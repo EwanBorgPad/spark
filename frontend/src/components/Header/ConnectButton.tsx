@@ -15,7 +15,8 @@ export const ConnectButton = () => {
     else if (walletState === 'CONNECTED') confirm('Disconnect wallet?') && signOut()
   }
 
-  return <Button
+  return <Button.IconWithLabel
+    icon={'SvgPhantom'}
     onClick={onClick}
     size='xs'
     color='primary'
