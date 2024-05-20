@@ -37,13 +37,28 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
 
     setWalletState('CONNECTING')
-    // @ts-expect-error no types for phantom yet
-    const signInRes = await window.phantom.solana.signIn({})
-    setWalletState('CONNECTED')
 
-    const address = signInRes.address.toString()
+    // initiate connection
+    try {
+      // @ts-expect-error no types for phantom yet
+      const signInRes = await window.phantom.solana.signIn({})
 
-    setAddress(address)
+      // connection accepted
+      const address = signInRes.address.toString()
+      setAddress(address)
+      setWalletState('CONNECTED')
+
+    } catch (e) {
+      setWalletState('NOT_CONNECTED')
+
+      if (e instanceof Error && e.message === 'User rejected the request.') {
+        // connection declined
+        alert('Sign in declined by user!')
+      } else {
+        // rethrow
+        throw e
+      }
+    }
   }
 
   async function signOut() {
