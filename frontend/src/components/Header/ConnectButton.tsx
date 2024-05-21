@@ -45,7 +45,7 @@ export const ConnectButton = () => {
               </h1>
             </div>
             {/* Body */}
-            <div className="flex items-center justify-center gap-6 p-[56px]">
+            <div className="w-full flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-6 p-4 lg:p-[56px]">
               <WalletProvider
                 icon={"SvgPhantom"}
                 label={"Phantom"}
@@ -76,7 +76,8 @@ type WalletProviderProps = {
 function WalletProvider({ icon, label, onClick }: WalletProviderProps) {
   const className = twMerge(
     "flex flex-col items-center justify-center gap-4",
-    "w-[180px] h-[180px] border border-bd-primary rounded-2xl p-[40px] hover:bg-emphasis cursor-pointer",
+    'lg:p-[40px]',
+    "w-full lg:w-[180px] h-[180px] border border-bd-primary rounded-2xl hover:bg-emphasis cursor-pointer",
   )
   return (
     <div onClick={onClick} className={className}>
