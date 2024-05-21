@@ -24,14 +24,6 @@ export const ConnectButton = () => {
           ? truncateAddress(address)
           : "Unknown Status"
 
-  function onPhantomClick() {
-    signInWithPhantom()
-  }
-
-  function onBackpackClick() {
-    signInWithBackpack()
-  }
-
   function onClick() {
     if (walletState === "NOT_CONNECTED") {
       setShowModal(true)
@@ -57,12 +49,12 @@ export const ConnectButton = () => {
               <WalletProvider
                 icon={"SvgPhantom"}
                 label={"Phantom"}
-                onClick={onPhantomClick}
+                onClick={signInWithPhantom}
               />
               <WalletProvider
                 icon={"SvgBackpack"}
                 label={"Backpack"}
-                onClick={onBackpackClick}
+                onClick={signInWithBackpack}
               />
             </div>
           </div>
