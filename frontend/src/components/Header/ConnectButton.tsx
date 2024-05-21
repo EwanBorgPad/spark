@@ -10,7 +10,7 @@ export const ConnectButton = () => {
   const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
-    if (walletState === 'CONNECTED') {
+    if (walletState === "CONNECTED") {
       setShowModal(false)
     }
   }, [walletState, showModal])
@@ -29,7 +29,7 @@ export const ConnectButton = () => {
   }
 
   function onBackpackClick() {
-    alert('Backpack not implemented yet!')
+    alert("Backpack not implemented yet!")
   }
 
   function onClick() {
@@ -40,27 +40,36 @@ export const ConnectButton = () => {
     }
   }
 
-  return <>
-    <Button
-      onClick={onClick}
-      size="xs"
-      color="primary"
-      btnText={btnText}
-    />
-    {showModal && <SimpleModal onClose={() => setShowModal(false)}>
-      <div className='flex flex-col items-center justify-center'>
-        {/* Heading */}
-        <div className='w-full p-[17px] text-center'>
-          <h1 className="text-body-xl-semibold text-white">Connect a Solana Wallet</h1>
-        </div>
-        {/* Body */}
-        <div className="flex gap-6 items-center justify-center p-[56px]">
-          <WalletProvider icon={'SvgPhantom'} label={'Phantom'} onClick={onPhantomClick} />
-          <WalletProvider icon={'SvgBackpack'} label={'Backpack'} onClick={onBackpackClick} />
-        </div>
-      </div>
-    </SimpleModal>}
-  </>
+  return (
+    <>
+      <Button onClick={onClick} size="xs" color="primary" btnText={btnText} />
+      {showModal && (
+        <SimpleModal onClose={() => setShowModal(false)}>
+          <div className="flex flex-col items-center justify-center">
+            {/* Heading */}
+            <div className="w-full p-[17px] text-center">
+              <h1 className="text-body-xl-semibold text-white">
+                Connect a Solana Wallet
+              </h1>
+            </div>
+            {/* Body */}
+            <div className="flex items-center justify-center gap-6 p-[56px]">
+              <WalletProvider
+                icon={"SvgPhantom"}
+                label={"Phantom"}
+                onClick={onPhantomClick}
+              />
+              <WalletProvider
+                icon={"SvgBackpack"}
+                label={"Backpack"}
+                onClick={onBackpackClick}
+              />
+            </div>
+          </div>
+        </SimpleModal>
+      )}
+    </>
+  )
 }
 
 function truncateAddress(address: string) {
@@ -74,11 +83,13 @@ type WalletProviderProps = {
 }
 function WalletProvider({ icon, label, onClick }: WalletProviderProps) {
   const className = twMerge(
-    'flex flex-col items-center justify-center gap-4',
-    'w-[180px] h-[180px] border border-bd-primary rounded-2xl p-[40px] hover:bg-emphasis cursor-pointer'
+    "flex flex-col items-center justify-center gap-4",
+    "w-[180px] h-[180px] border border-bd-primary rounded-2xl p-[40px] hover:bg-emphasis cursor-pointer",
   )
-  return <div onClick={onClick} className={className}>
-    <Icon className='text-[60px]' icon={icon} />
-    <p className='text-white text-body-l-medium'>{label}</p>
-  </div>
+  return (
+    <div onClick={onClick} className={className}>
+      <Icon className="text-[60px]" icon={icon} />
+      <p className="text-body-l-medium text-white">{label}</p>
+    </div>
+  )
 }
