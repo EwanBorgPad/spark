@@ -4,6 +4,8 @@ export default {
   theme: {
     extend: {
       colors: {
+        "red": "#FF0000",
+
         // background colors
         "default": "#0C111D",
         "secondary": "#161B26",
@@ -22,6 +24,7 @@ export default {
         "progress-gray": "#1a202a",
         "progress-left": "#01C38D",
         "progress-right": "#FFFF00",
+        "overlay": "#0C111D",
 
         // font colors
         "fg": {
@@ -67,10 +70,20 @@ export default {
       },
       boxShadow: {
         "underline": "0px 2px 0px 0px rgba(188,254,143,1)"
+      },
+      fontSize: {
+        'body-xl-semibold': [ '18px', {
+          lineHeight: '26px',
+          fontWeight: 'bold',
+        } ],
+        'body-l-medium': [ '16px', {
+          lineHeight: '24px',
+          fontWeight: 500,
+        } ],
       }
     },
   },
   plugins: [],
-  
+
 }
 

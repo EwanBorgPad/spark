@@ -12,4 +12,8 @@ export default defineConfig({
     },
   },
   plugins: [react()],
+  // enable below to serve on local network (for testing on mobile devices)
+  // server: {
+  //   host: true,
+  // }
 })

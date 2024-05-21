@@ -1,4 +1,4 @@
-import { Button } from "../Button/Button"
+import { ConnectButton } from "./ConnectButton"
 
 const Header = () => {
   return (
@@ -13,8 +13,7 @@ const Header = () => {
           <span className="font-bold text-fg-primary">BorgPad</span>
         </div>
 
-        <Button size="xs" color="primary" btnText="Connect Wallet" />
-        {/* v2: Navbar is already created */}
+        <ConnectButton />
       </div>
     </header>
   )
