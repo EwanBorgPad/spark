@@ -13,12 +13,12 @@ export function SimpleModal({ children, onClose, className }: Props) {
     'relative',
     'w-[460px]',
     'bg-secondary rounded-[10px] overflow-hidden',
-    'border-solid border-1 border-bd-primary',
+    'border-solid border border-bd-primary',
     className,
   )
   return <Portal id='simple-modal'>
     {/* fixed backdrop */}
-    <div className='border-1 fixed z-20 inset-0 bg-overlay bg-opacity-75 transition-opacity'></div>
+    <div className='fixed z-20 inset-0 bg-overlay bg-opacity-75 transition-opacity'></div>
 
     {/* fixed modal container*/}
     <div className='fixed z-30 inset-0 overflow-y-auto'>
