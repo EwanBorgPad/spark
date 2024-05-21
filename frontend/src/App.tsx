@@ -11,7 +11,7 @@ const router = createBrowserRouter([
     element: (
       <div>
         <Link to={"/project"}>
-          <Button size='xl' color='primary' btnText='Go To Project' />
+          <Button size="xl" color="primary" btnText="Go To Project" />
         </Link>
       </div>
     ),
@@ -23,11 +23,11 @@ const router = createBrowserRouter([
 ])
 function App() {
   return (
-    <div className='max-w-screen flex min-h-screen flex-col items-center justify-center overflow-x-hidden overflow-y-scroll bg-default font-geist text-fg-primary'>
-      <div className='max-w-screen absolute left-0 top-0 -z-[0] w-full overflow-hidden'>
+    <div className="max-w-screen flex min-h-screen flex-col items-center justify-center overflow-x-hidden overflow-y-scroll bg-default font-geist text-fg-primary">
+      <div className="max-w-screen absolute left-0 top-16 -z-[0] w-full overflow-hidden">
         <img
           src={backdropImg}
-          className='h-[740px] min-w-[1440px] lg:h-auto lg:w-screen'
+          className="h-[740px] min-w-[1440px] lg:h-auto lg:w-screen"
         />
       </div>
 

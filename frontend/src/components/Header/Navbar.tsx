@@ -18,7 +18,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className='flex h-8 items-center gap-2 overflow-x-scroll text-fg-disabled lg:px-4'>
+    <nav className="flex h-8 items-center gap-2 overflow-x-scroll text-fg-disabled lg:px-4">
       {renderNavItems()}
     </nav>
   )
