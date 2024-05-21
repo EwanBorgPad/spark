@@ -6,7 +6,7 @@ import { AvailableIcons, Icon } from "@/components/Icon/Icon.tsx"
 import { twMerge } from "tailwind-merge"
 
 export const ConnectButton = () => {
-  const { walletState, address, signIn, signOut } = useWalletContext()
+  const { walletState, address, signInWithPhantom, signInWithBackpack, signOut } = useWalletContext()
   const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
@@ -25,11 +25,11 @@ export const ConnectButton = () => {
           : "Unknown Status"
 
   function onPhantomClick() {
-    signIn()
+    signInWithPhantom()
   }
 
   function onBackpackClick() {
-    alert("Backpack not implemented yet!")
+    signInWithBackpack()
   }
 
   function onClick() {
