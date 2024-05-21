@@ -1,8 +1,9 @@
 import { ConnectButton } from "./ConnectButton"
 import { AvailableIcons, Icon } from "@/components/Icon/Icon.tsx"
 import { twMerge } from "tailwind-merge"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
+import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
 
 const Header = () => {
   const { isSignedIn } = useWalletContext()
@@ -35,10 +36,19 @@ function WalletDropdown() {
   const icon: AvailableIcons =
     walletProvider === "PHANTOM" ? "SvgPhantom" : "SvgBackpack"
 
+  const dropdownButtonRef = useRef<HTMLDivElement | null>(null)
+  const dropdownMenuRef = useRef<HTMLDivElement | null>(null)
+  useCheckOutsideClick(
+    dropdownMenuRef,
+    () => isOpen && setIsOpen(false),
+    [dropdownButtonRef]
+  )
+
   return (
     <div className="relative">
       {/* dropdown button */}
       <div
+        ref={dropdownButtonRef}
         onClick={toggleDropdown}
         className="flex cursor-pointer items-center gap-3 rounded-2xl border border-bd-primary bg-tertiary px-3 py-1.5"
       >
@@ -55,6 +65,7 @@ function WalletDropdown() {
       {/* dropdown menu */}
       {isOpen && (
         <div
+          ref={dropdownMenuRef}
           className={twMerge(
             "absolute right-0 top-12 w-[343px] p-4",
             "rounded-xl border border-bd-primary bg-default",
