@@ -1,13 +1,22 @@
 import { createContext, ReactNode, useContext, useState } from "react"
 
 export type WalletState = "NOT_CONNECTED" | "CONNECTING" | "CONNECTED"
+/**
+ * Different Wallet Providers (not sure if that's the right now)
+ * Phantom: https://phantom.app/
+ * Backpack: https://backpack.app/
+ */
+export type WalletProvider = "PHANTOM" | "BACKPACK" | ""
 
 type Context = {
   address: string
   walletState: WalletState
+  walletProvider: WalletProvider
   signInWithPhantom: () => void
   signInWithBackpack: () => void
   signOut: () => void
+  isSignedIn: boolean
+  truncatedAddress: string
 }
 
 const WalletContext = createContext<Context | undefined>(undefined)
@@ -29,6 +38,7 @@ export function useWalletContext() {
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [address, setAddress] = useState("")
   const [walletState, setWalletState] = useState<WalletState>("NOT_CONNECTED")
+  const [walletProvider, setWalletProvider] = useState<WalletProvider>("")
 
   async function signInWithPhantom() {
     // @ts-expect-error no types for phantom yet
@@ -52,6 +62,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       const address = signInRes.address.toString()
       setAddress(address)
       setWalletState("CONNECTED")
+      setWalletProvider("PHANTOM")
     } catch (e) {
       setWalletState("NOT_CONNECTED")
 
@@ -87,6 +98,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       const address = signInRes.account.address
       setAddress(address)
       setWalletState("CONNECTED")
+      setWalletProvider("BACKPACK")
     } catch (e) {
       setWalletState("NOT_CONNECTED")
 
@@ -104,19 +116,30 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   async function signOut() {
     setAddress("")
     setWalletState("NOT_CONNECTED")
+    setWalletProvider("")
   }
+
+  const isSignedIn = Boolean(address)
+  const truncatedAddress = truncateAddress(address)
 
   return (
     <WalletContext.Provider
       value={{
         address,
         walletState,
+        walletProvider,
         signInWithPhantom,
         signInWithBackpack,
         signOut,
+        isSignedIn,
+        truncatedAddress,
       }}
     >
       {children}
     </WalletContext.Provider>
   )
+}
+
+function truncateAddress(address: string) {
+  return address.slice(0, 4) + "..." + address.slice(-4)
 }
