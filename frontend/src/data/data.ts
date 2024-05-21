@@ -3,9 +3,12 @@ import curator from "../assets/curator.png"
 import chainImg from "../assets/zoraImg.png"
 import projectCoin from "../assets/projectCoin.png"
 import secondaryImgUrl from "../assets/secondaryImgUrl.png"
-import { addDays, addHours, addMinutes } from "date-fns"
+import { addDays } from "date-fns/addDays"
+import { addHours } from "date-fns/addHours"
+import { addMinutes } from "date-fns/addMinutes"
+import { TimelineEventType } from "@/components/Timeline/Timeline"
 
-const tgeDate = addMinutes(addHours(addDays(new Date(), 2.43), 3), 44)
+const arbitraryDate = addMinutes(addHours(addDays(new Date(), -14), 3), 44)
 
 type ProjectData = {
   title: string
@@ -49,6 +52,7 @@ type ProjectData = {
     tokenGenerationEventDate: Date
   }
   secondaryImgUrl: string
+  timeline: TimelineEventType[]
 }
 
 export const dummyData: ProjectData = {
@@ -109,7 +113,7 @@ export const dummyData: ProjectData = {
     total: 2000,
   },
   // might be swaped with duration of TGE
-  endsIn: tgeDate,
+  endsIn: arbitraryDate,
   whitelisting: {
     raiseTarget: 2000000,
     price: {
@@ -125,7 +129,14 @@ export const dummyData: ProjectData = {
       tgePercentage: 20,
       cliffPercentage: 20,
     },
-    tokenGenerationEventDate: tgeDate,
+    tokenGenerationEventDate: arbitraryDate,
   },
   secondaryImgUrl: secondaryImgUrl,
+  timeline: [
+    { label: "Registration Opens", date: arbitraryDate },
+    { label: "Sale Opens", date: addDays(arbitraryDate, 10) },
+    { label: "Sale Closes", date: addDays(arbitraryDate, 12) },
+    { label: "Reward Distribution", date: addDays(arbitraryDate, 22) },
+    { label: "?", date: addDays(arbitraryDate, 24) },
+  ],
 }
