@@ -1,6 +1,11 @@
 import { ExternalLinkType } from "@/components/Button/ExternalLink"
 import curator from "../assets/curator.png"
 import chainImg from "../assets/zoraImg.png"
+import projectCoin from "../assets/projectCoin.png"
+import secondaryImgUrl from "../assets/secondaryImgUrl.png"
+import { addDays, addHours, addMinutes } from "date-fns"
+
+const tgeDate = addMinutes(addHours(addDays(new Date(), 2.43), 3), 44)
 
 type ProjectData = {
   title: string
@@ -25,6 +30,25 @@ type ProjectData = {
     available: number
     total: number
   }
+  endsIn: Date
+  whitelisting: {
+    raiseTarget: number
+    price: {
+      coin: {
+        iconUrl: string
+        ticker: string
+      }
+      dollarPrice: number
+      borgPrice: number
+    }
+    registrations: number
+    vesting: {
+      tgePercentage: number
+      cliffPercentage: number
+    }
+    tokenGenerationEventDate: Date
+  }
+  secondaryImgUrl: string
 }
 
 export const dummyData: ProjectData = {
@@ -81,7 +105,27 @@ export const dummyData: ProjectData = {
   marketcap: 220301040.134242,
   fdv: 144501647.5001,
   tokens: {
-    available: 1150,
+    available: 1565,
     total: 2000,
   },
+  // might be swaped with duration of TGE
+  endsIn: tgeDate,
+  whitelisting: {
+    raiseTarget: 2000000,
+    price: {
+      coin: {
+        iconUrl: projectCoin,
+        ticker: "LRC",
+      },
+      dollarPrice: 0.08327,
+      borgPrice: 0.41635,
+    },
+    registrations: 1698,
+    vesting: {
+      tgePercentage: 20,
+      cliffPercentage: 20,
+    },
+    tokenGenerationEventDate: tgeDate,
+  },
+  secondaryImgUrl: secondaryImgUrl,
 }

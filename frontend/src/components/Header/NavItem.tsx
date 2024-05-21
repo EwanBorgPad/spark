@@ -18,7 +18,7 @@ const NavItem = ({ id, label }: Props) => {
           "border-b-[2px] border-fg-brand-primary text-fg-primary hover:text-fg-primary",
       )}
     >
-      <span className='text-nowrap px-2 py-1'>{label}</span>
+      <span className="text-nowrap px-2 py-1">{label}</span>
     </Link>
   )
 }

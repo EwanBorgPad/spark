@@ -2,9 +2,9 @@ import { SVGProps } from "react"
 
 export const SvgLoader = (props: SVGProps<SVGSVGElement>) => (
   <svg
-    xmlns='http://www.w3.org/2000/svg'
-    fill='none'
-    viewBox='0 0 24 24'
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
     {...props}
   >
     <circle
@@ -12,7 +12,7 @@ export const SvgLoader = (props: SVGProps<SVGSVGElement>) => (
       cy={12}
       r={10}
       fill={"none"}
-      stroke='#77777f'
+      stroke="#77777f"
       strokeWidth={3}
     />
     <circle
@@ -20,7 +20,7 @@ export const SvgLoader = (props: SVGProps<SVGSVGElement>) => (
       cy={12}
       r={10}
       fill={"none"}
-      stroke='#ffffff'
+      stroke="#ffffff"
       strokeWidth={3}
       strokeDasharray={25}
     />

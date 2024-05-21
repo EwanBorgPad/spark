@@ -71,4 +71,7 @@ h5 {
 .progress-bar-start {
   clip-path: circle(100px at center);
 }
+.secondary-profile-img {
+  background-image: url("./src/assets/secondaryImgUrl.png");
+}
 

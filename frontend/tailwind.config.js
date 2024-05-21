@@ -21,7 +21,7 @@ export default {
         "brand-dimmed-2": "#161b26",
         "progress-gray": "#1a202a",
         "progress-left": "#01C38D",
-        "progress-right": "#FFF78A",
+        "progress-right": "#FFFF00",
 
         // font colors
         "fg": {
@@ -56,6 +56,11 @@ export default {
         // other colors
 
       },
+      backgroundImage: {
+        "texture": "url(/src/assets/texture-min.png)",
+        "texture-zoomed-out": "url(/src/assets/grainy-horizontal.png)",
+        "secondary-profile-photo": "url(/src/assets/secondaryImgUrl.png)",
+      },
       fontFamily: {
         "geist": ["Geist", "Arial", "sans-serif"],
         "geist-mono": ["GeistMono", "monospace"]
@@ -66,5 +71,6 @@ export default {
     },
   },
   plugins: [],
+  
 }
 
