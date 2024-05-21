@@ -1,5 +1,5 @@
-import { Button } from "../Button/Button"
-import { useWalletContext } from '../../hooks/useWalletContext.tsx'
+import { Button } from "@/components/Button/Button"
+import { useWalletContext } from '@/hooks/useWalletContext'
 
 export const ConnectButton = () => {
   const { walletState, address, signIn, signOut } = useWalletContext()
