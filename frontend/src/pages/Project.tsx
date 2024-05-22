@@ -12,7 +12,7 @@ import Timeline from "@/components/Timeline/Timeline"
 
 const Project = () => {
   return (
-    <main className="z-0 flex w-full flex-col items-center gap-10 px-4 py-[72px] font-normal text-fg-primary lg:max-w-[760px] lg:py-[100px]">
+    <main className="z-0 flex w-full flex-col items-center gap-10 px-4 py-[72px] font-normal text-fg-primary lg:max-w-[792px] lg:py-[100px]">
       <div className="flex w-full flex-col justify-between gap-6 lg:flex-row">
         <div className="flex flex-col gap-6 lg:flex-row">
           <Avatar imgUrl={avatarExample} size="large" />
