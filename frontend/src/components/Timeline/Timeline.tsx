@@ -100,7 +100,7 @@ const Timeline = ({ timelineEvents }: Props) => {
 
   return (
     <div className="w-full">
-      <h2 className="w-full pb-3 text-left text-2xl">Timeline</h2>
+      <h2 className="text-2xl w-full pb-3 text-left">Timeline</h2>
       <div className="flex w-full flex-col gap-4 rounded-lg border border-bd-secondary bg-secondary/50 px-4 py-5 ">
         {Object.values(data).map(
           (event: ExtendedTimelineEventType, dataIndex) =>

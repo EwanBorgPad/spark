@@ -22,7 +22,7 @@ type WhitelistingDataType = {
 
 const WhitelistingLP = ({ data }: { data: WhitelistingDataType }) => {
   return (
-    <div className="relative flex w-full flex-col items-center gap-2 rounded-3xl border border-bd-secondary bg-secondary bg-texture bg-cover p-6 pt-[26px] text-sm text-fg-primary bg-blend-multiply">
+    <div className="text-sm relative flex w-full flex-col items-center gap-2 rounded-3xl border border-bd-secondary bg-secondary bg-texture bg-cover p-6 pt-[26px] text-fg-primary bg-blend-multiply">
       <div className="flex w-full items-center justify-between py-2.5">
         <span>Raise Target</span>
         <div className="flex gap-2">

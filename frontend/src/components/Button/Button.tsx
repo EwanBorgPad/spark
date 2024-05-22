@@ -65,7 +65,7 @@ const ButtonRoot = forwardRef<HTMLButtonElement, ButtonProps<"button">>(
     const prefixElementOrLoader = useMemo<ReactNode>(() => {
       if (isLoading)
         return (
-          <Icon className={"absolute left-4 animate-spin"} icon={"SvgLoader"} />
+          <Icon className={"animate-spin absolute left-4"} icon={"SvgLoader"} />
         )
       return prefixElement
     }, [isLoading, prefixElement])
