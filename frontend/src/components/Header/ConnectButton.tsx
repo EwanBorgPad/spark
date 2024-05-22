@@ -6,7 +6,13 @@ import { AvailableIcons, Icon } from "@/components/Icon/Icon.tsx"
 import { twMerge } from "tailwind-merge"
 
 export const ConnectButton = () => {
-  const { walletState, address, signIn, signOut } = useWalletContext()
+  const {
+    walletState,
+    truncatedAddress,
+    signInWithPhantom,
+    signInWithBackpack,
+    signOut,
+  } = useWalletContext()
   const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
@@ -21,16 +27,8 @@ export const ConnectButton = () => {
       : walletState === "CONNECTING"
         ? "Connecting..."
         : walletState === "CONNECTED"
-          ? truncateAddress(address)
+          ? truncatedAddress
           : "Unknown Status"
-
-  function onPhantomClick() {
-    signIn()
-  }
-
-  function onBackpackClick() {
-    alert("Backpack not implemented yet!")
-  }
 
   function onClick() {
     if (walletState === "NOT_CONNECTED") {
@@ -53,16 +51,16 @@ export const ConnectButton = () => {
               </h1>
             </div>
             {/* Body */}
-            <div className="flex items-center justify-center gap-6 p-[56px]">
+            <div className="flex w-full flex-col items-center justify-center gap-4 p-4 lg:flex-row lg:gap-6 lg:p-[56px]">
               <WalletProvider
                 icon={"SvgPhantom"}
                 label={"Phantom"}
-                onClick={onPhantomClick}
+                onClick={signInWithPhantom}
               />
               <WalletProvider
                 icon={"SvgBackpack"}
                 label={"Backpack"}
-                onClick={onBackpackClick}
+                onClick={signInWithBackpack}
               />
             </div>
           </div>
@@ -70,10 +68,6 @@ export const ConnectButton = () => {
       )}
     </>
   )
-}
-
-function truncateAddress(address: string) {
-  return address.slice(0, 4) + "..." + address.slice(-4)
 }
 
 type WalletProviderProps = {
@@ -84,7 +78,8 @@ type WalletProviderProps = {
 function WalletProvider({ icon, label, onClick }: WalletProviderProps) {
   const className = twMerge(
     "flex flex-col items-center justify-center gap-4",
-    "w-[180px] h-[180px] border border-bd-primary rounded-2xl p-[40px] hover:bg-emphasis cursor-pointer",
+    "lg:p-[40px]",
+    "w-full lg:w-[180px] h-[180px] border border-bd-primary rounded-2xl hover:bg-emphasis cursor-pointer",
   )
   return (
     <div onClick={onClick} className={className}>

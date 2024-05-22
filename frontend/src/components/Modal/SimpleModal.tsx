@@ -1,7 +1,8 @@
-import { ReactNode } from "react"
+import { ReactNode, useRef } from "react"
 import { Portal } from "@/components/Portal/Portal"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "@/components/Icon/Icon.tsx"
+import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
 
 type Props = {
   children: ReactNode
@@ -16,6 +17,10 @@ export function SimpleModal({ children, onClose, className }: Props) {
     "border-solid border border-bd-primary",
     className,
   )
+
+  const modalRef = useRef<HTMLDivElement | null>(null)
+  useCheckOutsideClick(modalRef, () => onClose?.())
+
   return (
     <Portal id="simple-modal">
       {/* fixed backdrop */}
@@ -30,7 +35,7 @@ export function SimpleModal({ children, onClose, className }: Props) {
           }
         >
           {/* modal */}
-          <div className={modalClasses}>
+          <div ref={modalRef} className={modalClasses}>
             {onClose && <CloseButton onClose={onClose} />}
 
             {children}
