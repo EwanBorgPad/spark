@@ -1,4 +1,3 @@
-import { Icon } from "../Icon/Icon"
 import { ConnectButton } from "./ConnectButton"
 import { AvailableIcons, Icon } from "@/components/Icon/Icon.tsx"
 import { twMerge } from "tailwind-merge"
