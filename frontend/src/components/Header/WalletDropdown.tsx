@@ -3,11 +3,13 @@ import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { AvailableIcons, Icon } from "@/components/Icon/Icon.tsx"
 import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
 import { twMerge } from "tailwind-merge"
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard.ts"
 
 export const WalletDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
 
-  const { truncatedAddress, walletProvider, signOut } = useWalletContext()
+  const { address, truncatedAddress, walletProvider, signOut } =
+    useWalletContext()
 
   const toggleDropdown = () => setIsOpen((isOpen) => !isOpen)
 
@@ -20,13 +22,15 @@ export const WalletDropdown = () => {
     dropdownButtonRef,
   ])
 
+  const { isCopied, copyToClipboard } = useCopyToClipboard()
+
   return (
     <div className="relative">
       {/* dropdown button */}
       <div
         ref={dropdownButtonRef}
         onClick={toggleDropdown}
-        className="flex cursor-pointer items-center gap-3 rounded-2xl border border-bd-primary bg-secondary hover:bg-tertiary px-3 py-1.5"
+        className="flex cursor-pointer items-center gap-3 rounded-2xl border border-bd-primary bg-secondary px-3 py-1.5 hover:bg-tertiary"
       >
         <Icon icon={icon} />
         <p className="select-none">{truncatedAddress}</p>
@@ -57,9 +61,21 @@ export const WalletDropdown = () => {
           </div>
           {/* right side */}
           <div className="flex items-center gap-3">
-            <DropdownMenuButton icon={"SvgCopy"} />
-            <DropdownMenuButton icon={"SvgShare"} />
-            <DropdownMenuButton icon={"SvgLogOut"} onClick={signOut} />
+            <DropdownMenuButton
+              icon={"SvgCopy"}
+              tooltipText={isCopied ? "Copied!" : "Copy Wallet Address"}
+              onClick={() => copyToClipboard(address)}
+            />
+            <DropdownMenuButton
+              icon={"SvgShare"}
+              tooltipText={"Share"}
+              onClick={() => alert("Not implemented!")}
+            />
+            <DropdownMenuButton
+              icon={"SvgLogOut"}
+              tooltipText={"Disconnect"}
+              onClick={signOut}
+            />
           </div>
         </div>
       )}
@@ -69,17 +85,46 @@ export const WalletDropdown = () => {
 
 type DropdownMenuButtonProps = {
   icon: AvailableIcons
+  tooltipText: string
   onClick?: () => void
 }
+const DropdownMenuButton = ({
+  icon,
+  onClick,
+  tooltipText,
+}: DropdownMenuButtonProps) => {
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false)
 
-const DropdownMenuButton = ({ icon, onClick }: DropdownMenuButtonProps) => {
   const classes = twMerge(
-    "flex items-center h-[32px] w-[32px]  rounded-lg border border-bd-primary p-2",
-    onClick && "cursor-pointer",
+    "relative",
+    "flex items-center h-[32px] w-[32px] p-2",
+    "rounded-lg border border-bd-primary",
+    "bg-default hover:bg-secondary",
+    "cursor-pointer select-none",
   )
   return (
-    <div className={classes} onClick={onClick}>
+    <div
+      onMouseEnter={() => setIsTooltipVisible(true)}
+      onMouseLeave={() => setIsTooltipVisible(false)}
+      className={classes}
+      onClick={onClick}
+    >
       <Icon icon={icon} />
+      {isTooltipVisible && <Tooltip text={tooltipText} />}
     </div>
   )
+}
+
+type TooltipProps = {
+  text: string
+}
+const Tooltip = ({ text }: TooltipProps) => {
+  const classes = twMerge(
+    "absolute top-9 -right-0 px-2 py-1",
+    "bg-black border border-bd-secondary",
+    "whitespace-nowrap",
+    "rounded-lg",
+    "z-10",
+  )
+  return <div className={classes}>{text}</div>
 }
