@@ -43,7 +43,7 @@ export const ConnectButton = () => {
       <Button onClick={onClick} size="xs" color="primary" btnText={btnText} />
       {showModal && (
         <SimpleModal onClose={() => setShowModal(false)}>
-          <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center justify-center max-sm:h-full">
             {/* Heading */}
             <div className="w-full p-[17px] text-center">
               <h1 className="text-body-xl-semibold text-white">
@@ -51,7 +51,7 @@ export const ConnectButton = () => {
               </h1>
             </div>
             {/* Body */}
-            <div className="flex w-full flex-col items-center justify-center gap-4 p-4 lg:flex-row lg:gap-6 lg:p-[56px]">
+            <div className="flex w-full grow flex-col items-center justify-center gap-4 p-4 lg:flex-row lg:gap-6 lg:p-[56px]">
               <WalletProvider
                 icon={"SvgPhantom"}
                 label={"Phantom"}
