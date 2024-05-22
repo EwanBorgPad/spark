@@ -5,6 +5,10 @@ import { useEffect, useState } from "react"
 import { AvailableIcons, Icon } from "@/components/Icon/Icon.tsx"
 import { twMerge } from "tailwind-merge"
 
+/**
+ * Connect button which opens a modal for choosing a wallet to connect to.
+ * @constructor
+ */
 export const ConnectButton = () => {
   const {
     walletState,
@@ -79,7 +83,7 @@ function WalletProvider({ icon, label, onClick }: WalletProviderProps) {
   const className = twMerge(
     "flex flex-col items-center justify-center gap-4",
     "lg:p-[40px]",
-    "w-full lg:w-[180px] h-[180px] border border-bd-primary rounded-2xl hover:bg-emphasis cursor-pointer",
+    "w-full lg:w-[180px] h-[180px] border border-bd-primary rounded-2xl hover:bg-tertiary cursor-pointer",
   )
   return (
     <div onClick={onClick} className={className}>
