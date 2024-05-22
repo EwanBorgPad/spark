@@ -80,7 +80,16 @@ export default {
           lineHeight: '24px',
           fontWeight: 500,
         } ],
-      }
+      },
+      keyframes: {
+        'top-down': {
+          '0%': { transform: 'translateY(-100%)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+      },
+      animation: {
+        'top-down': 'top-down 0.1s ease-out forwards',
+      },
     },
   },
   plugins: [],

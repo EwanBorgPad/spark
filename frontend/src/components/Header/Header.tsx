@@ -70,6 +70,8 @@ function WalletDropdown() {
             "absolute right-0 top-12 w-[343px] p-4",
             "rounded-xl border border-bd-primary bg-default",
             "flex items-center justify-between",
+            "transition-transform ease-out",
+            isOpen && 'animate-top-down',
           )}
         >
           {/* left side */}

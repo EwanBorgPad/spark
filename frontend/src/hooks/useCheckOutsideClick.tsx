@@ -2,7 +2,7 @@ import { RefObject, useEffect } from "react"
 
 export function useCheckOutsideClick(
   node: RefObject<HTMLDivElement> | RefObject<HTMLFormElement> | RefObject<HTMLElement>,
-  onClickOutside: (event?: any) => void,
+  onClickOutside: () => void,
   exclude?: (RefObject<HTMLElement>)[]
 ) {
   const helperFunc = (e: MouseEvent) => {
