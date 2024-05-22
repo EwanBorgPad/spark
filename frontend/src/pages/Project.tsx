@@ -8,6 +8,7 @@ import Avatar from "../components/Avatar/Avatar"
 import DesignSystem from "./DesignSystem"
 import { dummyData } from "../data/data"
 import { Icon } from "../components/Icon/Icon"
+import Timeline from "@/components/Timeline/Timeline"
 
 const Project = () => {
   return (
@@ -126,14 +127,7 @@ const Project = () => {
       </div>
 
       {/* @TODO - Timeline */}
-      <div className="w-full">
-        <h2 className="w-full pb-3 text-left text-2xl">Timeline</h2>
-        <div className="flex flex-col gap-3 rounded-lg border border-bd-secondary bg-secondary/50 px-4 py-5">
-          <div className="h-[6px] w-full items-center bg-default">
-            <div className="mt-[2px] h-[2px] w-full bg-brand-primary"></div>
-          </div>
-        </div>
-      </div>
+      <Timeline timelineEvents={dummyData.timeline} />
 
       <DesignSystem />
     </main>
