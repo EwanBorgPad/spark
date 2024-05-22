@@ -5,10 +5,10 @@ import { formatDateForDisplay } from "../utils/date-helpers"
 import avatarExample from "../assets/avatarExample.png"
 import ProgressBar from "../components/ProgressBar"
 import Avatar from "../components/Avatar/Avatar"
-import DesignSystem from "./DesignSystem"
 import { dummyData } from "../data/data"
 import { Icon } from "../components/Icon/Icon"
 import Timeline from "@/components/Timeline/Timeline"
+import { ScrollRestoration } from "react-router-dom"
 
 const Project = () => {
   return (
@@ -126,10 +126,10 @@ const Project = () => {
         <Icon icon="SvgArrowRight" className="text-[20px]" />
       </div>
 
-      {/* @TODO - Timeline */}
       <Timeline timelineEvents={dummyData.timeline} />
+      <ScrollRestoration />
 
-      <DesignSystem />
+      {/* <DesignSystem /> */}
     </main>
   )
 }

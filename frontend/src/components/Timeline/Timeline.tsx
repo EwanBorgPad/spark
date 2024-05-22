@@ -1,7 +1,8 @@
+import { useWindowSize } from "@/hooks/useWindowSize"
 import { formatDateForDisplay } from "@/utils/date-helpers"
 import { differenceInMilliseconds } from "date-fns"
 import { isBefore } from "date-fns/isBefore"
-import { useLayoutEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { twMerge } from "tailwind-merge"
 
 export type Props = {
@@ -27,6 +28,8 @@ const HORIZONTAL_PADDING = 16
 const Timeline = ({ timelineEvents }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState<number | null>(null)
+
+  const { width } = useWindowSize()
 
   const calculateTimelineData = (): ExtendedTimelineEventType[] => {
     const currentMoment = new Date()
@@ -86,9 +89,9 @@ const Timeline = ({ timelineEvents }: Props) => {
     return (
       <div
         key={event.label}
-        className="flex max-w-[132px] flex-1 items-center gap-4 lg:flex-col"
+        className="flex w-full flex-1 items-center gap-4 lg:max-w-[132px] lg:flex-col"
       >
-        <div className="relative flex h-6 w-6 items-center justify-center rounded-full bg-default">
+        <div className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-default lg:shrink">
           {displayTimeline && (
             <>
               {/* vertical view */}
@@ -116,7 +119,7 @@ const Timeline = ({ timelineEvents }: Props) => {
             <div className="z-[3] h-2 w-2 rounded-full bg-brand-primary"></div>
           )}
         </div>
-        <div className="flex flex-col lg:items-center">
+        <div className="flex flex-1 flex-col lg:items-center">
           <span
             className={twMerge(
               "truncate text-wrap text-sm font-normal",
@@ -137,7 +140,7 @@ const Timeline = ({ timelineEvents }: Props) => {
     if (containerRef?.current?.offsetWidth) {
       setContainerWidth(containerRef.current.offsetWidth)
     }
-  }, [])
+  }, [width])
 
   return (
     <div ref={containerRef} className="w-full">
