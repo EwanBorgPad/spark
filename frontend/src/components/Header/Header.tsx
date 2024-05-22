@@ -38,11 +38,9 @@ function WalletDropdown() {
 
   const dropdownButtonRef = useRef<HTMLDivElement | null>(null)
   const dropdownMenuRef = useRef<HTMLDivElement | null>(null)
-  useCheckOutsideClick(
-    dropdownMenuRef,
-    () => isOpen && setIsOpen(false),
-    [dropdownButtonRef]
-  )
+  useCheckOutsideClick(dropdownMenuRef, () => isOpen && setIsOpen(false), [
+    dropdownButtonRef,
+  ])
 
   return (
     <div className="relative">
@@ -71,7 +69,7 @@ function WalletDropdown() {
             "rounded-xl border border-bd-primary bg-default",
             "flex items-center justify-between",
             "transition-transform ease-out",
-            isOpen && 'animate-top-down',
+            isOpen && "animate-top-down",
           )}
         >
           {/* left side */}

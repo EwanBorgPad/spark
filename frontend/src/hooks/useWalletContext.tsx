@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useContext, useState } from "react"
+import { usePersistedState } from "@/hooks/usePersistedState.ts"
 
 export type WalletState = "NOT_CONNECTED" | "CONNECTING" | "CONNECTED"
 /**
@@ -36,9 +37,15 @@ export function useWalletContext() {
  * @constructor
  */
 export function WalletProvider({ children }: { children: ReactNode }) {
-  const [address, setAddress] = useState("")
-  const [walletState, setWalletState] = useState<WalletState>("NOT_CONNECTED")
-  const [walletProvider, setWalletProvider] = useState<WalletProvider>("")
+  const [address, setAddress] = usePersistedState("address")
+  const [walletProvider, setWalletProvider] =
+    usePersistedState<WalletProvider>("walletProvider")
+
+  const initialWalletState: WalletState = address
+    ? "CONNECTED"
+    : "NOT_CONNECTED"
+  const [walletState, setWalletState] =
+    useState<WalletState>(initialWalletState)
 
   async function signInWithPhantom() {
     // @ts-expect-error no types for phantom yet
