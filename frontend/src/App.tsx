@@ -1,26 +1,9 @@
 import "./i18n/i18n"
 import backdropImg from "./assets/backdropImgMin.png"
 import Header from "./components/Header/Header"
-import { Link, RouterProvider, createBrowserRouter } from "react-router-dom"
-import Project from "./pages/Project"
-import { Button } from "./components/Button/Button"
+import { Outlet } from "react-router-dom"
+import Footer from "./components/Footer/Footer"
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: (
-      <div>
-        <Link to={"/project"}>
-          <Button size="xl" color="primary" btnText="Go To Project" />
-        </Link>
-      </div>
-    ),
-  },
-  {
-    path: "/project",
-    element: <Project />,
-  },
-])
 function App() {
   return (
     <div className="max-w-screen flex min-h-screen flex-col items-center justify-center overflow-x-hidden overflow-y-scroll bg-default font-geist text-fg-primary">
@@ -33,7 +16,8 @@ function App() {
 
       <Header />
 
-      <RouterProvider router={router} />
+      <Outlet />
+      <Footer />
     </div>
   )
 }

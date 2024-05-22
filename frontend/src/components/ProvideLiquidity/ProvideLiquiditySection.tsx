@@ -8,7 +8,7 @@ const ProvideLiquiditySection = () => {
       <span className="absolute -top-[18px] rounded-full bg-brand-primary px-4 py-2 text-fg-alt-default">
         Whitelisting
       </span>
-      <CountDownTimer endsIn={dummyData.endsIn} />
+      <CountDownTimer endsIn={dummyData.distributionStartDate} />
       <WhitelistingLP data={dummyData.whitelisting} />
     </div>
   )

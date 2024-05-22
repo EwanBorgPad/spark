@@ -1,9 +1,11 @@
+
 import { ConnectButton } from "./ConnectButton"
 import { AvailableIcons, Icon } from "@/components/Icon/Icon.tsx"
 import { twMerge } from "tailwind-merge"
 import { useRef, useState } from "react"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
+import Logo from "../Logo"
 
 const Header = () => {
   const { isSignedIn } = useWalletContext()
@@ -15,13 +17,7 @@ const Header = () => {
           "flex w-full max-w-[1180px] flex-row items-center justify-between"
         }
       >
-        <div className="flex items-center gap-1 py-2">
-          {/* <div className="h-[19px] w-[19px] rounded-full bg-brand-primary" /> */}
-          <Icon icon="SvgLogo" className="text-2xl mb-[4px] h-[20px]" />
-          <span className="text-2xl font-sulphur-point leading-[28px] text-fg-primary">
-            BorgPad
-          </span>
-        </div>
+        <Logo />
 
         {isSignedIn ? <WalletDropdown /> : <ConnectButton />}
       </div>

@@ -8,7 +8,7 @@ import { addHours } from "date-fns/addHours"
 import { addMinutes } from "date-fns/addMinutes"
 import { TimelineEventType } from "@/components/Timeline/Timeline"
 
-const arbitraryDate = addMinutes(addHours(addDays(new Date(), 17), 3), 44)
+const arbitraryDate = addMinutes(addHours(addDays(new Date(), -14), 1), 44)
 
 type ProjectData = {
   title: string
@@ -33,7 +33,7 @@ type ProjectData = {
     available: number
     total: number
   }
-  endsIn: Date
+  distributionStartDate: Date
   whitelisting: {
     raiseTarget: number
     price: {
@@ -113,7 +113,7 @@ export const dummyData: ProjectData = {
     total: 2000,
   },
   // might be swaped with duration of TGE
-  endsIn: arbitraryDate,
+  distributionStartDate: addDays(arbitraryDate, 22),
   whitelisting: {
     raiseTarget: 2000000,
     price: {
