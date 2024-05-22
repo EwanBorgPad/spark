@@ -1,4 +1,5 @@
 import { formatDateForDisplay } from "@/utils/date-helpers"
+import { differenceInMilliseconds } from "date-fns"
 import { isBefore } from "date-fns/isBefore"
 import { twMerge } from "tailwind-merge"
 
@@ -16,6 +17,8 @@ type ExtendedTimelineEventType = {
   didTimePass: boolean
   nextEventDate?: Date
 } & TimelineEventType
+
+const MAX_TIMELINE_SECTION_HEIGHT = 54
 
 const Timeline = ({ timelineEvents }: Props) => {
   const calculateTimelineData = (): ExtendedTimelineEventType[] => {
@@ -40,6 +43,25 @@ const Timeline = ({ timelineEvents }: Props) => {
     index: number,
   ) => {
     const displayTimeline = dataLength - 1 !== index
+    const calculateTimelineRatio = () => {
+      const isTimelineFinished = Boolean(
+        event?.nextEventDate && isBefore(event.nextEventDate, new Date()),
+      )
+      if (isTimelineFinished) return 1
+      if (!event.didTimePass) return 0
+      if (!event?.nextEventDate) return 0
+      const timelineDurationInMs = differenceInMilliseconds(
+        event.nextEventDate,
+        event.date,
+      )
+      const timelineLeftInMs = differenceInMilliseconds(
+        event.nextEventDate,
+        new Date(),
+      )
+      return (timelineDurationInMs - timelineLeftInMs) / timelineDurationInMs
+    }
+
+    const calculatedRatio = calculateTimelineRatio()
 
     return (
       <div key={event.label} className="flex items-center gap-4">
@@ -47,9 +69,12 @@ const Timeline = ({ timelineEvents }: Props) => {
           {displayTimeline && (
             <>
               <div className="absolute left-[9px] top-3 z-[1] h-[54px] w-[6px] items-center bg-default"></div>
-              {event.didTimePass && (
-                <div className="absolute left-[9px] top-3 z-[2] ml-[2px] flex h-[54px] w-[2px] flex-col gap-1 bg-brand-primary"></div>
-              )}
+              <div
+                style={{
+                  height: calculatedRatio * MAX_TIMELINE_SECTION_HEIGHT,
+                }}
+                className="absolute left-[9px] top-3 z-[2] ml-[2px] flex w-[2px] flex-col gap-1 bg-brand-primary"
+              ></div>
             </>
           )}
           {event.didTimePass && (

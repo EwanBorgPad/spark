@@ -8,7 +8,7 @@ import { addHours } from "date-fns/addHours"
 import { addMinutes } from "date-fns/addMinutes"
 import { TimelineEventType } from "@/components/Timeline/Timeline"
 
-const arbitraryDate = addMinutes(addHours(addDays(new Date(), -14), 3), 44)
+const arbitraryDate = addMinutes(addHours(addDays(new Date(), 17), 3), 44)
 
 type ProjectData = {
   title: string
