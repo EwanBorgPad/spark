@@ -1,5 +1,6 @@
 import { isAfter } from "date-fns/isAfter"
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 type CountDownTimerProps = {
   endsIn: Date
@@ -38,6 +39,7 @@ const getCountdownTime = (timeLeft: number): TUseTimer => {
 }
 
 const CountDownTimer = ({ endsIn }: CountDownTimerProps) => {
+  const { t } = useTranslation()
   const [timeLeft, setTimeLeft] = useState(endsIn.getTime() - Date.now())
 
   const isEventFinished = isAfter(new Date(), endsIn)
@@ -55,11 +57,15 @@ const CountDownTimer = ({ endsIn }: CountDownTimerProps) => {
 
   return (
     <div className="flex h-[120px] w-full flex-col items-center rounded-t-xl bg-[radial-gradient(50%_65%_at_50%_0%,rgba(188,254,143,0.15)_0%,rgba(0,0,0,0.0)_100%)] pt-8">
-      <span className="text-sm text-fg-primary/60">Distribution starts in</span>
+      <span className="text-sm text-fg-primary/60">
+        {t("distribution_starts_in")}
+      </span>
       {isEventFinished ? (
-        <span className="text-xl text-fg-primary/60">Distribution ended</span>
+        <span className="text-xl text-fg-primary/60">
+          {t("distribution_ended")}
+        </span>
       ) : (
-        <div className="text-2xl flex items-start font-geist-mono">
+        <div className="flex items-start font-geist-mono text-2xl">
           <div className="flex flex-col items-center">
             <span className="font-semibold">{days}</span>
             <span className="text-[10px] leading-none opacity-60">days</span>

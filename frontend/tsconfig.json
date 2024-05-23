@@ -23,6 +23,7 @@
       "@/*": ["./src/*"]
     }
   },
+  // files from @types are added automatically upon creation in "include" property below
   "include": ["src", "src/@types/i18next.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

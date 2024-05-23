@@ -90,22 +90,21 @@ const Project = () => {
       <section className="flex w-full max-w-[400px] flex-col gap-[25px]">
         <div className="mt-[28px] flex w-full justify-between gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <span className="text-sm text-fg-tertiary">Marketcap</span>
+            <span className="text-sm text-fg-tertiary">{t("marketcap")}</span>
             <span className="font-geist-mono text-base text-fg-primary">
               {formatCurrencyAmount(dummyData.marketcap)}
             </span>
           </div>
           <div className="flex flex-1 flex-col gap-2">
-            <span className="text-sm text-fg-tertiary">FDV</span>
+            <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
             <span className="font-geist-mono text-base text-fg-primary">
               {formatCurrencyAmount(dummyData.fdv)}
-              {/* ${dummyData.fdv.toFixed(2)} */}
             </span>
           </div>
         </div>
         <div className="flex flex-col gap-3 rounded-xl bg-secondary px-4 py-3">
           <div className="flex w-full items-center justify-between gap-4">
-            <span className="text-base">Tokens Available</span>
+            <span className="text-base">{t("tokens_available")}</span>
             <div className="flex flex-col items-end">
               <span className="text-sm text-fg-tertiary">
                 {`${getRatioPercantage(
@@ -129,10 +128,10 @@ const Project = () => {
           className="absolute left-0 h-[72px] w-[100px] opacity-5"
         />
         <div className="z-[1] flex flex-col">
-          <span>{dummyData.title} Data Room</span>
-          <span className="opacity-50">
-            Learn more about the project and...
+          <span>
+            {dummyData.title} {t("data_room")}
           </span>
+          <span className="opacity-50">{t("learn_more_about")}</span>
         </div>
         <Icon icon="SvgArrowRight" className="text-[20px]" />
       </section>
