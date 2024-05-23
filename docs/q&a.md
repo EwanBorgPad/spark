@@ -18,3 +18,5 @@ The format isn't perfect, feel free to refactor at any time.
   - A: No, try Phantom and Backpack respectively.
 - Q: Are we definitely going with Solana chain exclusively? No Ethereum?
   - A: Looks like it.
+- Q: Which languages are supported? 
+  - A: Only EN for now, but probably more in the future

@@ -37,9 +37,9 @@ const ExternalLinkWithLabel = ({
     >
       <Icon
         icon={icons[externalLink.linkType]}
-        className="text-xl leading-none"
+        className={twMerge("text-xl leading-none", iconClassName)}
       />
-      <span className="text-nowrap text-sm">{externalLink?.label}</span>
+      <span className="text-sm text-nowrap">{externalLink?.label}</span>
     </a>
   )
 }
