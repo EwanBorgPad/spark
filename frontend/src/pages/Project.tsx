@@ -30,7 +30,7 @@ const Project = () => {
         </div>
       </div>
 
-      <div className="text-sm flex w-full flex-wrap gap-x-5 gap-y-3">
+      <div className="flex w-full flex-wrap gap-x-5 gap-y-3 text-sm">
         <div className="flex gap-5">
           <div className="flex items-center gap-2 border-r-[1px] border-r-fg-gray-line pr-5">
             <span className="text-fg-primary text-opacity-50">Chain</span>
@@ -80,13 +80,13 @@ const Project = () => {
         <div className="mt-[28px] flex w-full justify-between gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <span className="text-sm text-fg-tertiary">Marketcap</span>
-            <span className="text-base font-geist-mono text-fg-primary">
+            <span className="font-geist-mono text-base text-fg-primary">
               {formatCurrencyAmount(dummyData.marketcap)}
             </span>
           </div>
           <div className="flex flex-1 flex-col gap-2">
             <span className="text-sm text-fg-tertiary">FDV</span>
-            <span className="text-base font-geist-mono text-fg-primary">
+            <span className="font-geist-mono text-base text-fg-primary">
               {formatCurrencyAmount(dummyData.fdv)}
               {/* ${dummyData.fdv.toFixed(2)} */}
             </span>

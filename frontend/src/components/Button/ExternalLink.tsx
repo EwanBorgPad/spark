@@ -39,7 +39,7 @@ const ExternalLinkWithLabel = ({
         icon={icons[externalLink.linkType]}
         className="text-xl leading-none"
       />
-      <span className="text-sm text-nowrap">{externalLink?.label}</span>
+      <span className="text-nowrap text-sm">{externalLink?.label}</span>
     </a>
   )
 }

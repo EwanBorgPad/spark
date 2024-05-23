@@ -8,7 +8,7 @@ const DesignSystem = () => {
 
       <h2>Icons & Buttons</h2>
 
-      <div className="text-xl flex gap-3">
+      <div className="flex gap-3 text-xl">
         <Icon icon="SvgArrowDown" />
         <Icon icon="SvgArrowRight" />
         <Icon icon="SvgBorgCoin" />
