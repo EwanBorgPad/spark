@@ -5,7 +5,6 @@ import { twMerge } from "tailwind-merge"
 import { useRef, useState } from "react"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
-import Logo from "../Logo"
 
 const Header = () => {
   const { isSignedIn } = useWalletContext()

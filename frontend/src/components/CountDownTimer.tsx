@@ -1,13 +1,4 @@
-import { differenceInDays } from "date-fns"
-import { differenceInHours } from "date-fns/differenceInHours"
-import { differenceInMilliseconds } from "date-fns/differenceInMilliseconds"
-import { differenceInMinutes } from "date-fns/differenceInMinutes"
 import { isAfter } from "date-fns/isAfter"
-import { isBefore } from "date-fns/isBefore"
-import { millisecondsToHours } from "date-fns/millisecondsToHours"
-import { millisecondsToMinutes } from "date-fns/millisecondsToMinutes"
-import { subDays } from "date-fns/subDays"
-import { subHours } from "date-fns/subHours"
 import { useEffect, useState } from "react"
 
 type CountDownTimerProps = {
@@ -68,7 +59,7 @@ const CountDownTimer = ({ endsIn }: CountDownTimerProps) => {
       {isEventFinished ? (
         <span className="text-xl text-fg-primary/60">Distribution ended</span>
       ) : (
-        <div className="flex items-start font-geist-mono text-2xl">
+        <div className="text-2xl flex items-start font-geist-mono">
           <div className="flex flex-col items-center">
             <span className="font-semibold">{days}</span>
             <span className="text-[10px] leading-none opacity-60">days</span>

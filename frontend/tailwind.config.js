@@ -71,25 +71,6 @@ export default {
       boxShadow: {
         underline: "0px 2px 0px 0px rgba(188,254,143,1)",
       },
-      'body-xl-semibold': [ '18px', {
-        lineHeight: '26px',
-        fontWeight: 'bold',
-      } ],
-      'body-l-medium': [ '16px', {
-        lineHeight: '24px',
-        fontWeight: 500,
-      } ],
-    },
-    keyframes: {
-      'top-down': {
-        '0%': { transform: 'translateY(-100%)', opacity: '0' },
-        '100%': { transform: 'translateY(0)', opacity: '1' },
-      },
-    },
-    animation: {
-      'top-down': 'top-down 0.1s ease-out forwards',
-    },
-    fontSize: {
       "body-xl-semibold": [
         "18px",
         {
@@ -104,6 +85,33 @@ export default {
           fontWeight: 500,
         },
       ],
+      fontSize: {
+        "body-xl-semibold": [
+          "18px",
+          {
+            lineHeight: "26px",
+            fontWeight: "bold",
+          },
+        ],
+        "body-l-medium": [
+          "16px",
+          {
+            lineHeight: "24px",
+            fontWeight: 500,
+          },
+        ],
+      },
+    },
+
+    // not extended
+    keyframes: {
+      "top-down": {
+        "0%": { transform: "translateY(-100%)", opacity: "0" },
+        "100%": { transform: "translateY(0)", opacity: "1" },
+      },
+    },
+    animation: {
+      "top-down": "top-down 0.1s ease-out forwards",
     },
   },
   plugins: [],

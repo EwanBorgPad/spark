@@ -2,7 +2,7 @@ import { useWindowSize } from "@/hooks/useWindowSize"
 import { formatDateForDisplay } from "@/utils/date-helpers"
 import { differenceInMilliseconds } from "date-fns"
 import { isBefore } from "date-fns/isBefore"
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 import { twMerge } from "tailwind-merge"
 
 export type Props = {
@@ -122,13 +122,13 @@ const Timeline = ({ timelineEvents }: Props) => {
         <div className="flex flex-1 flex-col lg:items-center">
           <span
             className={twMerge(
-              "truncate text-wrap text-sm font-normal",
+              "text-xs truncate text-wrap font-normal",
               event.didTimePass && "font-semibold",
             )}
           >
             {event.label}
           </span>
-          <span className="truncate text-xs leading-[18px] opacity-50">
+          <span className="text-xs truncate leading-[18px] opacity-50">
             {event.displayedTime}
           </span>
         </div>
@@ -143,9 +143,9 @@ const Timeline = ({ timelineEvents }: Props) => {
   }, [width])
 
   return (
-    <div className="w-full">
-      <h2 className="w-full pb-3 text-left text-2xl">Timeline</h2>
-      <div className="flex w-full flex-col gap-4 rounded-lg border border-bd-secondary bg-secondary/50 px-4 py-5 ">
+    <div ref={containerRef} className="w-full">
+      <h2 className="text-2xl w-full pb-3 text-left">Timeline</h2>
+      <div className="flex w-full flex-col justify-between gap-4 rounded-lg border border-bd-secondary bg-secondary/50 px-4 py-5 lg:flex-row">
         {Object.values(data).map(
           (event: ExtendedTimelineEventType, dataIndex) =>
             renderTimelineEvent(event, dataLength, dataIndex),
