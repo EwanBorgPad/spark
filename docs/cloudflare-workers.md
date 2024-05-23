@@ -33,5 +33,7 @@ Even though we may centralize the server, we can still use CloudFlare CDN for th
 
 ## Resources:
 
-- [Is "edge" computing really faster?](https://www.youtube.com/watch?v=yOP5-3_WFus)
+- [YouTube: Is "edge" computing really faster?](https://www.youtube.com/watch?v=yOP5-3_WFus)
 - [Cloudflare wiki](https://en.wikipedia.org/wiki/Cloudflare)
+- [Eliminating cold starts with Cloudflare Workers](https://blog.cloudflare.com/eliminating-cold-starts-with-cloudflare-workers)
+- 

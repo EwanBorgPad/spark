@@ -122,13 +122,13 @@ const Timeline = ({ timelineEvents }: Props) => {
         <div className="flex flex-1 flex-col lg:items-center">
           <span
             className={twMerge(
-              "text-xs truncate text-wrap font-normal",
+              "truncate text-wrap text-xs font-normal",
               event.didTimePass && "font-semibold",
             )}
           >
             {event.label}
           </span>
-          <span className="text-xs truncate leading-[18px] opacity-50">
+          <span className="truncate text-xs leading-[18px] opacity-50">
             {event.displayedTime}
           </span>
         </div>
@@ -144,7 +144,7 @@ const Timeline = ({ timelineEvents }: Props) => {
 
   return (
     <div ref={containerRef} className="w-full">
-      <h2 className="text-2xl w-full pb-3 text-left">Timeline</h2>
+      <h2 className="w-full pb-3 text-left text-2xl">Timeline</h2>
       <div className="flex w-full flex-col justify-between gap-4 rounded-lg border border-bd-secondary bg-secondary/50 px-4 py-5 lg:flex-row">
         {Object.values(data).map(
           (event: ExtendedTimelineEventType, dataIndex) =>

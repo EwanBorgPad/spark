@@ -19,7 +19,7 @@ const Footer = () => {
           <Logo />
           <span className="text-sm">© 2024</span>
         </div>
-        <div className="text-sm flex items-center gap-5">
+        <div className="flex items-center gap-5 text-sm">
           <Link to="/terms-of-service">
             <Button
               color="plain"
@@ -30,7 +30,7 @@ const Footer = () => {
           <span className="text-2xl opacity-50">|</span>
           <ExternalLink.Icon
             externalLink={{ linkType: "x-twitter", url: "#" }}
-            className="text-3xl h-[1em] w-[1em] border-none p-0"
+            className="h-[1em] w-[1em] border-none p-0 text-3xl"
             iconClassName="text-xl"
           />
         </div>

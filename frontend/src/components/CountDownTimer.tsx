@@ -59,7 +59,7 @@ const CountDownTimer = ({ endsIn }: CountDownTimerProps) => {
       {isEventFinished ? (
         <span className="text-xl text-fg-primary/60">Distribution ended</span>
       ) : (
-        <div className="text-2xl flex items-start font-geist-mono">
+        <div className="flex items-start font-geist-mono text-2xl">
           <div className="flex flex-col items-center">
             <span className="font-semibold">{days}</span>
             <span className="text-[10px] leading-none opacity-60">days</span>
