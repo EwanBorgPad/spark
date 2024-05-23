@@ -5,6 +5,7 @@ export default {
     extend: {
       colors: {
         red: "#FF0000",
+        black: "#000000",
 
         // background colors
         default: "#0C111D",

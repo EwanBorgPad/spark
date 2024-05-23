@@ -11,9 +11,9 @@ type Props = {
 }
 export function SimpleModal({ children, onClose, className }: Props) {
   const modalClasses = twMerge(
-    "relative",
+    "relative h-full",
     "w-[460px]",
-    "bg-secondary rounded-[10px] overflow-hidden",
+    "bg-secondary lg:rounded-[10px] overflow-hidden",
     "border-solid border border-bd-primary",
     className,
   )
@@ -31,7 +31,7 @@ export function SimpleModal({ children, onClose, className }: Props) {
         {/*  */}
         <div
           className={
-            "px-s flex min-h-full items-center justify-center md:px-[50px]"
+            "px-s flex min-h-full items-center justify-center max-sm:h-full md:px-[50px]"
           }
         >
           {/* modal */}
@@ -57,7 +57,7 @@ export function CloseButton({
   className?: string
 }) {
   const cls = twMerge(
-    "absolute top-base right-base md:top-[20px] md:right-[30px]",
+    "absolute top-5 max-sm:left-4 md:right-6",
     "rounded-full",
     "flex items-center justify-center",
     "cursor-pointer",

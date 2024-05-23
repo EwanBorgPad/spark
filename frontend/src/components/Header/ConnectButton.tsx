@@ -5,6 +5,10 @@ import { useEffect, useState } from "react"
 import { AvailableIcons, Icon } from "@/components/Icon/Icon.tsx"
 import { twMerge } from "tailwind-merge"
 
+/**
+ * Connect button which opens a modal for choosing a wallet to connect to.
+ * @constructor
+ */
 export const ConnectButton = () => {
   const {
     walletState,
@@ -43,7 +47,7 @@ export const ConnectButton = () => {
       <Button onClick={onClick} size="xs" color="primary" btnText={btnText} />
       {showModal && (
         <SimpleModal onClose={() => setShowModal(false)}>
-          <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center justify-center max-sm:h-full">
             {/* Heading */}
             <div className="w-full p-[17px] text-center">
               <h1 className="text-body-xl-semibold text-white">
@@ -51,7 +55,7 @@ export const ConnectButton = () => {
               </h1>
             </div>
             {/* Body */}
-            <div className="flex w-full flex-col items-center justify-center gap-4 p-4 lg:flex-row lg:gap-6 lg:p-[56px]">
+            <div className="flex w-full grow flex-col items-center justify-center gap-4 p-4 lg:flex-row lg:gap-6 lg:p-[56px]">
               <WalletProvider
                 icon={"SvgPhantom"}
                 label={"Phantom"}
@@ -79,7 +83,7 @@ function WalletProvider({ icon, label, onClick }: WalletProviderProps) {
   const className = twMerge(
     "flex flex-col items-center justify-center gap-4",
     "lg:p-[40px]",
-    "w-full lg:w-[180px] h-[180px] border border-bd-primary rounded-2xl hover:bg-emphasis cursor-pointer",
+    "w-full lg:w-[180px] h-[180px] border border-bd-primary rounded-2xl hover:bg-tertiary cursor-pointer",
   )
   return (
     <div onClick={onClick} className={className}>
