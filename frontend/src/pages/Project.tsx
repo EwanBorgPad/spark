@@ -122,18 +122,23 @@ const Project = () => {
       </section>
       <ProvideLiquiditySection />
 
-      <section className="relative mt-10 flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-lg border border-bd-secondary bg-secondary/50 from-brand-primary/10 via-black/0 via-30% px-4 py-3 hover:border-brand-secondary/30 hover:bg-gradient-to-l">
+      <section className="group relative mt-10 flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-lg border border-bd-secondary bg-secondary/50 from-brand-primary/10 via-black/0 via-30% px-4 py-3 transition-colors hover:border-brand-secondary/30 hover:bg-gradient-to-l">
         <img
           src={dummyData.secondaryImgUrl}
           className="absolute left-0 h-[72px] w-[100px] opacity-5"
         />
         <div className="z-[1] flex flex-col">
-          <span>
+          <span className="font-medium">
             {dummyData.title} {t("data_room")}
           </span>
-          <span className="opacity-50">{t("learn_more_about")}</span>
+          <span className="font-normal opacity-50">
+            {t("learn_more_about")}
+          </span>
         </div>
-        <Icon icon="SvgArrowRight" className="text-[20px]" />
+        <Icon
+          icon="SvgArrowRight"
+          className="group-hover:scale-140 text-[20px] transition-transform"
+        />
       </section>
 
       <Timeline timelineEvents={dummyData.timeline} />

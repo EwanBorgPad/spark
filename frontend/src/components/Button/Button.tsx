@@ -72,7 +72,7 @@ const ButtonRoot = forwardRef<HTMLButtonElement, ButtonProps<"button">>(
 
     const className = classNames([
       "relative flex items-center justify-center  font-medium h-fit",
-      "hover:opacity-85 active:scale-[98%]",
+      "hover:opacity-85 transition-opacity active:scale-[98%]",
       "focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-black",
       "disabled:cursor-not-allowed disabled:opacity-50",
       BUTTON_COLOR_CLASS_NAMES[color],
