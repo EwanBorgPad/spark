@@ -4,8 +4,10 @@ import { Link } from "react-router-dom"
 import { ExternalLink } from "../Button/ExternalLink"
 import backdropImg from "@/assets/backdropImgMin.png"
 import { Button } from "../Button/Button"
+import { useTranslation } from "react-i18next"
 
 const Footer = () => {
+  const { t } = useTranslation()
   return (
     <footer className="relative flex h-[300px] w-full flex-col items-center justify-center overflow-hidden border-t border-t-bd-primary">
       <div className="max-w-screen absolute bottom-0 left-0 -z-[0] w-full rotate-180 overflow-hidden">
@@ -23,7 +25,7 @@ const Footer = () => {
           <Link to="/terms-of-service">
             <Button
               color="plain"
-              btnText="Terms of Service"
+              btnText={t("terms_of_service")}
               className="text-sm font-normal"
             />
           </Link>

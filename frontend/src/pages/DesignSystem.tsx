@@ -22,112 +22,61 @@ const DesignSystem = () => {
         <Icon icon="SvgWalletFilled" />
         <Icon icon="SvgWeb" />
       </div>
+
       <div className="flex flex-wrap items-start gap-3">
-        <Button size="xs" color="primary">
-          Label
-        </Button>
-        <Button size="sm" color="primary">
-          Label
-        </Button>
-        <Button size="md" color="primary">
-          Label
-        </Button>
-        <Button size="lg" color="primary">
-          Label
-        </Button>
-        <Button size="xl" color="primary">
-          Label
-        </Button>
+        <Button btnText="Label" size="xs" color="primary" />
+        <Button btnText="Label" size="sm" color="primary" />
+        <Button btnText="Label" size="md" color="primary" />
+        <Button btnText="Label" size="lg" color="primary" />
+        <Button btnText="Label" size="xl" color="primary" />
       </div>
 
       <div className="flex flex-wrap items-start gap-3">
-        <Button size="xs" color="secondary">
-          Label
-        </Button>
-        <Button size="sm" color="secondary">
-          Label
-        </Button>
-        <Button size="md" color="secondary">
-          Label
-        </Button>
-        <Button size="lg" color="secondary">
-          Label
-        </Button>
-        <Button size="xl" color="secondary">
-          Label
-        </Button>
+        <Button btnText="Label" size="xs" color="primary" />
+        <Button btnText="Label" size="sm" color="primary" />
+        <Button btnText="Label" size="md" color="primary" />
+        <Button btnText="Label" size="lg" color="primary" />
+        <Button btnText="Label" size="xl" color="primary" />
       </div>
 
       <div className="flex flex-wrap items-start gap-3">
-        <Button size="xs" color="tertiary">
-          Label
-        </Button>
-        <Button size="sm" color="tertiary">
-          Label
-        </Button>
-        <Button size="md" color="tertiary">
-          Label
-        </Button>
-        <Button size="lg" color="tertiary">
-          Label
-        </Button>
-        <Button size="xl" color="tertiary">
-          Label
-        </Button>
+        <Button btnText="Label" size="xs" color="secondary" />
+        <Button btnText="Label" size="sm" color="secondary" />
+        <Button btnText="Label" size="md" color="secondary" />
+        <Button btnText="Label" size="lg" color="secondary" />
+        <Button btnText="Label" size="xl" color="secondary" />
       </div>
 
       <div className="flex flex-wrap items-start gap-3">
-        <Button size="xs" color="danger">
-          Label
-        </Button>
-        <Button size="sm" color="danger">
-          Label
-        </Button>
-        <Button size="md" color="danger">
-          Label
-        </Button>
-        <Button size="lg" color="danger">
-          Label
-        </Button>
-        <Button size="xl" color="danger">
-          Label
-        </Button>
+        <Button btnText="Label" size="xs" color="tertiary" />
+        <Button btnText="Label" size="sm" color="tertiary" />
+        <Button btnText="Label" size="md" color="tertiary" />
+        <Button btnText="Label" size="lg" color="tertiary" />
+        <Button btnText="Label" size="xl" color="tertiary" />
       </div>
 
       <div className="flex flex-wrap items-start gap-3">
-        <Button size="xs" color="plain">
-          Label
-        </Button>
-        <Button size="sm" color="plain">
-          Label
-        </Button>
-        <Button size="md" color="plain">
-          Label
-        </Button>
-        <Button size="lg" color="plain">
-          Label
-        </Button>
-        <Button size="xl" color="plain">
-          Label
-        </Button>
+        <Button btnText="Label" size="xs" color="danger" />
+        <Button btnText="Label" size="sm" color="danger" />
+        <Button btnText="Label" size="md" color="danger" />
+        <Button btnText="Label" size="lg" color="danger" />
+        <Button btnText="Label" size="xl" color="danger" />
       </div>
 
       <div className="flex flex-wrap items-start gap-3">
-        <Button size="xs" color="primary">
-          Label
-        </Button>
-        <Button size="sm" color="primary">
-          Label
-        </Button>
-        <Button size="md" color="primary">
-          Label
-        </Button>
-        <Button size="lg" color="primary">
-          Label
-        </Button>
-        <Button size="xl" color="primary">
-          Label
-        </Button>
+        <Button btnText="Label" size="xs" color="plain" />
+        <Button btnText="Label" size="sm" color="plain" />
+        <Button btnText="Label" size="md" color="plain" />
+        <Button btnText="Label" size="lg" color="plain" />
+        <Button btnText="Label" size="xl" color="plain" />
+      </div>
+
+      <div className="flex flex-wrap items-start gap-3">
+        <Button btnText="Label" size="xs" color="primary" />
+        <Button btnText="Label" size="sm" color="primary" />
+        <Button btnText="Label" size="md" color="primary" />
+        <Button btnText="Label" size="lg" color="primary" />
+        <Button btnText="Label" size="xl" color="primary" />
       </div>
     </div>
   )
