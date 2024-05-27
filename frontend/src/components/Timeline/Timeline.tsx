@@ -122,13 +122,13 @@ const Timeline = ({ timelineEvents }: Props) => {
         <div className="flex flex-1 flex-col lg:items-center">
           <span
             className={twMerge(
-              "text-xs truncate text-wrap font-normal",
+              "truncate text-wrap text-xs font-normal",
               event.didTimePass && "font-semibold",
             )}
           >
             {event.label}
           </span>
-          <span className="text-xs truncate leading-[18px] opacity-50">
+          <span className="truncate text-xs leading-[18px] opacity-50">
             {event.displayedTime}
           </span>
         </div>

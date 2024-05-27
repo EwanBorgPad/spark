@@ -16,5 +16,5 @@
 
 - Mobile:
   - [Deep Links](https://phantom.app/learn/blog/the-complete-guide-to-phantom-deeplinks)
+  - [Phantom Deeplinks](https://docs.phantom.app/phantom-deeplinks/deeplinks-ios-and-android)
   - [Connect](https://docs.phantom.app/phantom-deeplinks/provider-methods/connect)
-

@@ -102,6 +102,8 @@ const DropdownMenuButton = ({
     "bg-default hover:bg-secondary",
     "cursor-pointer select-none",
   )
+
+  const tooltipClasses = twMerge(isTooltipVisible && "animate-fade-in")
   return (
     <div
       onMouseEnter={() => setIsTooltipVisible(true)}
@@ -110,21 +112,25 @@ const DropdownMenuButton = ({
       onClick={onClick}
     >
       <Icon icon={icon} />
-      {isTooltipVisible && <Tooltip text={tooltipText} />}
+      {isTooltipVisible && (
+        <Tooltip className={tooltipClasses} text={tooltipText} />
+      )}
     </div>
   )
 }
 
 type TooltipProps = {
+  className: string
   text: string
 }
-const Tooltip = ({ text }: TooltipProps) => {
+const Tooltip = ({ className, text }: TooltipProps) => {
   const classes = twMerge(
     "absolute top-9 -right-0 px-2 py-1",
     "bg-black border border-bd-secondary",
     "whitespace-nowrap",
     "rounded-lg",
     "z-10",
+    className,
   )
   return <div className={classes}>{text}</div>
 }
