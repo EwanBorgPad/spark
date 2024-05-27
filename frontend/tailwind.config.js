@@ -71,6 +71,8 @@ export default {
       },
       boxShadow: {
         underline: "0px 2px 0px 0px rgba(188,254,143,1)",
+        header: "0px 10px 10px -2px rgba(172,255,115,0.05);",
+        "header-transparent": "0px 5px 6px -2px rgba(172,255,115,0.0);",
       },
       "body-xl-semibold": [
         "18px",

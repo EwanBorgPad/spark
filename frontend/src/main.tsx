@@ -20,15 +20,19 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: (
-          <div>
-            <Link to={"/project"}>
-              <Button size="xl" color="primary" btnText="Go To Project" />
+          <div className="flex h-screen items-center justify-center">
+            <Link to={"/project/puffer-finance"}>
+              <Button
+                size="xl"
+                color="primary"
+                btnText="Go To Puffer Finance"
+              />
             </Link>
           </div>
         ),
       },
       {
-        path: "/project",
+        path: "/project/:projectId",
         element: <Project />,
       },
       {
@@ -38,7 +42,7 @@ const router = createBrowserRouter([
             <ScrollRestoration />
             <h1>Terms of Service Page</h1>
             <h2>TBD...</h2>
-            <Link to={"/project"}>
+            <Link to={"/project/puffer-finance"}>
               <Button size="xl" color="primary" btnText="Go Back To Project" />
             </Link>
           </div>

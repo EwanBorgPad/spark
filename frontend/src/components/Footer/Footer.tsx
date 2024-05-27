@@ -27,10 +27,10 @@ const Footer = () => {
               className="text-sm font-normal"
             />
           </Link>
-          <span className="text-2xl opacity-50">|</span>
+          <div className="h-5 border-l-[1px] border-l-fg-primary/50"></div>
           <ExternalLink.Icon
             externalLink={{ linkType: "x-twitter", url: "#" }}
-            className="h-[1em] w-[1em] border-none p-0 text-3xl"
+            className="mx-2 h-[1em] w-[1em] border-none p-0 text-3xl"
             iconClassName="text-xl"
           />
         </div>

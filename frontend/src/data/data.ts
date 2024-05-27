@@ -7,6 +7,7 @@ import { addDays } from "date-fns/addDays"
 import { addHours } from "date-fns/addHours"
 import { addMinutes } from "date-fns/addMinutes"
 import { TimelineEventType } from "@/components/Timeline/Timeline"
+import i18n from "@/i18n/i18n"
 
 const arbitraryDate = addMinutes(addHours(addDays(new Date(), -11), 1), 44)
 
@@ -87,7 +88,7 @@ export const dummyData: ProjectData = {
   curator: {
     avatarUrl: curator,
     fullName: "John Doe",
-    position: "Founding Contributor",
+    position: i18n.t("founding.contributor"),
     socials: [
       {
         url: "#",
@@ -133,10 +134,10 @@ export const dummyData: ProjectData = {
   },
   secondaryImgUrl: secondaryImgUrl,
   timeline: [
-    { label: "Registration Opens", date: arbitraryDate },
-    { label: "Sale Opens", date: addDays(arbitraryDate, 10) },
-    { label: "Sale Closes", date: addDays(arbitraryDate, 12) },
-    { label: "Reward Distribution", date: addDays(arbitraryDate, 22) },
+    { label: i18n.t("registration_opens"), date: arbitraryDate },
+    { label: i18n.t("sale_opens"), date: addDays(arbitraryDate, 10) },
+    { label: i18n.t("sale_closes"), date: addDays(arbitraryDate, 12) },
+    { label: i18n.t("reward_distribution"), date: addDays(arbitraryDate, 22) },
     { label: "?", date: addDays(arbitraryDate, 24) },
   ],
 }
