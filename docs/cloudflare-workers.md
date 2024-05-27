@@ -36,4 +36,8 @@ Even though we may centralize the server, we can still use CloudFlare CDN for th
 - [YouTube: Is "edge" computing really faster?](https://www.youtube.com/watch?v=yOP5-3_WFus)
 - [Cloudflare wiki](https://en.wikipedia.org/wiki/Cloudflare)
 - [Eliminating cold starts with Cloudflare Workers](https://blog.cloudflare.com/eliminating-cold-starts-with-cloudflare-workers)
-- 
+- [Create Cloudflare CLI](https://developers.cloudflare.com/pages/get-started/c3)
+- [wrangler.toml](https://developers.cloudflare.com/workers/wrangler/configuration/)
+- [D1 Get started](https://developers.cloudflare.com/d1/get-started/)
+- [Using Cloudflare workers as your only backend](https://www.youtube.com/watch?v=1tM_d3CH0N0)
+- [Monorepos](https://developers.cloudflare.com/pages/configuration/monorepos/)

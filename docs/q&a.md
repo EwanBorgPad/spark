@@ -12,6 +12,7 @@ The format isn't perfect, feel free to refactor at any time.
 
 ## Business questions
 - Q: Whitelisted - do we keep the whitelist list in our database?
+  - A: No, there will be a way to determine if someone is whitelisted based on their actions on the chain probably.
 - Q: Can there be multiple events (for multiple projects) at the same time? How do we handle that?
   - A: For the MVP only one event (probably for Agora company) 
 - Q: Are we gonna use Wallet Connect for authentication (same as last year)? And subquestion, should we use SIWE or something else? Does SIWE work with Solana (instead of Ethereum)?
