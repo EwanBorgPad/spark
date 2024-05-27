@@ -11,11 +11,17 @@ import Avatar from "../components/Avatar/Avatar"
 import { Icon } from "../components/Icon/Icon"
 import { dummyData } from "../data/data"
 import { useTranslation } from "react-i18next"
+import { useRef } from "react"
 
 const Project = () => {
   const { t } = useTranslation()
+  const mainRef = useRef<HTMLDivElement>(null)
+
   return (
-    <main className="z-0 flex w-full flex-col items-center gap-10 px-4 py-[72px] font-normal text-fg-primary lg:max-w-[792px] lg:py-[100px]">
+    <main
+      ref={mainRef}
+      className="page z-0 flex w-full flex-col items-center gap-10 px-4 py-[72px] font-normal text-fg-primary lg:max-w-[792px] lg:py-[100px]"
+    >
       <section className="flex w-full flex-col justify-between gap-6 lg:flex-row">
         <div className="flex flex-col gap-6 lg:flex-row">
           <Avatar imgUrl={avatarExample} size="large" />

@@ -76,4 +76,7 @@ h5 {
 .secondary-profile-img {
   background-image: url("./src/assets/secondaryImgUrl.png");
 }
+.header-shadow {
+  @apply shadow-md shadow-brand-primary
+}
 

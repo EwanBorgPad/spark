@@ -1,10 +1,14 @@
 {
   "plugins": ["react-hooks"],
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:react/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+  ],
   "settings": {
     "react": {
-      "version": "detect"
-    }
+      "version": "detect",
+    },
   },
   "rules": {
     "no-multiple-empty-lines": ["error", { "max": 2 }],
@@ -60,5 +64,5 @@
     ],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
-  }
+  },
 }
