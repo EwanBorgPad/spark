@@ -41,3 +41,6 @@ Even though we may centralize the server, we can still use CloudFlare CDN for th
 - [D1 Get started](https://developers.cloudflare.com/d1/get-started/)
 - [Using Cloudflare workers as your only backend](https://www.youtube.com/watch?v=1tM_d3CH0N0)
 - [Monorepos](https://developers.cloudflare.com/pages/configuration/monorepos/)
+- [Cloud Computing without Containers](https://blog.cloudflare.com/cloud-computing-without-containers/)
+
+- [Reddit: Vercel vs Cloudflare Pages/Workers](https://www.reddit.com/r/nextjs/comments/s3ec29/vercel_vs_cloudflare_pages_workers/)
