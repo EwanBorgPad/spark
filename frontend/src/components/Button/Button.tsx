@@ -5,6 +5,7 @@ import { Icon } from "../Icon/Icon"
 
 type ButtonColor = "primary" | "secondary" | "tertiary" | "danger" | "plain"
 type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl"
+type ButtonSizeClassKey = "btnContainer" | "btnText"
 
 type ButtonProps<T extends keyof JSX.IntrinsicElements> = {
   border?: boolean
@@ -37,12 +38,18 @@ const BUTTON_COLOR_CLASS_NAMES: Record<ButtonColor, string> = {
     "text-white bg-transparent text-fg-primary active:bg-secondary disabled:text-fg-primary/50",
 }
 
-const BUTTON_SIZE_CLASS_NAMES: Record<ButtonSize, string> = {
-  xs: "rounded-lg py-1.5 px-3 text-sm",
-  sm: "rounded-lg py-2 px-2 text-sm",
-  md: "rounded-xl py-2 px-3 text-base",
-  lg: "rounded-xl py-3 px-4 text-base",
-  xl: "rounded-xl py-4 px-4 text-[18px] leading-[24px]",
+const BUTTON_SIZE_CLASS_NAMES: Record<
+  ButtonSize,
+  Record<ButtonSizeClassKey, string>
+> = {
+  xs: { btnContainer: "rounded-lg py-1.5 px-3 text-sm", btnText: "px-1.5" },
+  sm: { btnContainer: "rounded-lg py-2 px-3 text-sm", btnText: "px-2" },
+  md: { btnContainer: "rounded-xl py-2.5 px-3 text-base", btnText: "px-2" },
+  lg: { btnContainer: "rounded-xl py-3.5 px-4 text-base", btnText: "px-3" },
+  xl: {
+    btnContainer: "rounded-xl py-[18px] px-4 text-[18px] leading-[24px]",
+    btnText: "px-3",
+  },
 }
 
 const ButtonRoot = forwardRef<HTMLButtonElement, ButtonProps<"button">>(
@@ -64,26 +71,23 @@ const ButtonRoot = forwardRef<HTMLButtonElement, ButtonProps<"button">>(
     const isDisabled = props.disabled || isLoading
     const prefixElementOrLoader = useMemo<ReactNode>(() => {
       if (isLoading)
-        return (
-          <Icon className={"animate-spin absolute left-4"} icon={"SvgLoader"} />
-        )
+        return <Icon className={"animate-spin"} icon={"SvgLoader"} />
       return prefixElement
     }, [isLoading, prefixElement])
 
-    const className = classNames([
-      "relative flex items-center justify-center  font-medium h-fit",
-      "hover:opacity-85 transition-opacity active:scale-[98%]",
+    const btnContainerClasses = classNames([
+      "relative flex items-center justify-center font-medium transition-opacity",
+      "hover:opacity-85 active:scale-[98%]",
       "focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-black",
-      "disabled:cursor-not-allowed disabled:opacity-50",
+      "disabled:cursor-not-allowed disabled:bg-opacity-50",
+      BUTTON_SIZE_CLASS_NAMES[size].btnContainer,
       BUTTON_COLOR_CLASS_NAMES[color],
-      BUTTON_SIZE_CLASS_NAMES[size],
       props.className,
     ])
 
-    const contentClassName = classNames([
-      "flex-grow min-w-0 truncate px-2",
-      Boolean(prefixElementOrLoader) && "ml-2",
-      Boolean(suffixElement) && "mr-2",
+    const btnTextClassName = classNames([
+      "truncate",
+      BUTTON_SIZE_CLASS_NAMES[size].btnText,
       textClassName,
     ])
 
@@ -94,12 +98,12 @@ const ButtonRoot = forwardRef<HTMLButtonElement, ButtonProps<"button">>(
         type={"button"}
         {...props}
         disabled={isDisabled}
-        className={className}
+        className={btnContainerClasses}
         ref={ref}
       >
         {prefixElementOrLoader}
         {btnText ? (
-          <span className={contentClassName}>{btnText}</span>
+          <span className={btnTextClassName}>{btnText}</span>
         ) : (
           children
         )}
@@ -109,34 +113,6 @@ const ButtonRoot = forwardRef<HTMLButtonElement, ButtonProps<"button">>(
   },
 )
 ButtonRoot.displayName = "ButtonRoot"
-
-{
-  /* @TODO - Finish this */
-}
-const IconButtonWithLabel = forwardRef<
-  HTMLButtonElement,
-  IconButtonWithLabelProps
->(({ icon, color, iconWrapperClassName, ...props }, ref) => {
-  return (
-    <Button
-      className={"!p-0"}
-      prefixElement={
-        <div
-          className={classNames(
-            "flex h-9 w-9 items-center justify-center rounded-full",
-            color && BUTTON_COLOR_CLASS_NAMES[color],
-            iconWrapperClassName,
-          )}
-        >
-          <Icon icon={icon} />
-        </div>
-      }
-      {...props}
-      ref={ref}
-    />
-  )
-})
-IconButtonWithLabel.displayName = "IconButtonWithLabel"
 
 const IconButton = forwardRef<HTMLButtonElement, IconButtonWithLabelProps>(
   ({ icon, color, iconWrapperClassName, ...props }, ref) => {
@@ -159,10 +135,8 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonWithLabelProps>(
     )
   },
 )
-
 IconButton.displayName = "IconButton"
 
 export const Button = Object.assign(ButtonRoot, {
-  IconWithLabel: IconButtonWithLabel,
   Icon: IconButton,
 })

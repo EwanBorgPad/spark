@@ -12,7 +12,7 @@ export const SvgLoader = (props: SVGProps<SVGSVGElement>) => (
       cy={12}
       r={10}
       fill={"none"}
-      stroke="#77777f"
+      stroke="#4d4d4d"
       strokeWidth={3}
     />
     <circle

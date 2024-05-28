@@ -149,6 +149,9 @@ const Project = () => {
 
       <Timeline timelineEvents={dummyData.timeline} />
       <ScrollRestoration />
+
+      {/* to be deleted */}
+      {/* <DesignSystem /> */}
     </main>
   )
 }
