@@ -12,6 +12,8 @@ import { Icon } from "../components/Icon/Icon"
 import { dummyData } from "../data/data"
 import { useTranslation } from "react-i18next"
 import { useRef } from "react"
+import InputValues from "@/components/QA/InputValues"
+import DesignSystem from "./DesignSystem"
 
 const Project = () => {
   const { t } = useTranslation()
@@ -151,7 +153,8 @@ const Project = () => {
       <ScrollRestoration />
 
       {/* to be deleted */}
-      {/* <DesignSystem /> */}
+      <DesignSystem />
+      <InputValues />
     </main>
   )
 }
