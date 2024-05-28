@@ -1,9 +1,13 @@
 import CountDownTimer from "../CountDownTimer"
-import { dummyData } from "../../data/data"
+import { ProjectData } from "../../data/data"
 import WhitelistingLP from "./WhitelistingLP"
 import { useTranslation } from "react-i18next"
 
-const ProvideLiquiditySection = () => {
+type Props = {
+  data: ProjectData
+}
+
+const ProvideLiquiditySection = ({ data }: Props) => {
   const { t } = useTranslation()
 
   return (
@@ -11,8 +15,8 @@ const ProvideLiquiditySection = () => {
       <span className="absolute -top-[18px] rounded-full bg-brand-primary px-4 py-2 text-fg-alt-default">
         {t("whitelisting")}
       </span>
-      <CountDownTimer endsIn={dummyData.distributionStartDate} />
-      <WhitelistingLP data={dummyData.whitelisting} />
+      <CountDownTimer endsIn={data.distributionStartDate} />
+      <WhitelistingLP data={data.whitelisting} />
     </section>
   )
 }

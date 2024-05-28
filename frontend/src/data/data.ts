@@ -11,7 +11,7 @@ import i18n from "@/i18n/i18n"
 
 const arbitraryDate = addMinutes(addHours(addDays(new Date(), -11), 1), 44)
 
-type ProjectData = {
+export type ProjectData = {
   title: string
   subtitle: string
   projectLinks: ExternalLinkType[]

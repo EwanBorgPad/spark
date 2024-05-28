@@ -79,4 +79,7 @@ h5 {
 .header-shadow {
   @apply shadow-md shadow-brand-primary
 }
+.data-room {
+  @apply relative mt-10 flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-lg border border-bd-secondary bg-secondary/50 from-brand-primary/10 via-black/0 via-30% px-4 py-3 transition-colors hover:border-brand-secondary/30 hover:bg-gradient-to-l
+}
 

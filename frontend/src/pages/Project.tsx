@@ -1,4 +1,6 @@
 import { ScrollRestoration } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { useState } from "react"
 
 import ProvideLiquiditySection from "../components/ProvideLiquidity/ProvideLiquiditySection"
 import { formatCurrencyAmount, getRatioPercantage } from "../utils/format"
@@ -6,36 +8,31 @@ import { ExternalLink } from "../components/Button/ExternalLink"
 import { formatDateForDisplay } from "../utils/date-helpers"
 import avatarExample from "../assets/avatarExample.png"
 import Timeline from "@/components/Timeline/Timeline"
+import { ProjectData, dummyData } from "../data/data"
+import InputValues from "@/components/QA/InputValues"
 import ProgressBar from "../components/ProgressBar"
 import Avatar from "../components/Avatar/Avatar"
 import { Icon } from "../components/Icon/Icon"
-import { dummyData } from "../data/data"
-import { useTranslation } from "react-i18next"
-import { useRef } from "react"
-import InputValues from "@/components/QA/InputValues"
-import DesignSystem from "./DesignSystem"
+// import DesignSystem from "./DesignSystem"
 
 const Project = () => {
+  const [projectData, setProjectData] = useState<ProjectData>(dummyData)
   const { t } = useTranslation()
-  const mainRef = useRef<HTMLDivElement>(null)
 
   return (
-    <main
-      ref={mainRef}
-      className="page z-0 flex w-full flex-col items-center gap-10 px-4 py-[72px] font-normal text-fg-primary lg:max-w-[792px] lg:py-[100px]"
-    >
+    <main className="page z-1 flex w-full flex-col items-center gap-10 px-4 py-[72px] font-normal text-fg-primary lg:max-w-[792px] lg:py-[100px]">
       <section className="flex w-full flex-col justify-between gap-6 lg:flex-row">
         <div className="flex flex-col gap-6 lg:flex-row">
           <Avatar imgUrl={avatarExample} size="large" />
           <div className="flex flex-col gap-1">
-            <h1 className="font-semibold">{dummyData.title}</h1>
+            <h1 className="font-semibold">{projectData.title}</h1>
             <span className="text-fg-primary text-opacity-75">
-              {dummyData.subtitle}
+              {projectData.subtitle}
             </span>
           </div>
         </div>
         <div className="flex items-start gap-2">
-          {dummyData.projectLinks.map((link, index) => (
+          {projectData.projectLinks.map((link, index) => (
             <ExternalLink.Icon key={index} externalLink={link} />
           ))}
         </div>
@@ -47,14 +44,14 @@ const Project = () => {
             <span className="text-fg-primary text-opacity-50">
               {t("chain")}
             </span>
-            <img className="h-4 w-4" src={dummyData.chain.picUrl} />
-            <span>{dummyData.chain.name}</span>
+            <img className="h-4 w-4" src={projectData.chain.picUrl} />
+            <span>{projectData.chain.name}</span>
           </div>
           <div className="flex items-center gap-2 border-r-fg-gray-line pr-5 lg:border-r-[1px] lg:border-fg-primary/50">
             <span className="text-fg-primary text-opacity-50">
               {t("lbp_type")}
             </span>
-            <span>{dummyData.lbpType}</span>
+            <span>{projectData.lbpType}</span>
           </div>
         </div>
         <div className="flex gap-5">
@@ -62,7 +59,7 @@ const Project = () => {
             <span className="text-fg-primary text-opacity-50">
               {t("origin")}
             </span>
-            <span>{dummyData.origin}</span>
+            <span>{projectData.origin}</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-fg-primary text-opacity-50">
@@ -78,16 +75,18 @@ const Project = () => {
         <div className="w-full rounded-lg bg-gradient-to-r from-brand-primary/50 to-brand-secondary/15 p-[1px]">
           <div className="flex h-full w-full flex-col items-start justify-between gap-4 rounded-[7px] bg-gradient-to-br from-brand-dimmed-1 via-brand-dimmed-2 via-50% to-brand-dimmed-2 px-4 py-3 lg:flex-row lg:items-center lg:bg-gradient-to-r">
             <div className="flex items-center gap-4">
-              <Avatar imgUrl={dummyData.curator.avatarUrl} size="medium" />
+              <Avatar imgUrl={projectData.curator.avatarUrl} size="medium" />
               <div className="flex flex-col">
-                <span className="text-base">{dummyData.curator.fullName}</span>
+                <span className="text-base">
+                  {projectData.curator.fullName}
+                </span>
                 <span className="text-sm opacity-50">
-                  {dummyData.curator.position}
+                  {projectData.curator.position}
                 </span>
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              {dummyData.curator.socials.map((social) => (
+              {projectData.curator.socials.map((social) => (
                 <ExternalLink key={social.linkType} externalLink={social} />
               ))}
             </div>
@@ -100,13 +99,13 @@ const Project = () => {
           <div className="flex flex-1 flex-col gap-2">
             <span className="text-sm text-fg-tertiary">{t("marketcap")}</span>
             <span className="font-geist-mono text-base text-fg-primary">
-              {formatCurrencyAmount(dummyData.marketcap)}
+              {formatCurrencyAmount(projectData.marketcap)}
             </span>
           </div>
           <div className="flex flex-1 flex-col gap-2">
             <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
             <span className="font-geist-mono text-base text-fg-primary">
-              {formatCurrencyAmount(dummyData.fdv)}
+              {formatCurrencyAmount(projectData.fdv)}
             </span>
           </div>
         </div>
@@ -116,28 +115,28 @@ const Project = () => {
             <div className="flex flex-col items-end">
               <span className="text-sm text-fg-tertiary">
                 {`${getRatioPercantage(
-                  dummyData.tokens.available,
-                  dummyData.tokens.total,
+                  projectData.tokens.available,
+                  projectData.tokens.total,
                 )}%`}
               </span>
               <span className="text-base text-fg-primary">
-                {`${dummyData.tokens.available}/${dummyData.tokens.total}`}
+                {`${projectData.tokens.available}/${projectData.tokens.total}`}
               </span>
             </div>
           </div>
-          <ProgressBar tokens={dummyData.tokens} />
+          <ProgressBar tokens={projectData.tokens} />
         </div>
       </section>
-      <ProvideLiquiditySection />
+      <ProvideLiquiditySection data={projectData} />
 
-      <section className="group relative mt-10 flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-lg border border-bd-secondary bg-secondary/50 from-brand-primary/10 via-black/0 via-30% px-4 py-3 transition-colors hover:border-brand-secondary/30 hover:bg-gradient-to-l">
+      <section className="data-room group">
         <img
-          src={dummyData.secondaryImgUrl}
+          src={projectData.secondaryImgUrl}
           className="absolute left-0 h-[72px] w-[100px] opacity-5"
         />
         <div className="z-[1] flex flex-col">
           <span className="font-medium">
-            {dummyData.title} {t("data_room")}
+            {projectData.title} {t("data_room")}
           </span>
           <span className="font-normal opacity-50">
             {t("learn_more_about")}
@@ -149,12 +148,14 @@ const Project = () => {
         />
       </section>
 
-      <Timeline timelineEvents={dummyData.timeline} />
+      <Timeline timelineEvents={projectData.timeline} />
       <ScrollRestoration />
 
       {/* to be deleted */}
-      <DesignSystem />
-      <InputValues />
+      {/* <DesignSystem /> */}
+      {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && (
+        <InputValues data={projectData} setData={setProjectData} />
+      )}
     </main>
   )
 }
