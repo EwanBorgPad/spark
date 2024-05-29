@@ -30,23 +30,25 @@ We've done a lot of UI work, what we could from the designs, and are starting wo
 - Q: Where does the user's balance come from? Is Borg implemented as token on Solana (SPL)? What's the address?
   - Borg is a bridge token, but yes it is compatible with SPL.
   - Borg address: https://solscan.io/token/3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z
+  - GetBalance api: https://solana.com/docs/rpc/http/getbalance
 - Q: Users are gonna use Borg exclusively?
   - Yes.
 - Q: Where does project data come from (can we hardcode the configuration for the MVP)?
-  - Yes, hardcode.
+  - Hardcode.
 - Q: Static assets hosting (images)? the simplest is to host them as frontend assets (main question is dynamic/static)
-  - Yes, hardcode.
+  - Hardcode, deploy as static resources in frontend.
 - Q: When the User creates an order, what happens (api call, chain interaction, smart contracts)?
-  - On chain. https://github.com/orca-so/orca-sdks
-  - Workshop with one of our engineers from the team as in introduction to this.
-  - Nicolas will handle this by EOW (May 2025)
+  - It all happens on chain
+  - This link was provided, might be irrelevant now, but let's keep it https://github.com/orca-so/orca-sdks
+  - We'll organize a workshop with one of SB engineers to resolve this questions.
+  - Nicolas will handle this by EOW (end of May 2025).
 - Q: What data are we gonna store in the database (rather than the chain itself)?
   - We might not need a datastore after all. 
   - Public RPC to be able to make the queries, Nicolas will give us this.
   - https://solana.com/docs/rpc
   - https://solana.com/docs/rpc/http
   - https://solana.com/docs/rpc/http/getbalance
-  - Try to use D1 for caching, rpc calls might be slow, BUT avoid premature optimization.
+  - Possibly try to use D1 for caching, as rpc calls might be slow, BUT avoid premature optimization.
 - Q: Past orders info? Database or chain?
   - https://dex.zeta.markets/trade/SOL-PERP 
 
@@ -54,17 +56,17 @@ We've done a lot of UI work, what we could from the designs, and are starting wo
 - Q: How do we test this, is there a staging environment (testnet, devnet)?
   - We will get this later (on the workshop with their engineers possibly).
 - Q: Do we need Cloudflare Workers (depends on the above's answer)? What would they do (auth + db write?)?
-  - We might not need them.
+  - We probably won't need them if we don't use the database.
 - Q: I wanna go with this https://developers.cloudflare.com/pages/functions/?
+  - Yes.
 - Q: Will the app communicate with SwissBorg backend (rather than smart contracts)?
   - No.
 - Q: Sign in with Solana (https://siws.web3auth.io/)? I guess we're going to need this if we're authorizing our users on the backend
-  - TBD.
+  - This will be relevant if we include some backend api endpoints (that need authorization).
 - JSON Data Model (data.ts)
 
 
 
-i dont think we have open-sourced it yet
 
 
 
