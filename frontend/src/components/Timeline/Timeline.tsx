@@ -1,5 +1,5 @@
 import { useWindowSize } from "@/hooks/useWindowSize"
-import { formatDateForDisplay } from "@/utils/date-helpers"
+import { calculateTimelineData } from "@/utils/timeline"
 import { differenceInMilliseconds } from "date-fns"
 import { isBefore } from "date-fns/isBefore"
 import { useLayoutEffect, useRef, useState } from "react"
@@ -9,15 +9,24 @@ export type Props = {
   timelineEvents: TimelineEventType[]
 }
 
+export const timelineEvents = [
+  "INACTIVE",
+  "REGISTRATION_OPENS",
+  "SALE_OPENS",
+  "SALE_CLOSES",
+  "REWARD_DISTRIBUTION",
+  "UNKNOWN",
+] as const
 export type TimelineEventType = {
   label: string
   date: Date
+  id: (typeof timelineEvents)[number]
 }
 
-type ExtendedTimelineEventType = {
-  displayedTime: string
-  didTimePass: boolean
-  nextEventDate?: Date
+export type ExtendedTimelineEventType = {
+  displayedTime?: string
+  wasEventBeforeCurrentMoment?: boolean
+  nextEventDate: Date
 } & TimelineEventType
 
 const MAX_TIMELINE_SECTION_HEIGHT = 54
@@ -30,21 +39,7 @@ const Timeline = ({ timelineEvents }: Props) => {
   const [containerWidth, setContainerWidth] = useState<number | null>(null)
 
   const { width } = useWindowSize()
-
-  const calculateTimelineData = (): ExtendedTimelineEventType[] => {
-    const currentMoment = new Date()
-    const nextEventDates = timelineEvents.slice(1)
-    return timelineEvents.map((event, index) => {
-      return {
-        label: event.label,
-        date: event.date,
-        nextEventDate: nextEventDates[index]?.date,
-        displayedTime: formatDateForDisplay(event.date),
-        didTimePass: isBefore(event.date, currentMoment),
-      }
-    })
-  }
-  const data = calculateTimelineData()
+  const data = calculateTimelineData(timelineEvents)
   const dataLength = data.length
 
   const renderTimelineEvent = (
@@ -58,7 +53,7 @@ const Timeline = ({ timelineEvents }: Props) => {
         event?.nextEventDate && isBefore(event.nextEventDate, new Date()),
       )
       if (isTimelineFinished) return 1
-      if (!event.didTimePass) return 0
+      if (!event.wasEventBeforeCurrentMoment) return 0
       if (!event?.nextEventDate) return 0
       const timelineDurationInMs = differenceInMilliseconds(
         event.nextEventDate,
@@ -88,7 +83,7 @@ const Timeline = ({ timelineEvents }: Props) => {
 
     return (
       <div
-        key={event.label}
+        key={event.id}
         className="flex w-full flex-1 items-center gap-4 lg:max-w-[132px] lg:flex-col"
       >
         <div className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-default lg:shrink">
@@ -115,7 +110,7 @@ const Timeline = ({ timelineEvents }: Props) => {
               ></div>
             </>
           )}
-          {event.didTimePass && (
+          {event.wasEventBeforeCurrentMoment && (
             <div className="z-[3] h-2 w-2 rounded-full bg-brand-primary"></div>
           )}
         </div>
@@ -123,7 +118,7 @@ const Timeline = ({ timelineEvents }: Props) => {
           <span
             className={twMerge(
               "truncate text-wrap text-xs font-normal",
-              event.didTimePass && "font-semibold",
+              event.wasEventBeforeCurrentMoment && "font-semibold",
             )}
           >
             {event.label}
@@ -144,7 +139,7 @@ const Timeline = ({ timelineEvents }: Props) => {
 
   return (
     <section ref={containerRef} className="w-full">
-      <h2 className="text-2xl w-full pb-3 text-left">Timeline</h2>
+      <h2 className="w-full pb-3 text-left text-2xl">Timeline</h2>
       <div className="flex w-full flex-col justify-between gap-4 rounded-lg border border-bd-secondary bg-secondary/50 px-4 py-5 lg:flex-row">
         {Object.values(data).map(
           (event: ExtendedTimelineEventType, dataIndex) =>

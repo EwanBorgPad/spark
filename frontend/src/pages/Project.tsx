@@ -2,25 +2,29 @@ import { ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
-import ProvideLiquiditySection from "../components/ProvideLiquidity/ProvideLiquiditySection"
+import TokenGenerationWrapper from "../components/TokenGenerationSection/TokenGenerationSection"
 import { formatCurrencyAmount, getRatioPercantage } from "../utils/format"
 import { ExternalLink } from "../components/Button/ExternalLink"
 import { formatDateForDisplay } from "../utils/date-helpers"
 import avatarExample from "../assets/avatarExample.png"
 import Timeline from "@/components/Timeline/Timeline"
 import { ProjectData, dummyData } from "../data/data"
-import InputValues from "@/components/QA/InputValues"
+
 import ProgressBar from "../components/ProgressBar"
 import Avatar from "../components/Avatar/Avatar"
 import { Icon } from "../components/Icon/Icon"
+import TimeTester from "@/components/QA/TimelineTester"
+import { calculateTimelineData } from "@/utils/timeline"
 // import DesignSystem from "./DesignSystem"
 
 const Project = () => {
   const [projectData, setProjectData] = useState<ProjectData>(dummyData)
   const { t } = useTranslation()
 
+  const expandedTimeline = calculateTimelineData(projectData.timeline)
+
   return (
-    <main className="page z-1 flex w-full flex-col items-center gap-10 px-4 py-[72px] font-normal text-fg-primary lg:max-w-[792px] lg:py-[100px]">
+    <main className="page z-[10] flex w-full flex-col items-center gap-10 px-4 py-[72px] font-normal text-fg-primary lg:max-w-[792px] lg:py-[100px]">
       <section className="flex w-full flex-col justify-between gap-6 lg:flex-row">
         <div className="flex flex-col gap-6 lg:flex-row">
           <Avatar imgUrl={avatarExample} size="large" />
@@ -127,7 +131,10 @@ const Project = () => {
           <ProgressBar tokens={projectData.tokens} />
         </div>
       </section>
-      <ProvideLiquiditySection data={projectData} />
+      <TokenGenerationWrapper
+        data={projectData}
+        expandedTimeline={expandedTimeline}
+      />
 
       <section className="data-room group">
         <img
@@ -154,7 +161,7 @@ const Project = () => {
       {/* to be deleted */}
       {/* <DesignSystem /> */}
       {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && (
-        <InputValues data={projectData} setData={setProjectData} />
+        <TimeTester data={projectData} setData={setProjectData} />
       )}
     </main>
   )

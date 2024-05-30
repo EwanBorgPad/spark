@@ -34,7 +34,7 @@ const OffsetEventInput = ({
 }: OffsetEventInputType) => {
   return (
     <div className="flex w-full items-center justify-between">
-      <span className="capitalize">{changeType}</span>
+      <span className="text-sm capitalize">{changeType}</span>
       <div className="flex items-center gap-2">
         <Button
           size="xs"
@@ -54,7 +54,7 @@ const OffsetEventInput = ({
   )
 }
 
-const InputValues = ({ data, setData }: Props) => {
+const TimeTester = ({ data, setData }: Props) => {
   const [isOpened, setIsOpen] = useState(false)
   const [offset, setOffset] = useState(defaultOffset)
   const ref = useRef<HTMLDivElement>(null)
@@ -142,4 +142,4 @@ const InputValues = ({ data, setData }: Props) => {
   )
 }
 
-export default InputValues
+export default TimeTester
