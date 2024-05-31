@@ -16,7 +16,7 @@ const Footer = () => {
           className="h-[740px] min-w-[1440px] lg:h-auto lg:w-screen"
         />
       </div>
-      <div className="z-[1] flex flex-col items-center justify-center gap-6">
+      <div className="z-[0] flex flex-col items-center justify-center gap-6">
         <div className="flex flex-col items-center gap-2">
           <Logo />
           <span className="text-sm">© 2024</span>

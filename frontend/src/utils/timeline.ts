@@ -1,0 +1,23 @@
+import {
+  ExtendedTimelineEventType,
+  TimelineEventType,
+} from "@/components/Timeline/Timeline"
+import { formatDateForDisplay } from "./date-helpers"
+import { isBefore } from "date-fns/isBefore"
+
+export const calculateTimelineData = (
+  timelineEvents: TimelineEventType[],
+): ExtendedTimelineEventType[] => {
+  const currentMoment = new Date()
+  const nextEventDates = timelineEvents.slice(1)
+  return timelineEvents.map((event, index) => {
+    return {
+      label: event.label,
+      date: event.date,
+      id: event.id,
+      nextEventDate: nextEventDates[index]?.date,
+      displayedTime: formatDateForDisplay(event.date),
+      wasEventBeforeCurrentMoment: isBefore(event.date, currentMoment),
+    }
+  })
+}

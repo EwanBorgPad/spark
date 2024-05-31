@@ -20,7 +20,7 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: (
-          <div className="flex h-screen items-center justify-center">
+          <div className="z-[10] flex h-screen items-center justify-center">
             <Link to={"/project/puffer-finance"}>
               <Button
                 size="xl"

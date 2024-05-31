@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 type CountDownTimerProps = {
-  endsIn: Date
+  endOfEvent: Date
 }
 
 type TUseTimer = {
@@ -38,11 +38,18 @@ const getCountdownTime = (timeLeft: number): TUseTimer => {
   }
 }
 
-const CountDownTimer = ({ endsIn }: CountDownTimerProps) => {
-  const { t } = useTranslation()
-  const [timeLeft, setTimeLeft] = useState(endsIn.getTime() - Date.now())
+const calculateTimeLeft = (endOfEvent: Date) =>
+  endOfEvent.getTime() - Date.now()
 
-  const isEventFinished = isAfter(new Date(), endsIn)
+const CountDownTimer = ({ endOfEvent }: CountDownTimerProps) => {
+  const { t } = useTranslation()
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(endOfEvent))
+
+  useEffect(() => {
+    setTimeLeft(calculateTimeLeft(endOfEvent))
+  }, [endOfEvent])
+
+  const isEventFinished = isAfter(new Date(), endOfEvent)
   useEffect(() => {
     if (isEventFinished) return
     const timerId = setTimeout(() => {

@@ -14,13 +14,9 @@ const Header = () => {
 
   return (
     <>
-      <div
-        ref={intersectionReferenceElement}
-        className="absolute left-0 top-0 z-[-10] h-screen w-2 bg-transparent"
-      ></div>
       <header
         ref={headerRef}
-        className="fixed left-0 top-0 z-[1] flex h-12 w-full flex-row justify-center border-b-[1px] border-tertiary bg-default px-4 py-2 transition-shadow duration-500 lg:h-[72px]"
+        className="fixed left-0 top-0 z-[11] flex h-12 w-full flex-row justify-center border-b-[1px] border-tertiary bg-default px-4 py-2 transition-shadow duration-500 lg:h-[72px]"
       >
         <div
           className={
@@ -38,6 +34,12 @@ const Header = () => {
           {isSignedIn ? <WalletDropdown /> : <ConnectButton />}
         </div>
       </header>
+
+      {/* full height reference element for intersection observer that is used inside useHeaderShadow */}
+      <div
+        ref={intersectionReferenceElement}
+        className="absolute left-0 top-0 z-[-10] h-screen w-2 bg-transparent"
+      ></div>
     </>
   )
 }
