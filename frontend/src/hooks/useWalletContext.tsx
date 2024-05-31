@@ -3,7 +3,10 @@ import { usePersistedState } from "@/hooks/usePersistedState.ts"
 import { isMobile } from "@/utils/isMobile.ts"
 
 const PAGE_URL = "https://borgpad.pages.dev"
-const PAGE_DOMAIN = "borgpad.pages.dev"
+/**
+ * I've just hardcoded this to current host, hope it doesn't backfire
+ */
+const PAGE_DOMAIN = window.location.host
 
 export type WalletState = "NOT_CONNECTED" | "CONNECTING" | "CONNECTED"
 
