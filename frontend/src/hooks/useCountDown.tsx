@@ -1,12 +1,15 @@
+import { CountDownType } from "@/components/CountDownCallback"
 import { useEffect, useState } from "react"
 
 const calculateTimeLeft = (endOfEvent: Date) =>
   endOfEvent.getTime() - Date.now()
 
-export const useCountDown = (
-  endOfEvent: Date,
-  callbackWhenTimeExpires: () => void,
-) => {
+export const useCountDown = ({
+  endOfEvent,
+  callbackWhenTimeExpires,
+  callbackAsPerInterval,
+  interval = 1000,
+}: CountDownType) => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(endOfEvent))
 
   useEffect(() => {
@@ -15,12 +18,13 @@ export const useCountDown = (
 
   useEffect(() => {
     if (timeLeft <= 0) {
-      callbackWhenTimeExpires()
+      callbackWhenTimeExpires?.()
       return
     }
     const timerId = setTimeout(() => {
-      setTimeLeft((prev) => prev - 1000)
-    }, 1000)
+      callbackAsPerInterval?.()
+      setTimeLeft((prev) => prev - interval)
+    }, interval)
 
     return () => {
       clearTimeout(timerId)

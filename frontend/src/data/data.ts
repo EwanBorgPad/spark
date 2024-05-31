@@ -8,8 +8,12 @@ import { addHours } from "date-fns/addHours"
 import { addMinutes } from "date-fns/addMinutes"
 import { TimelineEventType } from "@/components/Timeline/Timeline"
 import i18n from "@/i18n/i18n"
+import { addSeconds } from "date-fns/addSeconds"
 
-const arbitraryDate = addMinutes(addHours(addDays(new Date(), -11), 1), 44)
+const arbitraryDate = addSeconds(
+  addMinutes(addHours(addDays(new Date(), -11), 1), 9),
+  25,
+)
 
 export type ProjectData = {
   title: string

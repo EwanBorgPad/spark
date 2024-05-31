@@ -2,14 +2,22 @@ import { useWindowSize } from "@/hooks/useWindowSize"
 import { calculateTimelineData } from "@/utils/timeline"
 import { differenceInMilliseconds } from "date-fns"
 import { isBefore } from "date-fns/isBefore"
-import { useLayoutEffect, useRef, useState } from "react"
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react"
 import { twMerge } from "tailwind-merge"
+import { CountDownCallback } from "../CountDownCallback"
+import { getCurrentTgeEvent } from "../TokenGenerationSection/TokenGenerationSection"
 
 export type Props = {
   timelineEvents: TimelineEventType[]
 }
 
-export const timelineEvents = [
+export const timelineEventIds = [
   "INACTIVE",
   "REGISTRATION_OPENS",
   "SALE_OPENS",
@@ -20,7 +28,7 @@ export const timelineEvents = [
 export type TimelineEventType = {
   label: string
   date: Date
-  id: (typeof timelineEvents)[number]
+  id: (typeof timelineEventIds)[number]
 }
 
 export type ExtendedTimelineEventType = {
@@ -35,12 +43,15 @@ const BORDER_SIZE = 1
 const HORIZONTAL_PADDING = 16
 
 const Timeline = ({ timelineEvents }: Props) => {
-  const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState<number | null>(null)
+  const [timelineData, setTimelineData] = useState(
+    calculateTimelineData(timelineEvents),
+  )
+  const containerRef = useRef<HTMLDivElement>(null)
+  const dataLength = timelineData.length
+  const currentTgeEvent = getCurrentTgeEvent(timelineData)
 
   const { width } = useWindowSize()
-  const data = calculateTimelineData(timelineEvents)
-  const dataLength = data.length
 
   const renderTimelineEvent = (
     event: ExtendedTimelineEventType,
@@ -137,15 +148,41 @@ const Timeline = ({ timelineEvents }: Props) => {
     }
   }, [width])
 
+  const updateTimeline = useCallback(() => {
+    const updatedTimelineData = calculateTimelineData(timelineEvents)
+    setTimelineData(updatedTimelineData)
+  }, [timelineEvents])
+
+  useEffect(() => {
+    updateTimeline()
+  }, [timelineEvents, updateTimeline])
+
   return (
     <section ref={containerRef} className="w-full">
       <h2 className="w-full pb-3 text-left text-2xl">Timeline</h2>
       <div className="flex w-full flex-col justify-between gap-4 rounded-lg border border-bd-secondary bg-secondary/50 px-4 py-5 lg:flex-row">
-        {Object.values(data).map(
+        {Object.values(timelineData).map(
           (event: ExtendedTimelineEventType, dataIndex) =>
             renderTimelineEvent(event, dataLength, dataIndex),
         )}
       </div>
+
+      {/* countdown events */}
+      {currentTgeEvent?.nextEventDate && (
+        <>
+          {/* countdown for adding circle for finished event */}
+          <CountDownCallback
+            endOfEvent={currentTgeEvent.nextEventDate}
+            callbackWhenTimeExpires={updateTimeline}
+          />
+          {/* countdown for updating line timeline lengths every minute */}
+          <CountDownCallback
+            endOfEvent={currentTgeEvent.nextEventDate}
+            callbackAsPerInterval={updateTimeline}
+            interval={60000}
+          />
+        </>
+      )}
     </section>
   )
 }

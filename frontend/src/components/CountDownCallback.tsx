@@ -1,13 +1,16 @@
 import { useCountDown } from "@/hooks/useCountDown"
 
-type Props = {
+export type CountDownType = {
   endOfEvent: Date
-  callbackWhenTimeExpires: () => void
+  callbackWhenTimeExpires?: () => void
+  callbackAsPerInterval?: () => void
+  interval?: number // interval in milliseconds
 }
 
-const CountDownCallback = ({ endOfEvent, callbackWhenTimeExpires }: Props) => {
-  useCountDown(endOfEvent, callbackWhenTimeExpires)
+export const CountDownCallback = ({
+  endOfEvent,
+  callbackWhenTimeExpires,
+}: CountDownType) => {
+  useCountDown({ endOfEvent, callbackWhenTimeExpires })
   return null
 }
-
-export default CountDownCallback

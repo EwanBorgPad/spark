@@ -1,12 +1,13 @@
-import { ProjectData } from "../../data/data"
-import { isBefore } from "date-fns/isBefore"
-import { ExtendedTimelineEventType } from "../Timeline/Timeline"
-import Whitelisting from "./TGEStatus/Whitelisting"
-import Live from "./TGEStatus/Live"
-import SaleFinished from "./TGEStatus/SaleFinished"
-import LaunchpadLive from "./TGEStatus/LaunchpadLive"
 import { useCallback, useEffect, useState } from "react"
-import CountDownCallback from "../CountDownCallback"
+import { isBefore } from "date-fns/isBefore"
+
+import { ExtendedTimelineEventType } from "../Timeline/Timeline"
+import LaunchpadLive from "./TGEStatus/LaunchpadLive"
+import { CountDownCallback } from "../CountDownCallback"
+import Whitelisting from "./TGEStatus/Whitelisting"
+import SaleFinished from "./TGEStatus/SaleFinished"
+import { ProjectData } from "../../data/data"
+import Live from "./TGEStatus/Live"
 
 type Props = {
   data: ProjectData
@@ -20,9 +21,7 @@ const inactiveStatus: ExtendedTimelineEventType = {
   nextEventDate: new Date(),
 }
 
-const getCurrentTgeEvent = (
-  timeline: ExtendedTimelineEventType[],
-): ExtendedTimelineEventType => {
+export const getCurrentTgeEvent = (timeline: ExtendedTimelineEventType[]) => {
   const currentMoment = new Date()
   const status = timeline.find((event) => {
     const isEventFinished = isBefore(event.date, currentMoment)
@@ -50,10 +49,7 @@ const TokenGenerationSection = ({ expandedTimeline, data }: Props) => {
     updateTgeStatus()
   }, [expandedTimeline, updateTgeStatus])
 
-  console.log("TokenGenerationSection rerender")
-
   const renderComponent = (tgeEvent: ExtendedTimelineEventType) => {
-    // console.log(tgeStatus.date)
     switch (tgeEvent.id) {
       case "INACTIVE":
         return <span>Registration not opened yet</span>
