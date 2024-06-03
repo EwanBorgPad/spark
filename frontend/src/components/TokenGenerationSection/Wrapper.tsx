@@ -1,4 +1,5 @@
 import React from "react"
+import { twMerge } from "tailwind-merge"
 
 type WrapperProps = {
   label: string
@@ -6,6 +7,7 @@ type WrapperProps = {
 }
 type InnerWrapperProps = {
   children: React.ReactNode
+  className?: string
 }
 
 const Wrapper = ({ label, children }: WrapperProps) => {
@@ -21,9 +23,19 @@ const Wrapper = ({ label, children }: WrapperProps) => {
   )
 }
 
-const InnerWrapper = ({ children }: InnerWrapperProps) => {
+const InnerWrapper = ({ children, className }: InnerWrapperProps) => {
   return (
-    <div className="relative flex w-full flex-col items-center gap-2 rounded-3xl border border-bd-secondary bg-secondary bg-texture bg-cover p-6 pt-[26px] text-sm text-fg-primary bg-blend-multiply">
+    <div
+      style={{
+        // blend mode doesn't work inside twMerge, unknown reason
+        backgroundBlendMode: "multiply",
+        backgroundColor: "rgb(31,36, 47)",
+      }}
+      className={twMerge(
+        "relative flex w-full flex-col items-center gap-2 rounded-3xl border border-bd-secondary bg-secondary bg-texture bg-contain p-4 text-sm text-fg-primary",
+        className,
+      )}
+    >
       {children}
     </div>
   )

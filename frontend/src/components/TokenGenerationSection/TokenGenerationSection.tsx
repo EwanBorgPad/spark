@@ -61,7 +61,9 @@ const TokenGenerationSection = ({ expandedTimeline, data }: Props) => {
           />
         )
       case "SALE_OPENS":
-        return <Live eventData={tgeEvent} />
+        return (
+          <Live eventData={tgeEvent} provideLiquidity={data.provideLiquidity} />
+        )
       case "SALE_CLOSES":
         return <SaleFinished eventData={tgeEvent} />
       case "REWARD_DISTRIBUTION":
