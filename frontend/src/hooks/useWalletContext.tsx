@@ -112,22 +112,22 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }
 
   async function signInWith({ wallet, getProvider, signIn }: SignInWithArgs) {
-    if (isMobile()) {
-      const url = encodeURIComponent(PAGE_URL)
-      const deepLink = `https://${wallet}.app/ul/browse/${url}?ref=${url}`
-      window.location.href = deepLink
-      return
-    }
-
     const provider = getProvider()
 
     const isExtensionDetected = Boolean(provider)
 
     if (!isExtensionDetected) {
-      const message = `${wallet} not detected!`
-      // temp solution, throw error until we define how to handle this gracefully
-      alert(message)
-      throw new Error(message)
+      if (isMobile()) {
+        const url = encodeURIComponent(PAGE_URL)
+        const deepLink = `https://${wallet}.app/ul/browse/${url}?ref=${url}`
+        window.location.href = deepLink
+        return
+      } else {
+        const message = `${wallet} not detected!`
+        // temp solution, throw error until we define how to handle this gracefully
+        alert(message)
+        throw new Error(message)
+      }
     }
 
     setWalletState("CONNECTING")
