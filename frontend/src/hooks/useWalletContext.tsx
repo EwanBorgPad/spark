@@ -10,7 +10,7 @@ import { isMobile } from "@/utils/isMobile.ts"
 import { useSearchParams } from "react-router-dom"
 
 const AUTO_CONNECT_PARAM_KEY = "autoConnect"
-const PAGE_URL = "https://borgpad.pages.dev"
+const PAGE_URL = window.location.origin
 /**
  * I've just hardcoded this to current host, hope it doesn't backfire
  */
