@@ -1,8 +1,16 @@
-import { createContext, ReactNode, useContext, useState } from "react"
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react"
 import { usePersistedState } from "@/hooks/usePersistedState.ts"
 import { isMobile } from "@/utils/isMobile.ts"
+import { useSearchParams } from "react-router-dom"
 
-const PAGE_URL = "https://borgpad.pages.dev"
+const AUTO_CONNECT_PARAM_KEY = "autoConnect"
+const PAGE_URL = window.location.origin
 /**
  * I've just hardcoded this to current host, hope it doesn't backfire
  */
@@ -63,17 +71,38 @@ type SignInWithArgs = {
  * @constructor
  */
 export function WalletProvider({ children }: { children: ReactNode }) {
+  //// hooks
   const [address, setAddress] = usePersistedState("address")
   const [walletProvider, setWalletProvider] = usePersistedState<
     SupportedWallet | ""
   >("wallet")
-
   const initialWalletState: WalletState = address
     ? "CONNECTED"
     : "NOT_CONNECTED"
   const [walletState, setWalletState] =
     useState<WalletState>(initialWalletState)
 
+  // autoConnect feature
+  const [searchParams, setSearchParams] = useSearchParams()
+  const autoConnect = searchParams.get(AUTO_CONNECT_PARAM_KEY)
+  useEffect(() => {
+    if (autoConnect === null) return
+
+    if (autoConnect.toUpperCase() === "PHANTOM") {
+      signInWithPhantom()
+    } else if (autoConnect.toUpperCase() === "BACKPACK") {
+      signInWithBackpack()
+    }
+
+    setSearchParams(searchParams => {
+      searchParams.delete(AUTO_CONNECT_PARAM_KEY)
+      return searchParams
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // don't wanna add signInWithPhantom and signInWithBackpack in deps array
+  }, [autoConnect, setSearchParams])
+
+  //// not hooks
   async function signInWithPhantom() {
     await signInWith({
       wallet: "PHANTOM",
@@ -118,8 +147,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     if (!isExtensionDetected) {
       if (isMobile()) {
-        const url = encodeURIComponent(PAGE_URL)
-        const deepLink = `https://${wallet}.app/ul/browse/${url}?ref=${url}`
+        const url = `${PAGE_URL}/?autoConnect=${wallet}`
+        const encodedUrl = encodeURIComponent(url)
+        const encodedPageUrl = encodeURIComponent(PAGE_URL)
+        const deepLink = `https://${wallet}.app/ul/browse/${encodedUrl}?ref=${encodedPageUrl}`
         window.location.href = deepLink
         return
       } else {
