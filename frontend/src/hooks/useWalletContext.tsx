@@ -149,7 +149,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       if (isMobile()) {
         const url = `${PAGE_URL}/?autoConnect=${wallet}`
         const encodedUrl = encodeURIComponent(url)
-        const deepLink = `https://${wallet}.app/ul/browse/${encodedUrl}?ref=${PAGE_URL}`
+        const encodedPageUrl = encodeURIComponent(PAGE_URL)
+        const deepLink = `https://${wallet}.app/ul/browse/${encodedUrl}?ref=${encodedPageUrl}`
         window.location.href = deepLink
         return
       } else {
