@@ -7,7 +7,7 @@ import { CountDownCallback } from "../CountDownCallback"
 import Whitelisting from "./TGEStatus/Whitelisting"
 import SaleFinished from "./TGEStatus/SaleFinished"
 import { ProjectData } from "../../data/data"
-import Live from "./TGEStatus/Live"
+import LiveNow from "./TGEStatus/LiveNow"
 
 type Props = {
   data: ProjectData
@@ -61,9 +61,7 @@ const TokenGenerationSection = ({ expandedTimeline, data }: Props) => {
           />
         )
       case "SALE_OPENS":
-        return (
-          <Live eventData={tgeEvent} provideLiquidity={data.provideLiquidity} />
-        )
+        return <LiveNow eventData={tgeEvent} />
       case "SALE_CLOSES":
         return <SaleFinished eventData={tgeEvent} />
       case "REWARD_DISTRIBUTION":

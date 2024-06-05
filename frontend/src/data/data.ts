@@ -139,22 +139,22 @@ export const dummyData: ProjectData = {
   secondaryImgUrl: secondaryImgUrl,
   timeline: [
     {
-      label: i18n.t("registration_opens"),
+      label: i18n.t("timeline.registration_opens"),
       date: arbitraryDate,
       id: "REGISTRATION_OPENS",
     },
     {
-      label: i18n.t("sale_opens"),
+      label: i18n.t("timeline.sale_opens"),
       date: addDays(arbitraryDate, 10),
       id: "SALE_OPENS",
     },
     {
-      label: i18n.t("sale_closes"),
+      label: i18n.t("timeline.sale_closes"),
       date: addDays(arbitraryDate, 12),
       id: "SALE_CLOSES",
     },
     {
-      label: i18n.t("reward_distribution"),
+      label: i18n.t("timeline.reward_distribution"),
       date: addDays(arbitraryDate, 22),
       id: "REWARD_DISTRIBUTION",
     },

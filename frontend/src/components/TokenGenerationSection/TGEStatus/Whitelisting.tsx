@@ -1,9 +1,9 @@
 import React from "react"
-import { TgeWrapper } from "../Wrapper"
+import { TgeWrapper } from "../components/Wrapper"
 import { useTranslation } from "react-i18next"
 import CountDownTimer from "@/components/CountDownTimer"
 import { ExtendedTimelineEventType } from "@/components/Timeline/Timeline"
-import WhitelistingLP from "../WhitelistingLP"
+import WhitelistingLP from "../components/WhitelistingLP"
 import { ProjectData } from "@/data/data"
 
 type WhitelistingProps = {

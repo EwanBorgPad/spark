@@ -1,7 +1,7 @@
 import { ExtendedTimelineEventType } from "@/components/Timeline/Timeline"
 import React from "react"
 import { useTranslation } from "react-i18next"
-import { TgeWrapper } from "../Wrapper"
+import { TgeWrapper } from "../components/Wrapper"
 import CountDownTimer from "@/components/CountDownTimer"
 
 type LiveProps = {

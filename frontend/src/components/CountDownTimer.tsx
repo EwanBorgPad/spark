@@ -65,11 +65,11 @@ const CountDownTimer = ({ endOfEvent }: CountDownTimerProps) => {
   return (
     <div className="flex h-[120px] w-full flex-col items-center rounded-t-xl bg-[radial-gradient(50%_65%_at_50%_0%,rgba(188,254,143,0.15)_0%,rgba(0,0,0,0.0)_100%)] pt-8">
       <span className="text-sm text-fg-primary/60">
-        {t("distribution_starts_in")}
+        {t("tge.distribution_starts_in")}
       </span>
       {isEventFinished ? (
         <span className="text-xl text-fg-primary/60">
-          {t("distribution_ended")}
+          {t("tge.distribution_ended")}
         </span>
       ) : (
         <div className="flex items-start font-geist-mono text-2xl">
