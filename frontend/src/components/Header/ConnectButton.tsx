@@ -17,7 +17,9 @@ export const ConnectButton = () => {
     signInWithBackpack,
     signOut,
   } = useWalletContext()
+
   const [showModal, setShowModal] = useState(false)
+  const [showNoWallet, setShowNoWallet] = useState(false)
 
   useEffect(() => {
     if (walletState === "CONNECTED") {
@@ -48,25 +50,60 @@ export const ConnectButton = () => {
       {showModal && (
         <SimpleModal onClose={() => setShowModal(false)}>
           <div className="flex flex-col items-center justify-center max-sm:h-full">
+
+
+
+
+            {/*/!* Heading *!/*/}
+            {/*<div className="w-full p-[17px] text-center">*/}
+            {/*  <h1 className="text-body-xl-semibold text-white">*/}
+            {/*    Connect a Solana Wallet*/}
+            {/*  </h1>*/}
+            {/*</div>*/}
+            {/*/!* Body *!/*/}
+            {/*<div className="w-full flex flex-col grow justify-center">*/}
+            {/*  <div*/}
+            {/*    className="flex w-full flex-col items-center justify-center gap-4 p-4 lg:flex-row lg:gap-6 lg:p-[56px] lg:pb-[40px]">*/}
+            {/*    <WalletProvider*/}
+            {/*      icon={"SvgPhantom"}*/}
+            {/*      label={"Phantom"}*/}
+            {/*      onClick={signInWithPhantom}*/}
+            {/*    />*/}
+            {/*    <WalletProvider*/}
+            {/*      icon={"SvgBackpack"}*/}
+            {/*      label={"Backpack"}*/}
+            {/*      onClick={signInWithBackpack}*/}
+            {/*    />*/}
+            {/*  </div>*/}
+            {/*  <div className='lg:pb-12'>*/}
+            {/*    <p className="text-center text-fg-primary select-none cursor-pointer hover:underline">I don't*/}
+            {/*      have a wallet</p>*/}
+            {/*  </div>*/}
+            {/*</div>*/}
+
+
             {/* Heading */}
             <div className="w-full p-[17px] text-center">
               <h1 className="text-body-xl-semibold text-white">
-                Connect a Solana Wallet
+                No wallet?
               </h1>
             </div>
             {/* Body */}
-            <div className="flex w-full grow flex-col items-center justify-center gap-4 p-4 lg:flex-row lg:gap-6 lg:p-[56px]">
+            <div className={twMerge(
+              'w-full flex flex-col grow items-center justify-start lg:justify-center',
+              'gap-5 px-10 pt-14 lg:pt-3 pb-8',
+            )}>
+              <p className="text-fg-tertiary">New to DeFI? Create a wallet now:</p>
               <WalletProvider
                 icon={"SvgPhantom"}
-                label={"Phantom"}
-                onClick={signInWithPhantom}
+                label={"Create a Phantom Wallet"}
+                onClick={() => window.open('https://phantom.app','_blank')}
               />
-              <WalletProvider
-                icon={"SvgBackpack"}
-                label={"Backpack"}
-                onClick={signInWithBackpack}
-              />
+              <p className="text-center text-fg-secondary">Phantom is a robust, multi-chain wallet<br />trusted by
+                over 3 million users.</p>
             </div>
+
+
           </div>
         </SimpleModal>
       )}
@@ -74,16 +111,19 @@ export const ConnectButton = () => {
   )
 }
 
+
+
 type WalletProviderProps = {
   icon: AvailableIcons
   label: string
   onClick: () => void
 }
+
 function WalletProvider({ icon, label, onClick }: WalletProviderProps) {
   const className = twMerge(
     "flex flex-col items-center justify-center gap-4",
-    "lg:p-[40px]",
-    "w-full lg:w-[180px] h-[180px] border border-bd-primary rounded-2xl hover:bg-tertiary cursor-pointer",
+    "p-[40px]",
+    "w-full border border-bd-primary rounded-2xl hover:bg-tertiary cursor-pointer",
   )
   return (
     <div onClick={onClick} className={className}>

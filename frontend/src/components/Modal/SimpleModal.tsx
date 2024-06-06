@@ -61,11 +61,11 @@ export function CloseButton({
     "rounded-full",
     "flex items-center justify-center",
     "cursor-pointer",
+    "hover:bg-tertiary ",
     className,
   )
   return (
     <div
-      style={{ width: BTN_SIZE_PX, height: BTN_SIZE_PX }}
       onClick={onClose}
       className={cls}
     >
