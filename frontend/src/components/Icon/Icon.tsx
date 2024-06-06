@@ -17,7 +17,7 @@ export const Icon = ({ icon, ...props }: IconProps) => {
       stroke={"currentColor"}
       strokeWidth={"0"}
       {...props}
-      className={classNames("inline-block h-[1em] w-[1em]", props.className)}
+      className={classNames("flex h-[1em] w-[1em]", props.className)}
     />
   )
 }

@@ -26,6 +26,8 @@ export default {
         "progress-left": "#01C38D",
         "progress-right": "#FFFF00",
         overlay: "#0C111D",
+        "error-primary": "#3D1B16",
+        "error-secondary": "#6C261B",
 
         // font colors
         fg: {

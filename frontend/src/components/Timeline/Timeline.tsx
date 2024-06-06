@@ -11,7 +11,8 @@ import {
 } from "react"
 import { twMerge } from "tailwind-merge"
 import { CountDownCallback } from "../CountDownCallback"
-import { getCurrentTgeEvent } from "../TokenGenerationSection/TokenGenerationSection"
+import { getCurrentTgeEvent } from "@/utils/getCurrentTgeEvent"
+
 
 export type Props = {
   timelineEvents: TimelineEventType[]

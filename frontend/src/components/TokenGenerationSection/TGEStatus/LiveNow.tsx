@@ -4,12 +4,15 @@ import { ExtendedTimelineEventType } from "@/components/Timeline/Timeline"
 import LiveNowExchange from "../components/LiveNowExchange"
 import CountDownTimer from "@/components/CountDownTimer"
 import { TgeWrapper } from "../components/Wrapper"
+import { ProjectData } from "@/data/data"
 
 type LiveNowProps = {
   eventData: ExtendedTimelineEventType
+  userIsWhitelisted: boolean
+  tgeData: ProjectData["tge"]
 }
 
-const LiveNow = ({ eventData }: LiveNowProps) => {
+const LiveNow = ({ eventData, userIsWhitelisted, tgeData }: LiveNowProps) => {
   const { t } = useTranslation()
 
   return (
@@ -17,7 +20,10 @@ const LiveNow = ({ eventData }: LiveNowProps) => {
       {eventData?.nextEventDate && (
         <CountDownTimer endOfEvent={eventData.nextEventDate} />
       )}
-      <LiveNowExchange />
+      <LiveNowExchange
+        userIsWhitelisted={userIsWhitelisted}
+        tgeData={tgeData}
+      />
     </TgeWrapper>
   )
 }

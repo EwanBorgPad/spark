@@ -121,7 +121,7 @@ const ButtonRoot = forwardRef<HTMLButtonElement, ButtonProps<"button">>(
 
     return (
       <Tag
-        type={"button"}
+        type={props.type || "button"}
         {...props}
         disabled={isDisabled}
         className={btnContainerClasses}

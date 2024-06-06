@@ -8,10 +8,10 @@ import { ProjectData } from "@/data/data"
 
 type WhitelistingProps = {
   eventData: ExtendedTimelineEventType
-  whitelistingData: ProjectData["whitelisting"]
+  tgeData: ProjectData["tge"]
 }
 
-const Whitelisting = ({ eventData, whitelistingData }: WhitelistingProps) => {
+const Whitelisting = ({ eventData, tgeData }: WhitelistingProps) => {
   const { t } = useTranslation()
   return (
     <TgeWrapper label={t("tge.whitelisting")}>
@@ -20,7 +20,7 @@ const Whitelisting = ({ eventData, whitelistingData }: WhitelistingProps) => {
           <CountDownTimer endOfEvent={eventData.nextEventDate} />
         </>
       )}
-      <WhitelistingLP data={whitelistingData} />
+      <WhitelistingLP tgeData={tgeData} />
     </TgeWrapper>
   )
 }

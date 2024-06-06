@@ -2,17 +2,26 @@
   "language.en": "English",
   "language.de": "Deutch",
   "general.english": "English!",
+
   "connect_wallet": "Connect Wallet",
+
   "chain": "Chain",
   "lbp_type": "LBP Type",
   "origin": "Origin",
   "created": "Created",
   "deal_curated_by": "Deal curated by",
   "founding.contributor": "Founding Contributor",
+
   "marketcap": "Marketcap",
   "fdv": "FDV",
   "tokens_available": "Tokens Available",
 
+  "tge.eligible": "Eligible",
+  "tge.not_eligible": "Not Eligible",
+  "tge.balance": "Balance",
+  "tge.not_opened_yet": "Registration not opened yet",
+  "tge.provide_liquidity": "Provide Liquidity",
+  "tge.youre_paying": "You're Paying",
   "tge.whitelisting": "Whitelisting",
   "tge.live_now": "Live Now",
   "tge.sale_finished": "Sale Finished",
@@ -30,8 +39,10 @@
   "tge.registrations": "tge.registrations",
   "tge.vesting": "tge.vesting",
   "tge.token_generation_event": "Token Generation Event",
-  "tge.connect_wallet_to_see": "Connect wallet to see the whitelist status",
+  "tge.live_now.connect_wallet_to_see": "Connect your wallet to see the whitelist status and supply $BORG",
+  "tge.whitelisting.connect_wallet_to_see": "Connect wallet to see the whitelist status",
   "tge.select_wallet": "Select Wallet",
+  "tge.please_input_value": "Please input value",
 
   "data_room": "Data Room",
 

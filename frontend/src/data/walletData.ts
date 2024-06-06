@@ -1,7 +1,7 @@
 export type WalletData = {
-  balance: number
+  balance?: number
 }
 
 export const walletDummyData: WalletData = {
-  balance: 10344,
+  balance: 10331.514,
 }
