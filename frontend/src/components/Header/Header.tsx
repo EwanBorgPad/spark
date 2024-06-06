@@ -8,7 +8,7 @@ import useHeaderShadow from "@/hooks/useHeaderShadow"
 const Header = () => {
   const intersectionReferenceElement = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
-  const { isSignedIn } = useWalletContext()
+  const { walletState } = useWalletContext()
 
   useHeaderShadow({ headerRef, intersectionReferenceElement })
 
@@ -31,7 +31,7 @@ const Header = () => {
             </span>
           </div>
 
-          {isSignedIn ? <WalletDropdown /> : <ConnectButton />}
+          {walletState === "CONNECTED" ? <WalletDropdown /> : <ConnectButton />}
         </div>
       </header>
 

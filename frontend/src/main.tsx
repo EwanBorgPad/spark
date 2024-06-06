@@ -15,9 +15,11 @@ import Project from "./pages/Project"
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <WalletProvider>
-      <App />
-    </WalletProvider>,
+    element: (
+      <WalletProvider>
+        <App />
+      </WalletProvider>
+    ),
     children: [
       {
         path: "/",

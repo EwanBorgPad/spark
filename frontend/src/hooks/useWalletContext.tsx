@@ -28,7 +28,6 @@ type Context = {
   signInWithPhantom: () => void
   signInWithBackpack: () => void
   signOut: () => void
-  isSignedIn: boolean
   truncatedAddress: string
 }
 
@@ -94,12 +93,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       signInWithBackpack()
     }
 
-    setSearchParams(searchParams => {
+    setSearchParams((searchParams) => {
       searchParams.delete(AUTO_CONNECT_PARAM_KEY)
       return searchParams
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     // don't wanna add signInWithPhantom and signInWithBackpack in deps array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoConnect, setSearchParams])
 
   //// not hooks
@@ -190,7 +189,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setWalletProvider("")
   }
 
-  const isSignedIn = Boolean(address)
   const truncatedAddress = truncateAddress(address)
 
   return (
@@ -202,7 +200,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         signInWithPhantom,
         signInWithBackpack,
         signOut,
-        isSignedIn,
         truncatedAddress,
       }}
     >
