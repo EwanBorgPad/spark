@@ -101,15 +101,16 @@ export const ConnectButton = () => {
 function NoWalletModalContent({ close }: { close: () => void }) {
   const iconCss = twMerge(
     'text-2xl hover:bg-tertiary rounded-full',
-    'select-none cursor-pointer absolute',
+    'select-none cursor-pointer',
   )
   return <>
     {/* Heading */}
-    <div className="w-full p-[17px] text-center flex items-center relative">
+    <div className="w-full p-[17px] text-center flex items-center">
       <Icon icon={'SvgArrowLeft'} onClick={close} className={iconCss} />
       <h1 className="grow text-body-xl-semibold text-white">
         No wallet?
       </h1>
+      <div className="w-6"></div>
     </div>
     {/* Body */}
     <div className={twMerge(
