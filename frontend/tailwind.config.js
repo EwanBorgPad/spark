@@ -28,6 +28,7 @@ export default {
         overlay: "#0C111D",
         "error-primary": "#3D1B16",
         "error-secondary": "#6C261B",
+        "default-hover": "#131822",
 
         // font colors
         fg: {
