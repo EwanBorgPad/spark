@@ -11,13 +11,19 @@ export type ExternalLinkType = {
   linkType: LinkType
   label?: string
 }
-export type LinkType = "medium" | "linkedin" | "web" | "x-twitter"
+export type LinkType =
+  | "medium"
+  | "linkedin"
+  | "web"
+  | "x-twitter"
+  | "outer-link"
 
 const icons: Record<Props["externalLink"]["linkType"], AvailableIcons> = {
   medium: "SvgMedium",
   linkedin: "SvgLinkedin",
   web: "SvgWeb",
   "x-twitter": "SvgTwitter",
+  "outer-link": "SvgExternalLink",
 }
 
 const ExternalLinkWithLabel = ({

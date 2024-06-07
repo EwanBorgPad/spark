@@ -61,6 +61,11 @@ export type ProjectData = {
       name: string
       img: string
     }
+    pastOrders: {
+      borgAmount: number
+      date: Date
+      externalLink: string
+    }[]
   }
   secondaryImgUrl: string
   timeline: TimelineEventType[]
@@ -145,6 +150,28 @@ export const dummyData: ProjectData = {
       name: "Raydium",
       img: raydiumImg,
     },
+    pastOrders: [
+      {
+        borgAmount: 3813.35,
+        date: addDays(arbitraryDate, -22),
+        externalLink: "#",
+      },
+      {
+        borgAmount: 110.1,
+        date: addDays(arbitraryDate, -22),
+        externalLink: "#",
+      },
+      {
+        borgAmount: 240.891,
+        date: addDays(arbitraryDate, -22),
+        externalLink: "#",
+      },
+      {
+        borgAmount: 440.4,
+        date: addDays(arbitraryDate, -22),
+        externalLink: "#",
+      },
+    ],
   },
   secondaryImgUrl: secondaryImgUrl,
   timeline: [
