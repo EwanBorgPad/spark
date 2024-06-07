@@ -27,7 +27,7 @@ const Accordion = ({ label, sublabel, children }: AccordionProps) => {
         color="secondary"
         size="xl"
         onClick={() => setOpen(!isOpen)}
-        className="hover:bg-default-hover z-[10] gap-1 rounded-lg p-3 hover:opacity-100 active:scale-[100%]"
+        className="z-[10] gap-1 rounded-lg p-3 hover:opacity-100 active:scale-[100%]"
       >
         <span className="text-sm font-normal">{label}</span>
         {sublabel && <span className="text-sm font-normal">{sublabel}</span>}
