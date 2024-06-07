@@ -5,11 +5,19 @@ import { useEffect, useState } from "react"
 import { AvailableIcons, Icon } from "@/components/Icon/Icon.tsx"
 import { twMerge } from "tailwind-merge"
 
+type ConnectButtonProps = {
+  btnClassName?: string
+  customBtnText?: string
+}
+
 /**
  * Connect button which opens a modal for choosing a wallet to connect to.
  * @constructor
  */
-export const ConnectButton = () => {
+export const ConnectButton = ({
+  btnClassName,
+  customBtnText = "Connect Wallet",
+}: ConnectButtonProps) => {
   const {
     walletState,
     truncatedAddress,
@@ -29,7 +37,7 @@ export const ConnectButton = () => {
 
   const btnText =
     walletState === "NOT_CONNECTED"
-      ? "Connect Wallet"
+      ? customBtnText
       : walletState === "CONNECTING"
         ? "Connecting..."
         : walletState === "CONNECTED"
@@ -46,7 +54,13 @@ export const ConnectButton = () => {
 
   return (
     <>
-      <Button onClick={onClick} size="xs" color="primary" btnText={btnText} />
+      <Button
+        onClick={onClick}
+        size="xs"
+        color="primary"
+        btnText={btnText}
+        className={btnClassName}
+      />
       {showModal && (
         <SimpleModal showCloseBtn={!showNoWallet} onClose={() => {
           setShowModal(false)

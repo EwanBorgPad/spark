@@ -30,7 +30,7 @@ const BUTTON_COLOR_CLASS_NAMES: Record<ButtonColor, string> = {
   primary:
     "text-default bg-brand-primary active:bg-brand-secondary disabled:bg-opacity-50",
   secondary:
-    "bg-default active:bg-secondary disabled:bg-opacity-50 text-fg-primary disabled:text-fg-primary/50 border border-bd-primary",
+    "bg-default active:bg-secondary disabled:bg-opacity-50 text-fg-primary disabled:text-fg-primary/50 border-[1px] border-bd-primary",
   tertiary:
     "text-white bg-secondary active:bg-tertiary disabled:bg-secondary disabled:bg-opacity-50 text-fg-primary",
   danger:
@@ -121,7 +121,7 @@ const ButtonRoot = forwardRef<HTMLButtonElement, ButtonProps<"button">>(
 
     return (
       <Tag
-        type={"button"}
+        type={props.type || "button"}
         {...props}
         disabled={isDisabled}
         className={btnContainerClasses}

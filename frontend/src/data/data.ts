@@ -1,14 +1,16 @@
+import i18n from "@/i18n/i18n"
+
 import { ExternalLinkType } from "@/components/Button/ExternalLink"
 import curator from "../assets/curator.png"
 import chainImg from "../assets/zoraImg.png"
-import projectCoin from "../assets/projectCoin.png"
 import secondaryImgUrl from "../assets/secondaryImgUrl.png"
 import { addDays } from "date-fns/addDays"
 import { addHours } from "date-fns/addHours"
 import { addMinutes } from "date-fns/addMinutes"
 import { TimelineEventType } from "@/components/Timeline/Timeline"
-import i18n from "@/i18n/i18n"
 import { addSeconds } from "date-fns/addSeconds"
+import raydiumImg from "@/assets/raydium.png"
+import lrcCoinImg from "@/assets/lrcCoin.png"
 
 const arbitraryDate = addSeconds(
   addMinutes(addHours(addDays(new Date(), -11), 1), 9),
@@ -39,13 +41,13 @@ export type ProjectData = {
     total: number
   }
   distributionStartDate: Date
-  whitelisting: {
+  tge: {
     raiseTarget: number
+    projectCoin: {
+      iconUrl: string
+      ticker: string
+    }
     price: {
-      coin: {
-        iconUrl: string
-        ticker: string
-      }
       dollarPrice: number
       borgPrice: number
     }
@@ -55,6 +57,10 @@ export type ProjectData = {
       cliffPercentage: number
     }
     tokenGenerationEventDate: Date
+    liquidityPool: {
+      name: string
+      img: string
+    }
   }
   secondaryImgUrl: string
   timeline: TimelineEventType[]
@@ -119,13 +125,13 @@ export const dummyData: ProjectData = {
   },
   // might be swaped with duration of TGE
   distributionStartDate: addDays(arbitraryDate, 22),
-  whitelisting: {
+  tge: {
     raiseTarget: 2000000,
+    projectCoin: {
+      iconUrl: lrcCoinImg,
+      ticker: "LRC",
+    },
     price: {
-      coin: {
-        iconUrl: projectCoin,
-        ticker: "LRC",
-      },
       dollarPrice: 0.08327,
       borgPrice: 0.41635,
     },
@@ -135,26 +141,30 @@ export const dummyData: ProjectData = {
       cliffPercentage: 20,
     },
     tokenGenerationEventDate: arbitraryDate,
+    liquidityPool: {
+      name: "Raydium",
+      img: raydiumImg,
+    },
   },
   secondaryImgUrl: secondaryImgUrl,
   timeline: [
     {
-      label: i18n.t("registration_opens"),
+      label: i18n.t("timeline.registration_opens"),
       date: arbitraryDate,
       id: "REGISTRATION_OPENS",
     },
     {
-      label: i18n.t("sale_opens"),
+      label: i18n.t("timeline.sale_opens"),
       date: addDays(arbitraryDate, 10),
       id: "SALE_OPENS",
     },
     {
-      label: i18n.t("sale_closes"),
+      label: i18n.t("timeline.sale_closes"),
       date: addDays(arbitraryDate, 12),
       id: "SALE_CLOSES",
     },
     {
-      label: i18n.t("reward_distribution"),
+      label: i18n.t("timeline.reward_distribution"),
       date: addDays(arbitraryDate, 22),
       id: "REWARD_DISTRIBUTION",
     },

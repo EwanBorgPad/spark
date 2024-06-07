@@ -146,7 +146,7 @@ const Project = () => {
             {projectData.title} {t("data_room")}
           </span>
           <span className="font-normal opacity-50">
-            {t("learn_more_about")}
+            {t("timeline.learn_more_about")}
           </span>
         </div>
         <Icon

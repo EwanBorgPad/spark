@@ -15,7 +15,7 @@ export default {
         accent: "#060A14",
         "success-primary": "#053321",
         "success-secondary": "#074D31",
-        "brand-primary": "#BCFE8F",
+        "brand-primary": "#ACFF73",
         "brand-secondary": "#A3E683",
         attention: "#4E1D09",
         e: "#55160C",
@@ -26,6 +26,8 @@ export default {
         "progress-left": "#01C38D",
         "progress-right": "#FFFF00",
         overlay: "#0C111D",
+        "error-primary": "#3D1B16",
+        "error-secondary": "#6C261B",
 
         // font colors
         fg: {
@@ -117,8 +119,8 @@ export default {
           "100%": { transform: "translateY(0)", opacity: "1" },
         },
         "fade-in": {
-          '0%': { opacity: 0 },
-          '100%': { opacity: 1 },
+          "0%": { opacity: 0 },
+          "100%": { opacity: 1 },
         },
       },
       animation: {
@@ -126,7 +128,6 @@ export default {
         "fade-in": "fade-in 0.2s ease-in-out",
       },
     },
-
   },
   plugins: [],
 }

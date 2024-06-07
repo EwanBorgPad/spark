@@ -2,35 +2,22 @@ import { formatDateForDisplay } from "@/utils/date-helpers"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
 import { useTranslation } from "react-i18next"
+import { ProjectData } from "@/data/data"
 
-type WhitelistingDataType = {
-  raiseTarget: number
-  price: {
-    coin: {
-      iconUrl: string
-      ticker: string
-    }
-    dollarPrice: number
-    borgPrice: number
-  }
-  registrations: number
-  vesting: {
-    tgePercentage: number
-    cliffPercentage: number
-  }
-  tokenGenerationEventDate: Date
+type WhitelistingLPProps = {
+  tgeData: ProjectData["tge"]
 }
 
-const WhitelistingLP = ({ data }: { data: WhitelistingDataType }) => {
+const WhitelistingLP = ({ tgeData }: WhitelistingLPProps) => {
   const { t } = useTranslation()
 
   return (
     <div className="relative flex w-full flex-col items-center gap-2 rounded-3xl border border-bd-secondary bg-secondary bg-texture bg-cover p-6 pt-[26px] text-sm text-fg-primary bg-blend-multiply">
       <div className="flex w-full items-center justify-between py-2.5">
-        <span>{t("raise_target")}</span>
+        <span>{t("tge.raise_target")}</span>
         <div className="flex gap-2">
           <span className="font-geist-mono">
-            {formatCurrencyAmount(data.raiseTarget, false, 0)}
+            {formatCurrencyAmount(tgeData.raiseTarget, false, 0)}
           </span>
           <span>BORG</span>
         </div>
@@ -40,19 +27,19 @@ const WhitelistingLP = ({ data }: { data: WhitelistingDataType }) => {
       <div className="flex w-full items-center justify-between py-2">
         <div className="flex items-center gap-2">
           <img
-            src={data.price.coin.iconUrl}
+            src={tgeData.projectCoin.iconUrl}
             className={"h-[28px] w-[28px] rounded-full object-cover"}
           />
-          <span>{data.price.coin.ticker}</span>
-          <span>{t("price")}</span>
+          <span>{tgeData.projectCoin.ticker}</span>
+          <span>{t("tge.price")}</span>
         </div>
         <div className="flex flex-col items-end">
           <span className="font-geist-mono">
-            {formatCurrencyAmount(data.price.dollarPrice, true, 5)}
+            {formatCurrencyAmount(tgeData.price.dollarPrice, true, 5)}
           </span>
           <div className="flex gap-2">
             <span className="font-geist-mono">
-              {formatCurrencyAmount(data.price.borgPrice, false, 5)}
+              {formatCurrencyAmount(tgeData.price.borgPrice, false, 5)}
             </span>
             <span>BORG</span>
           </div>
@@ -61,33 +48,35 @@ const WhitelistingLP = ({ data }: { data: WhitelistingDataType }) => {
       <hr className="w-full border-bd-primary opacity-50"></hr>
 
       <div className="flex w-full items-center justify-between py-2.5">
-        <span>{t("registrations")}</span>
+        <span>{t("tge.registrations")}</span>
         <span className="font-geist-mono">
-          {formatCurrencyAmount(data.registrations, false, 0)}
+          {formatCurrencyAmount(tgeData.registrations, false, 0)}
         </span>
       </div>
       <hr className="w-full border-bd-primary opacity-50"></hr>
 
       <div className="flex w-full items-center justify-between py-2.5">
-        <span>{t("vesting")}</span>
+        <span>{t("tge.vesting")}</span>
         <span>
-          {`${data.vesting.tgePercentage}% TGE, ${data.vesting.cliffPercentage}% cliff`}
+          {`${tgeData.vesting.tgePercentage}% TGE, ${tgeData.vesting.cliffPercentage}% cliff`}
         </span>
       </div>
       <hr className="w-full border-bd-primary opacity-50"></hr>
 
       <div className="flex w-full items-center justify-between py-2.5">
-        <span>{t("token_generation_event")}</span>
-        <span>{formatDateForDisplay(data.tokenGenerationEventDate)}</span>
+        <span>{t("tge.token_generation_event")}</span>
+        <span>{formatDateForDisplay(tgeData.tokenGenerationEventDate)}</span>
       </div>
 
       <div className="flex w-full flex-col truncate rounded-xl bg-brand-primary/10">
-        <span className="py-3 text-center">{t("connect_wallet_to_see")}</span>
+        <span className="py-3 text-center">
+          {t("tge.whitelisting.connect_wallet_to_see")}
+        </span>
         <Button
           size="xl"
           color="primary"
           className="w-full"
-          btnText={t("select_wallet")}
+          btnText={t("tge.select_wallet")}
         />
       </div>
     </div>
