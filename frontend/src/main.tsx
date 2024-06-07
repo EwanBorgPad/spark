@@ -15,7 +15,11 @@ import Project from "./pages/Project"
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: (
+      <WalletProvider>
+        <App />
+      </WalletProvider>
+    ),
     children: [
       {
         path: "/",
@@ -54,8 +58,6 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <WalletProvider>
-      <RouterProvider router={router} />
-    </WalletProvider>
+    <RouterProvider router={router} />
   </React.StrictMode>,
 )

@@ -95,7 +95,7 @@ export default {
           "18px",
           {
             lineHeight: "26px",
-            fontWeight: "bold",
+            fontWeight: 600,
           },
         ],
         "body-l-medium": [
@@ -103,6 +103,13 @@ export default {
           {
             lineHeight: "24px",
             fontWeight: 500,
+          },
+        ],
+        "body-l-regular": [
+          "16px",
+          {
+            lineHeight: "24px",
+            fontWeight: 400,
           },
         ],
       },

@@ -1,22 +1,33 @@
-import { createContext, ReactNode, useContext, useState } from "react"
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react"
 import { usePersistedState } from "@/hooks/usePersistedState.ts"
+import { isMobile } from "@/utils/isMobile.ts"
+import { useSearchParams } from "react-router-dom"
+
+const AUTO_CONNECT_PARAM_KEY = "autoConnect"
+const PAGE_URL = window.location.origin
+/**
+ * I've just hardcoded this to current host, hope it doesn't backfire
+ */
+const PAGE_DOMAIN = window.location.host
 
 export type WalletState = "NOT_CONNECTED" | "CONNECTING" | "CONNECTED"
-/**
- * Different Wallet Providers (not sure if that's the right now)
- * Phantom: https://phantom.app/
- * Backpack: https://backpack.app/
- */
-export type WalletProvider = "PHANTOM" | "BACKPACK" | ""
+
+const SupportedWallets = ["PHANTOM", "BACKPACK"] as const
+type SupportedWallet = (typeof SupportedWallets)[number]
 
 type Context = {
   address: string
   walletState: WalletState
-  walletProvider: WalletProvider
+  walletProvider: SupportedWallet | ""
   signInWithPhantom: () => void
   signInWithBackpack: () => void
   signOut: () => void
-  isSignedIn: boolean
   truncatedAddress: string
 }
 
@@ -30,86 +41,138 @@ export function useWalletContext() {
 }
 
 /**
+ * Provider provided by the extension
+ * e.g. window.phantom.solana or window.backpack
+ * Typing not complete.
+ */
+type Provider = {
+  signIn: (args: { domain: string }) => Promise<{
+    address: { toString(): string }
+  }>
+  connect: () => Promise<{
+    publicKey: { toString(): string }
+  }>
+}
+
+type SignInWithArgs = {
+  wallet: SupportedWallet
+  getProvider: () => Provider
+  /**
+   * SignIn (or connect, tbd) and return the address
+   */
+  signIn: () => Promise<string>
+}
+
+/**
  * Provides wallet connectivity functionality for the app.
- * There's quite a bit of duplicate code below (separate code for Phantom and Backpack), let's leave it like this until we're sure of how it should work.
  * Question: Should we use SignIn or Connect functionality, what's the difference?
  * @param children
  * @constructor
  */
 export function WalletProvider({ children }: { children: ReactNode }) {
+  //// hooks
   const [address, setAddress] = usePersistedState("address")
-  const [walletProvider, setWalletProvider] =
-    usePersistedState<WalletProvider>("walletProvider")
-
+  const [walletProvider, setWalletProvider] = usePersistedState<
+    SupportedWallet | ""
+  >("wallet")
   const initialWalletState: WalletState = address
     ? "CONNECTED"
     : "NOT_CONNECTED"
   const [walletState, setWalletState] =
     useState<WalletState>(initialWalletState)
 
+  // autoConnect feature
+  const [searchParams, setSearchParams] = useSearchParams()
+  const autoConnect = searchParams.get(AUTO_CONNECT_PARAM_KEY)
+  useEffect(() => {
+    if (autoConnect === null) return
+
+    if (autoConnect.toUpperCase() === "PHANTOM") {
+      signInWithPhantom()
+    } else if (autoConnect.toUpperCase() === "BACKPACK") {
+      signInWithBackpack()
+    }
+
+    setSearchParams((searchParams) => {
+      searchParams.delete(AUTO_CONNECT_PARAM_KEY)
+      return searchParams
+    })
+    // don't wanna add signInWithPhantom and signInWithBackpack in deps array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoConnect, setSearchParams])
+
+  //// not hooks
   async function signInWithPhantom() {
-    // @ts-expect-error no types for phantom yet
-    const isPhantom = window?.phantom?.solana?.isPhantom
+    await signInWith({
+      wallet: "PHANTOM",
+      // @ts-expect-error no typings
+      getProvider: () => window?.phantom?.solana,
+      signIn: async () => {
+        //// Connect
+        // const signInRes = await provider.connect()
+        // const address = signInRes.publicKey.toString()
+        ///////
 
-    if (!isPhantom) {
-      const message = "Phantom not detected! Install at: https://phantom.app"
-      // temp solution, throw error until we define how to handle this gracefully
-      alert(message)
-      throw new Error(message)
-    }
-
-    setWalletState("CONNECTING")
-
-    // initiate connection
-    try {
-      // @ts-expect-error no types for phantom yet
-      const signInRes = await window.phantom.solana.signIn({})
-
-      // connection accepted
-      const address = signInRes.address.toString()
-      setAddress(address)
-      setWalletState("CONNECTED")
-      setWalletProvider("PHANTOM")
-    } catch (e) {
-      setWalletState("NOT_CONNECTED")
-
-      if (e instanceof Error && e.message === "User rejected the request.") {
-        // connection declined
-        alert("Sign in declined by user!")
-      } else {
-        // rethrow
-        throw e
-      }
-    }
+        // @ts-expect-error no typings
+        const signInRes = await window?.phantom?.solana.signIn({
+          domain: PAGE_DOMAIN,
+        })
+        const address = signInRes.address.toString()
+        return address
+      },
+    })
   }
 
   async function signInWithBackpack() {
-    // @ts-expect-error no types
-    const isBackpack = window?.backpack?.isBackpack
+    await signInWith({
+      wallet: "BACKPACK",
+      // @ts-expect-error no typings
+      getProvider: () => window?.backpack,
+      signIn: async () => {
+        // @ts-expect-error no typings
+        const signInRes = await window?.backpack?.signIn({
+          domain: PAGE_DOMAIN,
+        })
+        const address = signInRes.account.address
+        return address
+      },
+    })
+  }
 
-    if (!isBackpack) {
-      const message = "Backpack not detected! Install at: https://backpack.app"
-      // temp solution, throw error until we define how to handle this gracefully
-      alert(message)
-      throw new Error(message)
+  async function signInWith({ wallet, getProvider, signIn }: SignInWithArgs) {
+    const provider = getProvider()
+
+    const isExtensionDetected = Boolean(provider)
+
+    if (!isExtensionDetected) {
+      if (isMobile()) {
+        const url = `${PAGE_URL}/?autoConnect=${wallet}`
+        const encodedUrl = encodeURIComponent(url)
+        const encodedPageUrl = encodeURIComponent(PAGE_URL)
+        const deepLink = `https://${wallet}.app/ul/browse/${encodedUrl}?ref=${encodedPageUrl}`
+        window.location.href = deepLink
+        return
+      } else {
+        const message = `${wallet} not detected!`
+        // temp solution, throw error until we define how to handle this gracefully
+        alert(message)
+        throw new Error(message)
+      }
     }
 
     setWalletState("CONNECTING")
 
     // initiate connection
     try {
-      // @ts-expect-error no types
-      const signInRes = await window.backpack.signIn({})
+      const address = await signIn()
 
       // connection accepted
-      const address = signInRes.account.address
       setAddress(address)
       setWalletState("CONNECTED")
-      setWalletProvider("BACKPACK")
+      setWalletProvider(wallet)
     } catch (e) {
       setWalletState("NOT_CONNECTED")
 
-      // not sure if this is correct code for Backpack (for Phantom it is)
       if (e instanceof Error && e.message === "User rejected the request.") {
         // connection declined
         alert("Sign in declined by user!")
@@ -126,7 +189,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setWalletProvider("")
   }
 
-  const isSignedIn = Boolean(address)
   const truncatedAddress = truncateAddress(address)
 
   return (
@@ -138,7 +200,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         signInWithPhantom,
         signInWithBackpack,
         signOut,
-        isSignedIn,
         truncatedAddress,
       }}
     >
