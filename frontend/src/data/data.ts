@@ -153,22 +153,22 @@ export const dummyData: ProjectData = {
     pastOrders: [
       {
         borgAmount: 3813.35,
-        date: addDays(arbitraryDate, -22),
+        date: addDays(arbitraryDate, -8),
         externalLink: "#",
       },
       {
         borgAmount: 110.1,
-        date: addDays(arbitraryDate, -22),
+        date: addDays(arbitraryDate, -7),
         externalLink: "#",
       },
       {
         borgAmount: 240.891,
-        date: addDays(arbitraryDate, -22),
+        date: addDays(arbitraryDate, -6),
         externalLink: "#",
       },
       {
         borgAmount: 440.4,
-        date: addDays(arbitraryDate, -22),
+        date: addDays(arbitraryDate, -5),
         externalLink: "#",
       },
     ],
