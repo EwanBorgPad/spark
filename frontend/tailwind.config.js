@@ -95,10 +95,23 @@ export default {
           "18px",
           {
             lineHeight: "26px",
-            fontWeight: "bold",
+            fontWeight: 600,
           },
         ],
-        "body-l-medium": ["16px", { lineHeight: "24px", fontWeight: 500 }],
+        "body-l-medium": [
+          "16px",
+          {
+            lineHeight: "24px",
+            fontWeight: 500,
+          },
+        ],
+        "body-l-regular": [
+          "16px",
+          {
+            lineHeight: "24px",
+            fontWeight: 400,
+          },
+        ],
       },
       keyframes: {
         "top-down": {

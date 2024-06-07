@@ -6,10 +6,11 @@ import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
 
 type Props = {
   children: ReactNode
+  showCloseBtn: boolean
   onClose?: () => void
   className?: string
 }
-export function SimpleModal({ children, onClose, className }: Props) {
+export function SimpleModal({ children, showCloseBtn, onClose, className }: Props) {
   const modalClasses = twMerge(
     "relative h-full",
     "w-[460px]",
@@ -36,7 +37,7 @@ export function SimpleModal({ children, onClose, className }: Props) {
         >
           {/* modal */}
           <div ref={modalRef} className={modalClasses}>
-            {onClose && <CloseButton onClose={onClose} />}
+            {onClose && showCloseBtn && <CloseButton onClose={onClose} />}
 
             {children}
           </div>
@@ -61,11 +62,11 @@ export function CloseButton({
     "rounded-full",
     "flex items-center justify-center",
     "cursor-pointer",
+    "hover:bg-tertiary ",
     className,
   )
   return (
     <div
-      style={{ width: BTN_SIZE_PX, height: BTN_SIZE_PX }}
       onClick={onClose}
       className={cls}
     >
