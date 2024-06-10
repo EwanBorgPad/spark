@@ -1,17 +1,17 @@
-import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import CurrencyInput, { formatValue } from "react-currency-input-field"
+import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
+import { ConnectButton } from "@/components/Header/ConnectButton"
+import { useWalletContext } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
 import { walletDummyData } from "@/data/walletData"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
 import raydiumImg from "@/assets/raydium.png"
 import lrcCoinImg from "@/assets/lrcCoin.png"
-import { TgeWrapper } from "./Wrapper"
-import { useWalletContext } from "@/hooks/useWalletContext"
-import { ConnectButton } from "@/components/Header/ConnectButton"
 import { ProjectData } from "@/data/data"
+import { TgeWrapper } from "./Wrapper"
 
 type LiveNowExchangeProps = {
   userIsWhitelisted: boolean
@@ -75,7 +75,9 @@ const LiveNowExchange = ({
   return (
     <TgeWrapper.Inner className="gap-0">
       <form
-        className="flex h-full w-full flex-col items-center bg-transparent"
+        className={
+          "relative flex h-full w-full flex-col items-center bg-transparent"
+        }
         onSubmit={handleSubmit(onSubmit)}
       >
         <span className="w-full pb-2.5 text-center text-base font-semibold">
@@ -201,6 +203,7 @@ const LiveNowExchange = ({
                 type="submit"
                 size="lg"
                 btnText="Supply $BORG"
+                disabled={!userIsWhitelisted}
                 className={"w-full"}
               />
               <Button
@@ -239,6 +242,21 @@ const LiveNowExchange = ({
           )}
         </div>
       </form>
+      {!userIsWhitelisted && (
+        <div className="absolute bottom-[60px] left-0 right-0 top-10 z-10 flex w-full flex-col items-center justify-center rounded-2xl bg-default/20 backdrop-blur-sm">
+          <div className="flex w-full max-w-[340px] flex-col rounded-md bg-default p-4 shadow-sm shadow-white/5">
+            <span className="text-fg-error-primary">
+              Your Wallet was not whitelisted for this deal
+            </span>
+            <span>See Whitelist Requirements:</span>
+            <ul className="list-inside list-disc">
+              <li>Requirement 1</li>
+              <li>Requirement 2</li>
+              <li>Requirement 3</li>
+            </ul>
+          </div>
+        </div>
+      )}
     </TgeWrapper.Inner>
   )
 }

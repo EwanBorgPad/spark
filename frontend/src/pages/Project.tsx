@@ -19,6 +19,7 @@ import { calculateTimelineData } from "@/utils/timeline"
 
 const Project = () => {
   const [projectData, setProjectData] = useState<ProjectData>(dummyData)
+  const [userIsWhitelisted, setUserIsWhitelist] = useState(true)
   const { t } = useTranslation()
 
   const expandedTimeline = calculateTimelineData(projectData.timeline)
@@ -134,6 +135,7 @@ const Project = () => {
       <TokenGenerationWrapper
         data={projectData}
         expandedTimeline={expandedTimeline}
+        userIsWhitelisted={userIsWhitelisted}
       />
 
       <section className="data-room group">
@@ -161,7 +163,12 @@ const Project = () => {
       {/* to be deleted */}
       {/* <DesignSystem /> */}
       {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && (
-        <TimeTester data={projectData} setData={setProjectData} />
+        <TimeTester
+          data={projectData}
+          setData={setProjectData}
+          setUserIsWhitelist={setUserIsWhitelist}
+          userIsWhitelisted={userIsWhitelisted}
+        />
       )}
     </main>
   )

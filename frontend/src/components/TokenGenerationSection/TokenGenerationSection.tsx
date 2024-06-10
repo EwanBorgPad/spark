@@ -13,9 +13,10 @@ import { useTranslation } from "react-i18next"
 type Props = {
   data: ProjectData
   expandedTimeline: ExtendedTimelineEventType[]
+  userIsWhitelisted: boolean
 }
 
-const TokenGenerationSection = ({ expandedTimeline, data }: Props) => {
+const TokenGenerationSection = ({ expandedTimeline, data, userIsWhitelisted }: Props) => {
   const { t } = useTranslation()
   const [currentTgeEvent, setCurrentTgeEvent] =
     useState<ExtendedTimelineEventType>(getCurrentTgeEvent(expandedTimeline))
@@ -25,8 +26,9 @@ const TokenGenerationSection = ({ expandedTimeline, data }: Props) => {
     setCurrentTgeEvent(newTgeStatus)
   }, [expandedTimeline])
 
-  // @TODO - change line below with API to check if user is whitelisted
-  const userIsWhitelisted = true
+  ///////////////////////////////////////////////////////////
+  // @TODO - Add API for checking user eligibility //////////
+  ///////////////////////////////////////////////////////////
 
   useEffect(() => {
     updateTgeStatus()
