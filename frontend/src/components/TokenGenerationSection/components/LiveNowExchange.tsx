@@ -14,7 +14,7 @@ import { ProjectData } from "@/data/data"
 import { TgeWrapper } from "./Wrapper"
 
 type LiveNowExchangeProps = {
-  userIsWhitelisted: boolean
+  isUserWhitelisted: boolean
   tgeData: ProjectData["tge"]
 }
 
@@ -29,7 +29,7 @@ const inputButtons = [
 ]
 
 const LiveNowExchange = ({
-  userIsWhitelisted,
+  isUserWhitelisted,
   tgeData,
 }: LiveNowExchangeProps) => {
   const { t } = useTranslation()
@@ -203,7 +203,7 @@ const LiveNowExchange = ({
                 type="submit"
                 size="lg"
                 btnText="Supply $BORG"
-                disabled={!userIsWhitelisted}
+                disabled={!isUserWhitelisted}
                 className={"w-full"}
               />
               <Button
@@ -228,7 +228,7 @@ const LiveNowExchange = ({
           {balance && (
             <div className="flex items-center gap-2">
               <span>{t("tge.participation_status")}:</span>
-              {userIsWhitelisted ? (
+              {isUserWhitelisted ? (
                 <span className="text-sm text-fg-success-primary">
                   {t("tge.whitelisted")}
                 </span>
@@ -242,7 +242,7 @@ const LiveNowExchange = ({
           )}
         </div>
       </form>
-      {!userIsWhitelisted && (
+      {!isUserWhitelisted && (
         <div className="absolute bottom-[60px] left-0 right-0 top-10 z-10 flex w-full flex-col items-center justify-center rounded-2xl bg-default/20 backdrop-blur-sm">
           <div className="flex w-full max-w-[340px] flex-col rounded-md bg-default p-4 shadow-sm shadow-white/5">
             <span className="text-fg-error-primary">

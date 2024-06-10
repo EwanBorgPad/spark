@@ -28,14 +28,13 @@ const Accordion = ({ label, sublabel, children }: AccordionProps) => {
         size="xl"
         onClick={() => setOpen(!isOpen)}
         className="z-[10] scale-100 gap-1 rounded-lg p-3 hover:opacity-100 active:!scale-[100%]"
-        style={{}}
       >
         <span className="text-sm font-normal">{label}</span>
         {sublabel && <span className="text-sm font-normal">{sublabel}</span>}
         <Icon
           icon={"SvgChevronDown"}
           className={twMerge(
-            "text-fg-primary opacity-50 transition-transform duration-500",
+            "rotate-90 text-fg-primary opacity-50 transition-transform duration-500",
             isOpen && "rotate-180",
           )}
         />
@@ -48,7 +47,7 @@ const Accordion = ({ label, sublabel, children }: AccordionProps) => {
         )}
       >
         <div className="h-2 w-full"></div>
-        {children}slack
+        {children}
       </div>
     </div>
   )

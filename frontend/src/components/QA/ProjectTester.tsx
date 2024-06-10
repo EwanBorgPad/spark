@@ -10,8 +10,8 @@ import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick"
 type Props = {
   data: ProjectData
   setData: (newData: ProjectData) => void
-  setUserIsWhitelist: (status: boolean) => void
-  userIsWhitelisted: boolean
+  setIsUserWhitelisted: (status: boolean) => void
+  isUserWhitelisted: boolean
 }
 const TIMESPANS = ["days", "hours", "minutes"] as const
 type ChangeType = (typeof TIMESPANS)[number]
@@ -56,11 +56,11 @@ const OffsetEventInput = ({
   )
 }
 
-const TimeTester = ({
+const ProjectTester = ({
   data,
   setData,
-  setUserIsWhitelist,
-  userIsWhitelisted,
+  setIsUserWhitelisted,
+  isUserWhitelisted,
 }: Props) => {
   const [isOpened, setIsOpen] = useState(false)
   const [offset, setOffset] = useState(defaultOffset)
@@ -111,9 +111,9 @@ const TimeTester = ({
               name="whitelist-checkbox"
               id="whitelist-checkbox"
               type="checkbox"
-              checked={userIsWhitelisted}
+              checked={isUserWhitelisted}
               className="h-5 w-5 cursor-pointer rounded border-gray-300 bg-gray-100 text-brand-primary"
-              onChange={(event) => setUserIsWhitelist(event.target.checked)}
+              onChange={(event) => setIsUserWhitelisted(event.target.checked)}
             />
             <label
               htmlFor="whitelist-checkbox"
@@ -165,4 +165,4 @@ const TimeTester = ({
   )
 }
 
-export default TimeTester
+export default ProjectTester

@@ -13,10 +13,14 @@ import { useTranslation } from "react-i18next"
 type Props = {
   data: ProjectData
   expandedTimeline: ExtendedTimelineEventType[]
-  userIsWhitelisted: boolean
+  isUserWhitelisted: boolean
 }
 
-const TokenGenerationSection = ({ expandedTimeline, data, userIsWhitelisted }: Props) => {
+const TokenGenerationSection = ({
+  expandedTimeline,
+  data,
+  isUserWhitelisted,
+}: Props) => {
   const { t } = useTranslation()
   const [currentTgeEvent, setCurrentTgeEvent] =
     useState<ExtendedTimelineEventType>(getCurrentTgeEvent(expandedTimeline))
@@ -43,7 +47,7 @@ const TokenGenerationSection = ({ expandedTimeline, data, userIsWhitelisted }: P
       case "SALE_OPENS":
         return (
           <LiveNow
-            userIsWhitelisted={userIsWhitelisted}
+            isUserWhitelisted={isUserWhitelisted}
             eventData={tgeEvent}
             tgeData={data.tge}
           />

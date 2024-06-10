@@ -9,11 +9,11 @@ import { ProjectData } from "@/data/data"
 
 type LiveNowProps = {
   eventData: ExtendedTimelineEventType
-  userIsWhitelisted: boolean
+  isUserWhitelisted: boolean
   tgeData: ProjectData["tge"]
 }
 
-const LiveNow = ({ eventData, userIsWhitelisted, tgeData }: LiveNowProps) => {
+const LiveNow = ({ eventData, isUserWhitelisted, tgeData }: LiveNowProps) => {
   const { t } = useTranslation()
 
   return (
@@ -23,7 +23,7 @@ const LiveNow = ({ eventData, userIsWhitelisted, tgeData }: LiveNowProps) => {
           <CountDownTimer endOfEvent={eventData.nextEventDate} />
         )}
         <LiveNowExchange
-          userIsWhitelisted={userIsWhitelisted}
+          isUserWhitelisted={isUserWhitelisted}
           tgeData={tgeData}
         />
       </TgeWrapper>
