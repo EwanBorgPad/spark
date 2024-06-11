@@ -10,6 +10,8 @@ import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick"
 type Props = {
   data: ProjectData
   setData: (newData: ProjectData) => void
+  setIsUserWhitelisted: (status: boolean) => void
+  isUserWhitelisted: boolean
 }
 const TIMESPANS = ["days", "hours", "minutes"] as const
 type ChangeType = (typeof TIMESPANS)[number]
@@ -54,7 +56,12 @@ const OffsetEventInput = ({
   )
 }
 
-const TimeTester = ({ data, setData }: Props) => {
+const ProjectTester = ({
+  data,
+  setData,
+  setIsUserWhitelisted,
+  isUserWhitelisted,
+}: Props) => {
   const [isOpened, setIsOpen] = useState(false)
   const [offset, setOffset] = useState(defaultOffset)
   const ref = useRef<HTMLDivElement>(null)
@@ -95,10 +102,26 @@ const TimeTester = ({ data, setData }: Props) => {
   }
 
   return (
-    <div ref={ref} className="fixed right-3 top-[50vh] z-[20] bg-default">
+    <div ref={ref} className="fixed right-3 top-[50vh] z-[20]">
       {isOpened ? (
         <div className="flex w-[300px] flex-col gap-4 rounded-lg border-[1px] border-brand-primary bg-default p-4">
           <span className="text-base">Input Values</span>
+          <div className="flex items-center rounded-md bg-emphasis px-3 py-2">
+            <input
+              name="whitelist-checkbox"
+              id="whitelist-checkbox"
+              type="checkbox"
+              checked={isUserWhitelisted}
+              className="h-5 w-5 cursor-pointer rounded border-gray-300 bg-gray-100 text-brand-primary"
+              onChange={(event) => setIsUserWhitelisted(event.target.checked)}
+            />
+            <label
+              htmlFor="whitelist-checkbox"
+              className="cursor-pointer select-none pl-2 pr-4"
+            >
+              Whitelisted
+            </label>
+          </div>
           <div className="flex w-full flex-col gap-2 rounded-md bg-emphasis p-2">
             <span className="text-base">Offset All Events</span>
 
@@ -142,4 +165,4 @@ const TimeTester = ({ data, setData }: Props) => {
   )
 }
 
-export default TimeTester
+export default ProjectTester

@@ -13,12 +13,14 @@ import { ProjectData, dummyData } from "../data/data"
 import ProgressBar from "../components/ProgressBar"
 import Avatar from "../components/Avatar/Avatar"
 import { Icon } from "../components/Icon/Icon"
-import TimeTester from "@/components/QA/TimelineTester"
+
 import { calculateTimelineData } from "@/utils/timeline"
+import ProjectTester from "@/components/QA/ProjectTester"
 // import DesignSystem from "./DesignSystem"
 
 const Project = () => {
   const [projectData, setProjectData] = useState<ProjectData>(dummyData)
+  const [isUserWhitelisted, setIsUserWhitelisted] = useState(true)
   const { t } = useTranslation()
 
   const expandedTimeline = calculateTimelineData(projectData.timeline)
@@ -134,6 +136,7 @@ const Project = () => {
       <TokenGenerationWrapper
         data={projectData}
         expandedTimeline={expandedTimeline}
+        isUserWhitelisted={isUserWhitelisted}
       />
 
       <section className="data-room group">
@@ -161,7 +164,12 @@ const Project = () => {
       {/* to be deleted */}
       {/* <DesignSystem /> */}
       {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && (
-        <TimeTester data={projectData} setData={setProjectData} />
+        <ProjectTester
+          data={projectData}
+          setData={setProjectData}
+          setIsUserWhitelisted={setIsUserWhitelisted}
+          isUserWhitelisted={isUserWhitelisted}
+        />
       )}
     </main>
   )

@@ -27,14 +27,14 @@ const Accordion = ({ label, sublabel, children }: AccordionProps) => {
         color="secondary"
         size="xl"
         onClick={() => setOpen(!isOpen)}
-        className="z-[10] gap-1 rounded-lg p-3 hover:opacity-100 active:scale-[100%]"
+        className="z-[10] scale-100 gap-1 rounded-lg p-3 hover:opacity-100 active:!scale-[100%]"
       >
         <span className="text-sm font-normal">{label}</span>
         {sublabel && <span className="text-sm font-normal">{sublabel}</span>}
         <Icon
           icon={"SvgChevronDown"}
           className={twMerge(
-            "text-fg-primary opacity-50 transition-transform duration-500",
+            "rotate-90 text-fg-primary opacity-50 transition-transform duration-500",
             isOpen && "rotate-180",
           )}
         />
@@ -42,7 +42,7 @@ const Accordion = ({ label, sublabel, children }: AccordionProps) => {
       <div
         ref={accordionRef}
         className={twMerge(
-          "transition-height top-11 z-[-10] -mt-2.5 w-full overflow-y-scroll rounded-b-lg border-[1px] border-t-0 border-bd-primary bg-secondary delay-0 duration-200 ease-in-out",
+          "transition-height top-11 z-[-10] -mt-2.5 max-h-[420px] w-full overflow-y-scroll rounded-b-lg border-[1px] border-t-0 border-bd-primary bg-secondary delay-0 duration-200 ease-in-out",
           !isOpen && "!max-h-0",
         )}
       >
