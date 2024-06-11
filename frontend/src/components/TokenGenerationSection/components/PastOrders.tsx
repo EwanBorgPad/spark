@@ -14,6 +14,8 @@ type PastOrderProps = {
   borgPriceInUSD: number
 }
 
+const MAX_ACCORDION_CONTAINER_HEIGHT = 317
+
 export const PastOrder = ({
   order,
   numberOfPastOrders,
@@ -64,15 +66,21 @@ export const PastOrders = ({ tgeData }: PastOrdersProps) => {
   const numberOfPastOrders = tgeData.pastOrders.length
   if (numberOfPastOrders === 0) return null
 
-  // @TODO - GET current BORG/USD price
-  // below is arbitrary value from 07.06.2024
   const getBorgPriceInUSD = () => {
+    //////////////////////////////////////////////
+    // @TODO - GET current BORG/USD price ////////
+    // below is arbitrary value from 07.06.2024 //
+    //////////////////////////////////////////////
     return 0.2179
   }
   const borgPriceInUSD = getBorgPriceInUSD()
 
   return (
-    <Accordion label={"Past Orders"} sublabel={`(${numberOfPastOrders})`}>
+    <Accordion
+      label={"Past Orders"}
+      sublabel={`(${numberOfPastOrders})`}
+      maxChildrenHeight={MAX_ACCORDION_CONTAINER_HEIGHT}
+    >
       {tgeData.pastOrders.map((order, index) => {
         return (
           <PastOrder
