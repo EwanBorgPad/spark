@@ -67,10 +67,13 @@ We've done a lot of UI work, what we could from the designs, and are starting wo
 
 ### Whitelisting Questions
 
-- Q: Just to confirm - "backend" in the specs refers to BorgPad backend, not some other service?
-- Q: What about security considerations (I suppose it’s not okay for the whitelisting data to be publicly accessible)? What if I know someone's address and fake the connection? Is SIWS the solution?
-- Q: “Create BO to manually set and order whitelisting tiers” - what’s BO for?
-- Q: In the doc it says “on-chain first, off-chain later” does this assume off-chain is harder to implement? I’m interested to hear why’s that
+- Q: Just to confirm - "backend" in the specs refers to BorgPad backend (something we should build), 
+  - not some other service provided to us?
+- Q: What about security considerations (I suppose it’s not okay for the whitelisting data to be publicly accessible)? 
+  - What if I know someone's address and fake the connection? Is SIWS the solution?
+- Q: “Create BO to manually set and order whitelisting tiers” - is BO = Back Office?
+- Q: In the doc it says “on-chain first, off-chain later” does this assume off-chain is harder to implement? 
+  - I’m interested to hear why’s that
 - Suggestion: We should consider caching the results after we make the MVP and see how it performs
 - 
 - Tier definitions"
