@@ -3,7 +3,7 @@ interface Env {
 
 }
 
-export const onRequest: PagesFunction<Env> = async (context) => {
+export const onRequestGet: PagesFunction<Env> = async (context) => {
   const method = context.request.method
   const url = context.request.url
 
