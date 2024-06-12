@@ -29,6 +29,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240605.0",
     "@eslint/eslintrc": "^3.0.2",
     "@openapitools/openapi-generator-cli": "^2.13.4",
     "@types/react": "^18.3.1",
