@@ -65,10 +65,25 @@ We've done a lot of UI work, what we could from the designs, and are starting wo
   - This will be relevant if we include some backend api endpoints (that need authorization).
 - JSON Data Model (data.ts)
 
+### Whitelisting Questions
 
-
-
-
+- Q: Just to confirm - "backend" in the specs refers to BorgPad backend (something we should build), 
+  - not some other service provided to us?
+- Q: What about security considerations (I suppose it’s not okay for the whitelisting data to be publicly accessible)? 
+  - What if I know someone's address and fake the connection? Is SIWS the solution?
+- Q: “Create BO to manually set and order whitelisting tiers” - is BO = Back Office?
+- Q: In the doc it says “on-chain first, off-chain later” does this assume off-chain is harder to implement? 
+  - I’m interested to hear why’s that
+- Suggestion: We should consider caching the results after we make the MVP and see how it performs
+- 
+- Tier definitions"
+  - "Create BO to manually set and order whitelisting tiers and their associated criteria for each LBP."
+  - "Maintain a secure and efficient system to store and update criteria and tier definitions"
+  - "Allow flexibility in the criteria evaluation logic to accommodate additional criteria without significant rework."
+  - I'd like to discuss this more, but my key points are:
+    - Storing the criteria evaluation **logic** in the database might not be so easy, it is not trivial to serialize logic
+    - We can do this as a series of functions in typescript files, such that adding/removing a criteria would involve pushing new code to the repo
+      - criteria: { name: string, logic: Function }
 
 
 
