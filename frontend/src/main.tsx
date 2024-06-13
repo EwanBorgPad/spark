@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound"
 import Homepage from "./pages/Homepage"
 import Project from "./pages/Project"
 import App from "./App"
+import { WhitelistStatusProvider } from "./hooks/useWhitelistContext"
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <WhitelistStatusProvider>
+      <RouterProvider router={router} />
+    </WhitelistStatusProvider>
   </React.StrictMode>,
 )

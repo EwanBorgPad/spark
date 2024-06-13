@@ -9,19 +9,13 @@ import SaleFinished from "./TGEStatus/SaleFinished"
 import Whitelisting from "./TGEStatus/Whitelisting"
 import { ProjectData } from "../../data/data"
 import LiveNow from "./TGEStatus/LiveNow"
-import { whitelistDummyData } from "@/data/whitelistingData"
 
 type Props = {
   data: ProjectData
   expandedTimeline: ExtendedTimelineEventType[]
-  isUserWhitelisted: boolean
 }
 
-const TokenGenerationSection = ({
-  expandedTimeline,
-  data,
-  isUserWhitelisted,
-}: Props) => {
+const TokenGenerationSection = ({ expandedTimeline, data }: Props) => {
   const { t } = useTranslation()
   const [currentTgeEvent, setCurrentTgeEvent] =
     useState<ExtendedTimelineEventType>(getCurrentTgeEvent(expandedTimeline))
@@ -34,10 +28,6 @@ const TokenGenerationSection = ({
   ///////////////////////////////////////////////////////////
   // @TODO - Add API for checking user eligibility //////////
   ///////////////////////////////////////////////////////////
-  const getWhitelistStatus = () => {
-    return whitelistDummyData
-  }
-  const whitelistStatus = getWhitelistStatus()
 
   useEffect(() => {
     updateTgeStatus()
@@ -48,23 +38,9 @@ const TokenGenerationSection = ({
       case "INACTIVE":
         return <span>{t("tge.not_opened_yet")}</span>
       case "REGISTRATION_OPENS":
-        return (
-          <Whitelisting
-            whitelistStatus={whitelistStatus}
-            tgeData={data.tge}
-            isUserWhitelisted={isUserWhitelisted}
-            eventData={currentTgeEvent}
-          />
-        )
+        return <Whitelisting tgeData={data.tge} eventData={currentTgeEvent} />
       case "SALE_OPENS":
-        return (
-          <LiveNow
-            whitelistStatus={whitelistStatus}
-            isUserWhitelisted={isUserWhitelisted}
-            eventData={tgeEvent}
-            tgeData={data.tge}
-          />
-        )
+        return <LiveNow eventData={tgeEvent} tgeData={data.tge} />
       case "SALE_CLOSES":
         return <SaleFinished eventData={tgeEvent} />
       case "REWARD_DISTRIBUTION":

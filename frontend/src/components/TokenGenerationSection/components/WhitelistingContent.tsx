@@ -5,17 +5,12 @@ import { useTranslation } from "react-i18next"
 import { Icon } from "@/components/Icon/Icon"
 import { ProjectData } from "@/data/data"
 import TokenRewards from "./TokenRewards"
-import { Badge } from "@/components/Badge/Badge"
 
 type WhitelistingContentProps = {
   tgeData: ProjectData["tge"]
-  isUserWhitelisted: boolean
 }
 
-const WhitelistingContent = ({
-  tgeData,
-  isUserWhitelisted,
-}: WhitelistingContentProps) => {
+const WhitelistingContent = ({ tgeData }: WhitelistingContentProps) => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()

@@ -11,7 +11,7 @@ export type WhitelistStatusType = {
 }
 
 export const whitelistDummyData: WhitelistStatusType = {
-  whitelisted: false,
+  whitelisted: true,
   requirements: [
     {
       label: "Hold 20,000 BORG in your wallet",

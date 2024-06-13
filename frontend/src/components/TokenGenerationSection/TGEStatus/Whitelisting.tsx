@@ -4,23 +4,15 @@ import { ExtendedTimelineEventType } from "@/components/Timeline/Timeline"
 import WhitelistingContent from "../components/WhitelistingContent"
 import CountDownTimer from "@/components/CountDownTimer"
 import { TgeWrapper } from "../components/Wrapper"
-import { ProjectData } from "@/data/data"
 import WhitelistStatus from "../WhitelistStatus"
-import { WhitelistStatusType } from "@/data/whitelistingData"
+import { ProjectData } from "@/data/data"
 
 type WhitelistingProps = {
   eventData: ExtendedTimelineEventType
   tgeData: ProjectData["tge"]
-  isUserWhitelisted: boolean
-  whitelistStatus: WhitelistStatusType
 }
 
-const Whitelisting = ({
-  eventData,
-  tgeData,
-  isUserWhitelisted,
-  whitelistStatus,
-}: WhitelistingProps) => {
+const Whitelisting = ({ eventData, tgeData }: WhitelistingProps) => {
   const { t } = useTranslation()
   return (
     <div className="flex w-full max-w-[400px] flex-col gap-5">
@@ -30,15 +22,9 @@ const Whitelisting = ({
             <CountDownTimer endOfEvent={eventData.nextEventDate} />
           </>
         )}
-        <WhitelistingContent
-          tgeData={tgeData}
-          isUserWhitelisted={isUserWhitelisted}
-        />
+        <WhitelistingContent tgeData={tgeData} />
       </TgeWrapper>
-      <WhitelistStatus
-        isUserWhitelisted={isUserWhitelisted}
-        whitelistStatus={whitelistStatus}
-      />
+      <WhitelistStatus />
     </div>
   )
 }

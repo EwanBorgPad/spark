@@ -1,6 +1,6 @@
 import { ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import TokenGenerationWrapper from "../components/TokenGenerationSection/TokenGenerationSection"
 import { formatCurrencyAmount, getRatioPercantage } from "../utils/format"
@@ -14,13 +14,13 @@ import ProgressBar from "../components/ProgressBar"
 import Avatar from "../components/Avatar/Avatar"
 import { Icon } from "../components/Icon/Icon"
 
-import { WhitelistStatusType } from "@/data/whitelistingData"
+import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import { ProjectData, dummyData } from "../data/data"
 
 const Project = () => {
   const [projectData, setProjectData] = useState<ProjectData>(dummyData)
-  const [isUserWhitelisted, setIsUserWhitelisted] = useState(false)
   const { t } = useTranslation()
+  // const { getWhitelistStatus } = useWhitelistStatusContext()
 
   const expandedTimeline = calculateTimelineData(projectData.timeline)
 
@@ -135,7 +135,6 @@ const Project = () => {
       <TokenGenerationWrapper
         data={projectData}
         expandedTimeline={expandedTimeline}
-        isUserWhitelisted={isUserWhitelisted}
       />
 
       <section className="data-room group">
@@ -163,12 +162,7 @@ const Project = () => {
       {/* to be deleted */}
       {/* <DesignSystem /> */}
       {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && (
-        <ProjectTester
-          data={projectData}
-          setData={setProjectData}
-          setIsUserWhitelisted={setIsUserWhitelisted}
-          isUserWhitelisted={isUserWhitelisted}
-        />
+        <ProjectTester data={projectData} setData={setProjectData} />
       )}
     </main>
   )

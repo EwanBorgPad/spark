@@ -11,9 +11,9 @@ import { Icon } from "@/components/Icon/Icon"
 import { ProjectData } from "@/data/data"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
+import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 
 type LiveNowExchangeProps = {
-  isUserWhitelisted: boolean
   tgeData: ProjectData["tge"]
 }
 
@@ -27,13 +27,11 @@ const inputButtons = [
   { label: "100%", percantage: 100 },
 ]
 
-const LiveNowExchange = ({
-  isUserWhitelisted,
-  tgeData,
-}: LiveNowExchangeProps) => {
+const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()
+  const { isUserWhitelisted } = useWhitelistStatusContext()
 
   // @TODO - getBalance API instead of walletDummyData and variable below
   const balance = walletDummyData.balance
@@ -179,7 +177,8 @@ const LiveNowExchange = ({
               />
             </div>
           )}
-          {balance && (
+          {/* Probably not needed */}
+          {/* {balance && (
             <div className="flex items-center gap-2">
               <span>{t("tge.participation_status")}:</span>
               {isUserWhitelisted ? (
@@ -193,21 +192,22 @@ const LiveNowExchange = ({
                 </div>
               )}
             </div>
-          )}
+          )} */}
         </div>
       </form>
       {!isUserWhitelisted && (
-        <div className="absolute bottom-[60px] left-0 right-0 top-10 z-10 flex w-full flex-col items-center justify-center rounded-2xl bg-default/20 backdrop-blur-sm">
-          <div className="flex w-full max-w-[340px] flex-col rounded-md bg-default p-4 shadow-sm shadow-white/5">
+        <div className="absolute bottom-0 left-0 right-0 top-10 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
+          <div className="flex w-full max-w-[340px] flex-col rounded-lg bg-default p-4 shadow-sm shadow-white/5">
             <span className="text-fg-error-primary">
               Your Wallet was not whitelisted for this deal
             </span>
-            <span>See Whitelist Requirements:</span>
-            <ul className="list-inside list-disc">
-              <li>Requirement 1</li>
-              <li>Requirement 2</li>
-              <li>Requirement 3</li>
-            </ul>
+            <Button
+              onClick={() => scrollBy({ top: 400, behavior: "smooth" })}
+              size="md"
+              color="plain"
+              btnText="See Whitelist Requirements"
+              className="text-sm font-normal"
+            ></Button>
           </div>
         </div>
       )}

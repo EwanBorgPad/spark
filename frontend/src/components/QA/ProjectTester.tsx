@@ -6,12 +6,11 @@ import { addDays } from "date-fns/addDays"
 import { addHours } from "date-fns/addHours"
 import { addMinutes } from "date-fns/addMinutes"
 import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick"
+import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 
 type Props = {
   data: ProjectData
   setData: (newData: ProjectData) => void
-  setIsUserWhitelisted: (status: boolean) => void
-  isUserWhitelisted: boolean
 }
 const TIMESPANS = ["days", "hours", "minutes"] as const
 type ChangeType = (typeof TIMESPANS)[number]
@@ -56,12 +55,7 @@ const OffsetEventInput = ({
   )
 }
 
-const ProjectTester = ({
-  data,
-  setData,
-  setIsUserWhitelisted,
-  isUserWhitelisted,
-}: Props) => {
+const ProjectTester = ({ data, setData }: Props) => {
   const [isOpened, setIsOpen] = useState(false)
   const [offset, setOffset] = useState(defaultOffset)
   const ref = useRef<HTMLDivElement>(null)
@@ -70,6 +64,11 @@ const ProjectTester = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   )
+  const {
+    setWhitelistStatusToNotEligible,
+    isUserWhitelisted,
+    setWhitelistStatusToEligible,
+  } = useWhitelistStatusContext()
 
   useCheckOutsideClick(ref, () => setIsOpen(false))
 
@@ -101,6 +100,14 @@ const ProjectTester = ({
     setData({ ...data, timeline: originalTimeline })
   }
 
+  const onWhitelistCheckboxClick = (isChecked: boolean) => {
+    if (isChecked) {
+      setWhitelistStatusToEligible()
+    } else {
+      setWhitelistStatusToNotEligible()
+    }
+  }
+
   return (
     <div ref={ref} className="fixed right-3 top-[50vh] z-[20]">
       {isOpened ? (
@@ -113,7 +120,9 @@ const ProjectTester = ({
               type="checkbox"
               checked={isUserWhitelisted}
               className="h-5 w-5 cursor-pointer rounded border-gray-300 bg-gray-100 text-brand-primary"
-              onChange={(event) => setIsUserWhitelisted(event.target.checked)}
+              onChange={(event) =>
+                onWhitelistCheckboxClick(event.target.checked)
+              }
             />
             <label
               htmlFor="whitelist-checkbox"
