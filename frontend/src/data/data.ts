@@ -57,9 +57,13 @@ export type ProjectData = {
       cliffPercentage: number
     }
     tokenGenerationEventDate: Date
-    liquidityPool: {
-      name: string
-      img: string
+    liquidityPoolDetails: {
+      defiProtocol: {
+        name: string
+        imgUrl: string
+      }
+      lbType: string
+      lockingPeriod: string
     }
     pastOrders: {
       borgAmount: number
@@ -77,22 +81,22 @@ export const dummyData: ProjectData = {
   projectLinks: [
     {
       url: "#",
-      linkType: "web",
+      linkType: "WEB",
       label: undefined,
     },
     {
       url: "#",
-      linkType: "medium",
+      linkType: "MEDIUM",
       label: undefined,
     },
     {
       url: "#",
-      linkType: "linkedin",
+      linkType: "LINKED_IN",
       label: undefined,
     },
     {
       url: "#",
-      linkType: "x-twitter",
+      linkType: "X_TWITTER",
       label: undefined,
     },
   ],
@@ -107,17 +111,17 @@ export const dummyData: ProjectData = {
     socials: [
       {
         url: "#",
-        linkType: "linkedin",
+        linkType: "LINKED_IN",
         label: "Linkedin",
       },
       {
         url: "#",
-        linkType: "x-twitter",
+        linkType: "X_TWITTER",
         label: "X (ex-Twitter)",
       },
       {
         url: "#",
-        linkType: "medium",
+        linkType: "MEDIUM",
         label: "Medium",
       },
     ],
@@ -146,9 +150,13 @@ export const dummyData: ProjectData = {
       cliffPercentage: 20,
     },
     tokenGenerationEventDate: arbitraryDate,
-    liquidityPool: {
-      name: "Raydium",
-      img: raydiumImg,
+    liquidityPoolDetails: {
+      defiProtocol: {
+        name: "Raydium",
+        imgUrl: raydiumImg,
+      },
+      lbType: "Full Range",
+      lockingPeriod: "12 months",
     },
     pastOrders: [
       {

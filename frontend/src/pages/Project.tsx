@@ -6,21 +6,20 @@ import TokenGenerationWrapper from "../components/TokenGenerationSection/TokenGe
 import { formatCurrencyAmount, getRatioPercantage } from "../utils/format"
 import { ExternalLink } from "../components/Button/ExternalLink"
 import { formatDateForDisplay } from "../utils/date-helpers"
+import ProjectTester from "@/components/QA/ProjectTester"
+import { calculateTimelineData } from "@/utils/timeline"
 import avatarExample from "../assets/avatarExample.png"
 import Timeline from "@/components/Timeline/Timeline"
-import { ProjectData, dummyData } from "../data/data"
-
 import ProgressBar from "../components/ProgressBar"
 import Avatar from "../components/Avatar/Avatar"
 import { Icon } from "../components/Icon/Icon"
 
-import { calculateTimelineData } from "@/utils/timeline"
-import ProjectTester from "@/components/QA/ProjectTester"
-// import DesignSystem from "./DesignSystem"
+import { WhitelistStatusType } from "@/data/whitelistingData"
+import { ProjectData, dummyData } from "../data/data"
 
 const Project = () => {
   const [projectData, setProjectData] = useState<ProjectData>(dummyData)
-  const [isUserWhitelisted, setIsUserWhitelisted] = useState(true)
+  const [isUserWhitelisted, setIsUserWhitelisted] = useState(false)
   const { t } = useTranslation()
 
   const expandedTimeline = calculateTimelineData(projectData.timeline)

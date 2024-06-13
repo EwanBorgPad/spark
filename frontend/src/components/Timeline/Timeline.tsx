@@ -38,7 +38,7 @@ export type ExtendedTimelineEventType = {
   nextEventDate: Date
 } & TimelineEventType
 
-const MAX_TIMELINE_SECTION_HEIGHT = 54
+const MAX_TIMELINE_SECTION_HEIGHT = 50
 const GAP_SIZE = 16
 const BORDER_SIZE = 1
 const HORIZONTAL_PADDING = 16
@@ -101,15 +101,16 @@ const Timeline = ({ timelineEvents }: Props) => {
         <div className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-default lg:shrink">
           {displayTimeline && (
             <>
-              {/* vertical view */}
-              <div className="absolute left-[9px] top-3 z-[1] h-[54px] w-[6px] items-center bg-default lg:hidden"></div>
+              {/* mobile view */}
+              <div className="absolute left-[9px] top-3 z-[1] h-[50px] w-[6px] items-center bg-default lg:hidden"></div>
               <div
                 style={{
                   height: calculatedRatio * MAX_TIMELINE_SECTION_HEIGHT,
                 }}
                 className="absolute left-[9px] top-3 z-[2] ml-[2px] flex w-[2px] flex-col gap-1 bg-brand-primary lg:hidden"
               ></div>
-              {/* horizontal view */}
+
+              {/* desktop view */}
               <div
                 style={{ width: horizontalTimelineWidth }}
                 className="absolute left-3 z-[1] hidden h-[6px] w-full items-center bg-default lg:flex"
@@ -126,6 +127,7 @@ const Timeline = ({ timelineEvents }: Props) => {
             <div className="z-[3] h-2 w-2 rounded-full bg-brand-primary"></div>
           )}
         </div>
+
         <div className="flex flex-1 flex-col lg:items-center">
           <span
             className={twMerge(

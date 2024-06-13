@@ -45,7 +45,7 @@ export const PastOrder = ({
         </div>
         <div className="relative h-6 w-6">
           <ExternalLink.Icon
-            externalLink={{ linkType: "outer-link", url: "#" }}
+            externalLink={{ linkType: "OUTER_LINK", url: "#" }}
             className="absolute -left-1 -top-1.5 border-none text-xl text-fg-tertiary"
           />
         </div>

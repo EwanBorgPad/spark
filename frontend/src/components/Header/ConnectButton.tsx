@@ -62,14 +62,18 @@ export const ConnectButton = ({
         className={btnClassName}
       />
       {showModal && (
-        <SimpleModal showCloseBtn={!showNoWallet} onClose={() => {
-          setShowModal(false)
-          setShowNoWallet(false)
-        }}>
+        <SimpleModal
+          showCloseBtn={!showNoWallet}
+          onClose={() => {
+            setShowModal(false)
+            setShowNoWallet(false)
+          }}
+        >
           <div className="flex flex-col items-center justify-center max-sm:h-full">
-            { showNoWallet
-              ? <NoWalletModalContent close={() => setShowNoWallet(false)} />
-              : <>
+            {showNoWallet ? (
+              <NoWalletModalContent close={() => setShowNoWallet(false)} />
+            ) : (
+              <>
                 {/* Heading */}
                 <div className="w-full p-[17px] text-center">
                   <h1 className="text-body-xl-semibold text-white">
@@ -77,16 +81,19 @@ export const ConnectButton = ({
                   </h1>
                 </div>
                 {/* Body */}
-                <div className={twMerge(
-                  'w-full flex grow flex-col justify-start',
-                  'px-4 pt-14 lg:px-10 lg:pt-11'
-                )}>
+                <div
+                  className={twMerge(
+                    "flex w-full grow flex-col justify-start",
+                    "px-4 pt-14 lg:px-10 lg:pt-11",
+                  )}
+                >
                   <div
                     className={twMerge(
-                      'flex w-full flex-col lg:flex-row items-center justify-center',
-                      'gap-4 lg:gap-6',
+                      "flex w-full flex-col items-center justify-center lg:flex-row",
+                      "gap-4 lg:gap-6",
                       // 'p-4 lg:flex-row lg:gap-6 lg:p-[56px] lg:pb-[40px]',
-                    )}>
+                    )}
+                  >
                     <WalletProvider
                       icon={"SvgPhantom"}
                       label={"Phantom"}
@@ -98,14 +105,17 @@ export const ConnectButton = ({
                       onClick={signInWithBackpack}
                     />
                   </div>
-                  <div className='mt-4 lg:mt-5 mb-8'>
+                  <div className="mb-8 mt-4 lg:mt-5">
                     <p
                       onClick={() => setShowNoWallet(true)}
-                      className="p-3 text-center text-fg-primary select-none cursor-pointer hover:underline">I don't
-                      have a wallet</p>
+                      className="cursor-pointer select-none p-3 text-center text-fg-primary hover:underline"
+                    >
+                      I don&apos;t have a wallet
+                    </p>
                   </div>
                 </div>
-              </>}
+              </>
+            )}
           </div>
         </SimpleModal>
       )}
@@ -142,7 +152,6 @@ function NoWalletModalContent({ close }: { close: () => void }) {
     </div>
   </>
 }
-
 
 
 type WalletProviderProps = {

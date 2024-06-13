@@ -1,5 +1,5 @@
-import CurrencyInput, { formatValue } from "react-currency-input-field"
 import { useForm, SubmitHandler, Controller } from "react-hook-form"
+import CurrencyInput from "react-currency-input-field"
 import { useTranslation } from "react-i18next"
 
 import { ConnectButton } from "@/components/Header/ConnectButton"
@@ -8,9 +8,8 @@ import { formatCurrencyAmount } from "@/utils/format"
 import { walletDummyData } from "@/data/walletData"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
-import raydiumImg from "@/assets/raydium.png"
-import lrcCoinImg from "@/assets/lrcCoin.png"
 import { ProjectData } from "@/data/data"
+import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
 
 type LiveNowExchangeProps = {
@@ -65,12 +64,6 @@ const LiveNowExchange = ({
   }
 
   const borgCoinInput = watch("borgInputValue")
-  const getRewardQuantity = () => {
-    if (!borgCoinInput) return 0
-    return formatValue({
-      value: borgCoinInput,
-    })
-  }
 
   return (
     <TgeWrapper.Inner className="gap-0">
@@ -88,7 +81,7 @@ const LiveNowExchange = ({
             {t("tge.youre_paying")}
           </span>
           <div className="flex w-full flex-col justify-between gap-2">
-            <div className="flex w-full justify-between">
+            <div className="grid-cols-borg-input grid w-full gap-x-2">
               <div className="flex flex-col">
                 <Controller
                   control={control}
@@ -150,51 +143,12 @@ const LiveNowExchange = ({
           <span className="w-full pl-1 text-left text-xs opacity-50">
             {t("tge.to_receive")}
           </span>
-          <div className="border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary bg-tertiary ">
-            <div className="border-b-[1px] border-b-bd-primary px-3 py-2">
-              <div className="flex h-fit flex-wrap items-center gap-2 rounded-full pb-1 text-base font-medium">
-                <Icon icon="SvgBorgCoin" />
-                <span className="font-geist-mono text-base">
-                  {formatValue({ value: borgCoinInput }) || 0}
-                </span>
-                <span className="font-geist-mono">BORG</span>
-                <div className="flex items-center gap-2">
-                  <span className="font-normal opacity-50">+</span>
-                  <img src={lrcCoinImg} className="h-4 w-4 object-cover" />
-                  <span className="font-geist-mono text-base">
-                    {getRewardQuantity()}
-                  </span>
-                  <span className="font-geist-mono text-base">LRC</span>
-                </div>
-              </div>
 
-              <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
-                <Icon
-                  icon="SvgLock"
-                  className="mt-[-1px] text-base opacity-50"
-                />
-                <span className="opacity-50">{t("tge.liquidity_pool")}</span>
-                <img src={raydiumImg} className="h-4 w-4 object-cover" />
-                <span className="opacity-50">Raydium,</span>
-                <span className="opacity-50">12-{t("tge.month_lockup")}</span>
-              </div>
-            </div>
-            <div className="px-3 py-2">
-              <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
-                <img src={lrcCoinImg} className="h-4 w-4 object-cover" />
-                <span className="font-geist-mono text-base">
-                  {getRewardQuantity()}
-                </span>
-                <span className="font-geist-mono text-base">
-                  {tgeData.projectCoin.ticker}
-                </span>
-              </div>
-              <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
-                <Icon icon="SvgChartLine" className="text-base opacity-50" />
-                <span className="opacity-50">{t("tge.linearly_paid_out")}</span>
-              </div>
-            </div>
-          </div>
+          <TokenRewards
+            borgCoinInput={borgCoinInput}
+            isWhitelistingEvent={false}
+            tgeData={tgeData}
+          />
         </div>
         <div className="flex w-full flex-col items-center gap-4">
           {walletState === "CONNECTED" ? (

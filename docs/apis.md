@@ -6,4 +6,6 @@ As we're finishing up the UI work for now, we should list each API the UI needs 
 This document describes the APIs we will need:
 - getBalance - https://solana.com/docs/rpc/http/getbalance
 - getProjectData - hardcoded
+- getEligibilityStatus (whitelist)
+- GET $BORG price in USD
 - ...

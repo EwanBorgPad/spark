@@ -104,7 +104,7 @@ const ProjectTester = ({
   return (
     <div ref={ref} className="fixed right-3 top-[50vh] z-[20]">
       {isOpened ? (
-        <div className="flex w-[300px] flex-col gap-4 rounded-lg border-[1px] border-brand-primary bg-default p-4">
+        <div className="flex w-[300px] flex-col gap-4 rounded-2xl border-[1px] border-brand-primary bg-default p-4">
           <span className="text-base">Input Values</span>
           <div className="flex items-center rounded-md bg-emphasis px-3 py-2">
             <input

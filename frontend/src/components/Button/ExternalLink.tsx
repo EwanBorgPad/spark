@@ -12,18 +12,22 @@ export type ExternalLinkType = {
   label?: string
 }
 export type LinkType =
-  | "medium"
-  | "linkedin"
-  | "web"
-  | "x-twitter"
-  | "outer-link"
+  | "MEDIUM"
+  | "LINKED_IN"
+  | "WEB"
+  | "X_TWITTER"
+  | "OUTER_LINK"
+  | "NO_ICON"
 
-const icons: Record<Props["externalLink"]["linkType"], AvailableIcons> = {
-  medium: "SvgMedium",
-  linkedin: "SvgLinkedin",
-  web: "SvgWeb",
-  "x-twitter": "SvgTwitter",
-  "outer-link": "SvgExternalLink",
+const icons: Record<
+  Exclude<Props["externalLink"]["linkType"], "NO_ICON">,
+  AvailableIcons
+> = {
+  MEDIUM: "SvgMedium",
+  LINKED_IN: "SvgLinkedin",
+  WEB: "SvgWeb",
+  X_TWITTER: "SvgTwitter",
+  OUTER_LINK: "SvgExternalLink",
 }
 
 const ExternalLinkWithLabel = ({
@@ -41,10 +45,12 @@ const ExternalLinkWithLabel = ({
         className,
       )}
     >
-      <Icon
-        icon={icons[externalLink.linkType]}
-        className={twMerge("text-xl leading-none", iconClassName)}
-      />
+      {externalLink.linkType !== "NO_ICON" && (
+        <Icon
+          icon={icons[externalLink.linkType]}
+          className={twMerge("text-xl leading-none", iconClassName)}
+        />
+      )}
       <span className="text-nowrap text-sm">{externalLink?.label}</span>
     </a>
   )
@@ -64,10 +70,12 @@ const ExternalLinkIcon = ({
         className,
       )}
     >
-      <Icon
-        icon={icons[externalLink.linkType]}
-        className={twMerge("leading-none", iconClassName)}
-      />
+      {externalLink.linkType !== "NO_ICON" && (
+        <Icon
+          icon={icons[externalLink.linkType]}
+          className={twMerge("leading-none", iconClassName)}
+        />
+      )}
     </a>
   )
 }
