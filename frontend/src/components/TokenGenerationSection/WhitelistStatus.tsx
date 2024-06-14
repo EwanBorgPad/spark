@@ -10,7 +10,6 @@ const WhitelistStatus = () => {
   const { t } = useTranslation()
 
   const { whitelistStatus, isUserWhitelisted } = useWhitelistStatusContext()
-  console.log(isUserWhitelisted)
 
   const numberOfRequirements = whitelistStatus?.requirements.length || 0
 

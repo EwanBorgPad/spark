@@ -53,7 +53,7 @@ export function SimpleModal({
 }
 
 const ICON_SIZE_PX = 12
-const BTN_SIZE_PX = 20
+// const BTN_SIZE_PX = 20
 
 export function CloseButton({
   onClose,

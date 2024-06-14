@@ -1,2 +1,1 @@
-
 export const USDC_DEV_ADDRESS = "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
