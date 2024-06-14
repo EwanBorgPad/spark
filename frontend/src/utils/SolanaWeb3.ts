@@ -1,28 +1,16 @@
-
 // TODO @hardcoded
 const url = "https://api.devnet.solana.com"
 // TODO @hardcoded commitment
-const commitment = 'finalized' satisfies Commitment
-
-export async function mainSolanaWeb3() {
-  // TODO @hardcoded
-  const address = "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W"
-  // TODO @hardcoded
-  const usdcDevAddress = "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
-
-  const balance = await getSplTokenBalance({
-    address,
-    tokenAddress: usdcDevAddress,
-  })
-
-  console.log({ balance })
-}
+const commitment = "finalized" satisfies Commitment
 
 type GetSplTokenBalanceArgs = {
   address: string
   tokenAddress: string
 }
-export async function getSplTokenBalance({ address, tokenAddress }: GetSplTokenBalanceArgs): Promise<TokenAmount> {
+export async function getSplTokenBalance({
+  address,
+  tokenAddress,
+}: GetSplTokenBalanceArgs): Promise<TokenAmount> {
   const getTokenAccountsByOwnerResponse = await fetch(url, {
     method: "post",
     headers: {
@@ -48,7 +36,8 @@ export async function getSplTokenBalance({ address, tokenAddress }: GetSplTokenB
   const getTokenAccountsByOwner: RpcResponseGetTokenAccountsByOwner =
     await getTokenAccountsByOwnerResponse.json()
 
-  return getTokenAccountsByOwner.result.value[0].account.data.parsed.info.tokenAmount
+  return getTokenAccountsByOwner.result.value[0].account.data.parsed.info
+    .tokenAmount
 }
 
 /**
@@ -85,7 +74,7 @@ type RpcResponseGetTokenAccountsByOwner = RpcResponse<{
   tokenAmount: TokenAmount
 }>
 
-type RpcResponse<ResponseBody extends {}> = {
+type RpcResponse<ResponseBody extends Record<string, unknown>> = {
   jsonrpc: "2.0"
   result: {
     context: unknown
@@ -98,7 +87,7 @@ type RpcResponse<ResponseBody extends {}> = {
             }
           }
         }
-      }
+      },
     ]
   }
 }

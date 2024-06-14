@@ -5,13 +5,15 @@ import { useTranslation } from "react-i18next"
 import { ConnectButton } from "@/components/Header/ConnectButton"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
-import { walletDummyData } from "@/data/walletData"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
 import { ProjectData } from "@/data/data"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
 import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
+import { useState } from "react"
+import { getSplTokenBalance } from "@/utils/SolanaWeb3.ts"
+import { useAsyncEffect } from "@/hooks/useAsyncEffect.ts"
 
 type LiveNowExchangeProps = {
   tgeData: ProjectData["tge"]
@@ -30,11 +32,28 @@ const inputButtons = [
 const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
   const { t } = useTranslation()
 
-  const { walletState } = useWalletContext()
+  const { address, walletState } = useWalletContext()
   const { isUserWhitelisted } = useWhitelistStatusContext()
 
-  // @TODO - getBalance API instead of walletDummyData and variable below
-  const balance = walletDummyData.balance
+  // TODO consider creating useBalance or something
+  const [balance, setBalance] = useState<number | null>(null)
+
+  useAsyncEffect(async () => {
+    if (!address) {
+      setBalance(null)
+      return
+    }
+
+    const usdcDevAddress = "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
+    const tokenAmount = await getSplTokenBalance({
+      address,
+      tokenAddress: usdcDevAddress,
+    })
+    const balance =
+      Number(tokenAmount.amount) / Math.pow(10, tokenAmount.decimals)
+
+    setBalance(balance)
+  }, [])
 
   const {
     handleSubmit,
@@ -109,7 +128,7 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
                 <span>BORG</span>
               </div>
             </div>
-            {walletDummyData.balance && (
+            {balance !== null && (
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-2">
                   {inputButtons.map((btn) => (
@@ -126,9 +145,7 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
                 </div>
                 <p className="text-left text-xs opacity-50">
                   {t("tge.balance")}:{" "}
-                  <span>
-                    {formatCurrencyAmount(walletDummyData.balance, false)}
-                  </span>
+                  <span>{formatCurrencyAmount(balance, false)}</span>
                 </p>
               </div>
             )}
