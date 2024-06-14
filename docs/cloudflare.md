@@ -51,6 +51,13 @@ Much like a CDN caching static files to optimize content delivery, Edge Computin
 - [Eliminating cold starts with Cloudflare Workers](https://blog.cloudflare.com/eliminating-cold-starts-with-cloudflare-workers)
 - [Cloud Computing without Containers](https://blog.cloudflare.com/cloud-computing-without-containers/)
 
+### Tooling
+
+As Workers do not have a full nodejs API, we are limited in what we can use. Here are some recommended solutions:
+- Routing: [hono](https://hono.dev/getting-started/cloudflare-workers)
+- ORM: [drizzle](https://github.com/drizzle-team/drizzle-orm/blob/main/examples/cloudflare-d1/README.md)
+- Example: https://www.youtube.com/watch?v=PxWleEgi3Hw
+
 ### Resources
 
 - [YouTube: Is "edge" computing really faster?](https://www.youtube.com/watch?v=yOP5-3_WFus)
