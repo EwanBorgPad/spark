@@ -7,9 +7,11 @@ interface Env {}
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const method = context.request.method
   const url = context.request.url
-  const { address } = context.params
 
-  if (typeof address !== 'string') {
+  const { searchParams } = new URL(context.request.url)
+  const address = searchParams.get('address')
+
+  if (!address) {
     // TODO error
     return new Response(JSON.stringify({
       message: 'Please provide address as query param!'
@@ -17,8 +19,6 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       status: 400,
     })
   }
-
-  console.log({ contextParams: context.params })
 
   const balance = await getSplTokenBalance({ address, tokenAddress: USDC_DEV_ADDRESS })
 
