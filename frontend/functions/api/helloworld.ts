@@ -1,7 +1,4 @@
-
-interface Env {
-
-}
+interface Env {}
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const method = context.request.method
@@ -10,5 +7,5 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   console.log({ url, method })
   console.log(`Api: ${method} ${url}`)
 
-  return new Response('Hello world')
+  return new Response("Hello world")
 }

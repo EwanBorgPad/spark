@@ -79,7 +79,7 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
             {t("tge.youre_paying")}
           </span>
           <div className="flex w-full flex-col justify-between gap-2">
-            <div className="grid-cols-borg-input grid w-full gap-x-2">
+            <div className="grid w-full grid-cols-borg-input gap-x-2">
               <div className="flex flex-col">
                 <Controller
                   control={control}
