@@ -1,9 +1,10 @@
-import React from "react"
-import { TgeWrapper } from "../components/Wrapper"
 import { useTranslation } from "react-i18next"
-import CountDownTimer from "@/components/CountDownTimer"
+
 import { ExtendedTimelineEventType } from "@/components/Timeline/Timeline"
-import WhitelistingLP from "../components/WhitelistingLP"
+import WhitelistingContent from "../components/WhitelistingContent"
+import CountDownTimer from "@/components/CountDownTimer"
+import { TgeWrapper } from "../components/Wrapper"
+import WhitelistStatus from "../WhitelistStatus"
 import { ProjectData } from "@/data/data"
 
 type WhitelistingProps = {
@@ -14,14 +15,17 @@ type WhitelistingProps = {
 const Whitelisting = ({ eventData, tgeData }: WhitelistingProps) => {
   const { t } = useTranslation()
   return (
-    <TgeWrapper label={t("tge.whitelisting")}>
-      {eventData?.nextEventDate && (
-        <>
-          <CountDownTimer endOfEvent={eventData.nextEventDate} />
-        </>
-      )}
-      <WhitelistingLP tgeData={tgeData} />
-    </TgeWrapper>
+    <div className="flex w-full max-w-[400px] flex-col gap-5">
+      <TgeWrapper label={t("tge.whitelisting")}>
+        {eventData?.nextEventDate && (
+          <>
+            <CountDownTimer endOfEvent={eventData.nextEventDate} />
+          </>
+        )}
+        <WhitelistingContent tgeData={tgeData} />
+      </TgeWrapper>
+      <WhitelistStatus />
+    </div>
   )
 }
 

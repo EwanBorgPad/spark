@@ -1,20 +1,23 @@
 import { useTranslation } from "react-i18next"
 
 import { ExtendedTimelineEventType } from "@/components/Timeline/Timeline"
+import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import LiveNowExchange from "../components/LiveNowExchange"
 import CountDownTimer from "@/components/CountDownTimer"
 import { PastOrders } from "../components/PastOrders"
 import { TgeWrapper } from "../components/Wrapper"
+import WhitelistStatus from "../WhitelistStatus"
 import { ProjectData } from "@/data/data"
 
 type LiveNowProps = {
   eventData: ExtendedTimelineEventType
-  isUserWhitelisted: boolean
   tgeData: ProjectData["tge"]
 }
 
-const LiveNow = ({ eventData, isUserWhitelisted, tgeData }: LiveNowProps) => {
+const LiveNow = ({ eventData, tgeData }: LiveNowProps) => {
   const { t } = useTranslation()
+
+  const { whitelistStatus } = useWhitelistStatusContext()
 
   return (
     <div className="flex w-full max-w-[400px] flex-col gap-5">
@@ -22,12 +25,13 @@ const LiveNow = ({ eventData, isUserWhitelisted, tgeData }: LiveNowProps) => {
         {eventData?.nextEventDate && (
           <CountDownTimer endOfEvent={eventData.nextEventDate} />
         )}
-        <LiveNowExchange
-          isUserWhitelisted={isUserWhitelisted}
-          tgeData={tgeData}
-        />
+        <LiveNowExchange tgeData={tgeData} />
       </TgeWrapper>
-      <PastOrders tgeData={tgeData} />
+      {whitelistStatus?.whitelisted ? (
+        <PastOrders tgeData={tgeData} />
+      ) : (
+        <WhitelistStatus />
+      )}
     </div>
   )
 }

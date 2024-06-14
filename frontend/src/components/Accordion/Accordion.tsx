@@ -8,18 +8,28 @@ type AccordionProps = {
   label: string
   sublabel: string
   children: React.ReactNode
+  maxChildrenHeight?: number
 }
 
-const Accordion = ({ label, sublabel, children }: AccordionProps) => {
+const BORDER_HEIGHT = 1
+
+const Accordion = ({
+  label,
+  sublabel,
+  children,
+  maxChildrenHeight,
+}: AccordionProps) => {
   const [isOpen, setOpen] = useState(false)
   const accordionRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!accordionRef.current) return
     setOpen(false)
-    accordionRef.current.style.maxHeight =
-      accordionRef.current?.scrollHeight + "px"
-  }, [])
+    const maxContainerHeight =
+      maxChildrenHeight ||
+      1 * BORDER_HEIGHT + accordionRef.current?.scrollHeight
+    accordionRef.current.style.maxHeight = maxContainerHeight + "px"
+  }, [maxChildrenHeight])
 
   return (
     <div className="relative z-20 flex w-full flex-col">
@@ -34,7 +44,7 @@ const Accordion = ({ label, sublabel, children }: AccordionProps) => {
         <Icon
           icon={"SvgChevronDown"}
           className={twMerge(
-            "rotate-90 text-fg-primary opacity-50 transition-transform duration-500",
+            " text-fg-primary opacity-50 transition-transform duration-500",
             isOpen && "rotate-180",
           )}
         />
@@ -42,7 +52,7 @@ const Accordion = ({ label, sublabel, children }: AccordionProps) => {
       <div
         ref={accordionRef}
         className={twMerge(
-          "transition-height top-11 z-[-10] -mt-2.5 max-h-[420px] w-full overflow-y-scroll rounded-b-lg border-[1px] border-t-0 border-bd-primary bg-secondary delay-0 duration-200 ease-in-out",
+          "transition-height top-11 z-[-10] -mt-2.5 w-full overflow-y-scroll rounded-b-lg border-[1px] border-bd-primary bg-secondary pt-[-1px] delay-0 duration-200 ease-in-out",
           !isOpen && "!max-h-0",
         )}
       >

@@ -1,26 +1,21 @@
 import { useCallback, useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { ExtendedTimelineEventType } from "../Timeline/Timeline"
 import { getCurrentTgeEvent } from "@/utils/getCurrentTgeEvent"
 import { CountDownCallback } from "../CountDownCallback"
 import LaunchpadLive from "./TGEStatus/LaunchpadLive"
-import Whitelisting from "./TGEStatus/Whitelisting"
 import SaleFinished from "./TGEStatus/SaleFinished"
+import Whitelisting from "./TGEStatus/Whitelisting"
 import { ProjectData } from "../../data/data"
 import LiveNow from "./TGEStatus/LiveNow"
-import { useTranslation } from "react-i18next"
 
 type Props = {
   data: ProjectData
   expandedTimeline: ExtendedTimelineEventType[]
-  isUserWhitelisted: boolean
 }
 
-const TokenGenerationSection = ({
-  expandedTimeline,
-  data,
-  isUserWhitelisted,
-}: Props) => {
+const TokenGenerationSection = ({ expandedTimeline, data }: Props) => {
   const { t } = useTranslation()
   const [currentTgeEvent, setCurrentTgeEvent] =
     useState<ExtendedTimelineEventType>(getCurrentTgeEvent(expandedTimeline))
@@ -43,15 +38,9 @@ const TokenGenerationSection = ({
       case "INACTIVE":
         return <span>{t("tge.not_opened_yet")}</span>
       case "REGISTRATION_OPENS":
-        return <Whitelisting eventData={tgeEvent} tgeData={data.tge} />
+        return <Whitelisting tgeData={data.tge} eventData={currentTgeEvent} />
       case "SALE_OPENS":
-        return (
-          <LiveNow
-            isUserWhitelisted={isUserWhitelisted}
-            eventData={tgeEvent}
-            tgeData={data.tge}
-          />
-        )
+        return <LiveNow eventData={tgeEvent} tgeData={data.tge} />
       case "SALE_CLOSES":
         return <SaleFinished eventData={tgeEvent} />
       case "REWARD_DISTRIBUTION":
