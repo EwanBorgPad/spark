@@ -12,8 +12,9 @@ import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
 import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import { useState } from "react"
-import { getSplTokenBalance } from "@/utils/SolanaWeb3.ts"
 import { useAsyncEffect } from "@/hooks/useAsyncEffect.ts"
+import { getSplTokenBalance } from "../../../../shared/SolanaWeb3.ts"
+import { USDC_DEV_ADDRESS } from "../../../../shared/constants.ts"
 
 type LiveNowExchangeProps = {
   tgeData: ProjectData["tge"]
@@ -44,10 +45,9 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
       return
     }
 
-    const usdcDevAddress = "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
     const tokenAmount = await getSplTokenBalance({
       address,
-      tokenAddress: usdcDevAddress,
+      tokenAddress: USDC_DEV_ADDRESS,
     })
     const balance =
       Number(tokenAmount.amount) / Math.pow(10, tokenAmount.decimals)
