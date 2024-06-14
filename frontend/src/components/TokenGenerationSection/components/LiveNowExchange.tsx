@@ -49,10 +49,12 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
       address,
       tokenAddress: USDC_DEV_ADDRESS,
     })
-    const balance =
-      Number(tokenAmount.amount) / Math.pow(10, tokenAmount.decimals)
 
-    setBalance(balance)
+    if (tokenAmount) {
+      setBalance(tokenAmount.uiAmount)
+    } else {
+      setBalance(null)
+    }
   }, [])
 
   const {

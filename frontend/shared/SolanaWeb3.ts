@@ -7,10 +7,16 @@ type GetSplTokenBalanceArgs = {
   address: string
   tokenAddress: string
 }
+/**
+ * Returns SPL token balance for address at tokenAddress.
+ * Returns null if balance is not found.
+ * @param address
+ * @param tokenAddress
+ */
 export async function getSplTokenBalance({
   address,
   tokenAddress,
-}: GetSplTokenBalanceArgs): Promise<TokenAmount> {
+}: GetSplTokenBalanceArgs): Promise<TokenAmount | null> {
   const getTokenAccountsByOwnerResponse = await fetch(url, {
     method: "post",
     headers: {
@@ -35,6 +41,10 @@ export async function getSplTokenBalance({
 
   const getTokenAccountsByOwner: RpcResponseGetTokenAccountsByOwner =
     await getTokenAccountsByOwnerResponse.json()
+
+  if (getTokenAccountsByOwner.result.value.length === 0) {
+    return null
+  }
 
   return getTokenAccountsByOwner.result.value[0].account.data.parsed.info
     .tokenAmount
@@ -88,6 +98,6 @@ type RpcResponse<ResponseBody extends Record<string, unknown>> = {
           }
         }
       },
-    ]
+    ] | []
   }
 }
