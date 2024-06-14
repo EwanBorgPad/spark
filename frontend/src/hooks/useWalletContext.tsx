@@ -8,6 +8,7 @@ import {
 import { usePersistedState } from "@/hooks/usePersistedState.ts"
 import { isMobile } from "@/utils/isMobile.ts"
 import { useSearchParams } from "react-router-dom"
+import { mainSolanaWeb3 } from "@/utils/SolanaWeb3.ts"
 
 const AUTO_CONNECT_PARAM_KEY = "autoConnect"
 const PAGE_URL = window.location.origin
@@ -100,6 +101,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     // don't wanna add signInWithPhantom and signInWithBackpack in deps array
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoConnect, setSearchParams])
+
+  mainSolanaWeb3()
 
   //// not hooks
   async function signInWithPhantom() {
