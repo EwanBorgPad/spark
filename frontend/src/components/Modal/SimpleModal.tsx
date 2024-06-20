@@ -10,7 +10,12 @@ type Props = {
   onClose?: () => void
   className?: string
 }
-export function SimpleModal({ children, showCloseBtn, onClose, className }: Props) {
+export function SimpleModal({
+  children,
+  showCloseBtn,
+  onClose,
+  className,
+}: Props) {
   const modalClasses = twMerge(
     "relative h-full",
     "w-[460px]",
@@ -66,10 +71,7 @@ export function CloseButton({
     className,
   )
   return (
-    <div
-      onClick={onClose}
-      className={cls}
-    >
+    <div onClick={onClose} className={cls}>
       <Icon icon="SvgClose" width={ICON_SIZE_PX} height={ICON_SIZE_PX} />
     </div>
   )

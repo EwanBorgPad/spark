@@ -65,15 +65,45 @@ We've done a lot of UI work, what we could from the designs, and are starting wo
   - This will be relevant if we include some backend api endpoints (that need authorization).
 - JSON Data Model (data.ts)
 
+### Whitelisting Questions
 
+- Q: Just to confirm - "backend" in the specs refers to BorgPad backend (something we should build), 
+  - not some other service provided to us?
+  - A: Yes, we will build it.
+- Q: What about security considerations (I suppose it’s not okay for the whitelisting data to be publicly accessible)? 
+  - What if I know someone's address and fake the connection? Is SIWS the solution?
+- Q: “Create BO to manually set and order whitelisting tiers” - is BO = Back Office?
+  - A: Yes.
+- Q: In the doc it says “on-chain first, off-chain later” does this assume off-chain is harder to implement? 
+  - I’m interested to hear why’s that
+  - A: Yes. Not necessarily harder, just a different set of tools / environment. If under time-constraint, on-chain should be prio. Ideally however we do both from the get go.
+- Suggestion: We should consider caching the results after we make the MVP and see how it performs
+  - A: Some caching definitely makes sense here.
 
+---
+- Tier definitions
+  - "Create BO to manually set and order whitelisting tiers and their associated criteria for each LBP."
+  - "Maintain a secure and efficient system to store and update criteria and tier definitions"
+  - "Allow flexibility in the criteria evaluation logic to accommodate additional criteria without significant rework."
+  - I'd like to discuss this more, but my key points are:
+    - Storing the criteria evaluation **logic** in the database might not be so easy, it is not trivial to serialize logic
+    - We can do this as a series of functions in typescript files, such that adding/removing a criteria would involve pushing new code to the repo
+      - criteria: { name: string, logic: Function }
 
+### BackOffice Questions
 
+- Q: Logic serialization issue described above
+- Q: Can we expect a design for this? I think it'd also make some issues more obvious
 
+### WhitelistCriteria Questions
 
-
-
-
+- Follows someone on X (Twitter):
+  - Q: User signs in with Solana address - how can we check if they follow someone on Twitter?
+- Holds X Borg in their wallet:
+  - Q: How to check this from the backend?
+- Place of residence ("could work on acknowledgement basis & IP tracking"):
+  - Q: What would acknowledgement basis be in this context?
+  - Q: IP tracking is not a problem, but please note that this is not reliable, someone might be using Tor/VPN/Proxy or they may simply be accessing the service outside their home country.
 
 
 

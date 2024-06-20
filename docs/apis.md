@@ -7,5 +7,5 @@ This document describes the APIs we will need:
 - getBalance - https://solana.com/docs/rpc/http/getbalance
 - getProjectData - hardcoded
 - getEligibilityStatus (whitelist)
-- GET $BORG price in USD
+- getBorgPriceInUsd - exchange api? real time?
 - ...

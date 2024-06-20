@@ -24,6 +24,15 @@ Every time you open a new pull request on your GitHub repository, Cloudflare Pag
 - [Announcing Pages support for monorepos, wrangler.toml, database integrations and more!](https://blog.cloudflare.com/pages-workers-integrations-monorepos-nextjs-wrangler)
 - [Download existing project configuration](https://developers.cloudflare.com/pages/functions/wrangler-configuration/#projects-without-existing-wranglertoml-file)
 - [Build watch paths](https://developers.cloudflare.com/pages/configuration/build-watch-paths/#:~:text=To%20configure%20which%20paths%20are,paths%20to%20nothing%20(%20%5B%5D%20).)
+- [TypeScript Configuration](https://developers.cloudflare.com/pages/functions/typescript/)
+
+### Commands
+
+- `npx wrangler pages --help`
+- `npx wrangler pages dev` - start local server
+- `npx wrangler pages dev --local-protocol=https` - start local https server
+- `npx wrangler pages project list` - list projects
+- `npx wrangler pages deployment list` - list deployments
 
 ## Cloudflare Workers
 
@@ -42,6 +51,13 @@ Much like a CDN caching static files to optimize content delivery, Edge Computin
 - [Eliminating cold starts with Cloudflare Workers](https://blog.cloudflare.com/eliminating-cold-starts-with-cloudflare-workers)
 - [Cloud Computing without Containers](https://blog.cloudflare.com/cloud-computing-without-containers/)
 
+### Tooling
+
+As Workers do not have a full nodejs API, we are limited in what we can use. Here are some recommended solutions:
+- Routing: [hono](https://hono.dev/getting-started/cloudflare-workers)
+- ORM: [drizzle](https://github.com/drizzle-team/drizzle-orm/blob/main/examples/cloudflare-d1/README.md)
+- Example: https://www.youtube.com/watch?v=PxWleEgi3Hw
+
 ### Resources
 
 - [YouTube: Is "edge" computing really faster?](https://www.youtube.com/watch?v=yOP5-3_WFus)
@@ -52,6 +68,7 @@ Much like a CDN caching static files to optimize content delivery, Edge Computin
 - [Using Cloudflare workers as your only backend](https://www.youtube.com/watch?v=1tM_d3CH0N0)
 - [Monorepos](https://developers.cloudflare.com/pages/configuration/monorepos/)
 - [Reddit: Vercel vs Cloudflare Pages/Workers](https://www.reddit.com/r/nextjs/comments/s3ec29/vercel_vs_cloudflare_pages_workers/)
+- [Compatibility Flags](https://developers.cloudflare.com/workers/configuration/compatibility-dates/#compatibility-flags)
 
 ## Other Cloudflare services
 

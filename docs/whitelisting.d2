@@ -1,0 +1,45 @@
+shape: sequence_diagram
+
+# Actors
+fe: BP FE\n(Web)
+be: BP BE\n(CF Workers)
+db: D1\n(Database)
+bc: Blockchain
+os: Other\nSources
+
+# Styling
+be.style: {
+    stroke: orange
+    stroke-dash: 0
+}
+db.style: {
+    stroke: orange
+    stroke-dash: 0
+}
+
+# Sequence
+fe -> be: GET /whitelisting-status\n:address
+
+"Caching (optional)" {
+    be -> db: "Check cache..."
+    hit: {
+        db -> be: Cache hit!
+        be -> fe: "Return cached result"
+    }
+    miss: {
+        db -> be: Cache miss...
+    }
+}
+
+"" {
+    be."Performs various checks\ncalculating whitelisting  status"
+    be.checks -> bc: checks...
+    be.checks -> os: checks...
+    be."Calculates final WL status"
+}
+
+"Caching (optional)_" {
+    be -> db: "Cache the result..."
+}
+
+be -> fe: returns whitelisting status
