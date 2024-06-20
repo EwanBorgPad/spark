@@ -2,7 +2,7 @@ import { ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
-import TokenGenerationWrapper from "../components/TokenGenerationSection/TokenGenerationSection"
+import TokenGenerationSection from "../components/TokenGenerationSection/TokenGenerationSection"
 import { ExternalLink } from "../components/Button/ExternalLink"
 import { formatDateForDisplay } from "../utils/date-helpers"
 import ProjectTester from "@/components/QA/ProjectTester"
@@ -96,7 +96,8 @@ const Project = () => {
         </div>
       </section>
       <hr className="w-full border-bd-primary"></hr>
-      <TokenGenerationWrapper
+
+      <TokenGenerationSection
         data={projectData}
         expandedTimeline={expandedTimeline}
       />

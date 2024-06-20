@@ -81,6 +81,9 @@ export default {
       gridTemplateColumns: {
         "borg-input": "minmax(180px, 1fr) 88px",
       },
+      lineHeight: {
+        11: "44px",
+      },
       "body-xl-semibold": [
         "18px",
         {

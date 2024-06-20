@@ -4,22 +4,30 @@ import { formatCurrencyAmount, getRatioPercentage } from "@/utils/format"
 import { ProjectData } from "@/data/data"
 import ProgressBar from "./ProgressBar"
 
+import { tokenData } from "@/data/tokenData"
+
 const MarketAndTokensData = ({ projectData }: { projectData: ProjectData }) => {
   const { t } = useTranslation()
+
+  // @TODO - add API for getting token info
+  const getTokenInfo = () => {
+    return tokenData
+  }
+  const { marketCap, fdv } = getTokenInfo()
 
   return (
     <section className="flex w-full max-w-[400px] flex-col gap-[25px]">
       <div className="mt-[28px] flex w-full justify-between gap-4">
         <div className="flex flex-1 flex-col gap-2">
-          <span className="text-sm text-fg-tertiary">{t("marketcap")}</span>
+          <span className="text-sm text-fg-tertiary">{t("market-cap")}</span>
           <span className="font-geist-mono text-base text-fg-primary">
-            {formatCurrencyAmount(projectData.marketcap)}
+            {formatCurrencyAmount(marketCap)}
           </span>
         </div>
         <div className="flex flex-1 flex-col gap-2">
           <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
           <span className="font-geist-mono text-base text-fg-primary">
-            {formatCurrencyAmount(projectData.fdv)}
+            {formatCurrencyAmount(fdv)}
           </span>
         </div>
       </div>

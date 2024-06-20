@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { Icon } from "@/components/Icon/Icon"
 import { ProjectData } from "@/data/data"
 import TokenRewards from "./TokenRewards"
+import { borgPriceInUSD, tokenData } from "@/data/tokenData"
 
 type WhitelistingContentProps = {
   tgeData: ProjectData["tge"]
@@ -14,6 +15,18 @@ const WhitelistingContent = ({ tgeData }: WhitelistingContentProps) => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()
+
+  // @TODO - add API for getting token info
+  const getTokenInfo = () => {
+    return tokenData
+  }
+  const { priceInUSD } = getTokenInfo()
+  const getBorgPriceInUSD = () => {
+    return borgPriceInUSD
+  }
+  const borgPrice = getBorgPriceInUSD()
+
+  const tokenPriceInBORG = priceInUSD / borgPrice
 
   return (
     <div
@@ -60,11 +73,11 @@ const WhitelistingContent = ({ tgeData }: WhitelistingContentProps) => {
           </div>
           <div className="flex flex-col items-end">
             <span className="font-geist-mono">
-              {formatCurrencyAmount(tgeData.price.dollarPrice, true, 5)}
+              {formatCurrencyAmount(priceInUSD, true, 5)}
             </span>
             <div className="flex gap-2">
               <span className="font-geist-mono">
-                {formatCurrencyAmount(tgeData.price.borgPrice, false, 5)}
+                {formatCurrencyAmount(tokenPriceInBORG, false, 5)}
               </span>
               <span>BORG</span>
             </div>

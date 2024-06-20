@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 
-import MarketAndTokensData from "@/components/MarketAndTokens/MarketAndTokensData"
+import MarketAndTokensData from "@/components/TokenGenerationSection/components/MarketAndTokensData"
 import { ExtendedTimelineEventType } from "@/components/Timeline/Timeline"
 import WhitelistingContent from "../components/WhitelistingContent"
 import CountDownTimer from "@/components/CountDownTimer"
