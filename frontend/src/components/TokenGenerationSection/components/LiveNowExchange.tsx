@@ -2,6 +2,7 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import CurrencyInput from "react-currency-input-field"
 import { useTranslation } from "react-i18next"
 
+import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import { ConnectButton } from "@/components/Header/ConnectButton"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
@@ -11,7 +12,7 @@ import { Icon } from "@/components/Icon/Icon"
 import { ProjectData } from "@/data/data"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
-import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
+import { useEffect } from "react"
 
 type LiveNowExchangeProps = {
   tgeData: ProjectData["tge"]
@@ -22,9 +23,9 @@ type FormInputs = {
 }
 
 const inputButtons = [
-  { label: "25%", percantage: 25 },
-  { label: "50%", percantage: 50 },
-  { label: "100%", percantage: 100 },
+  { label: "25%", percentage: 25 },
+  { label: "50%", percentage: 50 },
+  { label: "100%", percentage: 100 },
 ]
 
 const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
@@ -79,7 +80,7 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
             {t("tge.youre_paying")}
           </span>
           <div className="flex w-full flex-col justify-between gap-2">
-            <div className="grid-cols-borg-input grid w-full gap-x-2">
+            <div className="grid w-full grid-cols-borg-input gap-x-2">
               <div className="flex flex-col">
                 <Controller
                   control={control}
@@ -114,13 +115,13 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
                 <div className="flex items-center gap-2">
                   {inputButtons.map((btn) => (
                     <Button
-                      key={btn.percantage}
+                      key={btn.percentage}
                       size="xs"
                       color="secondary"
                       btnText={btn.label}
                       className="h-[24px] px-1"
                       textClassName="text-[12px] leading-none text-fg-tertiary font-normal"
-                      onClick={() => clickProvideLiquidityBtn(btn.percantage)}
+                      onClick={() => clickProvideLiquidityBtn(btn.percentage)}
                     />
                   ))}
                 </div>
