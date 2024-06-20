@@ -38,9 +38,9 @@ const TokenGenerationSection = ({ expandedTimeline, data }: Props) => {
       case "INACTIVE":
         return <span>{t("tge.not_opened_yet")}</span>
       case "REGISTRATION_OPENS":
-        return <Whitelisting tgeData={data.tge} eventData={currentTgeEvent} />
+        return <Whitelisting eventData={currentTgeEvent} projectData={data} />
       case "SALE_OPENS":
-        return <LiveNow eventData={tgeEvent} tgeData={data.tge} />
+        return <LiveNow eventData={tgeEvent} projectData={data} />
       case "SALE_CLOSES":
         return <SaleFinished eventData={tgeEvent} />
       case "REWARD_DISTRIBUTION":

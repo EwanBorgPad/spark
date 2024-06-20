@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 
+import MarketAndTokensData from "@/components/MarketAndTokens/MarketAndTokensData"
 import { ExtendedTimelineEventType } from "@/components/Timeline/Timeline"
 import WhitelistingContent from "../components/WhitelistingContent"
 import CountDownTimer from "@/components/CountDownTimer"
@@ -9,23 +10,29 @@ import { ProjectData } from "@/data/data"
 
 type WhitelistingProps = {
   eventData: ExtendedTimelineEventType
-  tgeData: ProjectData["tge"]
+  projectData: ProjectData
 }
 
-const Whitelisting = ({ eventData, tgeData }: WhitelistingProps) => {
+const Whitelisting = ({ eventData, projectData }: WhitelistingProps) => {
   const { t } = useTranslation()
+
+  const tgeData = projectData.tge
+
   return (
-    <div className="flex w-full max-w-[400px] flex-col gap-5">
-      <TgeWrapper label={t("tge.whitelisting")}>
-        {eventData?.nextEventDate && (
-          <>
-            <CountDownTimer endOfEvent={eventData.nextEventDate} />
-          </>
-        )}
-        <WhitelistingContent tgeData={tgeData} />
-      </TgeWrapper>
-      <WhitelistStatus />
-    </div>
+    <>
+      <MarketAndTokensData projectData={projectData} />
+      <div className="flex w-full max-w-[400px] flex-col gap-5">
+        <TgeWrapper label={t("tge.whitelisting")}>
+          {eventData?.nextEventDate && (
+            <>
+              <CountDownTimer endOfEvent={eventData.nextEventDate} />
+            </>
+          )}
+          <WhitelistingContent tgeData={tgeData} />
+        </TgeWrapper>
+        <WhitelistStatus />
+      </div>
+    </>
   )
 }
 
