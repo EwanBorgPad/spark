@@ -45,14 +45,7 @@ export type ProjectData = {
       cliffPercentage: number
     }
     tokenGenerationEventDate: Date
-    liquidityPoolDetails: {
-      defiProtocol: {
-        name: string
-        imgUrl: string
-      }
-      lbType: string
-      lockingPeriod: string
-    }
+    liquidityPoolDetails: LiquidityPoolDetails
     pastOrders: {
       borgAmount: number
       date: Date
@@ -201,4 +194,13 @@ export const dummyData: ProjectData = {
     participants: 578,
     averageInvestedAmount: 1200.34,
   },
+}
+
+export type LiquidityPoolDetails = {
+  defiProtocol: {
+    name: string
+    imgUrl: string
+  }
+  lbType: string
+  lockingPeriod: string
 }

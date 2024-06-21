@@ -1,13 +1,18 @@
 import { useTranslation } from "react-i18next"
+import { Tweet } from "react-tweet"
 
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
+import { ConnectButton } from "@/components/Header/ConnectButton"
 import CountDownTimer from "@/components/CountDownTimer"
 import { formatCurrencyAmount } from "@/utils/format"
-import { TgeWrapper } from "../components/Wrapper"
-import { ProjectData } from "@/data/data"
-
-import { tokenData } from "@/data/tokenData"
 import { Button } from "@/components/Button/Button"
+import greenCloudImg from "@/assets/greenCloud.svg"
+import { TgeWrapper } from "../components/Wrapper"
+import { Icon } from "@/components/Icon/Icon"
+import { tokenData } from "@/data/tokenData"
+
+import { ProjectData } from "@/data/data"
+import { useWalletContext } from "@/hooks/useWalletContext"
 
 type LiveProps = {
   eventData: ExpandedTimelineEventType
@@ -24,6 +29,14 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
     averageInvestedAmount,
   } = projectData.saleResults
 
+  const { walletState } = useWalletContext()
+
+  // @TODO - add API for getting token info
+  const getContributionInfo = () => {
+    return tokenData
+  }
+  const contributionInfo = getContributionInfo()
+
   // @TODO - add API for getting token info
   const getTokenInfo = () => {
     return tokenData
@@ -32,7 +45,7 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
 
   return (
     <>
-      <div className="flex w-full flex-col gap-9">
+      <div className="flex w-full flex-col items-center gap-9">
         <div className="flex w-full flex-col items-center gap-1">
           <h2 className="leading-11 text-4xl font-semibold">Sale Over</h2>
           <span className="text-sm opacity-60">
@@ -93,15 +106,49 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
             </span>
           </div>
         </div>
+
+        <div className="w-full max-w-[400px]">
+          <Tweet id="1801629344848089180" />
+        </div>
       </div>
 
-      <TgeWrapper label={t("tge.sale_finished")}>
+      <div className="flex w-full flex-col items-center gap-9">
+        <div className="relative flex w-full max-w-[400px] items-center">
+          <img
+            src={greenCloudImg}
+            className="absolute h-[96px] w-full opacity-50"
+          ></img>
+          <div className="contribution-gradient h-[1px] flex-1 rotate-180"></div>
+          <Icon
+            icon="SvgHandWithWallet"
+            className="mx-4 h-5 w-5 text-fg-brand-primary"
+          />
+          <div className="contribution-gradient h-[1px] flex-1"></div>
+        </div>
+        <h3 className="text-[32px] font-semibold leading-tight">
+          Your Contribution
+        </h3>
+        {walletState !== "CONNECTED" ? (
+          <ConnectButton
+            customBtnText={"Connect Wallet to See Contribution"}
+            btnClassName="py-3 px-4 w-full max-w-[400px] text-base"
+          />
+        ) : null
+        /////////////////////////////////////////////////
+        // CONTINUE HERE and in contributionData.ts /////
+        // : contributionInfo.length !== 0 //////////////
+        /////////////////////////////////////////////////
+        }
+      </div>
+
+      {/* <TgeWrapper label={t("tge.sale_finished")}>
         {eventData?.nextEventDate && (
           <CountDownTimer endOfEvent={eventData.nextEventDate} />
         )}
-      </TgeWrapper>
+      </TgeWrapper> */}
     </>
   )
 }
 
 export default SaleOver
+
