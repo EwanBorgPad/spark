@@ -17,7 +17,6 @@ import { ProjectData, dummyData } from "../data/data"
 const Project = () => {
   const [projectData, setProjectData] = useState<ProjectData>(dummyData)
   const { t } = useTranslation()
-  // const { getWhitelistStatus } = useWhitelistStatusContext()
 
   const expandedTimeline = calculateTimelineData(projectData.timeline)
 

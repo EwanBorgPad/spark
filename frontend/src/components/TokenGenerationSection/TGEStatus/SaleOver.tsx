@@ -1,15 +1,16 @@
 import { useTranslation } from "react-i18next"
 
-import { ExtendedTimelineEventType } from "@/components/Timeline/Timeline"
+import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import CountDownTimer from "@/components/CountDownTimer"
 import { formatCurrencyAmount } from "@/utils/format"
 import { TgeWrapper } from "../components/Wrapper"
 import { ProjectData } from "@/data/data"
 
 import { tokenData } from "@/data/tokenData"
+import { Button } from "@/components/Button/Button"
 
 type LiveProps = {
-  eventData: ExtendedTimelineEventType
+  eventData: ExpandedTimelineEventType
   projectData: ProjectData
 }
 
@@ -37,10 +38,15 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
           <span className="text-sm opacity-60">
             Thank you for your participation
           </span>
-          {/* @TODO - ADD LINK WHEN YOU FIND OUT IF ITS INTERNAL OR EXTERNAL */}
-          <span className="cursor-pointer text-sm underline">
+
+          {/* @TODO - Add ScrollTo event when you make targeted component */}
+          <Button
+            color="plain"
+            className="cursor-pointer py-0 text-sm underline"
+            onClick={() => {}}
+          >
             Check Your Rewards Here
-          </span>
+          </Button>
         </div>
 
         <div className="flex w-full flex-wrap gap-x-4 gap-y-5 rounded-lg border-[1px] border-bd-primary bg-secondary px-5 py-4">

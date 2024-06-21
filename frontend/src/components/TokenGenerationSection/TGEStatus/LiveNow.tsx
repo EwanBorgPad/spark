@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import MarketAndTokensData from "@/components/TokenGenerationSection/components/MarketAndTokensData"
-import { ExtendedTimelineEventType } from "@/components/Timeline/Timeline"
+import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import LiveNowExchange from "../components/LiveNowExchange"
 import CountDownTimer from "@/components/CountDownTimer"
@@ -11,7 +11,7 @@ import WhitelistStatus from "../WhitelistStatus"
 import { ProjectData } from "@/data/data"
 
 type LiveNowProps = {
-  eventData: ExtendedTimelineEventType
+  eventData: ExpandedTimelineEventType
   projectData: ProjectData
 }
 

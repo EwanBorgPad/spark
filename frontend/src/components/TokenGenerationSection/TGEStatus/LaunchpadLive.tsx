@@ -1,9 +1,9 @@
-import { ExtendedTimelineEventType } from "@/components/Timeline/Timeline"
+import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { useTranslation } from "react-i18next"
 import { TgeWrapper } from "../components/Wrapper"
 
 type LaunchpadLiveProps = {
-  eventData: ExtendedTimelineEventType
+  eventData: ExpandedTimelineEventType
 }
 
 const LaunchpadLive = ({ eventData }: LaunchpadLiveProps) => {

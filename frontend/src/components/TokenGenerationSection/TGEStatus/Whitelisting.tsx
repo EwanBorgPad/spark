@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import MarketAndTokensData from "@/components/TokenGenerationSection/components/MarketAndTokensData"
-import { ExtendedTimelineEventType } from "@/components/Timeline/Timeline"
+import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import WhitelistingContent from "../components/WhitelistingContent"
 import CountDownTimer from "@/components/CountDownTimer"
 import { TgeWrapper } from "../components/Wrapper"
@@ -9,7 +9,7 @@ import WhitelistStatus from "../WhitelistStatus"
 import { ProjectData } from "@/data/data"
 
 type WhitelistingProps = {
-  eventData: ExtendedTimelineEventType
+  eventData: ExpandedTimelineEventType
   projectData: ProjectData
 }
 

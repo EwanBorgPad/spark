@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { ExtendedTimelineEventType } from "../Timeline/Timeline"
+import { ExpandedTimelineEventType } from "../Timeline/Timeline"
 import { getCurrentTgeEvent } from "@/utils/getCurrentTgeEvent"
 import { CountDownCallback } from "../CountDownCallback"
 import LaunchpadLive from "./TGEStatus/LaunchpadLive"
@@ -12,13 +12,13 @@ import LiveNow from "./TGEStatus/LiveNow"
 
 type Props = {
   data: ProjectData
-  expandedTimeline: ExtendedTimelineEventType[]
+  expandedTimeline: ExpandedTimelineEventType[]
 }
 
 const TokenGenerationSection = ({ expandedTimeline, data }: Props) => {
   const { t } = useTranslation()
   const [currentTgeEvent, setCurrentTgeEvent] =
-    useState<ExtendedTimelineEventType>(getCurrentTgeEvent(expandedTimeline))
+    useState<ExpandedTimelineEventType>(getCurrentTgeEvent(expandedTimeline))
 
   const updateTgeStatus = useCallback(() => {
     const newTgeStatus = getCurrentTgeEvent(expandedTimeline)
@@ -33,7 +33,7 @@ const TokenGenerationSection = ({ expandedTimeline, data }: Props) => {
     updateTgeStatus()
   }, [expandedTimeline, updateTgeStatus])
 
-  const renderComponent = (tgeEvent: ExtendedTimelineEventType) => {
+  const renderComponent = (tgeEvent: ExpandedTimelineEventType) => {
     switch (tgeEvent.id) {
       case "INACTIVE":
         return <span>{t("tge.not_opened_yet")}</span>
