@@ -11,10 +11,7 @@ import { ProjectData } from "@/data/data"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
 import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
-import { useState } from "react"
-import { useAsyncEffect } from "@/hooks/useAsyncEffect.ts"
-import { getSplTokenBalance } from "../../../../shared/SolanaWeb3.ts"
-import { USDC_DEV_ADDRESS } from "../../../../shared/constants.ts"
+import { useBalanceContext } from "@/hooks/useBalanceContext.tsx"
 
 type LiveNowExchangeProps = {
   tgeData: ProjectData["tge"]
@@ -36,26 +33,7 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
   const { address, walletState } = useWalletContext()
   const { isUserWhitelisted } = useWhitelistStatusContext()
 
-  // TODO consider creating useBalance or something
-  const [balance, setBalance] = useState<number | null>(null)
-
-  useAsyncEffect(async () => {
-    if (!address) {
-      setBalance(null)
-      return
-    }
-
-    const tokenAmount = await getSplTokenBalance({
-      address,
-      tokenAddress: USDC_DEV_ADDRESS,
-    })
-
-    if (tokenAmount) {
-      setBalance(tokenAmount.uiAmount)
-    } else {
-      setBalance(null)
-    }
-  }, [])
+  const { balance } = useBalanceContext()
 
   const {
     handleSubmit,
@@ -75,7 +53,7 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
     if (!balance) return
-    const floatValue = (balancePercentage / 100) * balance
+    const floatValue = (balancePercentage / 100) * Number(balance.amount)
     setValue("borgInputValue", floatValue.toString(), {
       shouldValidate: true,
       shouldDirty: true,
@@ -147,7 +125,7 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
                 </div>
                 <p className="text-left text-xs opacity-50">
                   {t("tge.balance")}:{" "}
-                  <span>{formatCurrencyAmount(balance, false)}</span>
+                  <span>{formatCurrencyAmount(Number(balance.uiAmountString), false)}</span>
                 </p>
               </div>
             )}

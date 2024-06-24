@@ -1,7 +1,5 @@
-// TODO @hardcoded
-const url = "https://api.devnet.solana.com"
-// TODO @hardcoded commitment
-const commitment = "finalized" satisfies Commitment
+import { COMMITMENT_LEVEL, SOLANA_RPC_URL } from "./constants.ts"
+
 
 type GetSplTokenBalanceArgs = {
   address: string
@@ -17,7 +15,7 @@ export async function getSplTokenBalance({
   address,
   tokenAddress,
 }: GetSplTokenBalanceArgs): Promise<TokenAmount | null> {
-  const getTokenAccountsByOwnerResponse = await fetch(url, {
+  const getTokenAccountsByOwnerResponse = await fetch(SOLANA_RPC_URL, {
     method: "post",
     headers: {
       "Content-Type": "application/json", // Specify the content type
@@ -33,7 +31,7 @@ export async function getSplTokenBalance({
         },
         {
           encoding: "jsonParsed",
-          commitment,
+          commitment: COMMITMENT_LEVEL,
         },
       ],
     }),
@@ -67,13 +65,31 @@ function uuidv4() {
  *  - 'processed': Query the most recent block which has reached 1 confirmation by the connected node
  *  - 'confirmed': Query the most recent block which has reached 1 confirmation by the cluster
  *  - 'finalized': Query the most recent block which has been finalized by the cluster
+ * Solana Commitment Status: https://docs.solanalabs.com/consensus/commitments
  */
-type Commitment = "processed" | "confirmed" | "finalized"
+export type Commitment = "processed" | "confirmed" | "finalized"
 
-type TokenAmount = {
+/**
+ * Structure representing the balance of a token
+ * https://solana.com/docs/rpc/json-structures#token-balances
+ */
+export type TokenAmount = {
+  /**
+   * Raw amount of tokens as a string, ignoring decimals
+   */
   amount: string
+  /**
+   * Number of decimals configured for token's mint.
+   */
   decimals: number
-  uiAmount: number
+  /**
+   * Token amount as a float, accounting for decimals.
+   * @deprecated
+   */
+  uiAmount: number | null
+  /**
+   * Token amount as a string, accounting for decimals.
+   */
   uiAmountString: string
 }
 
