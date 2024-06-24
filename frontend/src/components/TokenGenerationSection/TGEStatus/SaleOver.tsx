@@ -14,6 +14,7 @@ import { ContributionType, contributionData } from "@/data/contributionData"
 import { tokenData } from "@/data/tokenData"
 import { ProjectData } from "@/data/data"
 import YourContribution from "../components/YourContribution"
+import { getTweetIdFromURL } from "@/utils/tweetParser"
 
 type LiveProps = {
   eventData: ExpandedTimelineEventType
@@ -48,6 +49,8 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
     return tokenData
   }
   const { marketCap, fdv } = getTokenInfo()
+
+  const tweetId = getTweetIdFromURL(projectData.tge.tweetURL)
 
   return (
     <>
@@ -114,7 +117,7 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
         </div>
 
         <div className="w-full max-w-[400px]">
-          <Tweet id="1801629344848089180" />
+          {tweetId ? <Tweet id={tweetId} /> : ""}
         </div>
       </div>
 
@@ -140,7 +143,10 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
             btnClassName="py-3 px-4 w-full max-w-[400px] text-base"
           />
         ) : userDidContribute ? (
-          <YourContribution contributionInfo={contributionInfo} />
+          <YourContribution
+            contributionInfo={contributionInfo}
+            eventData={eventData}
+          />
         ) : (
           <div className="w-full max-w-[400px] rounded-lg border border-bd-primary bg-secondary px-4 py-3 text-sm opacity-60">
             The wallet you connected didn’t contribute to this pool.

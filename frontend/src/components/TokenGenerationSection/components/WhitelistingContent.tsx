@@ -3,9 +3,11 @@ import { useWalletContext } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
 import { useTranslation } from "react-i18next"
 import { Icon } from "@/components/Icon/Icon"
-import { ProjectData } from "@/data/data"
 import TokenRewards from "./TokenRewards"
-import { dummyBorgPriceInUSD, tokenData } from "@/data/tokenData"
+
+import { dummyBorgPriceInUSD } from "@/data/borgPriceInUsd"
+import { tokenData } from "@/data/tokenData"
+import { ProjectData } from "@/data/data"
 
 type WhitelistingContentProps = {
   tgeData: ProjectData["tge"]

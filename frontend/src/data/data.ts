@@ -39,6 +39,7 @@ export type ProjectData = {
       iconUrl: string
       ticker: string
     }
+    fixedCoinPriceInBorg: number
     registrations: number
     vesting: {
       tgePercentage: number
@@ -50,11 +51,7 @@ export type ProjectData = {
       lbType: string
       lockingPeriod: string
     }
-    pastOrders: {
-      borgAmount: number
-      date: Date
-      externalLink: string
-    }[]
+    tweetURL: string
   }
   secondaryImgUrl: string
   timeline: TimelineEventType[]
@@ -127,6 +124,7 @@ export const dummyData: ProjectData = {
       iconUrl: lrcCoinImg,
       ticker: "LRC",
     },
+    fixedCoinPriceInBorg: 1,
     registrations: 1698,
     vesting: {
       tgePercentage: 20,
@@ -144,28 +142,8 @@ export const dummyData: ProjectData = {
       lbType: "Full Range",
       lockingPeriod: "12 months",
     },
-    pastOrders: [
-      {
-        borgAmount: 3813.35,
-        date: addDays(currentMoment, -8),
-        externalLink: "#",
-      },
-      {
-        borgAmount: 110.1,
-        date: addDays(currentMoment, -7),
-        externalLink: "#",
-      },
-      {
-        borgAmount: 240.891,
-        date: addDays(currentMoment, -6),
-        externalLink: "#",
-      },
-      {
-        borgAmount: 440.4,
-        date: addDays(currentMoment, -5),
-        externalLink: "#",
-      },
-    ],
+    tweetURL:
+      "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
   },
   secondaryImgUrl: secondaryImgUrl,
   timeline: [

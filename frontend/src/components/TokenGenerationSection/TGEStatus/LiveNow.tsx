@@ -32,11 +32,7 @@ const LiveNow = ({ eventData, projectData }: LiveNowProps) => {
           )}
           <LiveNowExchange tgeData={tgeData} />
         </TgeWrapper>
-        {whitelistStatus?.whitelisted ? (
-          <PastOrders tgeData={tgeData} />
-        ) : (
-          <WhitelistStatus />
-        )}
+        {whitelistStatus?.whitelisted ? <PastOrders /> : <WhitelistStatus />}
       </div>
     </>
   )

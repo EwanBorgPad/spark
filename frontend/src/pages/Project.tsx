@@ -1,6 +1,5 @@
 import { ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { useState } from "react"
 
 import TokenGenerationSection from "../components/TokenGenerationSection/TokenGenerationSection"
 import { ExternalLink } from "../components/Button/ExternalLink"
@@ -12,10 +11,10 @@ import Timeline from "@/components/Timeline/Timeline"
 import Avatar from "../components/Avatar/Avatar"
 import { Icon } from "../components/Icon/Icon"
 
-import { ProjectData, dummyData } from "../data/data"
+import { useProjectDataContext } from "@/hooks/useProjectData"
 
 const Project = () => {
-  const [projectData, setProjectData] = useState<ProjectData>(dummyData)
+  const { projectData } = useProjectDataContext()
   const { t } = useTranslation()
 
   const expandedTimeline = calculateTimelineData(projectData.timeline)
@@ -96,10 +95,7 @@ const Project = () => {
       </section>
       <hr className="w-full border-bd-primary"></hr>
 
-      <TokenGenerationSection
-        data={projectData}
-        expandedTimeline={expandedTimeline}
-      />
+      <TokenGenerationSection expandedTimeline={expandedTimeline} />
 
       <section className="data-room group">
         <img
@@ -123,11 +119,7 @@ const Project = () => {
       <Timeline timelineEvents={projectData.timeline} />
       <ScrollRestoration />
 
-      {/* to be deleted */}
-      {/* <DesignSystem /> */}
-      {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && (
-        <ProjectTester data={projectData} setData={setProjectData} />
-      )}
+      {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && <ProjectTester />}
     </main>
   )
 }

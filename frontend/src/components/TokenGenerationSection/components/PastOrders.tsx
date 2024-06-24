@@ -6,8 +6,8 @@ import Accordion from "@/components/Accordion/Accordion"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 
+import { dummyBorgPriceInUSD } from "@/data/borgPriceInUsd"
 import { contributionData } from "@/data/contributionData"
-import { dummyBorgPriceInUSD } from "@/data/tokenData"
 import { ProjectData } from "@/data/data"
 
 type PastOrdersProps = {
