@@ -3,16 +3,17 @@ import { Tweet } from "react-tweet"
 
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { ConnectButton } from "@/components/Header/ConnectButton"
-import CountDownTimer from "@/components/CountDownTimer"
+import { useWalletContext } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
 import greenCloudImg from "@/assets/greenCloud.svg"
-import { TgeWrapper } from "../components/Wrapper"
 import { Icon } from "@/components/Icon/Icon"
-import { tokenData } from "@/data/tokenData"
 
+// to be replaced with API calls
+import { ContributionType, contributionData } from "@/data/contributionData"
+import { tokenData } from "@/data/tokenData"
 import { ProjectData } from "@/data/data"
-import { useWalletContext } from "@/hooks/useWalletContext"
+import YourContribution from "../components/YourContribution"
 
 type LiveProps = {
   eventData: ExpandedTimelineEventType
@@ -31,13 +32,18 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
 
   const { walletState } = useWalletContext()
 
-  // @TODO - add API for getting token info
-  const getContributionInfo = () => {
-    return tokenData
+  ////////////////////////////////////////////////////////
+  // @TODO - add API for getting contribution info ///////
+  ////////////////////////////////////////////////////////
+  const getContributionInfo = (): ContributionType | null => {
+    return contributionData
   }
   const contributionInfo = getContributionInfo()
+  const userDidContribute = !!contributionInfo?.suppliedBorg.total
 
-  // @TODO - add API for getting token info
+  /////////////////////////////////////////////////
+  // @TODO - add API for getting token info ///////
+  /////////////////////////////////////////////////
   const getTokenInfo = () => {
     return tokenData
   }
@@ -47,7 +53,7 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
     <>
       <div className="flex w-full flex-col items-center gap-9">
         <div className="flex w-full flex-col items-center gap-1">
-          <h2 className="leading-11 text-4xl font-semibold">Sale Over</h2>
+          <h2 className="text-4xl font-semibold leading-11">Sale Over</h2>
           <span className="text-sm opacity-60">
             Thank you for your participation
           </span>
@@ -133,12 +139,13 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
             customBtnText={"Connect Wallet to See Contribution"}
             btnClassName="py-3 px-4 w-full max-w-[400px] text-base"
           />
-        ) : null
-        /////////////////////////////////////////////////
-        // CONTINUE HERE and in contributionData.ts /////
-        // : contributionInfo.length !== 0 //////////////
-        /////////////////////////////////////////////////
-        }
+        ) : userDidContribute ? (
+          <YourContribution contributionInfo={contributionInfo} />
+        ) : (
+          <div className="w-full max-w-[400px] rounded-lg border border-bd-primary bg-secondary px-4 py-3 text-sm opacity-60">
+            The wallet you connected didn’t contribute to this pool.
+          </div>
+        )}
       </div>
 
       {/* <TgeWrapper label={t("tge.sale_finished")}>
@@ -151,4 +158,3 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
 }
 
 export default SaleOver
-

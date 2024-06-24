@@ -53,11 +53,13 @@ const TokenRewards = ({
           <Icon icon="SvgLock" className="mt-[-1px] text-base opacity-50" />
           <span className="opacity-50">{t("tge.liquidity_pool")}</span>
           <img
-            src={tgeData.liquidityPoolDetails.defiProtocol.imgUrl}
+            src={tgeData.lockupDetails.liquidityPool.imgUrl}
             className="h-4 w-4 object-cover"
           />
           <span className="opacity-50">Raydium,</span>
-          <span className="opacity-50">12-{t("tge.month_lockup")}</span>
+          <span className="opacity-50">
+            {tgeData.lockupDetails.description}
+          </span>
         </div>
       </div>
       <div className="px-3 py-2">

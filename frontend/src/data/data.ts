@@ -45,7 +45,11 @@ export type ProjectData = {
       cliffPercentage: number
     }
     tokenGenerationEventDate: Date
-    liquidityPoolDetails: LiquidityPoolDetails
+    lockupDetails: LockupDetails
+    liquidityPoolDetails: {
+      lbType: string
+      lockingPeriod: string
+    }
     pastOrders: {
       borgAmount: number
       date: Date
@@ -129,11 +133,14 @@ export const dummyData: ProjectData = {
       cliffPercentage: 20,
     },
     tokenGenerationEventDate: currentMoment,
-    liquidityPoolDetails: {
-      defiProtocol: {
+    lockupDetails: {
+      liquidityPool: {
         name: "Raydium",
         imgUrl: raydiumImg,
       },
+      description: "12 months",
+    },
+    liquidityPoolDetails: {
       lbType: "Full Range",
       lockingPeriod: "12 months",
     },
@@ -196,11 +203,10 @@ export const dummyData: ProjectData = {
   },
 }
 
-export type LiquidityPoolDetails = {
-  defiProtocol: {
+export type LockupDetails = {
+  liquidityPool: {
     name: string
     imgUrl: string
   }
-  lbType: string
-  lockingPeriod: string
+  description: string
 }

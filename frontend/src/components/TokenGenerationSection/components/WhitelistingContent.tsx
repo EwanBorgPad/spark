@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 import { Icon } from "@/components/Icon/Icon"
 import { ProjectData } from "@/data/data"
 import TokenRewards from "./TokenRewards"
-import { borgPriceInUSD, tokenData } from "@/data/tokenData"
+import { dummyBorgPriceInUSD, tokenData } from "@/data/tokenData"
 
 type WhitelistingContentProps = {
   tgeData: ProjectData["tge"]
@@ -22,7 +22,7 @@ const WhitelistingContent = ({ tgeData }: WhitelistingContentProps) => {
   }
   const { priceInUSD } = getTokenInfo()
   const getBorgPriceInUSD = () => {
-    return borgPriceInUSD
+    return dummyBorgPriceInUSD
   }
   const borgPrice = getBorgPriceInUSD()
 
@@ -104,11 +104,11 @@ const WhitelistingContent = ({ tgeData }: WhitelistingContentProps) => {
           <span>{t("tge.defi_protocol")}</span>
           <div className="flex items-center gap-2">
             <img
-              src={tgeData.liquidityPoolDetails.defiProtocol.imgUrl}
+              src={tgeData.lockupDetails.liquidityPool.imgUrl}
               alt="liquidity pool - defi protocol"
               className="h-5 w-5 rounded-full"
             />
-            <span>{tgeData.liquidityPoolDetails.defiProtocol.name}</span>
+            <span>{tgeData.lockupDetails.liquidityPool.name}</span>
           </div>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>

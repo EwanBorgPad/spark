@@ -11,4 +11,4 @@ export const tokenData: TokenData = {
 }
 
 // price from 20.06.2024.
-export const borgPriceInUSD = 0.1795
+export const dummyBorgPriceInUSD = 0.1795
