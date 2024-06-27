@@ -32,11 +32,17 @@ curl --location 'https://api.twitter.com/2/oauth2/token' \
 
 Links mentioning this issue:
 - https://stackoverflow.com/questions/35879943/twitter-api-authorization-fails-cors-preflight-in-browser
-- https://devcommunity.x.com/t/will-twitter-api-support-cors-headers-soon/28276\
 - https://github.com/xdevplatform/twitter-api-typescript-sdk/issues/36
+- https://devcommunity.x.com/t/will-twitter-api-support-cors-headers-soon/28276\
+- https://devcommunity.x.com/t/twitter-api-v2-public-client-no-access-control-allow-origin-header-present-cors/170402
 
 Current solution for avoiding CORS is to create a CF Worker on the backend and add access control headers.
 
 ## Questions 
+
+- how does Rey work in terms of tokens, I see there's no tokens returned from the backend, only cookies?
+- how does refresh token work if it is not stored on the frontend, stored on backend?
+
+## TODOs
 
 TODO @twitter: draw a diagram of how this works, particularly because we're using our own backend
