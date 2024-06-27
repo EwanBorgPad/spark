@@ -5,13 +5,13 @@ import { useTranslation } from "react-i18next"
 import { ConnectButton } from "@/components/Header/ConnectButton"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
-import { walletDummyData } from "@/data/walletData"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
 import { ProjectData } from "@/data/data"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
 import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
+import { useBalanceContext } from "@/hooks/useBalanceContext.tsx"
 
 type LiveNowExchangeProps = {
   tgeData: ProjectData["tge"]
@@ -30,11 +30,10 @@ const inputButtons = [
 const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
   const { t } = useTranslation()
 
-  const { walletState } = useWalletContext()
+  const { address, walletState } = useWalletContext()
   const { isUserWhitelisted } = useWhitelistStatusContext()
 
-  // @TODO - getBalance API instead of walletDummyData and variable below
-  const balance = walletDummyData.balance
+  const { balance } = useBalanceContext()
 
   const {
     handleSubmit,
@@ -54,7 +53,7 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
     if (!balance) return
-    const floatValue = (balancePercentage / 100) * balance
+    const floatValue = (balancePercentage / 100) * Number(balance.amount)
     setValue("borgInputValue", floatValue.toString(), {
       shouldValidate: true,
       shouldDirty: true,
@@ -109,7 +108,7 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
                 <span>BORG</span>
               </div>
             </div>
-            {walletDummyData.balance && (
+            {balance !== null && (
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-2">
                   {inputButtons.map((btn) => (
@@ -126,9 +125,7 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
                 </div>
                 <p className="text-left text-xs opacity-50">
                   {t("tge.balance")}:{" "}
-                  <span>
-                    {formatCurrencyAmount(walletDummyData.balance, false)}
-                  </span>
+                  <span>{formatCurrencyAmount(Number(balance.uiAmountString), false)}</span>
                 </p>
               </div>
             )}

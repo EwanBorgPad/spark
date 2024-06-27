@@ -1,6 +1,6 @@
 import { ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 import TokenGenerationWrapper from "../components/TokenGenerationSection/TokenGenerationSection"
 import { formatCurrencyAmount, getRatioPercantage } from "../utils/format"
@@ -14,7 +14,6 @@ import ProgressBar from "../components/ProgressBar"
 import Avatar from "../components/Avatar/Avatar"
 import { Icon } from "../components/Icon/Icon"
 
-import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import { ProjectData, dummyData } from "../data/data"
 
 const Project = () => {

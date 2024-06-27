@@ -105,7 +105,9 @@ We've done a lot of UI work, what we could from the designs, and are starting wo
   - Q: What would acknowledgement basis be in this context?
   - Q: IP tracking is not a problem, but please note that this is not reliable, someone might be using Tor/VPN/Proxy or they may simply be accessing the service outside their home country.
 
+### New Questions
 
+- Q1: How are gonna prevent direct access to smart contracts (core functionality) by somebody who is not whitelisted?
 
 
 
