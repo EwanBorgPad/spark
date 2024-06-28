@@ -33,18 +33,35 @@ export const SignInWithTwitterButton = () => {
 
     const params = (new URLSearchParams(queryParams)).toString()
 
-    const finalUrl = TWITTER_API_BASE_URL + params
+    const finalUrl = '/api/corsproxy?url=' + encodeURIComponent(TWITTER_API_BASE_URL + params)
 
     console.log({ finalUrl })
 
     console.log('requesting....')
     // TODO @twitter calling twitter API directly won't work because of CORS -> set up a function to mitigate this
-    const response = await fetch(finalUrl, {
+    const authRes = await fetch(finalUrl, {
       method: 'post',
     })
+    const authResponse = await authRes.json()
     console.log('requesting finished.')
 
-    console.log({ response })
+    console.log({ authResponse })
+
+    const accessToken = authResponse['access_token']
+
+    localStorage.setItem('twitterAccess', accessToken)
+
+    const twitterGetMeUrl = 'https://api.twitter.com/2/users/me?user.fields=profile_image_url'
+    const proxiedGetMe = '/api/corsproxy?url=' + encodeURIComponent(twitterGetMeUrl)
+    const getMeRes = await fetch(proxiedGetMe, {
+      method: 'get',
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+      },
+    })
+    const getMeResponse = await getMeRes.json()
+
+    console.log({ getMeResponse })
   }
 
   useEffect(() => {
