@@ -5,12 +5,18 @@ import { useEffect } from "react"
  * Find available scopes here: https://developer.x.com/en/docs/authentication/oauth-2-0/authorization-code
  */
 const TWITTER_AUTH_SCOPE = ['tweet.read', 'users.read', 'follows.read', 'offline.access'].join(' ')
-const TWITTER_OAUTH_BASE_URL = 'https://twitter.com/i/oauth2/authorize?'
-const TWITTER_API_BASE_URL = 'https://api.twitter.com/2/oauth2/token?'
+const TWITTER_OAUTH_BASE_URL = 'https://twitter.com/i/oauth2/authorize'
+const TWITTER_API_OAUTH2_TOKEN_URL = 'https://api.twitter.com/2/oauth2/token'
+const TWITTER_API_GET_ME_URL = 'https://api.twitter.com/2/users/me?user.fields=profile_image_url'
+/**
+ * Because Twitter API doesn't support CORS, we're forced to go through a proxy.
+ * CORS Proxy is currently realized through a CloudFlare Worker, deployed on the same url as the CF Page.
+ * Twitter CORS issues: https://devcommunity.x.com/t/twitter-api-v2-public-client-no-access-control-allow-origin-header-present-cors/170402/3
+ */
+const CORS_PROXY_URL = window.location.origin + '/api/corsproxy'
 
 const clientId = import.meta.env.VITE_TWITTER_CLIENT_ID
 const redirectUri = import.meta.env.VITE_TWITTER_REDIRECT_URI
-
 
 export const SignInWithTwitterButton = () => {
 
@@ -23,37 +29,31 @@ export const SignInWithTwitterButton = () => {
 
     if (state !== 'state' || !code) return
 
-    const queryParams = {
-      code,
-      'grant_type': 'authorization_code',
-      'client_id': clientId,
-      'redirect_uri': redirectUri,
-      'code_verifier': 'challenge',
-    }
+    const twitterAuthUrl = new URL(TWITTER_API_OAUTH2_TOKEN_URL)
+    twitterAuthUrl.searchParams.set('code', code)
+    twitterAuthUrl.searchParams.set('grant_type', 'authorization_code')
+    twitterAuthUrl.searchParams.set('client_id', clientId)
+    twitterAuthUrl.searchParams.set('redirect_uri', redirectUri)
+    twitterAuthUrl.searchParams.set('code_verifier', 'challenge')
 
-    const params = (new URLSearchParams(queryParams)).toString()
+    const proxiedTwitterAuthUrl = new URL(CORS_PROXY_URL)
+    proxiedTwitterAuthUrl.searchParams.set('url', twitterAuthUrl.href)
 
-    const finalUrl = '/api/corsproxy?url=' + encodeURIComponent(TWITTER_API_BASE_URL + params)
-
-    console.log({ finalUrl })
-
-    console.log('requesting....')
-    // TODO @twitter calling twitter API directly won't work because of CORS -> set up a function to mitigate this
-    const authRes = await fetch(finalUrl, {
+    const authRes = await fetch(proxiedTwitterAuthUrl, {
       method: 'post',
     })
     const authResponse = await authRes.json()
-    console.log('requesting finished.')
-
-    console.log({ authResponse })
 
     const accessToken = authResponse['access_token']
+    const refreshToken = authResponse['refresh_token']
 
-    localStorage.setItem('twitterAccess', accessToken)
+    localStorage.setItem('twitterAccessToken', accessToken)
+    localStorage.setItem('twitterRefreshToken', refreshToken)
 
-    const twitterGetMeUrl = 'https://api.twitter.com/2/users/me?user.fields=profile_image_url'
-    const proxiedGetMe = '/api/corsproxy?url=' + encodeURIComponent(twitterGetMeUrl)
-    const getMeRes = await fetch(proxiedGetMe, {
+    const proxiedTwitterGetMeUrl = new URL(CORS_PROXY_URL)
+    proxiedTwitterGetMeUrl.searchParams.set('url', TWITTER_API_GET_ME_URL)
+
+    const getMeRes = await fetch(proxiedTwitterGetMeUrl, {
       method: 'get',
       headers: {
         'Authorization': 'Bearer ' + accessToken,
@@ -69,23 +69,18 @@ export const SignInWithTwitterButton = () => {
   }, [])
 
   function signInWithTwitter() {
-    const queryParams = {
-      'client_id': clientId,
-      'redirect_uri': redirectUri,
-      'scope': TWITTER_AUTH_SCOPE,
+    const url = new URL(TWITTER_OAUTH_BASE_URL)
 
-      'response_type': 'code',
-      'state': 'state',
-      'code_challenge': 'challenge',
-      'code_challenge_method': 'plain',
-    }
+    url.searchParams.set('client_id', clientId)
+    url.searchParams.set('redirect_uri', redirectUri)
+    url.searchParams.set('scope', TWITTER_AUTH_SCOPE)
 
-    const params = new URLSearchParams(queryParams)
-    const paramsString = params.toString()
+    url.searchParams.set('response_type', 'code')
+    url.searchParams.set('state', 'state')
+    url.searchParams.set('code_challenge', 'challenge')
+    url.searchParams.set('code_challenge_method', 'plain')
 
-    const finalUrl = TWITTER_OAUTH_BASE_URL + paramsString
-
-    window.location.href = finalUrl
+    window.location.href = url.href
   }
 
   return <Button onClick={signInWithTwitter}>

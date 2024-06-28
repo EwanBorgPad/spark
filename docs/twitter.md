@@ -2,7 +2,7 @@
 # Twitter
 
 1. Create a free developer account on twitter
-2. Create a Project and open on dashboard https://developer.twitter.com/en/portal/projects/{projectId}/apps/{appId}/settings
+2. Create a Project and open on dashboard https://developer.twitter.com/en/portal/proj.ects/{projectId}/apps/{appId}/settings
 3. Enable Auth FINISH THIS MAYBE
 
 ## Endpoints
