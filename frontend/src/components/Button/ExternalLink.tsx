@@ -1,5 +1,7 @@
 import { twMerge } from "tailwind-merge"
 import { AvailableIcons, Icon } from "../Icon/Icon"
+import { getSignInWithTwitterUrl } from "@/hooks/useTwitterContext.tsx"
+import { HTMLAttributeAnchorTarget } from "react"
 
 type Props = {
   externalLink: ExternalLinkType
@@ -35,10 +37,18 @@ const ExternalLinkWithLabel = ({
   className,
   iconClassName,
 }: Props) => {
+  const url = externalLink.linkType === 'X_TWITTER'
+    ? getSignInWithTwitterUrl()
+    : externalLink.url
+
+  const target:  HTMLAttributeAnchorTarget = externalLink.linkType === 'X_TWITTER'
+    ? '_self'
+    : '_blank'
+
   return (
     <a
-      href={externalLink.url}
-      target="_blank"
+      href={url}
+      target={target}
       rel="noreferrer"
       className={twMerge(
         "flex items-center gap-2 rounded-full border-[1px] border-bd-primary px-2 py-1.5 hover:bg-bd-primary/40 active:scale-[98%]",

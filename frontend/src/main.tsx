@@ -11,16 +11,19 @@ import Project from "./pages/Project"
 import App from "./App"
 import { WhitelistStatusProvider } from "./hooks/useWhitelistContext"
 import { BalanceProvider } from "@/hooks/useBalanceContext.tsx"
+import { TwitterProvider } from "@/hooks/useTwitterContext.tsx"
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <WalletProvider>
-        <BalanceProvider>
-          <App />
-        </BalanceProvider>
-      </WalletProvider>
+      <TwitterProvider>
+        <WalletProvider>
+          <BalanceProvider>
+            <App />
+          </BalanceProvider>
+        </WalletProvider>
+      </TwitterProvider>
     ),
     children: [
       {

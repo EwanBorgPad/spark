@@ -2,7 +2,7 @@
 # Twitter
 
 1. Create a free developer account on twitter
-2. Create a Project and open on dashboard https://developer.twitter.com/en/portal/proj.ects/{projectId}/apps/{appId}/settings
+2. Create a Project and open on dashboard https://developer.twitter.com/en/portal/projects/{projectId}/apps/{appId}/settings
 3. Enable Auth FINISH THIS MAYBE
 
 ## Endpoints
@@ -46,3 +46,4 @@ Current solution for avoiding CORS is to create a CF Worker on the backend and a
 ## TODOs
 
 TODO @twitter: draw a diagram of how this works, particularly because we're using our own backend
+TODO @twitter: setup a staging + production account (currently it's on my personal acc)

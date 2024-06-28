@@ -1,5 +1,4 @@
-import { Button } from "@/components/Button/Button.tsx"
-import { useEffect } from "react"
+import { createContext, ReactNode, useContext, useEffect } from "react"
 
 /**
  * Find available scopes here: https://developer.x.com/en/docs/authentication/oauth-2-0/authorization-code
@@ -18,9 +17,22 @@ const CORS_PROXY_URL = window.location.origin + '/api/corsproxy'
 const clientId = import.meta.env.VITE_TWITTER_CLIENT_ID
 const redirectUri = import.meta.env.VITE_TWITTER_REDIRECT_URI
 
-export const SignInWithTwitterButton = () => {
+//////////////////////////////////
+///////// Context Code ///////////
+//////////////////////////////////
 
-  // TODO @twitter this function should run on page land, currently it is done through an on-mount effect for the SignInWithTwitterButton, that's not reliable enough
+type Context = {}
+
+const TwitterContext = createContext<Context | undefined>(undefined)
+
+export function useTwitterContext() {
+  const context = useContext(TwitterContext)
+  if (!context)
+    throw new Error("Component is outside of the <TwitterProvider />")
+  return context
+}
+
+export function TwitterProvider({ children }: { children: ReactNode }) {
   async function signInWithCode() {
     const searchParams = new URL(window.location.href).searchParams;
 
@@ -68,22 +80,26 @@ export const SignInWithTwitterButton = () => {
     signInWithCode()
   }, [])
 
-  function signInWithTwitter() {
-    const url = new URL(TWITTER_OAUTH_BASE_URL)
+  return (
+    <TwitterContext.Provider
+      value={{}}
+    >
+      {children}
+    </TwitterContext.Provider>
+  )
+}
 
-    url.searchParams.set('client_id', clientId)
-    url.searchParams.set('redirect_uri', redirectUri)
-    url.searchParams.set('scope', TWITTER_AUTH_SCOPE)
+export function getSignInWithTwitterUrl(): string {
+  const url = new URL(TWITTER_OAUTH_BASE_URL)
 
-    url.searchParams.set('response_type', 'code')
-    url.searchParams.set('state', 'state')
-    url.searchParams.set('code_challenge', 'challenge')
-    url.searchParams.set('code_challenge_method', 'plain')
+  url.searchParams.set('client_id', clientId)
+  url.searchParams.set('redirect_uri', redirectUri)
+  url.searchParams.set('scope', TWITTER_AUTH_SCOPE)
 
-    window.location.href = url.href
-  }
+  url.searchParams.set('response_type', 'code')
+  url.searchParams.set('state', 'state')
+  url.searchParams.set('code_challenge', 'challenge')
+  url.searchParams.set('code_challenge_method', 'plain')
 
-  return <Button onClick={signInWithTwitter}>
-    Sign In With Twitter
-  </Button>
+  return url.href
 }

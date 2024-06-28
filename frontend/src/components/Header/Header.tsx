@@ -4,7 +4,6 @@ import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { WalletDropdown } from "@/components/Header/WalletDropdown.tsx"
 import { useRef } from "react"
 import useHeaderShadow from "@/hooks/useHeaderShadow"
-import { SignInWithTwitterButton } from "@/components/Header/SignInWithTwitterButton.tsx"
 
 const Header = () => {
   const intersectionReferenceElement = useRef<HTMLDivElement>(null)
@@ -31,8 +30,6 @@ const Header = () => {
               BorgPad
             </span>
           </div>
-
-          <SignInWithTwitterButton />
 
           {walletState === "CONNECTED" ? <WalletDropdown /> : <ConnectButton />}
         </div>
