@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useContext, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
 
 /**
  * Find available scopes here: https://developer.x.com/en/docs/authentication/oauth-2-0/authorization-code
@@ -33,9 +34,10 @@ export function useTwitterContext() {
 }
 
 export function TwitterProvider({ children }: { children: ReactNode }) {
-  async function signInWithCode() {
-    const searchParams = new URL(window.location.href).searchParams;
 
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  async function signInWithCode() {
     const state = searchParams.get('state')
     const code = searchParams.get('code')
 
@@ -74,11 +76,17 @@ export function TwitterProvider({ children }: { children: ReactNode }) {
     const getMeResponse = await getMeRes.json()
 
     console.log({ getMeResponse })
+
+    setSearchParams((searchParams) => {
+      searchParams.delete('state')
+      searchParams.delete('code')
+      return searchParams
+    })
   }
 
   useEffect(() => {
     signInWithCode()
-  }, [])
+  }, [searchParams, setSearchParams])
 
   return (
     <TwitterContext.Provider
