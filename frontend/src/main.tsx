@@ -11,13 +11,16 @@ import Project from "./pages/Project"
 import App from "./App"
 import { WhitelistStatusProvider } from "./hooks/useWhitelistContext"
 import { ProjectDataProvider } from "./hooks/useProjectData"
+import { BalanceProvider } from "@/hooks/useBalanceContext.tsx"
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
       <WalletProvider>
-        <App />
+        <BalanceProvider>
+          <App />
+        </BalanceProvider>
       </WalletProvider>
     ),
     children: [

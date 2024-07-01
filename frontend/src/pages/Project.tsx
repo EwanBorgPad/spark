@@ -1,8 +1,10 @@
 import { ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { useState } from "react"
 
 import TokenGenerationSection from "../components/TokenGenerationSection/TokenGenerationSection"
 import { ExternalLink } from "../components/Button/ExternalLink"
+import { useProjectDataContext } from "@/hooks/useProjectData"
 import { formatDateForDisplay } from "../utils/date-helpers"
 import ProjectTester from "@/components/QA/ProjectTester"
 import { calculateTimelineData } from "@/utils/timeline"
@@ -11,7 +13,6 @@ import Timeline from "@/components/Timeline/Timeline"
 import Avatar from "../components/Avatar/Avatar"
 import { Icon } from "../components/Icon/Icon"
 
-import { useProjectDataContext } from "@/hooks/useProjectData"
 
 const Project = () => {
   const { projectData } = useProjectDataContext()
