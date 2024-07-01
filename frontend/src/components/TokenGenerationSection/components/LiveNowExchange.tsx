@@ -178,22 +178,6 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
               />
             </div>
           )}
-          {/* Probably not needed */}
-          {/* {balance && (
-            <div className="flex items-center gap-2">
-              <span>{t("tge.participation_status")}:</span>
-              {isUserWhitelisted ? (
-                <span className="text-sm text-fg-success-primary">
-                  {t("tge.whitelisted")}
-                </span>
-              ) : (
-                <div className="flex items-center gap-2 rounded-full border-[1px] border-error-secondary bg-error-primary py-1 pl-1 pr-2 text-fg-error-primary">
-                  <Icon icon="SvgCircledX" className="text-[18px]" />
-                  <span>{t("tge.not_eligible")}</span>
-                </div>
-              )}
-            </div>
-          )} */}
         </div>
       </form>
       {!isUserWhitelisted && (

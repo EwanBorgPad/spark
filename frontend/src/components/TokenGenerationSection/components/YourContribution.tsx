@@ -1,11 +1,11 @@
+import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
+import { useProjectDataContext } from "@/hooks/useProjectData"
+import { formatDateForDisplay } from "@/utils/date-helpers"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 import { PastOrders } from "./PastOrders"
 
 import { ContributionType } from "@/data/contributionData"
-import { useProjectDataContext } from "@/hooks/useProjectData"
-import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
-import { formatDateForDisplay } from "@/utils/date-helpers"
 
 type YourContributionProps = {
   contributionInfo: ContributionType
@@ -18,7 +18,7 @@ const YourContribution = ({
   const { projectData } = useProjectDataContext()
 
   return (
-    <div className="flex w-full max-w-[400px] flex-col items-center gap-6">
+    <>
       <div className="flex items-center gap-2 text-xl font-semibold">
         <Icon icon="SvgBorgCoin" />
         <span className="font-geist-mono">
@@ -49,7 +49,7 @@ const YourContribution = ({
                 className="h-4 w-4 object-cover"
               />
               <span className="font-geist-mono text-base">
-                {contributionInfo.reward.mainPosition.tokens}
+                {contributionInfo.toBeReceived.mainPosition.tokens}
               </span>
               <span className="font-geist-mono text-base">
                 {projectData.tge.projectCoin.ticker}
@@ -90,7 +90,7 @@ const YourContribution = ({
               className="h-4 w-4 object-cover"
             />
             <span className="font-geist-mono text-base">
-              {contributionInfo.reward.yourReward.tokens}
+              {contributionInfo.toBeReceived.yourReward.tokens}
             </span>
             <span className="font-geist-mono text-base">
               {projectData.tge.projectCoin.ticker}
@@ -98,12 +98,12 @@ const YourContribution = ({
           </div>
           <div className="flex h-fit items-center gap-1.5 rounded-full text-xs text-fg-primary ">
             <span className="opacity-50">
-              {contributionInfo.reward.yourReward.rewardPayoutType}
+              {contributionInfo.toBeReceived.yourReward.rewardPayoutType}
             </span>
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

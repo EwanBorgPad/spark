@@ -6,16 +6,16 @@ import Accordion from "@/components/Accordion/Accordion"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 
+// to be replaced with API calls
+import { ContributionType, contributionData } from "@/data/contributionData"
 import { dummyBorgPriceInUSD } from "@/data/borgPriceInUsd"
-import { contributionData } from "@/data/contributionData"
-import { ProjectData } from "@/data/data"
 
 type PastOrdersProps = {
   label?: string
   className?: string
 }
 type PastOrderProps = {
-  order: ProjectData["tge"]["pastOrders"][0]
+  order: ContributionType["suppliedBorg"]["pastOrders"][0]
   numberOfPastOrders: number
   index: number
   borgPriceInUSD: number

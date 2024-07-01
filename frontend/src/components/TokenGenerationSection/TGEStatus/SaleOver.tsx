@@ -3,18 +3,21 @@ import { Tweet } from "react-tweet"
 
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { ConnectButton } from "@/components/Header/ConnectButton"
+import YourContribution from "../components/YourContribution"
 import { useWalletContext } from "@/hooks/useWalletContext"
+import { getTweetIdFromURL } from "@/utils/tweetParser"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
-import greenCloudImg from "@/assets/greenCloud.svg"
 import { Icon } from "@/components/Icon/Icon"
 
 // to be replaced with API calls
 import { ContributionType, contributionData } from "@/data/contributionData"
 import { tokenData } from "@/data/tokenData"
 import { ProjectData } from "@/data/data"
-import YourContribution from "../components/YourContribution"
-import { getTweetIdFromURL } from "@/utils/tweetParser"
+import Divider from "@/components/Divider"
+import { useRef } from "react"
+import Rewards from "../components/Rewards"
+import { twMerge } from "tailwind-merge"
 
 type LiveProps = {
   eventData: ExpandedTimelineEventType
@@ -22,6 +25,8 @@ type LiveProps = {
 }
 
 const SaleOver = ({ eventData, projectData }: LiveProps) => {
+  const contributionsRef = useRef<HTMLDivElement>(null)
+  const rewardsRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
 
   const {
@@ -52,6 +57,24 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
 
   const tweetId = getTweetIdFromURL(projectData.tge.tweetURL)
 
+  const scrollToRewards = () => {
+    if (!contributionsRef.current) return
+    if (userDidContribute) {
+      if (!rewardsRef.current) return
+      window.scrollBy({
+        behavior: "smooth",
+        top: rewardsRef.current.getBoundingClientRect().top - 100,
+      })
+      return
+    }
+    window.scrollBy({
+      behavior: "smooth",
+      top: contributionsRef.current.getBoundingClientRect().top - 100,
+    })
+  }
+
+  const sectionClass = "flex w-full max-w-[400px] flex-col items-center gap-6"
+
   return (
     <>
       <div className="flex w-full flex-col items-center gap-9">
@@ -65,7 +88,7 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
           <Button
             color="plain"
             className="cursor-pointer py-0 text-sm underline"
-            onClick={() => {}}
+            onClick={scrollToRewards}
           >
             Check Your Rewards Here
           </Button>
@@ -121,19 +144,11 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
         </div>
       </div>
 
-      <div className="flex w-full flex-col items-center gap-9">
-        <div className="relative flex w-full max-w-[400px] items-center">
-          <img
-            src={greenCloudImg}
-            className="absolute h-[96px] w-full opacity-50"
-          ></img>
-          <div className="contribution-gradient h-[1px] flex-1 rotate-180"></div>
-          <Icon
-            icon="SvgHandWithWallet"
-            className="mx-4 h-5 w-5 text-fg-brand-primary"
-          />
-          <div className="contribution-gradient h-[1px] flex-1"></div>
-        </div>
+      <div
+        ref={contributionsRef}
+        className="flex w-full flex-col items-center gap-9"
+      >
+        <Divider icon="SvgHandWithWallet" />
         <h3 className="text-[32px] font-semibold leading-tight">
           Your Contribution
         </h3>
@@ -143,22 +158,26 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
             btnClassName="py-3 px-4 w-full max-w-[400px] text-base"
           />
         ) : userDidContribute ? (
-          <YourContribution
-            contributionInfo={contributionInfo}
-            eventData={eventData}
-          />
+          <>
+            <section className={sectionClass}>
+              <YourContribution
+                contributionInfo={contributionInfo}
+                eventData={eventData}
+              />
+            </section>
+            <section
+              ref={rewardsRef}
+              className={twMerge(sectionClass, "mt-7 gap-4")}
+            >
+              <Rewards eventData={eventData} />
+            </section>
+          </>
         ) : (
           <div className="w-full max-w-[400px] rounded-lg border border-bd-primary bg-secondary px-4 py-3 text-sm opacity-60">
             The wallet you connected didn’t contribute to this pool.
           </div>
         )}
       </div>
-
-      {/* <TgeWrapper label={t("tge.sale_finished")}>
-        {eventData?.nextEventDate && (
-          <CountDownTimer endOfEvent={eventData.nextEventDate} />
-        )}
-      </TgeWrapper> */}
     </>
   )
 }

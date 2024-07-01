@@ -13,7 +13,7 @@ export type ContributionType = {
       externalLink: string
     }[]
   }
-  reward: {
+  toBeReceived: {
     mainPosition: {
       borgAmount: number
       tokens: number
@@ -24,6 +24,7 @@ export type ContributionType = {
       rewardPayoutType: string
     }
   }
+  // @TODO - add rewards data type here
 }
 
 export const contributionData: ContributionType = {
@@ -52,7 +53,7 @@ export const contributionData: ContributionType = {
       },
     ],
   },
-  reward: {
+  toBeReceived: {
     mainPosition: {
       borgAmount: 1200,
       tokens: 1200,
