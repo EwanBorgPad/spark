@@ -10,6 +10,7 @@ export type ContributionType = {
     pastOrders: {
       borgAmount: number
       date: Date
+      // externalLink will be url of the transaction on the block explorer
       externalLink: string
     }[]
   }
@@ -24,7 +25,6 @@ export type ContributionType = {
       rewardPayoutType: string
     }
   }
-  // @TODO - add rewards data type here
 }
 
 export const contributionData: ContributionType = {

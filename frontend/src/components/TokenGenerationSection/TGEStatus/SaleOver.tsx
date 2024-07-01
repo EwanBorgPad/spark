@@ -1,5 +1,7 @@
 import { useTranslation } from "react-i18next"
+import { twMerge } from "tailwind-merge"
 import { Tweet } from "react-tweet"
+import { useRef } from "react"
 
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { ConnectButton } from "@/components/Header/ConnectButton"
@@ -8,16 +10,13 @@ import { useWalletContext } from "@/hooks/useWalletContext"
 import { getTweetIdFromURL } from "@/utils/tweetParser"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
-import { Icon } from "@/components/Icon/Icon"
+import Rewards from "../components/Rewards"
+import Divider from "@/components/Divider"
 
 // to be replaced with API calls
 import { ContributionType, contributionData } from "@/data/contributionData"
 import { tokenData } from "@/data/tokenData"
 import { ProjectData } from "@/data/data"
-import Divider from "@/components/Divider"
-import { useRef } from "react"
-import Rewards from "../components/Rewards"
-import { twMerge } from "tailwind-merge"
 
 type LiveProps = {
   eventData: ExpandedTimelineEventType
@@ -79,10 +78,10 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
     <>
       <div className="flex w-full flex-col items-center gap-9">
         <div className="flex w-full flex-col items-center gap-1">
-          <h2 className="text-4xl font-semibold leading-11">Sale Over</h2>
-          <span className="text-sm opacity-60">
-            Thank you for your participation
-          </span>
+          <h2 className="text-4xl font-semibold leading-11">
+            {t("sale_over")}
+          </h2>
+          <span className="text-sm opacity-60">{t("sale_over.thank_you")}</span>
 
           {/* @TODO - Add ScrollTo event when you make targeted component */}
           <Button
@@ -90,14 +89,14 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
             className="cursor-pointer py-0 text-sm underline"
             onClick={scrollToRewards}
           >
-            Check Your Rewards Here
+            {t("sale_over.check_your_rewards")}
           </Button>
         </div>
 
         <div className="flex w-full flex-wrap gap-x-4 gap-y-5 rounded-lg border-[1px] border-bd-primary bg-secondary px-5 py-4">
           <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
             <span className="text-sm text-fg-tertiary">
-              Total Amount Raised
+              {t("sale_over.total_amount_raised")}
             </span>
             <span className="font-geist-mono text-base leading-7 text-fg-primary">
               {formatCurrencyAmount(totalAmountRaised)}
@@ -105,34 +104,36 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
           </div>
           <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
             <span className="text-sm text-fg-tertiary">
-              Sell Out Percentage
+              {t("sale_over.sell_out_percentage")}
             </span>
             <span className="font-geist-mono text-base leading-7 text-fg-primary">
               {sellOutPercentage}%
             </span>
           </div>
           <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-            <span className="text-sm text-fg-tertiary">Participants</span>
+            <span className="text-sm text-fg-tertiary">
+              {t("sale_over.participants")}
+            </span>
             <span className="font-geist-mono text-base leading-7 text-fg-primary">
               {participants}
             </span>
           </div>
           <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
             <span className="text-sm text-fg-tertiary">
-              Average Invested Amount
+              {t("sale_over.average_invested_amount")}
             </span>
             <span className="font-geist-mono text-base leading-7 text-fg-primary">
               {formatCurrencyAmount(averageInvestedAmount)}
             </span>
           </div>
           <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-            <span className="text-sm text-fg-tertiary">Market Cap</span>
+            <span className="text-sm text-fg-tertiary">{t("market_cap")}</span>
             <span className="font-geist-mono text-base leading-7 text-fg-primary">
               {formatCurrencyAmount(marketCap)}
             </span>
           </div>
           <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-            <span className="text-sm text-fg-tertiary">FDV</span>
+            <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
             <span className="font-geist-mono text-base leading-7 text-fg-primary">
               {formatCurrencyAmount(fdv)}
             </span>
@@ -150,7 +151,7 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
       >
         <Divider icon="SvgHandWithWallet" />
         <h3 className="text-[32px] font-semibold leading-tight">
-          Your Contribution
+          {t("sale_over.your_contribution")}
         </h3>
         {walletState !== "CONNECTED" ? (
           <ConnectButton
@@ -174,7 +175,7 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
           </>
         ) : (
           <div className="w-full max-w-[400px] rounded-lg border border-bd-primary bg-secondary px-4 py-3 text-sm opacity-60">
-            The wallet you connected didn’t contribute to this pool.
+            {t("sale_over.wallet_didnt_contribute")}
           </div>
         )}
       </div>

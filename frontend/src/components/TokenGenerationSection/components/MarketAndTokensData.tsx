@@ -19,7 +19,7 @@ const MarketAndTokensData = ({ projectData }: { projectData: ProjectData }) => {
     <section className="flex w-full max-w-[400px] flex-col gap-[25px]">
       <div className="mt-[28px] flex w-full justify-between gap-4">
         <div className="flex flex-1 flex-col gap-2">
-          <span className="text-sm text-fg-tertiary">{t("market-cap")}</span>
+          <span className="text-sm text-fg-tertiary">{t("market_cap")}</span>
           <span className="font-geist-mono text-base text-fg-primary">
             {formatCurrencyAmount(marketCap)}
           </span>
