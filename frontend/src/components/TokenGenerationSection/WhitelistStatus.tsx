@@ -15,7 +15,7 @@ const WhitelistStatus = () => {
     <div className="mt-5 flex w-full flex-col gap-4">
       <div className="flex w-full items-center justify-between">
         <span>{t("tge.whitelist_status")}</span>
-        <Badge.Eligibility isUserWhitelisted={!!isUserWhitelisted} />
+        <Badge.Confirmation isConfirmed={!!isUserWhitelisted} />
       </div>
       {numberOfRequirements > 0 && (
         <div className="rounded-lg border-[1px] border-bd-primary bg-secondary">

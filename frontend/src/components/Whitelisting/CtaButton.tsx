@@ -1,23 +1,29 @@
-import React from "react"
+import React, { useState } from "react"
 
 import { Button } from "../Button/Button"
 import { ExternalLink } from "../Button/ExternalLink"
+import NotResidingInUsModal from "../Modal/Modals/NotResidingInUs"
 
 const CtaButtonRoot = () => {
   return null
 }
 
 const NotResidingInUsBtn = () => {
+  const [showModal, setShowModal] = useState(false)
+
   return (
     <div className="mt-2 flex justify-start">
       <Button
         color="secondary"
         size="xs"
         className="rounded-lg px-3"
-        onClick={() => console.log("NotResidingInUsBtn")}
+        onClick={() => setShowModal(!showModal)}
       >
         I Don’t Reside in the US
       </Button>
+      {showModal && (
+        <NotResidingInUsModal onClose={() => setShowModal(false)} />
+      )}
     </div>
   )
 }

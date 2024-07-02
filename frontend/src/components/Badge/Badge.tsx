@@ -24,27 +24,37 @@ const BadgeRoot = ({ label, icon, className, iconClassName }: BadgeProps) => {
   )
 }
 
-const EligibilityBadge = ({
-  isUserWhitelisted,
-}: {
-  isUserWhitelisted: boolean
-}) => {
+type ConfirmationBadgeProps = {
+  isConfirmed: boolean
+  classNames?: string
+  label?: string
+}
+const ConfirmationBadge = ({
+  isConfirmed,
+  classNames,
+  label,
+}: ConfirmationBadgeProps) => {
   const { t } = useTranslation()
+  const renderLabel = () => {
+    if (label) return label
+    return isConfirmed ? t("tge.eligible") : t("tge.not_eligible")
+  }
 
   return (
     <BadgeRoot
-      icon={isUserWhitelisted ? "SvgCircledCheckmark" : "SvgCircledX"}
-      label={isUserWhitelisted ? t("tge.eligible") : t("tge.not_eligible")}
-      className={
-        isUserWhitelisted
+      icon={isConfirmed ? "SvgCircledCheckmark" : "SvgCircledX"}
+      label={renderLabel()}
+      className={twMerge(
+        isConfirmed
           ? "border-bd-success-primary bg-success-primary text-fg-success-primary"
-          : "border-error-secondary bg-error-primary text-fg-error-primary"
-      }
-      iconClassName={isUserWhitelisted ? "text-fg-success-secondary" : ""}
+          : "border-error-secondary bg-error-primary text-fg-error-primary",
+        classNames,
+      )}
+      iconClassName={isConfirmed ? "text-fg-success-secondary" : ""}
     />
   )
 }
 
 export const Badge = Object.assign(BadgeRoot, {
-  Eligibility: EligibilityBadge,
+  Confirmation: ConfirmationBadge,
 })

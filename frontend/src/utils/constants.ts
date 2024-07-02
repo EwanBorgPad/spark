@@ -8,7 +8,7 @@ export type WhitelistRequirement = {
   description: string
   isFulfilled: boolean
   isMandatory: boolean
-  holdAmount?: number
+  heldAmount?: number
 }
 
 export const whitelistRequirements: Record<
@@ -20,7 +20,7 @@ export const whitelistRequirements: Record<
     description: "",
     isFulfilled: false,
     isMandatory: true,
-    holdAmount: 20000,
+    heldAmount: 20000,
   },
   FOLLOW_ON_X: {
     label: "Follow BorgPad on X",
