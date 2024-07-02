@@ -6,7 +6,7 @@ import WhitelistingContent from "../components/WhitelistingContent"
 import CountDownTimer from "@/components/CountDownTimer"
 import { TgeWrapper } from "../components/Wrapper"
 import WhitelistStatus from "../WhitelistStatus"
-import { ProjectData } from "@/data/data"
+import { ProjectData } from "@/data/projectData"
 
 type WhitelistingProps = {
   eventData: ExpandedTimelineEventType

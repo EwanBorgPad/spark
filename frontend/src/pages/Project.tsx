@@ -1,6 +1,5 @@
 import { ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { useState } from "react"
 
 import TokenGenerationSection from "../components/TokenGenerationSection/TokenGenerationSection"
 import { ExternalLink } from "../components/Button/ExternalLink"

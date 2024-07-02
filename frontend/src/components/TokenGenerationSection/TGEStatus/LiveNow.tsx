@@ -8,7 +8,7 @@ import CountDownTimer from "@/components/CountDownTimer"
 import { PastOrders } from "../components/PastOrders"
 import { TgeWrapper } from "../components/Wrapper"
 import WhitelistStatus from "../WhitelistStatus"
-import { ProjectData } from "@/data/data"
+import { ProjectData } from "@/data/projectData"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType

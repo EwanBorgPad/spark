@@ -1,5 +1,5 @@
 import { Icon } from "@/components/Icon/Icon"
-import { ProjectData } from "@/data/data"
+import { ProjectData } from "@/data/projectData"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import { formatValue } from "react-currency-input-field"
 import { useTranslation } from "react-i18next"

@@ -1,5 +1,5 @@
 import { addDays } from "date-fns/addDays"
-import { LockupDetails } from "./data"
+import { LockupDetails } from "./projectData"
 import raydiumImg from "@/assets/raydium.png"
 
 const currentMoment = new Date()

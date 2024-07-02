@@ -58,7 +58,7 @@ export type ProjectData = {
   saleResults: {
     totalAmountRaised: number
     sellOutPercentage: number
-    participants: number
+    participantCount: number
     averageInvestedAmount: number
   }
 }
@@ -176,7 +176,7 @@ export const dummyData: ProjectData = {
   saleResults: {
     totalAmountRaised: 800402.5661,
     sellOutPercentage: 78,
-    participants: 578,
+    participantCount: 578,
     averageInvestedAmount: 1200.34,
   },
 }

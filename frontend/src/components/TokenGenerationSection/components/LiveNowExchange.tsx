@@ -9,7 +9,7 @@ import { useWalletContext } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
-import { ProjectData } from "@/data/data"
+import { ProjectData } from "@/data/projectData"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
 
@@ -30,7 +30,7 @@ const inputButtons = [
 const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
   const { t } = useTranslation()
 
-  const { address, walletState } = useWalletContext()
+  const { walletState } = useWalletContext()
   const { isUserWhitelisted } = useWhitelistStatusContext()
 
   const { balance } = useBalanceContext()
@@ -125,7 +125,12 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
                 </div>
                 <p className="text-left text-xs opacity-50">
                   {t("tge.balance")}:{" "}
-                  <span>{formatCurrencyAmount(Number(balance.uiAmountString), false)}</span>
+                  <span>
+                    {formatCurrencyAmount(
+                      Number(balance.uiAmountString),
+                      false,
+                    )}
+                  </span>
                 </p>
               </div>
             )}

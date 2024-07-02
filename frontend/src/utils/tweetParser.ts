@@ -1,5 +1,6 @@
 const TWEET_SEARCH_PARAMS = ["s", "t"]
 
+// extract tweetId from tweet url
 export const getTweetIdFromURL = (url: string) => {
   const newUrl = new URL(url)
   TWEET_SEARCH_PARAMS.forEach((param) => {

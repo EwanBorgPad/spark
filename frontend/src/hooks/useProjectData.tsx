@@ -1,4 +1,4 @@
-import { dummyData, ProjectData } from "@/data/data"
+import { dummyData, ProjectData } from "@/data/projectData"
 import { createContext, ReactNode, useContext, useState } from "react"
 
 type Context = {

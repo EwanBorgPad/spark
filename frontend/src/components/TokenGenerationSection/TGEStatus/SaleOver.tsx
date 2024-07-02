@@ -15,8 +15,8 @@ import Divider from "@/components/Divider"
 
 // to be replaced with API calls
 import { ContributionType, contributionData } from "@/data/contributionData"
+import { ProjectData } from "@/data/projectData"
 import { tokenData } from "@/data/tokenData"
-import { ProjectData } from "@/data/data"
 
 type LiveProps = {
   eventData: ExpandedTimelineEventType
@@ -31,7 +31,7 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
   const {
     totalAmountRaised,
     sellOutPercentage,
-    participants,
+    participantCount,
     averageInvestedAmount,
   } = projectData.saleResults
 
@@ -115,7 +115,7 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
               {t("sale_over.participants")}
             </span>
             <span className="font-geist-mono text-base leading-7 text-fg-primary">
-              {participants}
+              {participantCount}
             </span>
           </div>
           <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">

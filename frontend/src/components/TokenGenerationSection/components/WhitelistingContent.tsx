@@ -7,7 +7,7 @@ import TokenRewards from "./TokenRewards"
 
 import { dummyBorgPriceInUSD } from "@/data/borgPriceInUsd"
 import { tokenData } from "@/data/tokenData"
-import { ProjectData } from "@/data/data"
+import { ProjectData } from "@/data/projectData"
 
 type WhitelistingContentProps = {
   tgeData: ProjectData["tge"]
