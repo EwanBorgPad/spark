@@ -87,7 +87,7 @@ const Project = () => {
             </div>
             <div className="flex flex-wrap gap-2">
               {projectData.curator.socials.map((social) => (
-                <ExternalLink key={social.linkType} externalLink={social} />
+                <ExternalLink key={social.iconType} externalLink={social} />
               ))}
             </div>
           </div>

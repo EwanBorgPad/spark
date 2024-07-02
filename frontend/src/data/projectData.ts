@@ -1,8 +1,8 @@
+import { addDays } from "date-fns/addDays"
 import i18n from "@/i18n/i18n"
 
 import { ExternalLinkType } from "@/components/Button/ExternalLink"
 import { TimelineEventType } from "@/components/Timeline/Timeline"
-import { addDays } from "date-fns/addDays"
 
 import secondaryImgUrl from "../assets/secondaryImgUrl.png"
 import raydiumImg from "@/assets/raydium.png"
@@ -69,22 +69,22 @@ export const dummyData: ProjectData = {
   projectLinks: [
     {
       url: "#",
-      linkType: "WEB",
+      iconType: "WEB",
       label: undefined,
     },
     {
       url: "#",
-      linkType: "MEDIUM",
+      iconType: "MEDIUM",
       label: undefined,
     },
     {
       url: "#",
-      linkType: "LINKED_IN",
+      iconType: "LINKED_IN",
       label: undefined,
     },
     {
       url: "#",
-      linkType: "X_TWITTER",
+      iconType: "X_TWITTER",
       label: undefined,
     },
   ],
@@ -99,17 +99,17 @@ export const dummyData: ProjectData = {
     socials: [
       {
         url: "#",
-        linkType: "LINKED_IN",
+        iconType: "LINKED_IN",
         label: "Linkedin",
       },
       {
         url: "#",
-        linkType: "X_TWITTER",
+        iconType: "X_TWITTER",
         label: "X (ex-Twitter)",
       },
       {
         url: "#",
-        linkType: "MEDIUM",
+        iconType: "MEDIUM",
         label: "Medium",
       },
     ],
@@ -159,7 +159,7 @@ export const dummyData: ProjectData = {
     },
     {
       label: i18n.t("timeline.sale_closes"),
-      date: addDays(currentMoment, -1),
+      date: addDays(currentMoment, 1),
       id: "SALE_CLOSES",
     },
     {
