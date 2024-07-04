@@ -1,13 +1,20 @@
+import { useTranslation } from "react-i18next"
 import Divider from "@/components/Divider"
 import { TgeWrapper } from "./Wrapper"
 import CountDownTimer from "@/components/CountDownTimer"
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
-import { useTranslation } from "react-i18next"
+import { useProjectDataContext } from "@/hooks/useProjectData"
+import ProgressBar from "./ProgressBar"
+import Accordion from "@/components/Accordion/Accordion"
+import ShowPayoutSchedule from "./ShowPayoutSchedule"
 
 type RewardsProps = {
   eventData: ExpandedTimelineEventType
+  hasDistributionStarted: boolean
 }
-const Rewards = ({ eventData }: RewardsProps) => {
+const Rewards = ({ eventData, hasDistributionStarted }: RewardsProps) => {
+  const { projectData } = useProjectDataContext()
+  const { iconUrl, ticker } = projectData.tge.projectCoin
   const { t } = useTranslation()
   return (
     <>
@@ -25,7 +32,28 @@ const Rewards = ({ eventData }: RewardsProps) => {
         {eventData?.nextEventDate && (
           <CountDownTimer endOfEvent={eventData.nextEventDate} />
         )}
+        {hasDistributionStarted && (
+          <>
+            <hr className="w-full max-w-[calc(100%-32px)] border-bd-primary" />
+            <div className="flex w-full flex-col gap-2.5 p-4 pb-7">
+              <div className="flex w-full items-center justify-between gap-2">
+                <span className="text-sm font-medium">Claimed</span>
+                <div className="flex items-center gap-2">
+                  <img src={iconUrl} className="h-4 w-4" />
+                  <p>
+                    <span className="mr-1">2,000/12,000</span>
+                    <span>LRC</span>
+                  </p>
+                </div>
+              </div>
+              <ProgressBar fulfilledAmount={2000} totalAmount={12000} />
+            </div>
+          </>
+        )}
       </TgeWrapper>
+      {hasDistributionStarted && (
+        <ShowPayoutSchedule ticker={ticker} tokenIconUrl={iconUrl} />
+      )}
     </>
   )
 }

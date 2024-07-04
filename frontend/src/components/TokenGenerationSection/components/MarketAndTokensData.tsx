@@ -14,6 +14,7 @@ const MarketAndTokensData = ({ projectData }: { projectData: ProjectData }) => {
     return tokenData
   }
   const { marketCap, fdv } = getTokenInfo()
+  const { available, total } = projectData.tokens
 
   return (
     <section className="flex w-full max-w-[400px] flex-col gap-[25px]">
@@ -46,7 +47,7 @@ const MarketAndTokensData = ({ projectData }: { projectData: ProjectData }) => {
             </span>
           </div>
         </div>
-        <ProgressBar tokens={projectData.tokens} />
+        <ProgressBar fulfilledAmount={available} totalAmount={total} />
       </div>
     </section>
   )

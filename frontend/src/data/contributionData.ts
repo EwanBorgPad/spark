@@ -25,6 +25,14 @@ export type ContributionType = {
       rewardPayoutType: string
     }
   }
+  rewards: {
+    claimed: number
+    showPayoutSchedule: {
+      date: Date
+      amount: number
+      isClaimed: boolean
+    }[]
+  }
 }
 
 export const contributionData: ContributionType = {
@@ -69,5 +77,9 @@ export const contributionData: ContributionType = {
       tokens: 1200,
       rewardPayoutType: "linearly paid-out through 12 months",
     },
+  },
+  rewards: {
+    claimed: 2000,
+    showPayoutSchedule: [],
   },
 }

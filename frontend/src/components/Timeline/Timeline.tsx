@@ -1,5 +1,5 @@
 import { useWindowSize } from "@/hooks/useWindowSize"
-import { calculateTimelineData } from "@/utils/timeline"
+import { expandTimelineDataInfo } from "@/utils/timeline"
 import { differenceInMilliseconds } from "date-fns"
 import { isBefore } from "date-fns/isBefore"
 import {
@@ -45,7 +45,7 @@ const HORIZONTAL_PADDING = 16
 const Timeline = ({ timelineEvents }: Props) => {
   const [containerWidth, setContainerWidth] = useState<number | null>(null)
   const [timelineData, setTimelineData] = useState(
-    calculateTimelineData(timelineEvents),
+    expandTimelineDataInfo(timelineEvents),
   )
   const containerRef = useRef<HTMLDivElement>(null)
   const dataLength = timelineData.length
@@ -151,7 +151,7 @@ const Timeline = ({ timelineEvents }: Props) => {
   }, [width])
 
   const updateTimeline = useCallback(() => {
-    const updatedTimelineData = calculateTimelineData(timelineEvents)
+    const updatedTimelineData = expandTimelineDataInfo(timelineEvents)
     setTimelineData(updatedTimelineData)
   }, [timelineEvents])
 

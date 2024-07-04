@@ -159,7 +159,7 @@ export const dummyData: ProjectData = {
     },
     {
       label: i18n.t("timeline.sale_closes"),
-      date: addDays(currentMoment, 1),
+      date: addDays(currentMoment, -1),
       id: "SALE_CLOSES",
     },
     {
