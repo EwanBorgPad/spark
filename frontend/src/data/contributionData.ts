@@ -14,26 +14,37 @@ export type ContributionType = {
       externalLink: string
     }[]
   }
-  toBeReceived: {
+  // section Your Contribution and Your Rewards
+  claimPositions: {
     mainPosition: {
       borgAmount: number
       tokens: number
       lockupDetails: LockupDetails
     }
-    yourReward: {
-      tokens: number
+    rewards: {
+      totalTokens: number
+      claimedTokens: number
       rewardPayoutType: string
+      payoutSchedule: PayoutScheduleType[]
     }
   }
-  rewards: {
-    claimed: number
-    showPayoutSchedule: {
-      date: Date
-      amount: number
-      isClaimed: boolean
-    }[]
-  }
 }
+
+export type PayoutScheduleType = {
+  date: Date
+  amount: number
+  isClaimed: boolean
+}
+
+const dummyPayoutScheduleData: PayoutScheduleType[] = [...Array(12).keys()].map(
+  (index) => {
+    return {
+      amount: 100,
+      isClaimed: index < 3,
+      date: addDays(currentMoment, -4 + index),
+    }
+  },
+)
 
 export const contributionData: ContributionType = {
   suppliedBorg: {
@@ -61,7 +72,7 @@ export const contributionData: ContributionType = {
       },
     ],
   },
-  toBeReceived: {
+  claimPositions: {
     mainPosition: {
       borgAmount: 1200,
       tokens: 1200,
@@ -73,13 +84,12 @@ export const contributionData: ContributionType = {
         },
       },
     },
-    yourReward: {
-      tokens: 1200,
+    rewards: {
+      claimedTokens: 1200,
+      totalTokens: 2000,
       rewardPayoutType: "linearly paid-out through 12 months",
+      payoutSchedule: dummyPayoutScheduleData,
     },
   },
-  rewards: {
-    claimed: 2000,
-    showPayoutSchedule: [],
-  },
 }
+

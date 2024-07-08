@@ -74,6 +74,8 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
   const sectionClass = "flex w-full max-w-[400px] flex-col items-center gap-6"
   const hasDistributionStarted = eventData.id === "REWARD_DISTRIBUTION"
 
+  console.log(tweetId)
+
   return (
     <>
       <div className="flex w-full flex-col items-center gap-9">
@@ -141,7 +143,8 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
         </div>
 
         <div className="w-full max-w-[400px]" data-theme="dark">
-          {tweetId ? <Tweet id={tweetId} /> : <TweetNotFound />}
+          {/* UNCOMMENT */}
+          {/* {tweetId ? <Tweet id={tweetId} /> : <TweetNotFound />} */}
         </div>
       </div>
 
@@ -172,6 +175,7 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
             >
               <Rewards
                 eventData={eventData}
+                rewards={contributionInfo.claimPositions.rewards}
                 hasDistributionStarted={hasDistributionStarted}
               />
             </section>

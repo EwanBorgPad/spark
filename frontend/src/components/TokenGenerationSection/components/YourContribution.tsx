@@ -19,6 +19,8 @@ const YourContribution = ({
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
 
+  const hasDistributionStarted = eventData.id === "REWARD_DISTRIBUTION"
+
   return (
     <>
       <div className="flex items-center gap-2 text-xl font-semibold">
@@ -55,7 +57,7 @@ const YourContribution = ({
                 className="h-4 w-4 object-cover"
               />
               <span className="font-geist-mono text-base">
-                {contributionInfo.toBeReceived.mainPosition.tokens}
+                {contributionInfo.claimPositions.mainPosition.tokens}
               </span>
               <span className="font-geist-mono text-base">
                 {projectData.tge.projectCoin.ticker}
@@ -75,10 +77,14 @@ const YourContribution = ({
               {projectData.tge.lockupDetails.description}
             </span>
           </div>
-          <span className="text-xs">
-            {t("sale_over.unlocks_on")}{" "}
-            {formatDateForDisplay(eventData.nextEventDate)}
-          </span>
+          {hasDistributionStarted ? (
+            "distribution started"
+          ) : (
+            <span className="text-xs">
+              {t("sale_over.unlocks_on")}{" "}
+              {formatDateForDisplay(eventData.nextEventDate)}
+            </span>
+          )}
 
           <div className="absolute -bottom-[10px] bg-default p-[2px]">
             <Icon
@@ -97,7 +103,7 @@ const YourContribution = ({
               className="h-4 w-4 object-cover"
             />
             <span className="font-geist-mono text-base">
-              {contributionInfo.toBeReceived.yourReward.tokens}
+              {contributionInfo.claimPositions.rewards.totalTokens}
             </span>
             <span className="font-geist-mono text-base">
               {projectData.tge.projectCoin.ticker}
@@ -105,7 +111,7 @@ const YourContribution = ({
           </div>
           <div className="flex h-fit items-center gap-1.5 rounded-full text-xs text-fg-primary ">
             <span className="opacity-50">
-              {contributionInfo.toBeReceived.yourReward.rewardPayoutType}
+              {contributionInfo.claimPositions.rewards.rewardPayoutType}
             </span>
           </div>
         </div>

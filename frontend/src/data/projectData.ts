@@ -12,6 +12,8 @@ import curator from "../assets/curator.png"
 
 const currentMoment = new Date()
 
+// Data defined through Back Office
+
 export type ProjectData = {
   title: string
   subtitle: string
@@ -159,12 +161,12 @@ export const dummyData: ProjectData = {
     },
     {
       label: i18n.t("timeline.sale_closes"),
-      date: addDays(currentMoment, -1),
+      date: addDays(currentMoment, -5),
       id: "SALE_CLOSES",
     },
     {
       label: i18n.t("timeline.reward_distribution"),
-      date: addDays(currentMoment, 5),
+      date: addDays(currentMoment, -2),
       id: "REWARD_DISTRIBUTION",
     },
     {
