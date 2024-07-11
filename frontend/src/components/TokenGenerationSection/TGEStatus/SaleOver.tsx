@@ -14,7 +14,10 @@ import Rewards from "../components/Rewards"
 import Divider from "@/components/Divider"
 
 // to be replaced with API calls
-import { ContributionType, contributionData } from "@/data/contributionData"
+import {
+  ContributionAndRewardsType,
+  contributionAndRewardsData,
+} from "@/data/contributionAndRewardsData"
 import { ProjectData } from "@/data/projectData"
 import { tokenData } from "@/data/tokenData"
 
@@ -40,8 +43,8 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
   ////////////////////////////////////////////////////////
   // @TODO - add API for getting contribution info ///////
   ////////////////////////////////////////////////////////
-  const getContributionInfo = (): ContributionType | null => {
-    return contributionData
+  const getContributionInfo = (): ContributionAndRewardsType | null => {
+    return contributionAndRewardsData
   }
   const contributionInfo = getContributionInfo()
   const userDidContribute = !!contributionInfo?.suppliedBorg.total
@@ -73,8 +76,6 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
   const tweetId = getTweetIdFromURL(projectData.tge.tweetURL)
   const sectionClass = "flex w-full max-w-[400px] flex-col items-center gap-6"
   const hasDistributionStarted = eventData.id === "REWARD_DISTRIBUTION"
-
-  console.log(tweetId)
 
   return (
     <>

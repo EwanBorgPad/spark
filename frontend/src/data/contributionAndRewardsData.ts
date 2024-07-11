@@ -1,30 +1,37 @@
 import { addDays } from "date-fns/addDays"
 import { LockupDetails } from "./projectData"
 import raydiumImg from "@/assets/raydium.png"
+import { addMonths } from "date-fns"
+import { subDays } from "date-fns/subDays"
 
 const currentMoment = new Date()
 
-export type ContributionType = {
+export type ContributionAndRewardsType = {
   suppliedBorg: {
     total: 1200
     pastOrders: {
       borgAmount: number
       date: Date
-      // externalLink will be url of the transaction on the block explorer
-      externalLink: string
+      transactionUrl: string // block explorer transaction url
     }[]
   }
-  // section Your Contribution and Your Rewards
+  // sections: Your Contribution and Your Rewards
   claimPositions: {
     mainPosition: {
-      borgAmount: number
-      tokens: number
+      borg: {
+        claimed: number
+        total: number
+      }
+      projectTokens: {
+        claimed: number
+        total: number
+      }
       lockupDetails: LockupDetails
     }
     rewards: {
       totalTokens: number
       claimedTokens: number
-      rewardPayoutType: string
+      rewardTypeDescription: string
       payoutSchedule: PayoutScheduleType[]
     }
   }
@@ -41,41 +48,47 @@ const dummyPayoutScheduleData: PayoutScheduleType[] = [...Array(12).keys()].map(
     return {
       amount: 100,
       isClaimed: index < 3,
-      date: addDays(currentMoment, -4 + index),
+      date: addMonths(subDays(currentMoment, 1), -10 + index),
     }
   },
 )
 
-export const contributionData: ContributionType = {
+export const contributionAndRewardsData: ContributionAndRewardsType = {
   suppliedBorg: {
     total: 1200,
     pastOrders: [
       {
         borgAmount: 3813.35,
         date: addDays(currentMoment, -8),
-        externalLink: "#",
+        transactionUrl: "#",
       },
       {
         borgAmount: 110.1,
         date: addDays(currentMoment, -7),
-        externalLink: "#",
+        transactionUrl: "#",
       },
       {
         borgAmount: 240.891,
         date: addDays(currentMoment, -6),
-        externalLink: "#",
+        transactionUrl: "#",
       },
       {
         borgAmount: 440.4,
         date: addDays(currentMoment, -5),
-        externalLink: "#",
+        transactionUrl: "#",
       },
     ],
   },
   claimPositions: {
     mainPosition: {
-      borgAmount: 1200,
-      tokens: 1200,
+      borg: {
+        claimed: 1013,
+        total: 1200,
+      },
+      projectTokens: {
+        claimed: 1013,
+        total: 1200,
+      },
       lockupDetails: {
         description: "12 month lockup",
         liquidityPool: {
@@ -85,11 +98,10 @@ export const contributionData: ContributionType = {
       },
     },
     rewards: {
-      claimedTokens: 1200,
-      totalTokens: 2000,
-      rewardPayoutType: "linearly paid-out through 12 months",
+      claimedTokens: 400,
+      totalTokens: 1200,
+      rewardTypeDescription: "linearly paid-out through 12 months",
       payoutSchedule: dummyPayoutScheduleData,
     },
   },
 }
-

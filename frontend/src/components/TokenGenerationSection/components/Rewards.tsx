@@ -8,16 +8,17 @@ import Divider from "@/components/Divider"
 import ProgressBar from "./ProgressBar"
 import { TgeWrapper } from "./Wrapper"
 
-import { ContributionType } from "@/data/contributionData"
+import { ContributionAndRewardsType } from "@/data/contributionAndRewardsData"
 import { Button } from "@/components/Button/Button"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 import { formatDateForTimer } from "@/utils/date-helpers"
+import { isBefore } from "date-fns/isBefore"
 
 type RewardsProps = {
   eventData: ExpandedTimelineEventType
   hasDistributionStarted: boolean
-  rewards: ContributionType["claimPositions"]["rewards"]
+  rewards: ContributionAndRewardsType["claimPositions"]["rewards"]
 }
 
 const Rewards = ({
@@ -29,9 +30,29 @@ const Rewards = ({
   const { iconUrl, ticker } = projectData.tge.projectCoin
   const { t } = useTranslation()
 
+  const currentMoment = new Date()
   const nextScheduledPayment = rewards.payoutSchedule.find(
-    (payment) => !payment.isClaimed,
+    (payment) => !payment.isClaimed && isBefore(currentMoment, payment.date),
   )
+  const amountToBeClaimed = rewards.payoutSchedule.reduce(
+    (accumulator, payment) => {
+      if (
+        !payment.isClaimed &&
+        !isBefore(currentMoment, payment.date) &&
+        isBefore(payment.date, currentMoment)
+      ) {
+        return accumulator + payment.amount
+      }
+      return accumulator
+    },
+    0,
+  )
+
+  const claimRewardsHandler = () => {
+    // @TODO - add API for claiming rewards
+    console.log("CLAIM REWARDS")
+    // @TODO - refetch rewards
+  }
 
   return (
     <>
@@ -50,14 +71,15 @@ const Rewards = ({
           <>
             <CountDownTimer
               labelAboveTimer={`Next Payment in: ${formatDateForTimer(nextScheduledPayment.date)}`}
-              endOfEvent={eventData.nextEventDate}
+              endOfEvent={nextScheduledPayment.date}
             />
             <div className="w-full px-4 pb-6">
               {nextScheduledPayment && (
                 <Button
-                  btnText={`Claim ${formatCurrencyAmount(nextScheduledPayment.amount, false)} ${ticker}`}
+                  btnText={`Claim ${formatCurrencyAmount(amountToBeClaimed, false)} ${ticker}`}
                   size="lg"
                   className="w-full py-3 font-normal"
+                  onClick={claimRewardsHandler}
                 />
               )}
             </div>

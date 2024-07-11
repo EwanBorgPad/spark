@@ -29,7 +29,7 @@ const Accordion = ({
     setOpen(false)
     const maxContainerHeight =
       maxChildrenHeight ||
-      1 * BORDER_HEIGHT + accordionRef.current?.scrollHeight
+      2 * BORDER_HEIGHT + accordionRef.current?.scrollHeight
     accordionRef.current.style.maxHeight = maxContainerHeight + "px"
   }, [maxChildrenHeight])
 

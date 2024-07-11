@@ -1,3 +1,4 @@
+@import "./style/inputSlider.css";
 @import url('https://fonts.googleapis.com/css2?family=Sulphur+Point:wght@300;400;700&display=swap');
 
 @tailwind base;
@@ -31,7 +32,6 @@ body {
   padding: 0;
   font-size: 16px;
   line-height: 24px;
-  overscroll-behavior: none;
   overflow-x: hidden;
   overflow-y: scroll;
 }
@@ -73,19 +73,6 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-.progress-bar-start {
-  clip-path: circle(100px at center);
-}
-.progress-bar-start {
-  clip-path: circle(100px at center);
-}
-.header-shadow {
-  @apply shadow-md shadow-brand-primary
-}
-.data-room {
-  @apply relative mt-10 flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-lg border border-bd-secondary bg-secondary/50 from-brand-primary/10 via-black/0 via-30% px-4 py-3 transition-colors hover:border-brand-secondary/30 hover:bg-gradient-to-l
-}
-
 input[type="checkbox"] {
   accent-color: #ACFF73;
 }
@@ -105,3 +92,12 @@ input[type="checkbox"] {
 .contribution-gradient {
   background: linear-gradient(90deg, #F4FFEC 0%, #ACFF73 8%, rgba(172, 255, 115, 0.25) 29.5%, rgba(172, 255, 115, 0.00) 100%);
 }
+
+/* Tailwind classes */
+.header-shadow {
+  @apply shadow-md shadow-brand-primary
+}
+.data-room {
+  @apply relative mt-10 flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-lg border border-bd-secondary bg-secondary/50 from-brand-primary/10 via-black/0 via-30% px-4 py-3 transition-colors hover:border-brand-secondary/30 hover:bg-gradient-to-l
+}
+
