@@ -6,7 +6,7 @@ type LaunchpadLiveProps = {
   eventData: ExpandedTimelineEventType
 }
 
-const LaunchpadLive = ({ eventData }: LaunchpadLiveProps) => {
+const LaunchpadLive = (_props: LaunchpadLiveProps) => {
   const { t } = useTranslation()
   return (
     <TgeWrapper label={t("tge.launchpad_live")}>

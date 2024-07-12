@@ -1,6 +1,5 @@
 import { COMMITMENT_LEVEL, SOLANA_RPC_URL } from "./constants.ts"
 
-
 type GetSplTokenBalanceArgs = {
   address: string
   tokenAddress: string
@@ -104,16 +103,18 @@ type RpcResponse<ResponseBody extends Record<string, unknown>> = {
   jsonrpc: "2.0"
   result: {
     context: unknown
-    value: [
-      {
-        account: {
-          data: {
-            parsed: {
-              info: ResponseBody
+    value:
+      | [
+          {
+            account: {
+              data: {
+                parsed: {
+                  info: ResponseBody
+                }
+              }
             }
-          }
-        }
-      },
-    ] | []
+          },
+        ]
+      | []
   }
 }
