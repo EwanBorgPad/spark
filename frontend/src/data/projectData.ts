@@ -1,8 +1,8 @@
+import { addDays } from "date-fns/addDays"
 import i18n from "@/i18n/i18n"
 
 import { ExternalLinkType } from "@/components/Button/ExternalLink"
 import { TimelineEventType } from "@/components/Timeline/Timeline"
-import { addDays } from "date-fns/addDays"
 
 import secondaryImgUrl from "../assets/secondaryImgUrl.png"
 import raydiumImg from "@/assets/raydium.png"
@@ -11,6 +11,8 @@ import chainImg from "../assets/zoraImg.png"
 import curator from "../assets/curator.png"
 
 const currentMoment = new Date()
+
+// Data defined through Back Office
 
 export type ProjectData = {
   title: string
@@ -69,22 +71,22 @@ export const dummyData: ProjectData = {
   projectLinks: [
     {
       url: "#",
-      linkType: "WEB",
+      iconType: "WEB",
       label: undefined,
     },
     {
       url: "#",
-      linkType: "MEDIUM",
+      iconType: "MEDIUM",
       label: undefined,
     },
     {
       url: "#",
-      linkType: "LINKED_IN",
+      iconType: "LINKED_IN",
       label: undefined,
     },
     {
       url: "#",
-      linkType: "X_TWITTER",
+      iconType: "X_TWITTER",
       label: undefined,
     },
   ],
@@ -99,17 +101,17 @@ export const dummyData: ProjectData = {
     socials: [
       {
         url: "#",
-        linkType: "LINKED_IN",
+        iconType: "LINKED_IN",
         label: "Linkedin",
       },
       {
         url: "#",
-        linkType: "X_TWITTER",
+        iconType: "X_TWITTER",
         label: "X (ex-Twitter)",
       },
       {
         url: "#",
-        linkType: "MEDIUM",
+        iconType: "MEDIUM",
         label: "Medium",
       },
     ],
@@ -159,12 +161,12 @@ export const dummyData: ProjectData = {
     },
     {
       label: i18n.t("timeline.sale_closes"),
-      date: addDays(currentMoment, -1),
+      date: addDays(currentMoment, -5),
       id: "SALE_CLOSES",
     },
     {
       label: i18n.t("timeline.reward_distribution"),
-      date: addDays(currentMoment, 5),
+      date: addDays(currentMoment, -2),
       id: "REWARD_DISTRIBUTION",
     },
     {

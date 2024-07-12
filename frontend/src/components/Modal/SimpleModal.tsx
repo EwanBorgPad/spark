@@ -63,11 +63,11 @@ export function CloseButton({
   className?: string
 }) {
   const cls = twMerge(
-    "absolute top-5 max-sm:left-4 md:right-6",
-    "rounded-full",
+    "absolute top-4 left-4",
+    "rounded-md",
     "flex items-center justify-center",
     "cursor-pointer",
-    "hover:bg-tertiary ",
+    "hover:bg-tertiary text-2xl text-white",
     className,
   )
   return (

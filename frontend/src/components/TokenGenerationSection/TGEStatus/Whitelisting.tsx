@@ -7,6 +7,7 @@ import CountDownTimer from "@/components/CountDownTimer"
 import { TgeWrapper } from "../components/Wrapper"
 import WhitelistStatus from "../WhitelistStatus"
 import { ProjectData } from "@/data/projectData"
+import { formatDateForTimer } from "@/utils/date-helpers"
 
 type WhitelistingProps = {
   eventData: ExpandedTimelineEventType
@@ -25,7 +26,10 @@ const Whitelisting = ({ eventData, projectData }: WhitelistingProps) => {
         <TgeWrapper label={t("tge.whitelisting")}>
           {eventData?.nextEventDate && (
             <>
-              <CountDownTimer endOfEvent={eventData.nextEventDate} />
+              <CountDownTimer
+                endOfEvent={eventData.nextEventDate}
+                labelAboveTimer={`Going live on ${formatDateForTimer(eventData.nextEventDate)}`}
+              />
             </>
           )}
           <WhitelistingContent tgeData={tgeData} />

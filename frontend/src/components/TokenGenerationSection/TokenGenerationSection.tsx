@@ -5,7 +5,6 @@ import { ExpandedTimelineEventType } from "../Timeline/Timeline"
 import { getCurrentTgeEvent } from "@/utils/getCurrentTgeEvent"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import { CountDownCallback } from "../CountDownCallback"
-import LaunchpadLive from "./TGEStatus/LaunchpadLive"
 import Whitelisting from "./TGEStatus/Whitelisting"
 import SaleOver from "./TGEStatus/SaleOver"
 import LiveNow from "./TGEStatus/LiveNow"
@@ -44,11 +43,10 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
       case "SALE_OPENS":
         return <LiveNow eventData={tgeEvent} projectData={projectData} />
       case "SALE_CLOSES":
-        return <SaleOver eventData={tgeEvent} projectData={projectData} />
       case "REWARD_DISTRIBUTION":
-        return <LaunchpadLive eventData={tgeEvent} />
+        return <SaleOver eventData={tgeEvent} projectData={projectData} />
       case "UNKNOWN":
-        return <span>{tgeEvent.label}</span>
+        return <span>{"PHASE TO BE DETERMINED"}</span>
     }
   }
 

@@ -9,6 +9,7 @@ import { PastOrders } from "../components/PastOrders"
 import { TgeWrapper } from "../components/Wrapper"
 import WhitelistStatus from "../WhitelistStatus"
 import { ProjectData } from "@/data/projectData"
+import { formatDateForTimer } from "@/utils/date-helpers"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType
@@ -28,7 +29,10 @@ const LiveNow = ({ eventData, projectData }: LiveNowProps) => {
       <div className="flex w-full max-w-[400px] flex-col gap-5">
         <TgeWrapper label={t("tge.live_now")}>
           {eventData?.nextEventDate && (
-            <CountDownTimer endOfEvent={eventData.nextEventDate} />
+            <CountDownTimer
+              endOfEvent={eventData.nextEventDate}
+              labelAboveTimer={`Ends on ${formatDateForTimer(eventData.nextEventDate)}`}
+            />
           )}
           <LiveNowExchange tgeData={tgeData} />
         </TgeWrapper>

@@ -2,14 +2,12 @@ import { getRatioPercentage } from "@/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 
 type ProgressBarProps = {
-  tokens: {
-    available: number
-    total: number
-  }
+  fulfilledAmount: number
+  totalAmount: number
 }
 
-const ProgressBar = ({ tokens }: ProgressBarProps) => {
-  const width = getRatioPercentage(tokens.available, tokens.total)
+const ProgressBar = ({ fulfilledAmount, totalAmount }: ProgressBarProps) => {
+  const width = getRatioPercentage(fulfilledAmount, totalAmount)
   const leftoverWidth = 100 - width
   return (
     <div className="h-4 w-full rounded-full bg-progress-gray p-1">

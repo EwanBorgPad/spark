@@ -5,7 +5,7 @@ import {
 import { formatDateForDisplay } from "./date-helpers"
 import { isBefore } from "date-fns/isBefore"
 
-export const calculateTimelineData = (
+export const expandTimelineDataInfo = (
   timelineEvents: TimelineEventType[],
 ): ExpandedTimelineEventType[] => {
   const currentMoment = new Date()

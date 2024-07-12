@@ -7,7 +7,10 @@ import { formatCurrencyAmount } from "@/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 
 // to be replaced with API calls
-import { ContributionType, contributionData } from "@/data/contributionData"
+import {
+  ContributionAndRewardsType,
+  contributionAndRewardsData,
+} from "@/data/contributionAndRewardsData"
 import { dummyBorgPriceInUSD } from "@/data/borgPriceInUsd"
 
 type PastOrdersProps = {
@@ -15,7 +18,7 @@ type PastOrdersProps = {
   className?: string
 }
 type PastOrderProps = {
-  order: ContributionType["suppliedBorg"]["pastOrders"][0]
+  order: ContributionAndRewardsType["suppliedBorg"]["pastOrders"][0]
   numberOfPastOrders: number
   index: number
   borgPriceInUSD: number
@@ -48,7 +51,7 @@ export const PastOrder = ({
         </div>
         <div className="relative h-6 w-6">
           <ExternalLink.Icon
-            externalLink={{ linkType: "OUTER_LINK", url: "#" }}
+            externalLink={{ iconType: "OUTER_LINK", url: order.transactionUrl }}
             className="absolute -left-1 -top-1.5 border-none text-xl text-fg-tertiary"
           />
         </div>
@@ -66,7 +69,7 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
   // @TODO - replace dummy call below with past orders //
   ///////////////////////////////////////////////////////
   const getContributions = () => {
-    return contributionData
+    return contributionAndRewardsData
   }
   const pastOrders = getContributions().suppliedBorg.pastOrders
   const numberOfPastOrders = pastOrders.length

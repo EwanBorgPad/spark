@@ -5,6 +5,7 @@
 
   "connect_wallet": "Connect Wallet",
 
+  "buy": "Buy",
   "chain": "Chain",
   "lbp_type": "LBP Type",
   "origin": "Origin",
@@ -67,6 +68,18 @@
   "sale_over.monthly_payments_need_to": "Monthly payments need to be Claimed manually. Liquidity pool will become accessible on 12th December 2024.",
   "sale_over.learn_more_about": "Learn More About Reward Terms",
   "sale_over.monthly_payout": "Monthly Payout",
+
+  "reward_distribution": "Reward Distribution",
+  "reward_distribution.claim_your_position": "Claim Your Main Position",
+  "reward_distribution.select_how_much": "Select how much do you want to claim",
+  "reward_distribution.already_claimed": "Already Claimed",
+  "reward_distribution.continue_in_wallet": "The transaction will continue in your wallet.",
+  "reward_distribution.all_rewards_claimed": "All rewards claimed.",
+  "reward_distribution.claimed": "Claimed",
+
+  "whitelisting.us_residency": "US Residency",
+  "whitelisting.i_dont_reside_in_us": " I Don’t Reside in the US",
+  "whitelisting.not_available_in_us": "This LBP is not available for US residents. To be whitelisted, please acknowledge that you don’t reside in the USA.",
 
   "data_room": "Data Room",
 

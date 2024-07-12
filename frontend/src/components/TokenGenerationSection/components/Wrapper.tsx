@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge"
 type WrapperProps = {
   label: string
   children: React.ReactNode
+  className?: string
 }
 type InnerWrapperProps = {
   children: React.ReactNode
