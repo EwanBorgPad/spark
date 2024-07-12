@@ -15,7 +15,7 @@ export default {
         accent: "#060A14",
         "success-primary": "#053321",
         "success-secondary": "#074D31",
-        "brand-primary": "#BCFE8F",
+        "brand-primary": "#ACFF73",
         "brand-secondary": "#A3E683",
         attention: "#4E1D09",
         e: "#55160C",
@@ -26,6 +26,9 @@ export default {
         "progress-left": "#01C38D",
         "progress-right": "#FFFF00",
         overlay: "#0C111D",
+        "error-primary": "#3D1B16",
+        "error-secondary": "#6C261B",
+        "default-hover": "#131822",
 
         // font colors
         fg: {
@@ -55,6 +58,7 @@ export default {
           attention: "#4E1D09",
           danger: "#F97066",
           danger2: "#55160C",
+          "success-primary": "#074D31",
         },
 
         // other colors
@@ -63,6 +67,10 @@ export default {
         texture: "url(/src/assets/texture-min.png)",
         "texture-zoomed-out": "url(/src/assets/grainy-horizontal.png)",
         "secondary-profile-photo": "url(/src/assets/secondaryImgUrl.png)",
+      },
+      backgroundColor: {
+        "contribution-gradient":
+          "linear-gradient(90deg, #F4FFEC 0%, #ACFF73 8%, rgba(172, 255, 115, 0.25) 29.5%, rgba(172, 255, 115, 0.00) 100%);",
       },
       fontFamily: {
         geist: ["Geist", "Arial", "sans-serif"],
@@ -73,6 +81,12 @@ export default {
         underline: "0px 2px 0px 0px rgba(188,254,143,1)",
         header: "0px 10px 10px -2px rgba(172,255,115,0.05);",
         "header-transparent": "0px 5px 6px -2px rgba(172,255,115,0.0);",
+      },
+      gridTemplateColumns: {
+        "borg-input": "minmax(180px, 1fr) 88px",
+      },
+      lineHeight: {
+        11: "44px",
       },
       "body-xl-semibold": [
         "18px",
@@ -93,7 +107,7 @@ export default {
           "18px",
           {
             lineHeight: "26px",
-            fontWeight: "bold",
+            fontWeight: 600,
           },
         ],
         "body-l-medium": [
@@ -103,6 +117,13 @@ export default {
             fontWeight: 500,
           },
         ],
+        "body-l-regular": [
+          "16px",
+          {
+            lineHeight: "24px",
+            fontWeight: 400,
+          },
+        ],
       },
       keyframes: {
         "top-down": {
@@ -110,8 +131,8 @@ export default {
           "100%": { transform: "translateY(0)", opacity: "1" },
         },
         "fade-in": {
-          '0%': { opacity: 0 },
-          '100%': { opacity: 1 },
+          "0%": { opacity: 0 },
+          "100%": { opacity: 1 },
         },
       },
       animation: {
@@ -119,7 +140,6 @@ export default {
         "fade-in": "fade-in 0.2s ease-in-out",
       },
     },
-    
   },
   plugins: [],
 }

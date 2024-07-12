@@ -6,10 +6,16 @@ import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
 
 type Props = {
   children: ReactNode
+  showCloseBtn: boolean
   onClose?: () => void
   className?: string
 }
-export function SimpleModal({ children, onClose, className }: Props) {
+export function SimpleModal({
+  children,
+  showCloseBtn,
+  onClose,
+  className,
+}: Props) {
   const modalClasses = twMerge(
     "relative h-full",
     "w-[460px]",
@@ -36,7 +42,7 @@ export function SimpleModal({ children, onClose, className }: Props) {
         >
           {/* modal */}
           <div ref={modalRef} className={modalClasses}>
-            {onClose && <CloseButton onClose={onClose} />}
+            {onClose && showCloseBtn && <CloseButton onClose={onClose} />}
 
             {children}
           </div>
@@ -47,7 +53,7 @@ export function SimpleModal({ children, onClose, className }: Props) {
 }
 
 const ICON_SIZE_PX = 12
-const BTN_SIZE_PX = 20
+// const BTN_SIZE_PX = 20
 
 export function CloseButton({
   onClose,
@@ -57,18 +63,15 @@ export function CloseButton({
   className?: string
 }) {
   const cls = twMerge(
-    "absolute top-5 max-sm:left-4 md:right-6",
-    "rounded-full",
+    "absolute top-4 left-4",
+    "rounded-md",
     "flex items-center justify-center",
     "cursor-pointer",
+    "hover:bg-tertiary text-2xl text-white",
     className,
   )
   return (
-    <div
-      style={{ width: BTN_SIZE_PX, height: BTN_SIZE_PX }}
-      onClick={onClose}
-      className={cls}
-    >
+    <div onClick={onClose} className={cls}>
       <Icon icon="SvgClose" width={ICON_SIZE_PX} height={ICON_SIZE_PX} />
     </div>
   )

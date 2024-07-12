@@ -1,11 +1,12 @@
 import { HTMLProps } from "@/@types/general"
 import { forwardRef, PropsWithChildren, ReactNode, useMemo } from "react"
 import { twMerge as classNames } from "tailwind-merge"
-import { Icon } from "../Icon/Icon"
+import { AvailableIcons, Icon } from "../Icon/Icon"
 
 type ButtonColor = "primary" | "secondary" | "tertiary" | "danger" | "plain"
 type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl"
 type ButtonSizeClassKey = "btnContainer" | "btnText"
+type ButtonIconSizeClassKey = "btnContainer" | "iconContainer"
 
 type ButtonProps<T extends keyof JSX.IntrinsicElements> = {
   border?: boolean
@@ -21,7 +22,7 @@ type ButtonProps<T extends keyof JSX.IntrinsicElements> = {
 } & Omit<HTMLProps<T>, "size" | "color">
 
 type IconButtonWithLabelProps = {
-  icon: Parameters<typeof Icon>[0]["icon"]
+  icon: AvailableIcons
   iconWrapperClassName?: HTMLProps["className"]
 } & ButtonProps<"button">
 
@@ -29,7 +30,7 @@ const BUTTON_COLOR_CLASS_NAMES: Record<ButtonColor, string> = {
   primary:
     "text-default bg-brand-primary active:bg-brand-secondary disabled:bg-opacity-50",
   secondary:
-    "bg-default active:bg-secondary disabled:bg-opacity-50 text-fg-primary disabled:text-fg-primary/50 border border-bd-primary",
+    "bg-default active:bg-secondary disabled:bg-opacity-50 text-fg-primary disabled:text-fg-primary/50 border-[1px] border-bd-primary hover:bg-default-hover",
   tertiary:
     "text-white bg-secondary active:bg-tertiary disabled:bg-secondary disabled:bg-opacity-50 text-fg-primary",
   danger:
@@ -49,6 +50,31 @@ const BUTTON_SIZE_CLASS_NAMES: Record<
   xl: {
     btnContainer: "rounded-xl py-[18px] px-4 text-[18px] leading-[24px]",
     btnText: "px-3",
+  },
+}
+const BUTTON_ICON_SIZE_CLASS_NAMES: Record<
+  ButtonSize,
+  Record<ButtonIconSizeClassKey, string>
+> = {
+  xs: {
+    btnContainer: "rounded-lg p-1.5 text-[16px] leading-none",
+    iconContainer: "h-5 w-5",
+  },
+  sm: {
+    btnContainer: "rounded-lg p-2 text-[20px] leading-none",
+    iconContainer: "h-5 w-5",
+  },
+  md: {
+    btnContainer: "rounded-xl p-3 text-[24px] leading-none",
+    iconContainer: "h-6 w-6",
+  },
+  lg: {
+    btnContainer: "rounded-xl p-3.5 text-[28px] leading-none",
+    iconContainer: "h-7 w-7",
+  },
+  xl: {
+    btnContainer: "rounded-xl p-[18px] text-[28px] leading-none",
+    iconContainer: "h-7 w-7",
   },
 }
 
@@ -95,7 +121,7 @@ const ButtonRoot = forwardRef<HTMLButtonElement, ButtonProps<"button">>(
 
     return (
       <Tag
-        type={"button"}
+        type={props.type || "button"}
         {...props}
         disabled={isDisabled}
         className={btnContainerClasses}
@@ -115,21 +141,31 @@ const ButtonRoot = forwardRef<HTMLButtonElement, ButtonProps<"button">>(
 ButtonRoot.displayName = "ButtonRoot"
 
 const IconButton = forwardRef<HTMLButtonElement, IconButtonWithLabelProps>(
-  ({ icon, color, iconWrapperClassName, ...props }, ref) => {
+  (
+    { icon, color = "primary", iconWrapperClassName, size = "md", ...props },
+    ref,
+  ) => {
     return (
       <Button
         {...props}
-        className={classNames("!p-0", props.className)}
+        color={color}
+        size={size}
+        className={classNames(
+          "",
+          BUTTON_ICON_SIZE_CLASS_NAMES[size].btnContainer,
+          BUTTON_COLOR_CLASS_NAMES[color],
+          props.className,
+        )}
         ref={ref}
       >
         <div
           className={classNames(
-            "flex h-9 w-9 items-center justify-center rounded-full",
-            color && BUTTON_COLOR_CLASS_NAMES[color],
+            "flex items-center justify-center border-none bg-transparent",
+            BUTTON_ICON_SIZE_CLASS_NAMES[size].iconContainer,
             iconWrapperClassName,
           )}
         >
-          <Icon className={"h-[1em] w-[1em]"} icon={icon} />
+          <Icon icon={icon} />
         </div>
       </Button>
     )

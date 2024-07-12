@@ -1,52 +1,48 @@
+import { RouterProvider, createBrowserRouter } from "react-router-dom"
 import ReactDOM from "react-dom/client"
-import App from "./App"
-import "./index.css"
 import React from "react"
+import "./index.css"
+
 import { WalletProvider } from "@/hooks/useWalletContext"
-import {
-  Link,
-  RouterProvider,
-  ScrollRestoration,
-  createBrowserRouter,
-} from "react-router-dom"
-import { Button } from "./components/Button/Button"
+import TermsOfService from "./pages/TermsOfService"
+import NotFound from "./pages/NotFound"
+import Homepage from "./pages/Homepage"
 import Project from "./pages/Project"
+import App from "./App"
+import { WhitelistStatusProvider } from "./hooks/useWhitelistContext"
+import { ProjectDataProvider } from "./hooks/useProjectData"
+import { BalanceProvider } from "@/hooks/useBalanceContext.tsx"
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: (
+      <WalletProvider>
+        <BalanceProvider>
+          <App />
+        </BalanceProvider>
+      </WalletProvider>
+    ),
     children: [
       {
         path: "/",
-        element: (
-          <div className="flex h-screen items-center justify-center">
-            <Link to={"/project/puffer-finance"}>
-              <Button
-                size="xl"
-                color="primary"
-                btnText="Go To Puffer Finance"
-              />
-            </Link>
-          </div>
-        ),
+        element: <Homepage />,
       },
       {
         path: "/project/:projectId",
-        element: <Project />,
+        element: (
+          <ProjectDataProvider>
+            <Project />
+          </ProjectDataProvider>
+        ),
       },
       {
         path: "/terms-of-service",
-        element: (
-          <div className="flex h-screen flex-col items-center justify-center gap-4">
-            <ScrollRestoration />
-            <h1>Terms of Service Page</h1>
-            <h2>TBD...</h2>
-            <Link to={"/project/puffer-finance"}>
-              <Button size="xl" color="primary" btnText="Go Back To Project" />
-            </Link>
-          </div>
-        ),
+        element: <TermsOfService />,
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },
@@ -54,8 +50,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <WalletProvider>
+    <WhitelistStatusProvider>
       <RouterProvider router={router} />
-    </WalletProvider>
+    </WhitelistStatusProvider>
   </React.StrictMode>,
 )

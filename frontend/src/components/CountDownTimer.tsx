@@ -3,7 +3,8 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 type CountDownTimerProps = {
-  endsIn: Date
+  endOfEvent: Date
+  labelAboveTimer: string
 }
 
 type TUseTimer = {
@@ -38,11 +39,21 @@ const getCountdownTime = (timeLeft: number): TUseTimer => {
   }
 }
 
-const CountDownTimer = ({ endsIn }: CountDownTimerProps) => {
-  const { t } = useTranslation()
-  const [timeLeft, setTimeLeft] = useState(endsIn.getTime() - Date.now())
+const calculateTimeLeft = (endOfEvent: Date) =>
+  endOfEvent.getTime() - Date.now()
 
-  const isEventFinished = isAfter(new Date(), endsIn)
+const CountDownTimer = ({
+  endOfEvent,
+  labelAboveTimer,
+}: CountDownTimerProps) => {
+  const { t } = useTranslation()
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(endOfEvent))
+
+  useEffect(() => {
+    setTimeLeft(calculateTimeLeft(endOfEvent))
+  }, [endOfEvent])
+
+  const isEventFinished = isAfter(new Date(), endOfEvent)
   useEffect(() => {
     if (isEventFinished) return
     const timerId = setTimeout(() => {
@@ -57,12 +68,12 @@ const CountDownTimer = ({ endsIn }: CountDownTimerProps) => {
 
   return (
     <div className="flex h-[120px] w-full flex-col items-center rounded-t-xl bg-[radial-gradient(50%_65%_at_50%_0%,rgba(188,254,143,0.15)_0%,rgba(0,0,0,0.0)_100%)] pt-8">
-      <span className="text-sm text-fg-primary/60">
-        {t("distribution_starts_in")}
+      <span className="text-sm font-light text-fg-primary/60">
+        {labelAboveTimer}
       </span>
       {isEventFinished ? (
         <span className="text-xl text-fg-primary/60">
-          {t("distribution_ended")}
+          {t("tge.distribution_ended")}
         </span>
       ) : (
         <div className="flex items-start font-geist-mono text-2xl">

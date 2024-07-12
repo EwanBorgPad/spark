@@ -2,3 +2,19 @@
 .idea
 frontend/dist
 cf-testing
+
+# These are some examples of commonly ignored file patterns.
+# You should customize this list as applicable to your project.
+
+# dependencies
+node_modules
+dist
+
+# production
+build
+
+# cloudflare wrangler
+.wrangler
+
+# misc
+.env

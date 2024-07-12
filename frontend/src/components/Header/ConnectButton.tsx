@@ -5,11 +5,19 @@ import { useEffect, useState } from "react"
 import { AvailableIcons, Icon } from "@/components/Icon/Icon.tsx"
 import { twMerge } from "tailwind-merge"
 
+type ConnectButtonProps = {
+  btnClassName?: string
+  customBtnText?: string
+}
+
 /**
  * Connect button which opens a modal for choosing a wallet to connect to.
  * @constructor
  */
-export const ConnectButton = () => {
+export const ConnectButton = ({
+  btnClassName,
+  customBtnText = "Connect Wallet",
+}: ConnectButtonProps) => {
   const {
     walletState,
     truncatedAddress,
@@ -17,7 +25,9 @@ export const ConnectButton = () => {
     signInWithBackpack,
     signOut,
   } = useWalletContext()
+
   const [showModal, setShowModal] = useState(false)
+  const [showNoWallet, setShowNoWallet] = useState(false)
 
   useEffect(() => {
     if (walletState === "CONNECTED") {
@@ -27,7 +37,7 @@ export const ConnectButton = () => {
 
   const btnText =
     walletState === "NOT_CONNECTED"
-      ? "Connect Wallet"
+      ? customBtnText
       : walletState === "CONNECTING"
         ? "Connecting..."
         : walletState === "CONNECTED"
@@ -44,32 +54,108 @@ export const ConnectButton = () => {
 
   return (
     <>
-      <Button onClick={onClick} size="xs" color="primary" btnText={btnText} />
+      <Button
+        onClick={onClick}
+        size="xs"
+        color="primary"
+        btnText={btnText}
+        className={btnClassName}
+      />
       {showModal && (
-        <SimpleModal onClose={() => setShowModal(false)}>
+        <SimpleModal
+          showCloseBtn={!showNoWallet}
+          onClose={() => {
+            setShowModal(false)
+            setShowNoWallet(false)
+          }}
+        >
           <div className="flex flex-col items-center justify-center max-sm:h-full">
-            {/* Heading */}
-            <div className="w-full p-[17px] text-center">
-              <h1 className="text-body-xl-semibold text-white">
-                Connect a Solana Wallet
-              </h1>
-            </div>
-            {/* Body */}
-            <div className="flex w-full grow flex-col items-center justify-center gap-4 p-4 lg:flex-row lg:gap-6 lg:p-[56px]">
-              <WalletProvider
-                icon={"SvgPhantom"}
-                label={"Phantom"}
-                onClick={signInWithPhantom}
-              />
-              <WalletProvider
-                icon={"SvgBackpack"}
-                label={"Backpack"}
-                onClick={signInWithBackpack}
-              />
-            </div>
+            {showNoWallet ? (
+              <NoWalletModalContent close={() => setShowNoWallet(false)} />
+            ) : (
+              <>
+                {/* Heading */}
+                <div className="w-full p-4 text-center">
+                  <h1 className="text-body-xl-semibold text-white">
+                    Connect a Solana Wallet
+                  </h1>
+                </div>
+                {/* Body */}
+                <div
+                  className={twMerge(
+                    "flex w-full grow flex-col justify-start",
+                    "px-4 pt-14 lg:px-10 lg:pt-11",
+                  )}
+                >
+                  <div
+                    className={twMerge(
+                      "flex w-full flex-col items-center justify-center lg:flex-row",
+                      "gap-4 lg:gap-6",
+                      // 'p-4 lg:flex-row lg:gap-6 lg:p-[56px] lg:pb-[40px]',
+                    )}
+                  >
+                    <WalletProvider
+                      icon={"SvgPhantom"}
+                      label={"Phantom"}
+                      onClick={signInWithPhantom}
+                    />
+                    <WalletProvider
+                      icon={"SvgBackpack"}
+                      label={"Backpack"}
+                      onClick={signInWithBackpack}
+                    />
+                  </div>
+                  <div className="mb-8 mt-4 lg:mt-5">
+                    <p
+                      onClick={() => setShowNoWallet(true)}
+                      className="cursor-pointer select-none p-3 text-center text-fg-primary hover:underline"
+                    >
+                      I don&apos;t have a wallet
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </SimpleModal>
       )}
+    </>
+  )
+}
+function NoWalletModalContent({ close }: { close: () => void }) {
+  const iconCss = twMerge(
+    "text-2xl hover:bg-tertiary rounded-full",
+    "select-none cursor-pointer",
+  )
+  return (
+    <>
+      {/* Heading */}
+      <div className="flex w-full items-center p-[17px] text-center">
+        <Icon icon={"SvgArrowLeft"} onClick={close} className={iconCss} />
+        <h1 className="grow text-body-xl-semibold text-white">No wallet?</h1>
+        <div className="w-6"></div>
+      </div>
+      {/* Body */}
+      <div
+        className={twMerge(
+          "flex w-full grow flex-col items-center justify-start lg:justify-center",
+          "gap-5 px-10 pb-8 pt-14 lg:pt-3",
+        )}
+      >
+        <p className="text-body-l-regular text-fg-tertiary">
+          New to DeFI? Create a wallet now:
+        </p>
+        <WalletProvider
+          icon={"SvgPhantom"}
+          label={"Create a Phantom Wallet"}
+          onClick={() => window.open("https://phantom.app", "_blank")}
+        />
+        <p className="text-center text-fg-secondary">
+          Phantom is a robust, multi-chain wallet
+          <br />
+          trusted by over 3 million users.
+        </p>
+      </div>
     </>
   )
 }
@@ -79,11 +165,12 @@ type WalletProviderProps = {
   label: string
   onClick: () => void
 }
+
 function WalletProvider({ icon, label, onClick }: WalletProviderProps) {
   const className = twMerge(
     "flex flex-col items-center justify-center gap-4",
-    "lg:p-[40px]",
-    "w-full lg:w-[180px] h-[180px] border border-bd-primary rounded-2xl hover:bg-tertiary cursor-pointer",
+    "p-[40px]",
+    "w-full border border-bd-primary rounded-2xl hover:bg-tertiary cursor-pointer",
   )
   return (
     <div onClick={onClick} className={className}>
