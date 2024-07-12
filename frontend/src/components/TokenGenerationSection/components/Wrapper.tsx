@@ -17,8 +17,6 @@ const Wrapper = ({ label, children }: WrapperProps) => {
         {label}
       </span>
       {children}
-      {/* <CountDownTimer endsIn={data.distributionStartDate} />
-      <WhitelistingLP data={data.whitelisting} /> */}
     </section>
   )
 }

@@ -2,16 +2,16 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import CurrencyInput from "react-currency-input-field"
 import { useTranslation } from "react-i18next"
 
+import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import { ConnectButton } from "@/components/Header/ConnectButton"
+import { useBalanceContext } from "@/hooks/useBalanceContext.tsx"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
-import { ProjectData } from "@/data/data"
+import { ProjectData } from "@/data/projectData"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
-import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
-import { useBalanceContext } from "@/hooks/useBalanceContext.tsx"
 
 type LiveNowExchangeProps = {
   tgeData: ProjectData["tge"]
@@ -22,9 +22,9 @@ type FormInputs = {
 }
 
 const inputButtons = [
-  { label: "25%", percantage: 25 },
-  { label: "50%", percantage: 50 },
-  { label: "100%", percantage: 100 },
+  { label: "25%", percentage: 25 },
+  { label: "50%", percentage: 50 },
+  { label: "100%", percentage: 100 },
 ]
 
 const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
@@ -113,13 +113,13 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
                 <div className="flex items-center gap-2">
                   {inputButtons.map((btn) => (
                     <Button
-                      key={btn.percantage}
+                      key={btn.percentage}
                       size="xs"
                       color="secondary"
                       btnText={btn.label}
                       className="h-[24px] px-1"
                       textClassName="text-[12px] leading-none text-fg-tertiary font-normal"
-                      onClick={() => clickProvideLiquidityBtn(btn.percantage)}
+                      onClick={() => clickProvideLiquidityBtn(btn.percentage)}
                     />
                   ))}
                 </div>
@@ -179,22 +179,6 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
               />
             </div>
           )}
-          {/* Probably not needed */}
-          {/* {balance && (
-            <div className="flex items-center gap-2">
-              <span>{t("tge.participation_status")}:</span>
-              {isUserWhitelisted ? (
-                <span className="text-sm text-fg-success-primary">
-                  {t("tge.whitelisted")}
-                </span>
-              ) : (
-                <div className="flex items-center gap-2 rounded-full border-[1px] border-error-secondary bg-error-primary py-1 pl-1 pr-2 text-fg-error-primary">
-                  <Icon icon="SvgCircledX" className="text-[18px]" />
-                  <span>{t("tge.not_eligible")}</span>
-                </div>
-              )}
-            </div>
-          )} */}
         </div>
       </form>
       {!isUserWhitelisted && (

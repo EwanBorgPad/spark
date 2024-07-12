@@ -12,8 +12,9 @@
   "deal_curated_by": "Deal curated by",
   "founding.contributor": "Founding Contributor",
 
-  "marketcap": "Marketcap",
+  "market_cap": "Market Cap",
   "fdv": "FDV",
+  "liquidity_pool": "Liquidity Pool",
   "tokens_available": "Tokens Available",
 
   "tge.eligible": "Eligible",
@@ -48,6 +49,24 @@
   "tge.whitelisting.connect_wallet_to_see": "Connect wallet to see the whitelist status",
   "tge.select_wallet": "Select Wallet",
   "tge.please_input_value": "Please input value",
+
+  "sale_over": "Sale Over",
+  "sale_over.thank_you": "Thank you for your participation",
+  "sale_over.check_your_rewards": "Check Your Rewards Here",
+  "sale_over.total_amount_raised": "Total Amount Raised",
+  "sale_over.sell_out_percentage": "Sell Out Percentage",
+  "sale_over.participants": "Participants",
+  "sale_over.average_invested_amount": "Average Invested Amount",
+  "sale_over.your_contribution": "Your Contribution",
+  "sale_over.wallet_didnt_contribute": "The wallet you connected didn’t contribute to this pool.",
+  "sale_over.total_to_be_received": "Total to be received",
+  "sale_over.your_main_position": "Your Main Position",
+  "sale_over.unlocks_on": "Unlocks on",
+  "sale_over.your_reward": "Your Reward",
+  "sale_over.rewards": "Rewards",
+  "sale_over.monthly_payments_need_to": "Monthly payments need to be Claimed manually. Liquidity pool will become accessible on 12th December 2024.",
+  "sale_over.learn_more_about": "Learn More About Reward Terms",
+  "sale_over.monthly_payout": "Monthly Payout",
 
   "data_room": "Data Room",
 

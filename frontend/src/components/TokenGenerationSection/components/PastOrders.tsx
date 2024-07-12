@@ -2,13 +2,20 @@ import { twMerge } from "tailwind-merge"
 
 import { ExternalLink } from "@/components/Button/ExternalLink"
 import { formatDateForDisplay } from "@/utils/date-helpers"
+import Accordion from "@/components/Accordion/Accordion"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Icon } from "@/components/Icon/Icon"
-import { ProjectData } from "@/data/data"
-import Accordion from "@/components/Accordion/Accordion"
 
+// to be replaced with API calls
+import { ContributionType, contributionData } from "@/data/contributionData"
+import { dummyBorgPriceInUSD } from "@/data/borgPriceInUsd"
+
+type PastOrdersProps = {
+  label?: string
+  className?: string
+}
 type PastOrderProps = {
-  order: ProjectData["tge"]["pastOrders"][0]
+  order: ContributionType["suppliedBorg"]["pastOrders"][0]
   numberOfPastOrders: number
   index: number
   borgPriceInUSD: number
@@ -22,10 +29,6 @@ export const PastOrder = ({
   index,
   borgPriceInUSD,
 }: PastOrderProps) => {
-  ///////////////////////////////
-  // @TODO - fetch past orders //
-  ///////////////////////////////
-
   const getBorgValueInUSD = (amount: number) => {
     return formatCurrencyAmount(borgPriceInUSD * amount)
   }
@@ -58,12 +61,15 @@ export const PastOrder = ({
   )
 }
 
-type PastOrdersProps = {
-  tgeData: ProjectData["tge"]
-}
-
-export const PastOrders = ({ tgeData }: PastOrdersProps) => {
-  const numberOfPastOrders = tgeData.pastOrders.length
+export const PastOrders = ({ label, className }: PastOrdersProps) => {
+  ///////////////////////////////////////////////////////
+  // @TODO - replace dummy call below with past orders //
+  ///////////////////////////////////////////////////////
+  const getContributions = () => {
+    return contributionData
+  }
+  const pastOrders = getContributions().suppliedBorg.pastOrders
+  const numberOfPastOrders = pastOrders.length
   if (numberOfPastOrders === 0) return null
 
   const getBorgPriceInUSD = () => {
@@ -71,17 +77,18 @@ export const PastOrders = ({ tgeData }: PastOrdersProps) => {
     // @TODO - GET current BORG/USD price ////////
     // below is arbitrary value from 07.06.2024 //
     //////////////////////////////////////////////
-    return 0.2179
+    return dummyBorgPriceInUSD
   }
   const borgPriceInUSD = getBorgPriceInUSD()
 
   return (
     <Accordion
-      label={"Past Orders"}
-      sublabel={`(${numberOfPastOrders})`}
+      label={label || "Past Orders"}
+      subLabel={`(${numberOfPastOrders})`}
       maxChildrenHeight={MAX_ACCORDION_CONTAINER_HEIGHT}
+      className={className}
     >
-      {tgeData.pastOrders.map((order, index) => {
+      {pastOrders.map((order, index) => {
         return (
           <PastOrder
             // @TODO - use past order ID for key prop when available

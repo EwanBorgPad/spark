@@ -1,5 +1,5 @@
 import {
-  ExtendedTimelineEventType,
+  ExpandedTimelineEventType,
   TimelineEventType,
 } from "@/components/Timeline/Timeline"
 import { formatDateForDisplay } from "./date-helpers"
@@ -7,7 +7,7 @@ import { isBefore } from "date-fns/isBefore"
 
 export const calculateTimelineData = (
   timelineEvents: TimelineEventType[],
-): ExtendedTimelineEventType[] => {
+): ExpandedTimelineEventType[] => {
   const currentMoment = new Date()
   const nextEventDates = timelineEvents.slice(1)
   return timelineEvents.map((event, index) => {

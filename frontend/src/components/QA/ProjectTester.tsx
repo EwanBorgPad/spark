@@ -1,17 +1,14 @@
 import { useMemo, useRef, useState } from "react"
-import { Button } from "../Button/Button"
 import { twMerge } from "tailwind-merge"
-import { ProjectData } from "@/data/data"
-import { addDays } from "date-fns/addDays"
-import { addHours } from "date-fns/addHours"
-import { addMinutes } from "date-fns/addMinutes"
-import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick"
-import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 
-type Props = {
-  data: ProjectData
-  setData: (newData: ProjectData) => void
-}
+import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
+import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick"
+import { useProjectDataContext } from "@/hooks/useProjectData"
+import { addMinutes } from "date-fns/addMinutes"
+import { addHours } from "date-fns/addHours"
+import { addDays } from "date-fns/addDays"
+import { Button } from "../Button/Button"
+
 const TIMESPANS = ["days", "hours", "minutes"] as const
 type ChangeType = (typeof TIMESPANS)[number]
 type UpdateEventsProps = {
@@ -55,12 +52,14 @@ const OffsetEventInput = ({
   )
 }
 
-const ProjectTester = ({ data, setData }: Props) => {
+const ProjectTester = () => {
+  const { projectData, setProjectData } = useProjectDataContext()
+
   const [isOpened, setIsOpen] = useState(false)
   const [offset, setOffset] = useState(defaultOffset)
   const ref = useRef<HTMLDivElement>(null)
   const originalTimeline = useMemo(
-    () => data.timeline,
+    () => projectData.timeline,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   )
@@ -89,15 +88,15 @@ const ProjectTester = ({ data, setData }: Props) => {
       return new Date()
     }
 
-    const newTimeline = data.timeline.map((event) => {
+    const newTimeline = projectData.timeline.map((event) => {
       return { ...event, date: updateEvent(event.date) }
     })
-    setData({ ...data, timeline: newTimeline })
+    setProjectData({ ...projectData, timeline: newTimeline })
   }
 
   const resetOffset = () => {
     setOffset(defaultOffset)
-    setData({ ...data, timeline: originalTimeline })
+    setProjectData({ ...projectData, timeline: originalTimeline })
   }
 
   const onWhitelistCheckboxClick = (isChecked: boolean) => {
