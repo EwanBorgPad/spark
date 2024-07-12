@@ -1,10 +1,9 @@
-import Accordion from "@/components/Accordion/Accordion"
-import { ContributionType, PayoutScheduleType } from "@/data/contributionData"
-import { formatDateForDisplay } from "@/utils/date-helpers"
-import { formatCurrencyAmount } from "@/utils/format"
-import { addDays } from "date-fns"
-import React from "react"
 import { twMerge } from "tailwind-merge"
+
+import { PayoutScheduleType } from "@/data/contributionAndRewardsData"
+import { formatDateForDisplay } from "@/utils/date-helpers"
+import Accordion from "@/components/Accordion/Accordion"
+import { formatCurrencyAmount } from "@/utils/format"
 
 type PayoutProps = {
   index: number
