@@ -90,7 +90,7 @@ const Rewards = ({
               icon="SvgCircledCheckmark"
               className="text-lg text-brand-primary"
             />
-            <span>All rewards claimed.</span>
+            <span>{t("reward_distribution.all_rewards_claimed")}</span>
           </div>
         )}
         {hasDistributionStarted && (
@@ -98,7 +98,9 @@ const Rewards = ({
             <hr className="w-full max-w-[calc(100%-32px)] border-bd-primary" />
             <div className="flex w-full flex-col gap-2.5 p-4 pb-7">
               <div className="flex w-full items-center justify-between gap-2">
-                <span className="text-sm font-medium">Claimed</span>
+                <span className="text-sm font-medium">
+                  {t("reward_distribution.claimed")}
+                </span>
                 <div className="flex items-center gap-2">
                   <img src={iconUrl} className="h-4 w-4" />
                   <p>

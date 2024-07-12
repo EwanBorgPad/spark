@@ -3,6 +3,7 @@ import { SimpleModal } from "../SimpleModal"
 import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { Badge } from "@/components/Badge/Badge"
+import { useTranslation } from "react-i18next"
 
 type NotResidingInUsModalProps = {
   onClose: () => void
@@ -11,6 +12,7 @@ type NotResidingInUsModalProps = {
 const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
   const [acknowledged, setAcknowledgement] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const { t } = useTranslation()
 
   const acknowledgeResidencyHandler = () => {
     setIsLoading(true)
@@ -30,7 +32,9 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
         <>
           {/* Heading */}
           <div className="w-full p-4 text-center">
-            <h1 className="text-body-xl-semibold text-white">US Residency</h1>
+            <h1 className="text-body-xl-semibold text-white">
+              {t("whitelisting.us_residency")}
+            </h1>
           </div>
           {/* Body */}
           <div
@@ -39,8 +43,7 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
             )}
           >
             <p className="text-center text-base text-fg-tertiary">
-              This LBP is not available for US residents. To be whitelisted,
-              please acknowledge that you don’t reside in the USA.
+              {t("whitelisting.not_available_in_us")}
             </p>
             {acknowledged ? (
               <>

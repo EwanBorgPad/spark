@@ -7,6 +7,7 @@ import { ContributionAndRewardsType } from "@/data/contributionAndRewardsData"
 import { formatCurrencyAmount } from "@/utils/format"
 import { CustomInputSlider } from "@/components/InputField/CustomInputSlider"
 import { Button } from "@/components/Button/Button"
+import { useTranslation } from "react-i18next"
 
 type ClaimYourPositionModalProps = {
   onClose: () => void
@@ -19,9 +20,10 @@ const ClaimYourPositionModal = ({
   onClose,
   mainPosition,
 }: ClaimYourPositionModalProps) => {
-  const numberInputRef = useRef<HTMLInputElement>(null)
   const [claimPercent, setClaimPercent] = useState<number>(100)
+  const numberInputRef = useRef<HTMLInputElement>(null)
   const { projectData } = useProjectDataContext()
+  const { t } = useTranslation()
 
   const claimChosenValueHandler = () => {
     console.log("Claim amount: ", claimPercent)
@@ -70,7 +72,7 @@ const ClaimYourPositionModal = ({
           {/* Heading */}
           <div className="w-full p-4 text-center">
             <h1 className="text-body-xl-semibold text-white">
-              Claim Your Main Position
+              {t("reward_distribution.claim_your_position")}
             </h1>
           </div>
           {/* Body */}
@@ -80,7 +82,7 @@ const ClaimYourPositionModal = ({
             )}
           >
             <p className="text-center text-base text-fg-tertiary">
-              Select how much do you want to claim
+              {t("reward_distribution.select_how_much")}
             </p>
             <div className="flex items-center gap-2">
               <div className="flex flex-1 flex-col items-start justify-start gap-[34px] rounded-lg border border-bd-primary bg-tertiary p-4">
@@ -102,7 +104,7 @@ const ClaimYourPositionModal = ({
                   {!!mainPosition.borg.claimed && (
                     <div className="flex flex-col items-start">
                       <span className="text-xs font-medium text-fg-secondary">
-                        Already Claimed:
+                        {t("reward_distribution.already_claimed")}:
                       </span>
                       <span className="text-sm text-fg-tertiary">
                         {formatCurrencyAmount(mainPosition.borg.claimed, false)}
@@ -139,7 +141,7 @@ const ClaimYourPositionModal = ({
                   {!!mainPosition.borg.claimed && (
                     <div className="flex flex-col items-start">
                       <span className="text-xs font-medium text-fg-secondary">
-                        Already Claimed:
+                        {t("reward_distribution.already_claimed")}:
                       </span>
                       <span className="text-sm text-fg-tertiary">
                         {formatCurrencyAmount(
@@ -196,7 +198,7 @@ const ClaimYourPositionModal = ({
                 btnText={"Claim"}
               />
               <span className="text-fg-tertiary">
-                The transaction will continue in your wallet.
+                {t("reward_distribution.continue_in_wallet")}
               </span>
             </div>
           </div>
