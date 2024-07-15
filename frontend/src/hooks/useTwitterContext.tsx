@@ -20,8 +20,8 @@ const TWITTER_API_GET_ME_URL = 'https://api.twitter.com/2/users/me?user.fields=p
  */
 const CORS_PROXY_URL = window.location.origin + '/api/corsproxy'
 
-const clientId = import.meta.env.VITE_TWITTER_CLIENT_ID
-const redirectUri = import.meta.env.VITE_TWITTER_REDIRECT_URI
+const CLIENT_ID = import.meta.env.VITE_TWITTER_CLIENT_ID
+const REDIRECT_URI = import.meta.env.VITE_TWITTER_REDIRECT_URI
 
 //////////////////////////////////
 ///////// Context Code ///////////
@@ -51,8 +51,8 @@ export function TwitterProvider({ children }: { children: ReactNode }) {
     const twitterAuthUrl = new URL(TWITTER_API_OAUTH2_TOKEN_URL)
     twitterAuthUrl.searchParams.set('code', code)
     twitterAuthUrl.searchParams.set('grant_type', 'authorization_code')
-    twitterAuthUrl.searchParams.set('client_id', clientId)
-    twitterAuthUrl.searchParams.set('redirect_uri', redirectUri)
+    twitterAuthUrl.searchParams.set('client_id', CLIENT_ID)
+    twitterAuthUrl.searchParams.set('redirect_uri', REDIRECT_URI)
     twitterAuthUrl.searchParams.set('code_verifier', 'challenge')
 
     const proxiedTwitterAuthUrl = new URL(CORS_PROXY_URL)
@@ -104,8 +104,9 @@ export function TwitterProvider({ children }: { children: ReactNode }) {
 
 export function getSignInWithTwitterUrl(): string {
   const url = new URL(TWITTER_OAUTH_BASE_URL)
+  const redirectUri = REDIRECT_URI + '?testkey=testvalue'
 
-  url.searchParams.set('client_id', clientId)
+  url.searchParams.set('client_id', CLIENT_ID)
   url.searchParams.set('redirect_uri', redirectUri)
   url.searchParams.set('scope', TWITTER_AUTH_SCOPE)
 

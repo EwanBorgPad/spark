@@ -72,7 +72,15 @@ async function signInWithCode({ code, clientId, redirectUri }: SignInWithCodeArg
       'Authorization': 'Bearer ' + accessToken,
     },
   })
-  const getMeResponse = await getMeRes.json()
+  const getMeResponse = await getMeRes.json<GetMeResponse>()
 
   return getMeResponse
+}
+
+type GetMeResponse = {
+  data: {
+    id: string
+    username: string
+    name: string
+  }
 }
