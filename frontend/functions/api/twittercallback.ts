@@ -1,13 +1,12 @@
 
 type ENV = {
   VITE_TWITTER_CLIENT_ID: string
-  VITE_TWITTER_REDIRECT_URI: string
+  DB: D1Database
 }
-export const onRequest: PagesFunction<ENV> = async (context) => {
+export const onRequest: PagesFunction<ENV> = async (ctx) => {
   try {
-    const code = new URL(context.request.url).searchParams.get('code')
-
-    const env = context.env
+    const code = new URL(ctx.request.url).searchParams.get('code')
+    const address = new URL(ctx.request.url).searchParams.get('address')
 
     if (!code) {
       return new Response(
@@ -16,17 +15,42 @@ export const onRequest: PagesFunction<ENV> = async (context) => {
       )
     }
 
-    const redirectUri = new URL(context.request.url)
+    const redirectUri = new URL(ctx.request.url)
     redirectUri.searchParams.delete('state')
     redirectUri.searchParams.delete('code')
 
     const getMeResponse = await signInWithCode({
       code,
-      clientId: env.VITE_TWITTER_CLIENT_ID,
+      clientId: ctx.env.VITE_TWITTER_CLIENT_ID,
       redirectUri: redirectUri.href,
     })
 
     console.log({ getMeResponse })
+    const twitterId = getMeResponse.data.id
+
+    // check if the user is stored in the db
+    const existingUser = await ctx.env.DB
+      .prepare("SELECT * FROM user WHERE wallet_addresss = $1")
+      .bind([address])
+      .first<UserModel>()
+
+    console.log({ existingUser })
+
+    if (!existingUser) {
+      console.log('User not found in db, inserting...')
+      await ctx.env.DB
+        .prepare("INSERT INTO user (wallet_address, twitter_id) VALUES ($1, $2)")
+        .bind([address, twitterId])
+        .run()
+      console.log('User inserted into db.')
+    } else {
+      console.log('User found in db, updating twitter id...')
+      await ctx.env.DB
+        .prepare("UPDATE user SET twitter_id = $2 WHERE wallet_address = $1")
+        .bind([address, twitterId])
+        .run()
+      console.log('User twitter id updated')
+    }
 
     return new Response(null, {
       status: 302,
@@ -85,4 +109,9 @@ type GetMeResponse = {
     username: string
     name: string
   }
+}
+
+type UserModel = {
+  wallet_address: string
+  twitter_id: string
 }
