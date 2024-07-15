@@ -31,7 +31,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     // check if the user is stored in the db
     const existingUser = await ctx.env.DB
       .prepare("SELECT * FROM user WHERE wallet_addresss = $1")
-      .bind([address])
+      .bind(address)
       .first<UserModel>()
 
     console.log({ existingUser })
@@ -40,14 +40,14 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
       console.log('User not found in db, inserting...')
       await ctx.env.DB
         .prepare("INSERT INTO user (wallet_address, twitter_id) VALUES ($1, $2)")
-        .bind([address, twitterId])
+        .bind(address, twitterId)
         .run()
       console.log('User inserted into db.')
     } else {
       console.log('User found in db, updating twitter id...')
       await ctx.env.DB
         .prepare("UPDATE user SET twitter_id = $2 WHERE wallet_address = $1")
-        .bind([address, twitterId])
+        .bind(address, twitterId)
         .run()
       console.log('User twitter id updated')
     }
