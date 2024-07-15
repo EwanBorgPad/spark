@@ -29,6 +29,8 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
       redirectUri: redirectUri.href,
     })
 
+    console.log({ smth: accessToken })
+
     // get me
     const getMeRes = await fetch(TWITTER_API_GET_ME_URL, {
       method: 'get',
@@ -127,7 +129,11 @@ type GetMeResponse = {
   }
 }
 type GetFollowingResponse = {
-
+  data: {
+    id: string
+    name: string
+    username: string
+  }[]
 }
 type UserModel = {
   wallet_address: string
