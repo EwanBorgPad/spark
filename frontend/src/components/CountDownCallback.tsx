@@ -4,7 +4,7 @@ export type CountDownType = {
   endOfEvent: Date
   callbackWhenTimeExpires?: () => void
   callbackAsPerInterval?: () => void
-  interval?: number // interval in milliseconds
+  interval?: number // milliseconds
 }
 
 export const CountDownCallback = ({

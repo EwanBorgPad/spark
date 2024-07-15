@@ -10,6 +10,7 @@ import Homepage from "./pages/Homepage"
 import Project from "./pages/Project"
 import App from "./App"
 import { WhitelistStatusProvider } from "./hooks/useWhitelistContext"
+import { ProjectDataProvider } from "./hooks/useProjectData"
 import { BalanceProvider } from "@/hooks/useBalanceContext.tsx"
 import { TwitterProvider } from "@/hooks/useTwitterContext.tsx"
 
@@ -32,7 +33,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/project/:projectId",
-        element: <Project />,
+        element: (
+          <ProjectDataProvider>
+            <Project />
+          </ProjectDataProvider>
+        ),
       },
       {
         path: "/terms-of-service",

@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge"
 type WrapperProps = {
   label: string
   children: React.ReactNode
+  className?: string
 }
 type InnerWrapperProps = {
   children: React.ReactNode
@@ -17,8 +18,6 @@ const Wrapper = ({ label, children }: WrapperProps) => {
         {label}
       </span>
       {children}
-      {/* <CountDownTimer endsIn={data.distributionStartDate} />
-      <WhitelistingLP data={data.whitelisting} /> */}
     </section>
   )
 }

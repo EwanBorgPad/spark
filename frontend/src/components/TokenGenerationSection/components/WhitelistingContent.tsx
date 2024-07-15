@@ -3,8 +3,11 @@ import { useWalletContext } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
 import { useTranslation } from "react-i18next"
 import { Icon } from "@/components/Icon/Icon"
-import { ProjectData } from "@/data/data"
 import TokenRewards from "./TokenRewards"
+
+import { dummyBorgPriceInUSD } from "@/data/borgPriceInUsd"
+import { tokenData } from "@/data/tokenData"
+import { ProjectData } from "@/data/projectData"
 
 type WhitelistingContentProps = {
   tgeData: ProjectData["tge"]
@@ -14,6 +17,18 @@ const WhitelistingContent = ({ tgeData }: WhitelistingContentProps) => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()
+
+  // @TODO - add API for getting token info
+  const getTokenInfo = () => {
+    return tokenData
+  }
+  const { priceInUSD } = getTokenInfo()
+  const getBorgPriceInUSD = () => {
+    return dummyBorgPriceInUSD
+  }
+  const borgPrice = getBorgPriceInUSD()
+
+  const tokenPriceInBORG = priceInUSD / borgPrice
 
   return (
     <div
@@ -60,11 +75,11 @@ const WhitelistingContent = ({ tgeData }: WhitelistingContentProps) => {
           </div>
           <div className="flex flex-col items-end">
             <span className="font-geist-mono">
-              {formatCurrencyAmount(tgeData.price.dollarPrice, true, 5)}
+              {formatCurrencyAmount(priceInUSD, true, 5)}
             </span>
             <div className="flex gap-2">
               <span className="font-geist-mono">
-                {formatCurrencyAmount(tgeData.price.borgPrice, false, 5)}
+                {formatCurrencyAmount(tokenPriceInBORG, false, 5)}
               </span>
               <span>BORG</span>
             </div>
@@ -91,11 +106,11 @@ const WhitelistingContent = ({ tgeData }: WhitelistingContentProps) => {
           <span>{t("tge.defi_protocol")}</span>
           <div className="flex items-center gap-2">
             <img
-              src={tgeData.liquidityPoolDetails.defiProtocol.imgUrl}
+              src={tgeData.lockupDetails.liquidityPool.imgUrl}
               alt="liquidity pool - defi protocol"
               className="h-5 w-5 rounded-full"
             />
-            <span>{tgeData.liquidityPoolDetails.defiProtocol.name}</span>
+            <span>{tgeData.lockupDetails.liquidityPool.name}</span>
           </div>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>

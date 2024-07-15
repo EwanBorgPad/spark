@@ -1,21 +1,18 @@
+import { addDays } from "date-fns/addDays"
 import i18n from "@/i18n/i18n"
 
 import { ExternalLinkType } from "@/components/Button/ExternalLink"
-import curator from "../assets/curator.png"
-import chainImg from "../assets/zoraImg.png"
-import secondaryImgUrl from "../assets/secondaryImgUrl.png"
-import { addDays } from "date-fns/addDays"
-import { addHours } from "date-fns/addHours"
-import { addMinutes } from "date-fns/addMinutes"
 import { TimelineEventType } from "@/components/Timeline/Timeline"
-import { addSeconds } from "date-fns/addSeconds"
+
+import secondaryImgUrl from "../assets/secondaryImgUrl.png"
 import raydiumImg from "@/assets/raydium.png"
 import lrcCoinImg from "@/assets/lrcCoin.png"
+import chainImg from "../assets/zoraImg.png"
+import curator from "../assets/curator.png"
 
-const arbitraryDate = addSeconds(
-  addMinutes(addHours(addDays(new Date(), -11), 1), 9),
-  25,
-)
+const currentMoment = new Date()
+
+// Data defined through Back Office
 
 export type ProjectData = {
   title: string
@@ -34,45 +31,38 @@ export type ProjectData = {
     position: string
     socials: ExternalLinkType[]
   }
-  marketcap: number
-  fdv: number
   tokens: {
     available: number
     total: number
   }
-  distributionStartDate: Date
   tge: {
     raiseTarget: number
     projectCoin: {
       iconUrl: string
       ticker: string
     }
-    price: {
-      dollarPrice: number
-      borgPrice: number
-    }
+    fixedCoinPriceInBorg: number
     registrations: number
     vesting: {
       tgePercentage: number
       cliffPercentage: number
     }
     tokenGenerationEventDate: Date
+    lockupDetails: LockupDetails
     liquidityPoolDetails: {
-      defiProtocol: {
-        name: string
-        imgUrl: string
-      }
       lbType: string
       lockingPeriod: string
     }
-    pastOrders: {
-      borgAmount: number
-      date: Date
-      externalLink: string
-    }[]
+    tweetURL: string
   }
   secondaryImgUrl: string
   timeline: TimelineEventType[]
+  saleResults: {
+    totalAmountRaised: number
+    sellOutPercentage: number
+    participantCount: number
+    averageInvestedAmount: number
+  }
 }
 
 export const dummyData: ProjectData = {
@@ -81,22 +71,22 @@ export const dummyData: ProjectData = {
   projectLinks: [
     {
       url: "#",
-      linkType: "WEB",
+      iconType: "WEB",
       label: undefined,
     },
     {
       url: "#",
-      linkType: "MEDIUM",
+      iconType: "MEDIUM",
       label: undefined,
     },
     {
       url: "#",
-      linkType: "LINKED_IN",
+      iconType: "LINKED_IN",
       label: undefined,
     },
     {
       url: "#",
-      linkType: "X_TWITTER",
+      iconType: "X_TWITTER",
       label: undefined,
     },
   ],
@@ -111,102 +101,92 @@ export const dummyData: ProjectData = {
     socials: [
       {
         url: "#",
-        linkType: "LINKED_IN",
+        iconType: "LINKED_IN",
         label: "Linkedin",
       },
       {
         url: "#",
-        linkType: "X_TWITTER",
+        iconType: "X_TWITTER",
         label: "X (ex-Twitter)",
       },
       {
         url: "#",
-        linkType: "MEDIUM",
+        iconType: "MEDIUM",
         label: "Medium",
       },
     ],
   },
-  marketcap: 220301040.134242,
-  fdv: 144501647.5001,
   tokens: {
     available: 1565,
     total: 2000,
   },
-  // might be swaped with duration of TGE
-  distributionStartDate: addDays(arbitraryDate, 22),
   tge: {
     raiseTarget: 2000000,
     projectCoin: {
       iconUrl: lrcCoinImg,
       ticker: "LRC",
     },
-    price: {
-      dollarPrice: 0.08327,
-      borgPrice: 0.41635,
-    },
+    fixedCoinPriceInBorg: 1,
     registrations: 1698,
     vesting: {
       tgePercentage: 20,
       cliffPercentage: 20,
     },
-    tokenGenerationEventDate: arbitraryDate,
-    liquidityPoolDetails: {
-      defiProtocol: {
+    tokenGenerationEventDate: currentMoment,
+    lockupDetails: {
+      liquidityPool: {
         name: "Raydium",
         imgUrl: raydiumImg,
       },
+      description: "12 months",
+    },
+    liquidityPoolDetails: {
       lbType: "Full Range",
       lockingPeriod: "12 months",
     },
-    pastOrders: [
-      {
-        borgAmount: 3813.35,
-        date: addDays(arbitraryDate, -8),
-        externalLink: "#",
-      },
-      {
-        borgAmount: 110.1,
-        date: addDays(arbitraryDate, -7),
-        externalLink: "#",
-      },
-      {
-        borgAmount: 240.891,
-        date: addDays(arbitraryDate, -6),
-        externalLink: "#",
-      },
-      {
-        borgAmount: 440.4,
-        date: addDays(arbitraryDate, -5),
-        externalLink: "#",
-      },
-    ],
+    tweetURL:
+      "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
   },
   secondaryImgUrl: secondaryImgUrl,
   timeline: [
     {
       label: i18n.t("timeline.registration_opens"),
-      date: arbitraryDate,
+      date: addDays(currentMoment, -22),
       id: "REGISTRATION_OPENS",
     },
     {
       label: i18n.t("timeline.sale_opens"),
-      date: addDays(arbitraryDate, 10),
+      date: addDays(currentMoment, -10),
       id: "SALE_OPENS",
     },
     {
       label: i18n.t("timeline.sale_closes"),
-      date: addDays(arbitraryDate, 12),
+      date: addDays(currentMoment, -5),
       id: "SALE_CLOSES",
     },
     {
       label: i18n.t("timeline.reward_distribution"),
-      date: addDays(arbitraryDate, 22),
+      date: addDays(currentMoment, -2),
       id: "REWARD_DISTRIBUTION",
     },
     {
       label: "?",
-      date: addDays(arbitraryDate, 24),
+      date: addDays(currentMoment, 24),
       id: "UNKNOWN",
     },
   ],
+  saleResults: {
+    totalAmountRaised: 800402.5661,
+    sellOutPercentage: 78,
+    participantCount: 578,
+    averageInvestedAmount: 1200.34,
+  },
+}
+
+export type LockupDetails = {
+  liquidityPool: {
+    name: string
+    imgUrl: string
+  }
+  description: string
 }

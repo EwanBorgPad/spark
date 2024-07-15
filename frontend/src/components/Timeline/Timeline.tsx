@@ -1,5 +1,5 @@
 import { useWindowSize } from "@/hooks/useWindowSize"
-import { calculateTimelineData } from "@/utils/timeline"
+import { expandTimelineDataInfo } from "@/utils/timeline"
 import { differenceInMilliseconds } from "date-fns"
 import { isBefore } from "date-fns/isBefore"
 import {
@@ -31,7 +31,7 @@ export type TimelineEventType = {
   id: (typeof timelineEventIds)[number]
 }
 
-export type ExtendedTimelineEventType = {
+export type ExpandedTimelineEventType = {
   displayedTime?: string
   wasEventBeforeCurrentMoment?: boolean
   nextEventDate: Date
@@ -45,7 +45,7 @@ const HORIZONTAL_PADDING = 16
 const Timeline = ({ timelineEvents }: Props) => {
   const [containerWidth, setContainerWidth] = useState<number | null>(null)
   const [timelineData, setTimelineData] = useState(
-    calculateTimelineData(timelineEvents),
+    expandTimelineDataInfo(timelineEvents),
   )
   const containerRef = useRef<HTMLDivElement>(null)
   const dataLength = timelineData.length
@@ -54,7 +54,7 @@ const Timeline = ({ timelineEvents }: Props) => {
   const { width } = useWindowSize()
 
   const renderTimelineEvent = (
-    event: ExtendedTimelineEventType,
+    event: ExpandedTimelineEventType,
     dataLength: number,
     index: number,
   ) => {
@@ -151,7 +151,7 @@ const Timeline = ({ timelineEvents }: Props) => {
   }, [width])
 
   const updateTimeline = useCallback(() => {
-    const updatedTimelineData = calculateTimelineData(timelineEvents)
+    const updatedTimelineData = expandTimelineDataInfo(timelineEvents)
     setTimelineData(updatedTimelineData)
   }, [timelineEvents])
 
@@ -164,7 +164,7 @@ const Timeline = ({ timelineEvents }: Props) => {
       <h2 className="w-full pb-3 text-left text-2xl">Timeline</h2>
       <div className="flex w-full flex-col justify-between gap-4 rounded-lg border border-bd-secondary bg-secondary/50 px-4 py-5 lg:flex-row">
         {Object.values(timelineData).map(
-          (event: ExtendedTimelineEventType, dataIndex) =>
+          (event: ExpandedTimelineEventType, dataIndex) =>
             renderTimelineEvent(event, dataLength, dataIndex),
         )}
       </div>

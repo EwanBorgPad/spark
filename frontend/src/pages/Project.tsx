@@ -1,30 +1,25 @@
 import { ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { useState } from "react"
 
-import TokenGenerationWrapper from "../components/TokenGenerationSection/TokenGenerationSection"
-import { formatCurrencyAmount, getRatioPercantage } from "../utils/format"
+import TokenGenerationSection from "../components/TokenGenerationSection/TokenGenerationSection"
 import { ExternalLink } from "../components/Button/ExternalLink"
+import { useProjectDataContext } from "@/hooks/useProjectData"
 import { formatDateForDisplay } from "../utils/date-helpers"
 import ProjectTester from "@/components/QA/ProjectTester"
-import { calculateTimelineData } from "@/utils/timeline"
+import { expandTimelineDataInfo } from "@/utils/timeline"
 import avatarExample from "../assets/avatarExample.png"
 import Timeline from "@/components/Timeline/Timeline"
-import ProgressBar from "../components/ProgressBar"
 import Avatar from "../components/Avatar/Avatar"
 import { Icon } from "../components/Icon/Icon"
 
-import { ProjectData, dummyData } from "../data/data"
-
 const Project = () => {
-  const [projectData, setProjectData] = useState<ProjectData>(dummyData)
+  const { projectData } = useProjectDataContext()
   const { t } = useTranslation()
-  // const { getWhitelistStatus } = useWhitelistStatusContext()
 
-  const expandedTimeline = calculateTimelineData(projectData.timeline)
+  const expandedTimeline = expandTimelineDataInfo(projectData.timeline)
 
   return (
-    <main className="page z-[10] flex w-full flex-col items-center gap-10 px-4 py-[72px] font-normal text-fg-primary lg:max-w-[792px] lg:py-[100px]">
+    <main className="page z-[10] flex w-full flex-col items-center gap-10 overflow-y-hidden px-4 py-[72px] font-normal text-fg-primary lg:max-w-[792px] lg:py-[100px]">
       <section className="flex w-full flex-col justify-between gap-6 lg:flex-row">
         <div className="flex flex-col gap-6 lg:flex-row">
           <Avatar imgUrl={avatarExample} size="large" />
@@ -91,50 +86,15 @@ const Project = () => {
             </div>
             <div className="flex flex-wrap gap-2">
               {projectData.curator.socials.map((social) => (
-                <ExternalLink key={social.linkType} externalLink={social} />
+                <ExternalLink key={social.iconType} externalLink={social} />
               ))}
             </div>
           </div>
         </div>
       </section>
       <hr className="w-full border-bd-primary"></hr>
-      <section className="flex w-full max-w-[400px] flex-col gap-[25px]">
-        <div className="mt-[28px] flex w-full justify-between gap-4">
-          <div className="flex flex-1 flex-col gap-2">
-            <span className="text-sm text-fg-tertiary">{t("marketcap")}</span>
-            <span className="font-geist-mono text-base text-fg-primary">
-              {formatCurrencyAmount(projectData.marketcap)}
-            </span>
-          </div>
-          <div className="flex flex-1 flex-col gap-2">
-            <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
-            <span className="font-geist-mono text-base text-fg-primary">
-              {formatCurrencyAmount(projectData.fdv)}
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-col gap-3 rounded-xl bg-secondary px-4 py-3">
-          <div className="flex w-full items-center justify-between gap-4">
-            <span className="text-base">{t("tokens_available")}</span>
-            <div className="flex flex-col items-end">
-              <span className="text-sm text-fg-tertiary">
-                {`${getRatioPercantage(
-                  projectData.tokens.available,
-                  projectData.tokens.total,
-                )}%`}
-              </span>
-              <span className="text-base text-fg-primary">
-                {`${projectData.tokens.available}/${projectData.tokens.total}`}
-              </span>
-            </div>
-          </div>
-          <ProgressBar tokens={projectData.tokens} />
-        </div>
-      </section>
-      <TokenGenerationWrapper
-        data={projectData}
-        expandedTimeline={expandedTimeline}
-      />
+
+      <TokenGenerationSection expandedTimeline={expandedTimeline} />
 
       <section className="data-room group">
         <img
@@ -158,11 +118,7 @@ const Project = () => {
       <Timeline timelineEvents={projectData.timeline} />
       <ScrollRestoration />
 
-      {/* to be deleted */}
-      {/* <DesignSystem /> */}
-      {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && (
-        <ProjectTester data={projectData} setData={setProjectData} />
-      )}
+      {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && <ProjectTester />}
     </main>
   )
 }

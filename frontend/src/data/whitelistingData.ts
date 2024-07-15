@@ -1,12 +1,11 @@
-import { ExternalLinkType } from "@/components/Button/ExternalLink"
+import { WhitelistingRequirementType } from "@/utils/constants"
 
 export type WhitelistStatusType = {
   whitelisted: boolean
   requirements: {
-    label: string
-    description: string
     isFulfilled: boolean
-    additionalCTA?: ExternalLinkType
+    isMandatory: boolean
+    type: WhitelistingRequirementType
   }[]
 }
 
@@ -14,35 +13,19 @@ export const whitelistDummyData: WhitelistStatusType = {
   whitelisted: true,
   requirements: [
     {
-      label: "Hold 20,000 BORG in your wallet",
-      description: "",
       isFulfilled: false,
-      additionalCTA: {
-        label: "Buy BORG",
-        linkType: "NO_ICON",
-        url: "#",
-      },
+      isMandatory: true,
+      type: "DONT_RESIDE_IN_US",
     },
     {
-      label: "Follow BorgPad on X",
-      description: "",
       isFulfilled: false,
-      additionalCTA: {
-        label: "Follow Us",
-        linkType: "X_TWITTER",
-        url: "#",
-      },
+      isMandatory: true,
+      type: "FOLLOW_ON_X",
     },
     {
-      label: "Another Requirement",
-      description:
-        "Consectetur a erat nam at. Interdum varius sit amet mattis vulputate enim nulla aliquet porttitor. ",
       isFulfilled: true,
-    },
-    {
-      label: "Don’t reside in the US",
-      description: "",
-      isFulfilled: true,
+      isMandatory: true,
+      type: "HOLD_BORG_IN_WALLET",
     },
   ],
 }

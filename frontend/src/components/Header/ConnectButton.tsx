@@ -75,7 +75,7 @@ export const ConnectButton = ({
             ) : (
               <>
                 {/* Heading */}
-                <div className="w-full p-[17px] text-center">
+                <div className="w-full p-4 text-center">
                   <h1 className="text-body-xl-semibold text-white">
                     Connect a Solana Wallet
                   </h1>

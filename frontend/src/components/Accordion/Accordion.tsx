@@ -6,17 +6,19 @@ import { Icon } from "../Icon/Icon"
 
 type AccordionProps = {
   label: string
-  sublabel: string
+  subLabel: string
   children: React.ReactNode
   maxChildrenHeight?: number
+  className?: string
 }
 
 const BORDER_HEIGHT = 1
 
 const Accordion = ({
   label,
-  sublabel,
+  subLabel,
   children,
+  className,
   maxChildrenHeight,
 }: AccordionProps) => {
   const [isOpen, setOpen] = useState(false)
@@ -27,12 +29,12 @@ const Accordion = ({
     setOpen(false)
     const maxContainerHeight =
       maxChildrenHeight ||
-      1 * BORDER_HEIGHT + accordionRef.current?.scrollHeight
+      2 * BORDER_HEIGHT + accordionRef.current?.scrollHeight
     accordionRef.current.style.maxHeight = maxContainerHeight + "px"
   }, [maxChildrenHeight])
 
   return (
-    <div className="relative z-20 flex w-full flex-col">
+    <div className={twMerge("relative z-20 flex w-full flex-col", className)}>
       <Button
         color="secondary"
         size="xl"
@@ -40,7 +42,7 @@ const Accordion = ({
         className="z-[10] scale-100 gap-1 rounded-lg p-3 hover:opacity-100 active:!scale-[100%]"
       >
         <span className="text-sm font-normal">{label}</span>
-        {sublabel && <span className="text-sm font-normal">{sublabel}</span>}
+        {subLabel && <span className="text-sm font-normal">{subLabel}</span>}
         <Icon
           icon={"SvgChevronDown"}
           className={twMerge(

@@ -1,4 +1,11 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react"
 import { getSplTokenBalance, TokenAmount } from "../../shared/SolanaWeb3.ts"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { USDC_DEV_ADDRESS } from "../../shared/constants.ts"
@@ -21,7 +28,7 @@ export function BalanceProvider({ children }: { children: ReactNode }) {
 
   const { address } = useWalletContext()
 
-  async function fetchBalance() {
+  const fetchBalance = useCallback(async () => {
     if (!address) {
       setBalance(null)
       return
@@ -37,16 +44,16 @@ export function BalanceProvider({ children }: { children: ReactNode }) {
     } else {
       setBalance(null)
     }
-  }
+  }, [address, setBalance])
 
   useEffect(() => {
     fetchBalance()
-  }, [address])
+  }, [address, fetchBalance])
 
   return (
     <BalanceContext.Provider
       value={{
-        balance
+        balance,
       }}
     >
       {children}

@@ -1,24 +1,23 @@
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { ExtendedTimelineEventType } from "../Timeline/Timeline"
+import { ExpandedTimelineEventType } from "../Timeline/Timeline"
 import { getCurrentTgeEvent } from "@/utils/getCurrentTgeEvent"
+import { useProjectDataContext } from "@/hooks/useProjectData"
 import { CountDownCallback } from "../CountDownCallback"
-import LaunchpadLive from "./TGEStatus/LaunchpadLive"
-import SaleFinished from "./TGEStatus/SaleFinished"
 import Whitelisting from "./TGEStatus/Whitelisting"
-import { ProjectData } from "../../data/data"
+import SaleOver from "./TGEStatus/SaleOver"
 import LiveNow from "./TGEStatus/LiveNow"
 
 type Props = {
-  data: ProjectData
-  expandedTimeline: ExtendedTimelineEventType[]
+  expandedTimeline: ExpandedTimelineEventType[]
 }
 
-const TokenGenerationSection = ({ expandedTimeline, data }: Props) => {
+const TokenGenerationSection = ({ expandedTimeline }: Props) => {
+  const { projectData } = useProjectDataContext()
   const { t } = useTranslation()
   const [currentTgeEvent, setCurrentTgeEvent] =
-    useState<ExtendedTimelineEventType>(getCurrentTgeEvent(expandedTimeline))
+    useState<ExpandedTimelineEventType>(getCurrentTgeEvent(expandedTimeline))
 
   const updateTgeStatus = useCallback(() => {
     const newTgeStatus = getCurrentTgeEvent(expandedTimeline)
@@ -33,20 +32,21 @@ const TokenGenerationSection = ({ expandedTimeline, data }: Props) => {
     updateTgeStatus()
   }, [expandedTimeline, updateTgeStatus])
 
-  const renderComponent = (tgeEvent: ExtendedTimelineEventType) => {
+  const renderComponent = (tgeEvent: ExpandedTimelineEventType) => {
     switch (tgeEvent.id) {
       case "INACTIVE":
         return <span>{t("tge.not_opened_yet")}</span>
       case "REGISTRATION_OPENS":
-        return <Whitelisting tgeData={data.tge} eventData={currentTgeEvent} />
+        return (
+          <Whitelisting eventData={currentTgeEvent} projectData={projectData} />
+        )
       case "SALE_OPENS":
-        return <LiveNow eventData={tgeEvent} tgeData={data.tge} />
+        return <LiveNow eventData={tgeEvent} projectData={projectData} />
       case "SALE_CLOSES":
-        return <SaleFinished eventData={tgeEvent} />
       case "REWARD_DISTRIBUTION":
-        return <LaunchpadLive eventData={tgeEvent} />
+        return <SaleOver eventData={tgeEvent} projectData={projectData} />
       case "UNKNOWN":
-        return <span>{tgeEvent.label}</span>
+        return <span>{"PHASE TO BE DETERMINED"}</span>
     }
   }
 

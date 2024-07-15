@@ -68,6 +68,10 @@ export default {
         "texture-zoomed-out": "url(/src/assets/grainy-horizontal.png)",
         "secondary-profile-photo": "url(/src/assets/secondaryImgUrl.png)",
       },
+      backgroundColor: {
+        "contribution-gradient":
+          "linear-gradient(90deg, #F4FFEC 0%, #ACFF73 8%, rgba(172, 255, 115, 0.25) 29.5%, rgba(172, 255, 115, 0.00) 100%);",
+      },
       fontFamily: {
         geist: ["Geist", "Arial", "sans-serif"],
         "geist-mono": ["GeistMono", "monospace"],
@@ -80,6 +84,9 @@ export default {
       },
       gridTemplateColumns: {
         "borg-input": "minmax(180px, 1fr) 88px",
+      },
+      lineHeight: {
+        11: "44px",
       },
       "body-xl-semibold": [
         "18px",
