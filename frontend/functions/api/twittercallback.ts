@@ -30,7 +30,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
 
     // check if the user is stored in the db
     const existingUser = await ctx.env.DB
-      .prepare("SELECT * FROM user WHERE wallet_addresss = $1")
+      .prepare("SELECT * FROM user WHERE wallet_address = $1")
       .bind(address)
       .first<UserModel>()
 
