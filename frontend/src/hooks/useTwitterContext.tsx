@@ -7,8 +7,9 @@ import { useSearchParams } from "react-router-dom"
  * Find available scopes here: https://developer.x.com/en/docs/authentication/oauth-2-0/authorization-code
  * TODO @twitter reduce scope to least privilege needed
  * Available ones we might need: 'tweet.read', 'users.read', 'follows.read', 'offline.access'
+ * These two ('tweet.read', 'users.read') are needed to fetch authenticated user's data https://developer.x.com/en/docs/authentication/guides/v2-authentication-mapping
  */
-const TWITTER_AUTH_SCOPE = ['follows.read'].join(' ')
+const TWITTER_AUTH_SCOPE = ['tweet.read', 'users.read', 'follows.read'].join(' ')
 const TWITTER_OAUTH_BASE_URL = 'https://twitter.com/i/oauth2/authorize'
 const TWITTER_API_OAUTH2_TOKEN_URL = 'https://api.twitter.com/2/oauth2/token'
 const TWITTER_API_GET_ME_URL = 'https://api.twitter.com/2/users/me?user.fields=profile_image_url'
