@@ -4,6 +4,7 @@ import { Button } from "../Button/Button"
 import { ExternalLink } from "../Button/ExternalLink"
 import NotResidingInUsModal from "../Modal/Modals/NotResidingInUs"
 import { useTranslation } from "react-i18next"
+import { getSignInWithTwitterUrl } from "@/hooks/useTwitterContext.tsx"
 
 const CtaButtonRoot = () => {
   return null
@@ -48,10 +49,11 @@ const HoldBorgInAmountBtn = () => {
 }
 
 const FollowOnXBtn = () => {
+  const signInWithTwitterUrl = getSignInWithTwitterUrl()
   return (
     <div className="mt-2 flex justify-start">
       <ExternalLink
-        externalLink={{ label: "Follow Us", url: "#", iconType: "X_TWITTER" }}
+        externalLink={{ label: "Follow Us", url: signInWithTwitterUrl, iconType: "X_TWITTER" }}
         className="gap-1 rounded-lg"
         iconClassName="opacity-50"
       />
