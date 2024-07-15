@@ -104,7 +104,10 @@ export function TwitterProvider({ children }: { children: ReactNode }) {
 
 export function getSignInWithTwitterUrl(): string {
   const url = new URL(TWITTER_OAUTH_BASE_URL)
-  const redirectUri = REDIRECT_URI + '?testkey=testvalue'
+
+  const address = localStorage.getItem('address')
+
+  const redirectUri = REDIRECT_URI + '?address=' + address
 
   url.searchParams.set('client_id', CLIENT_ID)
   url.searchParams.set('redirect_uri', redirectUri)

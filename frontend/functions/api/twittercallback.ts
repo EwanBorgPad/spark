@@ -7,9 +7,7 @@ export const onRequest: PagesFunction<ENV> = async (context) => {
   try {
     const code = new URL(context.request.url).searchParams.get('code')
 
-    console.log({ code })
     const env = context.env
-    console.log({ env })
 
     if (!code) {
       return new Response(
@@ -18,10 +16,14 @@ export const onRequest: PagesFunction<ENV> = async (context) => {
       )
     }
 
+    const redirectUri = new URL(context.request.url)
+    redirectUri.searchParams.delete('state')
+    redirectUri.searchParams.delete('code')
+
     const getMeResponse = await signInWithCode({
       code,
       clientId: env.VITE_TWITTER_CLIENT_ID,
-      redirectUri: env.VITE_TWITTER_REDIRECT_URI,
+      redirectUri: redirectUri.href,
     })
 
     console.log({ getMeResponse })
@@ -44,7 +46,7 @@ export const onRequest: PagesFunction<ENV> = async (context) => {
 }
 
 const TWITTER_API_OAUTH2_TOKEN_URL = 'https://api.twitter.com/2/oauth2/token'
-const TWITTER_API_GET_ME_URL = 'https://api.twitter.com/2/users/me?user.fields=profile_image_url'
+const TWITTER_API_GET_ME_URL = 'https://api.twitter.com/2/users/me' // ?user.fields=profile_image_url
 
 type SignInWithCodeArgs = {
   code: string
