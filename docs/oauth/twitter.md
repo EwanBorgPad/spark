@@ -47,3 +47,8 @@ Current solution for avoiding CORS is to create a CF Worker on the backend and a
 
 TODO @twitter: draw a diagram of how this works, particularly because we're using our own backend
 TODO @twitter: setup a staging + production account (currently it's on my personal acc)
+TODO @twitter: if we ultimately go with all-backend impl, remove tokens and TwitterContext from the frontend app
+
+
+
+

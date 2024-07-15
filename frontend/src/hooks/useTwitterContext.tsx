@@ -1,3 +1,5 @@
+// TODO BEFORE MERGE REMOVE UNNEEDED STUFF FROM HERE
+
 import { createContext, ReactNode, useContext, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
 
