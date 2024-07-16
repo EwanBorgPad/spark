@@ -1,3 +1,4 @@
+import { Tweet, TweetNotFound } from "react-tweet"
 import { useTranslation } from "react-i18next"
 import { twMerge } from "tailwind-merge"
 import { useRef } from "react"
@@ -6,12 +7,12 @@ import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { ConnectButton } from "@/components/Header/ConnectButton"
 import YourContribution from "../components/YourContribution"
 import { useWalletContext } from "@/hooks/useWalletContext"
+import backdropImg from "@/assets/bg-your-contribution.png"
 import { getTweetIdFromURL } from "@/utils/tweetParser"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
 import Rewards from "../components/Rewards"
 import Divider from "@/components/Divider"
-import backdropImg from "@/assets/bg-your-contribution.png"
 
 // to be replaced with API calls
 import {
