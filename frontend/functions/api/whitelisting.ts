@@ -1,11 +1,13 @@
 import { getSplTokenBalance } from "../../shared/SolanaWeb3"
 import { USDC_DEV_ADDRESS } from "../../shared/constants"
+import { GetWhitelistingResult, UserModel, UserModelJson } from "../../shared/models"
 
-interface Env {}
-
-export const onRequestGet: PagesFunction<Env> = async (context) => {
+type ENV = {
+  DB: D1Database
+}
+export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   try {
-    const { searchParams } = new URL(context.request.url)
+    const { searchParams } = new URL(ctx.request.url)
     const address = searchParams.get("address")
 
     if (!isAddressInCorrectFormat(address)) {
@@ -22,13 +24,19 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       tokenAddress: USDC_DEV_ADDRESS,
     })
 
-    console.log({ balance })
+    const user: UserModel = await ctx.env.DB
+      .prepare('SELECT * FROM user WHERE wallet_address = ?1')
+      .bind(address)
+      .first<UserModel>()
+    const userJson: UserModelJson = user?.json ? JSON.parse(user.json) : {}
 
-    return new Response(
-      JSON.stringify({
-        balance,
-      }),
-    )
+    const result: GetWhitelistingResult = {
+      balance,
+      isFollowingOnX: userJson.isFollowingOnX || false,
+      isNotUsaResident: userJson.isNotUsaResident || false,
+    }
+
+    return new Response(JSON.stringify(result))
   } catch (e) {
     console.error(e)
     return new Response(
