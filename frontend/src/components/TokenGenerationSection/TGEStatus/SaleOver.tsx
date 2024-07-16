@@ -1,4 +1,3 @@
-import { Tweet, TweetNotFound } from "react-tweet"
 import { useTranslation } from "react-i18next"
 import { twMerge } from "tailwind-merge"
 import { useRef } from "react"

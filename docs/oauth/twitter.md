@@ -38,17 +38,22 @@ Links mentioning this issue:
 
 Current solution for avoiding CORS is to create a CF Worker on the backend and add access control headers.
 
+## Pricing
+
+It seems currently only a subset of endpoints are available for free account: 
+- POST /2/tweets
+- DELETE /2/tweets/:id 
+- GET /2/users/me
+
+To fetch following/followers one needs to upgrade to Basic tier (100$/month)
+
+
 ## Questions 
 
 - how does Rey work in terms of tokens, I see there's no tokens returned from the backend, only cookies?
 - how does refresh token work if it is not stored on the frontend, stored on backend?
 
-## TODOs
+## TODO @twitter
 
-TODO @twitter: draw a diagram of how this works, particularly because we're using our own backend
-TODO @twitter: setup a staging + production account (currently it's on my personal acc)
-TODO @twitter: if we ultimately go with all-backend impl, remove tokens and TwitterContext from the frontend app
-
-
-
-
+- setup a staging + production account (currently it's on my personal acc)
+- if we ultimately go with all-backend impl, remove tokens and TwitterContext from the frontend app

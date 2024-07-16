@@ -1,9 +1,8 @@
-
-const allowedUrl = 'https://api.twitter.com'
+const allowedUrl = "https://api.twitter.com"
 
 export const onRequest: PagesFunction<{}> = async (context) => {
   try {
-    const urlParam = new URL(context.request.url).searchParams.get('url')
+    const urlParam = new URL(context.request.url).searchParams.get("url")
 
     if (!urlParam || !urlParam.startsWith(allowedUrl)) {
       return new Response(null, { status: 409 })

@@ -53,7 +53,11 @@ const FollowOnXBtn = () => {
   return (
     <div className="mt-2 flex justify-start">
       <ExternalLink
-        externalLink={{ label: "Follow Us", url: signInWithTwitterUrl, iconType: "X_TWITTER" }}
+        externalLink={{
+          label: "Follow Us",
+          url: signInWithTwitterUrl,
+          iconType: "X_TWITTER",
+        }}
         className="gap-1 rounded-lg"
         iconClassName="opacity-50"
       />

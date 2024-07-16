@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useLayoutEffect, useRef, useState } from "react"
+import React, { useLayoutEffect, useRef, useState } from "react"
 import { SimpleModal } from "../SimpleModal"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "@/components/Icon/Icon"

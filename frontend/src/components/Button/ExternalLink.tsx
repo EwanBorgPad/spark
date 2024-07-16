@@ -38,7 +38,7 @@ const ExternalLinkWithLabel = ({
   return (
     <a
       href={externalLink.url}
-      target={'_blank'}
+      target={"_blank"}
       rel="noreferrer"
       className={twMerge(
         "flex items-center gap-2 rounded-full border-[1px] border-bd-primary px-2 py-1.5 hover:bg-bd-primary/40 active:scale-[98%]",
