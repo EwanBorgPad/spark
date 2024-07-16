@@ -9,8 +9,10 @@ type ENV = {
 }
 export const onRequest: PagesFunction<ENV> = async (ctx) => {
   try {
-    const code = new URL(ctx.request.url).searchParams.get("code")
-    const address = new URL(ctx.request.url).searchParams.get("address")
+    const url = ctx.request.url
+
+    const code = new URL(url).searchParams.get("code")
+    const address = new URL(url).searchParams.get("address")
 
     if (!code) {
       return new Response(JSON.stringify({ message: "Code is missing!" }), {
@@ -18,7 +20,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
       })
     }
 
-    const redirectUri = new URL(ctx.request.url)
+    const redirectUri = new URL(url)
     redirectUri.searchParams.delete("state")
     redirectUri.searchParams.delete("code")
 
@@ -28,8 +30,6 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
       clientId: ctx.env.VITE_TWITTER_CLIENT_ID,
       redirectUri: redirectUri.href,
     })
-
-    console.log({ smth: accessToken })
 
     // get me
     const getMeRes = await fetch(TWITTER_API_GET_ME_URL, {
