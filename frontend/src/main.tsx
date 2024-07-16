@@ -12,16 +12,21 @@ import App from "./App"
 import { WhitelistStatusProvider } from "./hooks/useWhitelistContext"
 import { ProjectDataProvider } from "./hooks/useProjectData"
 import { BalanceProvider } from "@/hooks/useBalanceContext.tsx"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+
+const queryClient = new QueryClient()
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <WalletProvider>
-        <BalanceProvider>
-          <App />
-        </BalanceProvider>
-      </WalletProvider>
+      <QueryClientProvider client={queryClient}>
+        <WalletProvider>
+          <BalanceProvider>
+            <App />
+          </BalanceProvider>
+        </WalletProvider>
+      </QueryClientProvider>
     ),
     children: [
       {
