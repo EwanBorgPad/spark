@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import WhitelistRequirement from "../Whitelisting/WhitelistRequirement"
 import { Badge } from "../Badge/Badge"
+import { Icon } from "../Icon/Icon"
 
 const WhitelistStatus = () => {
   const { t } = useTranslation()
@@ -31,6 +32,15 @@ const WhitelistStatus = () => {
           })}
         </div>
       )}
+      <div className="flex w-full items-center justify-center gap-1">
+        <Icon icon="SvgSnapshot" className="text-xl text-brand-primary" />
+        <span className="text-sm text-fg-tertiary">
+          Final Snapshot taken on
+        </span>{" "}
+        <span className="text-sm text-fg-primary">
+          2nd Jan 2024, at 23:59 CET
+        </span>
+      </div>
     </div>
   )
 }
