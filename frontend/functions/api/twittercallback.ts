@@ -64,7 +64,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
 
     // check if the user is stored in the db
     const existingUser = await ctx.env.DB.prepare(
-      "SELECT * FROM user WHERE wallet_address = $1",
+      "SELECT * FROM user WHERE wallet_address = ?1",
     )
       .bind(address)
       .first<UserModel>()
@@ -77,7 +77,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
         isFollowingOnX: true
       }
       await ctx.env.DB.prepare(
-        "INSERT INTO user (wallet_address, twitter_id, json) VALUES ($1, $2, $3)",
+        "INSERT INTO user (wallet_address, twitter_id, json) VALUES (?1, ?2, ?3)",
       )
         .bind(address, twitterId, JSON.stringify(json))
         .run()
@@ -87,7 +87,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
       const json = existingUser.json ? JSON.parse(existingUser.json) as UserModelJson : {}
       json.isFollowingOnX = true
       await ctx.env.DB.prepare(
-        "UPDATE user SET twitter_id = $2, json = $3 WHERE wallet_address = $1",
+        "UPDATE user SET twitter_id = ?2, json = ?3 WHERE wallet_address = ?1",
       )
         .bind(address, twitterId, JSON.stringify(json))
         .run()
