@@ -23,7 +23,7 @@ const TWITTER_API_GET_ME_URL =
 const CORS_PROXY_URL = window.location.origin + "/api/corsproxy"
 
 const CLIENT_ID = import.meta.env.VITE_TWITTER_CLIENT_ID
-const REDIRECT_URI = import.meta.env.VITE_TWITTER_REDIRECT_URI
+const REDIRECT_URI = window.location.origin + '/api/twittercallback'
 
 //////////////////////////////////
 ///////// Context Code ///////////
