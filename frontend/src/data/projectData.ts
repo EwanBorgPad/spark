@@ -10,7 +10,7 @@ import lrcCoinImg from "@/assets/lrcCoin.png"
 import chainImg from "../assets/zoraImg.png"
 import curator from "../assets/curator.png"
 
-const currentMoment = new Date()
+const currentMoment = addDays(new Date(), 12)
 
 // Data defined through Back Office
 
