@@ -1,10 +1,11 @@
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 
 import { Button } from "../Button/Button"
 import { ExternalLink } from "../Button/ExternalLink"
 import NotResidingInUsModal from "../Modal/Modals/NotResidingInUs"
 import { useTranslation } from "react-i18next"
 import { getSignInWithTwitterUrl } from "@/hooks/useTwitterContext.tsx"
+import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 
 const CtaButtonRoot = () => {
   return null
@@ -49,7 +50,8 @@ const HoldBorgInAmountBtn = () => {
 }
 
 const FollowOnXBtn = () => {
-  const signInWithTwitterUrl = getSignInWithTwitterUrl()
+  const { address } = useWalletContext()
+  const signInWithTwitterUrl = useMemo(() => getSignInWithTwitterUrl(), [address])
   return (
     <div className="mt-2 flex justify-start">
       <ExternalLink
