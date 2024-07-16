@@ -7,8 +7,6 @@ pub struct Lbp {
     pub dynamic_data: LbpDynamicData
 }
 
-// TODO: use UnixTimestamp instead of u64 - require i64 to implement space trait
-
 #[derive(AnchorSerialize, AnchorDeserialize, InitSpace, Default, Clone)]
 pub struct LbpDynamicData {
     /// The amount of token that remains after the end of the fund collection phase
@@ -21,6 +19,7 @@ pub struct LbpDynamicData {
 
     /// The start time of the LP locked phase
     /// Set by the program once the admin transition from fund collection to lp locked phase
+    /// Expressed as Unix time (i.e. seconds since the Unix epoch).
     pub lp_locked_phase_start_time: u64,
 }
 
@@ -47,13 +46,17 @@ pub struct LbpStaticData {
     pub user_max_cap: u64,
 
     /// The start time of the fund collection phase
+    /// Expressed as Unix time (i.e. seconds since the Unix epoch).
     pub fund_collection_phase_start_time: u64,
     /// The end time of the fund collection phase
+    /// Expressed as Unix time (i.e. seconds since the Unix epoch).
     pub fund_collection_phase_end_time: u64,
 
     /// The locking time of the LP locked phase
+    /// Expressed as Unix time (i.e. seconds since the Unix epoch).
     pub lp_locked_phase_locking_time: u64,
     /// The vesting time of the LP locked phase
+    /// Expressed as Unix time (i.e. seconds since the Unix epoch).
     pub lp_locked_phase_vesting_time: u64,
 
     /// The bump of the pda

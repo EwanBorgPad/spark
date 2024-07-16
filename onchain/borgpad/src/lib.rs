@@ -9,7 +9,7 @@ pub mod errors;
 pub mod events;
 pub mod state;
 
-declare_id!("awerLVSjzcEWgRTK7WwbRZFnkhbUNHG5dwNMvY2a9JK");
+declare_id!("bpadkZmPMYyDPPLwedrKQcKoGAQhQqSkrACTWvB3U4t");
 
 #[program]
 pub mod borgpad {
