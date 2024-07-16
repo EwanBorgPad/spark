@@ -4,6 +4,8 @@ import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { Badge } from "@/components/Badge/Badge"
 import { useTranslation } from "react-i18next"
+import { backendApi } from "@/data/backendApi.ts"
+import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 
 type NotResidingInUsModalProps = {
   onClose: () => void
@@ -13,13 +15,18 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
   const [acknowledged, setAcknowledgement] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const { t } = useTranslation()
+  const { address } = useWalletContext()
 
-  const acknowledgeResidencyHandler = () => {
+  const acknowledgeResidencyHandler = async () => {
+    if (!address) {
+      // TODO @alert remove before prod and handle gracefully
+      alert('Please connect your wallet first!')
+      return
+    }
+
     setIsLoading(true)
-    setTimeout(() => {
-      setAcknowledgement(true)
-      setIsLoading(false)
-    }, 1000)
+    await backendApi.confirmResidency({ address })
+    setIsLoading(false)
   }
 
   const resetAcknowledgment = () => {

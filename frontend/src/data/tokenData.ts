@@ -9,4 +9,3 @@ export const tokenData: TokenData = {
   fdv: 144501647.5001,
   priceInUSD: 0.2014,
 }
-

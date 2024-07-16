@@ -10,7 +10,7 @@ import lrcCoinImg from "@/assets/lrcCoin.png"
 import chainImg from "../assets/zoraImg.png"
 import curator from "../assets/curator.png"
 
-const currentMoment = new Date()
+const currentMoment = addDays(new Date(), 12)
 
 // Data defined through Back Office
 
@@ -70,22 +70,22 @@ export const dummyData: ProjectData = {
   subtitle: "Anti-Slashing Liquid Staking",
   projectLinks: [
     {
-      url: "#",
+      url: "https://www.puffer.fi",
       iconType: "WEB",
       label: undefined,
     },
     {
-      url: "#",
+      url: "https://medium.com/@puffer.fi",
       iconType: "MEDIUM",
       label: undefined,
     },
     {
-      url: "#",
+      url: "https://www.linkedin.com/company/puffer-finance",
       iconType: "LINKED_IN",
       label: undefined,
     },
     {
-      url: "#",
+      url: "https://twitter.com/puffer_finance",
       iconType: "X_TWITTER",
       label: undefined,
     },
@@ -100,19 +100,19 @@ export const dummyData: ProjectData = {
     position: i18n.t("founding.contributor"),
     socials: [
       {
-        url: "#",
+        url: "https://medium.com/@puffer.fi",
+        iconType: "MEDIUM",
+        label: "Medium",
+      },
+      {
+        url: "https://www.linkedin.com/company/puffer-finance",
         iconType: "LINKED_IN",
         label: "Linkedin",
       },
       {
-        url: "#",
+        url: "https://twitter.com/puffer_finance",
         iconType: "X_TWITTER",
         label: "X (ex-Twitter)",
-      },
-      {
-        url: "#",
-        iconType: "MEDIUM",
-        label: "Medium",
       },
     ],
   },
