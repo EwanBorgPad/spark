@@ -6,31 +6,26 @@ import { Badge } from "@/components/Badge/Badge"
 import { useTranslation } from "react-i18next"
 import { backendApi } from "@/data/backendApi.ts"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
+import { useMutation } from "@tanstack/react-query"
 
 type NotResidingInUsModalProps = {
   onClose: () => void
 }
 
 const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
-  const [acknowledged, setAcknowledgement] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const { t } = useTranslation()
   const { address } = useWalletContext()
 
-  const acknowledgeResidencyHandler = async () => {
-    if (!address) {
-      // TODO @alert remove before prod and handle gracefully
-      alert('Please connect your wallet first!')
-      return
-    }
-
-    setIsLoading(true)
-    await backendApi.confirmResidency({ address })
-    setIsLoading(false)
-  }
+  const {
+    mutate: confirmResidency,
+    isPending,
+    isSuccess,
+  }= useMutation({
+    mutationFn: (address: string) => backendApi.confirmResidency({ address }),
+  })
 
   const resetAcknowledgment = () => {
-    setAcknowledgement(false)
+    // TODO @acknowledgment reset if needed
   }
 
   return (
@@ -52,7 +47,7 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
             <p className="text-center text-base text-fg-tertiary">
               {t("whitelisting.not_available_in_us")}
             </p>
-            {acknowledged ? (
+            {isSuccess ? (
               <>
                 <div className="flex w-full justify-center">
                   <Badge.Confirmation
@@ -71,9 +66,9 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
               </>
             ) : (
               <Button
-                isLoading={isLoading}
+                isLoading={isPending}
                 btnText={"I Acknowledge That I am Not a US Resident"}
-                onClick={acknowledgeResidencyHandler}
+                onClick={() => confirmResidency(address)}
               />
             )}
           </div>
