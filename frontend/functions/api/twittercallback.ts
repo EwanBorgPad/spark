@@ -41,6 +41,10 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     const getMeResponse = await getMeRes.json<GetMeResponse>()
     console.log({ getMeResponse })
 
+    /**
+     * TODO @twitter this is unimplemented because of API limitations (get followers requires a paid account)
+     * For now, assume all users hitting this endpoint ARE following BorgPad
+     */
     // get followers
     const getFollowingUrl = TWITTER_API_GET_FOLLOWING_URL.replace(
       ":id",
@@ -69,18 +73,23 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
 
     if (!existingUser) {
       console.log("User not found in db, inserting...")
+      const json: UserModelJson = {
+        isFollowingOnX: true
+      }
       await ctx.env.DB.prepare(
         "INSERT INTO user (wallet_address, twitter_id, json) VALUES ($1, $2, $3)",
       )
-        .bind(address, twitterId)
+        .bind(address, twitterId, JSON.stringify(json))
         .run()
       console.log("User inserted into db.")
     } else {
-      console.log("User found in db, updating twitter id...")
+      console.log("User found in db, updating...")
+      const json = existingUser.json ? JSON.parse(existingUser.json) as UserModelJson : {}
+      json.isFollowingOnX = true
       await ctx.env.DB.prepare(
-        "UPDATE user SET twitter_id = $2 WHERE wallet_address = $1",
+        "UPDATE user SET twitter_id = $2, json = $3 WHERE wallet_address = $1",
       )
-        .bind(address, twitterId)
+        .bind(address, twitterId, JSON.stringify(json))
         .run()
       console.log("User twitter id updated")
     }
@@ -147,7 +156,9 @@ type GetFollowingResponse = {
 type UserModel = {
   wallet_address: string
   twitter_id: string
-  json: null | {
-    isFollowing: boolean
-  }
+  json: null | string
+}
+type UserModelJson = {
+  isFollowingOnX?: boolean
+  isNotUsaResident?: boolean
 }
