@@ -51,13 +51,13 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
   }
 
   return (
-    <>
+    <section className="flex w-full flex-col items-center">
       <CountDownCallback
         endOfEvent={currentTgeEvent.nextEventDate}
         callbackWhenTimeExpires={updateTgeStatus}
       />
       {renderComponent(currentTgeEvent)}
-    </>
+    </section>
   )
 }
 
