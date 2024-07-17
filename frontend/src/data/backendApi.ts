@@ -1,13 +1,28 @@
+import { GetWhitelistingResult } from "../../shared/models.ts"
 
-const CONFIRM_RESIDENCY_URL = '/api/confirmresidency'
+// const API_BASE_URL = 'https://borgpad.pages.dev/api'
+const API_BASE_URL = '/api'
+const GET_WHITELISTING_STATUS_API = API_BASE_URL + '/whitelisting'
+const POST_CONFIRM_RESIDENCY_URL = API_BASE_URL + '/confirmresidency'
+
+const getWhitelistingStatus = async ({ address }: { address: string }) => {
+  const url = new URL(GET_WHITELISTING_STATUS_API, window.location.href)
+  url.searchParams.set('address', address)
+
+  const response = await fetch(url)
+  const result = await response.json() as GetWhitelistingResult
+
+  return result
+}
 
 const confirmResidency = async ({ address }: { address: string }) => {
-  const url = new URL(CONFIRM_RESIDENCY_URL, window.location.href)
+  const url = new URL(POST_CONFIRM_RESIDENCY_URL, window.location.href)
   url.searchParams.set('address', address)
 
   await fetch(url, { method: 'post' })
 }
 
 export const backendApi = {
-  confirmResidency
+  getWhitelistingStatus,
+  confirmResidency,
 }
