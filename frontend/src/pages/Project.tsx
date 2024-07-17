@@ -19,8 +19,8 @@ const Project = () => {
   const expandedTimeline = expandTimelineDataInfo(projectData.timeline)
 
   return (
-    <main className="page z-[10] flex w-full flex-col items-center gap-10 overflow-y-hidden px-4 py-[72px] font-normal text-fg-primary lg:max-w-[792px] lg:py-[100px]">
-      <section className="flex w-full flex-col justify-between gap-6 lg:flex-row">
+    <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[72px] font-normal text-fg-primary lg:py-[100px]">
+      <section className="flex w-full flex-col justify-between gap-6 px-4 lg:max-w-[792px] lg:flex-row">
         <div className="flex flex-col gap-6 lg:flex-row">
           <Avatar imgUrl={avatarExample} size="large" />
           <div className="flex flex-col gap-1">
@@ -37,7 +37,7 @@ const Project = () => {
         </div>
       </section>
 
-      <section className="flex w-full flex-wrap gap-x-5 gap-y-3 text-sm">
+      <section className="flex w-full flex-wrap gap-x-5 gap-y-3 px-4 text-sm lg:max-w-[792px]">
         <div className="flex gap-5">
           <div className="flex items-center gap-2 border-r-[1px] border-r-fg-gray-line pr-5">
             <span className="text-fg-primary text-opacity-50">
@@ -69,7 +69,7 @@ const Project = () => {
         </div>
       </section>
 
-      <section className="flex w-full flex-col gap-3">
+      <section className="flex w-full flex-col gap-3 px-4 lg:max-w-[792px]">
         <h4 className="text-sm font-normal">{t("deal_curated_by")}</h4>
         <div className="w-full rounded-lg bg-gradient-to-r from-brand-primary/50 to-brand-secondary/15 p-[1px]">
           <div className="flex h-full w-full flex-col items-start justify-between gap-4 rounded-[7px] bg-gradient-to-br from-brand-dimmed-1 via-brand-dimmed-2 via-50% to-brand-dimmed-2 px-4 py-3 lg:flex-row lg:items-center lg:bg-gradient-to-r">
@@ -92,27 +92,29 @@ const Project = () => {
           </div>
         </div>
       </section>
-      <hr className="w-full border-bd-primary"></hr>
+      <hr className="w-full border-bd-primary lg:max-w-[760px]"></hr>
 
       <TokenGenerationSection expandedTimeline={expandedTimeline} />
 
-      <section className="data-room group">
-        <img
-          src={projectData.secondaryImgUrl}
-          className="absolute left-0 h-[72px] w-[100px] opacity-5"
-        />
-        <div className="z-[1] flex flex-col">
-          <span className="font-medium">
-            {projectData.title} {t("data_room")}
-          </span>
-          <span className="font-normal opacity-50">
-            {t("timeline.learn_more_about")}
-          </span>
+      <section className="group w-full px-4 lg:max-w-[792px]">
+        <div className="data-room w-full ">
+          <img
+            src={projectData.secondaryImgUrl}
+            className="absolute left-0 h-[72px] w-[100px] opacity-5"
+          />
+          <div className="z-[1] flex flex-col">
+            <span className="font-medium">
+              {projectData.title} {t("data_room")}
+            </span>
+            <span className="font-normal opacity-50">
+              {t("timeline.learn_more_about")}
+            </span>
+          </div>
+          <Icon
+            icon="SvgArrowRight"
+            className="group-hover:scale-140 text-[20px] transition-transform"
+          />
         </div>
-        <Icon
-          icon="SvgArrowRight"
-          className="group-hover:scale-140 text-[20px] transition-transform"
-        />
       </section>
 
       <Timeline timelineEvents={projectData.timeline} />

@@ -6,7 +6,7 @@ import { Badge } from "@/components/Badge/Badge"
 import { useTranslation } from "react-i18next"
 import { backendApi } from "@/data/backendApi.ts"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 type NotResidingInUsModalProps = {
   onClose: () => void
@@ -15,6 +15,7 @@ type NotResidingInUsModalProps = {
 const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
   const { t } = useTranslation()
   const { address } = useWalletContext()
+  const queryClient = useQueryClient()
 
   const {
     mutate: confirmResidency,
@@ -22,6 +23,9 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
     isSuccess,
   }= useMutation({
     mutationFn: (address: string) => backendApi.confirmResidency({ address }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["getWhitelistingStatus", address], })
+    },
   })
 
   const resetAcknowledgment = () => {

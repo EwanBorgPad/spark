@@ -45,7 +45,7 @@ const YourContribution = ({
         {t("sale_over.total_to_be_received")}
       </span>
 
-      <div className="border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary">
+      <div className="border-t-none relative z-10 w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary">
         <div className="relative flex flex-col items-center gap-1 border-b-[1px] border-b-bd-primary px-4 pb-4 pt-6">
           <span className="mb-1 text-xs">
             {t("sale_over.your_main_position")}

@@ -160,9 +160,12 @@ const Timeline = ({ timelineEvents }: Props) => {
   }, [timelineEvents, updateTimeline])
 
   return (
-    <section ref={containerRef} className="w-full">
+    <section className="w-full px-4 lg:max-w-[792px]">
       <h2 className="w-full pb-3 text-left text-2xl">Timeline</h2>
-      <div className="flex w-full flex-col justify-between gap-4 rounded-lg border border-bd-secondary bg-secondary/50 px-4 py-5 lg:flex-row">
+      <div
+        ref={containerRef}
+        className="flex w-full flex-col justify-between gap-4 rounded-lg border border-bd-secondary bg-secondary/50 px-4 py-5 lg:flex-row"
+      >
         {Object.values(timelineData).map(
           (event: ExpandedTimelineEventType, dataIndex) =>
             renderTimelineEvent(event, dataLength, dataIndex),

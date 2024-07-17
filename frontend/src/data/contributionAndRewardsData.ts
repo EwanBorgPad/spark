@@ -98,7 +98,7 @@ export const contributionAndRewardsData: ContributionAndRewardsType = {
       },
     },
     rewards: {
-      claimedTokens: 400,
+      claimedTokens: 300,
       totalTokens: 1200,
       rewardTypeDescription: "linearly paid-out through 12 months",
       payoutSchedule: dummyPayoutScheduleData,

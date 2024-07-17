@@ -24,7 +24,7 @@ const LiveNow = ({ eventData, projectData }: LiveNowProps) => {
   const tgeData = projectData.tge
 
   return (
-    <>
+    <div className="flex w-full flex-col items-center gap-[52px] px-4">
       <MarketAndTokensData projectData={projectData} />
       <div className="flex w-full max-w-[400px] flex-col gap-5">
         <TgeWrapper label={t("tge.live_now")}>
@@ -38,7 +38,7 @@ const LiveNow = ({ eventData, projectData }: LiveNowProps) => {
         </TgeWrapper>
         {whitelistStatus?.whitelisted ? <PastOrders /> : <WhitelistStatus />}
       </div>
-    </>
+    </div>
   )
 }
 
