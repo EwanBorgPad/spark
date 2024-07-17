@@ -1,3 +1,4 @@
+import { Tweet, TweetNotFound } from "react-tweet"
 import { useTranslation } from "react-i18next"
 import { twMerge } from "tailwind-merge"
 import { useRef } from "react"
@@ -7,7 +8,6 @@ import { ConnectButton } from "@/components/Header/ConnectButton"
 import YourContribution from "../components/YourContribution"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { getTweetIdFromURL } from "@/utils/tweetParser"
-import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
 import Rewards from "../components/Rewards"
 import Divider from "@/components/Divider"
@@ -17,8 +17,8 @@ import {
   ContributionAndRewardsType,
   contributionAndRewardsData,
 } from "@/data/contributionAndRewardsData"
+import SaleOverResults from "../components/SaleOverResults"
 import { ProjectData } from "@/data/projectData"
-import { tokenData } from "@/data/tokenData"
 
 type LiveProps = {
   eventData: ExpandedTimelineEventType
@@ -29,14 +29,6 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
   const contributionsRef = useRef<HTMLDivElement>(null)
   const rewardsRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
-
-  const {
-    totalAmountRaised,
-    sellOutPercentage,
-    participantCount,
-    averageInvestedAmount,
-  } = projectData.saleResults
-
   const { walletState } = useWalletContext()
 
   ////////////////////////////////////////////////////////
@@ -47,14 +39,6 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
   }
   const contributionInfo = getContributionInfo()
   const userDidContribute = !!contributionInfo?.suppliedBorg.total
-
-  /////////////////////////////////////////////////
-  // @TODO - add API for getting token info ///////
-  /////////////////////////////////////////////////
-  const getTokenInfo = () => {
-    return tokenData
-  }
-  const { marketCap, fdv } = getTokenInfo()
 
   const scrollToRewards = () => {
     if (!contributionsRef.current) return
@@ -95,56 +79,10 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
           </Button>
         </div>
 
-        <div className="flex w-full flex-wrap gap-x-4 gap-y-5 rounded-lg border-[1px] border-bd-primary bg-secondary px-5 py-4">
-          <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-            <span className="text-sm text-fg-tertiary">
-              {t("sale_over.total_amount_raised")}
-            </span>
-            <span className="font-geist-mono text-base leading-7 text-fg-primary">
-              {formatCurrencyAmount(totalAmountRaised)}
-            </span>
-          </div>
-          <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-            <span className="text-sm text-fg-tertiary">
-              {t("sale_over.sell_out_percentage")}
-            </span>
-            <span className="font-geist-mono text-base leading-7 text-fg-primary">
-              {sellOutPercentage}%
-            </span>
-          </div>
-          <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-            <span className="text-sm text-fg-tertiary">
-              {t("sale_over.participants")}
-            </span>
-            <span className="font-geist-mono text-base leading-7 text-fg-primary">
-              {participantCount}
-            </span>
-          </div>
-          <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-            <span className="text-sm text-fg-tertiary">
-              {t("sale_over.average_invested_amount")}
-            </span>
-            <span className="font-geist-mono text-base leading-7 text-fg-primary">
-              {formatCurrencyAmount(averageInvestedAmount)}
-            </span>
-          </div>
-          <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-            <span className="text-sm text-fg-tertiary">{t("market_cap")}</span>
-            <span className="font-geist-mono text-base leading-7 text-fg-primary">
-              {formatCurrencyAmount(marketCap)}
-            </span>
-          </div>
-          <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-            <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
-            <span className="font-geist-mono text-base leading-7 text-fg-primary">
-              {formatCurrencyAmount(fdv)}
-            </span>
-          </div>
-        </div>
+        <SaleOverResults saleResults={projectData.saleResults} />
 
         <div className="w-full max-w-[400px]" data-theme="dark">
-          {/* UNCOMMENT */}
-          {/* {tweetId ? <Tweet id={tweetId} /> : <TweetNotFound />} */}
+          {tweetId ? <Tweet id={tweetId} /> : <TweetNotFound />}
         </div>
       </div>
 

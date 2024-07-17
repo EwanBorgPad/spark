@@ -77,6 +77,10 @@
   "reward_distribution.all_rewards_claimed": "All rewards claimed.",
   "reward_distribution.claimed": "Claimed",
 
+  "distribution_over": "Distribution Over",
+  "distribution_over.distribution_ended": "The reward distribution phase ended on",
+  "distribution_over.contact_us": "If you have any questions, please contact us.",
+
   "whitelisting.us_residency": "US Residency",
   "whitelisting.i_dont_reside_in_us": " I Don’t Reside in the US",
   "whitelisting.not_available_in_us": "This LBP is not available for US residents. To be whitelisted, please acknowledge that you don’t reside in the USA.",
@@ -88,6 +92,7 @@
   "timeline.sale_opens": "Sale Opens",
   "timeline.sale_closes": "Sale Closes",
   "timeline.reward_distribution": "Reward Distribution",
+  "timeline.distribution_over": "Distribution Over",
 
   "terms_of_service": "Terms of Service"
 }

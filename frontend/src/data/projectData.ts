@@ -170,9 +170,9 @@ export const dummyData: ProjectData = {
       id: "REWARD_DISTRIBUTION",
     },
     {
-      label: "?",
+      label: i18n.t("timeline.distribution_over"),
       date: addDays(currentMoment, 24),
-      id: "UNKNOWN",
+      id: "DISTRIBUTION_OVER",
     },
   ],
   saleResults: {
