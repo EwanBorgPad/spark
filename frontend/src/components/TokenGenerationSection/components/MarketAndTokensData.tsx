@@ -4,17 +4,22 @@ import { formatCurrencyAmount, getRatioPercentage } from "@/utils/format"
 import { ProjectData } from "@/data/projectData"
 import ProgressBar from "./ProgressBar"
 
-import { tokenData } from "@/data/tokenData"
+import { useQuery } from "@tanstack/react-query"
+import { exchangeApi } from "@/data/exchangeApi.ts"
 
 const MarketAndTokensData = ({ projectData }: { projectData: ProjectData }) => {
+  const { available, total } = projectData.tokensAvailability
   const { t } = useTranslation()
 
-  // @TODO - add API for getting token info
-  const getTokenInfo = () => {
-    return tokenData
-  }
-  const { marketCap, fdv } = getTokenInfo()
-  const { available, total } = projectData.tokensAvailability
+  // TODO @hardcoded switch to projectCoin instead of hardcoded BORG
+  const coin = 'swissborg'
+  const vsCurrency = 'usd'
+  const { data } = useQuery({
+    queryFn: () => exchangeApi.getCoinMarketData({
+      coin, vsCurrency,
+    }),
+    queryKey: ['exchangeApi', 'getCoinMarketData', coin, vsCurrency]
+  })
 
   return (
     <section className="flex w-full max-w-[400px] flex-col gap-[25px]">
@@ -22,13 +27,13 @@ const MarketAndTokensData = ({ projectData }: { projectData: ProjectData }) => {
         <div className="flex flex-1 flex-col gap-2">
           <span className="text-sm text-fg-tertiary">{t("market_cap")}</span>
           <span className="font-geist-mono text-base text-fg-primary">
-            {formatCurrencyAmount(marketCap)}
+            {formatCurrencyAmount(data?.marketCap || 0)}
           </span>
         </div>
         <div className="flex flex-1 flex-col gap-2">
           <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
           <span className="font-geist-mono text-base text-fg-primary">
-            {formatCurrencyAmount(fdv)}
+            {formatCurrencyAmount(data?.fullyDilutedValuation || 0)}
           </span>
         </div>
       </div>

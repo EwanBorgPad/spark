@@ -20,6 +20,8 @@ import {
 } from "@/data/contributionAndRewardsData"
 import SaleOverResults from "../components/SaleOverResults"
 import { ProjectData } from "@/data/projectData"
+import { useQuery } from "@tanstack/react-query"
+import { exchangeApi } from "@/data/exchangeApi.ts"
 
 type LiveProps = {
   eventData: ExpandedTimelineEventType

@@ -1,8 +1,9 @@
+import { exchangeApi } from "@/data/exchangeApi"
 import { ProjectData } from "@/data/projectData"
 import { formatCurrencyAmount } from "@/utils/format"
+import { useQuery } from "@tanstack/react-query"
 import React from "react"
 import { useTranslation } from "react-i18next"
-import { tokenData } from "@/data/tokenData"
 
 type SaleOverResultsProps = {
   saleResults: ProjectData["saleResults"]
@@ -21,10 +22,17 @@ const SaleOverResults = ({ saleResults }: SaleOverResultsProps) => {
   // @TODO - add API for getting token info ///////
   /////////////////////////////////////////////////
 
-  const getTokenInfo = () => {
-    return tokenData
-  }
-  const { marketCap, fdv } = getTokenInfo()
+  // TODO @hardcoded coin
+  const coin = "swissborg"
+  const vsCurrency = "usd"
+  const { data } = useQuery({
+    queryFn: () =>
+      exchangeApi.getCoinMarketData({
+        coin,
+        vsCurrency,
+      }),
+    queryKey: ["exchangeApi", "getCoinMarketData", coin, vsCurrency],
+  })
 
   return (
     <div className="flex w-full max-w-[760px] flex-wrap gap-x-4 gap-y-5 rounded-lg border-[1px] border-bd-primary bg-secondary px-4 py-4 lg:px-5">
@@ -63,13 +71,17 @@ const SaleOverResults = ({ saleResults }: SaleOverResultsProps) => {
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("market_cap")}</span>
         <span className="font-geist-mono text-base leading-7 text-fg-primary">
-          {formatCurrencyAmount(marketCap)}
+          {data?.marketCap
+            ? formatCurrencyAmount(data.marketCap)
+            : "unavailable"}
         </span>
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
         <span className="font-geist-mono text-base leading-7 text-fg-primary">
-          {formatCurrencyAmount(fdv)}
+          {data?.fullyDilutedValuation
+            ? formatCurrencyAmount(data.fullyDilutedValuation)
+            : "unavailable"}
         </span>
       </div>
     </div>
