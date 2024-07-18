@@ -5,9 +5,9 @@ import { useTranslation } from "react-i18next"
 import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"
 
-import { dummyBorgPriceInUSD } from "@/data/borgPriceInUsd"
-import { tokenData } from "@/data/tokenData"
 import { ProjectData } from "@/data/projectData"
+import { useQuery } from "@tanstack/react-query"
+import { exchangeApi } from "@/data/exchangeApi.ts"
 
 type WhitelistingContentProps = {
   tgeData: ProjectData["tge"]
@@ -18,17 +18,31 @@ const WhitelistingContent = ({ tgeData }: WhitelistingContentProps) => {
 
   const { walletState } = useWalletContext()
 
-  // @TODO - add API for getting token info
-  const getTokenInfo = () => {
-    return tokenData
-  }
-  const { priceInUSD } = getTokenInfo()
-  const getBorgPriceInUSD = () => {
-    return dummyBorgPriceInUSD
-  }
-  const borgPrice = getBorgPriceInUSD()
+  const borgCoinName = 'swissborg'
+  const vsCurrency = 'usd'
 
-  const tokenPriceInBORG = priceInUSD / borgPrice
+  // TODO @hardcoded swissborg coin, replace with project's token later
+  const { data: projectTokenData } = useQuery({
+    queryFn: () => exchangeApi.getCoinMarketData({
+      coin: borgCoinName,
+      vsCurrency,
+    }),
+    queryKey: ['exchangeApi', 'getCoinMarketData', borgCoinName, vsCurrency]
+  })
+
+  const { data: borgData } = useQuery({
+    queryFn: () => exchangeApi.getCoinMarketData({
+      coin: borgCoinName,
+      vsCurrency,
+    }),
+    queryKey: ['exchangeApi', 'getCoinMarketData', borgCoinName, vsCurrency]
+  })
+
+  if (!projectTokenData || !borgData) {
+    return null
+  }
+
+  const tokenPriceInBORG = projectTokenData.currentPrice / borgData.currentPrice
 
   return (
     <div
@@ -75,7 +89,7 @@ const WhitelistingContent = ({ tgeData }: WhitelistingContentProps) => {
           </div>
           <div className="flex flex-col items-end">
             <span className="font-geist-mono">
-              {formatCurrencyAmount(priceInUSD, true, 5)}
+              {formatCurrencyAmount(projectTokenData.currentPrice, true, 5)}
             </span>
             <div className="flex gap-2">
               <span className="font-geist-mono">
