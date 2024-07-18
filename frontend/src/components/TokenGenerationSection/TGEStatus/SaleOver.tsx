@@ -20,7 +20,8 @@ import {
   contributionAndRewardsData,
 } from "@/data/contributionAndRewardsData"
 import { ProjectData } from "@/data/projectData"
-import { tokenData } from "@/data/tokenData"
+import { useQuery } from "@tanstack/react-query"
+import { exchangeApi } from "@/data/exchangeApi.ts"
 
 type LiveProps = {
   eventData: ExpandedTimelineEventType
@@ -50,13 +51,15 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
   const contributionInfo = getContributionInfo()
   const userDidContribute = !!contributionInfo?.suppliedBorg.total
 
-  /////////////////////////////////////////////////
-  // @TODO - add API for getting token info ///////
-  /////////////////////////////////////////////////
-  const getTokenInfo = () => {
-    return tokenData
-  }
-  const { marketCap, fdv } = getTokenInfo()
+  // TODO @hardcoded coin
+  const coin = 'swissborg'
+  const vsCurrency = 'usd'
+  const { data } = useQuery({
+    queryFn: () => exchangeApi.getCoinMarketData({
+      coin, vsCurrency,
+    }),
+    queryKey: ['exchangeApi', 'getCoinMarketData', coin, vsCurrency]
+  })
 
   const scrollToRewards = () => {
     if (!contributionsRef.current) return
@@ -132,13 +135,13 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
           <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
             <span className="text-sm text-fg-tertiary">{t("market_cap")}</span>
             <span className="font-geist-mono text-base leading-7 text-fg-primary">
-              {formatCurrencyAmount(marketCap)}
+              {formatCurrencyAmount(data?.marketCap || 0)}
             </span>
           </div>
           <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
             <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
             <span className="font-geist-mono text-base leading-7 text-fg-primary">
-              {formatCurrencyAmount(fdv)}
+              {formatCurrencyAmount(data?.fullyDilutedValuation || 0)}
             </span>
           </div>
         </div>
