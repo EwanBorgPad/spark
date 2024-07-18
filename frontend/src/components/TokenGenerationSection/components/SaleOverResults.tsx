@@ -27,12 +27,12 @@ const SaleOverResults = ({ saleResults }: SaleOverResultsProps) => {
   const { marketCap, fdv } = getTokenInfo()
 
   return (
-    <div className="flex w-full flex-wrap gap-x-4 gap-y-5 rounded-lg border-[1px] border-bd-primary bg-secondary px-5 py-4">
+    <div className="flex w-full max-w-[760px] flex-wrap gap-x-4 gap-y-5 rounded-lg border-[1px] border-bd-primary bg-secondary px-4 py-4 lg:px-5">
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-        <span className="text-sm text-fg-tertiary">
+        <span className="w-fit text-sm text-fg-tertiary">
           {t("sale_over.total_amount_raised")}
         </span>
-        <span className="font-geist-mono text-base leading-7 text-fg-primary">
+        <span className="w-fit font-geist-mono text-base leading-7 text-fg-primary">
           {formatCurrencyAmount(totalAmountRaised)}
         </span>
       </div>

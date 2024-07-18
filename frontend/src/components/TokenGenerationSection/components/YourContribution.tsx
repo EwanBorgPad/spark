@@ -122,7 +122,9 @@ const YourContribution = ({
             </span>
           </div>
           <div className="flex h-fit items-center gap-1.5 rounded-full text-xs text-fg-primary ">
-            <span className="opacity-50">{rewards.rewardTypeDescription}</span>
+            <span className="opacity-50">
+              {projectData.rewards.description}
+            </span>
           </div>
         </div>
       </div>

@@ -19,7 +19,7 @@ const DistributionOver = ({
 }: DistributionOverProps) => {
   const { t } = useTranslation()
   return (
-    <div className="relative flex w-full flex-col items-center gap-10 pb-10">
+    <div className="relative flex w-full flex-col items-center gap-10 px-4 pb-10">
       <div className="flex w-full flex-col items-center gap-1">
         <h2 className="text-4xl font-semibold leading-11">
           {t("distribution_over")}
@@ -27,7 +27,7 @@ const DistributionOver = ({
         <span className="text-sm opacity-60">{t("sale_over.thank_you")}</span>
       </div>
       <SaleOverResults saleResults={projectData.saleResults} />
-      <div className="flex w-full max-w-[400px] flex-col items-center opacity-40">
+      <div className="flex w-full max-w-[400px] flex-col items-center pt-10 opacity-40">
         <Divider icon="SvgMedal" />
         <div className="mb-7 flex w-full flex-col items-center gap-1">
           <h2 className="text-4xl font-semibold">{t("sale_over.rewards")}</h2>
@@ -42,11 +42,13 @@ const DistributionOver = ({
         </div>
       </div>
       <div className="absolute bottom-2.5 flex w-full flex-col items-center gap-1.5">
-        <p className="font-medium">
+        <p className="w-full px-4 text-center font-medium">
           <span className="text-fg-primary">
             {t("distribution_over.distribution_ended")}
           </span>{" "}
-          <span>{formatDateForDisplay(eventData.date)}</span>
+          <span className="text-center">
+            {formatDateForDisplay(eventData.date)}
+          </span>
         </p>
         <span className="text-sm text-fg-tertiary">
           {t("distribution_over.contact_us")}

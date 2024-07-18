@@ -82,7 +82,7 @@
     "tweetURL": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
   },
   "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
-  "secondaryImgUrl": "__url_here",
+  "dataRoomImgUrl": "__url_here",
   "timeline": [
     {
       "id": "REGISTRATION_OPENS",

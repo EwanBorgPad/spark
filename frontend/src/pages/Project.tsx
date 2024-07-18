@@ -97,9 +97,14 @@ const Project = () => {
       <TokenGenerationSection expandedTimeline={expandedTimeline} />
 
       <section className="group w-full px-4 lg:max-w-[792px]">
-        <div className="data-room w-full ">
+        <a
+          className="data-room w-full"
+          target="_blank"
+          rel="noreferrer"
+          href={projectData.dataRoom.url}
+        >
           <img
-            src={projectData.secondaryImgUrl}
+            src={projectData.dataRoom.backgroundImgUrl}
             className="absolute left-0 h-[72px] w-[100px] opacity-5"
           />
           <div className="z-[1] flex flex-col">
@@ -114,7 +119,7 @@ const Project = () => {
             icon="SvgArrowRight"
             className="group-hover:scale-140 text-[20px] transition-transform"
           />
-        </div>
+        </a>
       </section>
 
       <Timeline timelineEvents={projectData.timeline} />

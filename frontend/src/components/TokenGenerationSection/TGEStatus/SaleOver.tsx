@@ -57,7 +57,7 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
     })
   }
 
-  const tweetId = getTweetIdFromURL(projectData.tge.tweetURL)
+  const tweetId = getTweetIdFromURL(projectData.tge.tweetUrl)
   const sectionClass =
     "flex w-full max-w-[400px] flex-col items-center gap-6 px-4"
   const hasDistributionStarted = eventData.id === "REWARD_DISTRIBUTION"
