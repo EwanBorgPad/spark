@@ -35,7 +35,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     await ctx.env.DB
-      .prepare("INSERT INTO projects (id, json) VALUES (?1, ?2)")
+      .prepare("INSERT INTO project (id, json) VALUES (?1, ?2)")
       .bind(data.id, JSON.stringify(data))
       .run()
 
