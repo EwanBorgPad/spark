@@ -22,14 +22,22 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
  */
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   try {
-    const { error } = projectSchema.safeParse(ctx.request.body)
+    // parse request
+    const requestJson = await ctx.request.json()
+    const { error, data } = projectSchema.safeParse(requestJson)
 
+    // validate request
     if (error) {
       return jsonResponse({
         message: 'Invalid request!',
         error,
       }, 400)
     }
+
+    await ctx.env.DB
+      .prepare("INSERT INTO projects (id, json) VALUES (?1, ?2)")
+      .bind(data.id, JSON.stringify(data))
+      .run()
 
     return jsonResponse({ message: 'Not implemented!' }, 501)
   } catch (e) {
@@ -42,5 +50,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 const jsonResponse = (json?: Record<string, unknown> | null, statusCode?: number): Response => {
   const body = json ? JSON.stringify(json) : null
   const status = statusCode ?? 200
-  return new Response(body, { status })
+  return new Response(body, {
+    status,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  })
 }
