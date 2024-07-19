@@ -66,7 +66,7 @@ export const dummyData: ProjectData = {
   title: "Puffer Finance",
   subtitle: "Anti-Slashing Liquid Staking",
   logoUrl: "/images/puffer-finance/avatar.png",
-  chain: { name: "Zora", picUrl: "/images/puffer-finance/zora.png" },
+  chain: { name: "Zora", picUrl: "/images/puffer-finance/chain-icon.png" },
   lbpType: "Buy Only",
   origin: "🇮🇹 Italy",
   createdAt: new Date(),
@@ -134,7 +134,7 @@ export const dummyData: ProjectData = {
     lockupDetails: {
       liquidityPool: {
         name: "Raydium",
-        imgUrl: '/images/puffer-finance/raydium.png',
+        imgUrl: '/images/puffer-finance/liquidity-pool-icon.png',
       },
       description: "12 months",
     },

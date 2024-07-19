@@ -92,7 +92,7 @@ export const contributionAndRewardsData: ContributionAndRewardsType = {
         description: "12 month lockup",
         liquidityPool: {
           name: "Raydium",
-          imgUrl: '/images/puffer-finance/raydium.png',
+          imgUrl: '/images/puffer-finance/liquidity-pool-icon.png',
         },
       },
     },
