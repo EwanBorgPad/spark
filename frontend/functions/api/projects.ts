@@ -65,12 +65,12 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   }
 }
 
-const getProjectById = async (db: D1Database, id: string): Promise<Project> => {
+const getProjectById = async (db: D1Database, id: string): Promise<Project | null> => {
   const project = await db
     .prepare('SELECT * FROM project WHERE id = ?1')
     .bind(id)
     .first<{ id: string, json: Project }>()
-  return project.json
+  return project ? project.json : null
 }
 
 const jsonResponse = (json?: Record<string, unknown> | null, statusCode?: number): Response => {
