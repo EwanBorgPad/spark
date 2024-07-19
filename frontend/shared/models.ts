@@ -51,3 +51,4 @@ export const projectSchema = z.object({
   }),
   // TODO @projects add missing data here
 })
+export type Project = z.infer<typeof projectSchema>

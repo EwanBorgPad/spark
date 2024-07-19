@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { projectSchema } from "../../shared/models"
+import { Project, projectSchema } from "../../shared/models"
 
 type ENV = {
   DB: D1Database
@@ -10,7 +10,17 @@ type ENV = {
  */
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   try {
-    return jsonResponse({ message: 'Not implemented!' }, 501)
+    const url = ctx.request.url
+    const id = new URL(url).searchParams.get("id")
+
+    // validate request
+    if (!id) {
+      return jsonResponse({ message: 'Please provide id query param' }, 400)
+    }
+
+    const project = await getProjectById(ctx.env.DB, id)
+
+    return jsonResponse(project)
   } catch (e) {
     console.error(e)
     return jsonResponse({ message: 'Something went wrong...' }, 500)
@@ -34,6 +44,15 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       }, 400)
     }
 
+    // check if exists
+    const existingProject = await getProjectById(ctx.env.DB, data.id)
+    if (existingProject) {
+      return jsonResponse({
+        message: 'Project with provided id already exists!',
+      }, 409)
+    }
+
+    // persist in db
     await ctx.env.DB
       .prepare("INSERT INTO project (id, json) VALUES (?1, ?2)")
       .bind(data.id, JSON.stringify(data))
@@ -46,6 +65,13 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   }
 }
 
+const getProjectById = async (db: D1Database, id: string): Promise<Project> => {
+  const project = await db
+    .prepare('SELECT * FROM project WHERE id = ?1')
+    .bind(id)
+    .first<{ id: string, json: Project }>()
+  return project.json
+}
 
 const jsonResponse = (json?: Record<string, unknown> | null, statusCode?: number): Response => {
   const body = json ? JSON.stringify(json) : null
