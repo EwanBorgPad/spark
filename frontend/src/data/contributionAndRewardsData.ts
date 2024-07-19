@@ -1,6 +1,5 @@
 import { addDays } from "date-fns/addDays"
 import { LockupDetails } from "./projectData"
-import raydiumImg from "@/assets/raydium.png"
 import { addMonths } from "date-fns"
 import { subDays } from "date-fns/subDays"
 
@@ -93,7 +92,7 @@ export const contributionAndRewardsData: ContributionAndRewardsType = {
         description: "12 month lockup",
         liquidityPool: {
           name: "Raydium",
-          imgUrl: raydiumImg,
+          imgUrl: '/images/puffer-finance/raydium.png',
         },
       },
     },
