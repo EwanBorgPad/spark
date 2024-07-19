@@ -20,7 +20,11 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     const project = await getProjectById(ctx.env.DB, id)
 
-    return jsonResponse(project)
+    if (project) {
+      return jsonResponse(project, 200)
+    } else {
+      return jsonResponse({ message: 'Not found!' }, 404)
+    }
   } catch (e) {
     console.error(e)
     return jsonResponse({ message: 'Something went wrong...' }, 500)
