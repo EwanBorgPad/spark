@@ -1,8 +1,10 @@
 import { CountDownType } from "@/components/CountDownCallback"
 import { useEffect, useState } from "react"
 
-const calculateTimeLeft = (endOfEvent: Date) =>
-  endOfEvent.getTime() - Date.now()
+const calculateTimeLeft = (endOfEvent: Date) => {
+  if (!endOfEvent) return 0
+  return endOfEvent.getTime() - Date.now()
+}
 
 export const useCountDown = ({
   endOfEvent,

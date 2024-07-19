@@ -23,7 +23,7 @@ export const timelineEventIds = [
   "SALE_OPENS",
   "SALE_CLOSES",
   "REWARD_DISTRIBUTION",
-  "UNKNOWN",
+  "DISTRIBUTION_OVER",
 ] as const
 export type TimelineEventType = {
   label: string
@@ -173,7 +173,7 @@ const Timeline = ({ timelineEvents }: Props) => {
       </div>
 
       {/* countdown events */}
-      {currentTgeEvent?.nextEventDate && (
+      {currentTgeEvent?.nextEventDate && currentTgeEvent.id !== "INACTIVE" && (
         <>
           {/* countdown for adding circle for finished event */}
           <CountDownCallback

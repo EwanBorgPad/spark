@@ -4,7 +4,7 @@ import i18n from "@/i18n/i18n"
 import { ExternalLinkType } from "@/components/Button/ExternalLink"
 import { TimelineEventType } from "@/components/Timeline/Timeline"
 
-import secondaryImgUrl from "../assets/secondaryImgUrl.png"
+import dataRoomImg from "../assets/dataRoomImg.png"
 import raydiumImg from "@/assets/raydium.png"
 import lrcCoinImg from "@/assets/lrcCoin.png"
 import chainImg from "../assets/zoraImg.png"
@@ -31,7 +31,7 @@ export type ProjectData = {
     position: string
     socials: ExternalLinkType[]
   }
-  tokens: {
+  tokensAvailability: {
     available: number
     total: number
   }
@@ -41,27 +41,34 @@ export type ProjectData = {
       iconUrl: string
       ticker: string
     }
-    fixedCoinPriceInBorg: number
+    fixedCoinPriceInBorg: number // value determined by borgpad staff
     registrations: number
     vesting: {
       tgePercentage: number
       cliffPercentage: number
     }
-    tokenGenerationEventDate: Date
     lockupDetails: LockupDetails
     liquidityPoolDetails: {
       lbType: string
       lockingPeriod: string
     }
-    tweetURL: string
+    tweetUrl: string
   }
-  secondaryImgUrl: string
+  dataRoom: {
+    backgroundImgUrl: string
+    url: string
+  }
   timeline: TimelineEventType[]
   saleResults: {
     totalAmountRaised: number
     sellOutPercentage: number
     participantCount: number
     averageInvestedAmount: number
+  }
+  rewards: {
+    distributionType: "linear"
+    description: string
+    payoutInterval: "daily" | "weekly" | "monthly"
   }
 }
 
@@ -116,7 +123,7 @@ export const dummyData: ProjectData = {
       },
     ],
   },
-  tokens: {
+  tokensAvailability: {
     available: 1565,
     total: 2000,
   },
@@ -132,7 +139,6 @@ export const dummyData: ProjectData = {
       tgePercentage: 20,
       cliffPercentage: 20,
     },
-    tokenGenerationEventDate: currentMoment,
     lockupDetails: {
       liquidityPool: {
         name: "Raydium",
@@ -144,10 +150,13 @@ export const dummyData: ProjectData = {
       lbType: "Full Range",
       lockingPeriod: "12 months",
     },
-    tweetURL:
+    tweetUrl:
       "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
   },
-  secondaryImgUrl: secondaryImgUrl,
+  dataRoom: {
+    backgroundImgUrl: dataRoomImg,
+    url: "#",
+  },
   timeline: [
     {
       label: i18n.t("timeline.registration_opens"),
@@ -170,9 +179,9 @@ export const dummyData: ProjectData = {
       id: "REWARD_DISTRIBUTION",
     },
     {
-      label: "?",
+      label: i18n.t("timeline.distribution_over"),
       date: addDays(currentMoment, 24),
-      id: "UNKNOWN",
+      id: "DISTRIBUTION_OVER",
     },
   ],
   saleResults: {
@@ -180,6 +189,11 @@ export const dummyData: ProjectData = {
     sellOutPercentage: 78,
     participantCount: 578,
     averageInvestedAmount: 1200.34,
+  },
+  rewards: {
+    distributionType: "linear", // I think alternative is "exponential", but we should check and discuss this
+    description: "linearly paid-out through 12 months",
+    payoutInterval: "monthly", // used for calculating payout schedule
   },
 }
 

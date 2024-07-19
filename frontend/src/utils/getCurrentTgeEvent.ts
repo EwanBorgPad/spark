@@ -13,9 +13,10 @@ export const getCurrentTgeEvent = (timeline: ExpandedTimelineEventType[]) => {
   const status = timeline.find((event) => {
     const isEventFinished = isBefore(event.date, currentMoment)
     if (!isEventFinished) return false
+    if (!event?.nextEventDate) return true
 
     const isThisLastActivatedEvent = Boolean(
-      event?.nextEventDate && isBefore(new Date(), event.nextEventDate),
+      isBefore(new Date(), event.nextEventDate),
     )
     return isThisLastActivatedEvent
   })

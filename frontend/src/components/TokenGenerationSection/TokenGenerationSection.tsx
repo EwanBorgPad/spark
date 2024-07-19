@@ -8,6 +8,7 @@ import { CountDownCallback } from "../CountDownCallback"
 import Whitelisting from "./TGEStatus/Whitelisting"
 import SaleOver from "./TGEStatus/SaleOver"
 import LiveNow from "./TGEStatus/LiveNow"
+import DistributionOver from "./TGEStatus/DistributionOver"
 
 type Props = {
   expandedTimeline: ExpandedTimelineEventType[]
@@ -45,8 +46,10 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
       case "SALE_CLOSES":
       case "REWARD_DISTRIBUTION":
         return <SaleOver eventData={tgeEvent} projectData={projectData} />
-      case "UNKNOWN":
-        return <span>{"PHASE TO BE DETERMINED"}</span>
+      case "DISTRIBUTION_OVER":
+        return (
+          <DistributionOver eventData={tgeEvent} projectData={projectData} />
+        )
     }
   }
 

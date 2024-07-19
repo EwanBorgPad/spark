@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query"
 import { exchangeApi } from "@/data/exchangeApi.ts"
 
 const MarketAndTokensData = ({ projectData }: { projectData: ProjectData }) => {
+  const { available, total } = projectData.tokensAvailability
   const { t } = useTranslation()
 
   // TODO @hardcoded switch to projectCoin instead of hardcoded BORG
@@ -19,8 +20,6 @@ const MarketAndTokensData = ({ projectData }: { projectData: ProjectData }) => {
     }),
     queryKey: ['exchangeApi', 'getCoinMarketData', coin, vsCurrency]
   })
-
-  const { available, total } = projectData.tokens
 
   return (
     <section className="flex w-full max-w-[400px] flex-col gap-[25px]">
@@ -43,13 +42,10 @@ const MarketAndTokensData = ({ projectData }: { projectData: ProjectData }) => {
           <span className="text-base">{t("tokens_available")}</span>
           <div className="flex flex-col items-end">
             <span className="text-sm text-fg-tertiary">
-              {`${getRatioPercentage(
-                projectData.tokens.available,
-                projectData.tokens.total,
-              )}%`}
+              {`${getRatioPercentage(available, total)}%`}
             </span>
             <span className="text-base text-fg-primary">
-              {`${projectData.tokens.available}/${projectData.tokens.total}`}
+              {`${available}/${total}`}
             </span>
           </div>
         </div>
