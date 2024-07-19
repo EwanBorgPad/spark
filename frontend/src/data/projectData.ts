@@ -20,7 +20,7 @@ export type ProjectData = {
   projectLinks: ExternalLinkType[]
   chain: {
     name: string
-    picUrl: string
+    iconUrl: string
   }
   lbpType: string
   origin: string
@@ -97,7 +97,7 @@ export const dummyData: ProjectData = {
       label: undefined,
     },
   ],
-  chain: { name: "Zora", picUrl: chainImg },
+  chain: { name: "Zora", iconUrl: chainImg },
   lbpType: "Buy Only",
   origin: "🇮🇹 Italy",
   createdAt: new Date(),
