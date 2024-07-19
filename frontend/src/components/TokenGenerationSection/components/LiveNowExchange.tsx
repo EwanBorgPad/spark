@@ -53,7 +53,8 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
     if (!balance) return
-    const floatValue = (balancePercentage / 100) * Number(balance.amount)
+    const floatValue =
+      (balancePercentage / 100) * Number(balance.uiAmountString)
     setValue("borgInputValue", floatValue.toString(), {
       shouldValidate: true,
       shouldDirty: true,
