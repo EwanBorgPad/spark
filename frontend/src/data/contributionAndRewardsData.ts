@@ -1,13 +1,11 @@
 import { addDays } from "date-fns/addDays"
-import { LockupDetails } from "./projectData"
-import { addMonths } from "date-fns"
-import { subDays } from "date-fns/subDays"
+import { addMonths } from "date-fns/addMonths"
 
 const currentMoment = new Date()
 
 export type ContributionAndRewardsType = {
   suppliedBorg: {
-    total: 1200
+    total: number
     pastOrders: {
       borgAmount: number
       date: Date
@@ -25,12 +23,10 @@ export type ContributionAndRewardsType = {
         claimed: number
         total: number
       }
-      lockupDetails: LockupDetails
     }
     rewards: {
       totalTokens: number
       claimedTokens: number
-      rewardTypeDescription: string
       payoutSchedule: PayoutScheduleType[]
     }
   }
@@ -42,12 +38,12 @@ export type PayoutScheduleType = {
   isClaimed: boolean
 }
 
-const dummyPayoutScheduleData: PayoutScheduleType[] = [...Array(12).keys()].map(
+export const dummyPayoutScheduleData: PayoutScheduleType[] = [...Array(12).keys()].map(
   (index) => {
     return {
       amount: 100,
       isClaimed: index < 3,
-      date: addMonths(subDays(currentMoment, 1), -10 + index),
+      date: addMonths(addDays(currentMoment, -1), -10 + index),
     }
   },
 )
@@ -88,18 +84,10 @@ export const contributionAndRewardsData: ContributionAndRewardsType = {
         claimed: 1013,
         total: 1200,
       },
-      lockupDetails: {
-        description: "12 month lockup",
-        liquidityPool: {
-          name: "Raydium",
-          imgUrl: '/images/puffer-finance/liquidity-pool-icon.png',
-        },
-      },
     },
     rewards: {
       claimedTokens: 300,
       totalTokens: 1200,
-      rewardTypeDescription: "linearly paid-out through 12 months",
       payoutSchedule: dummyPayoutScheduleData,
     },
   },

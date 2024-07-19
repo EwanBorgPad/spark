@@ -1,12 +1,14 @@
+import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
+import { addHours } from "date-fns/addHours"
 
 import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import WhitelistRequirement from "../Whitelisting/WhitelistRequirement"
+import { useWalletContext } from "@/hooks/useWalletContext.tsx"
+import { formatDateForSnapshot } from "@/utils/date-helpers"
+import { backendApi } from "@/data/backendApi.ts"
 import { Badge } from "../Badge/Badge"
 import { Icon } from "../Icon/Icon"
-import { useWalletContext } from "@/hooks/useWalletContext.tsx"
-import { useQuery } from "@tanstack/react-query"
-import { backendApi } from "@/data/backendApi.ts"
 
 const WhitelistStatus = () => {
   const { t } = useTranslation()
@@ -19,7 +21,7 @@ const WhitelistStatus = () => {
   const { data } = useQuery({
     queryFn: () => backendApi.getWhitelistingStatus({ address }),
     queryKey: ["getWhitelistingStatus", address],
-    enabled: !!address
+    enabled: !!address,
   })
 
   return (
@@ -31,8 +33,10 @@ const WhitelistStatus = () => {
       {numberOfRequirements > 0 && (
         <div className="rounded-lg border-[1px] border-bd-primary bg-secondary">
           {whitelistStatus!.requirements.map((requirement, index) => {
-            if (requirement.type === 'FOLLOW_ON_X') requirement.isFulfilled = data?.isFollowingOnX || false
-            if (requirement.type === 'DONT_RESIDE_IN_US') requirement.isFulfilled = data?.isNotUsaResident || false
+            if (requirement.type === "FOLLOW_ON_X")
+              requirement.isFulfilled = data?.isFollowingOnX || false
+            if (requirement.type === "DONT_RESIDE_IN_US")
+              requirement.isFulfilled = data?.isNotUsaResident || false
             // TODO @whitelisting BORG count
 
             return (
@@ -48,11 +52,12 @@ const WhitelistStatus = () => {
       )}
       <div className="flex w-full items-center justify-center gap-1">
         <Icon icon="SvgSnapshot" className="text-xl text-brand-primary" />
-        <span className="text-sm text-fg-tertiary">
-          Final Snapshot taken on
+        <span className="text-nowrap text-sm text-fg-tertiary">
+          {t("whitelisting.snapshot_taken")}
         </span>{" "}
-        <span className="text-sm text-fg-primary">
-          2nd Jan 2024, at 23:59 CET
+        <span className="text-nowrap text-sm text-fg-primary">
+          {/* @TODO - swap dummy date below with real snapshot data */}
+          {formatDateForSnapshot(addHours(new Date(), -4.4))}
         </span>
       </div>
     </div>
