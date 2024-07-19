@@ -58,7 +58,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       .bind(data.id, JSON.stringify(data))
       .run()
 
-    return jsonResponse({ message: 'Not implemented!' }, 501)
+    return jsonResponse({ message: 'Created!' }, 201)
   } catch (e) {
     console.error(e)
     return jsonResponse({ message: 'Something went wrong...' }, 500)
@@ -70,7 +70,7 @@ const getProjectById = async (db: D1Database, id: string): Promise<Project | nul
     .prepare('SELECT * FROM project WHERE id = ?1')
     .bind(id)
     .first<{ id: string, json: Project }>()
-  return project ? project.json : null
+  return project ? JSON.parse(project.json) : null
 }
 
 const jsonResponse = (json?: Record<string, unknown> | null, statusCode?: number): Response => {
