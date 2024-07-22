@@ -43,10 +43,6 @@ export function ProjectDataProvider({ children }: { children: ReactNode }) {
     )
   }
 
-  /////////////////////////////////////////////////////////////////
-  // @TODO - add GET api for project data and remove state above //
-  /////////////////////////////////////////////////////////////////
-
   return (
     <ProjectDataContext.Provider
       value={{

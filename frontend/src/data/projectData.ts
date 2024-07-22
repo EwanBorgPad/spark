@@ -69,10 +69,6 @@ export const dummyData: ProjectModel = {
     },
     fixedCoinPriceInBorg: 1,
     registrations: 1698,
-    vesting: {
-      tgePercentage: 20,
-      cliffPercentage: 20,
-    },
     liquidityPool: {
       name: "Raydium",
       iconUrl: '/images/puffer-finance/liquidity-pool-icon.png',

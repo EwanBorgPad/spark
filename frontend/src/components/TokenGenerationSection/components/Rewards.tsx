@@ -49,9 +49,11 @@ const Rewards = ({
   )
 
   const claimRewardsHandler = () => {
-    // @TODO - add API for claiming rewards
+    /**
+     * TODO @api for claiming rewards
+     * - refetch rewards
+     */
     console.log("CLAIM REWARDS")
-    // @TODO - refetch rewards
   }
 
   return (

@@ -27,7 +27,7 @@ const ClaimYourPositionModal = ({
 
   const claimChosenValueHandler = () => {
     console.log("Claim amount: ", claimPercent)
-    // @TODO - add API for claiming main position
+    // TODO @api add API for claiming main position
     onClose()
   }
 

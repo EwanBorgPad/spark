@@ -15,11 +15,6 @@ const SaleOverResults = () => {
     averageInvestedAmount,
   } = projectData.saleResults
 
-  /////////////////////////////////////////////////
-  // @TODO - add API for getting token info ///////
-  /////////////////////////////////////////////////
-
-  // TODO @hardcoded coin
   const coin = "swissborg"
   const vsCurrency = "usd"
   const { data } = useQuery({

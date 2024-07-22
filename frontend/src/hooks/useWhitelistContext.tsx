@@ -36,7 +36,7 @@ export function useWhitelistStatusContext() {
 export function WhitelistStatusProvider({ children }: { children: ReactNode }) {
   const [whitelistStatus, setWhitelistStatus] = useState<WhitelistStatusType>()
 
-  // @TODO - REMOVE code below and add API for fetching whitelisting status data
+  // TODO @api REMOVE code below and add API for fetching whitelisting status data
   const getWhitelistStatus = useCallback(() => {
     setWhitelistStatus(whitelistDummyData)
   }, [])

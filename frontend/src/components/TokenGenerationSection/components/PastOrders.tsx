@@ -66,7 +66,7 @@ export const PastOrder = ({
 
 export const PastOrders = ({ label, className }: PastOrdersProps) => {
   ///////////////////////////////////////////////////////
-  // @TODO - replace dummy call below with past orders //
+  // TODO @api replace dummy call below with past orders //
   ///////////////////////////////////////////////////////
   const getContributions = () => {
     return contributionAndRewardsData
@@ -77,7 +77,7 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
 
   const getBorgPriceInUSD = () => {
     //////////////////////////////////////////////
-    // @TODO - GET current BORG/USD price ////////
+    // TODO @api GET current BORG/USD price ////////
     // below is arbitrary value from 07.06.2024 //
     //////////////////////////////////////////////
     return dummyBorgPriceInUSD
@@ -94,7 +94,7 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
       {pastOrders.map((order, index) => {
         return (
           <PastOrder
-            // @TODO - use past order ID for key prop when available
+            // TODO @api - use past order ID for key prop when available
             key={index}
             numberOfPastOrders={numberOfPastOrders}
             order={order}
