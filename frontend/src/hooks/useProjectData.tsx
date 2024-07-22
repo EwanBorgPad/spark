@@ -3,6 +3,7 @@ import { ProjectModel, projectSchema } from "../../shared/models.ts"
 import { createContext, ReactNode, useContext, useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
+import { useParams } from "react-router-dom"
 
 type Context = {
   projectData: ProjectModel
@@ -18,11 +19,13 @@ export function useProjectDataContext() {
 }
 
 export function ProjectDataProvider({ children }: { children: ReactNode }) {
-  // TODO @hardcoded puffer-finance , should be pulled from url or smth
-  const id = 'puffer-finance'
+  let { projectId } = useParams()
+  projectId = projectId || ''
+
   const { data: projectData } = useQuery({
-    queryFn: () => backendApi.getProject({ id }),
-    queryKey: ['backendApi', 'getProject', id],
+    queryFn: () => backendApi.getProject({ projectId }),
+    queryKey: ['backendApi', 'getProject', projectId],
+    enabled: Boolean(projectId),
     // TODO @hardcoded remove initialData/dummyData after implementing loading states
     initialData: dummyData,
   })
@@ -35,7 +38,7 @@ export function ProjectDataProvider({ children }: { children: ReactNode }) {
    */
   const setProjectData = (data: ProjectModel) => {
     queryClient.setQueryData(
-      ['backendApi', 'getProject', id],
+      ['backendApi', 'getProject', projectId],
       data,
     )
   }
