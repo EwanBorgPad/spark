@@ -4,12 +4,6 @@ import i18n from "@/i18n/i18n"
 import { ExternalLinkType } from "@/components/Button/ExternalLink"
 import { TimelineEventType } from "@/components/Timeline/Timeline"
 
-import dataRoomImg from "../assets/dataRoomImg.png"
-import raydiumImg from "@/assets/raydium.png"
-import lrcCoinImg from "@/assets/lrcCoin.png"
-import chainImg from "../assets/zoraImg.png"
-import curator from "../assets/curator.png"
-
 const currentMoment = addDays(new Date(), 12)
 
 // Data defined through Back Office
@@ -17,7 +11,7 @@ const currentMoment = addDays(new Date(), 12)
 export type ProjectData = {
   title: string
   subtitle: string
-  projectLinks: ExternalLinkType[]
+  logoUrl: string
   chain: {
     name: string
     picUrl: string
@@ -31,6 +25,7 @@ export type ProjectData = {
     position: string
     socials: ExternalLinkType[]
   }
+  projectLinks: ExternalLinkType[]
   tokensAvailability: {
     available: number
     total: number
@@ -75,6 +70,33 @@ export type ProjectData = {
 export const dummyData: ProjectData = {
   title: "Puffer Finance",
   subtitle: "Anti-Slashing Liquid Staking",
+  logoUrl: "/images/puffer-finance/avatar.png",
+  chain: { name: "Zora", picUrl: "/images/puffer-finance/chain-icon.png" },
+  lbpType: "Buy Only",
+  origin: "🇮🇹 Italy",
+  createdAt: new Date(),
+  curator: {
+    avatarUrl: '/images/puffer-finance/curator-avatar.png',
+    fullName: "John Doe",
+    position: i18n.t("founding.contributor"),
+    socials: [
+      {
+        url: "https://medium.com/@puffer.fi",
+        iconType: "MEDIUM",
+        label: "Medium",
+      },
+      {
+        url: "https://www.linkedin.com/company/puffer-finance",
+        iconType: "LINKED_IN",
+        label: "Linkedin",
+      },
+      {
+        url: "https://twitter.com/puffer_finance",
+        iconType: "X_TWITTER",
+        label: "X (ex-Twitter)",
+      },
+    ],
+  },
   projectLinks: [
     {
       url: "https://www.puffer.fi",
@@ -97,32 +119,6 @@ export const dummyData: ProjectData = {
       label: undefined,
     },
   ],
-  chain: { name: "Zora", picUrl: chainImg },
-  lbpType: "Buy Only",
-  origin: "🇮🇹 Italy",
-  createdAt: new Date(),
-  curator: {
-    avatarUrl: curator,
-    fullName: "John Doe",
-    position: i18n.t("founding.contributor"),
-    socials: [
-      {
-        url: "https://medium.com/@puffer.fi",
-        iconType: "MEDIUM",
-        label: "Medium",
-      },
-      {
-        url: "https://www.linkedin.com/company/puffer-finance",
-        iconType: "LINKED_IN",
-        label: "Linkedin",
-      },
-      {
-        url: "https://twitter.com/puffer_finance",
-        iconType: "X_TWITTER",
-        label: "X (ex-Twitter)",
-      },
-    ],
-  },
   tokensAvailability: {
     available: 1565,
     total: 2000,
@@ -130,7 +126,7 @@ export const dummyData: ProjectData = {
   tge: {
     raiseTarget: 2000000,
     projectCoin: {
-      iconUrl: lrcCoinImg,
+      iconUrl: '/images/puffer-finance/lrc-icon.svg',
       ticker: "LRC",
     },
     fixedCoinPriceInBorg: 1,
@@ -142,7 +138,7 @@ export const dummyData: ProjectData = {
     lockupDetails: {
       liquidityPool: {
         name: "Raydium",
-        imgUrl: raydiumImg,
+        imgUrl: '/images/puffer-finance/liquidity-pool-icon.png',
       },
       description: "12 months",
     },
@@ -154,7 +150,7 @@ export const dummyData: ProjectData = {
       "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
   },
   dataRoom: {
-    backgroundImgUrl: dataRoomImg,
+    backgroundImgUrl: '/images/puffer-finance/avatar2.png',
     url: "#",
   },
   timeline: [
