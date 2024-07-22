@@ -1,11 +1,11 @@
-import { dummyData, ProjectData } from "@/data/projectData"
+import { dummyData } from "@/data/projectData.ts"
+import { ProjectModel } from "../../shared/models.ts"
 import { createContext, ReactNode, useContext, useState } from "react"
 
 type Context = {
-  projectData: ProjectData
-  setProjectData: (data: ProjectData) => void
+  projectData: ProjectModel
+  setProjectData: (data: ProjectModel) => void
 }
-
 const ProjectDataContext = createContext<Context | undefined>(undefined)
 
 export function useProjectDataContext() {
@@ -16,7 +16,7 @@ export function useProjectDataContext() {
 }
 
 export function ProjectDataProvider({ children }: { children: ReactNode }) {
-  const [projectData, setProjectData] = useState<ProjectData>(dummyData)
+  const [projectData, setProjectData] = useState<ProjectModel>(dummyData)
 
   /////////////////////////////////////////////////////////////////
   // @TODO - add GET api for project data and remove state above //

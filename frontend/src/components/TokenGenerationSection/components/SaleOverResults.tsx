@@ -1,22 +1,19 @@
 import { exchangeApi } from "@/data/exchangeApi"
-import { ProjectData } from "@/data/projectData"
 import { formatCurrencyAmount } from "@/utils/format"
 import { useQuery } from "@tanstack/react-query"
 import React from "react"
 import { useTranslation } from "react-i18next"
+import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
-type SaleOverResultsProps = {
-  saleResults: ProjectData["saleResults"]
-}
-
-const SaleOverResults = ({ saleResults }: SaleOverResultsProps) => {
+const SaleOverResults = () => {
   const { t } = useTranslation()
+  const { projectData } = useProjectDataContext()
   const {
     totalAmountRaised,
     sellOutPercentage,
     participantCount,
     averageInvestedAmount,
-  } = saleResults
+  } = projectData.saleResults
 
   /////////////////////////////////////////////////
   // @TODO - add API for getting token info ///////

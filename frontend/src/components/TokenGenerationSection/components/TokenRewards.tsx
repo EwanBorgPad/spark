@@ -1,5 +1,4 @@
 import { Icon } from "@/components/Icon/Icon"
-import { ProjectData } from "@/data/projectData"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import { formatValue } from "react-currency-input-field"
 import { useTranslation } from "react-i18next"
@@ -7,16 +6,15 @@ import { useTranslation } from "react-i18next"
 type TokenRewardsProps = {
   borgCoinInput: string
   isWhitelistingEvent: boolean
-  tgeData: ProjectData["tge"]
 }
 
 const TokenRewards = ({
   borgCoinInput,
   isWhitelistingEvent,
-  tgeData,
 }: TokenRewardsProps) => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
+  const tgeData = projectData.tge
 
   const getCoinReward = () => {
     if (!borgCoinInput) return 0
@@ -62,14 +60,14 @@ const TokenRewards = ({
           <Icon icon="SvgLock" className="mt-[-1px] text-base opacity-50" />
           <span className="opacity-50">{t("tge.liquidity_pool")}</span>
           <img
-            src={tgeData.lockupDetails.liquidityPool.imgUrl}
+            src={tgeData.liquidityPool.iconUrl}
             className="h-4 w-4 object-cover"
           />
           <span className="opacity-50">
-            {tgeData.lockupDetails.liquidityPool.name},
+            {tgeData.liquidityPool.name},
           </span>
           <span className="opacity-50">
-            {tgeData.lockupDetails.description}
+            {tgeData.liquidityPool.lockingPeriod}
           </span>
         </div>
       </div>

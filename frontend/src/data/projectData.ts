@@ -1,74 +1,10 @@
 import { addDays } from "date-fns/addDays"
 import i18n from "@/i18n/i18n"
-
-import { ExternalLinkType } from "@/components/Button/ExternalLink"
-import { TimelineEventType } from "@/components/Timeline/Timeline"
-import { Project } from "../../shared/models.ts"
+import { ProjectModel } from "../../shared/models.ts"
 
 const currentMoment = addDays(new Date(), 12)
 
-// Data defined through Back Office
-
-export type ProjectData = {
-  title: string
-  subtitle: string
-  logoUrl: string
-  chain: {
-    name: string
-    iconUrl: string
-  }
-  lbpType: string
-  origin: string
-  createdAt: Date
-  curator: {
-    avatarUrl: string
-    fullName: string
-    position: string
-    socials: ExternalLinkType[]
-  }
-  projectLinks: ExternalLinkType[]
-  tokensAvailability: {
-    available: number
-    total: number
-  }
-  tge: {
-    raiseTarget: number
-    projectCoin: {
-      iconUrl: string
-      ticker: string
-    }
-    fixedCoinPriceInBorg: number // value determined by borgpad staff
-    registrations: number
-    vesting: {
-      tgePercentage: number
-      cliffPercentage: number
-    }
-    lockupDetails: LockupDetails
-    liquidityPoolDetails: {
-      lbType: string
-      lockingPeriod: string
-    }
-    tweetUrl: string
-  }
-  dataRoom: {
-    backgroundImgUrl: string
-    url: string
-  }
-  timeline: TimelineEventType[]
-  saleResults: {
-    totalAmountRaised: number
-    sellOutPercentage: number
-    participantCount: number
-    averageInvestedAmount: number
-  }
-  rewards: {
-    distributionType: "linear"
-    description: string
-    payoutInterval: "daily" | "weekly" | "monthly"
-  }
-}
-
-export const dummyData: Project = {
+export const dummyData: ProjectModel = {
   id: "puffer-finance",
   title: "Puffer Finance",
   subtitle: "Anti-Slashing Liquid Staking",
@@ -128,7 +64,7 @@ export const dummyData: Project = {
   tge: {
     raiseTarget: 2000000,
     projectCoin: {
-      iconUrl: '/images/puffer-finance/lrc-icon.svg',
+      iconUrl: '/images/puffer-finance/project-coin-icon.svg',
       ticker: "LRC",
     },
     fixedCoinPriceInBorg: 1,
@@ -137,17 +73,23 @@ export const dummyData: Project = {
       tgePercentage: 20,
       cliffPercentage: 20,
     },
-    lockupDetails: {
-      liquidityPool: {
-        name: "Raydium",
-        imgUrl: '/images/puffer-finance/liquidity-pool-icon.png',
-      },
-      description: "12 months",
-    },
-    liquidityPoolDetails: {
-      lbType: "Full Range",
+    liquidityPool: {
+      name: "Raydium",
+      iconUrl: '/images/puffer-finance/liquidity-pool-icon.png',
+      lbpType: "Full Range",
       lockingPeriod: "12 months",
     },
+    // lockupDetails: {
+    //   liquidityPool: {
+    //     name: "Raydium",
+    //     imgUrl: '/images/puffer-finance/liquidity-pool-icon.png',
+    //   },
+    //   description: "12 months",
+    // },
+    // liquidityPoolDetails: {
+    //   lbType: "Full Range",
+    //   lockingPeriod: "12 months",
+    // },
     tweetUrl:
       "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
   },

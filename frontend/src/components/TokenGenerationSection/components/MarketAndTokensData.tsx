@@ -1,15 +1,16 @@
 import { useTranslation } from "react-i18next"
 
 import { formatCurrencyAmount, getRatioPercentage } from "@/utils/format"
-import { ProjectData } from "@/data/projectData"
 import ProgressBar from "./ProgressBar"
 
 import { useQuery } from "@tanstack/react-query"
 import { exchangeApi } from "@/data/exchangeApi.ts"
+import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
-const MarketAndTokensData = ({ projectData }: { projectData: ProjectData }) => {
-  const { available, total } = projectData.tokensAvailability
+const MarketAndTokensData = () => {
   const { t } = useTranslation()
+  const { projectData } = useProjectDataContext()
+  const { available, total } = projectData.tokensAvailability
 
   // TODO @hardcoded switch to projectCoin instead of hardcoded BORG
   const coin = 'swissborg'

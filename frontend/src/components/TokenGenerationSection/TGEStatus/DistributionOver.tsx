@@ -2,22 +2,21 @@ import { useTranslation } from "react-i18next"
 import React from "react"
 
 import SaleOverResults from "../components/SaleOverResults"
-import { ProjectData } from "@/data/projectData"
 import Divider from "@/components/Divider"
 import { TgeWrapper } from "../components/Wrapper"
 import { formatDateForDisplay } from "@/utils/date-helpers"
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
+import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
 type DistributionOverProps = {
-  projectData: ProjectData
   eventData: ExpandedTimelineEventType
 }
 
 const DistributionOver = ({
-  projectData,
   eventData,
 }: DistributionOverProps) => {
   const { t } = useTranslation()
+
   return (
     <div className="relative flex w-full flex-col items-center gap-10 px-4 pb-10">
       <div className="flex w-full flex-col items-center gap-1">
@@ -26,7 +25,7 @@ const DistributionOver = ({
         </h2>
         <span className="text-sm opacity-60">{t("sale_over.thank_you")}</span>
       </div>
-      <SaleOverResults saleResults={projectData.saleResults} />
+      <SaleOverResults />
       <div className="flex w-full max-w-[400px] flex-col items-center pt-10 opacity-40">
         <Divider icon="SvgMedal" />
         <div className="mb-7 flex w-full flex-col items-center gap-1">

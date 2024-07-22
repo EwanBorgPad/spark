@@ -19,20 +19,18 @@ import {
   contributionAndRewardsData,
 } from "@/data/contributionAndRewardsData"
 import SaleOverResults from "../components/SaleOverResults"
-import { ProjectData } from "@/data/projectData"
-import { useQuery } from "@tanstack/react-query"
-import { exchangeApi } from "@/data/exchangeApi.ts"
+import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
 type LiveProps = {
   eventData: ExpandedTimelineEventType
-  projectData: ProjectData
 }
 
-const SaleOver = ({ eventData, projectData }: LiveProps) => {
+const SaleOver = ({ eventData }: LiveProps) => {
   const contributionsRef = useRef<HTMLDivElement>(null)
   const rewardsRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
   const { walletState } = useWalletContext()
+  const { projectData } = useProjectDataContext()
 
   ////////////////////////////////////////////////////////
   // @TODO - add API for getting contribution info ///////
@@ -81,7 +79,7 @@ const SaleOver = ({ eventData, projectData }: LiveProps) => {
           </Button>
         </div>
 
-        <SaleOverResults saleResults={projectData.saleResults} />
+        <SaleOverResults />
 
         <div className="w-full max-w-[400px]" data-theme="dark">
           {tweetId ? <Tweet id={tweetId} /> : <TweetNotFound />}

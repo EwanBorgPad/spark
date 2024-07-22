@@ -66,23 +66,31 @@ export const projectSchema = z.object({
     fixedCoinPriceInBorg: z.number(),
     registrations: z.number(),
     /**
+     * TODO is this deprecated?
      * vesting - not sure where this is used
      */
     vesting: z.object({
       tgePercentage: z.number(),
       cliffPercentage: z.number(),
     }),
-    lockupDetails: z.object({
-      liquidityPool: z.object({
-        name: z.string(),
-        imgUrl: urlSchema(),
-      }),
-      description: z.string(),
-    }),
-    liquidityPoolDetails: z.object({
-      lbType: z.string(),
+    liquidityPool: z.object({
+      name: z.string(),
+      iconUrl: urlSchema(),
+      lbpType: z.string(),
       lockingPeriod: z.string(),
     }),
+    // TODO rework these objects, make them more logical
+    // lockupDetails: z.object({
+    //   liquidityPool: z.object({
+    //     name: z.string(),
+    //     imgUrl: urlSchema(),
+    //   }),
+    //   description: z.string(),
+    // }),
+    // liquidityPoolDetails: z.object({
+    //   lbType: z.string(),
+    //   lockingPeriod: z.string(),
+    // }),
     tweetUrl: urlSchema(),
   }),
   dataRoom: z.object({
@@ -106,4 +114,4 @@ export const projectSchema = z.object({
     payoutInterval: z.string(),
   }),
 })
-export type Project = z.infer<typeof projectSchema>
+export type ProjectModel = z.infer<typeof projectSchema>

@@ -9,13 +9,9 @@ import { useWalletContext } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
-import { ProjectData } from "@/data/projectData"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
-
-type LiveNowExchangeProps = {
-  tgeData: ProjectData["tge"]
-}
+import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
 type FormInputs = {
   borgInputValue: string
@@ -27,12 +23,11 @@ const inputButtons = [
   { label: "100%", percentage: 100 },
 ]
 
-const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
+const LiveNowExchange = () => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()
   const { isUserWhitelisted } = useWhitelistStatusContext()
-
   const { balance } = useBalanceContext()
 
   const {
@@ -147,7 +142,6 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
           <TokenRewards
             borgCoinInput={borgCoinInput}
             isWhitelistingEvent={false}
-            tgeData={tgeData}
           />
         </div>
         <div className="flex w-full flex-col items-center gap-4">
