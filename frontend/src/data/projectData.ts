@@ -3,6 +3,7 @@ import i18n from "@/i18n/i18n"
 
 import { ExternalLinkType } from "@/components/Button/ExternalLink"
 import { TimelineEventType } from "@/components/Timeline/Timeline"
+import { Project } from "../../shared/models.ts"
 
 const currentMoment = addDays(new Date(), 12)
 
@@ -67,7 +68,8 @@ export type ProjectData = {
   }
 }
 
-export const dummyData: ProjectData = {
+export const dummyData: Project = {
+  id: "puffer-finance",
   title: "Puffer Finance",
   subtitle: "Anti-Slashing Liquid Staking",
   logoUrl: "/images/puffer-finance/avatar.png",
@@ -101,22 +103,22 @@ export const dummyData: ProjectData = {
     {
       url: "https://www.puffer.fi",
       iconType: "WEB",
-      label: undefined,
+      label: '',
     },
     {
       url: "https://medium.com/@puffer.fi",
       iconType: "MEDIUM",
-      label: undefined,
+      label: '',
     },
     {
       url: "https://www.linkedin.com/company/puffer-finance",
       iconType: "LINKED_IN",
-      label: undefined,
+      label: '',
     },
     {
       url: "https://twitter.com/puffer_finance",
       iconType: "X_TWITTER",
-      label: undefined,
+      label: '',
     },
   ],
   tokensAvailability: {
