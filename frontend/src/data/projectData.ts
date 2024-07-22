@@ -124,11 +124,3 @@ export const dummyData: ProjectModel = {
     payoutInterval: "monthly", // used for calculating payout schedule
   },
 }
-
-export type LockupDetails = {
-  liquidityPool: {
-    name: string
-    imgUrl: string
-  }
-  description: string
-}

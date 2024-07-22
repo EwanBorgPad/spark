@@ -3,6 +3,7 @@
   "createdAt": "2024-07-12T12:39:16Z",
   "title": "Puffer Finance",
   "subtitle": "Anti-Slashing Liquid Staking",
+  "logoUrl": "/images/puffer-finance/avatar.png",
   "origin": "🇮🇹 Italy",
   "lbpType": "Buy Only",
   "chain": { "name": "Zora", "iconUrl": "/images/puffer-finance/chain-icon.png" },
@@ -33,22 +34,22 @@
       "url": "#",
       "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
       "iconType": "WEB",
-      "label": null
+      "label": ""
     },
     {
       "url": "#",
       "iconType": "MEDIUM",
-      "label": null
+      "label": ""
     },
     {
       "url": "#",
       "iconType": "LINKED_IN",
-      "label": null
+      "label": ""
     },
     {
       "url": "#",
       "iconType": "X_TWITTER",
-      "label": null
+      "label": ""
     }
   ],
   "tokensAvailability": {
@@ -74,7 +75,7 @@
       "lbpType": "Full Range",
       "lockingPeriod": "12 months"
     },
-    "tweetURL": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
+    "tweetUrl": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
   },
   "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
   "dataRoom": {
@@ -103,7 +104,7 @@
       "date": "2024-07-10"
     },
     {
-      "id": "UNKNOWN",
+      "id": "DISTRIBUTION_OVER",
       "label": "?",
       "date": "2024-08-05"
     }
