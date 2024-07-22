@@ -79,18 +79,6 @@ export const projectSchema = z.object({
       lbpType: z.string(),
       lockingPeriod: z.string(),
     }),
-    // TODO rework these objects, make them more logical
-    // lockupDetails: z.object({
-    //   liquidityPool: z.object({
-    //     name: z.string(),
-    //     imgUrl: urlSchema(),
-    //   }),
-    //   description: z.string(),
-    // }),
-    // liquidityPoolDetails: z.object({
-    //   lbType: z.string(),
-    //   lockingPeriod: z.string(),
-    // }),
     tweetUrl: urlSchema(),
   }),
   dataRoom: z.object({

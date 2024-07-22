@@ -79,19 +79,7 @@ export const dummyData: ProjectModel = {
       lbpType: "Full Range",
       lockingPeriod: "12 months",
     },
-    // lockupDetails: {
-    //   liquidityPool: {
-    //     name: "Raydium",
-    //     imgUrl: '/images/puffer-finance/liquidity-pool-icon.png',
-    //   },
-    //   description: "12 months",
-    // },
-    // liquidityPoolDetails: {
-    //   lbType: "Full Range",
-    //   lockingPeriod: "12 months",
-    // },
-    tweetUrl:
-      "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
+    tweetUrl: "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
   },
   dataRoom: {
     backgroundImgUrl: '/images/puffer-finance/avatar2.png',
