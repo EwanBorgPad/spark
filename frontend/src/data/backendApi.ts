@@ -1,7 +1,7 @@
 import { GetWhitelistingResult, ProjectModel, projectSchema } from "../../shared/models.ts"
 
-const API_BASE_URL = 'https://feat-projects-connect-client.borgpad.pages.dev/api'
-// const API_BASE_URL = '/api'
+// const API_BASE_URL = 'https://feat-projects-connect-client.borgpad.pages.dev/api'
+const API_BASE_URL = '/api'
 const GET_WHITELISTING_STATUS_API = API_BASE_URL + '/whitelisting'
 const POST_CONFIRM_RESIDENCY_URL = API_BASE_URL + '/confirmresidency'
 const GET_PROJECT_API_URL = API_BASE_URL + '/projects' // + '?id=id'
