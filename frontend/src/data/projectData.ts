@@ -14,7 +14,7 @@ export type ProjectData = {
   logoUrl: string
   chain: {
     name: string
-    picUrl: string
+    iconUrl: string
   }
   lbpType: string
   origin: string
@@ -71,7 +71,7 @@ export const dummyData: ProjectData = {
   title: "Puffer Finance",
   subtitle: "Anti-Slashing Liquid Staking",
   logoUrl: "/images/puffer-finance/avatar.png",
-  chain: { name: "Zora", picUrl: "/images/puffer-finance/chain-icon.png" },
+  chain: { name: "Zora", iconUrl: "/images/puffer-finance/chain-icon.png" },
   lbpType: "Buy Only",
   origin: "🇮🇹 Italy",
   createdAt: new Date(),

@@ -42,7 +42,7 @@ const Project = () => {
             <span className="text-fg-primary text-opacity-50">
               {t("chain")}
             </span>
-            <img className="h-4 w-4" src={projectData.chain.picUrl} />
+            <img className="h-4 w-4" src={projectData.chain.iconUrl} />
             <span>{projectData.chain.name}</span>
           </div>
           <div className="flex items-center gap-2 border-r-fg-gray-line pr-5 lg:border-r-[1px] lg:border-fg-primary/50">
