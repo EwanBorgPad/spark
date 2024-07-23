@@ -14,13 +14,20 @@ const ClaimYourPosition = ({
 }: ClaimYourPositionProps) => {
   const [showModal, setShowModal] = useState(false)
 
+  const isEntirePositionClaimed = alreadyClaimedPercent >= 100
+
   return (
     <div className="mt-3 flex w-full flex-col items-center gap-2">
       <Button
         onClick={() => setShowModal(true)}
         size="lg"
         className="w-full py-3 font-normal"
-        btnText={"Claim Your Position"}
+        disabled={isEntirePositionClaimed}
+        btnText={
+          isEntirePositionClaimed
+            ? "Entire Position Claimed"
+            : "Claim Your Position"
+        }
       />
       <p className="flex items-center gap-2 text-sm">
         <span className="text-fg-secondary">Already claimed:</span>

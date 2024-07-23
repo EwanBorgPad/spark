@@ -17,6 +17,12 @@ const WhitelistStatus = () => {
   const { whitelistStatus, isUserWhitelisted } = useWhitelistStatusContext()
 
   const numberOfRequirements = whitelistStatus?.requirements.length || 0
+  // move true values to the beginning of an array
+  const sortedRequirements = whitelistStatus?.requirements
+    ? [...whitelistStatus.requirements].sort((a, b) => {
+        return Number(b.isFulfilled) - Number(a.isFulfilled)
+      })
+    : []
 
   const { data } = useQuery({
     queryFn: () => backendApi.getWhitelistingStatus({ address }),
@@ -32,7 +38,7 @@ const WhitelistStatus = () => {
       </div>
       {numberOfRequirements > 0 && (
         <div className="rounded-lg border-[1px] border-bd-primary bg-secondary">
-          {whitelistStatus!.requirements.map((requirement, index) => {
+          {sortedRequirements.map((requirement, index) => {
             if (requirement.type === "FOLLOW_ON_X")
               requirement.isFulfilled = data?.isFollowingOnX || false
             if (requirement.type === "DONT_RESIDE_IN_US")
@@ -51,7 +57,10 @@ const WhitelistStatus = () => {
         </div>
       )}
       <div className="flex w-full items-center justify-center gap-1">
-        <Icon icon="SvgSnapshot" className="text-xl text-brand-primary" />
+        <Icon
+          icon="SvgSnapshot"
+          className="shrink-0 text-xl text-brand-primary"
+        />
         <span className="text-nowrap text-sm text-fg-tertiary">
           {t("whitelisting.snapshot_taken")}
         </span>{" "}

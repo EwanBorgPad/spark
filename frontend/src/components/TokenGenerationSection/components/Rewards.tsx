@@ -70,7 +70,7 @@ const Rewards = ({
         {nextScheduledPayment ? (
           <>
             <CountDownTimer
-              labelAboveTimer={`Next Payment in: ${formatDateForTimer(nextScheduledPayment.date)}`}
+              labelAboveTimer={`Next Payment: ${formatDateForTimer(nextScheduledPayment.date)}`}
               endOfEvent={nextScheduledPayment.date}
             />
             <div className="w-full px-4 pb-6">

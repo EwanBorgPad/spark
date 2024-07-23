@@ -1,4 +1,5 @@
 import { addDays } from "date-fns/addDays"
+import { addMonths } from "date-fns"
 import i18n from "@/i18n/i18n"
 
 import { ExternalLinkType } from "@/components/Button/ExternalLink"
@@ -136,11 +137,12 @@ export const dummyData: ProjectData = {
       cliffPercentage: 20,
     },
     lockupDetails: {
+      description: "12 months",
+      unlockDate: addMonths(addDays(currentMoment, -2), 12),
       liquidityPool: {
         name: "Raydium",
         imgUrl: '/images/puffer-finance/liquidity-pool-icon.png',
       },
-      description: "12 months",
     },
     liquidityPoolDetails: {
       lbType: "Full Range",
@@ -194,9 +196,10 @@ export const dummyData: ProjectData = {
 }
 
 export type LockupDetails = {
+  unlockDate: Date
+  description: string
   liquidityPool: {
     name: string
     imgUrl: string
   }
-  description: string
 }
