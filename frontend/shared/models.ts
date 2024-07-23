@@ -93,6 +93,7 @@ export const projectSchema = z.object({
     }),
   ),
   saleResults: z.object({
+    saleSucceeded: z.boolean(),
     totalAmountRaised: z.number(),
     sellOutPercentage: z.number(),
     participantCount: z.number(),

@@ -3,8 +3,13 @@ import { forwardRef, PropsWithChildren, ReactNode, useMemo } from "react"
 import { twMerge as classNames } from "tailwind-merge"
 import { AvailableIcons, Icon } from "../Icon/Icon"
 
-type ButtonColor = "primary" | "secondary" | "tertiary" | "danger" | "plain"
-type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl"
+export type ButtonColor =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "danger"
+  | "plain"
+export type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl"
 type ButtonSizeClassKey = "btnContainer" | "btnText"
 type ButtonIconSizeClassKey = "btnContainer" | "iconContainer"
 

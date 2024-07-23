@@ -68,6 +68,7 @@
   "sale_over.monthly_payments_need_to": "Monthly payments need to be Claimed manually. Liquidity pool will become accessible on 12th December 2024.",
   "sale_over.learn_more_about": "Learn More About Reward Terms",
   "sale_over.monthly_payout": "Monthly Payout",
+  "sale_over.sale_unsuccessful": "The initial pool investment criteria were not met.Therefore, the pool will be canceled and all contributions refunded.",
 
   "reward_distribution": "Reward Distribution",
   "reward_distribution.claim_your_position": "Claim Your Main Position",

@@ -3,7 +3,7 @@ import { addMonths } from "date-fns"
 import i18n from "@/i18n/i18n"
 import { ProjectModel } from "../../shared/models.ts"
 
-const currentMoment = addDays(new Date(), 12)
+const currentMoment = addDays(new Date(), 11)
 
 export const dummyData: ProjectModel = {
   id: "puffer-finance",
@@ -112,6 +112,7 @@ export const dummyData: ProjectModel = {
     },
   ],
   saleResults: {
+    saleSucceeded: false,
     totalAmountRaised: 800402.5661,
     sellOutPercentage: 78,
     participantCount: 578,
