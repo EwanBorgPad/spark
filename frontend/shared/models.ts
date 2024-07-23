@@ -28,14 +28,21 @@ export type GetWhitelistingResult = UserModelJson & {
  */
 const urlSchema = () => z.string()
 const iconTypeSchema = () => z.enum(['WEB', 'LINKED_IN', 'X_TWITTER', 'MEDIUM'])
+const externalUrlSchema = () => z.object({
+  url: urlSchema(),
+  iconType: iconTypeSchema(),
+  label: z.string(),
+})
+const dateSchema = () => z.coerce.date()
 /**
  * Schema for project, type should be inferred from this.
  */
 export const projectSchema = z.object({
   id: z.string(),
-  createdAt: z.string().datetime(),
+  createdAt: dateSchema(),
   title: z.string(),
   subtitle: z.string(),
+  logoUrl: z.string(),
   origin: z.string(),
   lbpType: z.string(),
   chain: z.object({ name: z.string(), iconUrl: urlSchema() }),
@@ -43,12 +50,57 @@ export const projectSchema = z.object({
     avatarUrl: urlSchema(),
     fullName: z.string(),
     position: z.string(),
-    socials: z.array(z.object({
-      url: urlSchema(),
-      iconType: iconTypeSchema(),
-      label: z.string(),
-    }))
+    socials: z.array(externalUrlSchema()),
   }),
-  // TODO @projects add missing data here
+  projectLinks: z.array(externalUrlSchema()),
+  tokensAvailability: z.object({
+    available: z.number().int(),
+    total: z.number().int(),
+  }),
+  tge: z.object({
+    raiseTarget: z.number().int(),
+    projectCoin: z.object({
+      iconUrl: urlSchema(),
+      ticker: z.string(),
+    }),
+    fixedCoinPriceInBorg: z.number(),
+    registrations: z.number(),
+    /**
+     * TODO is this deprecated?
+     * vesting - not sure where this is used
+     */
+    vesting: z.object({
+      tgePercentage: z.number(),
+      cliffPercentage: z.number(),
+    }),
+    liquidityPool: z.object({
+      name: z.string(),
+      iconUrl: urlSchema(),
+      lbpType: z.string(),
+      lockingPeriod: z.string(),
+      unlockDate: dateSchema(),
+    }),
+    tweetUrl: urlSchema(),
+  }),
+  dataRoom: z.object({
+    backgroundImgUrl: urlSchema(),
+    url: urlSchema(),
+  }),
+  timeline: z.array(z.object({
+    id: z.enum(['REGISTRATION_OPENS', 'SALE_OPENS', 'SALE_CLOSES', 'REWARD_DISTRIBUTION', 'DISTRIBUTION_OVER']),
+    date: dateSchema(),
+    label: z.string(),
+  })),
+  saleResults: z.object({
+    totalAmountRaised: z.number(),
+    sellOutPercentage: z.number(),
+    participantCount: z.number(),
+    averageInvestedAmount: z.number(),
+  }),
+  rewards: z.object({
+    distributionType: z.string(),
+    description: z.string(),
+    payoutInterval: z.string(),
+  }),
 })
-export type Project = z.infer<typeof projectSchema>
+export type ProjectModel = z.infer<typeof projectSchema>

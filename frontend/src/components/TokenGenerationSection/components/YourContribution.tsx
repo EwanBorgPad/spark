@@ -78,15 +78,15 @@ const YourContribution = ({
           </div>
           <div className="flex h-fit items-center gap-1 rounded-full text-xs text-fg-primary ">
             <img
-              src={projectData.tge.lockupDetails.liquidityPool.imgUrl}
+              src={projectData.tge.liquidityPool.iconUrl}
               className="h-4 w-4 object-cover"
             />
             <span className="opacity-50">
-              {projectData.tge.lockupDetails.liquidityPool.name}
+              {projectData.tge.liquidityPool.name}
             </span>
             <span className="opacity-50">{t("liquidity_pool")},</span>
             <span className="opacity-50">
-              {projectData.tge.lockupDetails.description}
+              {projectData.tge.liquidityPool.lockingPeriod}
             </span>
           </div>
           {hasDistributionStarted ? (

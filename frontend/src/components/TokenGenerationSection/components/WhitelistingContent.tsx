@@ -5,18 +5,17 @@ import { useTranslation } from "react-i18next"
 import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"
 
-import { ProjectData } from "@/data/projectData"
 import { useQuery } from "@tanstack/react-query"
 import { exchangeApi } from "@/data/exchangeApi.ts"
+import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
-type WhitelistingContentProps = {
-  tgeData: ProjectData["tge"]
-}
 
-const WhitelistingContent = ({ tgeData }: WhitelistingContentProps) => {
+const WhitelistingContent = () => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()
+  const { projectData } = useProjectDataContext()
+  const tgeData = projectData.tge
 
   const borgCoinName = 'swissborg'
   const vsCurrency = 'usd'
@@ -62,7 +61,6 @@ const WhitelistingContent = ({ tgeData }: WhitelistingContentProps) => {
         <TokenRewards
           borgCoinInput={"1"}
           isWhitelistingEvent={true}
-          tgeData={tgeData}
         />
       </div>
 
@@ -120,24 +118,24 @@ const WhitelistingContent = ({ tgeData }: WhitelistingContentProps) => {
           <span>{t("tge.defi_protocol")}</span>
           <div className="flex items-center gap-2">
             <img
-              src={tgeData.lockupDetails.liquidityPool.imgUrl}
+              src={tgeData.liquidityPool.iconUrl}
               alt="liquidity pool - defi protocol"
               className="h-5 w-5 rounded-full"
             />
-            <span>{tgeData.lockupDetails.liquidityPool.name}</span>
+            <span>{tgeData.liquidityPool.name}</span>
           </div>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.lbp_type")}</span>
-          <span>{tgeData.liquidityPoolDetails.lbType}</span>
+          <span>{tgeData.liquidityPool.lbpType}</span>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.locking_period")}</span>
-          <span>{tgeData.liquidityPoolDetails.lockingPeriod}</span>
+          <span>{tgeData.liquidityPool.lockingPeriod}</span>
         </div>
       </div>
 

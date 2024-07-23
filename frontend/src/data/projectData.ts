@@ -1,74 +1,12 @@
 import { addDays } from "date-fns/addDays"
 import { addMonths } from "date-fns"
 import i18n from "@/i18n/i18n"
-
-import { ExternalLinkType } from "@/components/Button/ExternalLink"
-import { TimelineEventType } from "@/components/Timeline/Timeline"
+import { ProjectModel } from "../../shared/models.ts"
 
 const currentMoment = addDays(new Date(), 12)
 
-// Data defined through Back Office
-
-export type ProjectData = {
-  title: string
-  subtitle: string
-  logoUrl: string
-  chain: {
-    name: string
-    iconUrl: string
-  }
-  lbpType: string
-  origin: string
-  createdAt: Date
-  curator: {
-    avatarUrl: string
-    fullName: string
-    position: string
-    socials: ExternalLinkType[]
-  }
-  projectLinks: ExternalLinkType[]
-  tokensAvailability: {
-    available: number
-    total: number
-  }
-  tge: {
-    raiseTarget: number
-    projectCoin: {
-      iconUrl: string
-      ticker: string
-    }
-    fixedCoinPriceInBorg: number // value determined by borgpad staff
-    registrations: number
-    vesting: {
-      tgePercentage: number
-      cliffPercentage: number
-    }
-    lockupDetails: LockupDetails
-    liquidityPoolDetails: {
-      lbType: string
-      lockingPeriod: string
-    }
-    tweetUrl: string
-  }
-  dataRoom: {
-    backgroundImgUrl: string
-    url: string
-  }
-  timeline: TimelineEventType[]
-  saleResults: {
-    totalAmountRaised: number
-    sellOutPercentage: number
-    participantCount: number
-    averageInvestedAmount: number
-  }
-  rewards: {
-    distributionType: "linear"
-    description: string
-    payoutInterval: "daily" | "weekly" | "monthly"
-  }
-}
-
-export const dummyData: ProjectData = {
+export const dummyData: ProjectModel = {
+  id: "puffer-finance",
   title: "Puffer Finance",
   subtitle: "Anti-Slashing Liquid Staking",
   logoUrl: "/images/puffer-finance/avatar.png",
@@ -102,22 +40,22 @@ export const dummyData: ProjectData = {
     {
       url: "https://www.puffer.fi",
       iconType: "WEB",
-      label: undefined,
+      label: '',
     },
     {
       url: "https://medium.com/@puffer.fi",
       iconType: "MEDIUM",
-      label: undefined,
+      label: '',
     },
     {
       url: "https://www.linkedin.com/company/puffer-finance",
       iconType: "LINKED_IN",
-      label: undefined,
+      label: '',
     },
     {
       url: "https://twitter.com/puffer_finance",
       iconType: "X_TWITTER",
-      label: undefined,
+      label: '',
     },
   ],
   tokensAvailability: {
@@ -127,7 +65,7 @@ export const dummyData: ProjectData = {
   tge: {
     raiseTarget: 2000000,
     projectCoin: {
-      iconUrl: '/images/puffer-finance/lrc-icon.svg',
+      iconUrl: '/images/puffer-finance/project-coin-icon.svg',
       ticker: "LRC",
     },
     fixedCoinPriceInBorg: 1,
@@ -136,20 +74,14 @@ export const dummyData: ProjectData = {
       tgePercentage: 20,
       cliffPercentage: 20,
     },
-    lockupDetails: {
-      description: "12 months",
-      unlockDate: addMonths(addDays(currentMoment, -2), 12),
-      liquidityPool: {
-        name: "Raydium",
-        imgUrl: '/images/puffer-finance/liquidity-pool-icon.png',
-      },
-    },
-    liquidityPoolDetails: {
-      lbType: "Full Range",
+    liquidityPool: {
+      name: "Raydium",
+      iconUrl: '/images/puffer-finance/liquidity-pool-icon.png',
+      lbpType: "Full Range",
       lockingPeriod: "12 months",
+      unlockDate: addMonths(addDays(currentMoment, -2), 12),
     },
-    tweetUrl:
-      "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
+    tweetUrl: "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
   },
   dataRoom: {
     backgroundImgUrl: '/images/puffer-finance/avatar2.png',
@@ -194,6 +126,7 @@ export const dummyData: ProjectData = {
     payoutInterval: "monthly", // used for calculating payout schedule
   },
 }
+<<<<<<< HEAD
 
 export type LockupDetails = {
   unlockDate: Date
@@ -203,3 +136,14 @@ export type LockupDetails = {
     imgUrl: string
   }
 }
+||||||| 228ca22
+
+export type LockupDetails = {
+  liquidityPool: {
+    name: string
+    imgUrl: string
+  }
+  description: string
+}
+=======
+>>>>>>> feat/projects-connect-client

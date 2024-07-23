@@ -15,7 +15,6 @@ type Props = {
 }
 
 const TokenGenerationSection = ({ expandedTimeline }: Props) => {
-  const { projectData } = useProjectDataContext()
   const { t } = useTranslation()
   const [currentTgeEvent, setCurrentTgeEvent] =
     useState<ExpandedTimelineEventType>(getCurrentTgeEvent(expandedTimeline))
@@ -39,16 +38,16 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
         return <span>{t("tge.not_opened_yet")}</span>
       case "REGISTRATION_OPENS":
         return (
-          <Whitelisting eventData={currentTgeEvent} projectData={projectData} />
+          <Whitelisting eventData={currentTgeEvent} />
         )
       case "SALE_OPENS":
-        return <LiveNow eventData={tgeEvent} projectData={projectData} />
+        return <LiveNow eventData={tgeEvent} />
       case "SALE_CLOSES":
       case "REWARD_DISTRIBUTION":
-        return <SaleOver eventData={tgeEvent} projectData={projectData} />
+        return <SaleOver eventData={tgeEvent} />
       case "DISTRIBUTION_OVER":
         return (
-          <DistributionOver eventData={tgeEvent} projectData={projectData} />
+          <DistributionOver eventData={tgeEvent} />
         )
     }
   }

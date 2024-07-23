@@ -6,22 +6,19 @@ import WhitelistingContent from "../components/WhitelistingContent"
 import CountDownTimer from "@/components/CountDownTimer"
 import { TgeWrapper } from "../components/Wrapper"
 import WhitelistStatus from "../WhitelistStatus"
-import { ProjectData } from "@/data/projectData"
 import { formatDateForTimer } from "@/utils/date-helpers"
+import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
 type WhitelistingProps = {
   eventData: ExpandedTimelineEventType
-  projectData: ProjectData
 }
 
-const Whitelisting = ({ eventData, projectData }: WhitelistingProps) => {
+const Whitelisting = ({ eventData }: WhitelistingProps) => {
   const { t } = useTranslation()
-
-  const tgeData = projectData.tge
 
   return (
     <div className="flex w-full flex-col items-center gap-[52px] px-4">
-      <MarketAndTokensData projectData={projectData} />
+      <MarketAndTokensData />
       <div className="flex w-full max-w-[400px] flex-col gap-5">
         <TgeWrapper label={t("tge.whitelisting")}>
           {eventData?.nextEventDate && (
@@ -32,7 +29,7 @@ const Whitelisting = ({ eventData, projectData }: WhitelistingProps) => {
               />
             </>
           )}
-          <WhitelistingContent tgeData={tgeData} />
+          <WhitelistingContent />
         </TgeWrapper>
         <WhitelistStatus />
       </div>
