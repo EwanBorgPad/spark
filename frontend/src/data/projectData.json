@@ -64,10 +64,6 @@
     },
     "fixedCoinPriceInBorg": 1,
     "registrations": 1698,
-    "vesting": {
-      "tgePercentage": 20,
-      "cliffPercentage": 20
-    },
     "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
     "liquidityPool": {
       "name": "Raydium",
@@ -106,7 +102,7 @@
     {
       "id": "DISTRIBUTION_OVER",
       "label": "?",
-      "date": "2024-08-05"
+      "date": "Distribution Over"
     }
   ],
   "whitelistingRequirements": [

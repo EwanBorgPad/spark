@@ -65,7 +65,7 @@ const WhitelistStatus = () => {
           {t("whitelisting.snapshot_taken")}
         </span>{" "}
         <span className="text-nowrap text-sm text-fg-primary">
-          {/* @TODO - swap dummy date below with real snapshot data */}
+          {/* TODO @api swap dummy date below with real snapshot data */}
           {formatDateForSnapshot(addHours(new Date(), -4.4))}
         </span>
       </div>

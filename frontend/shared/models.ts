@@ -65,14 +65,6 @@ export const projectSchema = z.object({
     }),
     fixedCoinPriceInBorg: z.number(),
     registrations: z.number(),
-    /**
-     * TODO is this deprecated?
-     * vesting - not sure where this is used
-     */
-    vesting: z.object({
-      tgePercentage: z.number(),
-      cliffPercentage: z.number(),
-    }),
     liquidityPool: z.object({
       name: z.string(),
       iconUrl: urlSchema(),

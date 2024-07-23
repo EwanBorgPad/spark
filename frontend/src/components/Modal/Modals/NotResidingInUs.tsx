@@ -1,4 +1,3 @@
-import React, { useState } from "react"
 import { SimpleModal } from "../SimpleModal"
 import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
@@ -28,10 +27,6 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
     },
   })
 
-  const resetAcknowledgment = () => {
-    // TODO @acknowledgment reset if needed
-  }
-
   return (
     <SimpleModal showCloseBtn={true} onClose={onClose}>
       <div className="flex w-full max-w-[460px] flex-col items-center justify-center max-sm:h-full">
@@ -52,22 +47,13 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
               {t("whitelisting.not_available_in_us")}
             </p>
             {isSuccess ? (
-              <>
-                <div className="flex w-full justify-center">
-                  <Badge.Confirmation
-                    isConfirmed={true}
-                    label={"Location Confirmed"}
-                    classNames="w-fit bg-transparent border-none"
-                  />
-                </div>
-                <Button
-                  color="plain"
-                  size="xs"
-                  btnText="Reset"
-                  className="absolute right-4 top-4 px-2 py-1"
-                  onClick={resetAcknowledgment}
+              <div className="flex w-full justify-center">
+                <Badge.Confirmation
+                  isConfirmed={true}
+                  label={"Location Confirmed"}
+                  classNames="w-fit bg-transparent border-none"
                 />
-              </>
+              </div>
             ) : (
               <Button
                 isLoading={isPending}

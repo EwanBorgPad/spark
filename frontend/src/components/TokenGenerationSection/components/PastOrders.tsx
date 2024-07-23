@@ -5,13 +5,14 @@ import { formatDateForDisplay } from "@/utils/date-helpers"
 import Accordion from "@/components/Accordion/Accordion"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Icon } from "@/components/Icon/Icon"
+import { useQuery } from "@tanstack/react-query"
+import { exchangeApi } from "@/data/exchangeApi.ts"
 
 // to be replaced with API calls
 import {
   ContributionAndRewardsType,
   contributionAndRewardsData,
 } from "@/data/contributionAndRewardsData"
-import { dummyBorgPriceInUSD } from "@/data/borgPriceInUsd"
 
 type PastOrdersProps = {
   label?: string
@@ -66,7 +67,7 @@ export const PastOrder = ({
 
 export const PastOrders = ({ label, className }: PastOrdersProps) => {
   ///////////////////////////////////////////////////////
-  // @TODO - replace dummy call below with past orders //
+  // TODO @api replace dummy call below with past orders //
   ///////////////////////////////////////////////////////
   const getContributions = () => {
     return contributionAndRewardsData
@@ -75,14 +76,15 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
   const numberOfPastOrders = pastOrders.length
   if (numberOfPastOrders === 0) return null
 
-  const getBorgPriceInUSD = () => {
-    //////////////////////////////////////////////
-    // @TODO - GET current BORG/USD price ////////
-    // below is arbitrary value from 07.06.2024 //
-    //////////////////////////////////////////////
-    return dummyBorgPriceInUSD
-  }
-  const borgPriceInUSD = getBorgPriceInUSD()
+  const coin = 'swissborg'
+  const vsCurrency = 'usd'
+  const { data } = useQuery({
+    queryFn: () => exchangeApi.getCoinMarketData({
+      coin, vsCurrency,
+    }),
+    queryKey: ['exchangeApi', 'getCoinMarketData', coin, vsCurrency]
+  })
+  const borgPriceInUSD = data?.currentPrice || 0
 
   return (
     <Accordion
@@ -94,7 +96,7 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
       {pastOrders.map((order, index) => {
         return (
           <PastOrder
-            // @TODO - use past order ID for key prop when available
+            // TODO @api - use past order ID for key prop when available
             key={index}
             numberOfPastOrders={numberOfPastOrders}
             order={order}

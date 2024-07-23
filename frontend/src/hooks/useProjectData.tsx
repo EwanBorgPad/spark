@@ -1,6 +1,6 @@
 import { dummyData } from "@/data/projectData.ts"
 import { ProjectModel, projectSchema } from "../../shared/models.ts"
-import { createContext, ReactNode, useContext, useState } from "react"
+import { createContext, ReactNode, useCallback, useContext, useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import { useParams } from "react-router-dom"
@@ -33,19 +33,12 @@ export function ProjectDataProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient()
 
   /**
-   * TODO @testing this is only for testing
+   * TODO @qaTesting this is only for testing
    * @param data
    */
-  const setProjectData = (data: ProjectModel) => {
-    queryClient.setQueryData(
-      ['backendApi', 'getProject', projectId],
-      data,
-    )
-  }
-
-  /////////////////////////////////////////////////////////////////
-  // @TODO - add GET api for project data and remove state above //
-  /////////////////////////////////////////////////////////////////
+  const setProjectData = useCallback((data: ProjectModel) => {
+    queryClient.setQueryData(['backendApi', 'getProject', projectId], data)
+  }, [queryClient, projectId])
 
   return (
     <ProjectDataContext.Provider

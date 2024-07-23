@@ -11,7 +11,6 @@ import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
-import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
 type FormInputs = {
   borgInputValue: string
@@ -39,11 +38,13 @@ const LiveNowExchange = () => {
   } = useForm<FormInputs>()
 
   const onSubmit: SubmitHandler<FormInputs> = (data) => {
+    /**
+     * TODO @api for providing liquidity
+     *  - refetch balance
+     *  - refetch Tokens Available
+     */
     // eslint-disable-next-line no-console
     console.log("Submitted", data)
-    // @TODO - add API for providing liquidity
-    // @TODO - refetch balance
-    // @TODO - refetch Tokens Available
   }
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
@@ -160,7 +161,7 @@ const LiveNowExchange = () => {
                 color="secondary"
                 btnText="Buy $BORG"
                 className="w-full py-2"
-                // @TODO - add click event when we get a link
+                // TODO - add click event when we get a link
               />
             </>
           ) : (

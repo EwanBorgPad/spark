@@ -33,7 +33,7 @@ const SaleOver = ({ eventData }: LiveProps) => {
   const { projectData } = useProjectDataContext()
 
   ////////////////////////////////////////////////////////
-  // @TODO - add API for getting contribution info ///////
+  // TODO @api for getting contribution info ///////
   ////////////////////////////////////////////////////////
   const getContributionInfo = (): ContributionAndRewardsType | null => {
     return contributionAndRewardsData
