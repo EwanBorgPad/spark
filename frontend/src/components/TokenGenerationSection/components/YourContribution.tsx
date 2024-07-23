@@ -8,6 +8,7 @@ import { formatCurrencyAmount } from "@/utils/format"
 import ClaimYourPosition from "./ClaimYourPosition"
 import { Icon } from "@/components/Icon/Icon"
 import { PastOrders } from "./PastOrders"
+import { isBefore } from "date-fns/isBefore"
 
 type YourContributionProps = {
   contributionInfo: ContributionAndRewardsType
@@ -23,8 +24,10 @@ const YourContribution = ({
     claimPositions: { mainPosition, rewards },
     suppliedBorg,
   } = contributionInfo
+  const { unlockDate } = projectData.tge.lockupDetails
 
-  const hasDistributionStarted = eventData.id === "REWARD_DISTRIBUTION"
+  const hasDistributionStarted =
+    eventData.id === "REWARD_DISTRIBUTION" && isBefore(unlockDate, new Date())
   const alreadyClaimedPercent = +(
     (mainPosition.borg.claimed / mainPosition.borg.total) *
     100
@@ -93,8 +96,7 @@ const YourContribution = ({
             />
           ) : (
             <span className="text-xs">
-              {t("sale_over.unlocks_on")}{" "}
-              {formatDateForDisplay(eventData.nextEventDate)}
+              {t("sale_over.unlocks_on")} {formatDateForDisplay(unlockDate)}
             </span>
           )}
 
@@ -108,7 +110,6 @@ const YourContribution = ({
 
         <div className="flex flex-col items-center gap-1 px-3 pb-6 pt-4">
           <span className="mb-1 text-xs">{t("sale_over.your_reward")}</span>
-
           <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
             <img
               src={projectData.tge.projectCoin.iconUrl}

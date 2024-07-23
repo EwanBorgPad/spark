@@ -20,17 +20,30 @@ export function SimpleModal({
     "relative h-full",
     "w-[460px]",
     "bg-secondary lg:rounded-[10px] overflow-hidden",
-    "border-solid border border-bd-primary",
+    "border-solid border border-bd-primary animate-fade-in",
     className,
   )
 
   const modalRef = useRef<HTMLDivElement | null>(null)
-  useCheckOutsideClick(modalRef, () => onClose?.())
+  const backdropRef = useRef<HTMLDivElement | null>(null)
+
+  const closeModalCallback = () => {
+    modalRef.current?.classList.add("animate-fade-out")
+    backdropRef.current?.classList.add("animate-fade-out")
+    setTimeout(() => {
+      onClose?.()
+    }, 300)
+  }
+
+  useCheckOutsideClick(modalRef, () => closeModalCallback())
 
   return (
     <Portal id="simple-modal">
       {/* fixed backdrop */}
-      <div className="fixed inset-0 z-20 bg-overlay bg-opacity-75 transition-opacity"></div>
+      <div
+        ref={backdropRef}
+        className="fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75"
+      ></div>
 
       {/* fixed modal container*/}
       <div className="fixed inset-0 z-30 overflow-y-auto">
@@ -42,7 +55,9 @@ export function SimpleModal({
         >
           {/* modal */}
           <div ref={modalRef} className={modalClasses}>
-            {onClose && showCloseBtn && <CloseButton onClose={onClose} />}
+            {onClose && showCloseBtn && (
+              <CloseButton onClose={closeModalCallback} />
+            )}
 
             {children}
           </div>

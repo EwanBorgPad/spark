@@ -9,6 +9,7 @@ import raydiumImg from "@/assets/raydium.png"
 import lrcCoinImg from "@/assets/lrcCoin.png"
 import chainImg from "../assets/zoraImg.png"
 import curator from "../assets/curator.png"
+import { addMonths } from "date-fns"
 
 const currentMoment = addDays(new Date(), 12)
 
@@ -140,11 +141,12 @@ export const dummyData: ProjectData = {
       cliffPercentage: 20,
     },
     lockupDetails: {
+      description: "12 months",
+      unlockDate: addMonths(addDays(currentMoment, -2), 12),
       liquidityPool: {
         name: "Raydium",
         imgUrl: raydiumImg,
       },
-      description: "12 months",
     },
     liquidityPoolDetails: {
       lbType: "Full Range",
@@ -198,9 +200,10 @@ export const dummyData: ProjectData = {
 }
 
 export type LockupDetails = {
+  unlockDate: Date
+  description: string
   liquidityPool: {
     name: string
     imgUrl: string
   }
-  description: string
 }
