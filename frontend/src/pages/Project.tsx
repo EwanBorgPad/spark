@@ -7,7 +7,6 @@ import { useProjectDataContext } from "@/hooks/useProjectData"
 import { formatDateForDisplay } from "../utils/date-helpers"
 import ProjectTester from "@/components/QA/ProjectTester"
 import { expandTimelineDataInfo } from "@/utils/timeline"
-import avatarExample from "../assets/avatarExample.png"
 import Timeline from "@/components/Timeline/Timeline"
 import Avatar from "../components/Avatar/Avatar"
 import { Icon } from "../components/Icon/Icon"
@@ -22,7 +21,7 @@ const Project = () => {
     <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[72px] font-normal text-fg-primary lg:py-[100px]">
       <section className="flex w-full flex-col justify-between gap-6 px-4 lg:max-w-[792px] lg:flex-row">
         <div className="flex flex-col gap-6 lg:flex-row">
-          <Avatar imgUrl={avatarExample} size="large" />
+          <Avatar imgUrl={projectData.logoUrl} size="large" />
           <div className="flex flex-col gap-1">
             <h1 className="font-semibold">{projectData.title}</h1>
             <span className="text-fg-primary text-opacity-75">
@@ -43,7 +42,7 @@ const Project = () => {
             <span className="text-fg-primary text-opacity-50">
               {t("chain")}
             </span>
-            <img className="h-4 w-4" src={projectData.chain.picUrl} />
+            <img className="h-4 w-4" src={projectData.chain.iconUrl} />
             <span>{projectData.chain.name}</span>
           </div>
           <div className="flex items-center gap-2 border-r-fg-gray-line pr-5 lg:border-r-[1px] lg:border-fg-primary/50">
