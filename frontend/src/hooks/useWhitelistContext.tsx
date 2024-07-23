@@ -44,12 +44,12 @@ export function WhitelistStatusProvider({ children }: { children: ReactNode }) {
     getWhitelistStatus()
   }, [getWhitelistStatus])
 
-  // USED FOR TESTING
+  // TODO @qaTesting USED FOR TESTING
   const setWhitelistStatusToEligible = useCallback(() => {
     setWhitelistStatus({ ...whitelistDummyData, whitelisted: true })
   }, [])
 
-  // USED FOR TESTING
+  // TODO @qaTesting USED FOR TESTING
   const setWhitelistStatusToNotEligible = useCallback(() => {
     setWhitelistStatus({ ...whitelistDummyData, whitelisted: false })
   }, [])
