@@ -27,12 +27,13 @@ export type GetWhitelistingResult = UserModelJson & {
  * Not sure what we wanna validate there ATM, so leave it as string for now.
  */
 const urlSchema = () => z.string()
-const iconTypeSchema = () => z.enum(['WEB', 'LINKED_IN', 'X_TWITTER', 'MEDIUM'])
-const externalUrlSchema = () => z.object({
-  url: urlSchema(),
-  iconType: iconTypeSchema(),
-  label: z.string(),
-})
+const iconTypeSchema = () => z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM"])
+const externalUrlSchema = () =>
+  z.object({
+    url: urlSchema(),
+    iconType: iconTypeSchema(),
+    label: z.string(),
+  })
 const dateSchema = () => z.coerce.date()
 /**
  * Schema for project, type should be inferred from this.
@@ -78,11 +79,19 @@ export const projectSchema = z.object({
     backgroundImgUrl: urlSchema(),
     url: urlSchema(),
   }),
-  timeline: z.array(z.object({
-    id: z.enum(['REGISTRATION_OPENS', 'SALE_OPENS', 'SALE_CLOSES', 'REWARD_DISTRIBUTION', 'DISTRIBUTION_OVER']),
-    date: dateSchema(),
-    label: z.string(),
-  })),
+  timeline: z.array(
+    z.object({
+      id: z.enum([
+        "REGISTRATION_OPENS",
+        "SALE_OPENS",
+        "SALE_CLOSES",
+        "REWARD_DISTRIBUTION",
+        "DISTRIBUTION_OVER",
+      ]),
+      date: dateSchema(),
+      label: z.string(),
+    }),
+  ),
   saleResults: z.object({
     totalAmountRaised: z.number(),
     sellOutPercentage: z.number(),

@@ -51,7 +51,11 @@ const HoldBorgInAmountBtn = () => {
 
 const FollowOnXBtn = () => {
   const { address } = useWalletContext()
-  const signInWithTwitterUrl = useMemo(() => getSignInWithTwitterUrl(), [address])
+  const signInWithTwitterUrl = useMemo(
+    () => getSignInWithTwitterUrl(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [address],
+  )
   return (
     <div className="mt-2 flex justify-start">
       <ExternalLink

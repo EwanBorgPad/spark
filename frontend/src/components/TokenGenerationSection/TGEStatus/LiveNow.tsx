@@ -9,7 +9,6 @@ import { PastOrders } from "../components/PastOrders"
 import { TgeWrapper } from "../components/Wrapper"
 import WhitelistStatus from "../WhitelistStatus"
 import { formatDateForTimer } from "@/utils/date-helpers"
-import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType

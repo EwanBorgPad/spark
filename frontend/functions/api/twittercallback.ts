@@ -74,7 +74,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     if (!existingUser) {
       console.log("User not found in db, inserting...")
       const json: UserModelJson = {
-        isFollowingOnX: true
+        isFollowingOnX: true,
       }
       await ctx.env.DB.prepare(
         "INSERT INTO user (wallet_address, twitter_id, json) VALUES (?1, ?2, ?3)",
@@ -84,7 +84,9 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
       console.log("User inserted into db.")
     } else {
       console.log("User found in db, updating...")
-      const json = existingUser.json ? JSON.parse(existingUser.json) as UserModelJson : {}
+      const json = existingUser.json
+        ? (JSON.parse(existingUser.json) as UserModelJson)
+        : {}
       json.isFollowingOnX = true
       await ctx.env.DB.prepare(
         "UPDATE user SET twitter_id = ?2, json = ?3 WHERE wallet_address = ?1",

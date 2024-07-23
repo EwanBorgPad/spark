@@ -63,9 +63,7 @@ const TokenRewards = ({
             src={tgeData.liquidityPool.iconUrl}
             className="h-4 w-4 object-cover"
           />
-          <span className="opacity-50">
-            {tgeData.liquidityPool.name},
-          </span>
+          <span className="opacity-50">{tgeData.liquidityPool.name},</span>
           <span className="opacity-50">
             {tgeData.liquidityPool.lockingPeriod}
           </span>

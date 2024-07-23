@@ -7,7 +7,8 @@
  * - Currently used directly from the frontend (they allow CORS), this might actually work better with the rate limiting because the requests will be coming from different ip addresses,
  *  but we can move this to the backend any time if needed.
  */
-const GET_COIN_MARKET_DATA_API_URL = 'https://api.coingecko.com/api/v3/coins/markets'// ?ids=swissborg&vs_currency=usd'
+const GET_COIN_MARKET_DATA_API_URL =
+  "https://api.coingecko.com/api/v3/coins/markets" // ?ids=swissborg&vs_currency=usd'
 
 type GetCoinMarketDataArgs = {
   coin: string
@@ -27,13 +28,16 @@ type GetCoinMarketDataResponse = {
   marketCap: number
   fullyDilutedValuation: number
 }
-const getCoinMarketData = async ({ coin, vsCurrency }: GetCoinMarketDataArgs): Promise<GetCoinMarketDataResponse> => {
+const getCoinMarketData = async ({
+  coin,
+  vsCurrency,
+}: GetCoinMarketDataArgs): Promise<GetCoinMarketDataResponse> => {
   const url = new URL(GET_COIN_MARKET_DATA_API_URL)
-  url.searchParams.set('ids', coin)
-  url.searchParams.set('vs_currency', vsCurrency)
+  url.searchParams.set("ids", coin)
+  url.searchParams.set("vs_currency", vsCurrency)
 
   const response = await fetch(url)
-  const responseJson = await response.json() as GetCoinMarketDataApiResponse
+  const responseJson = (await response.json()) as GetCoinMarketDataApiResponse
 
   const data = responseJson[0]
 

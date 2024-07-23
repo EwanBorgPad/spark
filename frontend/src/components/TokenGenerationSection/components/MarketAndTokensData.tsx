@@ -13,13 +13,15 @@ const MarketAndTokensData = () => {
   const { available, total } = projectData.tokensAvailability
 
   // TODO @hardcoded switch to projectCoin instead of hardcoded BORG
-  const coin = 'swissborg'
-  const vsCurrency = 'usd'
+  const coin = "swissborg"
+  const vsCurrency = "usd"
   const { data } = useQuery({
-    queryFn: () => exchangeApi.getCoinMarketData({
-      coin, vsCurrency,
-    }),
-    queryKey: ['exchangeApi', 'getCoinMarketData', coin, vsCurrency]
+    queryFn: () =>
+      exchangeApi.getCoinMarketData({
+        coin,
+        vsCurrency,
+      }),
+    queryKey: ["exchangeApi", "getCoinMarketData", coin, vsCurrency],
   })
 
   return (

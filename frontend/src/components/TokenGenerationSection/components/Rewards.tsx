@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next"
 
-import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import CountDownTimer from "@/components/CountDownTimer"
 import ShowPayoutSchedule from "./ShowPayoutSchedule"
@@ -16,16 +15,11 @@ import { formatDateForTimer } from "@/utils/date-helpers"
 import { isBefore } from "date-fns/isBefore"
 
 type RewardsProps = {
-  eventData: ExpandedTimelineEventType
   hasDistributionStarted: boolean
   rewards: ContributionAndRewardsType["claimPositions"]["rewards"]
 }
 
-const Rewards = ({
-  eventData,
-  hasDistributionStarted,
-  rewards,
-}: RewardsProps) => {
+const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
   const { projectData } = useProjectDataContext()
   const { iconUrl, ticker } = projectData.tge.projectCoin
   const { t } = useTranslation()

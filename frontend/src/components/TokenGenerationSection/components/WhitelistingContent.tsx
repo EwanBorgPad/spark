@@ -9,7 +9,6 @@ import { useQuery } from "@tanstack/react-query"
 import { exchangeApi } from "@/data/exchangeApi.ts"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
-
 const WhitelistingContent = () => {
   const { t } = useTranslation()
 
@@ -17,24 +16,26 @@ const WhitelistingContent = () => {
   const { projectData } = useProjectDataContext()
   const tgeData = projectData.tge
 
-  const borgCoinName = 'swissborg'
-  const vsCurrency = 'usd'
+  const borgCoinName = "swissborg"
+  const vsCurrency = "usd"
 
   // TODO @hardcoded swissborg coin, replace with project's token later
   const { data: projectTokenData } = useQuery({
-    queryFn: () => exchangeApi.getCoinMarketData({
-      coin: borgCoinName,
-      vsCurrency,
-    }),
-    queryKey: ['exchangeApi', 'getCoinMarketData', borgCoinName, vsCurrency]
+    queryFn: () =>
+      exchangeApi.getCoinMarketData({
+        coin: borgCoinName,
+        vsCurrency,
+      }),
+    queryKey: ["exchangeApi", "getCoinMarketData", borgCoinName, vsCurrency],
   })
 
   const { data: borgData } = useQuery({
-    queryFn: () => exchangeApi.getCoinMarketData({
-      coin: borgCoinName,
-      vsCurrency,
-    }),
-    queryKey: ['exchangeApi', 'getCoinMarketData', borgCoinName, vsCurrency]
+    queryFn: () =>
+      exchangeApi.getCoinMarketData({
+        coin: borgCoinName,
+        vsCurrency,
+      }),
+    queryKey: ["exchangeApi", "getCoinMarketData", borgCoinName, vsCurrency],
   })
 
   if (!projectTokenData || !borgData) {
@@ -58,10 +59,7 @@ const WhitelistingContent = () => {
           </p>
           <span className="text-fg-tertiary">Gives you:</span>
         </div>
-        <TokenRewards
-          borgCoinInput={"1"}
-          isWhitelistingEvent={true}
-        />
+        <TokenRewards borgCoinInput={"1"} isWhitelistingEvent={true} />
       </div>
 
       <div className="flex w-full flex-col">

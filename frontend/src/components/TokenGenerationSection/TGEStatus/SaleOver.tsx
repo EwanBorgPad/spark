@@ -122,7 +122,6 @@ const SaleOver = ({ eventData }: LiveProps) => {
               className={twMerge(sectionClass, "mt-7 gap-4")}
             >
               <Rewards
-                eventData={eventData}
                 rewards={contributionInfo.claimPositions.rewards}
                 hasDistributionStarted={hasDistributionStarted}
               />

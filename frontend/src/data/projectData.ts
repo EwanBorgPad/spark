@@ -15,7 +15,7 @@ export const dummyData: ProjectModel = {
   origin: "🇮🇹 Italy",
   createdAt: new Date(),
   curator: {
-    avatarUrl: '/images/puffer-finance/curator-avatar.png',
+    avatarUrl: "/images/puffer-finance/curator-avatar.png",
     fullName: "John Doe",
     position: i18n.t("founding.contributor"),
     socials: [
@@ -40,22 +40,22 @@ export const dummyData: ProjectModel = {
     {
       url: "https://www.puffer.fi",
       iconType: "WEB",
-      label: '',
+      label: "",
     },
     {
       url: "https://medium.com/@puffer.fi",
       iconType: "MEDIUM",
-      label: '',
+      label: "",
     },
     {
       url: "https://www.linkedin.com/company/puffer-finance",
       iconType: "LINKED_IN",
-      label: '',
+      label: "",
     },
     {
       url: "https://twitter.com/puffer_finance",
       iconType: "X_TWITTER",
-      label: '',
+      label: "",
     },
   ],
   tokensAvailability: {
@@ -65,22 +65,23 @@ export const dummyData: ProjectModel = {
   tge: {
     raiseTarget: 2000000,
     projectCoin: {
-      iconUrl: '/images/puffer-finance/project-coin-icon.svg',
+      iconUrl: "/images/puffer-finance/project-coin-icon.svg",
       ticker: "LRC",
     },
     fixedCoinPriceInBorg: 1,
     registrations: 1698,
     liquidityPool: {
       name: "Raydium",
-      iconUrl: '/images/puffer-finance/liquidity-pool-icon.png',
+      iconUrl: "/images/puffer-finance/liquidity-pool-icon.png",
       lbpType: "Full Range",
       lockingPeriod: "12 months",
       unlockDate: addMonths(addDays(currentMoment, -2), 12),
     },
-    tweetUrl: "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
+    tweetUrl:
+      "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
   },
   dataRoom: {
-    backgroundImgUrl: '/images/puffer-finance/avatar2.png',
+    backgroundImgUrl: "/images/puffer-finance/avatar2.png",
     url: "#",
   },
   timeline: [

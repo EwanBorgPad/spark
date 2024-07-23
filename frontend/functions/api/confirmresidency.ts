@@ -31,7 +31,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       console.log("User not found in db, inserting...")
       const json: UserModelJson = {
         isNotUsaResident: true,
-        isNotUsaResidentConfirmationTimestamp: (new Date()).toISOString(),
+        isNotUsaResidentConfirmationTimestamp: new Date().toISOString(),
       }
       await ctx.env.DB.prepare(
         "INSERT INTO user (wallet_address, json) VALUES (?1, ?2)",
@@ -41,9 +41,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       console.log("User inserted into db.")
     } else {
       console.log("User found in db, updating...")
-      const json: UserModelJson = existingUser.json ? JSON.parse(existingUser.json) : {}
+      const json: UserModelJson = existingUser.json
+        ? JSON.parse(existingUser.json)
+        : {}
       json.isNotUsaResident = true
-      json.isNotUsaResidentConfirmationTimestamp = (new Date()).toISOString()
+      json.isNotUsaResidentConfirmationTimestamp = new Date().toISOString()
       await ctx.env.DB.prepare(
         "UPDATE user SET json = ?2 WHERE wallet_address = ?1",
       )

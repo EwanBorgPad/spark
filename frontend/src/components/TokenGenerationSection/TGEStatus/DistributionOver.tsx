@@ -6,15 +6,12 @@ import Divider from "@/components/Divider"
 import { TgeWrapper } from "../components/Wrapper"
 import { formatDateForDisplay } from "@/utils/date-helpers"
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
-import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
 type DistributionOverProps = {
   eventData: ExpandedTimelineEventType
 }
 
-const DistributionOver = ({
-  eventData,
-}: DistributionOverProps) => {
+const DistributionOver = ({ eventData }: DistributionOverProps) => {
   const { t } = useTranslation()
 
   return (

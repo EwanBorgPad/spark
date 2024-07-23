@@ -1,6 +1,10 @@
 import { getSplTokenBalance } from "../../shared/SolanaWeb3"
 import { USDC_DEV_ADDRESS } from "../../shared/constants"
-import { GetWhitelistingResult, UserModel, UserModelJson } from "../../shared/models"
+import {
+  GetWhitelistingResult,
+  UserModel,
+  UserModelJson,
+} from "../../shared/models"
 
 type ENV = {
   DB: D1Database
@@ -24,8 +28,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       tokenAddress: USDC_DEV_ADDRESS,
     })
 
-    const user: UserModel = await ctx.env.DB
-      .prepare('SELECT * FROM user WHERE wallet_address = ?1')
+    const user: UserModel = await ctx.env.DB.prepare(
+      "SELECT * FROM user WHERE wallet_address = ?1",
+    )
       .bind(address)
       .first<UserModel>()
     const userJson: UserModelJson = user?.json ? JSON.parse(user.json) : {}

@@ -15,7 +15,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     // validate request
     if (!id) {
-      return jsonResponse({ message: 'Please provide id query param' }, 400)
+      return jsonResponse({ message: "Please provide id query param" }, 400)
     }
 
     const project = await getProjectById(ctx.env.DB, id)
@@ -23,11 +23,11 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     if (project) {
       return jsonResponse(project, 200)
     } else {
-      return jsonResponse({ message: 'Not found!' }, 404)
+      return jsonResponse({ message: "Not found!" }, 404)
     }
   } catch (e) {
     console.error(e)
-    return jsonResponse({ message: 'Something went wrong...' }, 500)
+    return jsonResponse({ message: "Something went wrong..." }, 500)
   }
 }
 /**
@@ -42,48 +42,59 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     // validate request
     if (error) {
-      return jsonResponse({
-        message: 'Invalid request!',
-        error,
-      }, 400)
+      return jsonResponse(
+        {
+          message: "Invalid request!",
+          error,
+        },
+        400,
+      )
     }
 
     // check if exists
     const existingProject = await getProjectById(ctx.env.DB, data.id)
     if (existingProject) {
-      return jsonResponse({
-        message: 'Project with provided id already exists!',
-      }, 409)
+      return jsonResponse(
+        {
+          message: "Project with provided id already exists!",
+        },
+        409,
+      )
     }
 
     // persist in db
-    await ctx.env.DB
-      .prepare("INSERT INTO project (id, json) VALUES (?1, ?2)")
+    await ctx.env.DB.prepare("INSERT INTO project (id, json) VALUES (?1, ?2)")
       .bind(data.id, JSON.stringify(data))
       .run()
 
-    return jsonResponse({ message: 'Created!' }, 201)
+    return jsonResponse({ message: "Created!" }, 201)
   } catch (e) {
     console.error(e)
-    return jsonResponse({ message: 'Something went wrong...' }, 500)
+    return jsonResponse({ message: "Something went wrong..." }, 500)
   }
 }
 
-const getProjectById = async (db: D1Database, id: string): Promise<Project | null> => {
+const getProjectById = async (
+  db: D1Database,
+  id: string,
+): Promise<Project | null> => {
   const project = await db
-    .prepare('SELECT * FROM project WHERE id = ?1')
+    .prepare("SELECT * FROM project WHERE id = ?1")
     .bind(id)
-    .first<{ id: string, json: Project }>()
+    .first<{ id: string; json: Project }>()
   return project ? JSON.parse(project.json) : null
 }
 
-const jsonResponse = (json?: Record<string, unknown> | null, statusCode?: number): Response => {
+const jsonResponse = (
+  json?: Record<string, unknown> | null,
+  statusCode?: number,
+): Response => {
   const body = json ? JSON.stringify(json) : null
   const status = statusCode ?? 200
   return new Response(body, {
     status,
     headers: {
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json",
     },
   })
 }

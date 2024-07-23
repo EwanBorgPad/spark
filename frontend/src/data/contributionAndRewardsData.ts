@@ -38,15 +38,15 @@ export type PayoutScheduleType = {
   isClaimed: boolean
 }
 
-export const dummyPayoutScheduleData: PayoutScheduleType[] = [...Array(12).keys()].map(
-  (index) => {
-    return {
-      amount: 100,
-      isClaimed: index < 3,
-      date: addMonths(addDays(currentMoment, -1), -10 + index),
-    }
-  },
-)
+export const dummyPayoutScheduleData: PayoutScheduleType[] = [
+  ...Array(12).keys(),
+].map((index) => {
+  return {
+    amount: 100,
+    isClaimed: index < 3,
+    date: addMonths(addDays(currentMoment, -1), -10 + index),
+  }
+})
 
 export const contributionAndRewardsData: ContributionAndRewardsType = {
   suppliedBorg: {

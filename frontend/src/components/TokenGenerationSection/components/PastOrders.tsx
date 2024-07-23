@@ -66,6 +66,20 @@ export const PastOrder = ({
 }
 
 export const PastOrders = ({ label, className }: PastOrdersProps) => {
+  // borg price
+  const coin = "swissborg"
+  const vsCurrency = "usd"
+  const { data } = useQuery({
+    queryFn: () =>
+      exchangeApi.getCoinMarketData({
+        coin,
+        vsCurrency,
+      }),
+    queryKey: ["exchangeApi", "getCoinMarketData", coin, vsCurrency],
+  })
+  const borgPriceInUSD = data?.currentPrice || 0
+  ////
+
   ///////////////////////////////////////////////////////
   // TODO @api replace dummy call below with past orders //
   ///////////////////////////////////////////////////////
@@ -75,16 +89,6 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
   const pastOrders = getContributions().suppliedBorg.pastOrders
   const numberOfPastOrders = pastOrders.length
   if (numberOfPastOrders === 0) return null
-
-  const coin = 'swissborg'
-  const vsCurrency = 'usd'
-  const { data } = useQuery({
-    queryFn: () => exchangeApi.getCoinMarketData({
-      coin, vsCurrency,
-    }),
-    queryKey: ['exchangeApi', 'getCoinMarketData', coin, vsCurrency]
-  })
-  const borgPriceInUSD = data?.currentPrice || 0
 
   return (
     <Accordion

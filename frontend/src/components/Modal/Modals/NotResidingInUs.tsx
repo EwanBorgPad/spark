@@ -20,10 +20,12 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
     mutate: confirmResidency,
     isPending,
     isSuccess,
-  }= useMutation({
+  } = useMutation({
     mutationFn: (address: string) => backendApi.confirmResidency({ address }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["getWhitelistingStatus", address], })
+      queryClient.invalidateQueries({
+        queryKey: ["getWhitelistingStatus", address],
+      })
     },
   })
 
