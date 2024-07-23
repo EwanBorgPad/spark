@@ -29,8 +29,13 @@ const getProject = async ({ projectId }: { projectId: string }): Promise<Project
 
   const response = await fetch(url)
   const json = await response.json()
-  const parsedJson = projectSchema.parse(json)
-  return parsedJson
+  try {
+    const parsedJson = projectSchema.parse(json)
+    return parsedJson
+  } catch (e) {
+    console.error('GEt /projects validation error!')
+    throw e
+  }
 }
 
 export const backendApi = {

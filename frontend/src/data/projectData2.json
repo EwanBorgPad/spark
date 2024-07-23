@@ -1,53 +1,53 @@
 {
-  "id": "puffer-finance",
+  "id": "milan-crypto-test",
   "createdAt": "2024-07-12T12:39:16Z",
-  "title": "Puffer Finance",
-  "subtitle": "Anti-Slashing Liquid Staking",
-  "logoUrl": "/images/puffer-finance/avatar.png",
-  "origin": "🇮🇹 Italy",
+  "title": "Milan Crypto",
+  "subtitle": "Anti-Slashing Liquid Staking Crypto Manic Automated Market",
+  "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar.png",
+  "origin": "\uD83C\uDDF7\uD83C\uDDF8 Serbia",
   "lbpType": "Buy Only",
-  "chain": { "name": "Zora", "iconUrl": "/images/puffer-finance/chain-icon.png" },
+  "chain": { "name": "Zora", "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/chain-icon.png" },
   "curator": {
-    "avatarUrl": "/images/puffer-finance/curator-avatar.png",
-    "fullName": "John Doe",
-    "position": "Founding Contributor",
+    "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/curator-avatar.jpg",
+    "fullName": "Milan Miljus",
+    "position": "Software Developer",
     "socials": [
       {
-        "url": "https://medium.com/@puffer.fi",
-        "iconType": "MEDIUM",
-        "label": "Medium"
-      },
-      {
-        "url": "https://www.linkedin.com/company/puffer-finance",
+        "url": "#",
         "iconType": "LINKED_IN",
         "label": "Linkedin"
       },
       {
-        "url": "https://twitter.com/puffer_finance",
+        "url": "#",
         "iconType": "X_TWITTER",
         "label": "X (ex-Twitter)"
+      },
+      {
+        "url": "#",
+        "iconType": "MEDIUM",
+        "label": "Medium"
       }
     ]
   },
   "projectLinks": [
     {
-      "url": "https://www.puffer.fi",
+      "url": "#",
       "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
       "iconType": "WEB",
       "label": ""
     },
     {
-      "url": "https://medium.com/@puffer.fi",
+      "url": "#",
       "iconType": "MEDIUM",
       "label": ""
     },
     {
-      "url": "https://www.linkedin.com/company/puffer-finance",
+      "url": "#",
       "iconType": "LINKED_IN",
       "label": ""
     },
     {
-      "url": "https://twitter.com/puffer_finance",
+      "url": "#",
       "iconType": "X_TWITTER",
       "label": ""
     }
@@ -59,7 +59,7 @@
   "tge": {
     "raiseTarget": 2000000,
     "projectCoin": {
-      "iconUrl": "/images/puffer-finance/project-coin-icon.svg",
+      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/project-coin-icon.svg",
       "ticker": "LRC"
     },
     "fixedCoinPriceInBorg": 1,
@@ -67,7 +67,7 @@
     "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
     "liquidityPool": {
       "name": "Raydium",
-      "iconUrl": "/images/puffer-finance/liquidity-pool-icon.png",
+      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/liquidity-pool-icon.png",
       "lbpType": "Full Range",
       "lockingPeriod": "12 months",
       "unlockDate": "2025-07-12T12:39:16Z"
@@ -76,7 +76,7 @@
   },
   "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
   "dataRoom": {
-    "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
+    "backgroundImgUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar2.png",
     "url": "#"
   },
   "timeline": [
