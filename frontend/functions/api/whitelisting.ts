@@ -29,7 +29,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     })
 
     const user: UserModel = await ctx.env.DB.prepare(
-      "SELECT * FROM user WHERE wallet_address = ?1",
+      "SELECT * FROM user WHERE address = ?1",
     )
       .bind(address)
       .first<UserModel>()
