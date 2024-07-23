@@ -122,24 +122,3 @@ export const dummyData: ProjectModel = {
     payoutInterval: "monthly", // used for calculating payout schedule
   },
 }
-<<<<<<< HEAD
-
-export type LockupDetails = {
-  unlockDate: Date
-  description: string
-  liquidityPool: {
-    name: string
-    imgUrl: string
-  }
-}
-||||||| 228ca22
-
-export type LockupDetails = {
-  liquidityPool: {
-    name: string
-    imgUrl: string
-  }
-  description: string
-}
-=======
->>>>>>> feat/projects-connect-client

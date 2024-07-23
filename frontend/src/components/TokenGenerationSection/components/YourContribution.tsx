@@ -24,7 +24,7 @@ const YourContribution = ({
     claimPositions: { mainPosition, rewards },
     suppliedBorg,
   } = contributionInfo
-  const { unlockDate } = projectData.tge.lockupDetails
+  const unlockDate = projectData.tge.liquidityPool.unlockDate
 
   const hasDistributionStarted =
     eventData.id === "REWARD_DISTRIBUTION" && isBefore(unlockDate, new Date())
