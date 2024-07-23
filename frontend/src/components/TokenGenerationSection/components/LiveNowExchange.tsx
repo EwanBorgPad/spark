@@ -11,7 +11,6 @@ import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
-import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
 type FormInputs = {
   borgInputValue: string
