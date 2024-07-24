@@ -128,6 +128,7 @@
     }
   ],
   "saleResults": {
+    "saleSucceeded": false,
     "totalAmountRaised": 800402.5661,
     "sellOutPercentage": 78,
     "participantCount": 578,

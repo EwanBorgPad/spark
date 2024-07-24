@@ -4,7 +4,7 @@ import { formatCurrencyAmount, getRatioPercentage } from "@/utils/format"
 import ProgressBar from "./ProgressBar"
 
 import { useQuery } from "@tanstack/react-query"
-import { exchangeApi } from "@/data/exchangeApi.ts"
+import { backendApi } from "@/data/backendApi.ts"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
 const MarketAndTokensData = () => {
@@ -13,15 +13,15 @@ const MarketAndTokensData = () => {
   const { available, total } = projectData.tokensAvailability
 
   // TODO @hardcoded switch to projectCoin instead of hardcoded BORG
-  const coin = "swissborg"
-  const vsCurrency = "usd"
+  const baseCurrency = "swissborg"
+  const targetCurrency = "usd"
   const { data } = useQuery({
     queryFn: () =>
-      exchangeApi.getCoinMarketData({
-        coin,
-        vsCurrency,
+      backendApi.getExchange({
+        baseCurrency,
+        targetCurrency,
       }),
-    queryKey: ["exchangeApi", "getCoinMarketData", coin, vsCurrency],
+    queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
 
   return (

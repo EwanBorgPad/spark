@@ -113,3 +113,12 @@ export type CacheStoreModel = {
   expires_at: string
   cache_data: string
 }
+
+export type GetExchangeResponse = {
+  baseCurrency: string
+  targetCurrency: string
+  currentPrice: number
+  marketCap: number
+  fullyDilutedValuation: number
+  cache: unknown
+}

@@ -6,7 +6,7 @@ import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"
 
 import { useQuery } from "@tanstack/react-query"
-import { exchangeApi } from "@/data/exchangeApi.ts"
+import { backendApi } from "@/data/backendApi.ts"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
 const WhitelistingContent = () => {
@@ -16,26 +16,25 @@ const WhitelistingContent = () => {
   const { projectData } = useProjectDataContext()
   const tgeData = projectData.tge
 
-  const borgCoinName = "swissborg"
-  const vsCurrency = "usd"
-
+  const baseCurrency = "swissborg"
+  const targetCurrency = "usd"
   // TODO @hardcoded swissborg coin, replace with project's token later
   const { data: projectTokenData } = useQuery({
     queryFn: () =>
-      exchangeApi.getCoinMarketData({
-        coin: borgCoinName,
-        vsCurrency,
+      backendApi.getExchange({
+        baseCurrency,
+        targetCurrency,
       }),
-    queryKey: ["exchangeApi", "getCoinMarketData", borgCoinName, vsCurrency],
+    queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
 
   const { data: borgData } = useQuery({
     queryFn: () =>
-      exchangeApi.getCoinMarketData({
-        coin: borgCoinName,
-        vsCurrency,
+      backendApi.getExchange({
+        baseCurrency,
+        targetCurrency,
       }),
-    queryKey: ["exchangeApi", "getCoinMarketData", borgCoinName, vsCurrency],
+    queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
 
   if (!projectTokenData || !borgData) {

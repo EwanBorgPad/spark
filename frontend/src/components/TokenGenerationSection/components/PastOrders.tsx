@@ -6,7 +6,7 @@ import Accordion from "@/components/Accordion/Accordion"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 import { useQuery } from "@tanstack/react-query"
-import { exchangeApi } from "@/data/exchangeApi.ts"
+import { backendApi } from "@/data/backendApi.ts"
 
 // to be replaced with API calls
 import {
@@ -67,18 +67,17 @@ export const PastOrder = ({
 
 export const PastOrders = ({ label, className }: PastOrdersProps) => {
   // borg price
-  const coin = "swissborg"
-  const vsCurrency = "usd"
+  const baseCurrency = "swissborg"
+  const targetCurrency = "usd"
   const { data } = useQuery({
     queryFn: () =>
-      exchangeApi.getCoinMarketData({
-        coin,
-        vsCurrency,
+      backendApi.getExchange({
+        baseCurrency,
+        targetCurrency,
       }),
-    queryKey: ["exchangeApi", "getCoinMarketData", coin, vsCurrency],
+    queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
   const borgPriceInUSD = data?.currentPrice || 0
-  ////
 
   ///////////////////////////////////////////////////////
   // TODO @api replace dummy call below with past orders //

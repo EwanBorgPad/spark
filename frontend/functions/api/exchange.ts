@@ -1,5 +1,5 @@
 import { jsonResponse } from "./cfPagesFunctionsUtils"
-import { CacheStoreModel } from "../../shared/models"
+import { CacheStoreModel, GetExchangeResponse } from "../../shared/models"
 import { addSeconds } from "date-fns"
 /**
  * GET /exchange
@@ -75,7 +75,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx): Promise<Response> =
         .run()
     }
 
-    const response = {
+    const response: GetExchangeResponse = {
+      baseCurrency,
+      targetCurrency,
       ...coinMarketData,
       cache: {
         cacheStatus,
@@ -115,12 +117,7 @@ type GetCoinMarketDataApiResponse = {
   market_cap: number
   fully_diluted_valuation: number
 }[]
-type GetCoinMarketDataResponse = {
-  currentPrice: number
-  marketCap: number
-  fullyDilutedValuation: number
-}
-const getCoinMarketData = async ({ baseCurrency, targetCurrency }: GetCoinMarketDataArgs): Promise<GetCoinMarketDataResponse> => {
+const getCoinMarketData = async ({ baseCurrency, targetCurrency }: GetCoinMarketDataArgs): Promise<GetExchangeResponse> => {
   const url = new URL(GET_COIN_MARKET_DATA_API_URL)
   url.searchParams.set("ids", baseCurrency)
   url.searchParams.set("vs_currency", targetCurrency)
