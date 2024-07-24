@@ -1,4 +1,6 @@
--- D1 Database doesn't support JSON, JSONB, nor TIMESTAMP type columns, so I've resorted to TEXT in those places
+-- D1 Database doesn't support JSON, JSONB, nor TIMESTAMP type columns
+-- Even though the creation works as expected, the driver returns JSONB and TIMESTAMP as plain string in javascript
+-- DROP TABLE user, project, cache_store;
 
 CREATE TABLE "user" (
     address TEXT NOT NULL PRIMARY KEY,
@@ -12,6 +14,6 @@ CREATE TABLE project (
 CREATE TABLE cache_store (
     cache_key TEXT NOT NULL PRIMARY KEY,
     created_at TIMESTAMP NOT NULL,
-    expiration_at TIMESTAMP NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
     cache_data JSONB NOT NULL DEFAULT '{}'
 );

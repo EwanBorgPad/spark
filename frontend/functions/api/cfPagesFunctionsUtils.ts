@@ -4,10 +4,10 @@
  * @param statusCode
  */
 export const jsonResponse = (
-  json?: Record<string, unknown> | null,
+  json?: string | Record<string, unknown> | null,
   statusCode?: number,
 ): Response => {
-  const body = json ? JSON.stringify(json) : null
+  const body = typeof json === 'object' ? JSON.stringify(json) : json
   const status = statusCode ?? 200
   return new Response(body, {
     status,
