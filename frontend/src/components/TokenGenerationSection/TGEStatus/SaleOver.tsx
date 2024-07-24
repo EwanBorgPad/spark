@@ -20,6 +20,7 @@ import {
 } from "@/data/contributionAndRewardsData"
 import SaleOverResults from "../components/SaleOverResults"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
+import SaleUnsuccessful from "../components/SaleUnsuccessful"
 
 type LiveProps = {
   eventData: ExpandedTimelineEventType
@@ -69,14 +70,22 @@ const SaleOver = ({ eventData }: LiveProps) => {
           <h2 className="text-4xl font-semibold leading-11">
             {hasDistributionStarted ? t("reward_distribution") : t("sale_over")}
           </h2>
-          <span className="text-sm opacity-60">{t("sale_over.thank_you")}</span>
-          <Button
-            color="plain"
-            className="cursor-pointer py-0 text-sm underline"
-            onClick={scrollToRewards}
-          >
-            {t("sale_over.check_your_rewards")}
-          </Button>
+          {projectData.saleResults.saleSucceeded ? (
+            <>
+              <span className="text-sm opacity-60">
+                {t("sale_over.thank_you")}
+              </span>
+              <Button
+                color="plain"
+                className="cursor-pointer py-0 text-sm underline"
+                onClick={scrollToRewards}
+              >
+                {t("sale_over.check_your_rewards")}
+              </Button>
+            </>
+          ) : (
+            <SaleUnsuccessful />
+          )}
         </div>
 
         <SaleOverResults />
@@ -86,53 +95,55 @@ const SaleOver = ({ eventData }: LiveProps) => {
         </div>
       </div>
 
-      <div
-        ref={contributionsRef}
-        className="relative flex w-full flex-col items-center gap-9 pt-[80px]"
-      >
-        <Divider icon="SvgHandWithWallet" />
+      {projectData.saleResults.saleSucceeded && (
         <div
-          className={twMerge(
-            "max-w-screen absolute left-0 top-10 -z-[-10] w-full overflow-hidden lg:top-16",
-            !userDidContribute || walletState !== "CONNECTED"
-              ? "h-[247px] lg:top-0"
-              : "",
-          )}
+          ref={contributionsRef}
+          className="relative flex w-full flex-col items-center gap-9 pt-[80px]"
         >
-          <img src={backdropImg} className="lg:h-auto lg:w-screen" />
-        </div>
-        <h3 className="px-4 text-[32px] font-semibold leading-tight">
-          {t("sale_over.your_contribution")}
-        </h3>
-        {walletState !== "CONNECTED" ? (
-          <ConnectButton
-            customBtnText={"Connect Wallet to See Contribution"}
-            btnClassName="py-3 px-4 w-full max-w-[400px] text-base z-10"
-          />
-        ) : userDidContribute ? (
-          <>
-            <section className={sectionClass}>
-              <YourContribution
-                contributionInfo={contributionInfo}
-                eventData={eventData}
-              />
-            </section>
-            <section
-              ref={rewardsRef}
-              className={twMerge(sectionClass, "mt-7 gap-4")}
-            >
-              <Rewards
-                rewards={contributionInfo.claimPositions.rewards}
-                hasDistributionStarted={hasDistributionStarted}
-              />
-            </section>
-          </>
-        ) : (
-          <div className="w-full max-w-[400px] rounded-lg border border-bd-primary bg-secondary px-4 py-3 text-sm opacity-60">
-            {t("sale_over.wallet_didnt_contribute")}
+          <Divider icon="SvgHandWithWallet" />
+          <div
+            className={twMerge(
+              "max-w-screen absolute left-0 top-10 -z-[-10] w-full overflow-hidden lg:top-16",
+              !userDidContribute || walletState !== "CONNECTED"
+                ? "h-[247px] lg:top-0"
+                : "",
+            )}
+          >
+            <img src={backdropImg} className="lg:h-auto lg:w-screen" />
           </div>
-        )}
-      </div>
+          <h3 className="px-4 text-[32px] font-semibold leading-tight">
+            {t("sale_over.your_contribution")}
+          </h3>
+          {walletState !== "CONNECTED" ? (
+            <ConnectButton
+              customBtnText={"Connect Wallet to See Contribution"}
+              btnClassName="py-3 px-4 w-full max-w-[400px] text-base z-10"
+            />
+          ) : userDidContribute ? (
+            <>
+              <section className={sectionClass}>
+                <YourContribution
+                  contributionInfo={contributionInfo}
+                  eventData={eventData}
+                />
+              </section>
+              <section
+                ref={rewardsRef}
+                className={twMerge(sectionClass, "mt-7 gap-4")}
+              >
+                <Rewards
+                  rewards={contributionInfo.claimPositions.rewards}
+                  hasDistributionStarted={hasDistributionStarted}
+                />
+              </section>
+            </>
+          ) : (
+            <div className="w-full max-w-[400px] rounded-lg border border-bd-primary bg-secondary px-4 py-3 text-sm opacity-60">
+              {t("sale_over.wallet_didnt_contribute")}
+            </div>
+          )}
+        </div>
+      )}
     </>
   )
 }
