@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { Project, projectSchema } from "../../shared/models"
+import { ProjectModel, projectSchema } from "../../shared/models"
 
 type ENV = {
   DB: D1Database
@@ -77,11 +77,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 const getProjectById = async (
   db: D1Database,
   id: string,
-): Promise<Project | null> => {
+): Promise<ProjectModel | null> => {
   const project = await db
     .prepare("SELECT * FROM project WHERE id = ?1")
     .bind(id)
-    .first<{ id: string; json: Project }>()
+    .first<{ id: string; json: ProjectModel }>()
   return project ? JSON.parse(project.json) : null
 }
 
