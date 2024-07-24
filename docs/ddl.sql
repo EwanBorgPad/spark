@@ -4,7 +4,6 @@
 
 CREATE TABLE "user" (
     address TEXT NOT NULL PRIMARY KEY,
-    twitter_id TEXT NOT NULL,
     json JSONB NOT NULL DEFAULT '{}'
 );
 CREATE TABLE project (
