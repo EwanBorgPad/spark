@@ -37,8 +37,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     const result: GetWhitelistingResult = {
       balance,
-      isFollowingOnX: userJson.twitter.isFollowingOnX || false,
-      isNotUsaResident: userJson.residency.isNotUsaResident || false,
+      isFollowingOnX: userJson?.twitter?.isFollowingOnX || false,
+      isNotUsaResident: userJson?.residency?.isNotUsaResident || false,
     }
 
     return new Response(JSON.stringify(result))
