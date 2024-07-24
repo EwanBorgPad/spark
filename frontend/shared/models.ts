@@ -106,3 +106,10 @@ export const projectSchema = z.object({
   }),
 })
 export type ProjectModel = z.infer<typeof projectSchema>
+
+export type CacheStoreModel = {
+  cache_key: string
+  created_at: string
+  expires_at: string
+  cache_data: string
+}
