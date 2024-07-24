@@ -76,12 +76,15 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     if (!existingUser) {
       console.log("User not found in db, inserting...")
       const json: UserModelJson = {
-        isFollowingOnX: true,
+        twitter: {
+          twitterId,
+          isFollowingOnX: true,
+        },
       }
       await ctx.env.DB.prepare(
-        "INSERT INTO user (address, twitter_id, json) VALUES (?1, ?2, ?3)",
+        "INSERT INTO user (address, json) VALUES (?1, ?2)",
       )
-        .bind(address, twitterId, JSON.stringify(json))
+        .bind(address, JSON.stringify(json))
         .run()
       console.log("User inserted into db.")
     } else {
@@ -89,11 +92,14 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
       const json = existingUser.json
         ? (JSON.parse(existingUser.json) as UserModelJson)
         : {}
-      json.isFollowingOnX = true
+      json.twitter = {
+        twitterId,
+        isFollowingOnX: true,
+      },
       await ctx.env.DB.prepare(
-        "UPDATE user SET twitter_id = ?2, json = ?3 WHERE address = ?1",
+        "UPDATE user SET json = ?2 WHERE address = ?1",
       )
-        .bind(address, twitterId, JSON.stringify(json))
+        .bind(address, JSON.stringify(json))
         .run()
       console.log("User twitter id updated")
     }

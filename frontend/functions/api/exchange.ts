@@ -133,6 +133,8 @@ const getCoinMarketData = async ({ baseCurrency, targetCurrency }: GetCoinMarket
   const data = responseJson[0]
 
   return {
+    baseCurrency,
+    targetCurrency,
     currentPrice: data.current_price,
     marketCap: data.market_cap,
     fullyDilutedValuation: data.fully_diluted_valuation,
