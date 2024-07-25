@@ -18,3 +18,6 @@ build
 
 # misc
 .env
+
+# ignore wrangler.toml for now
+wrangler.toml
