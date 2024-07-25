@@ -13,6 +13,7 @@ export const jsonResponse = (
     status,
     headers: {
       "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
     },
   })
 }
