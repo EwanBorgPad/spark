@@ -1,0 +1,12 @@
+compatibility_flags = [ "nodejs_compat" ]
+
+[vars]
+RETTIWT_API_KEY = "a2R0PVFRN21OV1RKM0txb0NZQ3RmVDFzZ2FURDA2SkREN0pwenZCdjFHS3k7dHdpZD0idT0xNzkyNTM3MDc0ODY1NzYyMzA1IjtjdDA9OGU5OWU2MTUxNzFjNzY5NGFiYzczYzNiODZiZTk2ZWQ7YXV0aF90b2tlbj1iNGE1NmVmY2VhYTI0NDYzMGVjNGIzNDUxNjViOGRlYTY4M2VmZWRkOw=="
+
+node_compat = true
+
+[[d1_databases]]
+binding = "DB" # Should match preview_database_id
+database_name = "borgpad-database-staging"
+database_id = "c97d41ed-925c-4b24-97cd-27669d1d8921" # wrangler d1 info YOUR_DATABASE_NAME
+preview_database_id = "DB" # Required for Pages local development
