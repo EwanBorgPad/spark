@@ -56,16 +56,18 @@ const TokenRewards = ({
           />
         </div>
 
-        <div className="flex h-fit w-full items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary">
+        <div className="flex h-fit w-full items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary">
           <Icon icon="SvgLock" className="mt-[-1px] text-base opacity-50" />
           <span className="opacity-50">{t("tge.liquidity_pool")}</span>
           <img
             src={tgeData.liquidityPool.iconUrl}
             className="h-4 w-4 object-cover"
           />
-          <span className="opacity-50">{tgeData.liquidityPool.name},</span>
-          <span className="opacity-50">
-            {tgeData.liquidityPool.lockingPeriod}
+          <a href={tgeData.liquidityPool.url} className="underline">
+            <span className="opacity-50">{tgeData.liquidityPool.name}</span>
+          </a>
+          <span className="-ml-1.5 opacity-50">
+            , {tgeData.liquidityPool.lockingPeriod}
           </span>
         </div>
       </div>
@@ -80,7 +82,7 @@ const TokenRewards = ({
             {tgeData.projectCoin.ticker}
           </span>
         </div>
-        <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
+        <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary ">
           <Icon icon="SvgChartLine" className="text-base opacity-50" />
           <span className="opacity-50">{t("tge.linearly_paid_out")}</span>
         </div>

@@ -81,10 +81,12 @@ const YourContribution = ({
               src={projectData.tge.liquidityPool.iconUrl}
               className="h-4 w-4 object-cover"
             />
-            <span className="opacity-50">
-              {projectData.tge.liquidityPool.name}
-            </span>
-            <span className="opacity-50">{t("liquidity_pool")},</span>
+            <a href={projectData.tge.liquidityPool.url} className="underline">
+              <span className="opacity-50">
+                {projectData.tge.liquidityPool.name}
+              </span>
+              <span className="opacity-50">{t("liquidity_pool")},</span>
+            </a>
             <span className="opacity-50">
               {projectData.tge.liquidityPool.lockingPeriod}
             </span>

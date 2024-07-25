@@ -29,7 +29,11 @@ const confirmResidency = async ({ address }: { address: string }) => {
   await fetch(url, { method: "post" })
 }
 
-const getProject = async ({ projectId, }: { projectId: string }): Promise<ProjectModel> => {
+const getProject = async ({
+  projectId,
+}: {
+  projectId: string
+}): Promise<ProjectModel> => {
   const url = new URL(GET_PROJECT_API_URL, window.location.href)
   url.searchParams.set("id", projectId)
 
