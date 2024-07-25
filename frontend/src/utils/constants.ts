@@ -1,3 +1,5 @@
+import i18n from "@/i18n/i18n"
+
 export type WhitelistingRequirementType =
   | "FOLLOW_ON_X"
   | "DONT_RESIDE_IN_US"
@@ -35,3 +37,21 @@ export const whitelistRequirements: Record<
     isMandatory: true,
   },
 }
+
+export const timelineEvents = [
+  "REGISTRATION_OPENS",
+  "SALE_OPENS",
+  "SALE_CLOSES",
+  "REWARD_DISTRIBUTION",
+  "DISTRIBUTION_OVER",
+]
+export const timelineEventLabels = {
+  REGISTRATION_OPENS: "Registration Opens",
+  SALE_OPENS: "Sale Opens",
+  SALE_CLOSES: "Sale Closes",
+  REWARD_DISTRIBUTION: "Reward Distribution",
+  DISTRIBUTION_OVER: "Distribution Over",
+}
+export const timelineEventOptions = Object.entries(timelineEventLabels).map(
+  ([key, value]) => ({ id: key, label: value }),
+)

@@ -13,6 +13,7 @@ import { WhitelistStatusProvider } from "./hooks/useWhitelistContext"
 import { ProjectDataProvider } from "./hooks/useProjectData"
 import { BalanceProvider } from "@/hooks/useBalanceContext.tsx"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import BackOffice from "./pages/BackOffice"
 
 const queryClient = new QueryClient()
 
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Homepage />,
+      },
+      {
+        path: "/back-office",
+        element: <BackOffice />,
       },
       {
         path: "/project/:projectId",
