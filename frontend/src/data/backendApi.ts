@@ -5,12 +5,11 @@ import {
   projectSchema,
 } from "../../shared/models.ts"
 
-// const API_BASE_URL = 'https://feat-projects-connect-client.borgpad.pages.dev/api'
-const API_BASE_URL = "/api"
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
 const GET_WHITELISTING_STATUS_API = API_BASE_URL + "/whitelisting"
 const POST_CONFIRM_RESIDENCY_URL = API_BASE_URL + "/confirmresidency"
 const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
-const GET_EXCHANGE_API_URL = API_BASE_URL + '/exchange'
+const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 
 const getWhitelistingStatus = async ({ address }: { address: string }) => {
   const url = new URL(GET_WHITELISTING_STATUS_API, window.location.href)

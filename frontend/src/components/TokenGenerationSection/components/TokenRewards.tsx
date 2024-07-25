@@ -23,6 +23,11 @@ const TokenRewards = ({
     })
   }
 
+  const totalRewards = {
+    borg: borgCoinInput,
+    targetCoin: getCoinReward(),
+  }
+
   return (
     <div className="border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary bg-tertiary ">
       <div className="relative flex flex-col items-center border-b-[1px] border-b-bd-primary px-3 py-2">
@@ -71,7 +76,7 @@ const TokenRewards = ({
           </span>
         </div>
       </div>
-      <div className="px-3 py-2">
+      <div className="border-b-[1px] border-b-bd-primary px-3 py-2">
         <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
           <img
             src={tgeData.projectCoin.iconUrl}
@@ -86,6 +91,16 @@ const TokenRewards = ({
           <Icon icon="SvgChartLine" className="text-base opacity-50" />
           <span className="opacity-50">{t("tge.linearly_paid_out")}</span>
         </div>
+      </div>
+      <div className="flex gap-2 px-3 py-2 text-xs">
+        <span>Total:</span>
+        <span className="font-geist-mono">
+          {isWhitelistingEvent ? 1 : formatValue({ value: borgCoinInput }) || 0}
+        </span>
+        <span className="font-geist-mono">{"BORG"}</span>
+        <span>{"+"}</span>
+        <span className="font-geist-mono">{totalRewards.targetCoin}</span>
+        <span className="font-geist-mono">{tgeData.projectCoin.ticker}</span>
       </div>
     </div>
   )

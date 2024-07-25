@@ -10,6 +10,8 @@ import CountDownTimer from "@/components/CountDownTimer"
 import { PastOrders } from "../components/PastOrders"
 import { TgeWrapper } from "../components/Wrapper"
 import WhitelistStatus from "../WhitelistStatus"
+import TopContributor from "../components/TopContributor"
+import { useRef } from "react"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType
@@ -17,17 +19,19 @@ type LiveNowProps = {
 
 const LiveNow = ({ eventData }: LiveNowProps) => {
   const { t } = useTranslation()
-
+  const whitelistRef = useRef<HTMLDivElement>(null)
   const { whitelistStatus } = useWhitelistStatusContext()
 
   return (
-    <div className="flex w-full max-w-[432px] flex-col items-center gap-[52px] px-4">
-      <div className="flex w-full flex-col gap-6">
-        <BasicTokenInfo />
-        <SaleProgress />
-      </div>
-      {!whitelistStatus?.whitelisted && <WhitelistStatus />}
-      <div className="flex w-full flex-col gap-5">
+    <div className="flex w-full flex-col items-center gap-[52px]">
+      <BasicTokenInfo />
+      <SaleProgress />
+      {!whitelistStatus?.whitelisted && (
+        <div className="flex w-full flex-col items-center" ref={whitelistRef}>
+          <WhitelistStatus />
+        </div>
+      )}
+      <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
         <TgeWrapper label={t("tge.live_now")}>
           {eventData?.nextEventDate && (
             <CountDownTimer
@@ -35,9 +39,14 @@ const LiveNow = ({ eventData }: LiveNowProps) => {
               labelAboveTimer={`Ends on ${formatDateForTimer(eventData.nextEventDate)}`}
             />
           )}
-          <LiveNowExchange />
+          <LiveNowExchange whitelistRequirementsRef={whitelistRef} />
         </TgeWrapper>
-        {whitelistStatus?.whitelisted && <PastOrders />}
+        {whitelistStatus?.whitelisted && (
+          <>
+            <TopContributor />
+            <PastOrders />
+          </>
+        )}
       </div>
     </div>
   )

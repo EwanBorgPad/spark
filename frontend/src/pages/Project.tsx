@@ -85,7 +85,7 @@ const Project = () => {
           </div>
         </div>
       </section>
-      <hr className="w-full border-bd-primary lg:max-w-[760px]"></hr>
+      <hr className="w-full max-w-[calc(100vw-32px)] border-bd-primary lg:max-w-[782px]"></hr>
 
       <TokenGenerationSection expandedTimeline={expandedTimeline} />
 
