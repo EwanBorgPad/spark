@@ -128,3 +128,6 @@ export type GetExchangeResponse = {
   fullyDilutedValuation: number
   cache?: unknown
 }
+export type GetPresignedUrlResponse = {
+  signedUrl: string
+}

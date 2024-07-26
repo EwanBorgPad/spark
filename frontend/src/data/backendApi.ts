@@ -1,16 +1,18 @@
 import {
   GetExchangeResponse,
+  GetPresignedUrlResponse,
   GetWhitelistingResult,
   ProjectModel,
   projectSchema,
 } from "../../shared/models.ts"
 
-// const API_BASE_URL = 'https://feat-projects-connect-client.borgpad.pages.dev/api'
-const API_BASE_URL = "/api"
-const GET_WHITELISTING_STATUS_API = API_BASE_URL + "/whitelisting"
-const POST_CONFIRM_RESIDENCY_URL = API_BASE_URL + "/confirmresidency"
-const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
-const GET_EXCHANGE_API_URL = API_BASE_URL + '/exchange'
+// const base_url = import.meta.env.VITE_API_BASE_URL ?? "/api"
+const base_url = "http://localhost:8788/api"
+const GET_WHITELISTING_STATUS_API = base_url + "/whitelisting"
+const POST_CONFIRM_RESIDENCY_URL = base_url + "/confirmresidency"
+const GET_PROJECT_API_URL = base_url + "/projects" // + '?id=id'
+const GET_EXCHANGE_API_URL = base_url + "/exchange"
+const GET_PRESIGNED_URL = base_url + "/presignedurl"
 
 const getWhitelistingStatus = async ({ address }: { address: string }) => {
   const url = new URL(GET_WHITELISTING_STATUS_API, window.location.href)
@@ -29,7 +31,11 @@ const confirmResidency = async ({ address }: { address: string }) => {
   await fetch(url, { method: "post" })
 }
 
-const getProject = async ({ projectId, }: { projectId: string }): Promise<ProjectModel> => {
+const getProject = async ({
+  projectId,
+}: {
+  projectId: string
+}): Promise<ProjectModel> => {
   const url = new URL(GET_PROJECT_API_URL, window.location.href)
   url.searchParams.set("id", projectId)
 
@@ -47,12 +53,44 @@ type GetExchangeArgs = {
   baseCurrency: string
   targetCurrency: string
 }
-const getExchange = async ({ baseCurrency, targetCurrency }: GetExchangeArgs): Promise<GetExchangeResponse> => {
+const getExchange = async ({
+  baseCurrency,
+  targetCurrency,
+}: GetExchangeArgs): Promise<GetExchangeResponse> => {
   const url = new URL(GET_EXCHANGE_API_URL, window.location.href)
-  url.searchParams.set('baseCurrency', baseCurrency)
-  url.searchParams.set('targetCurrency', targetCurrency)
+  url.searchParams.set("baseCurrency", baseCurrency)
+  url.searchParams.set("targetCurrency", targetCurrency)
 
   const response = await fetch(url)
+  const json = await response.json()
+  return json
+}
+type GetPresignedUrlArgs = {
+  fileName: string
+}
+const getPresignedUrl = async ({
+  fileName,
+}: GetPresignedUrlArgs): Promise<GetPresignedUrlResponse> => {
+  const url = new URL(GET_PRESIGNED_URL, window.location.href)
+  url.searchParams.set("fileName", fileName)
+
+  const response = await fetch(url)
+  const json = await response.json()
+  return json
+}
+
+type PutFileArgs = {
+  presignedUrl: string
+  file: File
+}
+const uploadFileToBucket = async ({
+  presignedUrl,
+  file,
+}: PutFileArgs): Promise<unknown> => {
+  const url = new URL("", presignedUrl)
+  console.log(url, presignedUrl)
+
+  const response = await fetch(url, { method: "PUT", body: file })
   const json = await response.json()
   return json
 }
@@ -62,4 +100,6 @@ export const backendApi = {
   confirmResidency,
   getProject,
   getExchange,
+  getPresignedUrl,
+  uploadFileToBucket,
 }

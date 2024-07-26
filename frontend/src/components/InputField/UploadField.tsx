@@ -2,6 +2,7 @@ import { HTMLProps } from "@/@types/general"
 import React, { useRef, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import { Button } from "../Button/Button"
+import { backendApi } from "@/data/backendApi"
 
 type UploadFieldProps = HTMLProps<"input"> & {
   containerClassName?: HTMLProps["className"]
@@ -10,6 +11,7 @@ type UploadFieldProps = HTMLProps<"input"> & {
   label?: string
   imgUrl: string | undefined // image source URL
   onChange: (value: string) => void
+  fileName: string
 }
 
 const UploadField = ({
@@ -19,6 +21,7 @@ const UploadField = ({
   label,
   imgUrl,
   onChange,
+  fileName,
   ...props
 }: UploadFieldProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -28,15 +31,15 @@ const UploadField = ({
   )
   const [uploading, setUploading] = useState(false)
 
-  const handleOnChange = (e: React.FormEvent<HTMLInputElement>) => {
+  const handleOnChange = async (e: React.FormEvent<HTMLInputElement>) => {
     setUploading(true)
     const target = e.target as HTMLInputElement & {
       files: FileList
     }
     if (!target.files[0]) return
-    // setFile(target.files[0])
+    const selectedFile = target.files[0]
 
-    // @TODO - upload to Cloudflare
+    await uploadFile(selectedFile)
 
     const file = new FileReader()
 
@@ -46,6 +49,23 @@ const UploadField = ({
     file.readAsDataURL(target.files[0])
     // onChange(imgUrl)
     setUploading(false)
+  }
+
+  const uploadFile = async (file: File) => {
+    try {
+      const presignedUrlResponse = await backendApi.getPresignedUrl({
+        fileName,
+      })
+      const presignedUrl = presignedUrlResponse.signedUrl
+      console.log("presignedUrl: ", presignedUrl)
+      const response = await backendApi.uploadFileToBucket({
+        presignedUrl,
+        file,
+      })
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const containerClassName = twMerge(

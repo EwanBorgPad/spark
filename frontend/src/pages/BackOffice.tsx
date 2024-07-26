@@ -64,6 +64,7 @@ const BackOffice = () => {
 
         <UploadField
           label="Label"
+          fileName="example"
           imgUrl={undefined} // input value
           onChange={(value) => console.log(value)}
         />

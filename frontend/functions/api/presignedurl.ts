@@ -1,15 +1,11 @@
 import { AwsClient } from "aws4fetch"
 
 type ENV = {
-  VITE_BUCKET_ACCOUNT_ID: string
-  VITE_BUCKET_NAME: string
+  R2_BUCKET_ACCOUNT_ID: string
+  R2_BUCKET_NAME: string
+  R2_ACCESS_KEY_ID: string
+  R2_SECRET_ACCESS_KEY: string
 }
-
-// can we import env here?
-const r2 = new AwsClient({
-  accessKeyId: "tokeneaxmple", // client ID
-  secretAccessKey: "O4wX5BZ6wpQncQOMFA7dCwDFKXZGte9xgCawagBk", // client secret
-})
 
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   // This is just an example to demonstrating using aws4fetch to generate a presigned URL.
@@ -17,40 +13,48 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   // that anyone can upload to your bucket.
   //
   // Consider implementing authorization, such as a preshared secret in a request header.
-  const url = ctx.request.url
+  const pathUrl = ctx.request.url
+  const fileName = new URL(pathUrl).searchParams.get("fileName")
 
   // const  = new URL(url).searchParams.get("")
 
-  const requestPath = new URL(url).pathname
+  const requestPath = new URL(pathUrl).pathname
 
   // Cannot upload to the root of a bucket
   if (requestPath === "/") {
     return new Response("Missing a filepath", { status: 400 })
   }
 
-  const bucketName = ctx.env.VITE_BUCKET_NAME
-  const accountId = ctx.env.VITE_BUCKET_ACCOUNT_ID
+  const bucketName = ctx.env.R2_BUCKET_NAME
+  const accountId = ctx.env.R2_BUCKET_ACCOUNT_ID
 
-  const uploadUrl = new URL(
-    `https://${accountId}.r2.cloudflarestorage.com/${bucketName}/${}`,
-    //   `https://${bucketName}.${accountId}.r2.cloudflarestorage.com`//suggested in docs
+  const url = new URL(
+    `https://${accountId}.r2.cloudflarestorage.com/${bucketName}/${fileName}`,
   )
+  console.log("url: ", url)
 
   // preserve the original path
-  uploadUrl.pathname = requestPath
+  url.pathname = requestPath
 
   // Specify a custom expiry for the presigned URL, in seconds
-  uploadUrl.searchParams.set("X-Amz-Expires", "3600")
+  url.searchParams.set("X-Amz-Expires", "3600")
 
+  const r2 = new AwsClient({
+    accessKeyId: ctx.env.R2_ACCESS_KEY_ID, // client ID
+    secretAccessKey: ctx.env.R2_SECRET_ACCESS_KEY, // client secret
+  })
   const signed = await r2.sign(
     new Request(url, {
       method: "PUT",
     }),
     {
-      aws: { signQuery: true },
+      aws: { signQuery: true, fileName },
     },
   )
+  console.log("url: ", signed.url)
 
   // Caller can now use this URL to upload to that object.
-  return new Response(signed.url, { status: 200 })
+  return new Response(JSON.stringify({ signedUrl: signed.url }), {
+    status: 200,
+  })
 }
