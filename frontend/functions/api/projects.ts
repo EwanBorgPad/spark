@@ -1,5 +1,5 @@
-import { z } from "zod"
-import { Project, projectSchema } from "../../shared/models"
+import { ProjectModel, projectSchema } from "../../shared/models"
+import { jsonResponse } from "./cfPagesFunctionsUtils"
 
 type ENV = {
   DB: D1Database
@@ -77,24 +77,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 const getProjectById = async (
   db: D1Database,
   id: string,
-): Promise<Project | null> => {
+): Promise<ProjectModel | null> => {
   const project = await db
     .prepare("SELECT * FROM project WHERE id = ?1")
     .bind(id)
-    .first<{ id: string; json: Project }>()
+    .first<{ id: string; json: ProjectModel }>()
   return project ? JSON.parse(project.json) : null
-}
-
-const jsonResponse = (
-  json?: Record<string, unknown> | null,
-  statusCode?: number,
-): Response => {
-  const body = json ? JSON.stringify(json) : null
-  const status = statusCode ?? 200
-  return new Response(body, {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
 }

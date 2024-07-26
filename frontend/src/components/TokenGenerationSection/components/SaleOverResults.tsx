@@ -1,4 +1,4 @@
-import { exchangeApi } from "@/data/exchangeApi"
+import { backendApi } from "@/data/backendApi.ts"
 import { formatCurrencyAmount } from "@/utils/format"
 import { useQuery } from "@tanstack/react-query"
 import React from "react"
@@ -15,15 +15,15 @@ const SaleOverResults = () => {
     averageInvestedAmount,
   } = projectData.saleResults
 
-  const coin = "swissborg"
-  const vsCurrency = "usd"
+  const baseCurrency = "swissborg"
+  const targetCurrency = "usd"
   const { data } = useQuery({
     queryFn: () =>
-      exchangeApi.getCoinMarketData({
-        coin,
-        vsCurrency,
+      backendApi.getExchange({
+        baseCurrency,
+        targetCurrency,
       }),
-    queryKey: ["exchangeApi", "getCoinMarketData", coin, vsCurrency],
+    queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
 
   return (

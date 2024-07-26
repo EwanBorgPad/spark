@@ -1,3 +1,5 @@
+import { UserModel, UserModelJson } from "../../shared/models"
+
 const TWITTER_API_OAUTH2_TOKEN_URL = "https://api.twitter.com/2/oauth2/token"
 const TWITTER_API_GET_ME_URL = "https://api.twitter.com/2/users/me" // ?user.fields=profile_image_url
 const TWITTER_API_GET_FOLLOWING_URL =
@@ -64,7 +66,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
 
     // check if the user is stored in the db
     const existingUser = await ctx.env.DB.prepare(
-      "SELECT * FROM user WHERE wallet_address = ?1",
+      "SELECT * FROM user WHERE address = ?1",
     )
       .bind(address)
       .first<UserModel>()
@@ -74,12 +76,15 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     if (!existingUser) {
       console.log("User not found in db, inserting...")
       const json: UserModelJson = {
-        isFollowingOnX: true,
+        twitter: {
+          twitterId,
+          isFollowingOnX: true,
+        },
       }
       await ctx.env.DB.prepare(
-        "INSERT INTO user (wallet_address, twitter_id, json) VALUES (?1, ?2, ?3)",
+        "INSERT INTO user (address, json) VALUES (?1, ?2)",
       )
-        .bind(address, twitterId, JSON.stringify(json))
+        .bind(address, JSON.stringify(json))
         .run()
       console.log("User inserted into db.")
     } else {
@@ -87,11 +92,14 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
       const json = existingUser.json
         ? (JSON.parse(existingUser.json) as UserModelJson)
         : {}
-      json.isFollowingOnX = true
+      json.twitter = {
+        twitterId,
+        isFollowingOnX: true,
+      },
       await ctx.env.DB.prepare(
-        "UPDATE user SET twitter_id = ?2, json = ?3 WHERE wallet_address = ?1",
+        "UPDATE user SET json = ?2 WHERE address = ?1",
       )
-        .bind(address, twitterId, JSON.stringify(json))
+        .bind(address, JSON.stringify(json))
         .run()
       console.log("User twitter id updated")
     }
@@ -154,13 +162,4 @@ type GetFollowingResponse = {
     name: string
     username: string
   }[]
-}
-type UserModel = {
-  wallet_address: string
-  twitter_id: string
-  json: null | string
-}
-type UserModelJson = {
-  isFollowingOnX?: boolean
-  isNotUsaResident?: boolean
 }

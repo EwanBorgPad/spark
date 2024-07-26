@@ -1,6 +1,7 @@
 const allowedUrl = "https://api.twitter.com"
 
-export const onRequest: PagesFunction<{}> = async (context) => {
+// not used right now, so not exported, but i wanted to keep it just in case
+const onRequest: PagesFunction<{}> = async (context) => {
   try {
     const urlParam = new URL(context.request.url).searchParams.get("url")
 

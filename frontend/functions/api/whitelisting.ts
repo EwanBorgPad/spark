@@ -5,6 +5,7 @@ import {
   UserModel,
   UserModelJson,
 } from "../../shared/models"
+import { jsonResponse } from "./cfPagesFunctionsUtils"
 
 type ENV = {
   DB: D1Database
@@ -15,12 +16,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const address = searchParams.get("address")
 
     if (!isAddressInCorrectFormat(address)) {
-      return new Response(
-        JSON.stringify({
-          message: "Please provide address as query param!",
-        }),
-        { status: 400 },
-      )
+      return jsonResponse({
+        message: "Please provide address as query param!",
+      }, 400)
     }
 
     const balance = await getSplTokenBalance({
@@ -29,7 +27,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     })
 
     const user: UserModel = await ctx.env.DB.prepare(
-      "SELECT * FROM user WHERE wallet_address = ?1",
+      "SELECT * FROM user WHERE address = ?1",
     )
       .bind(address)
       .first<UserModel>()
@@ -37,19 +35,16 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     const result: GetWhitelistingResult = {
       balance,
-      isFollowingOnX: userJson.isFollowingOnX || false,
-      isNotUsaResident: userJson.isNotUsaResident || false,
+      isFollowingOnX: userJson?.twitter?.isFollowingOnX || false,
+      isNotUsaResident: userJson?.residency?.isNotUsaResident || false,
     }
 
-    return new Response(JSON.stringify(result))
+    return jsonResponse(result)
   } catch (e) {
     console.error(e)
-    return new Response(
-      JSON.stringify({
-        message: "Something went wrong...",
-      }),
-      { status: 500 },
-    )
+    return jsonResponse({
+      message: "Something went wrong...",
+    }, 500)
   }
 }
 

@@ -5,22 +5,28 @@ import { z } from "zod"
  */
 export type UserModel = {
   wallet_address: string
-  twitter_id: string
   json: null | string
 }
 /**
  * UserModelJson, json column in user database.
  */
 export type UserModelJson = {
-  isFollowingOnX?: boolean
-  isNotUsaResident?: boolean
-  isNotUsaResidentConfirmationTimestamp?: string
+  twitter?: {
+    twitterId: string
+    isFollowingOnX: boolean
+  }
+  residency?: {
+    isNotUsaResident?: boolean
+    isNotUsaResidentConfirmationTimestamp?: string
+  }
 }
 /**
  * GET /whitelisting api response type
  */
-export type GetWhitelistingResult = UserModelJson & {
+export type GetWhitelistingResult = {
   balance: TokenAmount
+  isFollowingOnX: boolean
+  isNotUsaResident: boolean
 }
 /**
  * Represents url type
@@ -106,3 +112,19 @@ export const projectSchema = z.object({
   }),
 })
 export type ProjectModel = z.infer<typeof projectSchema>
+
+export type CacheStoreModel = {
+  cache_key: string
+  created_at: string
+  expires_at: string
+  cache_data: string
+}
+
+export type GetExchangeResponse = {
+  baseCurrency: string
+  targetCurrency: string
+  currentPrice: number
+  marketCap: number
+  fullyDilutedValuation: number
+  cache?: unknown
+}
