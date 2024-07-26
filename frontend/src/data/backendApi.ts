@@ -6,8 +6,7 @@ import {
   projectSchema,
 } from "../../shared/models.ts"
 
-// const base_url = import.meta.env.VITE_API_BASE_URL ?? "/api"
-const base_url = "http://localhost:8788/api"
+const base_url = import.meta.env.VITE_API_BASE_URL ?? "/api"
 const GET_WHITELISTING_STATUS_API = base_url + "/whitelisting"
 const POST_CONFIRM_RESIDENCY_URL = base_url + "/confirmresidency"
 const GET_PROJECT_API_URL = base_url + "/projects" // + '?id=id'
