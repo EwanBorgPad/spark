@@ -29,9 +29,8 @@ async function main() {
     const resList = res.list
     users.push(...res.list)
 
-    await sleep(10)
+    await sleep(1000)
     cursor = res.next.value
-    fs.writeFileSync('users3.json', JSON.stringify(users, null, 2))
 
     if (!resList.length) {
       console.log('res list is empty!!!')
@@ -39,7 +38,7 @@ async function main() {
     }
   } while (cursor)
 
-  fs.writeFileSync('users3.json', JSON.stringify(users, null, 2))
+  fs.writeFileSync('users.json', JSON.stringify(users, null, 2))
 }
 
 main().catch(console.error)
