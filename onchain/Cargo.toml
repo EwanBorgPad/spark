@@ -1,5 +1,7 @@
 [workspace]
-members = ["borgpad"]
+members = [
+    "programs/*"
+]
 resolver = "2"
 
 [profile.release]

@@ -4,9 +4,6 @@
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-borgpad = "246nkXa6faSbJC9yRGNs4UHcV7hP82fSaBpMoFSjdDVk"
-
 [provider]
 cluster = "Localnet"
 wallet = "~/.config/solana/id.json"
