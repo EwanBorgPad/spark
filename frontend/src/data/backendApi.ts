@@ -72,6 +72,8 @@ const getPresignedUrl = async ({
 }: GetPresignedUrlArgs): Promise<GetPresignedUrlResponse> => {
   const url = new URL(GET_PRESIGNED_URL, window.location.href)
   url.searchParams.set("fileName", fileName)
+  // @TODO - change value below
+  url.searchParams.set("projectId", "TEST")
 
   const response = await fetch(url)
   const json = await response.json()

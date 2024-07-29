@@ -15,6 +15,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   // Consider implementing authorization, such as a preshared secret in a request header.
   const pathUrl = ctx.request.url
   const fileName = new URL(pathUrl).searchParams.get("fileName")
+  const projectId = new URL(pathUrl).searchParams.get("projectId")
 
   // const  = new URL(url).searchParams.get("")
 
@@ -29,7 +30,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const accountId = ctx.env.R2_BUCKET_ACCOUNT_ID
 
   const url = new URL(
-    `https://${accountId}.r2.cloudflarestorage.com/${bucketName}/${fileName}`,
+    `https://${accountId}.r2.cloudflarestorage.com/${bucketName}/images/${projectId}/${fileName}`,
   )
   console.log("url: ", url)
 
