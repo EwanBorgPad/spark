@@ -17,10 +17,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const fileName = new URL(pathUrl).searchParams.get("fileName")
   const projectId = new URL(pathUrl).searchParams.get("projectId")
 
-  // const  = new URL(url).searchParams.get("")
-
   const requestPath = new URL(pathUrl).pathname
-
   // Cannot upload to the root of a bucket
   if (requestPath === "/") {
     return new Response("Missing a filepath", { status: 400 })
@@ -35,7 +32,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   console.log("url: ", url)
 
   // preserve the original path
-  url.pathname = requestPath
+  // url.pathname = requestPath
+  console.log(url)
 
   // Specify a custom expiry for the presigned URL, in seconds
   url.searchParams.set("X-Amz-Expires", "3600")
