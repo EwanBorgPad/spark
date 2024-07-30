@@ -15,12 +15,12 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   // Consider implementing authorization, such as a preshared secret in a request header.
   const pathUrl = ctx.request.url
 
-  // const fileName = new URL(pathUrl).searchParams.get("fileName")
-  // const projectId = new URL(pathUrl).searchParams.get("projectId")
+  const fileName = new URL(pathUrl).searchParams.get("fileName")
+  const projectId = new URL(pathUrl).searchParams.get("projectId")
 
-  const requestPathname = new URL(pathUrl).pathname
+  // const requestPathname = new URL(pathUrl).pathname
   // Cannot upload to the root of a bucket
-  if (requestPathname === "/") {
+  if (!fileName || !projectId) {
     return new Response("Missing a filepath", { status: 400 })
   }
 
@@ -28,12 +28,12 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const accountId = ctx.env.R2_BUCKET_ACCOUNT_ID
 
   const url = new URL(
-    `https://${bucketName}.${accountId}.r2.cloudflarestorage.com`,
+    `https://${accountId}.r2.cloudflarestorage.com/${bucketName}`,
   )
   console.log("url: ", url)
 
   // preserve the original path | this comment and line below is from their example, but this adds path from our wo "/api/presignedurl" to signed url. Not sure why would they leave this in their example
-  // url.pathname = requestPathname
+  url.pathname = `${projectId}/${fileName}`
 
   // Specify a custom expiry for the presigned URL, in seconds
   url.searchParams.set("X-Amz-Expires", "3600")
