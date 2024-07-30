@@ -27,7 +27,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const accountId = ctx.env.R2_BUCKET_ACCOUNT_ID
 
   const url = new URL(
-    `https://${accountId}.r2.cloudflarestorage.com/${bucketName}/test`,
+    `https://${accountId}.r2.cloudflarestorage.com/${bucketName}`,
   )
   console.log("url: ", url)
 
