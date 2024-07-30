@@ -2,9 +2,13 @@
 
 ## Info
 
-Program id: `bpadbLrS3Mw2e1EDSEnYzYpNwAQgJQXXHkT57D4TTJ4`
-
 Devnet deployer: `J23LkU7bYkZJxiRzsBhUftoP5T1bDtqbfYkT1kNJf77x`
+
+Devnet program id: `bpadbLrS3Mw2e1EDSEnYzYpNwAQgJQXXHkT57D4TTJ4`
+
+Devnet config: `4sNCxBsELhB6amzrhURgEfYSCY9JwEygr28dGGfpFYUT`
+
+Devnet example lbp: `BpWYQLwzJDJYB9awK5JYDrH7v6HcwkYuBeWeSpL17KDh`
 
 ## Dev environment
 

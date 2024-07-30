@@ -7,7 +7,7 @@ pub struct Lbp {
     pub dynamic_data: LbpDynamicData
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, InitSpace, Default, Clone)]
+#[derive(AnchorSerialize, AnchorDeserialize, InitSpace, Default, Clone, Debug, Eq, PartialEq)]
 pub struct LbpDynamicData {
     /// The amount of token that remains after the end of the fund collection phase
     /// If the user_max_cap is reached, the project_cap equals the project_max_cap
@@ -23,7 +23,7 @@ pub struct LbpDynamicData {
     pub lp_locked_phase_start_time: u64,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, InitSpace, Clone)]
+#[derive(AnchorSerialize, AnchorDeserialize, InitSpace, Clone, Debug, Eq, PartialEq)]
 pub struct LbpStaticData {
     /// An id to uniquely identify the lbp
     pub uid: u64,

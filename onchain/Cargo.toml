@@ -1,5 +1,6 @@
 [workspace]
-members = [ "client",
+members = [
+    "client",
     "programs/*"
 ]
 resolver = "2"
