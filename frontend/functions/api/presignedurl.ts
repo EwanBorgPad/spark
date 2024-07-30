@@ -17,9 +17,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const fileName = new URL(pathUrl).searchParams.get("fileName")
   const projectId = new URL(pathUrl).searchParams.get("projectId")
 
-  const requestPath = new URL(pathUrl).pathname
+  const requestPathname = new URL(pathUrl).pathname
   // Cannot upload to the root of a bucket
-  if (requestPath === "/") {
+  if (requestPathname === "/") {
     return new Response("Missing a filepath", { status: 400 })
   }
 
@@ -27,13 +27,13 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const accountId = ctx.env.R2_BUCKET_ACCOUNT_ID
 
   const url = new URL(
-    `https://${accountId}.r2.cloudflarestorage.com/${bucketName}`,
+    `https://${accountId}.r2.cloudflarestorage.com/${bucketName}/test`,
   )
   console.log("url: ", url)
 
   // preserve the original path
-  // url.pathname = requestPath
-  console.log(url)
+  url.pathname = requestPathname
+  // console.log(url)
 
   // Specify a custom expiry for the presigned URL, in seconds
   url.searchParams.set("X-Amz-Expires", "3600")
