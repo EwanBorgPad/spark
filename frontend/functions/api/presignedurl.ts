@@ -14,8 +14,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   //
   // Consider implementing authorization, such as a preshared secret in a request header.
   const pathUrl = ctx.request.url
-  const fileName = new URL(pathUrl).searchParams.get("fileName")
-  const projectId = new URL(pathUrl).searchParams.get("projectId")
+
+  // const fileName = new URL(pathUrl).searchParams.get("fileName")
+  // const projectId = new URL(pathUrl).searchParams.get("projectId")
 
   const requestPathname = new URL(pathUrl).pathname
   // Cannot upload to the root of a bucket
@@ -31,9 +32,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   )
   console.log("url: ", url)
 
-  // preserve the original path
+  // preserve the original path | this comment and line below is from their example, but this adds path "/api/presignedurl" to signed url. Not sure why would they leave this in their example
   // url.pathname = requestPathname
-  // console.log(url)
 
   // Specify a custom expiry for the presigned URL, in seconds
   url.searchParams.set("X-Amz-Expires", "3600")
