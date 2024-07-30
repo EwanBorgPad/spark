@@ -32,7 +32,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   console.log("url: ", url)
 
   // preserve the original path
-  url.pathname = requestPathname
+  // url.pathname = requestPathname
   // console.log(url)
 
   // Specify a custom expiry for the presigned URL, in seconds
