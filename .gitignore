@@ -13,9 +13,9 @@ dist
 # production
 build
 
-# misc
-.env
-
 # cloudflare wrangler
 .wrangler
 wrangler.toml
+
+# misc
+.env

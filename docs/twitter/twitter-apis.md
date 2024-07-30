@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 # Twitter Followers Scraping
 
