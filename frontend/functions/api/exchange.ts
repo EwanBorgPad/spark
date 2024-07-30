@@ -1,4 +1,4 @@
-import { jsonResponse } from "./cfPagesFunctionsUtils"
+import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { CacheStoreModel, GetExchangeResponse } from "../../shared/models"
 // @ts-expect-error date-fns import works, but typescript has to be reconfigured, so it's easier for me to
 import { addSeconds } from "date-fns/addSeconds"
@@ -26,6 +26,7 @@ type ENV = {
   DB: D1Database
 }
 export const onRequestGet: PagesFunction<ENV> = async (ctx): Promise<Response> => {
+  const db = ctx.env.DB
   try {
     // parse request
     const { searchParams } = new URL(ctx.request.url)
@@ -43,7 +44,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx): Promise<Response> =
     const cacheKey = `exchange-api/${baseCurrency}-${targetCurrency}`
 
     // pull existing cache
-    const cache = await ctx.env.DB
+    const cache = await db
       .prepare("SELECT * FROM cache_store WHERE cache_key = ?1")
       .bind(cacheKey)
       .first<CacheStoreModel>()
@@ -67,7 +68,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx): Promise<Response> =
       createdAt = new Date().toISOString()
       expiresAt = addSeconds(createdAt, CACHE_TTL_SECONDS).toISOString()
 
-      await ctx.env.DB
+      await db
         .prepare(
           'REPLACE INTO cache_store (cache_key, created_at, expires_at, cache_data)' +
           'VALUES (?1, ?2, ?3, ?4);'
@@ -90,7 +91,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx): Promise<Response> =
     // return result
     return jsonResponse(response)
   } catch (e) {
-    console.error(e)
+    await reportError(db, e)
     return jsonResponse({
       message: "Something went wrong...",
     }, 500)
