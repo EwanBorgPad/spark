@@ -31,7 +31,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   console.log("url: ", url)
 
   // preserve the original path | this comment and line below is from their example, but this adds path from our wo "/api/presignedurl" to signed url. Not sure why would they leave this in their example
-  url.pathname = `${bucketName}/${projectId}/${fileName}`
+  url.pathname = `${bucketName}/images/${projectId}/${fileName}`
 
   // Specify a custom expiry for the presigned URL, in seconds
   url.searchParams.set("X-Amz-Expires", "3600")

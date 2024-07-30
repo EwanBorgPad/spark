@@ -89,9 +89,6 @@ const uploadFileToBucket = async ({
   file,
 }: PutFileArgs): Promise<unknown> => {
   const url = new URL("", presignedUrl)
-  console.log(url, presignedUrl)
-
-  url.pathname = `images/test-project/example.png`
 
   const response = await fetch(url, { method: "PUT", body: file })
   const json = await response.json()
