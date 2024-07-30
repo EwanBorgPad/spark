@@ -27,7 +27,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const accountId = ctx.env.R2_BUCKET_ACCOUNT_ID
 
   const url = new URL(
-    `https://${accountId}.r2.cloudflarestorage.com/${bucketName}/images/${projectId}/${fileName}`,
+    `https://${bucketName}.${accountId}.r2.cloudflarestorage.com`,
   )
   console.log("url: ", url)
 
@@ -47,7 +47,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       method: "PUT",
     }),
     {
-      aws: { signQuery: true, fileName },
+      aws: { signQuery: true },
     },
   )
   console.log("url: ", signed.url)
