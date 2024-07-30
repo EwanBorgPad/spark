@@ -1,15 +1,16 @@
-import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
+import { hasAdminAccess, jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 
 const borgPadTwitterId = '1791134718131408897' // @borgpadhq // https://x.com/borgpadhq
 /**
  * This function should be set up as a cron job, currently an API endpoint
  */
 type ENV = {
-  RETTIWT_API_KEY: string
   DB: D1Database
+  RETTIWT_API_KEY: string
   TWITTER_AUTH_BEARER: string
   TWITTER_AUTH_COOKIE: string
   TWITTER_AUTH_X_CSRF_TOKEN: string
+  ADMIN_API_KEY_HASH: string
 }
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const env = ctx.env
@@ -18,6 +19,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     // check env variables
     if (!env.TWITTER_AUTH_BEARER || !env.TWITTER_AUTH_COOKIE || !env.TWITTER_AUTH_X_CSRF_TOKEN) {
       throw new Error('Twitter auth misconfigured!')
+    }
+
+    // authorize request
+    if (!hasAdminAccess(ctx)) {
+      return jsonResponse(null, 401)
     }
 
     // do stuff
