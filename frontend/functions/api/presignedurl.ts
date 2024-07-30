@@ -28,7 +28,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const accountId = ctx.env.R2_BUCKET_ACCOUNT_ID
 
   const url = new URL(
-    `https://${accountId}.r2.cloudflarestorage.com/${bucketName}`,
+    `https://borgpad-staging-bucket.${accountId}.r2.cloudflarestorage.com/${bucketName}`,
   )
   console.log("url: ", url)
 
