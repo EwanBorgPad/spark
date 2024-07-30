@@ -27,13 +27,11 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const bucketName = ctx.env.R2_BUCKET_NAME
   const accountId = ctx.env.R2_BUCKET_ACCOUNT_ID
 
-  const url = new URL(
-    `https://${accountId}.r2.cloudflarestorage.com/${bucketName}`,
-  )
+  const url = new URL(`https://${accountId}.r2.cloudflarestorage.com`)
   console.log("url: ", url)
 
   // preserve the original path | this comment and line below is from their example, but this adds path from our wo "/api/presignedurl" to signed url. Not sure why would they leave this in their example
-  url.pathname = `${projectId}/${fileName}`
+  url.pathname = `${bucketName}/${projectId}/${fileName}`
 
   // Specify a custom expiry for the presigned URL, in seconds
   url.searchParams.set("X-Amz-Expires", "3600")
