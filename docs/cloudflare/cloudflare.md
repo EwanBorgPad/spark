@@ -69,6 +69,7 @@ As Workers do not have a full nodejs API, we are limited in what we can use. Her
 - [Monorepos](https://developers.cloudflare.com/pages/configuration/monorepos/)
 - [Reddit: Vercel vs Cloudflare Pages/Workers](https://www.reddit.com/r/nextjs/comments/s3ec29/vercel_vs_cloudflare_pages_workers/)
 - [Compatibility Flags](https://developers.cloudflare.com/workers/configuration/compatibility-dates/#compatibility-flags)
+- [Why Worker's environment variables contain live objects](https://blog.cloudflare.com/workers-environment-live-object-bindings)
 
 ## Other Cloudflare services
 

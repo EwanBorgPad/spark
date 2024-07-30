@@ -1,7 +1,7 @@
 import { jsonResponse } from "./cfPagesFunctionsUtils"
 import { CacheStoreModel, GetExchangeResponse } from "../../shared/models"
 // @ts-expect-error date-fns import works, but typescript has to be reconfigured, so it's easier for me to
-import { addSeconds } from "date-fns"
+import { addSeconds } from "date-fns/addSeconds"
 /**
  * GET /exchange
  * Serves exchange data from a 3rd party exchange, and caches the response in the D1 db in order to avoid being rate limited.
