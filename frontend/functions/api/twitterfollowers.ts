@@ -21,6 +21,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       throw new Error('Twitter auth misconfigured!')
     }
 
+    if (!env.ADMIN_API_KEY_HASH) {
+      throw new Error('Env variables misconfigured!')
+    }
+
     // authorize request
     if (!hasAdminAccess(ctx)) {
       return jsonResponse(null, 401)
