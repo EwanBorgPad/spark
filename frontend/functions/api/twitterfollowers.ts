@@ -77,6 +77,14 @@ async function getFollowersForAccount(env: ENV, id: string, cursor?: string): Pr
     }
   })
 
+  const rateLimitHeaders = {
+    xRateLimitLimit: response.headers.get('x-rate-limit-limit'),
+    xRateLimitReset: response.headers.get('x-rate-limit-reset'),
+    xRateLimitRemaining: response.headers.get('x-rate-limit-remaining'),
+  }
+
+  console.log({ rateLimitHeaders })
+
   if (!response.ok) {
     const message = `Twitter scraping error! Status code=${response.status}`
     throw new Error(message)
