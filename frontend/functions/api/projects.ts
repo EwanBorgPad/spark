@@ -1,8 +1,9 @@
 import { ProjectModel, projectSchema } from "../../shared/models"
-import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
+import { hasAdminAccess, jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 
 type ENV = {
   DB: D1Database
+  ADMIN_API_KEY_HASH: string
 }
 /**
  * Get request handler - returns a project by id
@@ -38,6 +39,11 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
   try {
+    // authorize request
+    if (!hasAdminAccess(ctx)) {
+      return jsonResponse(null, 401)
+    }
+
     // parse request
     const requestJson = await ctx.request.json()
     const { error, data } = projectSchema.safeParse(requestJson)

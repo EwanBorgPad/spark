@@ -1,13 +1,17 @@
+import { createHash } from "node:crypto"
+
 /**
  * Easier way to return response
- * @param json
+ * @param retval
  * @param statusCode
  */
 export const jsonResponse = (
-  json?: string | Record<string, unknown> | null,
+  retval?: string | Record<string, unknown> | null,
   statusCode?: number,
 ): Response => {
-  const body = typeof json === 'object' ? JSON.stringify(json) : json
+  const body = (retval !== null && typeof retval === 'object')
+    ? JSON.stringify(retval)
+    : retval as string
   const status = statusCode ?? 200
   return new Response(body, {
     status,
@@ -40,7 +44,20 @@ export const reportError = async (db: D1Database, e: Error) => {
     .bind(id, message, createdAt, json)
     .run()
 }
+/**
+ * Call this function to check if the user has admin privileges in provided context.
+ * @param ctx
+ */
+export const hasAdminAccess = (ctx: EventContext<{ ADMIN_API_KEY_HASH: string }, any, Record<string, unknown>>) => {
+  const providedApiKey = (ctx.request.headers.get('authorization') ?? '').replace('Bearer ', '')
+  const providedApiKeyHash = createHash('sha256').update(providedApiKey).digest('hex')
 
+  const correctApiKeyHash = ctx.env.ADMIN_API_KEY_HASH
+
+  const isValid = Boolean(providedApiKey) && Boolean(correctApiKeyHash)
+    && providedApiKeyHash === correctApiKeyHash
+  return isValid
+}
 /**************************************/
 /********* PRIVATE FUNCTIONS **********/
 /**************************************/
