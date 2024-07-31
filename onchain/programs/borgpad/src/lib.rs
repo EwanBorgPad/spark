@@ -1,6 +1,8 @@
 use anchor_lang::prelude::*;
 use crate::instructions::initialize::*;
 use crate::instructions::initialize_lbp::*;
+use crate::instructions::set_admin_authority::*;
+use crate::instructions::set_whitelist_authority::*;
 use crate::state::lbp::LbpStaticData;
 // use solana_security_txt::security_txt;
 
@@ -27,5 +29,18 @@ pub mod borgpad {
         lbp_static_data: LbpStaticData
     ) -> Result<()> {
         return instructions::initialize_lbp::handler(ctx, lbp_static_data);
+    }
+
+    pub fn set_admin_authority(
+        ctx: Context<SetAdminAuthority>
+    ) -> Result<()> {
+        return instructions::set_admin_authority::handler(ctx);
+    }
+
+    pub fn set_whitelist_authority(
+        ctx: Context<SetWhitelistAuthority>,
+        new_whitelist_authority: Pubkey,
+    ) -> Result<()> {
+        return instructions::set_whitelist_authority::handler(ctx, new_whitelist_authority);
     }
 }

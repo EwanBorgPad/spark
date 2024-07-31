@@ -4,4 +4,6 @@ use anchor_lang::prelude::*;
 pub enum ErrorCode {
     #[msg("Signer must be the admin")]
     NotAdmin,
+    #[msg("Cannot set the same admin")]
+    SameAdmin,
 }
