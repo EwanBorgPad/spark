@@ -44,7 +44,7 @@ export const timelineEvents = [
   "SALE_CLOSES",
   "REWARD_DISTRIBUTION",
   "DISTRIBUTION_OVER",
-]
+] as const
 export const timelineEventLabels = {
   REGISTRATION_OPENS: "Registration Opens",
   SALE_OPENS: "Sale Opens",
@@ -53,5 +53,8 @@ export const timelineEventLabels = {
   DISTRIBUTION_OVER: "Distribution Over",
 }
 export const timelineEventOptions = Object.entries(timelineEventLabels).map(
-  ([key, value]) => ({ id: key, label: value }),
+  ([key, value]) => ({
+    id: key as unknown as typeof timelineEvents, // Object.entries isn't type safe
+    label: value,
+  }),
 )

@@ -33,7 +33,8 @@ export type GetWhitelistingResult = {
  * Not sure what we wanna validate there ATM, so leave it as string for now.
  */
 const urlSchema = () => z.string()
-const iconTypeSchema = () => z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM"])
+const iconTypeSchema = () =>
+  z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM", "OUTER_LINK"])
 const externalUrlSchema = () =>
   z.object({
     url: urlSchema(),

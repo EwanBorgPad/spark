@@ -83,6 +83,8 @@ export default {
       },
       gridTemplateColumns: {
         "borg-input": "minmax(180px, 1fr) 88px",
+        "curator-socials": "128px, 24px, 328px, 32px",
+        "bo-timeline": "160px minmax(320px, 1fr)",
       },
       lineHeight: {
         11: "44px",

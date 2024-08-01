@@ -9,59 +9,51 @@ type CurrencyInputFieldProps = HTMLProps<"input"> & {
   error?: string
   prefixElement?: PropsWithChildren["children"]
   suffixElement?: PropsWithChildren["children"]
-  disableFocusRing?: boolean
   label?: string
   onChange: (value: string) => void
   value: number | undefined
 }
 
-export const CurrencyInputField = forwardRef(
-  (
-    {
-      error,
-      prefixElement,
-      suffixElement,
-      containerClassName: _containerClassName,
-      disableFocusRing = false,
-      inputClassName,
-      value,
-      onChange,
-      disabled,
-      label,
-      ...props
-    }: CurrencyInputFieldProps,
-    ref,
-  ) => {
-    const containerClassName = twMerge(
-      "text-sm w-full flex flex-col items-start gap-2 px-4 cursor-text",
-      _containerClassName,
-    )
-    const inputClasses = twMerge(
-      "py-2.5 w-full focus:outline-0 bg-secondary flex-grow placeholder:text-gray-400 truncate ring-1 ring-bd-secondary rounded-lg px-2",
-      "focus-within:ring-2 focus-within:ring-bd-disabled",
-      error && "ring-1 ring-bd-danger focus-within:ring-bd-danger",
-      inputClassName,
-    )
+export const CurrencyInputField = ({
+  error,
+  prefixElement,
+  suffixElement,
+  containerClassName: _containerClassName,
+  inputClassName,
+  value,
+  onChange,
+  disabled,
+  label,
+  ...props
+}: CurrencyInputFieldProps) => {
+  const containerClassName = twMerge(
+    "text-sm w-full flex flex-col items-start gap-2 px-4 cursor-text max-w-[360px]",
+    _containerClassName,
+  )
+  const inputClasses = twMerge(
+    "w-full focus:outline-0 bg-secondary flex-grow placeholder:text-gray-400 truncate ring-1 ring-bd-secondary rounded-lg",
+    "focus-within:ring-2 focus-within:ring-bd-disabled",
+    error && "ring-1 ring-bd-danger focus-within:ring-bd-danger",
+    inputClassName,
+  )
 
-    return (
-      <div className={containerClassName}>
-        <label htmlFor={props.name} className="font-medium">
-          {label}
-        </label>
-        <div className={inputClasses}>
-          <CurrencyInput
-            value={value}
-            allowNegativeValue={false}
-            placeholder="0"
-            className={
-              "max-w-[242px] bg-transparent font-geist-mono text-sm focus:outline-none"
-            }
-            decimalsLimit={6}
-            onValueChange={(value) => onChange(value ?? "")}
-          />
-        </div>
+  return (
+    <div className={containerClassName}>
+      <label htmlFor={props.name} className="font-medium">
+        {label}
+      </label>
+      <div className={inputClasses}>
+        <CurrencyInput
+          value={value}
+          allowNegativeValue={false}
+          placeholder="0"
+          className={
+            "h-[40px] w-full max-w-[360px] bg-transparent px-2 py-2.5 font-geist-mono text-sm placeholder:text-white/30 focus:outline-none"
+          }
+          decimalsLimit={6}
+          onValueChange={(value) => onChange(value ?? "")}
+        />
       </div>
-    )
-  },
-)
-CurrencyInputField.displayName = "CurrencyInputField"
+    </div>
+  )
+}

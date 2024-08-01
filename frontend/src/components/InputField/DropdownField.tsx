@@ -40,7 +40,7 @@ export const DropdownField = forwardRef<HTMLInputElement, DropdownFieldProps>(
     useCheckOutsideClick(fieldRef, () => setDropdownOpened(false))
 
     const containerClassName = twMerge(
-      "text-sm w-full flex flex-col items-start gap-2 px-4 cursor-text max-w-[320px]",
+      "text-sm w-full flex flex-col items-start gap-2 px-4 cursor-text max-w-[360px]",
       _containerClassName,
     )
     const selectedOptionClasses = twMerge(
@@ -55,9 +55,11 @@ export const DropdownField = forwardRef<HTMLInputElement, DropdownFieldProps>(
 
     return (
       <div className={containerClassName}>
-        <label htmlFor={props.name} className="font-medium">
-          {label}
-        </label>
+        {label && (
+          <label htmlFor={props.name} className="font-medium">
+            {label}
+          </label>
+        )}
         <div
           {...props}
           ref={fieldRef}

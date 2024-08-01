@@ -30,7 +30,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     ref,
   ) => {
     const containerClassName = twMerge(
-      "text-sm w-full flex flex-col items-start gap-2 px-4 cursor-text",
+      "text-sm w-full flex flex-col items-start gap-2 px-4 cursor-text max-w-[360px]",
       _containerClassName,
     )
     const inputClasses = twMerge(
@@ -43,9 +43,11 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
 
     return (
       <div className={containerClassName}>
-        <label htmlFor={props.name} className="font-medium">
-          {label}
-        </label>
+        {label && (
+          <label htmlFor={props.name} className="font-medium">
+            {label}
+          </label>
+        )}
         <input
           disabled={disabled}
           ref={ref}
