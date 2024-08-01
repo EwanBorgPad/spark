@@ -110,3 +110,6 @@ input[type="checkbox"] {
 .react-datepicker__input-container {
   cursor: pointer !important;
 }
+.react-datepicker__month-container {
+  height: 294px !important;
+}

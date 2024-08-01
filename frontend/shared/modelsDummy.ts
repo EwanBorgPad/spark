@@ -47,54 +47,54 @@ const dateSchema = () => z.coerce.date()
  * Schema for project, type should be inferred from this.
  */
 export const projectSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  subtitle: z.string(),
-  logoUrl: z.string(),
-  chain: z.object({ name: z.string(), iconUrl: urlSchema() }),
-  origin: z.string(),
-  sector: z.string(),
-  curator: z.object({
-    avatarUrl: urlSchema(),
-    fullName: z.string(),
-    position: z.string(),
-    socials: z.array(externalUrlSchema()),
-  }),
-  projectLinks: z.array(externalUrlSchema()),
-  tokensAvailability: z.object({
-    available: z.number().int(),
-    total: z.number().int(),
-  }),
-  tge: z.object({
-    raiseTarget: z.number().int(),
-    projectCoin: z.object({
-      iconUrl: urlSchema(),
-      ticker: z.string(),
+  info: z.object({
+    id: z.string(),
+    title: z.string(),
+    subtitle: z.string(),
+    logoUrl: z.string(),
+    chain: z.object({ name: z.string(), iconUrl: urlSchema() }),
+    origin: z.string(),
+    sector: z.string(),
+    curator: z.object({
+      avatarUrl: urlSchema(),
+      fullName: z.string(),
+      position: z.string(),
+      socials: z.array(externalUrlSchema()),
     }),
-    fixedCoinPriceInBorg: z.number(),
-    whitelistParticipants: z.number(),
-    liquidityPool: z.object({
-      name: z.string(),
-      iconUrl: urlSchema(),
-      lbpType: z.string(),
-      lockingPeriod: z.string(),
-      unlockDate: dateSchema(),
-      url: z.string(),
+    projectLinks: z.array(externalUrlSchema()),
+    totalTokensForSale: z.number().int(),
+    tge: z.object({
+      raiseTarget: z.number().int(),
+      projectCoin: z.object({
+        iconUrl: urlSchema(),
+        ticker: z.string(),
+      }),
+      fixedCoinPriceInBorg: z.number(),
+      liquidityPool: z.object({
+        name: z.string(),
+        iconUrl: urlSchema(),
+        lbpType: z.string(),
+        lockingPeriod: z.string(),
+        unlockDate: dateSchema(),
+        url: z.string(),
+      }),
+      tweetUrl: urlSchema(),
     }),
-    tweetUrl: urlSchema(),
-  }),
-  dataRoom: z.object({
-    backgroundImgUrl: urlSchema(),
-    url: urlSchema(),
-  }),
-  timeline: z.array(
-    z.object({
-      id: z.enum(timelineEvents),
-      date: dateSchema(),
-      label: z.string(),
+    dataRoom: z.object({
+      backgroundImgUrl: urlSchema(),
+      url: urlSchema(),
     }),
-  ),
-  saleResults: z.object({
+    timeline: z.array(
+      z.object({
+        id: z.enum(timelineEvents),
+        date: dateSchema(),
+        label: z.string(),
+      }),
+    ),
+  }),
+  whitelistParticipants: z.number(),
+  saleData: z.object({
+    availableTokens: z.boolean(),
     saleSucceeded: z.boolean(),
     totalAmountRaised: z.number(),
     sellOutPercentage: z.number(),

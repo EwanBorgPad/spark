@@ -10,6 +10,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
 const GET_WHITELISTING_STATUS_API = API_BASE_URL + "/whitelisting"
 const POST_CONFIRM_RESIDENCY_URL = API_BASE_URL + "/confirmresidency"
 const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
+const PUT_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 
 const getWhitelistingStatus = async ({ address }: { address: string }) => {
@@ -47,6 +48,27 @@ const getProject = async ({
     throw e
   }
 }
+const createProject = async (formValues: ProjectModel) => {
+  const url = new URL(PUT_PROJECT_API_URL, window.location.href)
+  const body = JSON.stringify(formValues)
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      body,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${import.meta.env.AUTH_TOKEN_BORGPAD}`,
+      },
+    })
+    const json = await response.json()
+    const parsedJson = JSON.parse(json)
+    return parsedJson
+  } catch (e) {
+    console.error(e)
+    throw e
+  }
+}
 type GetExchangeArgs = {
   baseCurrency: string
   targetCurrency: string
@@ -63,41 +85,10 @@ const getExchange = async ({
   const json = await response.json()
   return json
 }
-type GetPresignedUrlArgs = {
-  fileName: string
-}
-const getPresignedUrl = async ({
-  fileName,
-}: GetPresignedUrlArgs): Promise<GetPresignedUrlResponse> => {
-  const url = new URL(GET_PRESIGNED_URL, window.location.href)
-  url.searchParams.set("fileName", fileName)
-
-  const response = await fetch(url)
-  const json = await response.json()
-  return json
-}
-
-type PutFileArgs = {
-  presignedUrl: string
-  file: File
-}
-const uploadFileToBucket = async ({
-  presignedUrl,
-  file,
-}: PutFileArgs): Promise<unknown> => {
-  const url = new URL("", presignedUrl)
-  console.log(url, presignedUrl)
-
-  const response = await fetch(url, { method: "PUT", body: file })
-  const json = await response.json()
-  return json
-}
-
 export const backendApi = {
   getWhitelistingStatus,
   confirmResidency,
   getProject,
   getExchange,
-  getPresignedUrl,
-  uploadFileToBucket,
+  createProject,
 }

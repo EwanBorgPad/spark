@@ -52,20 +52,20 @@ const UploadField = ({
   }
 
   const uploadFile = async (file: File) => {
-    try {
-      const presignedUrlResponse = await backendApi.getPresignedUrl({
-        fileName,
-      })
-      const presignedUrl = presignedUrlResponse.signedUrl
-      console.log("presignedUrl: ", presignedUrl)
-      const response = await backendApi.uploadFileToBucket({
-        presignedUrl,
-        file,
-      })
-      console.log(response)
-    } catch (error) {
-      console.log(error)
-    }
+    // try {
+    //   const presignedUrlResponse = await backendApi.getPresignedUrl({
+    //     fileName,
+    //   })
+    //   const presignedUrl = presignedUrlResponse.signedUrl
+    //   console.log("presignedUrl: ", presignedUrl)
+    //   const response = await backendApi.uploadFileToBucket({
+    //     presignedUrl,
+    //     file,
+    //   })
+    //   console.log(response)
+    // } catch (error) {
+    //   console.log(error)
+    // }
   }
 
   const containerClassName = twMerge(

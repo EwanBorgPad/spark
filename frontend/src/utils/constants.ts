@@ -45,6 +45,7 @@ export const timelineEvents = [
   "REWARD_DISTRIBUTION",
   "DISTRIBUTION_OVER",
 ] as const
+export type TimelineEventId = typeof timelineEvents
 export const timelineEventLabels = {
   REGISTRATION_OPENS: "Registration Opens",
   SALE_OPENS: "Sale Opens",
@@ -54,7 +55,7 @@ export const timelineEventLabels = {
 }
 export const timelineEventOptions = Object.entries(timelineEventLabels).map(
   ([key, value]) => ({
-    id: key as unknown as typeof timelineEvents, // Object.entries isn't type safe
+    id: key as unknown as TimelineEventId[number], // Object.entries isn't type safe
     label: value,
   }),
 )

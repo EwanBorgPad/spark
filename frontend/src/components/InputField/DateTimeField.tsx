@@ -9,6 +9,7 @@ type DateTimeFieldProps = {
   inputClassName?: HTMLProps["className"]
   error?: string
   label?: string
+  minDate?: Date
   value: Date | undefined
   onChange: (value: unknown) => void
 }
@@ -19,6 +20,7 @@ const DateTimeField = ({
   label,
   value,
   onChange,
+  minDate,
 }: DateTimeFieldProps) => {
   const containerClassName = twMerge(
     "text-sm w-full flex flex-col items-start px-4 cursor-text max-w-[360px]",
@@ -41,6 +43,7 @@ const DateTimeField = ({
         onChange={(date) => {
           onChange(date)
         }}
+        minDate={minDate}
         showTimeSelect
         dateFormat="MMMM d, yyyy h:mm aa (z)"
         className={inputClasses}
