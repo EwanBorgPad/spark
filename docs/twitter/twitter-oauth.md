@@ -19,7 +19,7 @@
 
 The api call which exchanges the CODE for the access token (below) has CORS protection so we can't initiate the call from the browser
 
-This issue was first mentioned in 2016 and there are still no plans for resolving. 
+This issue was first mentioned in 2016 and there are still no plans for resolving.
 
 ```bash
 curl --location 'https://api.twitter.com/2/oauth2/token' \
@@ -40,15 +40,15 @@ Current solution for avoiding CORS is to create a CF Worker on the backend and a
 
 ## Pricing
 
-It seems currently only a subset of endpoints are available for free account: 
+It seems currently only a subset of endpoints are available for free account:
 - POST /2/tweets
-- DELETE /2/tweets/:id 
+- DELETE /2/tweets/:id
 - GET /2/users/me
 
 To fetch following/followers one needs to upgrade to Basic tier (100$/month)
 
 
-## Questions 
+## Questions
 
 - how does Rey work in terms of tokens, I see there's no tokens returned from the backend, only cookies?
 - how does refresh token work if it is not stored on the frontend, stored on backend?

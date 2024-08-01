@@ -66,6 +66,7 @@ export default {
       backgroundImage: {
         texture: "url(/src/assets/texture-min.png)",
         "texture-zoomed-out": "url(/src/assets/grainy-horizontal.png)",
+        "top-contributor": "url(/src/assets/bg-top-contributor.png)",
       },
       backgroundColor: {
         "contribution-gradient":

@@ -16,3 +16,14 @@ CREATE TABLE cache_store (
     expires_at TIMESTAMP NOT NULL,
     cache_data JSONB NOT NULL DEFAULT '{}'
 );
+
+CREATE TABLE follower (
+    id TEXT NOT NULL PRIMARY KEY,
+    json JSONB NOT NULL DEFAULT '{}'
+);
+CREATE TABLE error (
+    id TEXT NOT NULL PRIMARY KEY,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    json JSONB NOT NULL DEFAULT '{}'
+);

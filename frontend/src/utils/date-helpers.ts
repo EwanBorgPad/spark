@@ -9,4 +9,7 @@ export const formatDateForTimer = (date: Date) => {
 export const formatDateForSnapshot = (date: Date) => {
   return format(date, "do MMMM yyyy, H:m OOOO")
 }
+export const formatDateAndMonth = (date: Date) => {
+  return format(date, "do MMMM")
+}
 

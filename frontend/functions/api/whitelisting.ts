@@ -5,12 +5,13 @@ import {
   UserModel,
   UserModelJson,
 } from "../../shared/models"
-import { jsonResponse } from "./cfPagesFunctionsUtils"
+import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 
 type ENV = {
   DB: D1Database
 }
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
+  const db = ctx.env.DB
   try {
     const { searchParams } = new URL(ctx.request.url)
     const address = searchParams.get("address")
@@ -26,9 +27,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       tokenAddress: USDC_DEV_ADDRESS,
     })
 
-    const user: UserModel = await ctx.env.DB.prepare(
-      "SELECT * FROM user WHERE address = ?1",
-    )
+    const user: UserModel = await db
+      .prepare("SELECT * FROM user WHERE address = ?1")
       .bind(address)
       .first<UserModel>()
     const userJson: UserModelJson = user?.json ? JSON.parse(user.json) : {}
@@ -41,7 +41,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     return jsonResponse(result)
   } catch (e) {
-    console.error(e)
+    await reportError(db, e)
     return jsonResponse({
       message: "Something went wrong...",
     }, 500)

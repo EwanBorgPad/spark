@@ -6,12 +6,11 @@ import {
   projectSchema,
 } from "../../shared/models.ts"
 
-const base_url = import.meta.env.VITE_API_BASE_URL ?? "/api"
-const GET_WHITELISTING_STATUS_API = base_url + "/whitelisting"
-const POST_CONFIRM_RESIDENCY_URL = base_url + "/confirmresidency"
-const GET_PROJECT_API_URL = base_url + "/projects" // + '?id=id'
-const GET_EXCHANGE_API_URL = base_url + "/exchange"
-const GET_PRESIGNED_URL = base_url + "/presignedurl"
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
+const GET_WHITELISTING_STATUS_API = API_BASE_URL + "/whitelisting"
+const POST_CONFIRM_RESIDENCY_URL = API_BASE_URL + "/confirmresidency"
+const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
+const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 
 const getWhitelistingStatus = async ({ address }: { address: string }) => {
   const url = new URL(GET_WHITELISTING_STATUS_API, window.location.href)

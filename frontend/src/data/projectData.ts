@@ -11,9 +11,8 @@ export const dummyData: ProjectModel = {
   subtitle: "Anti-Slashing Liquid Staking",
   logoUrl: "/images/puffer-finance/avatar.png",
   chain: { name: "Zora", iconUrl: "/images/puffer-finance/chain-icon.png" },
-  lbpType: "Buy Only",
   origin: "🇮🇹 Italy",
-  createdAt: new Date(),
+  sector: "Healthcare",
   curator: {
     avatarUrl: "/images/puffer-finance/curator-avatar.png",
     fullName: "John Doe",
@@ -69,13 +68,14 @@ export const dummyData: ProjectModel = {
       ticker: "LRC",
     },
     fixedCoinPriceInBorg: 1,
-    registrations: 1698,
+    whitelistParticipants: 1698,
     liquidityPool: {
       name: "Raydium",
       iconUrl: "/images/puffer-finance/liquidity-pool-icon.png",
       lbpType: "Full Range",
-      lockingPeriod: "12 months",
+      lockingPeriod: "12-month lockup",
       unlockDate: addMonths(addDays(currentMoment, -2), 12),
+      url: "#",
     },
     tweetUrl:
       "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
@@ -112,7 +112,7 @@ export const dummyData: ProjectModel = {
     },
   ],
   saleResults: {
-    saleSucceeded: false,
+    saleSucceeded: true,
     totalAmountRaised: 800402.5661,
     sellOutPercentage: 78,
     participantCount: 578,

@@ -1,12 +1,14 @@
 {
   "id": "puffer-finance",
-  "createdAt": "2024-07-12T12:39:16Z",
   "title": "Puffer Finance",
   "subtitle": "Anti-Slashing Liquid Staking",
   "logoUrl": "/images/puffer-finance/avatar.png",
   "origin": "🇮🇹 Italy",
-  "lbpType": "Buy Only",
-  "chain": { "name": "Zora", "iconUrl": "/images/puffer-finance/chain-icon.png" },
+  "sector": "Healthcare",
+  "chain": {
+    "name": "Zora",
+    "iconUrl": "/images/puffer-finance/chain-icon.png"
+  },
   "curator": {
     "avatarUrl": "/images/puffer-finance/curator-avatar.png",
     "fullName": "John Doe",
@@ -63,14 +65,15 @@
       "ticker": "LRC"
     },
     "fixedCoinPriceInBorg": 1,
-    "registrations": 1698,
+    "whitelistParticipants": 1698,
     "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
     "liquidityPool": {
       "name": "Raydium",
       "iconUrl": "/images/puffer-finance/liquidity-pool-icon.png",
       "lbpType": "Full Range",
-      "lockingPeriod": "12 months",
-      "unlockDate": "2025-07-12T12:39:16Z"
+      "lockingPeriod": "12-month lockup",
+      "unlockDate": "2025-07-12T12:39:16Z",
+      "url": "#"
     },
     "tweetUrl": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
   },
@@ -128,7 +131,7 @@
     }
   ],
   "saleResults": {
-    "saleSucceeded": false,
+    "saleSucceeded": true,
     "totalAmountRaised": 800402.5661,
     "sellOutPercentage": 78,
     "participantCount": 578,

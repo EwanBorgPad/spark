@@ -45,12 +45,6 @@ const Project = () => {
             <img className="h-4 w-4" src={projectData.chain.iconUrl} />
             <span>{projectData.chain.name}</span>
           </div>
-          <div className="flex items-center gap-2 border-r-fg-gray-line pr-5 lg:border-r-[1px] lg:border-fg-primary/50">
-            <span className="text-fg-primary text-opacity-50">
-              {t("lbp_type")}
-            </span>
-            <span>{projectData.lbpType}</span>
-          </div>
         </div>
         <div className="flex gap-5">
           <div className="flex items-center gap-2 border-r-[1px] border-r-fg-gray-line pr-5">
@@ -61,9 +55,9 @@ const Project = () => {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-fg-primary text-opacity-50">
-              {t("created")}
+              {t("sector")}
             </span>
-            <span>{formatDateForDisplay(new Date())}</span>
+            <span>{projectData.sector}</span>
           </div>
         </div>
       </section>
@@ -91,7 +85,7 @@ const Project = () => {
           </div>
         </div>
       </section>
-      <hr className="w-full border-bd-primary lg:max-w-[760px]"></hr>
+      <hr className="w-full max-w-[calc(100vw-32px)] border-bd-primary lg:max-w-[782px]"></hr>
 
       <TokenGenerationSection expandedTimeline={expandedTimeline} />
 

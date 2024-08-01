@@ -1,4 +1,5 @@
 import { UserModel, UserModelJson } from "../../shared/models"
+import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 
 const TWITTER_API_OAUTH2_TOKEN_URL = "https://api.twitter.com/2/oauth2/token"
 const TWITTER_API_GET_ME_URL = "https://api.twitter.com/2/users/me" // ?user.fields=profile_image_url
@@ -10,6 +11,7 @@ type ENV = {
   DB: D1Database
 }
 export const onRequest: PagesFunction<ENV> = async (ctx) => {
+  const db = ctx.env.DB
   try {
     const url = ctx.request.url
 
@@ -65,9 +67,8 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     const twitterId = getMeResponse.data.id
 
     // check if the user is stored in the db
-    const existingUser = await ctx.env.DB.prepare(
-      "SELECT * FROM user WHERE address = ?1",
-    )
+    const existingUser = await db
+      .prepare("SELECT * FROM user WHERE address = ?1")
       .bind(address)
       .first<UserModel>()
 
@@ -81,9 +82,8 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
           isFollowingOnX: true,
         },
       }
-      await ctx.env.DB.prepare(
-        "INSERT INTO user (address, json) VALUES (?1, ?2)",
-      )
+      await db
+        .prepare("INSERT INTO user (address, json) VALUES (?1, ?2)")
         .bind(address, JSON.stringify(json))
         .run()
       console.log("User inserted into db.")
@@ -96,9 +96,8 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
         twitterId,
         isFollowingOnX: true,
       },
-      await ctx.env.DB.prepare(
-        "UPDATE user SET json = ?2 WHERE address = ?1",
-      )
+      await db
+        .prepare("UPDATE user SET json = ?2 WHERE address = ?1")
         .bind(address, JSON.stringify(json))
         .run()
       console.log("User twitter id updated")
@@ -111,13 +110,8 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
       },
     })
   } catch (e) {
-    console.error(e)
-    return new Response(
-      JSON.stringify({
-        message: "Something went wrong...",
-      }),
-      { status: 500 },
-    )
+    await reportError(db, e)
+    return jsonResponse({ message: "Something went wrong..." }, 500)
   }
 }
 
