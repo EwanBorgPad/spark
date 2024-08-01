@@ -11,6 +11,7 @@ import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
+import React, { RefObject } from "react"
 
 type FormInputs = {
   borgInputValue: string
@@ -22,7 +23,11 @@ const inputButtons = [
   { label: "100%", percentage: 100 },
 ]
 
-const LiveNowExchange = () => {
+type Props = {
+  whitelistRequirementsRef: RefObject<HTMLDivElement>
+}
+
+const LiveNowExchange = ({ whitelistRequirementsRef }: Props) => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()
@@ -58,6 +63,15 @@ const LiveNowExchange = () => {
   }
 
   const borgCoinInput = watch("borgInputValue")
+
+  const scrollToWhitelistRequriements = () => {
+    const top =
+      whitelistRequirementsRef.current?.getBoundingClientRect().top ?? 0
+    window.scrollBy({
+      behavior: "smooth",
+      top: top - 100,
+    })
+  }
 
   return (
     <TgeWrapper.Inner className="gap-0">
@@ -179,12 +193,12 @@ const LiveNowExchange = () => {
       </form>
       {!isUserWhitelisted && (
         <div className="absolute bottom-0 left-0 right-0 top-10 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
-          <div className="flex w-full max-w-[340px] flex-col rounded-lg bg-default p-4 shadow-sm shadow-white/5">
+          <div className="flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
             <span className="text-fg-error-primary">
               Your Wallet was not whitelisted for this deal
             </span>
             <Button
-              onClick={() => scrollBy({ top: 400, behavior: "smooth" })}
+              onClick={scrollToWhitelistRequriements}
               size="md"
               color="plain"
               btnText="See Whitelist Requirements"

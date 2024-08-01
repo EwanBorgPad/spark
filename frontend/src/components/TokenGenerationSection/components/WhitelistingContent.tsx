@@ -8,6 +8,7 @@ import TokenRewards from "./TokenRewards"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
+import SimpleLoader from "@/components/Loaders/SimpleLoader"
 
 const WhitelistingContent = () => {
   const { t } = useTranslation()
@@ -37,11 +38,10 @@ const WhitelistingContent = () => {
     queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
 
-  if (!projectTokenData || !borgData) {
-    return null
-  }
-
-  const tokenPriceInBORG = projectTokenData.currentPrice / borgData.currentPrice
+  const tokenPriceInBORG =
+    !projectTokenData || !borgData
+      ? null
+      : projectTokenData.currentPrice / borgData.currentPrice
 
   return (
     <div
@@ -84,11 +84,21 @@ const WhitelistingContent = () => {
           </div>
           <div className="flex flex-col items-end">
             <span className="font-geist-mono">
-              {formatCurrencyAmount(projectTokenData.currentPrice, true, 5)}
+              {projectTokenData ? (
+                formatCurrencyAmount(projectTokenData.currentPrice, true, 5)
+              ) : (
+                // @TODO - add skeleton instead of loader
+                <SimpleLoader />
+              )}
             </span>
             <div className="flex gap-2">
               <span className="font-geist-mono">
-                {formatCurrencyAmount(tokenPriceInBORG, false, 5)}
+                {tokenPriceInBORG ? (
+                  formatCurrencyAmount(tokenPriceInBORG, false, 5)
+                ) : (
+                  // @TODO - add skeleton instead of loader
+                  <SimpleLoader />
+                )}
               </span>
               <span>BORG</span>
             </div>
@@ -97,9 +107,9 @@ const WhitelistingContent = () => {
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
         <div className="flex w-full items-center justify-between py-3">
-          <span>{t("tge.registrations")}</span>
+          <span>{t("tge.whitelist_participants")}</span>
           <span className="font-geist-mono">
-            {formatCurrencyAmount(tgeData.registrations, false, 0)}
+            {formatCurrencyAmount(tgeData.whitelistParticipants, false, 0)}
           </span>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>

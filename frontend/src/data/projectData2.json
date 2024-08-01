@@ -1,12 +1,14 @@
 {
   "id": "milan-crypto-test",
-  "createdAt": "2024-07-12T12:39:16Z",
   "title": "Milan Crypto",
   "subtitle": "Anti-Slashing Liquid Staking Crypto Manic Automated Market",
   "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar.png",
   "origin": "\uD83C\uDDF7\uD83C\uDDF8 Serbia",
-  "lbpType": "Buy Only",
-  "chain": { "name": "Zora", "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/chain-icon.png" },
+  "sector": "Healthcare",
+  "chain": {
+    "name": "Zora",
+    "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/chain-icon.png"
+  },
   "curator": {
     "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/curator-avatar.jpg",
     "fullName": "Milan Miljus",
@@ -63,14 +65,15 @@
       "ticker": "LRC"
     },
     "fixedCoinPriceInBorg": 1,
-    "registrations": 1698,
+    "whitelistParticipants": 1698,
     "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
     "liquidityPool": {
       "name": "Raydium",
       "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/liquidity-pool-icon.png",
       "lbpType": "Full Range",
-      "lockingPeriod": "12 months",
-      "unlockDate": "2025-07-12T12:39:16Z"
+      "lockingPeriod": "12-month lockup",
+      "unlockDate": "2025-07-12T12:39:16Z",
+      "url": "#"
     },
     "tweetUrl": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
   },
@@ -128,7 +131,7 @@
     }
   ],
   "saleResults": {
-    "saleSucceeded": false,
+    "saleSucceeded": true,
     "totalAmountRaised": 800402.5661,
     "sellOutPercentage": 78,
     "participantCount": 578,

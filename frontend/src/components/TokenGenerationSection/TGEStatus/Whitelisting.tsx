@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 
-import MarketAndTokensData from "@/components/TokenGenerationSection/components/MarketAndTokensData"
+import BasicTokenInfo from "@/components/TokenGenerationSection/components/BasicTokenInfo"
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import WhitelistingContent from "../components/WhitelistingContent"
 import CountDownTimer from "@/components/CountDownTimer"
@@ -16,9 +16,10 @@ const Whitelisting = ({ eventData }: WhitelistingProps) => {
   const { t } = useTranslation()
 
   return (
-    <div className="flex w-full flex-col items-center gap-[52px] px-4">
-      <MarketAndTokensData />
-      <div className="flex w-full max-w-[400px] flex-col gap-5">
+    <div className="flex w-full flex-col items-center gap-[52px]">
+      <BasicTokenInfo />
+      <WhitelistStatus />
+      <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
         <TgeWrapper label={t("tge.whitelisting")}>
           {eventData?.nextEventDate && (
             <>
@@ -30,7 +31,6 @@ const Whitelisting = ({ eventData }: WhitelistingProps) => {
           )}
           <WhitelistingContent />
         </TgeWrapper>
-        <WhitelistStatus />
       </div>
     </div>
   )

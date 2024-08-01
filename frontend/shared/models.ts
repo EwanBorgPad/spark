@@ -46,13 +46,12 @@ const dateSchema = () => z.coerce.date()
  */
 export const projectSchema = z.object({
   id: z.string(),
-  createdAt: dateSchema(),
   title: z.string(),
   subtitle: z.string(),
   logoUrl: z.string(),
-  origin: z.string(),
-  lbpType: z.string(),
   chain: z.object({ name: z.string(), iconUrl: urlSchema() }),
+  origin: z.string(),
+  sector: z.string(),
   curator: z.object({
     avatarUrl: urlSchema(),
     fullName: z.string(),
@@ -71,13 +70,14 @@ export const projectSchema = z.object({
       ticker: z.string(),
     }),
     fixedCoinPriceInBorg: z.number(),
-    registrations: z.number(),
+    whitelistParticipants: z.number(),
     liquidityPool: z.object({
       name: z.string(),
       iconUrl: urlSchema(),
       lbpType: z.string(),
       lockingPeriod: z.string(),
       unlockDate: dateSchema(),
+      url: z.string(),
     }),
     tweetUrl: urlSchema(),
   }),
