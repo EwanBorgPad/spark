@@ -1,6 +1,6 @@
 # Solana Web3
 
-Solana provides an npm package for chain interactions: [@solana/web3.js](https://www.npmjs.com/package/@solana/web3.js)
+Solana provides a npm package for chain interactions: [@solana/web3.js](https://www.npmjs.com/package/@solana/web3.js)
 
 However, I've decided **against** using the lib, instead going with manual implementation of the functionality for the following reasons:
 1. The lib is simply a wrapper around json-rpc-api and does not add much functionality by itself
