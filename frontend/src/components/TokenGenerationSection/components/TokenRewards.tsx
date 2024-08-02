@@ -14,12 +14,14 @@ const TokenRewards = ({
 }: TokenRewardsProps) => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
-  const tgeData = projectData.tge
+  const tgeData = projectData.info.tge
 
   const getCoinReward = () => {
     if (!borgCoinInput) return 0
     return formatValue({
-      value: (+borgCoinInput * projectData.tge.fixedCoinPriceInBorg).toString(),
+      value: (
+        +borgCoinInput * projectData.info.tge.fixedCoinPriceInBorg
+      ).toString(),
     })
   }
 

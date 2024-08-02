@@ -1,5 +1,3 @@
-import i18n from "@/i18n/i18n"
-
 export type WhitelistingRequirementType =
   | "FOLLOW_ON_X"
   | "DONT_RESIDE_IN_US"
@@ -13,7 +11,7 @@ export type WhitelistRequirement = {
   heldAmount?: number
 }
 
-export const whitelistRequirements: Record<
+export const whitelistRequirementsObj: Record<
   WhitelistingRequirementType,
   WhitelistRequirement
 > = {

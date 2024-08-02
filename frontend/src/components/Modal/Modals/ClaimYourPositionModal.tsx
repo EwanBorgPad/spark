@@ -118,11 +118,11 @@ const ClaimYourPositionModal = ({
               <div className="flex flex-1 flex-col items-start justify-start gap-[34px] rounded-lg border border-bd-primary bg-tertiary p-4">
                 <div className="flex items-center justify-center gap-2">
                   <img
-                    src={projectData.tge.projectCoin.iconUrl}
+                    src={projectData.info.tge.projectCoin.iconUrl}
                     className="h-5 w-5 object-cover"
                   />
                   <span className="text-base font-medium leading-tight text-neutral-100">
-                    {projectData.tge.projectCoin.ticker}
+                    {projectData.info.tge.projectCoin.ticker}
                   </span>
                 </div>
                 <div className="flex flex-col items-start justify-start gap-2 self-stretch">

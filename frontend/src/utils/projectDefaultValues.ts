@@ -1,5 +1,6 @@
 import { IconLinkType } from "@/components/Button/ExternalLink"
 import { timelineEventOptions } from "./constants"
+import { ProjectModel, WhitelistRequirementModel } from "shared/models"
 
 export const getDefaultValues = () => {
   return {
@@ -29,10 +30,7 @@ export const getDefaultValues = () => {
         label: "",
       },
     ],
-    tokensAvailability: {
-      available: undefined,
-      total: undefined,
-    },
+    totalTokensForSale: undefined,
     tge: {
       raiseTarget: undefined,
       projectCoin: {
@@ -60,5 +58,26 @@ export const getDefaultValues = () => {
       date: undefined,
       label: option.label,
     })),
+    whitelistRequirements: [
+      {
+        type: "HOLD_BORG_IN_WALLET",
+        label: "Hold XXXXX BORG in your wallet",
+        description: "",
+        isMandatory: true,
+        heldAmount: 20000,
+      },
+      {
+        type: "FOLLOW_ON_X",
+        label: "Follow BorgPad on X",
+        description: "",
+        isMandatory: true,
+      },
+      {
+        type: "DONT_RESIDE_IN_US",
+        label: "Don’t reside in the US",
+        description: "",
+        isMandatory: true,
+      },
+    ] as WhitelistRequirementModel[],
   }
 }

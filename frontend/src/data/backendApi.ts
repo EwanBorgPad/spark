@@ -1,6 +1,5 @@
 import {
   GetExchangeResponse,
-  GetPresignedUrlResponse,
   GetWhitelistingResult,
   ProjectModel,
   projectSchema,
@@ -10,7 +9,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
 const GET_WHITELISTING_STATUS_API = API_BASE_URL + "/whitelisting"
 const POST_CONFIRM_RESIDENCY_URL = API_BASE_URL + "/confirmresidency"
 const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
-const PUT_PROJECT_API_URL = API_BASE_URL + "/projects"
+const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 
 const getWhitelistingStatus = async ({ address }: { address: string }) => {
@@ -49,7 +48,7 @@ const getProject = async ({
   }
 }
 const createProject = async (formValues: ProjectModel) => {
-  const url = new URL(PUT_PROJECT_API_URL, window.location.href)
+  const url = new URL(POST_PROJECT_API_URL, window.location.href)
   const body = JSON.stringify(formValues)
 
   try {

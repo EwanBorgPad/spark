@@ -24,10 +24,11 @@ const YourContribution = ({
     claimPositions: { mainPosition, rewards },
     suppliedBorg,
   } = contributionInfo
-  const unlockDate = projectData.tge.liquidityPool.unlockDate
+  const { liquidityPool, projectCoin } = projectData.info.tge
 
   const hasDistributionStarted =
-    eventData.id === "REWARD_DISTRIBUTION" && isBefore(unlockDate, new Date())
+    eventData.id === "REWARD_DISTRIBUTION" &&
+    isBefore(liquidityPool.unlockDate, new Date())
   const alreadyClaimedPercent = +(
     (mainPosition.borg.claimed / mainPosition.borg.total) *
     100
@@ -64,32 +65,22 @@ const YourContribution = ({
                 icon="SvgPlus"
                 className="text-base text-fg-disabled opacity-50"
               />
-              <img
-                src={projectData.tge.projectCoin.iconUrl}
-                className="h-4 w-4 object-cover"
-              />
+              <img src={projectCoin.iconUrl} className="h-4 w-4 object-cover" />
               <span className="font-geist-mono text-base">
                 {mainPosition.projectTokens.total}
               </span>
               <span className="font-geist-mono text-base">
-                {projectData.tge.projectCoin.ticker}
+                {projectCoin.ticker}
               </span>
             </div>
           </div>
           <div className="flex h-fit items-center gap-1 rounded-full text-xs text-fg-primary ">
-            <img
-              src={projectData.tge.liquidityPool.iconUrl}
-              className="h-4 w-4 object-cover"
-            />
-            <a href={projectData.tge.liquidityPool.url} className="underline">
-              <span className="opacity-50">
-                {projectData.tge.liquidityPool.name}
-              </span>
+            <img src={liquidityPool.iconUrl} className="h-4 w-4 object-cover" />
+            <a href={liquidityPool.url} className="underline">
+              <span className="opacity-50">{liquidityPool.name}</span>
               <span className="opacity-50">{t("liquidity_pool")},</span>
             </a>
-            <span className="opacity-50">
-              {projectData.tge.liquidityPool.lockingPeriod}
-            </span>
+            <span className="opacity-50">{liquidityPool.lockingPeriod}</span>
           </div>
           {hasDistributionStarted ? (
             <ClaimYourPosition
@@ -98,7 +89,8 @@ const YourContribution = ({
             />
           ) : (
             <span className="text-xs">
-              {t("sale_over.unlocks_on")} {formatDateForDisplay(unlockDate)}
+              {t("sale_over.unlocks_on")}{" "}
+              {formatDateForDisplay(liquidityPool.unlockDate)}
             </span>
           )}
 
@@ -113,20 +105,17 @@ const YourContribution = ({
         <div className="flex flex-col items-center gap-1 px-3 pb-6 pt-4">
           <span className="mb-1 text-xs">{t("sale_over.your_reward")}</span>
           <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
-            <img
-              src={projectData.tge.projectCoin.iconUrl}
-              className="h-4 w-4 object-cover"
-            />
+            <img src={projectCoin.iconUrl} className="h-4 w-4 object-cover" />
             <span className="font-geist-mono text-base">
               {rewards.totalTokens}
             </span>
             <span className="font-geist-mono text-base">
-              {projectData.tge.projectCoin.ticker}
+              {projectCoin.ticker}
             </span>
           </div>
           <div className="flex h-fit items-center gap-1.5 rounded-full text-xs text-fg-primary ">
             <span className="opacity-50">
-              {projectData.rewards.description}
+              {projectData?.rewards?.description}
             </span>
           </div>
         </div>

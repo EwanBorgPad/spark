@@ -21,7 +21,7 @@ type RewardsProps = {
 
 const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
   const { projectData } = useProjectDataContext()
-  const { iconUrl, ticker } = projectData.tge.projectCoin
+  const { iconUrl, ticker } = projectData.info.tge.projectCoin
   const { t } = useTranslation()
 
   const currentMoment = new Date()
@@ -103,7 +103,7 @@ const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
                     <span className="mr-1">{rewards.claimedTokens}</span>
                     <span className="mr-1">/</span>
                     <span className="mr-1">{rewards.totalTokens}</span>
-                    <span>{projectData.tge.projectCoin.ticker}</span>
+                    <span>{projectData.info.tge.projectCoin.ticker}</span>
                   </p>
                 </div>
               </div>

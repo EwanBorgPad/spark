@@ -1,6 +1,6 @@
 import {
   WhitelistingRequirementType,
-  whitelistRequirements,
+  whitelistRequirementsObj,
 } from "@/utils/constants"
 import React from "react"
 import { twMerge } from "tailwind-merge"
@@ -20,7 +20,7 @@ const WhitelistRequirement = ({
   isLastItem,
   requirementStatus,
 }: WhitelistRequirementProps) => {
-  const requirementContent = whitelistRequirements[type]
+  const requirementContent = whitelistRequirementsObj[type]
 
   const renderCtaButton = () => {
     if (type === "DONT_RESIDE_IN_US") return <CtaButton.NotResidingInUS />

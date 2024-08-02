@@ -15,7 +15,7 @@ export const useFormDraft = (
 ) => {
   useEffect(() => {
     if (isEnabled) {
-      const formData = sessionStorage.getItem(formName)
+      const formData = localStorage.getItem(formName)
       if (formData) {
         Object.entries(JSON.parse(formData)).forEach(([key, value]) => {
           setValue(key, value)
@@ -26,10 +26,10 @@ export const useFormDraft = (
 
   useEffect(() => {
     if (isEnabled) {
-      sessionStorage.setItem(formName, JSON.stringify(formValues))
+      localStorage.setItem(formName, JSON.stringify(formValues))
       if (isSubmitted) {
         // @TODO - commented for testing, to be uncommented when seen
-        // sessionStorage.removeItem(formName)
+        // localStorage.removeItem(formName)
       }
     }
   }, [formName, formValues, isSubmitted, isEnabled])

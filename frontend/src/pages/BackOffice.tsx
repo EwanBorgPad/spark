@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query"
 import React, { useState } from "react"
 import {
   Controller,
@@ -13,13 +14,18 @@ import DateTimeField from "@/components/InputField/DateTimeField"
 import { getDefaultValues } from "@/utils/projectDefaultValues"
 import { TextField } from "@/components/InputField/TextField"
 import UploadField from "@/components/InputField/UploadField"
-import { Button } from "@/components/Button/Button"
-import { Icon } from "@/components/Icon/Icon"
-import { ProjectModel } from "shared/models"
+import BoWrapper from "@/components/BackOffice/BoWrapper"
 import { formatCurrencyAmount } from "@/utils/format"
 import { useFormDraft } from "@/hooks/useFormDraft"
-import { useMutation } from "@tanstack/react-query"
+import { Button } from "@/components/Button/Button"
 import { backendApi } from "@/data/backendApi"
+import { Icon } from "@/components/Icon/Icon"
+import { ProjectModel, WhitelistRequirementModel } from "shared/models"
+import CheckboxField from "@/components/InputField/CheckboxField"
+import {
+  WhitelistingRequirementType,
+  whitelistRequirementsObj,
+} from "@/utils/constants"
 
 const iconOptions = Object.entries(externalLinkObj).map(([key, value]) => ({
   id: key,
@@ -27,7 +33,7 @@ const iconOptions = Object.entries(externalLinkObj).map(([key, value]) => ({
 }))
 type IconType = Exclude<IconLinkType, "NO_ICON">
 
-const defaultOptions = {
+const valueOptions = {
   shouldDirty: true,
   shouldValidate: true,
 }
@@ -41,7 +47,7 @@ const BackOffice = () => {
     watch,
     control,
     formState: { errors, isSubmitted },
-  } = useForm<ProjectModel>({
+  } = useForm<ProjectModel["info"]>({
     defaultValues: getDefaultValues(),
   })
   useFormDraft("create-new-project", {
@@ -50,25 +56,14 @@ const BackOffice = () => {
     isSubmitted,
   })
 
-  const {
-    mutate: createProject,
-    isPending,
-    isSuccess,
-  } = useMutation({
-    mutationFn: (formValues: ProjectModel) =>
-      backendApi.createProject(formValues),
+  const { mutate: createProject, isPending } = useMutation({
+    mutationFn: (projectInfo: ProjectModel) =>
+      backendApi.createProject(projectInfo),
   })
 
-  const onSubmit: SubmitHandler<ProjectModel> = async (data) => {
-    // eslint-disable-next-line no-console
-    console.log(data)
-    try {
-      const response = await createProject(data)
-      console.log(response)
-      console.log("project created!")
-    } catch (e) {
-      console.error(e)
-    }
+  const onSubmit: SubmitHandler<ProjectModel["info"]> = async (data) => {
+    const response = await createProject({ info: data })
+    console.log(response)
   }
 
   // form arrays
@@ -92,7 +87,16 @@ const BackOffice = () => {
     control,
     name: "timeline",
   })
+  const {
+    fields: whitelistRequirements,
+    append: addWhitelistRequirement,
+    remove: removeWhitelistRequirement,
+  } = useFieldArray({
+    control,
+    name: "whitelistRequirements",
+  })
 
+  // component handlers
   const updateExternalLinks = (
     basePath: "curator.socials" | "projectLinks",
     value: IconLinkType,
@@ -113,14 +117,41 @@ const BackOffice = () => {
   const tokenTicker = watch("tge.projectCoin.ticker")
   const fixedCoinPriceInBorg = watch("tge.fixedCoinPriceInBorg")
 
+  const getRequirementLabel = (
+    requirement: WhitelistRequirementModel,
+    index: number,
+  ) => {
+    if (requirement.type !== "HOLD_BORG_IN_WALLET") return requirement.label
+    return requirement.label.replace(
+      "XXXXX",
+      watch("whitelistRequirements")[index]?.heldAmount + "",
+    )
+  }
+
+  const getMissingRequirements = (
+    requirements: WhitelistRequirementModel[],
+  ) => {
+    const selectedTypes = requirements.map((req) => req.type)
+    const allKeys = Object.keys(
+      whitelistRequirementsObj,
+    ) as WhitelistingRequirementType[]
+
+    const missingKeys = allKeys.filter((x) => !selectedTypes.includes(x))
+    return missingKeys.map((key) => ({
+      type: key,
+      ...whitelistRequirementsObj[key],
+    }))
+  }
+  getMissingRequirements(watch("whitelistRequirements"))
+
   return (
     <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[72px] font-normal text-fg-primary lg:py-[100px]">
       <h1>Create New Project</h1>
       <form
-        className="max-w-screen flex w-full flex-col items-start gap-6  px-4 lg:max-w-[720px]"
+        className="max-w-screen flex w-full flex-col items-start gap-8 px-4 md:max-w-[720px]"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="flex w-full flex-col gap-4 rounded-2xl bg-black/20 px-6 py-8 shadow-lg shadow-white/5">
+        <div className="flex w-full flex-col gap-4 rounded-2xl bg-gradient-to-b from-black/40 to-black/20 px-6 py-8 shadow-lg shadow-black/50">
           <Controller
             name="title"
             control={control}
@@ -137,7 +168,7 @@ const BackOffice = () => {
                   setValue(
                     `id`,
                     value.toLowerCase().replaceAll(" ", "-"),
-                    defaultOptions,
+                    valueOptions,
                   )
                 }}
               />
@@ -198,7 +229,7 @@ const BackOffice = () => {
           )}
         </div>
 
-        <div className="flex w-full flex-col gap-4 rounded-2xl bg-black/20 px-6 py-8  shadow-lg shadow-white/5">
+        <div className="flex w-full flex-col gap-4 rounded-2xl bg-gradient-to-b from-black/40 to-black/20 px-6 py-8  shadow-lg shadow-black/50">
           <Controller
             name="subtitle"
             control={control}
@@ -216,6 +247,7 @@ const BackOffice = () => {
             control={control}
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <UploadField
+                disabled // @TODO - remove "disabled" when file upload is ready
                 label="Project Logo"
                 fileName="avatar.png"
                 imgUrl={undefined} // input value
@@ -250,9 +282,7 @@ const BackOffice = () => {
             )}
           />
 
-          <div className="flex w-full flex-col items-start gap-4 rounded-xl bg-secondary/30 p-2 py-6 ring-[1px] ring-white/20">
-            <h2 className="px-4 text-xl font-semibold">Chain Info</h2>
-
+          <BoWrapper title="Chain Info">
             <Controller
               name="chain.name"
               control={control}
@@ -277,6 +307,7 @@ const BackOffice = () => {
                 fieldState: { error },
               }) => (
                 <UploadField
+                  disabled // @TODO - remove "disabled" when file upload is ready
                   label="Project Avatar"
                   fileName="chain-icon.png"
                   imgUrl={undefined} // input value
@@ -285,12 +316,11 @@ const BackOffice = () => {
                 />
               )}
             />
-          </div>
+          </BoWrapper>
 
-          <div className="flex w-full max-w-[720px] flex-col items-start gap-4 rounded-xl bg-secondary/30 p-2 py-6 ring-[1px] ring-white/20">
-            <h2 className="px-4 text-xl font-semibold">Project Links</h2>
+          <BoWrapper title="Project Links">
             <div className="flex w-full flex-col items-start gap-2 pl-4">
-              <div className="grid-cols-curator-socials grid gap-8 text-sm">
+              <div className="grid grid-cols-curator-socials gap-8 text-sm">
                 <span>Type</span>
                 <span>Icon</span>
                 <span>URL</span>
@@ -358,9 +388,8 @@ const BackOffice = () => {
               }
               className="ml-4"
             />
-          </div>
-          <div className="flex w-full max-w-[720px] flex-col items-start gap-4 rounded-xl bg-secondary/30 p-2 py-6 ring-[1px] ring-white/20">
-            <h2 className="px-4 text-xl font-semibold">Curator</h2>
+          </BoWrapper>
+          <BoWrapper title="Curator">
             <Controller
               name="curator.avatarUrl"
               control={control}
@@ -369,6 +398,7 @@ const BackOffice = () => {
                 fieldState: { error },
               }) => (
                 <UploadField
+                  disabled // @TODO - remove "disabled" when file upload is ready
                   label="Avatar"
                   fileName="curator-avatar.png"
                   imgUrl={undefined} // input value
@@ -409,7 +439,7 @@ const BackOffice = () => {
             />
             <div className="flex w-full flex-col items-start gap-2 pl-4">
               <h2 className="text-lg font-semibold">Socials</h2>
-              <div className="grid-cols-curator-socials grid gap-8 text-sm">
+              <div className="grid grid-cols-curator-socials gap-8 text-sm">
                 <span>Type</span>
                 <span>Icon</span>
                 <span>URL</span>
@@ -477,9 +507,8 @@ const BackOffice = () => {
               }
               className="ml-4"
             />
-          </div>
-          <div className="flex w-full flex-col items-start gap-2 rounded-xl bg-secondary/30 p-4  ring-[1px] ring-white/20 ">
-            <h2 className="text-lg font-semibold">{"Project's Token Info"}</h2>
+          </BoWrapper>
+          <BoWrapper title="Project's Token Info">
             <Controller
               name={`tge.projectCoin.ticker`}
               control={control}
@@ -504,6 +533,7 @@ const BackOffice = () => {
                 fieldState: { error },
               }) => (
                 <UploadField
+                  disabled // @TODO - remove "disabled" when file upload is ready
                   label="Token Image"
                   fileName="project-coin-icon"
                   containerClassName="px-0"
@@ -513,12 +543,11 @@ const BackOffice = () => {
                 />
               )}
             />
-          </div>
-          <div className="flex w-full flex-col items-start gap-2 rounded-xl bg-secondary/30 p-4  ring-[1px] ring-white/20 ">
-            <h2 className="text-lg font-semibold">Tokens Availability</h2>
+          </BoWrapper>
+          <BoWrapper title="Tokens Availability">
             <div className="flex items-start gap-2">
               <Controller
-                name={`tokensAvailability.total`}
+                name={`totalTokensForSale`}
                 control={control}
                 render={({
                   field: { value, onChange },
@@ -537,10 +566,9 @@ const BackOffice = () => {
                 <span className="mt-9 opacity-30">${tokenTicker}</span>
               )}
             </div>
-          </div>
+          </BoWrapper>
 
-          <div className="flex w-full flex-col items-start gap-4 rounded-xl bg-secondary/30 p-4  ring-[1px] ring-white/20 ">
-            <h2 className="text-lg font-semibold">Data Room</h2>
+          <BoWrapper title="Data Room">
             <Controller
               name={`dataRoom.url`}
               control={control}
@@ -565,6 +593,7 @@ const BackOffice = () => {
                 fieldState: { error },
               }) => (
                 <UploadField
+                  disabled // @TODO - remove "disabled" when file upload is ready
                   label="Backdrop Image"
                   fileName="project-coin-icon"
                   containerClassName="px-0"
@@ -574,11 +603,11 @@ const BackOffice = () => {
                 />
               )}
             />
-          </div>
+          </BoWrapper>
           <h2 className="pt-3 text-xl font-semibold">
             Token Generation Section
           </h2>
-          <div className="flex w-full flex-col items-start gap-4 rounded-xl bg-secondary/30 p-4 ring-[1px] ring-white/20 ">
+          <BoWrapper>
             <div className="flex items-start gap-2">
               <Controller
                 name={`tge.raiseTarget`}
@@ -640,10 +669,8 @@ const BackOffice = () => {
                 />
               )}
             />
-          </div>
-          <div className="flex w-full flex-col items-start gap-4 rounded-xl bg-secondary/30 p-4  ring-[1px] ring-white/20 ">
-            <h2 className="text-lg font-semibold">Liquidity Pool</h2>
-
+          </BoWrapper>
+          <BoWrapper title="Liquidity Pool">
             <Controller
               name={`tge.liquidityPool.name`}
               control={control}
@@ -668,6 +695,7 @@ const BackOffice = () => {
                 fieldState: { error },
               }) => (
                 <UploadField
+                  disabled // @TODO - remove "disabled" when file upload is ready
                   label="Icon"
                   fileName="project-coin-icon"
                   containerClassName="px-0"
@@ -725,12 +753,11 @@ const BackOffice = () => {
                 />
               )}
             />
-          </div>
+          </BoWrapper>
 
-          <div className="flex w-full max-w-[720px] flex-col items-start gap-4 rounded-xl bg-secondary/30 px-4 py-6 ring-[1px] ring-white/20">
-            <h2 className="text-xl font-semibold">Timeline Events</h2>
+          <BoWrapper title="Timeline Events">
             <div className="flex flex-col gap-3">
-              <div className="grid-cols-bo-timeline grid gap-2">
+              <div className="grid grid-cols-bo-timeline gap-2">
                 <span className="self-center">Event Type</span>
                 <span className="font-semibold">Date</span>
               </div>
@@ -738,7 +765,7 @@ const BackOffice = () => {
                 return (
                   <div
                     key={index}
-                    className="grid-cols-bo-timeline grid w-full gap-2"
+                    className="grid w-full grid-cols-bo-timeline gap-2"
                   >
                     <span className="self-center">{timelineEvent.label}</span>
                     <Controller
@@ -761,7 +788,84 @@ const BackOffice = () => {
                 )
               })}
             </div>
-          </div>
+          </BoWrapper>
+          <BoWrapper title="Whitelist Requirements">
+            <div className="flex w-full flex-col gap-2">
+              {whitelistRequirements.map((requirement, index) => {
+                return (
+                  <div
+                    key={requirement.id}
+                    className="relative flex min-h-[40px] w-full items-center justify-between gap-4 rounded-md py-3 pl-3 ring-1 ring-brand-primary/20"
+                  >
+                    <div className="flex flex-col items-start">
+                      <span className="font-semibold">
+                        {getRequirementLabel(requirement, index)}
+                      </span>
+                      <Controller
+                        name={`whitelistRequirements.${index}.isMandatory`}
+                        control={control}
+                        render={({
+                          field: { value, onChange },
+                          fieldState: { error },
+                        }) => {
+                          return (
+                            <CheckboxField
+                              value={value}
+                              onChange={onChange}
+                              label="Is Mandatory"
+                              error={error?.message}
+                            />
+                          )
+                        }}
+                      />
+                      {requirement.type === "HOLD_BORG_IN_WALLET" && (
+                        <Controller
+                          name={`whitelistRequirements.${index}.heldAmount`}
+                          control={control}
+                          render={({
+                            field: { value, onChange },
+                            fieldState: { error },
+                          }) => (
+                            <CurrencyInputField
+                              label="Held Amount"
+                              value={value}
+                              defaultValue={value}
+                              containerClassName="px-0 pt-2"
+                              onChange={onChange}
+                              error={error?.message}
+                            />
+                          )}
+                        />
+                      )}
+                    </div>
+                    <Button.Icon
+                      icon="SvgX"
+                      color="plain"
+                      className="absolute right-1 top-1 p-1 hover:bg-bd-danger/10 hover:text-bd-danger"
+                      onClick={() => removeWhitelistRequirement(index)}
+                    />
+                  </div>
+                )
+              })}
+              {getMissingRequirements(watch("whitelistRequirements")).map(
+                (item) => (
+                  <div
+                    key={item.type}
+                    className="flex items-center gap-2 opacity-30 hover:opacity-100"
+                  >
+                    <Button.Icon
+                      icon="SvgPlus"
+                      color="secondary"
+                      size="xs"
+                      onClick={() => addWhitelistRequirement(item)}
+                    />
+                    <span>Add</span>
+                    <span>{`"${item.label}"`}</span>
+                  </div>
+                ),
+              )}
+            </div>
+          </BoWrapper>
         </div>
         <div className="flex w-full justify-center pt-3">
           <Button
@@ -776,6 +880,7 @@ const BackOffice = () => {
       {/* @TODO - remove this component when feature is finished */}
       <div className="fixed right-4 top-[75vh] rounded-3xl bg-pink-100/10  p-4 ring-brand-primary">
         <Button
+          isLoading={isPending}
           onClick={() => {
             // eslint-disable-next-line no-console
             console.log("formValues: ", watch())

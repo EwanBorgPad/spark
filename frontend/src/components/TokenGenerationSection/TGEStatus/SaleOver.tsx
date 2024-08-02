@@ -58,7 +58,7 @@ const SaleOver = ({ eventData }: LiveProps) => {
     })
   }
 
-  const tweetId = getTweetIdFromURL(projectData.tge.tweetUrl)
+  const tweetId = getTweetIdFromURL(projectData.info.tge.tweetUrl)
   const sectionClass =
     "flex w-full max-w-[432px] flex-col items-center gap-6 px-4"
   const hasDistributionStarted = eventData.id === "REWARD_DISTRIBUTION"
@@ -70,7 +70,7 @@ const SaleOver = ({ eventData }: LiveProps) => {
           <h2 className="text-4xl font-semibold leading-11">
             {hasDistributionStarted ? t("reward_distribution") : t("sale_over")}
           </h2>
-          {projectData.saleResults.saleSucceeded ? (
+          {projectData?.saleData?.saleSucceeded ? (
             <>
               <span className="text-sm opacity-60">
                 {t("sale_over.thank_you")}
@@ -95,7 +95,7 @@ const SaleOver = ({ eventData }: LiveProps) => {
         </div>
       </div>
 
-      {projectData.saleResults.saleSucceeded && (
+      {projectData?.saleData?.saleSucceeded && (
         <div
           ref={contributionsRef}
           className="relative flex w-full flex-col items-center gap-9 pt-[80px]"

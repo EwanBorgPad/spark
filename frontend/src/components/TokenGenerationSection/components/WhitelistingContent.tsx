@@ -15,7 +15,7 @@ const WhitelistingContent = () => {
 
   const { walletState } = useWalletContext()
   const { projectData } = useProjectDataContext()
-  const tgeData = projectData.tge
+  const tgeData = projectData.info.tge
 
   const baseCurrency = "swissborg"
   const targetCurrency = "usd"
@@ -109,7 +109,8 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.whitelist_participants")}</span>
           <span className="font-geist-mono">
-            {formatCurrencyAmount(tgeData.whitelistParticipants, false, 0)}
+            {projectData?.whitelistParticipants &&
+              formatCurrencyAmount(projectData.whitelistParticipants, false, 0)}
           </span>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>

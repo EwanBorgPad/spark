@@ -1,4 +1,4 @@
-import { timelineEvents } from "@/utils/constants"
+import { timelineEvents, whitelistRequirements } from "@/utils/constants"
 import { TokenAmount } from "./SolanaWeb3"
 import { z } from "zod"
 /**
@@ -33,7 +33,7 @@ export type GetWhitelistingResult = {
  * Represents url type
  * Not sure what we wanna validate there ATM, so leave it as string for now.
  */
-const urlSchema = () => z.string()
+const urlSchema = () => z.string().optional() // @TODO - remove optionality when file upload is finished
 const iconTypeSchema = () =>
   z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM", "OUTER_LINK"])
 const externalUrlSchema = () =>
@@ -43,69 +43,94 @@ const externalUrlSchema = () =>
     label: z.string(),
   })
 const dateSchema = () => z.coerce.date()
+const timelineEventsSchema = () =>
+  z.enum([
+    "REGISTRATION_OPENS",
+    "SALE_OPENS",
+    "SALE_CLOSES",
+    "REWARD_DISTRIBUTION",
+    "DISTRIBUTION_OVER",
+  ])
+const whitelistRequirementsSchema = () =>
+  z.object({
+    type: z.enum(["HOLD_BORG_IN_WALLET", "FOLLOW_ON_X", "DONT_RESIDE_IN_US"]),
+    label: z.string(),
+    description: z.string(),
+    isMandatory: z.boolean(),
+    heldAmount: z.number().optional(),
+  })
+export type WhitelistRequirementModel = z.infer<
+  ReturnType<typeof whitelistRequirementsSchema>
+>
+
 /**
  * Schema for project, type should be inferred from this.
  */
 export const projectSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  subtitle: z.string(),
-  logoUrl: z.string(),
-  chain: z.object({ name: z.string(), iconUrl: urlSchema() }),
-  origin: z.string(),
-  sector: z.string(),
-  curator: z.object({
-    avatarUrl: urlSchema(),
-    fullName: z.string(),
-    position: z.string(),
-    socials: z.array(externalUrlSchema()),
-  }),
-  projectLinks: z.array(externalUrlSchema()),
-  tokensAvailability: z.object({
-    available: z.number().int(),
-    total: z.number().int(),
-  }),
-  tge: z.object({
-    raiseTarget: z.number().int(),
-    projectCoin: z.object({
-      iconUrl: urlSchema(),
-      ticker: z.string(),
+  info: z.object({
+    id: z.string(),
+    title: z.string(),
+    subtitle: z.string(),
+    logoUrl: urlSchema(),
+    chain: z.object({ name: z.string(), iconUrl: urlSchema() }),
+    origin: z.string(),
+    sector: z.string(),
+    curator: z.object({
+      avatarUrl: urlSchema(),
+      fullName: z.string(),
+      position: z.string(),
+      socials: z.array(externalUrlSchema()),
     }),
-    fixedCoinPriceInBorg: z.number(),
-    whitelistParticipants: z.number(),
-    liquidityPool: z.object({
-      name: z.string(),
-      iconUrl: urlSchema(),
-      lbpType: z.string(),
-      lockingPeriod: z.string(),
-      unlockDate: dateSchema(),
-      url: z.string(),
+    projectLinks: z.array(externalUrlSchema()),
+    totalTokensForSale: z.number().int(),
+    tge: z.object({
+      raiseTarget: z.number().int(),
+      projectCoin: z.object({
+        iconUrl: urlSchema(),
+        ticker: z.string(),
+      }),
+      fixedCoinPriceInBorg: z.number(),
+      liquidityPool: z.object({
+        name: z.string(),
+        iconUrl: urlSchema(),
+        lbpType: z.string(),
+        lockingPeriod: z.string(),
+        unlockDate: dateSchema(),
+        url: z.string(),
+      }),
+      tweetUrl: urlSchema(),
     }),
-    tweetUrl: urlSchema(),
-  }),
-  dataRoom: z.object({
-    backgroundImgUrl: urlSchema(),
-    url: urlSchema(),
-  }),
-  timeline: z.array(
-    z.object({
-      id: z.enum(timelineEvents),
-      date: dateSchema(),
-      label: z.string(),
+    dataRoom: z.object({
+      backgroundImgUrl: urlSchema(),
+      url: urlSchema(),
     }),
-  ),
-  saleResults: z.object({
-    saleSucceeded: z.boolean(),
-    totalAmountRaised: z.number(),
-    sellOutPercentage: z.number(),
-    participantCount: z.number(),
-    averageInvestedAmount: z.number(),
+    timeline: z.array(
+      z.object({
+        id: timelineEventsSchema(),
+        date: dateSchema(),
+        label: z.string(),
+      }),
+    ),
+    whitelistRequirements: z.array(whitelistRequirementsSchema()).min(0),
   }),
-  rewards: z.object({
-    distributionType: z.string(),
-    description: z.string(),
-    payoutInterval: z.string(),
-  }),
+  whitelistParticipants: z.number().optional(),
+  saleData: z
+    .object({
+      availableTokens: z.number(),
+      saleSucceeded: z.boolean(),
+      totalAmountRaised: z.number(),
+      sellOutPercentage: z.number(),
+      participantCount: z.number(),
+      averageInvestedAmount: z.number(),
+    })
+    .optional(),
+  rewards: z
+    .object({
+      distributionType: z.string(),
+      description: z.string(),
+      payoutInterval: z.string(),
+    })
+    .optional(),
 })
 export type ProjectModel = z.infer<typeof projectSchema>
 
