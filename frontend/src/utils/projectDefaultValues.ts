@@ -28,7 +28,7 @@ export const getDefaultValues = () => {
       {
         url: "",
         iconType: "WEB" as Exclude<IconLinkType, "NO_ICON">,
-        label: "",
+        label: "Web Link",
       },
     ],
     totalTokensForSale: undefined,
