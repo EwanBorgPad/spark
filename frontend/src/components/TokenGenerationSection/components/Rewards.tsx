@@ -118,7 +118,7 @@ const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
       {hasDistributionStarted && (
         <ShowPayoutSchedule
           ticker={ticker}
-          tokenIconUrl={iconUrl}
+          tokenIconUrl={iconUrl ?? ""}
           payoutSchedule={rewards.payoutSchedule}
         />
       )}

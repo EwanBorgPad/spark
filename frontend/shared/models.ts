@@ -1,4 +1,3 @@
-import { timelineEvents, whitelistRequirements } from "@/utils/constants"
 import { TokenAmount } from "./SolanaWeb3"
 import { z } from "zod"
 /**
@@ -79,9 +78,21 @@ export const projectSchema = z.object({
       avatarUrl: urlSchema(),
       fullName: z.string(),
       position: z.string(),
-      socials: z.array(externalUrlSchema()),
+      socials: z.array(
+        z.object({
+          url: z.string(),
+          iconType: iconTypeSchema(),
+          label: z.string(),
+        }),
+      ),
     }),
-    projectLinks: z.array(externalUrlSchema()),
+    projectLinks: z.array(
+      z.object({
+        url: z.string(),
+        iconType: iconTypeSchema(),
+        label: z.string(),
+      }),
+    ),
     totalTokensForSale: z.number().int(),
     tge: z.object({
       raiseTarget: z.number().int(),
