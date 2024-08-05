@@ -1,8 +1,9 @@
 import { IconLinkType } from "@/components/Button/ExternalLink"
 import { timelineEventOptions } from "./constants"
-import { ProjectModel, WhitelistRequirementModel } from "shared/models"
+import { WhitelistRequirementModel } from "shared/models"
 
 export const getDefaultValues = () => {
+  if (localStorage.getItem("create-new-project")) return undefined
   return {
     id: "",
     title: "",

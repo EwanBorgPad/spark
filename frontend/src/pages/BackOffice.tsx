@@ -67,28 +67,18 @@ const BackOffice = () => {
   }
 
   // form arrays
+  const { append: addCuratorSocials, remove: removeCuratorSocials } =
+    useFieldArray({
+      control,
+      name: "curator.socials",
+    })
+  const { append: addProjectLinks, remove: removeProjectLinks } = useFieldArray(
+    {
+      control,
+      name: "projectLinks",
+    },
+  )
   const {
-    fields: curatorSocials,
-    append: addCuratorSocials,
-    remove: removeCuratorSocials,
-  } = useFieldArray({
-    control,
-    name: "curator.socials",
-  })
-  const {
-    fields: projectLinks,
-    append: addProjectLinks,
-    remove: removeProjectLinks,
-  } = useFieldArray({
-    control,
-    name: "projectLinks",
-  })
-  const { fields: timelineEvents } = useFieldArray({
-    control,
-    name: "timeline",
-  })
-  const {
-    fields: whitelistRequirements,
     append: addWhitelistRequirement,
     remove: removeWhitelistRequirement,
   } = useFieldArray({
@@ -131,7 +121,7 @@ const BackOffice = () => {
   const getMissingRequirements = (
     requirements: WhitelistRequirementModel[],
   ) => {
-    const selectedTypes = requirements.map((req) => req.type)
+    const selectedTypes = requirements?.map((req) => req.type) ?? []
     const allKeys = Object.keys(
       whitelistRequirementsObj,
     ) as WhitelistingRequirementType[]
@@ -326,7 +316,7 @@ const BackOffice = () => {
                 <span>URL</span>
                 <span></span>
               </div>
-              {projectLinks.map((_, index) => (
+              {watch("projectLinks")?.map((_, index) => (
                 <div className="flex w-full items-center gap-8" key={index}>
                   <Controller
                     name={`projectLinks.${index}.iconType`}
@@ -445,7 +435,7 @@ const BackOffice = () => {
                 <span>URL</span>
                 <span></span>
               </div>
-              {curatorSocials.map((_, index) => (
+              {watch("curator.socials")?.map((_, index) => (
                 <div className="flex w-full items-center gap-8" key={index}>
                   <Controller
                     name={`curator.socials.${index}.iconType`}
@@ -761,7 +751,7 @@ const BackOffice = () => {
                 <span className="self-center">Event Type</span>
                 <span className="font-semibold">Date</span>
               </div>
-              {timelineEvents.map((timelineEvent, index) => {
+              {watch("timeline")?.map((timelineEvent, index) => {
                 return (
                   <div
                     key={index}
@@ -791,10 +781,10 @@ const BackOffice = () => {
           </BoWrapper>
           <BoWrapper title="Whitelist Requirements">
             <div className="flex w-full flex-col gap-2">
-              {whitelistRequirements.map((requirement, index) => {
+              {watch("whitelistRequirements")?.map((requirement, index) => {
                 return (
                   <div
-                    key={requirement.id}
+                    key={index}
                     className="relative flex min-h-[40px] w-full items-center justify-between gap-4 rounded-md py-3 pl-3 ring-1 ring-brand-primary/20"
                   >
                     <div className="flex flex-col items-start">
@@ -847,7 +837,7 @@ const BackOffice = () => {
                   </div>
                 )
               })}
-              {getMissingRequirements(watch("whitelistRequirements")).map(
+              {getMissingRequirements(watch("whitelistRequirements"))?.map(
                 (item) => (
                   <div
                     key={item.type}
