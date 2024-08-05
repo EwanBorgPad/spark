@@ -52,14 +52,14 @@ const createProject = async (formValues: ProjectModel) => {
   const body = JSON.stringify(formValues)
 
   try {
-    if (!import.meta.env.ADMIN_API_KEY_HASH)
+    if (!import.meta.env.VITE_ADMIN_API_KEY_HASH)
       throw "Authorization Bearer undefined"
     const response = await fetch(url, {
       method: "POST",
       body,
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.ADMIN_API_KEY_HASH}`,
+        Authorization: `Bearer ${import.meta.env.VITE_ADMIN_API_KEY_HASH}`,
       },
     })
     const json = await response.json()
