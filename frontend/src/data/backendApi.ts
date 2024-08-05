@@ -47,19 +47,25 @@ const getProject = async ({
     throw e
   }
 }
-const createProject = async (formValues: ProjectModel) => {
+
+export type CreateProjectRequest = {
+  formValues: ProjectModel
+  adminKey: string
+}
+const createProject = async ({
+  formValues,
+  adminKey,
+}: CreateProjectRequest) => {
   const url = new URL(POST_PROJECT_API_URL, window.location.href)
   const body = JSON.stringify(formValues)
 
   try {
-    if (!import.meta.env.VITE_ADMIN_API_KEY_HASH)
-      throw "Authorization Bearer undefined"
     const response = await fetch(url, {
       method: "POST",
       body,
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_ADMIN_API_KEY_HASH}`,
+        Authorization: `Bearer ${adminKey}`,
       },
     })
     const json = await response.json()

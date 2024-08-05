@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import React, { useState } from "react"
+import { toast } from "react-toastify"
 import {
   Controller,
   SubmitHandler,
@@ -9,8 +10,11 @@ import {
 
 import { externalLinkObj, IconLinkType } from "@/components/Button/ExternalLink"
 import { CurrencyInputField } from "@/components/InputField/CurrencyInputField"
+import { ProjectModel, WhitelistRequirementModel } from "shared/models"
 import { DropdownField } from "@/components/InputField/DropdownField"
+import { backendApi, CreateProjectRequest } from "@/data/backendApi"
 import DateTimeField from "@/components/InputField/DateTimeField"
+import CheckboxField from "@/components/InputField/CheckboxField"
 import { getDefaultValues } from "@/utils/projectDefaultValues"
 import { TextField } from "@/components/InputField/TextField"
 import UploadField from "@/components/InputField/UploadField"
@@ -18,10 +22,7 @@ import BoWrapper from "@/components/BackOffice/BoWrapper"
 import { formatCurrencyAmount } from "@/utils/format"
 import { useFormDraft } from "@/hooks/useFormDraft"
 import { Button } from "@/components/Button/Button"
-import { backendApi } from "@/data/backendApi"
 import { Icon } from "@/components/Icon/Icon"
-import { ProjectModel, WhitelistRequirementModel } from "shared/models"
-import CheckboxField from "@/components/InputField/CheckboxField"
 import {
   WhitelistingRequirementType,
   whitelistRequirementsObj,
@@ -47,7 +48,7 @@ const BackOffice = () => {
     watch,
     control,
     formState: { errors, isSubmitted },
-  } = useForm<ProjectModel["info"]>({
+  } = useForm<ProjectModel["info"] & { adminKey: string }>({
     defaultValues: getDefaultValues(),
   })
   useFormDraft("create-new-project", {
@@ -57,13 +58,23 @@ const BackOffice = () => {
   })
 
   const { mutate: createProject, isPending } = useMutation({
-    mutationFn: (projectInfo: ProjectModel) =>
-      backendApi.createProject(projectInfo),
+    mutationFn: (payload: CreateProjectRequest) =>
+      backendApi.createProject({
+        formValues: payload.formValues,
+        adminKey: payload.adminKey,
+      }),
+    onSuccess: () => toast.success("Project Created!"),
   })
 
-  const onSubmit: SubmitHandler<ProjectModel["info"]> = async (data) => {
-    const response = await createProject({ info: data })
-    console.log(response)
+  const onSubmit: SubmitHandler<
+    ProjectModel["info"] & { adminKey: string }
+  > = async (data) => {
+    const { adminKey, ...info } = data
+
+    createProject({
+      formValues: { info: info },
+      adminKey,
+    })
   }
 
   // form arrays
@@ -855,6 +866,34 @@ const BackOffice = () => {
                 ),
               )}
             </div>
+          </BoWrapper>
+          <BoWrapper title="Confirm you're an Admin">
+            <Controller
+              name="adminKey"
+              control={control}
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
+                <TextField
+                  label="Admin Key"
+                  value={value}
+                  containerClassName="px-0"
+                  error={error?.message}
+                  onChange={(event) => {
+                    onChange(event)
+                    const value = (event as React.ChangeEvent<HTMLInputElement>)
+                      .target.value
+                    if (idConfirmed) return
+                    setValue(
+                      `id`,
+                      value.toLowerCase().replaceAll(" ", "-"),
+                      valueOptions,
+                    )
+                  }}
+                />
+              )}
+            />
           </BoWrapper>
         </div>
         <div className="flex w-full justify-center pt-3">
