@@ -143,7 +143,6 @@ const BackOffice = () => {
       ...whitelistRequirementsObj[key],
     }))
   }
-  getMissingRequirements(watch("whitelistRequirements"))
 
   return (
     <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[72px] font-normal text-fg-primary lg:py-[100px]">
@@ -880,17 +879,7 @@ const BackOffice = () => {
                   value={value}
                   containerClassName="px-0"
                   error={error?.message}
-                  onChange={(event) => {
-                    onChange(event)
-                    const value = (event as React.ChangeEvent<HTMLInputElement>)
-                      .target.value
-                    if (idConfirmed) return
-                    setValue(
-                      `id`,
-                      value.toLowerCase().replaceAll(" ", "-"),
-                      valueOptions,
-                    )
-                  }}
+                  onChange={onChange}
                 />
               )}
             />

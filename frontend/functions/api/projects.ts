@@ -60,7 +60,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     // check if exists
-    const existingProject = await getProjectById(db, data.id)
+    const existingProject = await getProjectById(db, data.info.id)
     if (existingProject) {
       return jsonResponse(
         {
