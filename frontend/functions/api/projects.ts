@@ -73,7 +73,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     // persist in db
     await db
       .prepare("INSERT INTO project (id, json) VALUES (?1, ?2)")
-      .bind(data.id, JSON.stringify(data))
+      .bind(data.info.id, JSON.stringify(data))
       .run()
 
     return jsonResponse({ message: "Created!" }, 201)
