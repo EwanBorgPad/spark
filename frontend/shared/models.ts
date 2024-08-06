@@ -56,7 +56,7 @@ const whitelistRequirementsSchema = () =>
     label: z.string(),
     description: z.string(),
     isMandatory: z.boolean(),
-    heldAmount: z.number().optional(),
+    heldAmount: z.number({ coerce: true }).optional(),
   })
 export type WhitelistRequirementModel = z.infer<
   ReturnType<typeof whitelistRequirementsSchema>
