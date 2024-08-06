@@ -13,7 +13,7 @@ Devnet example lbp: `BpWYQLwzJDJYB9awK5JYDrH7v6HcwkYuBeWeSpL17KDh`
 ## Dev environment
 
 Build: 
-- Run: cargo build-sbf`
+- Run: `cargo build-sbf`
 
 Test: 
 - Run: `cargo test`

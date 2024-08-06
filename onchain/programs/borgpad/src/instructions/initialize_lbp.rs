@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token_interface::TokenAccount;
 use crate::errors::ErrorCode;
 use crate::state::config::*;
 use crate::state::lbp::*;
@@ -24,11 +25,22 @@ pub struct InitializeLbp<'info> {
     )]
     pub lbp: Account<'info, Lbp>,
 
+    // TODO: create tokens ata
+    // #[account(
+    //     init_if_needed,
+    //     payer = treasurer,
+    //     associated_token::mint = token_mint,
+    //     associated_token::authority = proxy,
+    //     associated_token::token_program = token_program,
+    // )]
+    // pub lbp_ata: InterfaceAccount<'info, TokenAccount>,
+
+
     #[account(
         mut,
-        constraint = config.admin_authority == admin.key() @ ErrorCode::NotAdmin
+        constraint = config.admin_authority == admin_authority.key() @ ErrorCode::NotAdmin
     )]
-    pub admin: Signer<'info>,
+    pub admin_authority: Signer<'info>,
 
     pub system_program: Program<'info, System>,
 }

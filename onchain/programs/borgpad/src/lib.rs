@@ -4,12 +4,20 @@ use crate::instructions::initialize_lbp::*;
 use crate::instructions::set_admin_authority::*;
 use crate::instructions::set_whitelist_authority::*;
 use crate::state::lbp::LbpStaticData;
-// use solana_security_txt::security_txt;
+use solana_security_txt::security_txt;
 
 pub mod instructions;
 pub mod errors;
 pub mod events;
 pub mod state;
+
+#[cfg(not(feature = "no-entrypoint"))]
+security_txt! {
+    name: "BorgPad",
+    project_url: "https://x.com/borgpadhq",
+    contacts: "TBD",
+    policy: "TBD"
+}
 
 declare_id!("bpadbLrS3Mw2e1EDSEnYzYpNwAQgJQXXHkT57D4TTJ4");
 
