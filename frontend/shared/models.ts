@@ -93,14 +93,14 @@ export const projectSchema = z.object({
         label: z.string(),
       }),
     ),
-    totalTokensForSale: z.number().int(),
+    totalTokensForSale: z.number({ coerce: true }).int(),
     tge: z.object({
-      raiseTarget: z.number().int(),
+      raiseTarget: z.number({ coerce: true }).int(),
       projectCoin: z.object({
         iconUrl: urlSchema(),
         ticker: z.string(),
       }),
-      fixedCoinPriceInBorg: z.number(),
+      fixedCoinPriceInBorg: z.number({ coerce: true }),
       liquidityPool: z.object({
         name: z.string(),
         iconUrl: urlSchema(),

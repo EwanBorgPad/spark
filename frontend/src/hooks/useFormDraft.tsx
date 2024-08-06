@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { UseFormSetValue } from "react-hook-form"
 
 type FormMethods = {
-  formValues: unknown
+  formValues: Record<string, unknown>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setValue: UseFormSetValue<any>
   isSubmitted: boolean
@@ -10,8 +10,9 @@ type FormMethods = {
 
 export const useFormDraft = (
   formName: string,
-  { formValues, setValue, isSubmitted }: FormMethods,
+  { formValues: _formValues, setValue, isSubmitted }: FormMethods,
   isEnabled: boolean = true,
+  excludedProperty?: string,
 ) => {
   useEffect(() => {
     if (isEnabled) {
@@ -26,11 +27,14 @@ export const useFormDraft = (
 
   useEffect(() => {
     if (isEnabled) {
+      const formValues = _formValues
+      if (excludedProperty) {
+        delete formValues[excludedProperty]
+      }
       localStorage.setItem(formName, JSON.stringify(formValues))
       if (isSubmitted) {
-        // @TODO - commented for testing, to be uncommented when seen
-        // localStorage.removeItem(formName)
+        localStorage.removeItem(formName)
       }
     }
-  }, [formName, formValues, isSubmitted, isEnabled])
+  }, [formName, _formValues, isSubmitted, isEnabled, excludedProperty])
 }

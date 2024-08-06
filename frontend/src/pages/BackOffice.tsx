@@ -27,12 +27,14 @@ import {
   WhitelistingRequirementType,
   whitelistRequirementsObj,
 } from "@/utils/constants"
+import { getStoredValue } from "@/utils/getStoredValue"
 
 const iconOptions = Object.entries(externalLinkObj).map(([key, value]) => ({
   id: key,
   label: value.label,
 }))
 type IconType = Exclude<IconLinkType, "NO_ICON">
+type FormType = ProjectModel["info"] & { adminKey: string }
 
 const valueOptions = {
   shouldDirty: true,
@@ -42,20 +44,27 @@ const valueOptions = {
 const BackOffice = () => {
   const [idConfirmed, setIdConfirmed] = useState(false)
 
+  const defaultValues =
+    getStoredValue("create-new-project") ?? getDefaultValues()
   const {
     handleSubmit,
     setValue,
     watch,
     control,
     formState: { errors, isSubmitted },
-  } = useForm<ProjectModel["info"] & { adminKey: string }>({
-    defaultValues: getDefaultValues(),
+  } = useForm<FormType>({
+    defaultValues,
   })
-  useFormDraft("create-new-project", {
-    formValues: watch(),
-    setValue,
-    isSubmitted,
-  })
+  useFormDraft(
+    "create-new-project",
+    {
+      formValues: watch(),
+      setValue,
+      isSubmitted,
+    },
+    true,
+    "adminKey",
+  )
 
   const { mutate: createProject, isPending } = useMutation({
     mutationFn: (payload: CreateProjectRequest) =>
@@ -64,11 +73,10 @@ const BackOffice = () => {
         adminKey: payload.adminKey,
       }),
     onSuccess: () => toast.success("Project Created!"),
+    onError: (error) => toast.error(error.message),
   })
 
-  const onSubmit: SubmitHandler<
-    ProjectModel["info"] & { adminKey: string }
-  > = async (data) => {
+  const onSubmit: SubmitHandler<FormType> = async (data) => {
     const { adminKey, ...info } = data
 
     createProject({
@@ -118,15 +126,11 @@ const BackOffice = () => {
   const tokenTicker = watch("tge.projectCoin.ticker")
   const fixedCoinPriceInBorg = watch("tge.fixedCoinPriceInBorg")
 
-  const getRequirementLabel = (
-    requirement: WhitelistRequirementModel,
-    index: number,
-  ) => {
-    if (requirement.type !== "HOLD_BORG_IN_WALLET") return requirement.label
-    return requirement.label.replace(
-      "XXXXX",
-      watch("whitelistRequirements")[index]?.heldAmount + "",
-    )
+  const setRequirementLabel = (heldAmount: number, index: number) => {
+    console.log(heldAmount)
+    const newLabel = `Hold ${heldAmount} BORG in your wallet`
+    setValue(`whitelistRequirements.${index}.label`, newLabel)
+    return newLabel
   }
 
   const getMissingRequirements = (
@@ -145,7 +149,7 @@ const BackOffice = () => {
   }
 
   return (
-    <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[72px] font-normal text-fg-primary lg:py-[100px]">
+    <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[100px] font-normal text-fg-primary lg:py-[100px]">
       <h1>Create New Project</h1>
       <form
         className="max-w-screen flex w-full flex-col items-start gap-8 px-4 md:max-w-[720px]"
@@ -799,7 +803,7 @@ const BackOffice = () => {
                   >
                     <div className="flex flex-col items-start">
                       <span className="font-semibold">
-                        {getRequirementLabel(requirement, index)}
+                        {watch(`whitelistRequirements.${index}.label`)}
                       </span>
                       <Controller
                         name={`whitelistRequirements.${index}.isMandatory`}
@@ -831,7 +835,13 @@ const BackOffice = () => {
                               value={value}
                               defaultValue={value}
                               containerClassName="px-0 pt-2"
-                              onChange={onChange}
+                              onChange={(event) => {
+                                onChange(event)
+                                setRequirementLabel(
+                                  event ? Number(event) : 20000,
+                                  index,
+                                )
+                              }}
                               error={error?.message}
                             />
                           )}
@@ -891,24 +901,25 @@ const BackOffice = () => {
             type="submit"
             size="md"
             className="px-10"
+            isLoading={isPending}
           />
         </div>
       </form>
-
       {/* @TODO - remove this component when feature is finished */}
-      <div className="fixed right-4 top-[75vh] rounded-3xl bg-pink-100/10  p-4 ring-brand-primary">
+      {/* <div className="fixed right-4 top-[75vh] flex flex-col  gap-4 rounded-3xl bg-pink-100/10 p-4 ring-brand-primary">
         <Button
           isLoading={isPending}
           onClick={() => {
+            toast.success("Project Created!")
             // eslint-disable-next-line no-console
-            console.log("formValues: ", watch())
+            // console.log("formValues: ", watch())
             // eslint-disable-next-line no-console
-            console.log("errors: ", errors)
+            // console.log("errors: ", errors)
           }}
           btnText="LOG VALUES"
           className="bg-pink-500 text-white active:bg-pink-300"
         />
-      </div>
+      </div> */}
     </main>
   )
 }

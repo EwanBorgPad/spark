@@ -69,8 +69,7 @@ const createProject = async ({
       },
     })
     const json = await response.json()
-    const parsedJson = JSON.parse(json)
-    return parsedJson
+    return json
   } catch (e) {
     console.error(e)
     throw e

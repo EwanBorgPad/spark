@@ -3,7 +3,6 @@ import { timelineEventOptions } from "./constants"
 import { WhitelistRequirementModel } from "shared/models"
 
 export const getDefaultValues = () => {
-  if (localStorage.getItem("create-new-project")) return undefined
   return {
     id: "",
     title: "",
@@ -62,7 +61,7 @@ export const getDefaultValues = () => {
     whitelistRequirements: [
       {
         type: "HOLD_BORG_IN_WALLET",
-        label: "Hold XXXXX BORG in your wallet",
+        label: "Hold 20000 BORG in your wallet",
         description: "",
         isMandatory: true,
         heldAmount: 20000,
@@ -80,5 +79,8 @@ export const getDefaultValues = () => {
         isMandatory: true,
       },
     ] as WhitelistRequirementModel[],
+
+    // this will not be submitted through body
+    adminKey: "",
   }
 }

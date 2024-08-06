@@ -10,7 +10,7 @@ type CurrencyInputFieldProps = HTMLProps<"input"> & {
   prefixElement?: PropsWithChildren["children"]
   suffixElement?: PropsWithChildren["children"]
   label?: string
-  onChange: (value: number | undefined) => void
+  onChange: (value: string | undefined) => void
   value: number | undefined
 }
 
@@ -44,14 +44,14 @@ export const CurrencyInputField = ({
       </label>
       <div className={inputClasses}>
         <CurrencyInput
-          value={Number(value)}
+          value={value}
           allowNegativeValue={false}
           placeholder="0"
           className={
             "h-[40px] w-full max-w-[360px] bg-transparent px-2 py-2.5 font-geist-mono text-sm placeholder:text-white/30 focus:outline-none"
           }
           decimalsLimit={6}
-          onValueChange={(value) => onChange(value ? Number(value) : undefined)}
+          onValueChange={onChange}
         />
       </div>
     </div>
