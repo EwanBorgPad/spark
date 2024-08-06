@@ -13,5 +13,16 @@ pub struct Config {
 
 impl Config {
     pub const LEN: usize = 8 + Self::INIT_SPACE;
+
+    pub fn initialize(
+        &mut self,
+        admin_authority: Pubkey,
+        whitelist_authority: Pubkey,
+        bump: u8
+    ) {
+        self.admin_authority = admin_authority;
+        self.whitelist_authority = whitelist_authority;
+        self.bump = bump;
+    }
 }
 

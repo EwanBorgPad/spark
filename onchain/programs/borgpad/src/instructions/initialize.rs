@@ -31,10 +31,7 @@ pub fn handler(
     whitelist_authority: Pubkey
 ) -> Result<()> {
     let config_data: &mut Account<Config> = &mut ctx.accounts.config;
-
-    config_data.admin_authority = admin_authority;
-    config_data.whitelist_authority = whitelist_authority;
-    config_data.bump = ctx.bumps.config;
+    config_data.initialize(admin_authority, whitelist_authority, ctx.bumps.config);
 
     Ok(())
 }

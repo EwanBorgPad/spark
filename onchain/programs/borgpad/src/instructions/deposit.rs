@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     token_interface::{TokenAccount, Mint, TokenInterface, TransferChecked,
-                      transfer_checked, SyncNative, sync_native},
+                      transfer_checked, mint_to, MintTo},
 };
 use anchor_spl::associated_token::AssociatedToken;
 use crate::errors::ErrorCode;
@@ -30,11 +30,11 @@ pub struct Deposit<'info> {
     #[account(
         seeds = [
         b"lbp".as_ref(),
-        & uid.to_le_bytes()
+        & lbp.static_data.uid.to_le_bytes()
         ],
         bump
     )]
-    pub lbp: Account<'info, Lbp>,
+    pub lbp: Box<Account<'info, Lbp>>,
 
     #[account(
         init,
@@ -54,7 +54,7 @@ pub struct Deposit<'info> {
         associated_token::authority = user,
         associated_token::token_program = token_program,
     )]
-    pub user_position_ata: Option<InterfaceAccount<'info, TokenAccount>>,
+    pub user_position_ata: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
         mut,
@@ -62,7 +62,7 @@ pub struct Deposit<'info> {
         associated_token::authority = user,
         associated_token::token_program = token_program,
     )]
-    pub user_token_ata: Option<InterfaceAccount<'info, TokenAccount>>,
+    pub user_token_ata: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
         mut,
@@ -78,10 +78,10 @@ pub struct Deposit<'info> {
         mint::authority = lbp,
         mint::decimals = 0,
     )]
-    pub position_mint: Account<'info, Mint>,
+    pub position_mint: InterfaceAccount<'info, Mint>,
 
     #[account(
-        constraint = lbp_data.static_data.user_token_mint == token_mint.key() @ ErrorCode::IncorrectMint
+        constraint = lbp.static_data.user_token_mint == token_mint.key() @ ErrorCode::IncorrectMint
     )]
     pub token_mint: InterfaceAccount<'info, Mint>,
 
@@ -94,14 +94,19 @@ pub struct Deposit<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
+// TODO: check that I did not forget a check or a step
 pub fn handler(ctx: Context<Deposit>, amount: u64) -> Result<()> {
     let lbp_data: &mut Account<Lbp> = &mut ctx.accounts.lbp;
+
+    if ctx.accounts.lbp_token_ata.amount + amount > lbp_data.static_data.user_max_cap {
+        return err!(ErrorCode::MaxCapReached)
+    }
 
     transfer_checked(
         CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
             TransferChecked {
-                from: ctx.accounts.user_token_ata.clone().unwrap().to_account_info(),
+                from: ctx.accounts.user_token_ata.to_account_info(),
                 to: ctx.accounts.lbp_token_ata.to_account_info(),
                 mint: ctx.accounts.token_mint.to_account_info(),
                 authority: ctx.accounts.user.to_account_info(),
@@ -111,9 +116,21 @@ pub fn handler(ctx: Context<Deposit>, amount: u64) -> Result<()> {
         ctx.accounts.token_mint.decimals,
     )?;
 
-    // TODO: create NFT
+    mint_to(
+        CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            MintTo {
+                mint: ctx.accounts.position_mint.to_account_info(),
+                to: ctx.accounts.user_position_ata.to_account_info(),
+                authority: lbp_data.to_account_info()
+            },
+            &[&[b"lbp", & lbp_data.static_data.uid.to_le_bytes(), &[ctx.bumps.lbp]]],
+        ),
+        1,
+    )?;
 
-    // TODO: write metadata
+    let position_data: &mut Account<Position> = &mut ctx.accounts.position;
+    position_data.initialize(ctx.accounts.position_mint.key(), amount, ctx.bumps.position);
 
     Ok(())
 }
