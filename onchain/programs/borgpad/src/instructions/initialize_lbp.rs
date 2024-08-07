@@ -1,9 +1,9 @@
-use anchor_lang::prelude::*;
-use anchor_spl::associated_token::AssociatedToken;
-use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 use crate::errors::ErrorCode;
 use crate::state::config::*;
 use crate::state::lbp::*;
+use anchor_lang::prelude::*;
+use anchor_spl::associated_token::AssociatedToken;
+use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 
 #[derive(Accounts)]
 #[instruction(lbp_initialize: LbpInitializeData)]
@@ -35,16 +35,30 @@ pub struct InitializeLbp<'info> {
     #[account(
         init_if_needed,
         payer = admin_authority,
-        associated_token::mint = token_mint,
+        associated_token::mint = raised_token_mint,
         associated_token::authority = lbp,
         associated_token::token_program = token_program,
     )]
-    pub lbp_ata: InterfaceAccount<'info, TokenAccount>,
+    pub lbp_raised_token_ata: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
-        constraint = lbp_initialize.user_token_mint == token_mint.key() @ ErrorCode::IncorrectMint
+        init_if_needed,
+        payer = admin_authority,
+        associated_token::mint = launched_token_mint,
+        associated_token::authority = lbp,
+        associated_token::token_program = token_program,
     )]
-    pub token_mint: InterfaceAccount<'info, Mint>,
+    pub lbp_launched_token_ata: InterfaceAccount<'info, TokenAccount>,
+
+    #[account(
+        constraint = lbp_initialize.raised_token_mint == raised_token_mint.key() @ ErrorCode::IncorrectMint
+    )]
+    pub raised_token_mint: InterfaceAccount<'info, Mint>,
+
+    #[account(
+        constraint = lbp_initialize.launched_token_mint == launched_token_mint.key() @ ErrorCode::IncorrectMint
+    )]
+    pub launched_token_mint: InterfaceAccount<'info, Mint>,
 
     pub token_program: Interface<'info, TokenInterface>,
 
@@ -57,7 +71,11 @@ pub struct InitializeLbp<'info> {
 
 pub fn handler(ctx: Context<InitializeLbp>, lbp_initialize: LbpInitializeData) -> Result<()> {
     let lbp_data: &mut Account<Lbp> = &mut ctx.accounts.lbp;
-    lbp_data.initialize(lbp_initialize);
+    lbp_data.initialize(
+        lbp_initialize,
+        ctx.accounts.launched_token_mint.key(),
+        ctx.accounts.raised_token_mint.key(),
+    );
 
     Ok(())
 }

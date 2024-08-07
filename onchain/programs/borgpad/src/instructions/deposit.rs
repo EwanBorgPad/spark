@@ -1,13 +1,12 @@
-use anchor_lang::prelude::*;
-use anchor_spl::{
-    token_interface::{TokenAccount, Mint, TokenInterface, TransferChecked,
-                      transfer_checked, mint_to, MintTo},
-};
-use anchor_spl::associated_token::AssociatedToken;
 use crate::errors::ErrorCode;
 use crate::state::config::*;
 use crate::state::lbp::*;
 use crate::state::position::*;
+use anchor_lang::prelude::*;
+use anchor_spl::associated_token::AssociatedToken;
+use anchor_spl::token_interface::{
+    mint_to, transfer_checked, Mint, MintTo, TokenAccount, TokenInterface, TransferChecked,
+};
 
 #[derive(Accounts)]
 pub struct Deposit<'info> {
@@ -57,19 +56,19 @@ pub struct Deposit<'info> {
 
     #[account(
         mut,
-        associated_token::mint = token_mint,
+        associated_token::mint = raised_token_mint,
         associated_token::authority = user,
         associated_token::token_program = token_program,
     )]
-    pub user_token_ata: InterfaceAccount<'info, TokenAccount>,
+    pub user_raised_token_ata: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
         mut,
-        associated_token::mint = token_mint,
+        associated_token::mint = raised_token_mint,
         associated_token::authority = lbp,
         associated_token::token_program = token_program,
     )]
-    pub lbp_token_ata: InterfaceAccount<'info, TokenAccount>,
+    pub lbp_raised_token_ata: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
         init,
@@ -80,9 +79,9 @@ pub struct Deposit<'info> {
     pub position_mint: InterfaceAccount<'info, Mint>,
 
     #[account(
-        constraint = lbp.user_token_mint == token_mint.key() @ ErrorCode::IncorrectMint
+        constraint = lbp.raised_token_mint == raised_token_mint.key() @ ErrorCode::IncorrectMint
     )]
-    pub token_mint: InterfaceAccount<'info, Mint>,
+    pub raised_token_mint: InterfaceAccount<'info, Mint>,
 
     pub token_program: Interface<'info, TokenInterface>,
 
@@ -95,23 +94,32 @@ pub struct Deposit<'info> {
 
 pub fn handler(ctx: Context<Deposit>, amount: u64) -> Result<()> {
     let lbp_data: &mut Account<Lbp> = &mut ctx.accounts.lbp;
+    let time = Clock::get()?.unix_timestamp as u64;
 
-    if ctx.accounts.lbp_token_ata.amount + amount > lbp_data.user_max_cap {
-        return err!(ErrorCode::MaxCapReached)
+    if time < lbp_data.fund_collection_start_time {
+        return err!(ErrorCode::FundCollectionPhaseNotStarted);
+    }
+
+    if time > lbp_data.fund_collection_end_time {
+        return err!(ErrorCode::FundCollectionPhaseCompleted);
+    }
+
+    if ctx.accounts.lbp_raised_token_ata.amount + amount > lbp_data.raised_token_max_cap {
+        return err!(ErrorCode::MaxCapReached);
     }
 
     transfer_checked(
         CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
             TransferChecked {
-                from: ctx.accounts.user_token_ata.to_account_info(),
-                to: ctx.accounts.lbp_token_ata.to_account_info(),
-                mint: ctx.accounts.token_mint.to_account_info(),
+                from: ctx.accounts.user_raised_token_ata.to_account_info(),
+                to: ctx.accounts.lbp_raised_token_ata.to_account_info(),
+                mint: ctx.accounts.raised_token_mint.to_account_info(),
                 authority: ctx.accounts.user.to_account_info(),
             },
         ),
         amount,
-        ctx.accounts.token_mint.decimals,
+        ctx.accounts.raised_token_mint.decimals,
     )?;
 
     mint_to(
@@ -120,9 +128,9 @@ pub fn handler(ctx: Context<Deposit>, amount: u64) -> Result<()> {
             MintTo {
                 mint: ctx.accounts.position_mint.to_account_info(),
                 to: ctx.accounts.user_position_ata.to_account_info(),
-                authority: lbp_data.to_account_info()
+                authority: lbp_data.to_account_info(),
             },
-            &[&[b"lbp", & lbp_data.uid.to_le_bytes(), &[ctx.bumps.lbp]]],
+            &[&[b"lbp", &lbp_data.uid.to_le_bytes(), &[ctx.bumps.lbp]]],
         ),
         1,
     )?;

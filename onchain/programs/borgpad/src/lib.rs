@@ -1,14 +1,14 @@
-use anchor_lang::prelude::*;
 use crate::instructions::initialize::*;
 use crate::instructions::initialize_lbp::*;
 use crate::instructions::set_admin_authority::*;
 use crate::instructions::set_whitelist_authority::*;
 use crate::state::lbp::LbpInitializeData;
+use anchor_lang::prelude::*;
 use solana_security_txt::security_txt;
 
-pub mod instructions;
 pub mod errors;
 pub mod events;
+pub mod instructions;
 pub mod state;
 
 #[cfg(not(feature = "no-entrypoint"))]
@@ -27,21 +27,19 @@ pub mod borgpad {
     pub fn initialize(
         ctx: Context<Initialize>,
         admin_authority: Pubkey,
-        whitelist_authority: Pubkey
+        whitelist_authority: Pubkey,
     ) -> Result<()> {
         return instructions::initialize::handler(ctx, admin_authority, whitelist_authority);
     }
 
     pub fn initialize_lbp(
         ctx: Context<InitializeLbp>,
-        lbp_initialize: LbpInitializeData
+        lbp_initialize: LbpInitializeData,
     ) -> Result<()> {
         return instructions::initialize_lbp::handler(ctx, lbp_initialize);
     }
 
-    pub fn set_admin_authority(
-        ctx: Context<SetAdminAuthority>
-    ) -> Result<()> {
+    pub fn set_admin_authority(ctx: Context<SetAdminAuthority>) -> Result<()> {
         return instructions::set_admin_authority::handler(ctx);
     }
 

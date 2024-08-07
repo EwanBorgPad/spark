@@ -1,6 +1,6 @@
-use anchor_lang::prelude::*;
 use crate::program::Borgpad;
 use crate::state::config::*;
+use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
@@ -28,11 +28,10 @@ pub struct Initialize<'info> {
 pub fn handler(
     ctx: Context<Initialize>,
     admin_authority: Pubkey,
-    whitelist_authority: Pubkey
+    whitelist_authority: Pubkey,
 ) -> Result<()> {
     let config_data: &mut Account<Config> = &mut ctx.accounts.config;
     config_data.initialize(admin_authority, whitelist_authority, ctx.bumps.config);
 
     Ok(())
 }
-

@@ -22,7 +22,7 @@ pub struct SetAdminAuthority<'info> {
         mut,
         constraint = new_admin_authority.key() != old_admin_authority.key() @ ErrorCode::SameAdmin
     )]
-    pub new_admin_authority: Signer<'info>
+    pub new_admin_authority: Signer<'info>,
 }
 
 pub fn handler(ctx: Context<SetAdminAuthority>) -> Result<()> {
