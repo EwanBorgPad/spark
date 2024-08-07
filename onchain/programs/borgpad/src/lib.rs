@@ -3,7 +3,7 @@ use crate::instructions::initialize::*;
 use crate::instructions::initialize_lbp::*;
 use crate::instructions::set_admin_authority::*;
 use crate::instructions::set_whitelist_authority::*;
-use crate::state::lbp::LbpStaticData;
+use crate::state::lbp::LbpInitializeData;
 use solana_security_txt::security_txt;
 
 pub mod instructions;
@@ -34,9 +34,9 @@ pub mod borgpad {
 
     pub fn initialize_lbp(
         ctx: Context<InitializeLbp>,
-        lbp_static_data: LbpStaticData
+        lbp_initialize: LbpInitializeData
     ) -> Result<()> {
-        return instructions::initialize_lbp::handler(ctx, lbp_static_data);
+        return instructions::initialize_lbp::handler(ctx, lbp_initialize);
     }
 
     pub fn set_admin_authority(

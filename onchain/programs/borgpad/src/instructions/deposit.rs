@@ -10,7 +10,6 @@ use crate::state::lbp::*;
 use crate::state::position::*;
 
 #[derive(Accounts)]
-#[instruction(uid: u64)]
 pub struct Deposit<'info> {
     #[account(
         mut,
@@ -30,7 +29,7 @@ pub struct Deposit<'info> {
     #[account(
         seeds = [
         b"lbp".as_ref(),
-        & lbp.static_data.uid.to_le_bytes()
+        & lbp.uid.to_le_bytes()
         ],
         bump
     )]
@@ -81,7 +80,7 @@ pub struct Deposit<'info> {
     pub position_mint: InterfaceAccount<'info, Mint>,
 
     #[account(
-        constraint = lbp.static_data.user_token_mint == token_mint.key() @ ErrorCode::IncorrectMint
+        constraint = lbp.user_token_mint == token_mint.key() @ ErrorCode::IncorrectMint
     )]
     pub token_mint: InterfaceAccount<'info, Mint>,
 
@@ -94,11 +93,10 @@ pub struct Deposit<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-// TODO: check that I did not forget a check or a step
 pub fn handler(ctx: Context<Deposit>, amount: u64) -> Result<()> {
     let lbp_data: &mut Account<Lbp> = &mut ctx.accounts.lbp;
 
-    if ctx.accounts.lbp_token_ata.amount + amount > lbp_data.static_data.user_max_cap {
+    if ctx.accounts.lbp_token_ata.amount + amount > lbp_data.user_max_cap {
         return err!(ErrorCode::MaxCapReached)
     }
 
@@ -124,7 +122,7 @@ pub fn handler(ctx: Context<Deposit>, amount: u64) -> Result<()> {
                 to: ctx.accounts.user_position_ata.to_account_info(),
                 authority: lbp_data.to_account_info()
             },
-            &[&[b"lbp", & lbp_data.static_data.uid.to_le_bytes(), &[ctx.bumps.lbp]]],
+            &[&[b"lbp", & lbp_data.uid.to_le_bytes(), &[ctx.bumps.lbp]]],
         ),
         1,
     )?;

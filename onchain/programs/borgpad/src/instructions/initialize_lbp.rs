@@ -6,7 +6,7 @@ use crate::state::config::*;
 use crate::state::lbp::*;
 
 #[derive(Accounts)]
-#[instruction(lbp_static_data: LbpStaticData)]
+#[instruction(lbp_initialize: LbpInitializeData)]
 pub struct InitializeLbp<'info> {
     #[account(
         mut,
@@ -25,7 +25,7 @@ pub struct InitializeLbp<'info> {
         space = Lbp::LEN,
         seeds = [
         b"lbp".as_ref(),
-        &lbp_static_data.uid.to_le_bytes()
+        &lbp_initialize.uid.to_le_bytes()
         ],
         bump,
         payer = admin_authority
@@ -42,7 +42,7 @@ pub struct InitializeLbp<'info> {
     pub lbp_ata: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
-        constraint = lbp_static_data.user_token_mint == token_mint.key() @ ErrorCode::IncorrectMint
+        constraint = lbp_initialize.user_token_mint == token_mint.key() @ ErrorCode::IncorrectMint
     )]
     pub token_mint: InterfaceAccount<'info, Mint>,
 
@@ -55,9 +55,9 @@ pub struct InitializeLbp<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn handler(ctx: Context<InitializeLbp>, lbp_static_data: LbpStaticData) -> Result<()> {
-    let lbp = Lbp { static_data: lbp_static_data, dynamic_data: LbpDynamicData::default() };
-    ctx.accounts.lbp.set_inner(lbp);
+pub fn handler(ctx: Context<InitializeLbp>, lbp_initialize: LbpInitializeData) -> Result<()> {
+    let lbp_data: &mut Account<Lbp> = &mut ctx.accounts.lbp;
+    lbp_data.initialize(lbp_initialize);
 
     Ok(())
 }
