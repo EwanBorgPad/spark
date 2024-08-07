@@ -7,8 +7,8 @@ import { useProjectDataContext } from "@/hooks/useProjectData"
 import ProjectTester from "@/components/QA/ProjectTester"
 import { expandTimelineDataInfo } from "@/utils/timeline"
 import Timeline from "@/components/Timeline/Timeline"
-import Avatar from "../components/Avatar/Avatar"
 import { Icon } from "../components/Icon/Icon"
+import Img from "@/components/Image/Img"
 
 const Project = () => {
   const { projectData } = useProjectDataContext()
@@ -20,7 +20,7 @@ const Project = () => {
     <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[72px] font-normal text-fg-primary lg:py-[100px]">
       <section className="flex w-full flex-col justify-between gap-6 px-4 lg:max-w-[792px] lg:flex-row">
         <div className="flex flex-col gap-6 lg:flex-row">
-          <Avatar imgUrl={projectData.info.logoUrl ?? ""} size="large" />
+          <Img src={projectData.info.logoUrl} size="20" />
           <div className="flex flex-col gap-1">
             <h1 className="font-semibold">{projectData.info.title}</h1>
             <span className="text-fg-primary text-opacity-75">
@@ -41,7 +41,7 @@ const Project = () => {
             <span className="text-fg-primary text-opacity-50">
               {t("chain")}
             </span>
-            <img className="h-4 w-4" src={projectData.info.chain.iconUrl} />
+            <Img size="4" src={projectData.info.chain.iconUrl} />
             <span>{projectData.info.chain.name}</span>
           </div>
         </div>
@@ -66,10 +66,7 @@ const Project = () => {
         <div className="w-full rounded-lg bg-gradient-to-r from-brand-primary/50 to-brand-secondary/15 p-[1px]">
           <div className="flex h-full w-full flex-col items-start justify-between gap-4 rounded-[7px] bg-gradient-to-br from-brand-dimmed-1 via-brand-dimmed-2 via-50% to-brand-dimmed-2 px-4 py-3 lg:flex-row lg:items-center lg:bg-gradient-to-r">
             <div className="flex items-center gap-4">
-              <Avatar
-                imgUrl={projectData.info.curator.avatarUrl ?? ""}
-                size="medium"
-              />
+              <Img src={projectData.info.curator.avatarUrl} size="10" />
               <div className="flex flex-col">
                 <span className="text-base">
                   {projectData.info.curator.fullName}

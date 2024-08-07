@@ -1,16 +1,22 @@
-import { useMutation } from "@tanstack/react-query"
-import React, { useState } from "react"
-import { toast } from "react-toastify"
 import {
   Controller,
   SubmitHandler,
   useFieldArray,
   useForm,
 } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
+import React, { useState } from "react"
+import { toast } from "react-toastify"
+import { z } from "zod"
 
+import {
+  WhitelistingRequirementType,
+  whitelistRequirementsObj,
+} from "@/utils/constants"
 import { externalLinkObj, IconLinkType } from "@/components/Button/ExternalLink"
 import { CurrencyInputField } from "@/components/InputField/CurrencyInputField"
-import { ProjectModel, WhitelistRequirementModel } from "shared/models"
+import { infoSchema, WhitelistRequirementModel } from "../../shared/models"
 import { DropdownField } from "@/components/InputField/DropdownField"
 import { backendApi, CreateProjectRequest } from "@/data/backendApi"
 import DateTimeField from "@/components/InputField/DateTimeField"
@@ -19,28 +25,28 @@ import { getDefaultValues } from "@/utils/projectDefaultValues"
 import { TextField } from "@/components/InputField/TextField"
 import UploadField from "@/components/InputField/UploadField"
 import BoWrapper from "@/components/BackOffice/BoWrapper"
+import { getStoredValue } from "@/utils/getStoredValue"
 import { formatCurrencyAmount } from "@/utils/format"
 import { useFormDraft } from "@/hooks/useFormDraft"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
-import {
-  WhitelistingRequirementType,
-  whitelistRequirementsObj,
-} from "@/utils/constants"
-import { getStoredValue } from "@/utils/getStoredValue"
 
+// helper values and types
 const iconOptions = Object.entries(externalLinkObj).map(([key, value]) => ({
   id: key,
   label: value.label,
 }))
-type IconType = Exclude<IconLinkType, "NO_ICON">
-type FormType = ProjectModel["info"] & { adminKey: string }
-
 const valueOptions = {
   shouldDirty: true,
   shouldValidate: true,
 }
+const extendedProjectInfoSchema = infoSchema.extend({
+  adminKey: z.string().min(1),
+})
+type FormType = z.infer<typeof extendedProjectInfoSchema>
+type IconType = Exclude<IconLinkType, "NO_ICON">
 
+// component
 const BackOffice = () => {
   const [idConfirmed, setIdConfirmed] = useState(false)
 
@@ -51,9 +57,11 @@ const BackOffice = () => {
     setValue,
     watch,
     control,
-    formState: { errors, isSubmitted },
+    formState: { isSubmitted },
   } = useForm<FormType>({
     defaultValues,
+    resolver: zodResolver(extendedProjectInfoSchema),
+    mode: "onSubmit",
   })
   useFormDraft(
     "create-new-project",
@@ -63,7 +71,7 @@ const BackOffice = () => {
       isSubmitted,
     },
     true,
-    "adminKey",
+    { key: "adminKey", value: "" },
   )
 
   const { mutate: createProject, isPending } = useMutation({
@@ -80,7 +88,7 @@ const BackOffice = () => {
     const { adminKey, ...info } = data
 
     createProject({
-      formValues: { info: info },
+      formValues: { info: info, whitelistParticipants: 0 },
       adminKey,
     })
   }
@@ -127,7 +135,6 @@ const BackOffice = () => {
   const fixedCoinPriceInBorg = watch("tge.fixedCoinPriceInBorg")
 
   const setRequirementLabel = (heldAmount: number, index: number) => {
-    console.log(heldAmount)
     const newLabel = `Hold ${heldAmount} BORG in your wallet`
     setValue(`whitelistRequirements.${index}.label`, newLabel)
     return newLabel
@@ -665,7 +672,7 @@ const BackOffice = () => {
                 fieldState: { error },
               }) => (
                 <TextField
-                  label="Tweet Url"
+                  label="Tweet Url - shown in Reward Distribution Phase"
                   value={value}
                   containerClassName="px-0"
                   onChange={onChange}
@@ -721,6 +728,7 @@ const BackOffice = () => {
                   value={value}
                   containerClassName="px-0"
                   onChange={onChange}
+                  placeholder="e.g. Full Range"
                   error={error?.message}
                 />
               )}
@@ -736,6 +744,7 @@ const BackOffice = () => {
                   label="Locking Period (short description)"
                   value={value}
                   containerClassName="px-0"
+                  placeholder="12-month lockup"
                   onChange={onChange}
                   error={error?.message}
                 />
@@ -910,11 +919,11 @@ const BackOffice = () => {
         <Button
           isLoading={isPending}
           onClick={() => {
-            toast.success("Project Created!")
+            // toast.success("Project Created!")
             // eslint-disable-next-line no-console
-            // console.log("formValues: ", watch())
+            console.log("formValues: ", watch())
             // eslint-disable-next-line no-console
-            // console.log("errors: ", errors)
+            console.log("errors: ", errors)
           }}
           btnText="LOG VALUES"
           className="bg-pink-500 text-white active:bg-pink-300"

@@ -37,7 +37,7 @@ export const getDefaultValues = () => {
         iconUrl: "",
         ticker: "",
       },
-      fixedCoinPriceInBorg: 1,
+      fixedCoinPriceInBorg: undefined,
       whitelistParticipants: 1698,
       liquidityPool: {
         name: "",
@@ -51,7 +51,7 @@ export const getDefaultValues = () => {
     },
     dataRoom: {
       backgroundImgUrl: "",
-      url: "#",
+      url: "",
     },
     timeline: timelineEventOptions.map((option) => ({
       id: option.id,

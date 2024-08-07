@@ -12,7 +12,7 @@ export const useFormDraft = (
   formName: string,
   { formValues: _formValues, setValue, isSubmitted }: FormMethods,
   isEnabled: boolean = true,
-  excludedProperty?: string,
+  replaceItem?: { key: string; value: "" },
 ) => {
   useEffect(() => {
     if (isEnabled) {
@@ -28,13 +28,13 @@ export const useFormDraft = (
   useEffect(() => {
     if (isEnabled) {
       const formValues = _formValues
-      if (excludedProperty) {
-        delete formValues[excludedProperty]
-      }
+      if (replaceItem?.key) {
+        formValues[replaceItem.key] = replaceItem.value
+      } // this will avoid saving adminKey inside localStorage
       localStorage.setItem(formName, JSON.stringify(formValues))
       if (isSubmitted) {
         localStorage.removeItem(formName)
       }
     }
-  }, [formName, _formValues, isSubmitted, isEnabled, excludedProperty])
+  }, [formName, _formValues, isSubmitted, isEnabled, replaceItem])
 }

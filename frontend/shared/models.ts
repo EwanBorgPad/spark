@@ -37,7 +37,7 @@ const iconTypeSchema = () =>
   z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM", "OUTER_LINK"])
 const externalUrlSchema = () =>
   z.object({
-    url: urlSchema(),
+    url: z.string().min(1),
     iconType: iconTypeSchema(),
     label: z.string(),
   })
@@ -53,7 +53,7 @@ const timelineEventsSchema = () =>
 const whitelistRequirementsSchema = () =>
   z.object({
     type: z.enum(["HOLD_BORG_IN_WALLET", "FOLLOW_ON_X", "DONT_RESIDE_IN_US"]),
-    label: z.string(),
+    label: z.string().min(1),
     description: z.string(),
     isMandatory: z.boolean(),
     heldAmount: z.number({ coerce: true }).optional(),
@@ -65,74 +65,64 @@ export type WhitelistRequirementModel = z.infer<
 /**
  * Schema for project, type should be inferred from this.
  */
-export const projectSchema = z.object({
-  info: z.object({
-    id: z.string(),
-    title: z.string(),
-    subtitle: z.string(),
-    logoUrl: urlSchema(),
-    chain: z.object({ name: z.string(), iconUrl: urlSchema() }),
-    origin: z.string(),
-    sector: z.string(),
-    curator: z.object({
-      avatarUrl: urlSchema(),
-      fullName: z.string(),
-      position: z.string(),
-      socials: z.array(
-        z.object({
-          url: z.string(),
-          iconType: iconTypeSchema(),
-          label: z.string(),
-        }),
-      ),
-    }),
-    projectLinks: z.array(
-      z.object({
-        url: z.string(),
-        iconType: iconTypeSchema(),
-        label: z.string(),
-      }),
-    ),
-    totalTokensForSale: z.number({ coerce: true }).int(),
-    tge: z.object({
-      raiseTarget: z.number({ coerce: true }).int(),
-      projectCoin: z.object({
-        iconUrl: urlSchema(),
-        ticker: z.string(),
-      }),
-      fixedCoinPriceInBorg: z.number({ coerce: true }),
-      liquidityPool: z.object({
-        name: z.string(),
-        iconUrl: urlSchema(),
-        lbpType: z.string(),
-        lockingPeriod: z.string(),
-        unlockDate: dateSchema(),
-        url: z.string(),
-      }),
-      tweetUrl: urlSchema(),
-    }),
-    dataRoom: z.object({
-      backgroundImgUrl: urlSchema(),
-      url: urlSchema(),
-    }),
-    timeline: z.array(
-      z.object({
-        id: timelineEventsSchema(),
-        date: dateSchema(),
-        label: z.string(),
-      }),
-    ),
-    whitelistRequirements: z.array(whitelistRequirementsSchema()).min(0),
+
+export const infoSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  subtitle: z.string().min(1),
+  logoUrl: urlSchema(),
+  chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
+  origin: z.string().min(1),
+  sector: z.string().min(1),
+  curator: z.object({
+    avatarUrl: urlSchema(),
+    fullName: z.string().min(1),
+    position: z.string().min(1),
+    socials: z.array(externalUrlSchema()),
   }),
+  projectLinks: z.array(externalUrlSchema()),
+  totalTokensForSale: z.number({ coerce: true }).int(),
+  tge: z.object({
+    raiseTarget: z.number({ coerce: true }).int(),
+    projectCoin: z.object({
+      iconUrl: urlSchema(),
+      ticker: z.string().min(1),
+    }),
+    fixedCoinPriceInBorg: z.number({ coerce: true }),
+    liquidityPool: z.object({
+      name: z.string().min(1),
+      iconUrl: urlSchema(),
+      lbpType: z.string().min(1),
+      lockingPeriod: z.string().min(1),
+      unlockDate: dateSchema(),
+      url: z.string().min(1),
+    }),
+    tweetUrl: z.string(),
+  }),
+  dataRoom: z.object({
+    backgroundImgUrl: urlSchema(),
+    url: z.string().min(1),
+  }),
+  timeline: z.array(
+    z.object({
+      id: timelineEventsSchema(),
+      date: dateSchema(),
+      label: z.string().min(1),
+    }),
+  ),
+  whitelistRequirements: z.array(whitelistRequirementsSchema()).min(0),
+})
+export const projectSchema = z.object({
+  info: infoSchema,
   whitelistParticipants: z.number().optional(),
   saleData: z
     .object({
-      availableTokens: z.number(),
+      availableTokens: z.number({ coerce: true }),
       saleSucceeded: z.boolean(),
-      totalAmountRaised: z.number(),
-      sellOutPercentage: z.number(),
-      participantCount: z.number(),
-      averageInvestedAmount: z.number(),
+      totalAmountRaised: z.number({ coerce: true }),
+      sellOutPercentage: z.number({ coerce: true }),
+      participantCount: z.number({ coerce: true }),
+      averageInvestedAmount: z.number({ coerce: true }),
     })
     .optional(),
   rewards: z
@@ -143,6 +133,7 @@ export const projectSchema = z.object({
     })
     .optional(),
 })
+export type ProjectInfoModel = z.infer<typeof infoSchema>
 export type ProjectModel = z.infer<typeof projectSchema>
 
 export type CacheStoreModel = {

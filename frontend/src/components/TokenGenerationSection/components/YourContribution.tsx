@@ -9,6 +9,7 @@ import ClaimYourPosition from "./ClaimYourPosition"
 import { Icon } from "@/components/Icon/Icon"
 import { PastOrders } from "./PastOrders"
 import { isBefore } from "date-fns/isBefore"
+import Img from "@/components/Image/Img"
 
 type YourContributionProps = {
   contributionInfo: ContributionAndRewardsType
@@ -65,7 +66,7 @@ const YourContribution = ({
                 icon="SvgPlus"
                 className="text-base text-fg-disabled opacity-50"
               />
-              <img src={projectCoin.iconUrl} className="h-4 w-4 object-cover" />
+              <Img src={projectCoin.iconUrl} size="4" />
               <span className="font-geist-mono text-base">
                 {mainPosition.projectTokens.total}
               </span>
@@ -75,7 +76,7 @@ const YourContribution = ({
             </div>
           </div>
           <div className="flex h-fit items-center gap-1 rounded-full text-xs text-fg-primary ">
-            <img src={liquidityPool.iconUrl} className="h-4 w-4 object-cover" />
+            <Img src={liquidityPool.iconUrl} size="4" />
             <a href={liquidityPool.url} className="underline">
               <span className="opacity-50">{liquidityPool.name}</span>
               <span className="opacity-50">{t("liquidity_pool")},</span>
@@ -105,7 +106,7 @@ const YourContribution = ({
         <div className="flex flex-col items-center gap-1 px-3 pb-6 pt-4">
           <span className="mb-1 text-xs">{t("sale_over.your_reward")}</span>
           <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
-            <img src={projectCoin.iconUrl} className="h-4 w-4 object-cover" />
+            <Img src={projectCoin.iconUrl} size="4" />
             <span className="font-geist-mono text-base">
               {rewards.totalTokens}
             </span>

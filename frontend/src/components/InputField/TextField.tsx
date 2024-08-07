@@ -30,7 +30,7 @@ export const TextField = ({
     _containerClassName,
   )
   const inputClasses = twMerge(
-    "py-2.5 w-full focus:outline-0 bg-secondary flex-grow placeholder:text-gray-400 truncate ring-1 ring-bd-secondary rounded-lg px-2",
+    "py-2.5 w-full focus:outline-0 bg-secondary flex-grow placeholder:text-gray-600 truncate ring-1 ring-bd-secondary rounded-lg px-2",
     "disabled:cursor-not-allowed",
     "focus:ring-2 focus:ring-bd-disabled",
     error && "ring-1 ring-bd-danger focus:ring-bd-danger",

@@ -13,6 +13,7 @@ import { formatCurrencyAmount } from "@/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 import { formatDateForTimer } from "@/utils/date-helpers"
 import { isBefore } from "date-fns/isBefore"
+import Img from "@/components/Image/Img"
 
 type RewardsProps = {
   hasDistributionStarted: boolean
@@ -98,7 +99,7 @@ const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
                   {t("reward_distribution.claimed")}
                 </span>
                 <div className="flex items-center gap-2">
-                  <img src={iconUrl} className="h-4 w-4" />
+                  <Img src={iconUrl} size="4" />
                   <p>
                     <span className="mr-1">{rewards.claimedTokens}</span>
                     <span className="mr-1">/</span>

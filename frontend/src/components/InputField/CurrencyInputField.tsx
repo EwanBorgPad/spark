@@ -12,6 +12,7 @@ type CurrencyInputFieldProps = HTMLProps<"input"> & {
   label?: string
   onChange: (value: string | undefined) => void
   value: number | undefined
+  placeholder?: string
 }
 
 export const CurrencyInputField = ({
@@ -24,6 +25,7 @@ export const CurrencyInputField = ({
   onChange,
   disabled,
   label,
+  placeholder,
   ...props
 }: CurrencyInputFieldProps) => {
   const containerClassName = twMerge(
@@ -46,7 +48,7 @@ export const CurrencyInputField = ({
         <CurrencyInput
           value={value}
           allowNegativeValue={false}
-          placeholder="0"
+          placeholder={placeholder ?? "0"}
           className={
             "h-[40px] w-full max-w-[360px] bg-transparent px-2 py-2.5 font-geist-mono text-sm placeholder:text-white/30 focus:outline-none"
           }
@@ -54,6 +56,9 @@ export const CurrencyInputField = ({
           onValueChange={onChange}
         />
       </div>
+      {error && (
+        <span className="-mt-1 text-xs text-fg-error-primary">{error}</span>
+      )}
     </div>
   )
 }

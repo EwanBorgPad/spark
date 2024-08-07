@@ -113,3 +113,11 @@ input[type="checkbox"] {
 .react-datepicker__month-container {
   height: 294px !important;
 }
+
+/* Image fallback */
+img:before {
+  content: ' ';
+  display: block;
+  position: absolute;
+  background-image: url("./assets/fallout.png");
+}

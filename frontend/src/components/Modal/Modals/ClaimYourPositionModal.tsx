@@ -8,6 +8,7 @@ import { formatCurrencyAmount } from "@/utils/format"
 import { CustomInputSlider } from "@/components/InputField/CustomInputSlider"
 import { Button } from "@/components/Button/Button"
 import { useTranslation } from "react-i18next"
+import Img from "@/components/Image/Img"
 
 type ClaimYourPositionModalProps = {
   onClose: () => void
@@ -117,9 +118,9 @@ const ClaimYourPositionModal = ({
               <Icon icon="SvgPlus" className="rounded-full text-fg-disabled" />
               <div className="flex flex-1 flex-col items-start justify-start gap-[34px] rounded-lg border border-bd-primary bg-tertiary p-4">
                 <div className="flex items-center justify-center gap-2">
-                  <img
+                  <Img
                     src={projectData.info.tge.projectCoin.iconUrl}
-                    className="h-5 w-5 object-cover"
+                    size="5"
                   />
                   <span className="text-base font-medium leading-tight text-neutral-100">
                     {projectData.info.tge.projectCoin.ticker}
