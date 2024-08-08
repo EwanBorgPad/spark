@@ -6,12 +6,13 @@ import {
   projectSchema,
 } from "../../shared/models.ts"
 
-const base_url = import.meta.env.VITE_API_BASE_URL ?? "/api"
-const GET_WHITELISTING_STATUS_API = base_url + "/whitelisting"
-const POST_CONFIRM_RESIDENCY_URL = base_url + "/confirmresidency"
-const GET_PROJECT_API_URL = base_url + "/projects" // + '?id=id'
-const GET_EXCHANGE_API_URL = base_url + "/exchange"
-const GET_PRESIGNED_URL = base_url + "/presignedurl"
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
+const GET_WHITELISTING_STATUS_API = API_BASE_URL + "/whitelisting"
+const POST_CONFIRM_RESIDENCY_URL = API_BASE_URL + "/confirmresidency"
+const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
+const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
+const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
+const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
 
 const getWhitelistingStatus = async ({ address }: { address: string }) => {
   const url = new URL(GET_WHITELISTING_STATUS_API, window.location.href)
@@ -45,6 +46,34 @@ const getProject = async ({
     return parsedJson
   } catch (e) {
     console.error("GET /projects validation error!")
+    throw e
+  }
+}
+
+export type CreateProjectRequest = {
+  formValues: ProjectModel
+  adminKey: string
+}
+const createProject = async ({
+  formValues,
+  adminKey,
+}: CreateProjectRequest) => {
+  const url = new URL(POST_PROJECT_API_URL, window.location.href)
+  const body = JSON.stringify(formValues)
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      body,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${adminKey}`,
+      },
+    })
+    const json = await response.json()
+    return json
+  } catch (e) {
+    console.error(e)
     throw e
   }
 }
@@ -108,6 +137,5 @@ export const backendApi = {
   confirmResidency,
   getProject,
   getExchange,
-  getPresignedUrl,
-  uploadFileToBucket,
+  createProject,
 }

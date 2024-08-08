@@ -8,13 +8,15 @@ import TokenRewards from "./TokenRewards"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
+import SimpleLoader from "@/components/Loaders/SimpleLoader"
+import Img from "@/components/Image/Img"
 
 const WhitelistingContent = () => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()
   const { projectData } = useProjectDataContext()
-  const tgeData = projectData.tge
+  const tgeData = projectData.info.tge
 
   const baseCurrency = "swissborg"
   const targetCurrency = "usd"
@@ -37,11 +39,10 @@ const WhitelistingContent = () => {
     queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
 
-  if (!projectTokenData || !borgData) {
-    return null
-  }
-
-  const tokenPriceInBORG = projectTokenData.currentPrice / borgData.currentPrice
+  const tokenPriceInBORG =
+    !projectTokenData || !borgData
+      ? null
+      : projectTokenData.currentPrice / borgData.currentPrice
 
   return (
     <div
@@ -75,20 +76,27 @@ const WhitelistingContent = () => {
 
         <div className="flex w-full items-center justify-between py-2">
           <div className="flex items-center gap-2">
-            <img
-              src={tgeData.projectCoin.iconUrl}
-              className={"h-[24px] w-[24px] rounded-full object-cover"}
-            />
+            <Img src={tgeData.projectCoin.iconUrl} size="6" />
             <span>{tgeData.projectCoin.ticker}</span>
             <span>{t("tge.price")}</span>
           </div>
           <div className="flex flex-col items-end">
             <span className="font-geist-mono">
-              {formatCurrencyAmount(projectTokenData.currentPrice, true, 5)}
+              {projectTokenData ? (
+                formatCurrencyAmount(projectTokenData.currentPrice, true, 5)
+              ) : (
+                // @TODO - add skeleton instead of loader
+                <SimpleLoader />
+              )}
             </span>
             <div className="flex gap-2">
               <span className="font-geist-mono">
-                {formatCurrencyAmount(tokenPriceInBORG, false, 5)}
+                {tokenPriceInBORG ? (
+                  formatCurrencyAmount(tokenPriceInBORG, false, 5)
+                ) : (
+                  // @TODO - add skeleton instead of loader
+                  <SimpleLoader />
+                )}
               </span>
               <span>BORG</span>
             </div>
@@ -97,9 +105,10 @@ const WhitelistingContent = () => {
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
         <div className="flex w-full items-center justify-between py-3">
-          <span>{t("tge.registrations")}</span>
+          <span>{t("tge.whitelist_participants")}</span>
           <span className="font-geist-mono">
-            {formatCurrencyAmount(tgeData.registrations, false, 0)}
+            {projectData?.whitelistParticipants &&
+              formatCurrencyAmount(projectData.whitelistParticipants, false, 0)}
           </span>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
@@ -114,11 +123,7 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.defi_protocol")}</span>
           <div className="flex items-center gap-2">
-            <img
-              src={tgeData.liquidityPool.iconUrl}
-              alt="liquidity pool - defi protocol"
-              className="h-5 w-5 rounded-full"
-            />
+            <Img src={tgeData.liquidityPool.iconUrl} size="5" />
             <span>{tgeData.liquidityPool.name}</span>
           </div>
         </div>

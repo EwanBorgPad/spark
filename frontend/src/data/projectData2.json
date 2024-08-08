@@ -1,134 +1,137 @@
 {
-  "id": "milan-crypto-test",
-  "createdAt": "2024-07-12T12:39:16Z",
-  "title": "Milan Crypto",
-  "subtitle": "Anti-Slashing Liquid Staking Crypto Manic Automated Market",
-  "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar.png",
-  "origin": "\uD83C\uDDF7\uD83C\uDDF8 Serbia",
-  "lbpType": "Buy Only",
-  "chain": { "name": "Zora", "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/chain-icon.png" },
-  "curator": {
-    "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/curator-avatar.jpg",
-    "fullName": "Milan Miljus",
-    "position": "Software Developer",
-    "socials": [
+  "info": {
+    "id": "milan-crypto-test",
+    "title": "Milan Crypto",
+    "subtitle": "Anti-Slashing Liquid Staking Crypto Manic Automated Market",
+    "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar.png",
+    "origin": "\uD83C\uDDF7\uD83C\uDDF8 Serbia",
+    "sector": "Healthcare",
+    "chain": {
+      "name": "Zora",
+      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/chain-icon.png"
+    },
+    "totalTokensForSale": 32000,
+    "curator": {
+      "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/curator-avatar.jpg",
+      "fullName": "Milan Miljus",
+      "position": "Software Developer",
+      "socials": [
+        {
+          "url": "#",
+          "iconType": "LINKED_IN",
+          "label": "Linkedin"
+        },
+        {
+          "url": "#",
+          "iconType": "X_TWITTER",
+          "label": "X (ex-Twitter)"
+        },
+        {
+          "url": "#",
+          "iconType": "MEDIUM",
+          "label": "Medium"
+        }
+      ]
+    },
+    "projectLinks": [
       {
         "url": "#",
-        "iconType": "LINKED_IN",
-        "label": "Linkedin"
-      },
-      {
-        "url": "#",
-        "iconType": "X_TWITTER",
-        "label": "X (ex-Twitter)"
+        "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
+        "iconType": "WEB",
+        "label": ""
       },
       {
         "url": "#",
         "iconType": "MEDIUM",
-        "label": "Medium"
+        "label": ""
+      },
+      {
+        "url": "#",
+        "iconType": "LINKED_IN",
+        "label": ""
+      },
+      {
+        "url": "#",
+        "iconType": "X_TWITTER",
+        "label": ""
+      }
+    ],
+    "tge": {
+      "raiseTarget": 2000000,
+      "projectCoin": {
+        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/project-coin-icon.svg",
+        "ticker": "LRC"
+      },
+      "fixedCoinPriceInBorg": 1,
+      "whitelistParticipants": 1698,
+      "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
+      "liquidityPool": {
+        "name": "Raydium",
+        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/liquidity-pool-icon.png",
+        "lbpType": "Full Range",
+        "lockingPeriod": "12-month lockup",
+        "unlockDate": "2025-07-12T12:39:16Z",
+        "url": "#"
+      },
+      "tweetUrl": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
+    },
+    "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
+    "dataRoom": {
+      "backgroundImgUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar2.png",
+      "url": "#"
+    },
+    "timeline": [
+      {
+        "id": "REGISTRATION_OPENS",
+        "label": "Registration Opens",
+        "date": "2024-06-20"
+      },
+      {
+        "id": "SALE_OPENS",
+        "label": "Sale Opens",
+        "date": "2024-07-02"
+      },
+      {
+        "id": "SALE_CLOSES",
+        "label": "Sale Closes",
+        "date": "2024-07-07"
+      },
+      {
+        "id": "REWARD_DISTRIBUTION",
+        "label": "Reward Distribution",
+        "date": "2024-07-10"
+      },
+      {
+        "id": "DISTRIBUTION_OVER",
+        "label": "Distribution Over",
+        "date": "2025-07-10"
+      }
+    ],
+    "whitelistingRequirements": [
+      {
+        "type": "HOLD_BORG_IN_WALLET",
+        "label": "Hold 20,000 BORG in your wallet",
+        "description": "",
+        "isMandatory": true,
+        "heldAmount": 20000
+      },
+      {
+        "type": "FOLLOW_ON_X",
+        "label": "Follow BorgPad on X",
+        "description": "",
+        "isMandatory": true
+      },
+      {
+        "type": "DONT_RESIDE_IN_US",
+        "label": "Don’t reside in the US",
+        "description": "",
+        "isMandatory": true
       }
     ]
   },
-  "projectLinks": [
-    {
-      "url": "#",
-      "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
-      "iconType": "WEB",
-      "label": ""
-    },
-    {
-      "url": "#",
-      "iconType": "MEDIUM",
-      "label": ""
-    },
-    {
-      "url": "#",
-      "iconType": "LINKED_IN",
-      "label": ""
-    },
-    {
-      "url": "#",
-      "iconType": "X_TWITTER",
-      "label": ""
-    }
-  ],
-  "tokensAvailability": {
-    "available": 1565,
-    "total": 2000
-  },
-  "tge": {
-    "raiseTarget": 2000000,
-    "projectCoin": {
-      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/project-coin-icon.svg",
-      "ticker": "LRC"
-    },
-    "fixedCoinPriceInBorg": 1,
-    "registrations": 1698,
-    "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
-    "liquidityPool": {
-      "name": "Raydium",
-      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/liquidity-pool-icon.png",
-      "lbpType": "Full Range",
-      "lockingPeriod": "12 months",
-      "unlockDate": "2025-07-12T12:39:16Z"
-    },
-    "tweetUrl": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
-  },
-  "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
-  "dataRoom": {
-    "backgroundImgUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar2.png",
-    "url": "#"
-  },
-  "timeline": [
-    {
-      "id": "REGISTRATION_OPENS",
-      "label": "Registration Opens",
-      "date": "2024-06-20"
-    },
-    {
-      "id": "SALE_OPENS",
-      "label": "Sale Opens",
-      "date": "2024-07-02"
-    },
-    {
-      "id": "SALE_CLOSES",
-      "label": "Sale Closes",
-      "date": "2024-07-07"
-    },
-    {
-      "id": "REWARD_DISTRIBUTION",
-      "label": "Reward Distribution",
-      "date": "2024-07-10"
-    },
-    {
-      "id": "DISTRIBUTION_OVER",
-      "label": "Distribution Over",
-      "date": "2025-07-10"
-    }
-  ],
-  "whitelistingRequirements": [
-    {
-      "type": "HOLD_BORG_IN_WALLET",
-      "label": "Hold 20,000 BORG in your wallet",
-      "description": "",
-      "isMandatory": true,
-      "heldAmount": 20000
-    },
-    {
-      "type": "FOLLOW_ON_X",
-      "label": "Follow BorgPad on X",
-      "description": "",
-      "isMandatory": true
-    },
-    {
-      "type": "DONT_RESIDE_IN_US",
-      "label": "Don’t reside in the US",
-      "description": "",
-      "isMandatory": true
-    }
-  ],
   "saleResults": {
-    "saleSucceeded": false,
+    "availableTokens": 14300,
+    "saleSucceeded": true,
     "totalAmountRaised": 800402.5661,
     "sellOutPercentage": 78,
     "participantCount": 578,

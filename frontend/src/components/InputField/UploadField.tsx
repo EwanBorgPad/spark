@@ -75,15 +75,9 @@ const UploadField = ({
   }
 
   const containerClassName = twMerge(
-    "text-sm w-full flex flex-col items-start gap-2 px-4 cursor-text",
+    "text-sm w-full flex flex-col items-start gap-2 px-4 cursor-text max-w-[360px]",
     _containerClassName,
   )
-  //   const inputClasses = twMerge(
-  //     "py-2.5 w-full focus:outline-0 bg-secondary flex-grow placeholder:text-gray-400 truncate ring-1 ring-bd-secondary rounded-lg px-2",
-  //     "focus:ring-2 focus:ring-bd-disabled",
-  //     error && "ring-1 ring-bd-danger focus:ring-bd-danger",
-  //     inputClassName,
-  //   )
 
   return (
     <div className={containerClassName}>

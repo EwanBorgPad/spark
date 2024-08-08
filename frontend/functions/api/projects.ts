@@ -1,14 +1,16 @@
 import { ProjectModel, projectSchema } from "../../shared/models"
-import { jsonResponse } from "./cfPagesFunctionsUtils"
+import { hasAdminAccess, jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 
 type ENV = {
   DB: D1Database
+  ADMIN_API_KEY_HASH: string
 }
 /**
  * Get request handler - returns a project by id
  * @param ctx
  */
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
+  const db = ctx.env.DB
   try {
     const url = ctx.request.url
     const id = new URL(url).searchParams.get("id")
@@ -18,7 +20,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: "Please provide id query param" }, 400)
     }
 
-    const project = await getProjectById(ctx.env.DB, id)
+    const project = await getProjectById(db, id)
 
     if (project) {
       return jsonResponse(project, 200)
@@ -26,7 +28,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: "Not found!" }, 404)
     }
   } catch (e) {
-    console.error(e)
+    await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
   }
 }
@@ -35,7 +37,13 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
  * @param ctx
  */
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
+  const db = ctx.env.DB
   try {
+    // authorize request
+    if (!hasAdminAccess(ctx)) {
+      return jsonResponse(null, 401)
+    }
+
     // parse request
     const requestJson = await ctx.request.json()
     const { error, data } = projectSchema.safeParse(requestJson)
@@ -52,7 +60,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     // check if exists
-    const existingProject = await getProjectById(ctx.env.DB, data.id)
+    const existingProject = await getProjectById(db, data.info.id)
     if (existingProject) {
       return jsonResponse(
         {
@@ -63,13 +71,14 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     // persist in db
-    await ctx.env.DB.prepare("INSERT INTO project (id, json) VALUES (?1, ?2)")
-      .bind(data.id, JSON.stringify(data))
+    await db
+      .prepare("INSERT INTO project (id, json) VALUES (?1, ?2)")
+      .bind(data.info.id, JSON.stringify(data))
       .run()
 
     return jsonResponse({ message: "Created!" }, 201)
   } catch (e) {
-    console.error(e)
+    await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
   }
 }

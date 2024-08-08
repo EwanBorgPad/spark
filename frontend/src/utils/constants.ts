@@ -1,5 +1,3 @@
-import i18n from "@/i18n/i18n"
-
 export type WhitelistingRequirementType =
   | "FOLLOW_ON_X"
   | "DONT_RESIDE_IN_US"
@@ -13,7 +11,7 @@ export type WhitelistRequirement = {
   heldAmount?: number
 }
 
-export const whitelistRequirements: Record<
+export const whitelistRequirementsObj: Record<
   WhitelistingRequirementType,
   WhitelistRequirement
 > = {
@@ -44,7 +42,8 @@ export const timelineEvents = [
   "SALE_CLOSES",
   "REWARD_DISTRIBUTION",
   "DISTRIBUTION_OVER",
-]
+] as const
+export type TimelineEventId = typeof timelineEvents
 export const timelineEventLabels = {
   REGISTRATION_OPENS: "Registration Opens",
   SALE_OPENS: "Sale Opens",
@@ -53,5 +52,8 @@ export const timelineEventLabels = {
   DISTRIBUTION_OVER: "Distribution Over",
 }
 export const timelineEventOptions = Object.entries(timelineEventLabels).map(
-  ([key, value]) => ({ id: key, label: value }),
+  ([key, value]) => ({
+    id: key as unknown as TimelineEventId[number], // Object.entries isn't type safe
+    label: value,
+  }),
 )

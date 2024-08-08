@@ -9,7 +9,7 @@ Cloudflare Pages offers developers free hosting for static websites and web appl
 
 Preview deployments allow you to preview new versions of your project without deploying it to production.
 
-Every time you open a new pull request on your GitHub repository, Cloudflare Pages will create a unique preview URL, which will stay updated as you continue to push new commits to the branch. This is only true when pull requests originate from the repository itself.
+Every time you open a new pull request on your GitHub repository, Cloudflare Pages will (by default) create a unique preview URL, which will stay updated as you continue to push new commits to the branch. This is only true when pull requests originate from the repository itself.
 
 - [Preview deployments](https://developers.cloudflare.com/pages/configuration/preview-deployments/)
 - [Control access to your project's Preview deployments with Cloudflare Access](https://www.cloudflare.com/en-gb/zero-trust/products/access/)
@@ -53,22 +53,30 @@ Much like a CDN caching static files to optimize content delivery, Edge Computin
 
 ### Tooling
 
-As Workers do not have a full nodejs API, we are limited in what we can use. Here are some recommended solutions:
-- Routing: [hono](https://hono.dev/getting-started/cloudflare-workers)
-- ORM: [drizzle](https://github.com/drizzle-team/drizzle-orm/blob/main/examples/cloudflare-d1/README.md)
-- Example: https://www.youtube.com/watch?v=PxWleEgi3Hw
+As Workers do not have full [nodejs compatibility](https://developers.cloudflare.com/workers/runtime-apis/nodejs/), we are limited in what we can use. Here are some recommended solutions:
+- Routing: [hono](https://developers.cloudflare.com/pages/framework-guides/deploy-a-hono-site/) ([npm](https://www.npmjs.com/package/hono))
+- ORM: [drizzle](https://developers.cloudflare.com/d1/reference/community-projects/#drizzle-orm) ([npm](https://www.npmjs.com/package/drizzle-orm))
+- Validation: [zod](https://zod.dev/) ([npm](https://www.npmjs.com/package/zod))
+
+All listed libraries have 0 dependencies and are supported on CloudFlare Worker's runtime.
+
+Tutorial: [Serverless API with Cloudflare Workers (Hono, D1 & Drizzle ORM)](https://www.youtube.com/watch?v=PxWleEgi3Hw)
+
+### Configuration
+
+- [Create Cloudflare CLI](https://developers.cloudflare.com/pages/get-started/c3)
+- [wrangler.toml](https://developers.cloudflare.com/workers/wrangler/configuration/)
+- [Compatibility Flags](https://developers.cloudflare.com/workers/configuration/compatibility-dates/#compatibility-flags)
+- [Why Worker's environment variables contain live objects](https://blog.cloudflare.com/workers-environment-live-object-bindings)
+- [Service Bindings](https://developers.cloudflare.com/workers/runtime-apis/bindings/service-bindings/)
 
 ### Resources
 
 - [YouTube: Is "edge" computing really faster?](https://www.youtube.com/watch?v=yOP5-3_WFus)
-- [Cloudflare wiki](https://en.wikipedia.org/wiki/Cloudflare)
-- [Create Cloudflare CLI](https://developers.cloudflare.com/pages/get-started/c3)
-- [wrangler.toml](https://developers.cloudflare.com/workers/wrangler/configuration/)
 - [D1 Get started](https://developers.cloudflare.com/d1/get-started/)
 - [Using Cloudflare workers as your only backend](https://www.youtube.com/watch?v=1tM_d3CH0N0)
 - [Monorepos](https://developers.cloudflare.com/pages/configuration/monorepos/)
 - [Reddit: Vercel vs Cloudflare Pages/Workers](https://www.reddit.com/r/nextjs/comments/s3ec29/vercel_vs_cloudflare_pages_workers/)
-- [Compatibility Flags](https://developers.cloudflare.com/workers/configuration/compatibility-dates/#compatibility-flags)
 
 ## Other Cloudflare services
 

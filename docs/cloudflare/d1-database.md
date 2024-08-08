@@ -3,13 +3,12 @@
 
 D1 is a distributed SQLite-like database developed by CloudFlare.
 
-- Documentation: https://developers.cloudflare.com/d1/
-- Bindings Concept: https://developers.cloudflare.com/pages/functions/bindings/#d1-databases
-- Local Development: https://developers.cloudflare.com/d1/build-with-d1/local-development/
-- JSON columns: https://developers.cloudflare.com/d1/build-with-d1/query-json
-- Executing queries against a local database: `wrangler d1 execute DB_NAME --local --command "SELECT 1;"`
+- [Documentation](https://developers.cloudflare.com/d1/)
+- [Bindings Concept](https://developers.cloudflare.com/pages/functions/bindings/#d1-databases)
+- [Local Development](https://developers.cloudflare.com/d1/build-with-d1/local-development/)
+- [JSON columns](https://developers.cloudflare.com/d1/build-with-d1/query-json)
 
-### wrangler.toml
+## Local Development
 
 In order to set up a local database, one needs to create a `wrangler.toml` file in project root with at least the following:
 
@@ -21,18 +20,19 @@ database_id = "DB_UUID" # wrangler d1 info YOUR_DATABASE_NAME
 preview_database_id = "DB" # Required for Pages local development
 ```
 
-After creating the toml file and running `wrangler dev` it should output something like this:
+After creating the .toml file and running `wrangler dev` it should output something like this:
 
 ```
 Your worker has access to the following bindings:
 - D1 Databases:
   - DB: DB_NAME (DB), Preview: (DB)
-```
 
-TODO @d1 use json functions instead of orm-like logic
-TODO @d1 make json column NOT NULL DEFAULT '{}'
+⎔ Starting local server...
+[wrangler:inf] Ready on http://localhost:8788
+```
 
 ### Useful commands
 
+- Query local database: `wrangler d1 execute DB_NAME --local --command "SELECT 1;"`
 - List all tables: `wrangler d1 execute DB_NAME --remote --command "SELECT name FROM sqlite_master WHERE type='table';"`
 - List all columns: `wrangler d1 execute DB_NAME --remote --command "PRAGMA table_info(TABLE_NAME);"`

@@ -30,3 +30,5 @@ export * from "./SvgHandWithWallet"
 export * from "./SvgPlus"
 export * from "./SvgMedal"
 export * from "./SvgSnapshot"
+export * from "./SvgTrophy"
+
