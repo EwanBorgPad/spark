@@ -1,136 +1,137 @@
 {
-  "id": "puffer-finance",
-  "title": "Puffer Finance",
-  "subtitle": "Anti-Slashing Liquid Staking",
-  "logoUrl": "/images/puffer-finance/avatar.png",
-  "origin": "🇮🇹 Italy",
-  "sector": "Healthcare",
-  "chain": {
-    "name": "Zora",
-    "iconUrl": "/images/puffer-finance/chain-icon.png"
-  },
-  "curator": {
-    "avatarUrl": "/images/puffer-finance/curator-avatar.png",
-    "fullName": "John Doe",
-    "position": "Founding Contributor",
-    "socials": [
+  "info": {
+    "id": "puffer-finance",
+    "title": "Puffer Finance",
+    "subtitle": "Anti-Slashing Liquid Staking",
+    "logoUrl": "/images/puffer-finance/avatar.png",
+    "origin": "🇮🇹 Italy",
+    "sector": "Healthcare",
+    "chain": {
+      "name": "Zora",
+      "iconUrl": "/images/puffer-finance/chain-icon.png"
+    },
+    "totalTokensForSale": 25000,
+    "curator": {
+      "avatarUrl": "/images/puffer-finance/curator-avatar.png",
+      "fullName": "John Doe",
+      "position": "Founding Contributor",
+      "socials": [
+        {
+          "url": "https://medium.com/@puffer.fi",
+          "iconType": "MEDIUM",
+          "label": "Medium"
+        },
+        {
+          "url": "https://www.linkedin.com/company/puffer-finance",
+          "iconType": "LINKED_IN",
+          "label": "Linkedin"
+        },
+        {
+          "url": "https://twitter.com/puffer_finance",
+          "iconType": "X_TWITTER",
+          "label": "X (ex-Twitter)"
+        }
+      ]
+    },
+    "projectLinks": [
+      {
+        "url": "https://www.puffer.fi",
+        "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
+        "iconType": "WEB",
+        "label": ""
+      },
       {
         "url": "https://medium.com/@puffer.fi",
         "iconType": "MEDIUM",
-        "label": "Medium"
+        "label": ""
       },
       {
         "url": "https://www.linkedin.com/company/puffer-finance",
         "iconType": "LINKED_IN",
-        "label": "Linkedin"
+        "label": ""
       },
       {
         "url": "https://twitter.com/puffer_finance",
         "iconType": "X_TWITTER",
-        "label": "X (ex-Twitter)"
+        "label": ""
+      }
+    ],
+    "tge": {
+      "raiseTarget": 2000000,
+      "projectCoin": {
+        "iconUrl": "/images/puffer-finance/project-coin-icon.svg",
+        "ticker": "LRC"
+      },
+      "fixedCoinPriceInBorg": 1,
+      "whitelistParticipants": 1698,
+      "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
+      "liquidityPool": {
+        "name": "Raydium",
+        "iconUrl": "/images/puffer-finance/liquidity-pool-icon.png",
+        "lbpType": "Full Range",
+        "lockingPeriod": "12-month lockup",
+        "unlockDate": "2025-07-12T12:39:16Z",
+        "url": "#"
+      },
+      "tweetUrl": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
+    },
+    "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
+    "dataRoom": {
+      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
+      "url": "#"
+    },
+    "timeline": [
+      {
+        "id": "REGISTRATION_OPENS",
+        "label": "Registration Opens",
+        "date": "2024-06-20"
+      },
+      {
+        "id": "SALE_OPENS",
+        "label": "Sale Opens",
+        "date": "2024-07-02"
+      },
+      {
+        "id": "SALE_CLOSES",
+        "label": "Sale Closes",
+        "date": "2024-07-07"
+      },
+      {
+        "id": "REWARD_DISTRIBUTION",
+        "label": "Reward Distribution",
+        "date": "2024-07-10"
+      },
+      {
+        "id": "DISTRIBUTION_OVER",
+        "label": "Distribution Over",
+        "date": "2025-07-10"
+      }
+    ],
+    "whitelistingRequirements": [
+      {
+        "type": "HOLD_BORG_IN_WALLET",
+        "label": "Hold 20,000 BORG in your wallet",
+        "description": "",
+        "isMandatory": true,
+        "heldAmount": 20000
+      },
+      {
+        "type": "FOLLOW_ON_X",
+        "label": "Follow BorgPad on X",
+        "description": "",
+        "isMandatory": true
+      },
+      {
+        "type": "DONT_RESIDE_IN_US",
+        "label": "Don’t reside in the US",
+        "description": "",
+        "isMandatory": true
       }
     ]
   },
-  "projectLinks": [
-    {
-      "url": "https://www.puffer.fi",
-      "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
-      "iconType": "WEB",
-      "label": ""
-    },
-    {
-      "url": "https://medium.com/@puffer.fi",
-      "iconType": "MEDIUM",
-      "label": ""
-    },
-    {
-      "url": "https://www.linkedin.com/company/puffer-finance",
-      "iconType": "LINKED_IN",
-      "label": ""
-    },
-    {
-      "url": "https://twitter.com/puffer_finance",
-      "iconType": "X_TWITTER",
-      "label": ""
-    }
-  ],
-  "tokensAvailability": {
-    "available": 1565,
-    "total": 2000
-  },
-  "tge": {
-    "raiseTarget": 2000000,
-    "projectCoin": {
-      "iconUrl": "/images/puffer-finance/project-coin-icon.svg",
-      "ticker": "LRC"
-    },
-    "fixedCoinPriceInBorg": 1,
-    "whitelistParticipants": 1698,
-    "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
-    "liquidityPool": {
-      "name": "Raydium",
-      "iconUrl": "/images/puffer-finance/liquidity-pool-icon.png",
-      "lbpType": "Full Range",
-      "lockingPeriod": "12-month lockup",
-      "unlockDate": "2025-07-12T12:39:16Z",
-      "url": "#"
-    },
-    "tweetUrl": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
-  },
-  "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
-  "dataRoom": {
-    "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
-    "url": "#"
-  },
-  "timeline": [
-    {
-      "id": "REGISTRATION_OPENS",
-      "label": "Registration Opens",
-      "date": "2024-06-20"
-    },
-    {
-      "id": "SALE_OPENS",
-      "label": "Sale Opens",
-      "date": "2024-07-02"
-    },
-    {
-      "id": "SALE_CLOSES",
-      "label": "Sale Closes",
-      "date": "2024-07-07"
-    },
-    {
-      "id": "REWARD_DISTRIBUTION",
-      "label": "Reward Distribution",
-      "date": "2024-07-10"
-    },
-    {
-      "id": "DISTRIBUTION_OVER",
-      "label": "Distribution Over",
-      "date": "2025-07-10"
-    }
-  ],
-  "whitelistingRequirements": [
-    {
-      "type": "HOLD_BORG_IN_WALLET",
-      "label": "Hold 20,000 BORG in your wallet",
-      "description": "",
-      "isMandatory": true,
-      "heldAmount": 20000
-    },
-    {
-      "type": "FOLLOW_ON_X",
-      "label": "Follow BorgPad on X",
-      "description": "",
-      "isMandatory": true
-    },
-    {
-      "type": "DONT_RESIDE_IN_US",
-      "label": "Don’t reside in the US",
-      "description": "",
-      "isMandatory": true
-    }
-  ],
-  "saleResults": {
+  "whitelistParticipants": 768,
+  "saleData": {
+    "availableTokens": 12403,
     "saleSucceeded": true,
     "totalAmountRaised": 800402.5661,
     "sellOutPercentage": 78,

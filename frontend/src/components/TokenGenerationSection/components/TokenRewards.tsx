@@ -1,5 +1,7 @@
 import { Icon } from "@/components/Icon/Icon"
+import Img from "@/components/Image/Img"
 import { useProjectDataContext } from "@/hooks/useProjectData"
+import { formatCurrencyAmount } from "@/utils/format"
 import { formatValue } from "react-currency-input-field"
 import { useTranslation } from "react-i18next"
 
@@ -14,12 +16,14 @@ const TokenRewards = ({
 }: TokenRewardsProps) => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
-  const tgeData = projectData.tge
+  const tgeData = projectData.info.tge
 
   const getCoinReward = () => {
     if (!borgCoinInput) return 0
+    const tokenReward =
+      +borgCoinInput * projectData.info.tge.fixedCoinPriceInBorg
     return formatValue({
-      value: (+borgCoinInput * projectData.tge.fixedCoinPriceInBorg).toString(),
+      value: formatCurrencyAmount(tokenReward, false, 6).toString(),
     })
   }
 
@@ -44,10 +48,7 @@ const TokenRewards = ({
               icon="SvgPlus"
               className="text-base text-fg-disabled opacity-50"
             />
-            <img
-              src={tgeData.projectCoin.iconUrl}
-              className="h-4 w-4 object-cover"
-            />
+            <Img src={tgeData.projectCoin.iconUrl} size="4" />
             <span className="font-geist-mono text-base">{getCoinReward()}</span>
             <span className="font-geist-mono text-base">
               {tgeData.projectCoin.ticker}
@@ -64,10 +65,7 @@ const TokenRewards = ({
         <div className="flex h-fit w-full items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary">
           <Icon icon="SvgLock" className="mt-[-1px] text-base opacity-50" />
           <span className="opacity-50">{t("tge.liquidity_pool")}</span>
-          <img
-            src={tgeData.liquidityPool.iconUrl}
-            className="h-4 w-4 object-cover"
-          />
+          <Img src={tgeData.liquidityPool.iconUrl} size="4" />
           <a href={tgeData.liquidityPool.url} className="underline">
             <span className="opacity-50">{tgeData.liquidityPool.name}</span>
           </a>
@@ -78,10 +76,7 @@ const TokenRewards = ({
       </div>
       <div className="border-b-[1px] border-b-bd-primary px-3 py-2">
         <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
-          <img
-            src={tgeData.projectCoin.iconUrl}
-            className="h-4 w-4 object-cover"
-          />
+          <Img src={tgeData.projectCoin.iconUrl} size="4" />
           <span className="font-geist-mono text-base">{getCoinReward()}</span>
           <span className="font-geist-mono text-base">
             {tgeData.projectCoin.ticker}

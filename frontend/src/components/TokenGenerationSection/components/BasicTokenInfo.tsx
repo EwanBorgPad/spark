@@ -10,7 +10,9 @@ import { useProjectDataContext } from "@/hooks/useProjectData"
 const BasicTokenInfo = () => {
   const { t } = useTranslation()
   const {
-    projectData: { timeline },
+    projectData: {
+      info: { timeline },
+    },
   } = useProjectDataContext()
 
   // TODO @hardcoded switch to projectCoin instead of hardcoded BORG

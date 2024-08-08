@@ -1,13 +1,25 @@
-import { useProjectDataContext } from "@/hooks/useProjectData"
-import { getRatioPercentage } from "@/utils/format"
-import React from "react"
 import { useTranslation } from "react-i18next"
+
+import { useProjectDataContext } from "@/hooks/useProjectData"
+import { formatCurrencyAmount, getRatioPercentage } from "@/utils/format"
 import ProgressBar from "./ProgressBar"
 
 const SaleProgress = () => {
   const { t } = useTranslation()
-  const { projectData } = useProjectDataContext()
-  const { available, total } = projectData.tokensAvailability
+  const {
+    projectData: { info, saleData },
+  } = useProjectDataContext()
+
+  const availableTokensFormatted = formatCurrencyAmount(
+    saleData?.availableTokens ?? 0,
+    false,
+    2,
+  )
+  const totalTokensFormatted = formatCurrencyAmount(
+    info.totalTokensForSale,
+    false,
+    0,
+  )
 
   return (
     <div className="flex w-full max-w-[432px] flex-col px-4">
@@ -16,14 +28,20 @@ const SaleProgress = () => {
           <span className="text-base">{t("lp_sale_progress")}</span>
           <div className="flex flex-col items-end">
             <span className="text-sm text-fg-tertiary">
-              {`${getRatioPercentage(available, total)}%`}
+              {saleData?.availableTokens &&
+                `${getRatioPercentage(saleData.availableTokens, info.totalTokensForSale)}%`}
             </span>
             <span className="text-base text-fg-primary">
-              {`${available}/${total}`}
+              {`${availableTokensFormatted}/${totalTokensFormatted}`}
             </span>
           </div>
         </div>
-        <ProgressBar fulfilledAmount={available} totalAmount={total} />
+        {saleData?.availableTokens && (
+          <ProgressBar
+            fulfilledAmount={saleData?.availableTokens}
+            totalAmount={info.totalTokensForSale}
+          />
+        )}
       </div>
     </div>
   )

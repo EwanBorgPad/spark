@@ -11,7 +11,7 @@ export type WhitelistRequirement = {
   heldAmount?: number
 }
 
-export const whitelistRequirements: Record<
+export const whitelistRequirementsObj: Record<
   WhitelistingRequirementType,
   WhitelistRequirement
 > = {
@@ -35,3 +35,25 @@ export const whitelistRequirements: Record<
     isMandatory: true,
   },
 }
+
+export const timelineEvents = [
+  "REGISTRATION_OPENS",
+  "SALE_OPENS",
+  "SALE_CLOSES",
+  "REWARD_DISTRIBUTION",
+  "DISTRIBUTION_OVER",
+] as const
+export type TimelineEventId = typeof timelineEvents
+export const timelineEventLabels = {
+  REGISTRATION_OPENS: "Registration Opens",
+  SALE_OPENS: "Sale Opens",
+  SALE_CLOSES: "Sale Closes",
+  REWARD_DISTRIBUTION: "Reward Distribution",
+  DISTRIBUTION_OVER: "Distribution Over",
+}
+export const timelineEventOptions = Object.entries(timelineEventLabels).map(
+  ([key, value]) => ({
+    id: key as unknown as TimelineEventId[number], // Object.entries isn't type safe
+    label: value,
+  }),
+)

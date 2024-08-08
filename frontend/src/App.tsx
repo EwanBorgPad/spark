@@ -3,6 +3,8 @@ import backdropImg from "./assets/backdropImgMin.png"
 import Header from "./components/Header/Header"
 import { Outlet } from "react-router-dom"
 import Footer from "./components/Footer/Footer"
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 function App() {
   return (
@@ -13,9 +15,9 @@ function App() {
           className="h-[740px] min-w-[1440px] lg:h-auto lg:w-screen"
         />
       </div>
+      <ToastContainer />
 
       <Header />
-
       <Outlet />
       <Footer />
     </div>

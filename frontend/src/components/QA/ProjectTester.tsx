@@ -59,7 +59,7 @@ const ProjectTester = () => {
   const [offset, setOffset] = useState(defaultOffset)
   const ref = useRef<HTMLDivElement>(null)
   const originalTimeline = useMemo(
-    () => projectData.timeline,
+    () => projectData.info.timeline,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   )
@@ -88,15 +88,21 @@ const ProjectTester = () => {
       return new Date()
     }
 
-    const newTimeline = projectData.timeline.map((event) => {
+    const newTimeline = projectData.info.timeline.map((event) => {
       return { ...event, date: updateEvent(event.date) }
     })
-    setProjectData({ ...projectData, timeline: newTimeline })
+    setProjectData({
+      ...projectData,
+      info: { ...projectData.info, timeline: newTimeline },
+    })
   }
 
   const resetOffset = () => {
     setOffset(defaultOffset)
-    setProjectData({ ...projectData, timeline: originalTimeline })
+    setProjectData({
+      ...projectData,
+      info: { ...projectData.info, timeline: originalTimeline },
+    })
   }
 
   const onWhitelistCheckboxClick = (isChecked: boolean) => {

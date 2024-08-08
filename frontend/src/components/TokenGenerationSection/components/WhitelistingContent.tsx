@@ -9,13 +9,14 @@ import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import SimpleLoader from "@/components/Loaders/SimpleLoader"
+import Img from "@/components/Image/Img"
 
 const WhitelistingContent = () => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()
   const { projectData } = useProjectDataContext()
-  const tgeData = projectData.tge
+  const tgeData = projectData.info.tge
 
   const baseCurrency = "swissborg"
   const targetCurrency = "usd"
@@ -75,10 +76,7 @@ const WhitelistingContent = () => {
 
         <div className="flex w-full items-center justify-between py-2">
           <div className="flex items-center gap-2">
-            <img
-              src={tgeData.projectCoin.iconUrl}
-              className={"h-[24px] w-[24px] rounded-full object-cover"}
-            />
+            <Img src={tgeData.projectCoin.iconUrl} size="6" />
             <span>{tgeData.projectCoin.ticker}</span>
             <span>{t("tge.price")}</span>
           </div>
@@ -109,7 +107,8 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.whitelist_participants")}</span>
           <span className="font-geist-mono">
-            {formatCurrencyAmount(tgeData.whitelistParticipants, false, 0)}
+            {projectData?.whitelistParticipants &&
+              formatCurrencyAmount(projectData.whitelistParticipants, false, 0)}
           </span>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
@@ -124,11 +123,7 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.defi_protocol")}</span>
           <div className="flex items-center gap-2">
-            <img
-              src={tgeData.liquidityPool.iconUrl}
-              alt="liquidity pool - defi protocol"
-              className="h-5 w-5 rounded-full"
-            />
+            <Img src={tgeData.liquidityPool.iconUrl} size="5" />
             <span>{tgeData.liquidityPool.name}</span>
           </div>
         </div>

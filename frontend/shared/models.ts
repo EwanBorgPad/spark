@@ -32,85 +32,108 @@ export type GetWhitelistingResult = {
  * Represents url type
  * Not sure what we wanna validate there ATM, so leave it as string for now.
  */
-const urlSchema = () => z.string()
-const iconTypeSchema = () => z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM"])
+const urlSchema = () => z.string().optional() // @TODO - remove optionality when file upload is finished
+const iconTypeSchema = () =>
+  z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM", "OUTER_LINK"])
 const externalUrlSchema = () =>
   z.object({
-    url: urlSchema(),
+    url: z.string().min(1),
     iconType: iconTypeSchema(),
     label: z.string(),
   })
 const dateSchema = () => z.coerce.date()
+const timelineEventsSchema = () =>
+  z.enum([
+    "REGISTRATION_OPENS",
+    "SALE_OPENS",
+    "SALE_CLOSES",
+    "REWARD_DISTRIBUTION",
+    "DISTRIBUTION_OVER",
+  ])
+const whitelistRequirementsSchema = () =>
+  z.object({
+    type: z.enum(["HOLD_BORG_IN_WALLET", "FOLLOW_ON_X", "DONT_RESIDE_IN_US"]),
+    label: z.string().min(1),
+    description: z.string(),
+    isMandatory: z.boolean(),
+    heldAmount: z.number({ coerce: true }).optional(),
+  })
+export type WhitelistRequirementModel = z.infer<
+  ReturnType<typeof whitelistRequirementsSchema>
+>
+
 /**
  * Schema for project, type should be inferred from this.
  */
-export const projectSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  subtitle: z.string(),
-  logoUrl: z.string(),
-  chain: z.object({ name: z.string(), iconUrl: urlSchema() }),
-  origin: z.string(),
-  sector: z.string(),
+
+export const infoSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  subtitle: z.string().min(1),
+  logoUrl: urlSchema(),
+  chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
+  origin: z.string().min(1),
+  sector: z.string().min(1),
   curator: z.object({
     avatarUrl: urlSchema(),
-    fullName: z.string(),
-    position: z.string(),
+    fullName: z.string().min(1),
+    position: z.string().min(1),
     socials: z.array(externalUrlSchema()),
   }),
   projectLinks: z.array(externalUrlSchema()),
-  tokensAvailability: z.object({
-    available: z.number().int(),
-    total: z.number().int(),
-  }),
+  totalTokensForSale: z.number({ coerce: true }).int(),
   tge: z.object({
-    raiseTarget: z.number().int(),
+    raiseTarget: z.number({ coerce: true }).int(),
     projectCoin: z.object({
       iconUrl: urlSchema(),
-      ticker: z.string(),
+      ticker: z.string().min(1),
     }),
-    fixedCoinPriceInBorg: z.number(),
-    whitelistParticipants: z.number(),
+    fixedCoinPriceInBorg: z.number({ coerce: true }),
     liquidityPool: z.object({
-      name: z.string(),
+      name: z.string().min(1),
       iconUrl: urlSchema(),
-      lbpType: z.string(),
-      lockingPeriod: z.string(),
+      lbpType: z.string().min(1),
+      lockingPeriod: z.string().min(1),
       unlockDate: dateSchema(),
-      url: z.string(),
+      url: z.string().min(1),
     }),
-    tweetUrl: urlSchema(),
+    tweetUrl: z.string(),
   }),
   dataRoom: z.object({
     backgroundImgUrl: urlSchema(),
-    url: urlSchema(),
+    url: z.string().min(1),
   }),
   timeline: z.array(
     z.object({
-      id: z.enum([
-        "REGISTRATION_OPENS",
-        "SALE_OPENS",
-        "SALE_CLOSES",
-        "REWARD_DISTRIBUTION",
-        "DISTRIBUTION_OVER",
-      ]),
+      id: timelineEventsSchema(),
       date: dateSchema(),
-      label: z.string(),
+      label: z.string().min(1),
     }),
   ),
-  saleResults: z.object({
-    saleSucceeded: z.boolean(),
-    totalAmountRaised: z.number(),
-    sellOutPercentage: z.number(),
-    participantCount: z.number(),
-    averageInvestedAmount: z.number(),
-  }),
-  rewards: z.object({
-    distributionType: z.string(),
-    description: z.string(),
-    payoutInterval: z.string(),
-  }),
+  whitelistRequirements: z.array(whitelistRequirementsSchema()).min(0),
 })
+export const projectSchema = z.object({
+  info: infoSchema,
+  whitelistParticipants: z.number().optional(),
+  saleData: z
+    .object({
+      availableTokens: z.number({ coerce: true }),
+      saleSucceeded: z.boolean(),
+      totalAmountRaised: z.number({ coerce: true }),
+      sellOutPercentage: z.number({ coerce: true }),
+      participantCount: z.number({ coerce: true }),
+      averageInvestedAmount: z.number({ coerce: true }),
+    })
+    .optional(),
+  rewards: z
+    .object({
+      distributionType: z.string(),
+      description: z.string(),
+      payoutInterval: z.string(),
+    })
+    .optional(),
+})
+export type ProjectInfoModel = z.infer<typeof infoSchema>
 export type ProjectModel = z.infer<typeof projectSchema>
 
 export type CacheStoreModel = {
@@ -127,4 +150,7 @@ export type GetExchangeResponse = {
   marketCap: number
   fullyDilutedValuation: number
   cache?: unknown
+}
+export type GetPresignedUrlResponse = {
+  signedUrl: string
 }

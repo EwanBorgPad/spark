@@ -9,6 +9,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
 const GET_WHITELISTING_STATUS_API = API_BASE_URL + "/whitelisting"
 const POST_CONFIRM_RESIDENCY_URL = API_BASE_URL + "/confirmresidency"
 const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
+const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 
 const getWhitelistingStatus = async ({ address }: { address: string }) => {
@@ -46,23 +47,54 @@ const getProject = async ({
     throw e
   }
 }
+
+export type CreateProjectRequest = {
+  formValues: ProjectModel
+  adminKey: string
+}
+const createProject = async ({
+  formValues,
+  adminKey,
+}: CreateProjectRequest) => {
+  const url = new URL(POST_PROJECT_API_URL, window.location.href)
+  const body = JSON.stringify(formValues)
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      body,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${adminKey}`,
+      },
+    })
+    const json = await response.json()
+    return json
+  } catch (e) {
+    console.error(e)
+    throw e
+  }
+}
 type GetExchangeArgs = {
   baseCurrency: string
   targetCurrency: string
 }
-const getExchange = async ({ baseCurrency, targetCurrency }: GetExchangeArgs): Promise<GetExchangeResponse> => {
+const getExchange = async ({
+  baseCurrency,
+  targetCurrency,
+}: GetExchangeArgs): Promise<GetExchangeResponse> => {
   const url = new URL(GET_EXCHANGE_API_URL, window.location.href)
-  url.searchParams.set('baseCurrency', baseCurrency)
-  url.searchParams.set('targetCurrency', targetCurrency)
+  url.searchParams.set("baseCurrency", baseCurrency)
+  url.searchParams.set("targetCurrency", targetCurrency)
 
   const response = await fetch(url)
   const json = await response.json()
   return json
 }
-
 export const backendApi = {
   getWhitelistingStatus,
   confirmResidency,
   getProject,
   getExchange,
+  createProject,
 }

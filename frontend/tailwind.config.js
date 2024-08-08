@@ -1,3 +1,5 @@
+import { transform } from "typescript"
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
@@ -67,6 +69,7 @@ export default {
         texture: "url(/src/assets/texture-min.png)",
         "texture-zoomed-out": "url(/src/assets/grainy-horizontal.png)",
         "top-contributor": "url(/src/assets/bg-top-contributor.png)",
+        fallback: "url(/src/assets/fallback.png)",
       },
       backgroundColor: {
         "contribution-gradient":
@@ -84,6 +87,8 @@ export default {
       },
       gridTemplateColumns: {
         "borg-input": "minmax(180px, 1fr) 88px",
+        "curator-socials": "128px, 24px, 328px, 32px",
+        "bo-timeline": "160px minmax(320px, 1fr)",
       },
       lineHeight: {
         11: "44px",
@@ -138,11 +143,16 @@ export default {
           "0%": { opacity: 1 },
           "100%": { opacity: 0 },
         },
+        "slide-skeleton": {
+          "0%": { transform: "translateY(-100%)" },
+          "50%": { transform: "translateY(+100%)" },
+        },
       },
       animation: {
         "top-down": "top-down 0.1s ease-out forwards",
         "fade-in": "fade-in 0.2s ease-in-out",
         "fade-out": "fade-out 0.31s ease-in-out",
+        "slide-skeleton": "slide-skeleton 2s ease-in-out infinite",
       },
     },
   },

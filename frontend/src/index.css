@@ -16,6 +16,7 @@
   }
 }
 
+
 *,
 *:before,
 *:after  {
@@ -101,3 +102,14 @@ input[type="checkbox"] {
   @apply relative mt-10 flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-lg border border-bd-secondary bg-secondary/50 from-brand-primary/10 via-black/0 via-30% px-4 py-3 transition-colors hover:border-brand-secondary/30 hover:bg-gradient-to-l
 }
 
+/* Date Picker */
+.react-datepicker__calendar-icon {
+  fill: gray;
+  margin-top: 4px;
+}
+.react-datepicker__input-container {
+  cursor: pointer !important;
+}
+.react-datepicker__month-container {
+  height: 294px !important;
+}
