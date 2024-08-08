@@ -5,6 +5,7 @@ type ENV = {
   R2_BUCKET_NAME: string
   R2_ACCESS_KEY_ID: string
   R2_SECRET_ACCESS_KEY: string
+  R2_PUBLIC_URL_BASE_PATH: string
 }
 
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
@@ -27,13 +28,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const bucketName = ctx.env.R2_BUCKET_NAME
   const accountId = ctx.env.R2_BUCKET_ACCOUNT_ID
 
-  const url = new URL(
-    `https://${bucketName}.${accountId}.r2.cloudflarestorage.com`,
-  )
-  console.log("url: ", url)
+  const url = new URL(`https://${accountId}.r2.cloudflarestorage.com`)
 
-  // preserve the original path | this comment and line below is from their example, but this adds path from our wo "/api/presignedurl" to signed url. Not sure why would they leave this in their example
-  url.pathname = `${fileName}`
+  url.pathname = `${bucketName}/images/${projectId}/${fileName}`
 
   // Specify a custom expiry for the presigned URL, in seconds
   url.searchParams.set("X-Amz-Expires", "3600")
@@ -50,10 +47,16 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       aws: { signQuery: true },
     },
   )
-  console.log("url: ", signed.url)
+
+  // cloudflare doesn't return public URL when file is uploaded so we will construct it here
+  const publicUrl = new URL(`${ctx.env.R2_PUBLIC_URL_BASE_PATH}`)
+  publicUrl.pathname = `images/${projectId}/${fileName}`
 
   // Caller can now use this URL to upload to that object.
-  return new Response(JSON.stringify({ signedUrl: signed.url }), {
-    status: 200,
-  })
+  return new Response(
+    JSON.stringify({ signedUrl: signed.url, publicUrl: publicUrl.href }),
+    {
+      status: 200,
+    },
+  )
 }

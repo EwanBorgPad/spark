@@ -39,33 +39,35 @@ const UploadField = ({
     if (!target.files[0]) return
     const selectedFile = target.files[0]
 
-    await uploadFile(selectedFile)
+    try {
+      const publicUrl = await uploadFile(selectedFile)
 
-    const file = new FileReader()
-
-    file.onload = function () {
-      setPreview(file.result)
+      onChange(publicUrl)
+      setPreview(publicUrl)
+      // const file = new FileReader()
+      // file.onload = function () {
+      //   setPreview(file.result)
+      // }
+      // file.readAsDataURL(target.files[0])
+    } catch (e) {
+      console.error(e)
     }
-    file.readAsDataURL(target.files[0])
-    // onChange(imgUrl)
+
     setUploading(false)
   }
 
   const uploadFile = async (file: File) => {
-    try {
-      const presignedUrlResponse = await backendApi.getPresignedUrl({
-        fileName,
-      })
-      const presignedUrl = presignedUrlResponse.signedUrl
-      console.log("presignedUrl: ", presignedUrl)
-      const response = await backendApi.uploadFileToBucket({
-        presignedUrl,
-        file,
-      })
-      console.log(response)
-    } catch (error) {
-      console.log(error)
-    }
+    const presignedUrlResponse = await backendApi.getPresignedUrl({
+      fileName,
+    })
+    const { signedUrl: presignedUrl, publicUrl } = presignedUrlResponse
+
+    await backendApi.uploadFileToBucket({
+      presignedUrl,
+      file,
+    })
+
+    return publicUrl
   }
 
   const containerClassName = twMerge(

@@ -130,4 +130,5 @@ export type GetExchangeResponse = {
 }
 export type GetPresignedUrlResponse = {
   signedUrl: string
+  publicUrl: string
 }

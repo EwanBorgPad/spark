@@ -1,3 +1,10 @@
+[vars]
+R2_BUCKET_NAME= "borgpad-staging-bucket"
+R2_BUCKET_ACCOUNT_ID= "2b7d0e931a9c1557e6ca9927c9078579"
+R2_SECRET_ACCESS_KEY= "3d71a230c624f7791143663105be6416a26fe90938a7132dad4ae9093871b51e"
+R2_ACCESS_KEY_ID= "f669c3e9e58f7d448bf39e066118a8b9"
+R2_PUBLIC_URL_BASE_PATH= "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev"
+
 [[d1_databases]]
 binding = "DB" # Should match preview_database_id
 database_name = "borgpad-database-staging"

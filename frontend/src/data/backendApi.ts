@@ -73,7 +73,7 @@ const getPresignedUrl = async ({
   const url = new URL(GET_PRESIGNED_URL, window.location.href)
   url.searchParams.set("fileName", fileName)
   // @TODO - change value below
-  url.searchParams.set("projectId", "TEST")
+  url.searchParams.set("projectId", "puffer-finance") // @TODO - value to be updated
 
   const response = await fetch(url)
   const json = await response.json()
@@ -90,7 +90,15 @@ const uploadFileToBucket = async ({
 }: PutFileArgs): Promise<unknown> => {
   const url = new URL("", presignedUrl)
 
-  const response = await fetch(url, { method: "PUT", body: file })
+  const response = await fetch(url, {
+    method: "PUT",
+    body: file,
+    headers: {
+      // 'Authorization': `Bearer ${authToken}`,
+      "Content-Type": "image/png", // Correct content type for a PNG image
+      "Content-Length": file.size.toString(), // Optional but recommended
+    },
+  })
   const json = await response.json()
   return json
 }
