@@ -12,6 +12,7 @@ type UploadFieldProps = HTMLProps<"input"> & {
   imgUrl: string | undefined // image source URL
   onChange: (value: string) => void
   fileName: string
+  projectId: string
 }
 
 const UploadField = ({
@@ -22,6 +23,7 @@ const UploadField = ({
   imgUrl,
   onChange,
   fileName,
+  projectId,
   ...props
 }: UploadFieldProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -59,7 +61,9 @@ const UploadField = ({
   const uploadFile = async (file: File) => {
     const presignedUrlResponse = await backendApi.getPresignedUrl({
       fileName,
+      projectId,
     })
+    console.log("presignedUrlResponse: ", presignedUrlResponse)
     const { signedUrl: presignedUrl, publicUrl } = presignedUrlResponse
 
     await backendApi.uploadFileToBucket({

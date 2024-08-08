@@ -66,14 +66,16 @@ const getExchange = async ({
 }
 type GetPresignedUrlArgs = {
   fileName: string
+  projectId: string
 }
 const getPresignedUrl = async ({
   fileName,
+  projectId,
 }: GetPresignedUrlArgs): Promise<GetPresignedUrlResponse> => {
   const url = new URL(GET_PRESIGNED_URL, window.location.href)
   url.searchParams.set("fileName", fileName)
   // @TODO - change value below
-  url.searchParams.set("projectId", "puffer-finance") // @TODO - value to be updated
+  url.searchParams.set("projectId", projectId)
 
   const response = await fetch(url)
   const json = await response.json()
@@ -87,10 +89,10 @@ type PutFileArgs = {
 const uploadFileToBucket = async ({
   presignedUrl,
   file,
-}: PutFileArgs): Promise<unknown> => {
+}: PutFileArgs): Promise<undefined> => {
   const url = new URL("", presignedUrl)
 
-  const response = await fetch(url, {
+  await fetch(url, {
     method: "PUT",
     body: file,
     headers: {
@@ -99,8 +101,6 @@ const uploadFileToBucket = async ({
       "Content-Length": file.size.toString(), // Optional but recommended
     },
   })
-  const json = await response.json()
-  return json
 }
 
 export const backendApi = {
