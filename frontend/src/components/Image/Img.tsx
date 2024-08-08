@@ -1,6 +1,6 @@
-import React, { useState } from "react"
+import { useState } from "react"
 import { twMerge } from "tailwind-merge"
-import fallbackImg from "../../assets/fallback.png"
+import fallbackImg from "../../assets/fallback1.png"
 
 type Props = {
   src: string | undefined
@@ -51,7 +51,7 @@ const Img = ({ size, src, customClass }: Props) => {
       ) : (
         <img
           src={!renderFallback ? src : fallbackImg}
-          onLoad={(value) => console.log(value)}
+          onLoad={() => setIsLoading(false)}
           onError={onError}
           className={twMerge("h-full w-full object-cover", avatarSize[size])}
         />

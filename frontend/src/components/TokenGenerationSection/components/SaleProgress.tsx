@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import { useProjectDataContext } from "@/hooks/useProjectData"
-import { getRatioPercentage } from "@/utils/format"
+import { formatCurrencyAmount, getRatioPercentage } from "@/utils/format"
 import ProgressBar from "./ProgressBar"
 
 const SaleProgress = () => {
@@ -9,6 +9,17 @@ const SaleProgress = () => {
   const {
     projectData: { info, saleData },
   } = useProjectDataContext()
+
+  const availableTokensFormatted = formatCurrencyAmount(
+    saleData?.availableTokens ?? 0,
+    false,
+    2,
+  )
+  const totalTokensFormatted = formatCurrencyAmount(
+    info.totalTokensForSale,
+    false,
+    0,
+  )
 
   return (
     <div className="flex w-full max-w-[432px] flex-col px-4">
@@ -21,7 +32,7 @@ const SaleProgress = () => {
                 `${getRatioPercentage(saleData.availableTokens, info.totalTokensForSale)}%`}
             </span>
             <span className="text-base text-fg-primary">
-              {`${saleData?.availableTokens}/${info.totalTokensForSale}`}
+              {`${availableTokensFormatted}/${totalTokensFormatted}`}
             </span>
           </div>
         </div>

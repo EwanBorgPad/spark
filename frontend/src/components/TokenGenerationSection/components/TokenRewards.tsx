@@ -1,6 +1,7 @@
 import { Icon } from "@/components/Icon/Icon"
 import Img from "@/components/Image/Img"
 import { useProjectDataContext } from "@/hooks/useProjectData"
+import { formatCurrencyAmount } from "@/utils/format"
 import { formatValue } from "react-currency-input-field"
 import { useTranslation } from "react-i18next"
 
@@ -19,10 +20,10 @@ const TokenRewards = ({
 
   const getCoinReward = () => {
     if (!borgCoinInput) return 0
+    const tokenReward =
+      +borgCoinInput * projectData.info.tge.fixedCoinPriceInBorg
     return formatValue({
-      value: (
-        +borgCoinInput * projectData.info.tge.fixedCoinPriceInBorg
-      ).toString(),
+      value: formatCurrencyAmount(tokenReward, false, 6).toString(),
     })
   }
 
