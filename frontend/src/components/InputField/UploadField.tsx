@@ -105,7 +105,7 @@ const UploadField = ({
         ref={inputRef}
         type="file"
         onChange={handleOnChange}
-        accept="image/png, image/jpg"
+        accept="image/png, image/jpg, image/svg+xml"
       />
       <div className="flex flex-col items-center gap-4">
         {preview && (
