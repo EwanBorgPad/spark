@@ -85,15 +85,19 @@ const UploadField = ({
     return publicUrl
   }
 
+  const refreshPreview = (url?: string) => {
+    if (!url) return
+    setPreview(url)
+  }
+
+  useEffect(() => {
+    refreshPreview(imgUrl)
+  }, [imgUrl])
+
   const containerClassName = twMerge(
     "text-sm w-full flex flex-col items-start gap-2 px-4 cursor-text max-w-[360px]",
     _containerClassName,
   )
-
-  useEffect(() => {
-    if (!imgUrl) return
-    setPreview(imgUrl)
-  }, [imgUrl])
 
   return (
     <div className={containerClassName}>
