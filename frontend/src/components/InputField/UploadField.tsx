@@ -1,10 +1,13 @@
 import { HTMLProps } from "@/@types/general"
-import React, { useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import { Button } from "../Button/Button"
 import { backendApi } from "@/data/backendApi"
+import { MAX_IMAGE_SIZE } from "@/utils/constants"
 
-type UploadFieldProps = HTMLProps<"input"> & {
+const maxFileSizeInMB = MAX_IMAGE_SIZE / 1024 / 1024
+
+type UploadFieldProps = {
   containerClassName?: HTMLProps["className"]
   inputClassName?: HTMLProps["className"]
   error?: string
@@ -13,21 +16,26 @@ type UploadFieldProps = HTMLProps<"input"> & {
   onChange: (value: string) => void
   fileName: string
   projectId: string
+  disabled: boolean
+  name: string
+  previewClass?: string
+  setError: (message: string) => void
 }
 
 const UploadField = ({
   containerClassName: _containerClassName,
-  inputClassName,
   error,
   label,
   imgUrl,
   onChange,
   fileName,
   projectId,
-  ...props
+  name,
+  disabled,
+  previewClass,
+  setError,
 }: UploadFieldProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  // const [file, setFile] = useState<File>()
   const [preview, setPreview] = useState<string | ArrayBuffer | null>(
     imgUrl ?? null,
   )
@@ -39,18 +47,21 @@ const UploadField = ({
       files: FileList
     }
     if (!target.files[0]) return
+    if (preview) setPreview("")
+
     const selectedFile = target.files[0]
+
+    if (selectedFile.size > MAX_IMAGE_SIZE) {
+      setError(
+        `File size too big. Upload files smaller than ${maxFileSizeInMB}MB`,
+      )
+      setUploading(false)
+      return
+    }
 
     try {
       const publicUrl = await uploadFile(selectedFile)
-
       onChange(publicUrl)
-      setPreview(publicUrl)
-      // const file = new FileReader()
-      // file.onload = function () {
-      //   setPreview(file.result)
-      // }
-      // file.readAsDataURL(target.files[0])
     } catch (e) {
       console.error(e)
     }
@@ -60,10 +71,10 @@ const UploadField = ({
 
   const uploadFile = async (file: File) => {
     const presignedUrlResponse = await backendApi.getPresignedUrl({
-      fileName,
+      fileName: fileName + "-" + Math.floor(Math.random() * 1000000000),
       projectId,
     })
-    console.log("presignedUrlResponse: ", presignedUrlResponse)
+    if (!presignedUrlResponse) throw "pre-signing url failed"
     const { signedUrl: presignedUrl, publicUrl } = presignedUrlResponse
 
     await backendApi.uploadFileToBucket({
@@ -79,9 +90,14 @@ const UploadField = ({
     _containerClassName,
   )
 
+  useEffect(() => {
+    if (!imgUrl) return
+    setPreview(imgUrl)
+  }, [imgUrl])
+
   return (
     <div className={containerClassName}>
-      <label htmlFor={props.name} className="font-medium">
+      <label htmlFor={name} className="font-medium">
         {label}
       </label>
       <input
@@ -91,20 +107,39 @@ const UploadField = ({
         onChange={handleOnChange}
         accept="image/png, image/jpg"
       />
-      <Button
-        color="secondary"
-        btnText="Upload"
-        isLoading={uploading}
-        onClick={() => inputRef.current?.click()}
-      />
+      <div className="flex flex-col items-center gap-4">
+        {preview && (
+          <div className="flex flex-col items-center gap-4 rounded bg-white/10 px-4 py-2">
+            <div className="flex flex-col items-center">
+              <span className="text-sm">Preview</span>
+              <span className="text-sm">(expected size)</span>
+            </div>
+            <div
+              className={twMerge(
+                "shrink-0 overflow-hidden rounded-full",
+                previewClass,
+              )}
+            >
+              <img
+                src={preview as string}
+                className={"h-full w-full object-cover"}
+              />
+            </div>
+          </div>
+        )}
+        <div className="flex flex-col items-center">
+          <Button
+            color="secondary"
+            btnText={"Upload"}
+            disabled={disabled}
+            isLoading={uploading}
+            onClick={() => inputRef.current?.click()}
+          />
+          <span className="text-[8px] text-white/70">{`Max ${maxFileSizeInMB}MB`}</span>
+        </div>
+      </div>
       {error && (
-        <span className="-mt-1 text-xs text-fg-error-primary">{error}</span>
-      )}
-      {preview && (
-        <img
-          src={preview as string}
-          className="h-[120px] w-auto object-cover"
-        />
+        <span className={"-mt-1 text-xs text-fg-error-primary"}>{error}</span>
       )}
     </div>
   )

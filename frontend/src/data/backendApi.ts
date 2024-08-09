@@ -138,4 +138,6 @@ export const backendApi = {
   getProject,
   getExchange,
   createProject,
+  getPresignedUrl,
+  uploadFileToBucket,
 }

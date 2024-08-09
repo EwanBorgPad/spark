@@ -57,3 +57,5 @@ export const timelineEventOptions = Object.entries(timelineEventLabels).map(
     label: value,
   }),
 )
+
+export const MAX_IMAGE_SIZE = 2097152 // 2MB

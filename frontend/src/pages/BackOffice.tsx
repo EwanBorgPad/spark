@@ -58,6 +58,7 @@ const BackOffice = () => {
     watch,
     control,
     formState: { isSubmitted },
+    setError,
   } = useForm<FormType>({
     defaultValues,
     resolver: zodResolver(extendedProjectInfoSchema),
@@ -133,6 +134,7 @@ const BackOffice = () => {
 
   const tokenTicker = watch("tge.projectCoin.ticker")
   const fixedCoinPriceInBorg = watch("tge.fixedCoinPriceInBorg")
+  const projectId = watch("id")
 
   const setRequirementLabel = (heldAmount: number, index: number) => {
     const newLabel = `Hold ${heldAmount} BORG in your wallet`
@@ -154,6 +156,9 @@ const BackOffice = () => {
       ...whitelistRequirementsObj[key],
     }))
   }
+
+  const setUploadFileError = (message: string) =>
+    setError("logoUrl", { message: message })
 
   return (
     <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[100px] font-normal text-fg-primary lg:py-[100px]">
@@ -228,7 +233,7 @@ const BackOffice = () => {
               </ul>
             )}
             <span className="text-sm">See mockup url below:</span>
-            <span className="w-fit rounded-lg bg-secondary px-2 py-1 text-sm ring-1 ring-brand-secondary/50">{`https://borgpad.com/project/${watch("id")}`}</span>
+            <span className="w-fit rounded-lg bg-secondary px-2 py-1 text-sm ring-1 ring-brand-secondary/50">{`https://borgpad.com/project/${projectId}`}</span>
           </div>
           {!idConfirmed && (
             <div className="flex w-full justify-center pt-2">
@@ -256,15 +261,25 @@ const BackOffice = () => {
           <Controller
             name="logoUrl"
             control={control}
-            render={({ field: { value, onChange }, fieldState: { error } }) => (
+            render={({
+              field: { value, onChange, name },
+              fieldState: { error },
+            }) => (
               <UploadField
-                disabled // @TODO - remove "disabled" when file upload is ready
+                disabled={!projectId || !idConfirmed}
+                name={name}
                 label="Project Logo"
-                fileName="avatar.png"
-                projectId="puffer-finance"
-                imgUrl={undefined} // input value
-                onChange={(value) => console.log(value)}
-                error={error?.message}
+                fileName="project-logo"
+                previewClass="size-20"
+                projectId={projectId}
+                imgUrl={value} // input value
+                onChange={onChange}
+                setError={setUploadFileError}
+                error={
+                  !idConfirmed
+                    ? "Please confirm id in first section"
+                    : error?.message
+                }
               />
             )}
           />
@@ -312,20 +327,27 @@ const BackOffice = () => {
             />
 
             <Controller
-              name="logoUrl"
+              name="chain.iconUrl"
               control={control}
               render={({
-                field: { value, onChange },
+                field: { value, onChange, name },
                 fieldState: { error },
               }) => (
                 <UploadField
-                  disabled // @TODO - remove "disabled" when file upload is ready
-                  label="Project Avatar"
-                  fileName="chain-icon.png"
-                  projectId="puffer-finance"
-                  imgUrl={undefined} // input value
-                  onChange={(value) => console.log(value)}
-                  error={error?.message}
+                  setError={setUploadFileError}
+                  disabled={!projectId && !idConfirmed}
+                  name={name}
+                  previewClass="size-4"
+                  label="Chain Icon"
+                  fileName="chain-icon"
+                  projectId={projectId}
+                  imgUrl={value} // input value
+                  onChange={onChange}
+                  error={
+                    !idConfirmed
+                      ? "Please confirm id in first section"
+                      : error?.message
+                  }
                 />
               )}
             />
@@ -407,17 +429,24 @@ const BackOffice = () => {
               name="curator.avatarUrl"
               control={control}
               render={({
-                field: { value, onChange },
+                field: { value, onChange, name },
                 fieldState: { error },
               }) => (
                 <UploadField
-                  disabled // @TODO - remove "disabled" when file upload is ready
+                  setError={setUploadFileError}
+                  disabled={!projectId && !idConfirmed}
+                  name={name}
                   label="Avatar"
-                  fileName="curator-avatar.png"
-                  projectId="puffer-finance"
-                  imgUrl={undefined} // input value
-                  onChange={(value) => console.log(value)}
-                  error={error?.message}
+                  previewClass="size-10"
+                  fileName="curator-avatar"
+                  projectId={projectId}
+                  imgUrl={value} // input value
+                  onChange={onChange}
+                  error={
+                    !idConfirmed
+                      ? "Please confirm id in first section"
+                      : error?.message
+                  }
                 />
               )}
             />
@@ -464,7 +493,7 @@ const BackOffice = () => {
                   <Controller
                     name={`curator.socials.${index}.iconType`}
                     control={control}
-                    render={({ field: { value }, fieldState: { error } }) => (
+                    render={({ field: { value } }) => (
                       <DropdownField
                         options={iconOptions}
                         value={value}
@@ -543,17 +572,25 @@ const BackOffice = () => {
               name="tge.projectCoin.iconUrl"
               control={control}
               render={({
-                field: { value, onChange },
+                field: { value, onChange, name },
                 fieldState: { error },
               }) => (
                 <UploadField
-                  disabled // @TODO - remove "disabled" when file upload is ready
-                  label="Token Image"
+                  setError={setUploadFileError}
+                  disabled={!projectId && !idConfirmed}
+                  name={name}
+                  label="Token Icon"
+                  previewClass="size-4"
                   fileName="project-coin-icon"
                   containerClassName="px-0"
-                  imgUrl={undefined} // input value
-                  onChange={(value) => console.log(value)}
-                  error={error?.message}
+                  projectId={projectId}
+                  imgUrl={value} // input value
+                  onChange={onChange}
+                  error={
+                    !idConfirmed
+                      ? "Please confirm id in first section"
+                      : error?.message
+                  }
                 />
               )}
             />
@@ -603,17 +640,25 @@ const BackOffice = () => {
               name="dataRoom.backgroundImgUrl"
               control={control}
               render={({
-                field: { value, onChange },
+                field: { value, onChange, name },
                 fieldState: { error },
               }) => (
                 <UploadField
-                  disabled // @TODO - remove "disabled" when file upload is ready
+                  setError={setUploadFileError}
+                  disabled={!projectId && !idConfirmed}
+                  name={name}
                   label="Backdrop Image"
-                  fileName="project-coin-icon"
+                  previewClass="rounded-none h-[72px] w-[100px]"
+                  fileName="data-room-backdrop"
+                  projectId={projectId}
                   containerClassName="px-0"
-                  imgUrl={undefined} // input value
-                  onChange={(value) => console.log(value)}
-                  error={error?.message}
+                  imgUrl={value} // input value
+                  onChange={onChange}
+                  error={
+                    !idConfirmed
+                      ? "Please confirm id in first section"
+                      : error?.message
+                  }
                 />
               )}
             />
@@ -705,17 +750,25 @@ const BackOffice = () => {
               name="tge.liquidityPool.iconUrl"
               control={control}
               render={({
-                field: { value, onChange },
+                field: { value, onChange, name },
                 fieldState: { error },
               }) => (
                 <UploadField
-                  disabled // @TODO - remove "disabled" when file upload is ready
+                  setError={setUploadFileError}
+                  disabled={!projectId && !idConfirmed}
                   label="Icon"
-                  fileName="project-coin-icon"
+                  previewClass="size-4"
+                  fileName="liquidity-pool-icon"
+                  name={name}
+                  projectId={projectId}
                   containerClassName="px-0"
-                  imgUrl={undefined} // input value
-                  onChange={(value) => console.log(value)}
-                  error={error?.message}
+                  imgUrl={value} // input value
+                  onChange={onChange}
+                  error={
+                    !idConfirmed
+                      ? "Please confirm id in first section"
+                      : error?.message
+                  }
                 />
               )}
             />
