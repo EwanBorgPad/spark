@@ -20,9 +20,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
   try {
     // authorize request
-    if (!hasAdminAccess(ctx)) {
-      return jsonResponse(null, 401)
-    }
+    // if (!hasAdminAccess(ctx)) {
+    //   return jsonResponse(null, 401)
+    // }
 
     const pathUrl = ctx.request.url
     const fileName = new URL(pathUrl).searchParams.get("fileName")
