@@ -38,20 +38,30 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       const users = res.list
 
       if (!users.length) {
-        console.log('Users list is empty, breaking...')
+        console.log('Users list is empty, finished.')
         break
       }
 
-      // try bulk insert if performance becomes a problem
+      // bulk insert
+      const placeholders = []
+      const values = []
+      let index = 1
       for (const user of users) {
-        await db
-          .prepare('INSERT INTO follower (id, json) VALUES ($1, $2)' +
-            ' ON CONFLICT DO NOTHING;')
-          .bind(user.id, JSON.stringify(user))
-          .run()
+        placeholders.push(`($${index}, $${index + 1})`)
+        values.push(user.id, JSON.stringify(user))
+        index += 2
       }
 
-      await sleep(1000)
+      const query = `
+        INSERT INTO follower (id, json)
+        VALUES ${placeholders.join(', ')}
+        ON CONFLICT DO NOTHING;
+      `;
+
+      await db.prepare(query).bind(...values).run()
+
+      const sleepTime = getRandomNumber()
+      await sleep(sleepTime)
       cursor = res.cursor
     } while (cursor)
 
@@ -117,6 +127,10 @@ async function getFollowersForAccount(env: ENV, id: string, cursor?: string): Pr
 }
 
 const sleep = (ms: number): Promise<void> => new Promise(r => setTimeout(r, ms))
+
+function getRandomNumber(min = 500, max = 1500) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 type TwitterUser = {
   id: string
