@@ -26,7 +26,7 @@ export const TextField = ({
   ...props
 }: TextFieldProps) => {
   const containerClassName = twMerge(
-    "text-sm w-full flex flex-col items-start gap-2 px-4 cursor-text max-w-[360px]",
+    "text-sm w-full flex flex-col items-start gap-2 cursor-text max-w-[360px]",
     _containerClassName,
   )
   const inputClasses = twMerge(

@@ -4,13 +4,14 @@ import { twMerge } from "tailwind-merge"
 import { Button } from "../Button/Button"
 import { backendApi } from "@/data/backendApi"
 import { MAX_IMAGE_SIZE } from "@/utils/constants"
+import { FieldError } from "react-hook-form"
 
 const maxFileSizeInMB = MAX_IMAGE_SIZE / 1024 / 1024
 
 type UploadFieldProps = {
   containerClassName?: HTMLProps["className"]
   inputClassName?: HTMLProps["className"]
-  error?: string
+  error?: FieldError
   label?: string
   imgUrl: string | undefined // image source URL
   onChange: (value: string) => void
@@ -19,7 +20,7 @@ type UploadFieldProps = {
   disabled: boolean
   name: string
   previewClass?: string
-  setError: (message: string) => void
+  adminKey: string
 }
 
 const UploadField = ({
@@ -33,13 +34,14 @@ const UploadField = ({
   name,
   disabled,
   previewClass,
-  setError,
+  adminKey,
 }: UploadFieldProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | ArrayBuffer | null>(
     imgUrl ?? null,
   )
   const [uploading, setUploading] = useState(false)
+  const [customError, setCustomError] = useState<string>("")
 
   const handleOnChange = async (e: React.FormEvent<HTMLInputElement>) => {
     setUploading(true)
@@ -52,7 +54,7 @@ const UploadField = ({
     const selectedFile = target.files[0]
 
     if (selectedFile.size > MAX_IMAGE_SIZE) {
-      setError(
+      setCustomError(
         `File size too big. Upload files smaller than ${maxFileSizeInMB}MB`,
       )
       setUploading(false)
@@ -73,6 +75,7 @@ const UploadField = ({
     const presignedUrlResponse = await backendApi.getPresignedUrl({
       fileName: fileName + "-" + Math.floor(Math.random() * 1000000000),
       projectId,
+      adminKey,
     })
     if (!presignedUrlResponse) throw "pre-signing url failed"
     const { signedUrl: presignedUrl, publicUrl } = presignedUrlResponse
@@ -95,7 +98,7 @@ const UploadField = ({
   }, [imgUrl])
 
   const containerClassName = twMerge(
-    "text-sm w-full flex flex-col items-start gap-2 px-4 cursor-text max-w-[360px]",
+    "text-sm w-full flex flex-col items-start gap-2 cursor-text max-w-[360px]",
     _containerClassName,
   )
 
@@ -109,7 +112,7 @@ const UploadField = ({
         ref={inputRef}
         type="file"
         onChange={handleOnChange}
-        accept="image/png, image/jpg, image/svg+xml"
+        accept="image/png, image/jpg, image/webp"
       />
       <div className="flex flex-col items-center gap-4">
         {preview && (
@@ -134,7 +137,7 @@ const UploadField = ({
         <div className="flex flex-col items-center">
           <Button
             color="secondary"
-            btnText={"Upload"}
+            btnText={"Upload Image"}
             disabled={disabled}
             isLoading={uploading}
             onClick={() => inputRef.current?.click()}
@@ -142,8 +145,15 @@ const UploadField = ({
           <span className="text-[8px] text-white/70">{`Max ${maxFileSizeInMB}MB`}</span>
         </div>
       </div>
-      {error && (
-        <span className={"-mt-1 text-xs text-fg-error-primary"}>{error}</span>
+      {(error || !!customError) && (
+        <span
+          className={twMerge(
+            "-mt-1 text-xs text-fg-error-primary",
+            error?.type === "PRECONDITION" && "text-orange-400",
+          )}
+        >
+          {error?.message || customError}
+        </span>
       )}
     </div>
   )
