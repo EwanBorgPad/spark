@@ -158,7 +158,7 @@ pub fn handler(ctx: Context<UserDeposit>, amount: u64) -> Result<()> {
     )?;
 
     let position_data: &mut Account<Position> = &mut ctx.accounts.position;
-    position_data.initialize(ctx.accounts.position_mint.key(), amount, ctx.bumps.position);
+    position_data.initialize(ctx.accounts.position_mint.key(), ctx.accounts.lbp.key(), amount, ctx.bumps.position);
 
     Ok(())
 }

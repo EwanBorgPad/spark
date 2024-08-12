@@ -37,6 +37,7 @@ pub struct UserRefund<'info> {
             position_mint.key().as_ref()
         ],
         bump,
+        constraint = position.lbp == lbp.key() @ ErrorCode::InvalidPosition
     )]
     pub position: Account<'info, Position>,
 
@@ -135,7 +136,7 @@ pub fn handler(ctx: Context<UserRefund>) -> Result<()> {
             }
         )
     )?;
-    
+
     // TODO: use token2022 to close the mint as well
 
     Ok(())

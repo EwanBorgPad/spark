@@ -31,8 +31,7 @@ pub struct ProjectRefund<'info> {
         bump
     )]
     pub lbp: Box<Account<'info, Lbp>>,
-
-    // TODO: link a position to the lbp otherwise a user could withdraw from an incorrect lbp
+    
     #[account(
         mut,
         close = project,
@@ -40,7 +39,8 @@ pub struct ProjectRefund<'info> {
             b"position".as_ref(),
             position_mint.key().as_ref()
         ],
-        bump
+        bump,
+        constraint = position.lbp == lbp.key() @ ErrorCode::InvalidPosition
     )]
     pub position: Account<'info, Position>,
 

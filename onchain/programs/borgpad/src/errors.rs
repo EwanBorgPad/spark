@@ -10,6 +10,8 @@ pub enum ErrorCode {
     InvalidMint,
     #[msg("This phase change is unauthorised")]
     InvalidPhaseChange,
+    #[msg("This position is not linked to the provided lbp")]
+    InvalidPosition,
     #[msg("The max cap has been reached")]
     MaxCapReached,
     #[msg("Signer must be the admin authority")]
