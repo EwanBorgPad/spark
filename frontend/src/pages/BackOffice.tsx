@@ -1,5 +1,6 @@
 import {
   Controller,
+  FieldError,
   SubmitHandler,
   useFieldArray,
   useForm,
@@ -58,11 +59,10 @@ const BackOffice = () => {
     watch,
     control,
     formState: { isSubmitted },
-    setError,
   } = useForm<FormType>({
     defaultValues,
     resolver: zodResolver(extendedProjectInfoSchema),
-    mode: "onSubmit",
+    mode: "onBlur",
   })
   useFormDraft(
     "create-new-project",
@@ -75,6 +75,7 @@ const BackOffice = () => {
     { key: "adminKey", value: "" },
   )
 
+  // create project - api
   const { mutate: createProject, isPending } = useMutation({
     mutationFn: (payload: CreateProjectRequest) =>
       backendApi.createProject({
@@ -85,6 +86,7 @@ const BackOffice = () => {
     onError: (error) => toast.error(error.message),
   })
 
+  // onSubmit handler
   const onSubmit: SubmitHandler<FormType> = async (data) => {
     const { adminKey, ...info } = data
 
@@ -94,7 +96,7 @@ const BackOffice = () => {
     })
   }
 
-  // form arrays
+  // form arrays - react hook forms
   const { append: addCuratorSocials, remove: removeCuratorSocials } =
     useFieldArray({
       control,
@@ -114,7 +116,18 @@ const BackOffice = () => {
     name: "whitelistRequirements",
   })
 
-  // component handlers
+  // variable helpers
+  const tokenTicker = watch("tge.projectCoin.ticker")
+  const fixedCoinPriceInBorg = watch("tge.fixedCoinPriceInBorg")
+  const projectId = watch("id")
+  const adminKey = watch("adminKey")
+  const isUploadDisabled = !projectId || !idConfirmed || !adminKey
+  const uploadPreconditionError: FieldError = {
+    type: "PRECONDITION",
+    message: "Please confirm admin key & ID in first two section",
+  }
+
+  // various functions and handlers
   const updateExternalLinks = (
     basePath: "curator.socials" | "projectLinks",
     value: IconLinkType,
@@ -131,10 +144,6 @@ const BackOffice = () => {
     if (!lastPickedEventDate) return new Date()
     return lastPickedEventDate
   }
-
-  const tokenTicker = watch("tge.projectCoin.ticker")
-  const fixedCoinPriceInBorg = watch("tge.fixedCoinPriceInBorg")
-  const projectId = watch("id")
 
   const setRequirementLabel = (heldAmount: number, index: number) => {
     const newLabel = `Hold ${heldAmount} BORG in your wallet`
@@ -157,8 +166,7 @@ const BackOffice = () => {
     }))
   }
 
-  const setUploadFileError = (message: string) =>
-    setError("logoUrl", { message: message })
+  const checkIfProjectIdExists = () => {}
 
   return (
     <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[100px] font-normal text-fg-primary lg:py-[100px]">
@@ -167,7 +175,28 @@ const BackOffice = () => {
         className="max-w-screen flex w-full flex-col items-start gap-8 px-4 md:max-w-[720px]"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="flex w-full flex-col gap-4 rounded-2xl bg-gradient-to-b from-black/40 to-black/20 px-6 py-8 shadow-lg shadow-black/50">
+        <div className="flex w-full flex-col gap-4 rounded-2xl bg-gradient-to-b from-gray-200/20 to-gray-200/10 px-6 py-8 shadow-lg shadow-black">
+          <BoWrapper title="Confirm you're an Admin">
+            <Controller
+              name="adminKey"
+              control={control}
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
+                <TextField
+                  label="Admin Key"
+                  type="password"
+                  value={value}
+                  name="admin-key"
+                  error={error?.message}
+                  onChange={onChange}
+                />
+              )}
+            />
+          </BoWrapper>
+        </div>
+        <div className="flex w-full flex-col gap-4 rounded-2xl bg-gradient-to-b from-gray-200/20 to-gray-200/10 px-6 py-8 shadow-lg shadow-black">
           <Controller
             name="title"
             control={control}
@@ -190,7 +219,7 @@ const BackOffice = () => {
               />
             )}
           />
-          <div className="flex w-full items-start">
+          <div className="flex w-full items-start gap-2">
             <Controller
               name="id"
               control={control}
@@ -204,6 +233,7 @@ const BackOffice = () => {
                   value={value}
                   onChange={onChange}
                   error={error?.message}
+                  inputClassName={idConfirmed ? "ring-brand-primary" : ""}
                 />
               )}
             />
@@ -214,7 +244,7 @@ const BackOffice = () => {
               </div>
             )}
           </div>
-          <div className="flex flex-col items-start gap-2 px-4">
+          <div className="flex flex-col items-start gap-2">
             {idConfirmed ? (
               <span className="text-sm">
                 ID confirmed and used for a file folder for storing images.
@@ -239,13 +269,14 @@ const BackOffice = () => {
             <div className="flex w-full justify-center pt-2">
               <Button
                 btnText="Confirm ID"
+                disabled={!projectId}
                 onClick={() => setIdConfirmed(true)}
               />
             </div>
           )}
         </div>
 
-        <div className="flex w-full flex-col gap-4 rounded-2xl bg-gradient-to-b from-black/40 to-black/20 px-6 py-8  shadow-lg shadow-black/50">
+        <div className="flex w-full flex-col gap-4 rounded-2xl bg-gray-200/10 px-6 py-8 shadow-lg shadow-black/50">
           <Controller
             name="subtitle"
             control={control}
@@ -266,20 +297,16 @@ const BackOffice = () => {
               fieldState: { error },
             }) => (
               <UploadField
-                disabled={!projectId || !idConfirmed}
+                imgUrl={value} // input value
+                onChange={onChange}
+                adminKey={adminKey}
+                disabled={isUploadDisabled}
                 name={name}
                 label="Project Logo"
                 fileName="project-logo"
                 previewClass="size-20"
                 projectId={projectId}
-                imgUrl={value} // input value
-                onChange={onChange}
-                setError={setUploadFileError}
-                error={
-                  !idConfirmed
-                    ? "Please confirm id in first section"
-                    : error?.message
-                }
+                error={isUploadDisabled ? uploadPreconditionError : error}
               />
             )}
           />
@@ -309,52 +336,8 @@ const BackOffice = () => {
             )}
           />
 
-          <BoWrapper title="Chain Info">
-            <Controller
-              name="chain.name"
-              control={control}
-              render={({
-                field: { value, onChange },
-                fieldState: { error },
-              }) => (
-                <TextField
-                  label="Chain Name"
-                  value={value}
-                  onChange={onChange}
-                  error={error?.message}
-                />
-              )}
-            />
-
-            <Controller
-              name="chain.iconUrl"
-              control={control}
-              render={({
-                field: { value, onChange, name },
-                fieldState: { error },
-              }) => (
-                <UploadField
-                  setError={setUploadFileError}
-                  disabled={!projectId && !idConfirmed}
-                  name={name}
-                  previewClass="size-4"
-                  label="Chain Icon"
-                  fileName="chain-icon"
-                  projectId={projectId}
-                  imgUrl={value} // input value
-                  onChange={onChange}
-                  error={
-                    !idConfirmed
-                      ? "Please confirm id in first section"
-                      : error?.message
-                  }
-                />
-              )}
-            />
-          </BoWrapper>
-
           <BoWrapper title="Project Links">
-            <div className="flex w-full flex-col items-start gap-2 pl-4">
+            <div className="flex w-full flex-col items-start gap-2">
               <div className="grid grid-cols-curator-socials gap-8 text-sm">
                 <span>Type</span>
                 <span>Icon</span>
@@ -398,7 +381,6 @@ const BackOffice = () => {
                     }) => (
                       <TextField
                         value={value}
-                        containerClassName="px-0"
                         onChange={onChange}
                         error={error?.message}
                       />
@@ -424,6 +406,45 @@ const BackOffice = () => {
               className="ml-4"
             />
           </BoWrapper>
+          <BoWrapper title="Chain Info">
+            <Controller
+              name="chain.name"
+              control={control}
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
+                <TextField
+                  label="Chain Name"
+                  value={value}
+                  onChange={onChange}
+                  error={error?.message}
+                />
+              )}
+            />
+
+            <Controller
+              name="chain.iconUrl"
+              control={control}
+              render={({
+                field: { value, onChange, name },
+                fieldState: { error },
+              }) => (
+                <UploadField
+                  adminKey={adminKey}
+                  disabled={isUploadDisabled}
+                  name={name}
+                  previewClass="size-4"
+                  label="Chain Icon"
+                  fileName="chain-icon"
+                  projectId={projectId}
+                  imgUrl={value} // input value
+                  onChange={onChange}
+                  error={isUploadDisabled ? uploadPreconditionError : error}
+                />
+              )}
+            />
+          </BoWrapper>
           <BoWrapper title="Curator">
             <Controller
               name="curator.avatarUrl"
@@ -433,8 +454,8 @@ const BackOffice = () => {
                 fieldState: { error },
               }) => (
                 <UploadField
-                  setError={setUploadFileError}
-                  disabled={!projectId && !idConfirmed}
+                  adminKey={adminKey}
+                  disabled={isUploadDisabled}
                   name={name}
                   label="Avatar"
                   previewClass="size-10"
@@ -442,11 +463,7 @@ const BackOffice = () => {
                   projectId={projectId}
                   imgUrl={value} // input value
                   onChange={onChange}
-                  error={
-                    !idConfirmed
-                      ? "Please confirm id in first section"
-                      : error?.message
-                  }
+                  error={isUploadDisabled ? uploadPreconditionError : error}
                 />
               )}
             />
@@ -480,7 +497,7 @@ const BackOffice = () => {
                 />
               )}
             />
-            <div className="flex w-full flex-col items-start gap-2 pl-4">
+            <div className="flex w-full flex-col items-start gap-2">
               <h2 className="text-lg font-semibold">Socials</h2>
               <div className="grid grid-cols-curator-socials gap-8 text-sm">
                 <span>Type</span>
@@ -525,7 +542,6 @@ const BackOffice = () => {
                     }) => (
                       <TextField
                         value={value}
-                        containerClassName="px-0"
                         onChange={onChange}
                         error={error?.message}
                       />
@@ -562,7 +578,6 @@ const BackOffice = () => {
                 <TextField
                   label="Ticker"
                   value={value}
-                  containerClassName="px-0"
                   onChange={onChange}
                   error={error?.message}
                 />
@@ -576,21 +591,16 @@ const BackOffice = () => {
                 fieldState: { error },
               }) => (
                 <UploadField
-                  setError={setUploadFileError}
-                  disabled={!projectId && !idConfirmed}
+                  adminKey={adminKey}
+                  disabled={isUploadDisabled}
                   name={name}
                   label="Token Icon"
                   previewClass="size-4"
                   fileName="project-coin-icon"
-                  containerClassName="px-0"
                   projectId={projectId}
                   imgUrl={value} // input value
                   onChange={onChange}
-                  error={
-                    !idConfirmed
-                      ? "Please confirm id in first section"
-                      : error?.message
-                  }
+                  error={isUploadDisabled ? uploadPreconditionError : error}
                 />
               )}
             />
@@ -607,7 +617,6 @@ const BackOffice = () => {
                   <CurrencyInputField
                     label="total"
                     value={value}
-                    containerClassName="px-0"
                     onChange={onChange}
                     error={error?.message}
                   />
@@ -630,7 +639,6 @@ const BackOffice = () => {
                 <TextField
                   label="Link"
                   value={value}
-                  containerClassName="px-0"
                   onChange={onChange}
                   error={error?.message}
                 />
@@ -644,21 +652,16 @@ const BackOffice = () => {
                 fieldState: { error },
               }) => (
                 <UploadField
-                  setError={setUploadFileError}
-                  disabled={!projectId && !idConfirmed}
+                  adminKey={adminKey}
+                  disabled={isUploadDisabled}
                   name={name}
                   label="Backdrop Image"
                   previewClass="rounded-none h-[72px] w-[100px]"
                   fileName="data-room-backdrop"
                   projectId={projectId}
-                  containerClassName="px-0"
                   imgUrl={value} // input value
                   onChange={onChange}
-                  error={
-                    !idConfirmed
-                      ? "Please confirm id in first section"
-                      : error?.message
-                  }
+                  error={isUploadDisabled ? uploadPreconditionError : error}
                 />
               )}
             />
@@ -678,7 +681,6 @@ const BackOffice = () => {
                   <CurrencyInputField
                     label="Raise Target"
                     value={value}
-                    containerClassName="px-0"
                     onChange={onChange}
                     error={error?.message}
                   />
@@ -696,7 +698,6 @@ const BackOffice = () => {
                 <CurrencyInputField
                   label="Fixed Token Price in $BORG"
                   value={value}
-                  containerClassName="px-0"
                   onChange={onChange}
                   error={error?.message}
                 />
@@ -722,7 +723,6 @@ const BackOffice = () => {
                 <TextField
                   label="Tweet Url - shown in Reward Distribution Phase"
                   value={value}
-                  containerClassName="px-0"
                   onChange={onChange}
                   error={error?.message}
                 />
@@ -740,7 +740,6 @@ const BackOffice = () => {
                 <TextField
                   label="Name"
                   value={value}
-                  containerClassName="px-0"
                   onChange={onChange}
                   error={error?.message}
                 />
@@ -754,21 +753,16 @@ const BackOffice = () => {
                 fieldState: { error },
               }) => (
                 <UploadField
-                  setError={setUploadFileError}
-                  disabled={!projectId && !idConfirmed}
+                  adminKey={adminKey}
+                  disabled={isUploadDisabled}
                   label="Icon"
                   previewClass="size-4"
                   fileName="liquidity-pool-icon"
                   name={name}
                   projectId={projectId}
-                  containerClassName="px-0"
                   imgUrl={value} // input value
                   onChange={onChange}
-                  error={
-                    !idConfirmed
-                      ? "Please confirm id in first section"
-                      : error?.message
-                  }
+                  error={isUploadDisabled ? uploadPreconditionError : error}
                 />
               )}
             />
@@ -782,7 +776,6 @@ const BackOffice = () => {
                 <TextField
                   label="LBP Type"
                   value={value}
-                  containerClassName="px-0"
                   onChange={onChange}
                   placeholder="e.g. Full Range"
                   error={error?.message}
@@ -799,7 +792,6 @@ const BackOffice = () => {
                 <TextField
                   label="Locking Period (short description)"
                   value={value}
-                  containerClassName="px-0"
                   placeholder="12-month lockup"
                   onChange={onChange}
                   error={error?.message}
@@ -816,7 +808,6 @@ const BackOffice = () => {
                 <DateTimeField
                   label="Unlock Date"
                   value={value}
-                  containerClassName="px-0"
                   onChange={onChange}
                   error={error?.message}
                 />
@@ -846,7 +837,6 @@ const BackOffice = () => {
                       }) => (
                         <DateTimeField
                           value={value}
-                          containerClassName="px-0"
                           onChange={onChange}
                           error={error?.message}
                           minDate={getMinDate(index)}
@@ -941,24 +931,6 @@ const BackOffice = () => {
               )}
             </div>
           </BoWrapper>
-          <BoWrapper title="Confirm you're an Admin">
-            <Controller
-              name="adminKey"
-              control={control}
-              render={({
-                field: { value, onChange },
-                fieldState: { error },
-              }) => (
-                <TextField
-                  label="Admin Key"
-                  value={value}
-                  containerClassName="px-0"
-                  error={error?.message}
-                  onChange={onChange}
-                />
-              )}
-            />
-          </BoWrapper>
         </div>
         <div className="flex w-full justify-center pt-3">
           <Button
@@ -979,7 +951,7 @@ const BackOffice = () => {
             // eslint-disable-next-line no-console
             console.log("formValues: ", watch())
             // eslint-disable-next-line no-console
-            console.log("errors: ", errors)
+            // console.log("errors: ", errors)
           }}
           btnText="LOG VALUES"
           className="bg-pink-500 text-white active:bg-pink-300"

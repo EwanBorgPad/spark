@@ -23,7 +23,7 @@ const DateTimeField = ({
   minDate,
 }: DateTimeFieldProps) => {
   const containerClassName = twMerge(
-    "text-sm w-full flex flex-col items-start px-4 cursor-text max-w-[360px]",
+    "text-sm w-full flex flex-col items-start cursor-text max-w-[360px]",
     _containerClassName,
   )
 

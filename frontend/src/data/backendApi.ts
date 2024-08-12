@@ -96,17 +96,23 @@ const getExchange = async ({
 type GetPresignedUrlArgs = {
   fileName: string
   projectId: string
+  adminKey: string
 }
 const getPresignedUrl = async ({
   fileName,
   projectId,
+  adminKey,
 }: GetPresignedUrlArgs): Promise<GetPresignedUrlResponse> => {
   const url = new URL(GET_PRESIGNED_URL, window.location.href)
   url.searchParams.set("fileName", fileName)
-  // @TODO - change value below
   url.searchParams.set("projectId", projectId)
 
-  const response = await fetch(url)
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${adminKey}`,
+    },
+  })
   const json = await response.json()
   return json
 }
