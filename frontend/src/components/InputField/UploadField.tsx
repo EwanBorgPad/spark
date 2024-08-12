@@ -112,7 +112,7 @@ const UploadField = ({
         ref={inputRef}
         type="file"
         onChange={handleOnChange}
-        accept="image/png, image/jpg, image/svg+xml"
+        accept="image/png, image/jpg, image/webp"
       />
       <div className="flex flex-col items-center gap-4">
         {preview && (
@@ -137,7 +137,7 @@ const UploadField = ({
         <div className="flex flex-col items-center">
           <Button
             color="secondary"
-            btnText={"Upload"}
+            btnText={"Upload Image"}
             disabled={disabled}
             isLoading={uploading}
             onClick={() => inputRef.current?.click()}
