@@ -1,5 +1,6 @@
 import {
   GetExchangeResponse,
+  GetPresignedUrlResponse,
   GetWhitelistingResult,
   ProjectModel,
   projectSchema,
@@ -11,6 +12,7 @@ const POST_CONFIRM_RESIDENCY_URL = API_BASE_URL + "/confirmresidency"
 const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
 const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
+const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
 
 const getWhitelistingStatus = async ({ address }: { address: string }) => {
   const url = new URL(GET_WHITELISTING_STATUS_API, window.location.href)
@@ -91,10 +93,51 @@ const getExchange = async ({
   const json = await response.json()
   return json
 }
+type GetPresignedUrlArgs = {
+  fileName: string
+  projectId: string
+}
+const getPresignedUrl = async ({
+  fileName,
+  projectId,
+}: GetPresignedUrlArgs): Promise<GetPresignedUrlResponse> => {
+  const url = new URL(GET_PRESIGNED_URL, window.location.href)
+  url.searchParams.set("fileName", fileName)
+  // @TODO - change value below
+  url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url)
+  const json = await response.json()
+  return json
+}
+
+type PutFileArgs = {
+  presignedUrl: string
+  file: File
+}
+const uploadFileToBucket = async ({
+  presignedUrl,
+  file,
+}: PutFileArgs): Promise<undefined> => {
+  const url = new URL("", presignedUrl)
+
+  await fetch(url, {
+    method: "PUT",
+    body: file,
+    headers: {
+      // 'Authorization': `Bearer ${authToken}`,
+      "Content-Type": "image/png", // Correct content type for a PNG image
+      "Content-Length": file.size.toString(), // Optional but recommended
+    },
+  })
+}
+
 export const backendApi = {
   getWhitelistingStatus,
   confirmResidency,
   getProject,
   getExchange,
   createProject,
+  getPresignedUrl,
+  uploadFileToBucket,
 }
