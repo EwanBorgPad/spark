@@ -2,18 +2,12 @@ use anchor_lang::prelude::*;
 
 /// Valid phase change:
 /// FundCollection -> Refund
-/// FundCollection -> Cliff
-/// FundCollection -> Vesting (if cliff duration is set to zero)
-/// Cliff -> Vesting
-/// Cliff -> Finished (if vesting duration is set to zero)
-/// Vesting -> Finished
+/// FundCollection -> Vesting
 #[derive(AnchorSerialize, AnchorDeserialize, InitSpace, Clone, Debug, Eq, PartialEq)]
 pub enum Phase {
     FundCollection,
     Refund,
-    Cliff,
     Vesting,
-    Finished,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, InitSpace, Clone, Debug, Eq, PartialEq)]
@@ -22,18 +16,17 @@ pub struct LbpInitializeData {
     pub uid: u64,
 
     /// The owner of the lbp
-    pub launched_token_owner: Pubkey,
+    pub project: Pubkey,
+
     /// The mint of the token supplied by the project
     pub launched_token_mint: Pubkey,
     /// The part of token that is used for the liquidity pool. The rest is sent to the reward pool
     pub launched_token_lp_distribution: u8,
     /// The max amount of token that the project can deposit
-    pub launched_token_max_cap: u64,
+    pub launched_token_cap: u64,
 
     /// The mint of the token supplied by the users
     pub raised_token_mint: Pubkey,
-    /// The ata that holds the token deposited by the users
-    pub raised_token_ata: Pubkey,
     /// The min amount of token that the users must deposit to move to the LP locked phase
     /// If this amount is not reached the users are reimbursed
     pub raised_token_min_cap: u64,
@@ -64,17 +57,15 @@ pub struct Lbp {
     pub uid: u64,
 
     /// The owner of the lbp, i.e., the project launching the token
-    pub launched_token_owner: Pubkey,
+    pub project: Pubkey,
+
     /// The mint of the token supplied by the project
     pub launched_token_mint: Pubkey,
     /// The ata that holds the token deposited by the project
     pub launched_token_ata: Pubkey,
     /// The part of token that is used for the liquidity pool. The rest is sent to the reward pool
     pub launched_token_lp_distribution: u8,
-    /// The max amount of token that the project can deposit
-    pub launched_token_max_cap: u64,
-    /// The amount of token that remains after the end of the fund collection phase
-    /// If the launched_token_max_cap is reached, the launched_token_cap equals the launched_token_max_cap
+    /// The max amount of token that the project must deposit
     pub launched_token_cap: u64,
 
     /// The mint of the token supplied by the users
@@ -101,7 +92,7 @@ pub struct Lbp {
     /// The start time of the cliff phase
     /// Set by the program once the admin transition from fund collection to cliff phase
     /// Expressed as Unix time (i.e. seconds since the Unix epoch).
-    pub cliff_start_time: u64,
+    pub vesting_start_time: u64,
     /// The duration of the cliff phase
     /// Expressed as Unix time (i.e. seconds since the Unix epoch).
     pub cliff_duration: u64,
@@ -124,14 +115,14 @@ impl Lbp {
     ) {
         self.uid = lbp_initialize.uid;
 
-        self.launched_token_owner = lbp_initialize.launched_token_owner;
+        self.project = lbp_initialize.project;
+
         self.launched_token_mint = lbp_initialize.launched_token_mint;
         self.launched_token_ata = launched_token_ata;
         self.launched_token_lp_distribution = lbp_initialize.launched_token_lp_distribution;
-        self.launched_token_max_cap = lbp_initialize.launched_token_max_cap;
+        self.launched_token_cap = lbp_initialize.launched_token_cap;
 
         self.raised_token_mint = lbp_initialize.raised_token_mint;
-        self.raised_token_ata = lbp_initialize.raised_token_ata;
         self.raised_token_ata = raised_token_ata;
         self.raised_token_min_cap = lbp_initialize.raised_token_min_cap;
         self.raised_token_max_cap = lbp_initialize.raised_token_max_cap;

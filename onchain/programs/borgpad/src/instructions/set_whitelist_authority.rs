@@ -14,7 +14,7 @@ pub struct SetWhitelistAuthority<'info> {
 
     #[account(
         mut,
-        constraint = config.admin_authority == admin_authority.key() @ ErrorCode::NotAdmin
+        constraint = config.admin_authority == admin_authority.key() @ ErrorCode::NotAdminAuthority
     )]
     pub admin_authority: Signer<'info>,
 }

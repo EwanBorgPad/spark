@@ -10,6 +10,7 @@ pub struct Position {
     /// The bump of the pda
     pub bump: u8,
     // TODO: define a field to track how much has already been claimed for the position - should be dynamic and function of self.amount and lbp.user_cap
+    // TODO: define a field to link a position to a lbp
 }
 
 impl Position {

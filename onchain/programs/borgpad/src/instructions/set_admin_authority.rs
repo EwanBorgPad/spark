@@ -14,13 +14,13 @@ pub struct SetAdminAuthority<'info> {
 
     #[account(
         mut,
-        constraint = config.admin_authority == old_admin_authority.key() @ ErrorCode::NotAdmin
+        constraint = config.admin_authority == old_admin_authority.key() @ ErrorCode::NotAdminAuthority
     )]
     pub old_admin_authority: Signer<'info>,
 
     #[account(
         mut,
-        constraint = new_admin_authority.key() != old_admin_authority.key() @ ErrorCode::SameAdmin
+        constraint = new_admin_authority.key() != old_admin_authority.key() @ ErrorCode::SameAdminAuthority
     )]
     pub new_admin_authority: Signer<'info>,
 }

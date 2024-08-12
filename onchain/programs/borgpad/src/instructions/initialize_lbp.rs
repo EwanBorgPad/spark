@@ -10,7 +10,7 @@ use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 pub struct InitializeLbp<'info> {
     #[account(
         mut,
-        constraint = config.admin_authority == admin_authority.key() @ ErrorCode::NotAdmin
+        constraint = config.admin_authority == admin_authority.key() @ ErrorCode::NotAdminAuthority
     )]
     pub admin_authority: Signer<'info>,
 
@@ -51,12 +51,12 @@ pub struct InitializeLbp<'info> {
     pub lbp_launched_token_ata: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
-        constraint = lbp_initialize.raised_token_mint == raised_token_mint.key() @ ErrorCode::IncorrectMint
+        constraint = lbp_initialize.raised_token_mint == raised_token_mint.key() @ ErrorCode::InvalidMint
     )]
     pub raised_token_mint: InterfaceAccount<'info, Mint>,
 
     #[account(
-        constraint = lbp_initialize.launched_token_mint == launched_token_mint.key() @ ErrorCode::IncorrectMint
+        constraint = lbp_initialize.launched_token_mint == launched_token_mint.key() @ ErrorCode::InvalidMint
     )]
     pub launched_token_mint: InterfaceAccount<'info, Mint>,
 
