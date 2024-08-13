@@ -31,6 +31,7 @@ import { formatCurrencyAmount } from "@/utils/format"
 import { useFormDraft } from "@/hooks/useFormDraft"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
+import ProjectCreated from "@/components/Modal/Modals/ProjectCreated"
 
 // helper values and types
 const iconOptions = Object.entries(externalLinkObj).map(([key, value]) => ({
@@ -50,6 +51,7 @@ type IconType = Exclude<IconLinkType, "NO_ICON">
 // component
 const BackOffice = () => {
   const [idConfirmed, setIdConfirmed] = useState(false)
+  const [createdProjectId, setCreatedProjectId] = useState<string | null>(null)
 
   const defaultValues =
     getStoredValue("create-new-project") ?? getDefaultValues()
@@ -82,8 +84,13 @@ const BackOffice = () => {
         formValues: payload.formValues,
         adminKey: payload.adminKey,
       }),
-    onSuccess: () => toast.success("Project Created!"),
-    onError: (error) => toast.error(error.message),
+    onSuccess: (data) => {
+      toast.success("Project Created!")
+    },
+    onError: (error) => {
+      toast.error(error.message)
+      setIdConfirmed(false)
+    },
   })
 
   // onSubmit handler
@@ -94,6 +101,7 @@ const BackOffice = () => {
       formValues: { info: info, whitelistParticipants: 0 },
       adminKey,
     })
+    setCreatedProjectId(info.id)
   }
 
   // form arrays - react hook forms
@@ -119,6 +127,7 @@ const BackOffice = () => {
   // variable helpers
   const tokenTicker = watch("tge.projectCoin.ticker")
   const fixedCoinPriceInBorg = watch("tge.fixedCoinPriceInBorg")
+  const projectLinks = watch("projectLinks")
   const projectId = watch("id")
   const adminKey = watch("adminKey")
   const isUploadDisabled = !projectId || !idConfirmed || !adminKey
@@ -165,8 +174,6 @@ const BackOffice = () => {
       ...whitelistRequirementsObj[key],
     }))
   }
-
-  const checkIfProjectIdExists = () => {}
 
   return (
     <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[100px] font-normal text-fg-primary lg:py-[100px]">
@@ -344,7 +351,7 @@ const BackOffice = () => {
                 <span>URL</span>
                 <span></span>
               </div>
-              {watch("projectLinks")?.map((_, index) => (
+              {projectLinks?.map((_, index) => (
                 <div className="flex w-full items-center gap-8" key={index}>
                   <Controller
                     name={`projectLinks.${index}.iconType`}
@@ -942,6 +949,13 @@ const BackOffice = () => {
           />
         </div>
       </form>
+
+      {createdProjectId && (
+        <ProjectCreated
+          onClose={() => setCreatedProjectId(null)}
+          projectId={createdProjectId}
+        />
+      )}
       {/* @TODO - remove this component when feature is finished */}
       {/* <div className="fixed right-4 top-[75vh] flex flex-col  gap-4 rounded-3xl bg-pink-100/10 p-4 ring-brand-primary">
         <Button

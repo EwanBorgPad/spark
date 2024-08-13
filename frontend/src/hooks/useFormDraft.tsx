@@ -30,7 +30,7 @@ export const useFormDraft = (
       const formValues = _formValues
       if (replaceItem?.key) {
         formValues[replaceItem.key] = replaceItem.value
-      } // this will avoid saving adminKey inside localStorage
+      } // this will avoid saving certain keys inside localStorage (e.g. admin key)
       localStorage.setItem(formName, JSON.stringify(formValues))
       if (isSubmitted) {
         localStorage.removeItem(formName)

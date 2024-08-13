@@ -61,21 +61,18 @@ const createProject = async ({
   const url = new URL(POST_PROJECT_API_URL, window.location.href)
   const body = JSON.stringify(formValues)
 
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      body,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${adminKey}`,
-      },
-    })
-    const json = await response.json()
-    return json
-  } catch (e) {
-    console.error(e)
-    throw e
-  }
+  // try {
+  const response = await fetch(url, {
+    method: "POST",
+    body,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${adminKey}`,
+    },
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
 }
 type GetExchangeArgs = {
   baseCurrency: string
