@@ -61,7 +61,6 @@ const createProject = async ({
   const url = new URL(POST_PROJECT_API_URL, window.location.href)
   const body = JSON.stringify(formValues)
 
-  // try {
   const response = await fetch(url, {
     method: "POST",
     body,

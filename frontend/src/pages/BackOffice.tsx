@@ -17,6 +17,7 @@ import {
 } from "@/utils/constants"
 import { externalLinkObj, IconLinkType } from "@/components/Button/ExternalLink"
 import { CurrencyInputField } from "@/components/InputField/CurrencyInputField"
+import ProjectCreatedModal from "@/components/Modal/Modals/ProjectCreatedModal"
 import { infoSchema, WhitelistRequirementModel } from "../../shared/models"
 import { DropdownField } from "@/components/InputField/DropdownField"
 import { backendApi, CreateProjectRequest } from "@/data/backendApi"
@@ -31,7 +32,6 @@ import { formatCurrencyAmount } from "@/utils/format"
 import { useFormDraft } from "@/hooks/useFormDraft"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
-import ProjectCreated from "@/components/Modal/Modals/ProjectCreated"
 
 // helper values and types
 const iconOptions = Object.entries(externalLinkObj).map(([key, value]) => ({
@@ -951,7 +951,7 @@ const BackOffice = () => {
       </form>
 
       {createdProjectId && (
-        <ProjectCreated
+        <ProjectCreatedModal
           onClose={() => setCreatedProjectId(null)}
           projectId={createdProjectId}
         />

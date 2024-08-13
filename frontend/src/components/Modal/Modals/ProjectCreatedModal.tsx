@@ -7,7 +7,7 @@ type Props = {
   onClose: () => void
   projectId: string
 }
-const ProjectCreated = ({ onClose, projectId }: Props) => {
+const ProjectCreatedModal = ({ onClose, projectId }: Props) => {
   return (
     <SimpleModal
       showCloseBtn
@@ -36,4 +36,4 @@ const ProjectCreated = ({ onClose, projectId }: Props) => {
   )
 }
 
-export default ProjectCreated
+export default ProjectCreatedModal
