@@ -254,18 +254,16 @@ const BackOffice = () => {
           <div className="flex flex-col items-start gap-2">
             {idConfirmed ? (
               <span className="text-sm">
-                ID confirmed and used for a file folder for storing images.
+                ID confirmed, you can now upload images.
               </span>
             ) : (
               <ul className="list-inside list-disc text-sm">
-                <li>Project ID should be unique.</li>
                 <li>
-                  ID will be used as a path on borgpad.com and as a file folder
-                  for storing images.
+                  ID will be used as a path on borgpad.com and for storing
+                  images.
                 </li>
-                <li>Once you confirm it you will not be able to change it.</li>
                 <li className="font-semibold">
-                  Do not use same ID from existing projects.
+                  Do not use same ID from existing projects. ID should be unique
                 </li>
               </ul>
             )}
