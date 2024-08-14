@@ -6,6 +6,7 @@ type Props = {
   src: string | undefined
   size: "4" | "5" | "6" | "10" | "20" | "none"
   customClass?: string
+  showFallback?: boolean
 }
 
 const avatarSize: Record<Props["size"], string> = {
@@ -29,7 +30,7 @@ const ImgSkeletonLoader = () => {
   )
 }
 
-const Img = ({ size, src, customClass }: Props) => {
+const Img = ({ size, src, customClass, showFallback = true }: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const [renderFallback, setRenderFallback] = useState(src ? false : true)
 
@@ -37,6 +38,8 @@ const Img = ({ size, src, customClass }: Props) => {
     setRenderFallback(true)
     setIsLoading(false)
   }
+  console.log(!src && !showFallback)
+  if (!src && !showFallback) return null
 
   return (
     <div

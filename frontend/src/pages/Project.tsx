@@ -95,14 +95,11 @@ const Project = () => {
           rel="noreferrer"
           href={projectData.info.dataRoom.url}
         >
-          <img
-            src={projectData.info.dataRoom.backgroundImgUrl}
-            className="absolute left-0 h-[72px] w-[100px] opacity-5"
-          />
           <Img
             src={projectData.info.dataRoom.backgroundImgUrl}
             size={"none"}
             customClass="!h-[72px] !w-[100px] absolute left-0"
+            showFallback={false}
           />
           <div className="z-[1] flex flex-col">
             <span className="font-medium">
