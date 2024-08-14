@@ -1,9 +1,9 @@
-import { Icon } from "@/components/Icon/Icon"
-import Img from "@/components/Image/Img"
-import { useProjectDataContext } from "@/hooks/useProjectData"
-import { formatCurrencyAmount } from "@/utils/format"
 import { formatValue } from "react-currency-input-field"
 import { useTranslation } from "react-i18next"
+
+import { useProjectDataContext } from "@/hooks/useProjectData"
+import { Icon } from "@/components/Icon/Icon"
+import Img from "@/components/Image/Img"
 
 type TokenRewardsProps = {
   borgCoinInput: string
@@ -18,18 +18,21 @@ const TokenRewards = ({
   const { projectData } = useProjectDataContext()
   const tgeData = projectData.info.tge
 
-  const getCoinReward = () => {
+  const getTokenReward = () => {
     if (!borgCoinInput) return 0
-    const tokenReward =
-      +borgCoinInput * projectData.info.tge.fixedCoinPriceInBorg
-    return formatValue({
-      value: formatCurrencyAmount(tokenReward, false, 6).toString(),
-    })
+    const tokenPriceInBorg = Number(projectData.info.tge.fixedCoinPriceInBorg)
+    if (Number.isNaN(tokenPriceInBorg)) {
+      console.error(tokenPriceInBorg)
+      return 0
+    }
+    const tokenReward = +borgCoinInput * tokenPriceInBorg
+    return tokenReward
   }
 
-  const totalRewards = {
+  const rewards = {
     borg: borgCoinInput,
-    targetCoin: getCoinReward(),
+    targetToken: formatValue({ value: getTokenReward().toString() }),
+    totalTargetToken: formatValue({ value: (2 * getTokenReward()).toString() }),
   }
 
   return (
@@ -49,7 +52,9 @@ const TokenRewards = ({
               className="text-base text-fg-disabled opacity-50"
             />
             <Img src={tgeData.projectCoin.iconUrl} size="4" />
-            <span className="font-geist-mono text-base">{getCoinReward()}</span>
+            <span className="font-geist-mono text-base">
+              {rewards.targetToken}
+            </span>
             <span className="font-geist-mono text-base">
               {tgeData.projectCoin.ticker}
             </span>
@@ -77,7 +82,9 @@ const TokenRewards = ({
       <div className="border-b-[1px] border-b-bd-primary px-3 py-2">
         <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
           <Img src={tgeData.projectCoin.iconUrl} size="4" />
-          <span className="font-geist-mono text-base">{getCoinReward()}</span>
+          <span className="font-geist-mono text-base">
+            {rewards.targetToken}
+          </span>
           <span className="font-geist-mono text-base">
             {tgeData.projectCoin.ticker}
           </span>
@@ -94,7 +101,7 @@ const TokenRewards = ({
         </span>
         <span className="font-geist-mono">{"BORG"}</span>
         <span>{"+"}</span>
-        <span className="font-geist-mono">{totalRewards.targetCoin}</span>
+        <span className="font-geist-mono">{rewards.totalTargetToken}</span>
         <span className="font-geist-mono">{tgeData.projectCoin.ticker}</span>
       </div>
     </div>
