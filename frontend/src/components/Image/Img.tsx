@@ -38,7 +38,7 @@ const Img = ({ size, src, customClass, showFallback = true }: Props) => {
     setRenderFallback(true)
     setIsLoading(false)
   }
-  console.log(!src && !showFallback)
+
   if (!src && !showFallback) return null
 
   return (
