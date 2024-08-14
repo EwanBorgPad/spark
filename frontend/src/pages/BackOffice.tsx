@@ -84,9 +84,9 @@ const BackOffice = () => {
         formValues: payload.formValues,
         adminKey: payload.adminKey,
       }),
-    onSuccess: (data) => {
+    onSuccess: (_, variables) => {
       toast.success("Project Created!")
-      setCreatedProjectId(data.info.id)
+      setCreatedProjectId(variables.formValues.info.id)
     },
     onError: (error) => {
       toast.error(error.message)
