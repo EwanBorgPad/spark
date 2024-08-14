@@ -86,6 +86,7 @@ const BackOffice = () => {
       }),
     onSuccess: (data) => {
       toast.success("Project Created!")
+      setCreatedProjectId(data.info.id)
     },
     onError: (error) => {
       toast.error(error.message)
@@ -101,7 +102,6 @@ const BackOffice = () => {
       formValues: { info: info, whitelistParticipants: 0 },
       adminKey,
     })
-    setCreatedProjectId(info.id)
   }
 
   // form arrays - react hook forms

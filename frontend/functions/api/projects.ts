@@ -40,9 +40,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
   try {
     // authorize request
-    if (!hasAdminAccess(ctx)) {
-      return jsonResponse(null, 401)
-    }
+    // if (!hasAdminAccess(ctx)) {
+    //   return jsonResponse(null, 401)
+    // }
 
     // parse request
     const requestJson = await ctx.request.json()
