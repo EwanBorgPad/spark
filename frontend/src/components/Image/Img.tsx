@@ -4,7 +4,7 @@ import fallbackImg from "../../assets/fallback1.png"
 
 type Props = {
   src: string | undefined
-  size: "4" | "5" | "6" | "10" | "20"
+  size: "4" | "5" | "6" | "10" | "20" | "none"
   customClass?: string
 }
 
@@ -14,6 +14,7 @@ const avatarSize: Record<Props["size"], string> = {
   "6": "size-6",
   "10": "size-10",
   "20": "size-20",
+  none: "",
 }
 
 const ImgSkeletonLoader = () => {

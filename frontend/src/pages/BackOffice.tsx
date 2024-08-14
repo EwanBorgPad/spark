@@ -649,27 +649,33 @@ const BackOffice = () => {
                 />
               )}
             />
-            <Controller
-              name="dataRoom.backgroundImgUrl"
-              control={control}
-              render={({
-                field: { value, onChange, name },
-                fieldState: { error },
-              }) => (
-                <UploadField
-                  adminKey={adminKey}
-                  disabled={isUploadDisabled}
-                  name={name}
-                  label="Backdrop Image"
-                  previewClass="rounded-none h-[72px] w-[100px]"
-                  fileName="data-room-backdrop"
-                  projectId={projectId}
-                  imgUrl={value} // input value
-                  onChange={onChange}
-                  error={isUploadDisabled ? uploadPreconditionError : error}
-                />
-              )}
-            />
+            <div className="flex flex-col items-start gap-1">
+              <Controller
+                name="dataRoom.backgroundImgUrl"
+                control={control}
+                render={({
+                  field: { value, onChange, name },
+                  fieldState: { error },
+                }) => (
+                  <UploadField
+                    adminKey={adminKey}
+                    disabled={isUploadDisabled}
+                    name={name}
+                    label="Backdrop Image"
+                    previewClass="rounded-none h-[72px] w-[100px]"
+                    fileName="data-room-backdrop"
+                    projectId={projectId}
+                    imgUrl={value} // input value
+                    onChange={onChange}
+                    error={isUploadDisabled ? uploadPreconditionError : error}
+                  />
+                )}
+              />
+              <span className="text-xs">
+                Image should be black & white and with lowered opacity (see
+                existing projects).
+              </span>
+            </div>
           </BoWrapper>
           <h2 className="pt-3 text-xl font-semibold">
             Token Generation Section

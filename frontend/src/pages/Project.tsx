@@ -99,6 +99,11 @@ const Project = () => {
             src={projectData.info.dataRoom.backgroundImgUrl}
             className="absolute left-0 h-[72px] w-[100px] opacity-5"
           />
+          <Img
+            src={projectData.info.dataRoom.backgroundImgUrl}
+            size={"none"}
+            customClass="!h-[72px] !w-[100px] absolute left-0"
+          />
           <div className="z-[1] flex flex-col">
             <span className="font-medium">
               {projectData.info.title} {t("data_room")}
