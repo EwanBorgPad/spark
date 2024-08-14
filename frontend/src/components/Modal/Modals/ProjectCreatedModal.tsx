@@ -1,7 +1,7 @@
-import React from "react"
-import { SimpleModal } from "../SimpleModal"
-import { Button } from "@/components/Button/Button"
 import { Link } from "react-router-dom"
+
+import { Button } from "@/components/Button/Button"
+import { SimpleModal } from "../SimpleModal"
 
 type Props = {
   onClose: () => void
@@ -19,7 +19,7 @@ const ProjectCreatedModal = ({ onClose, projectId }: Props) => {
           🎉 Project has been created! 🎉
         </span>
         <span>You can find it at the following link:</span>
-        <span className="w-fit rounded-lg bg-secondary px-2 py-1 text-sm ring-1 ring-brand-secondary/50">{`${import.meta.env.BASE_URL}/project/${projectId}`}</span>
+        <span className="w-fit rounded-lg bg-secondary px-2 py-1 text-sm ring-1 ring-brand-secondary/50">{`${window.location.origin}/project/${projectId}`}</span>
         <div className="flex w-full justify-center gap-4 pt-2">
           <Button
             btnText="Create New Project"
@@ -27,7 +27,7 @@ const ProjectCreatedModal = ({ onClose, projectId }: Props) => {
             size="sm"
             onClick={onClose}
           />
-          <Link to={`${import.meta.env.BASE_URL}/project/${projectId}`}>
+          <Link to={`${window.location.origin}/project/${projectId}`}>
             <Button btnText="Go To Page" size="sm" className="w-[170px]" />
           </Link>
         </div>
