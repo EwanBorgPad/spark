@@ -2,10 +2,11 @@ export const getRatioPercentage = (filled: number, total: number) => {
   return Math.floor((filled / total) * 100)
 }
 export const formatCurrencyAmount = (
-  amount: number,
+  amount: number | undefined,
   withSymbol: boolean = true,
   decimals: number = 2,
 ) => {
+  if (!amount) return undefined
   const value = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",

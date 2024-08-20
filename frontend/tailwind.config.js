@@ -144,15 +144,15 @@ export default {
           "100%": { opacity: 0 },
         },
         "slide-skeleton": {
-          "0%": { transform: "translateY(-100%)" },
-          "50%": { transform: "translateY(+100%)" },
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(+100%)" },
         },
       },
       animation: {
         "top-down": "top-down 0.1s ease-out forwards",
         "fade-in": "fade-in 0.2s ease-in-out",
         "fade-out": "fade-out 0.31s ease-in-out",
-        "slide-skeleton": "slide-skeleton 2s ease-in-out infinite",
+        "slide-skeleton": "slide-skeleton 1s ease-in-out infinite",
       },
     },
   },
