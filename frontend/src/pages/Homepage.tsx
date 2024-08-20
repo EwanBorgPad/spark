@@ -1,6 +1,7 @@
 import { Button } from "@/components/Button/Button"
 import React from "react"
 import { Link } from "react-router-dom"
+import { testAnchorJson } from "@/anchor/AnchorJson.ts"
 
 const Homepage = () => {
   return (
@@ -8,6 +9,7 @@ const Homepage = () => {
       <Link to={"/project/puffer-finance"}>
         <Button size="xl" color="primary" btnText="Go To Puffer Finance" />
       </Link>
+      <Button size="xl" color="primary" btnText="Test Anchor" onClick={testAnchorJson} />
     </div>
   )
 }

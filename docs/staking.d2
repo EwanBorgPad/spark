@@ -1,0 +1,19 @@
+shape: sequence_diagram
+
+
+# Actors
+fe: BP FE\n(Web)
+be: BP BE\n(CF Workers)
+# db: D1\n(Database)
+sp: LBP Program
+
+fe."Prepare transaction\n(everything but the admin signature)"
+
+fe -> be: "Send serialized \ntx to backend"
+
+be."Check whitelisting\nrequirements"
+be."Sign the tx using\nauthorized private key"
+
+be -> sp: "Deposit instruction (TBD)"
+
+be -> fe: "200 OK"
