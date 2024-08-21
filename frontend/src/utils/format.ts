@@ -16,3 +16,9 @@ export const formatCurrencyAmount = (
   if (!withSymbol) return value.substring(1)
   return value
 }
+
+
+export const capitalizeFirstLetter = (string?: string) => {
+  if (!string) return "" // handle empty or undefined strings
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}

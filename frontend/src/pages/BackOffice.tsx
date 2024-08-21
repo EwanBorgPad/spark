@@ -12,13 +12,20 @@ import { toast } from "react-toastify"
 import { z } from "zod"
 
 import {
+  distributionTypeOptions,
+  iconOptions,
+  initialSaleData,
+  payoutIntervalOptions,
+  setValueOptions,
+} from "@/utils/back-office"
+import {
   WhitelistingRequirementType,
   whitelistRequirementsObj,
 } from "@/utils/constants"
 import { externalLinkObj, IconLinkType } from "@/components/Button/ExternalLink"
 import { CurrencyInputField } from "@/components/InputField/CurrencyInputField"
 import ProjectCreatedModal from "@/components/Modal/Modals/ProjectCreatedModal"
-import { infoSchema, WhitelistRequirementModel } from "../../shared/models"
+import { projectSchema, WhitelistRequirementModel } from "../../shared/models"
 import { DropdownField } from "@/components/InputField/DropdownField"
 import { backendApi, CreateProjectRequest } from "@/data/backendApi"
 import DateTimeField from "@/components/InputField/DateTimeField"
@@ -33,19 +40,13 @@ import { useFormDraft } from "@/hooks/useFormDraft"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
 
-// helper values and types
-const iconOptions = Object.entries(externalLinkObj).map(([key, value]) => ({
-  id: key,
-  label: value.label,
-}))
-const valueOptions = {
-  shouldDirty: true,
-  shouldValidate: true,
-}
-const extendedProjectInfoSchema = infoSchema.extend({
-  adminKey: z.string().min(1),
-})
-type FormType = z.infer<typeof extendedProjectInfoSchema>
+// schema & types
+const extendedProjectSchema = projectSchema
+  .extend({
+    adminKey: z.string().min(1),
+  })
+  .omit({ saleData: true })
+type FormType = z.infer<typeof extendedProjectSchema>
 type IconType = Exclude<IconLinkType, "NO_ICON">
 
 // component
@@ -63,7 +64,7 @@ const BackOffice = () => {
     formState: { isSubmitted },
   } = useForm<FormType>({
     defaultValues,
-    resolver: zodResolver(extendedProjectInfoSchema),
+    resolver: zodResolver(extendedProjectSchema),
     mode: "onBlur",
   })
   useFormDraft(
@@ -81,12 +82,12 @@ const BackOffice = () => {
   const { mutate: createProject, isPending } = useMutation({
     mutationFn: (payload: CreateProjectRequest) =>
       backendApi.createProject({
-        formValues: payload.formValues,
+        project: payload.project,
         adminKey: payload.adminKey,
       }),
     onSuccess: (_, variables) => {
       toast.success("Project Created!")
-      setCreatedProjectId(variables.formValues.info.id)
+      setCreatedProjectId(variables.project.info.id)
     },
     onError: (error) => {
       toast.error(error.message)
@@ -96,10 +97,15 @@ const BackOffice = () => {
 
   // onSubmit handler
   const onSubmit: SubmitHandler<FormType> = async (data) => {
-    const { adminKey, ...info } = data
+    const { adminKey, info, rewards } = data
 
     createProject({
-      formValues: { info: info, whitelistParticipants: 0 },
+      project: {
+        info: info,
+        whitelistParticipants: 0,
+        rewards: rewards,
+        saleData: initialSaleData,
+      },
       adminKey,
     })
   }
@@ -108,12 +114,12 @@ const BackOffice = () => {
   const { append: addCuratorSocials, remove: removeCuratorSocials } =
     useFieldArray({
       control,
-      name: "curator.socials",
+      name: "info.curator.socials",
     })
   const { append: addProjectLinks, remove: removeProjectLinks } = useFieldArray(
     {
       control,
-      name: "projectLinks",
+      name: "info.projectLinks",
     },
   )
   const {
@@ -121,24 +127,25 @@ const BackOffice = () => {
     remove: removeWhitelistRequirement,
   } = useFieldArray({
     control,
-    name: "whitelistRequirements",
+    name: "info.whitelistRequirements",
   })
 
   // variable helpers
-  const tokenTicker = watch("tge.projectCoin.ticker")
-  const fixedCoinPriceInBorg = watch("tge.fixedCoinPriceInBorg")
-  const projectLinks = watch("projectLinks")
-  const projectId = watch("id")
+  const tokenTicker = watch("info.tge.projectCoin.ticker")
+  const fixedCoinPriceInBorg = watch("info.tge.fixedCoinPriceInBorg")
+  const projectLinks = watch("info.projectLinks")
+  const projectId = watch("info.id")
   const adminKey = watch("adminKey")
   const isUploadDisabled = !projectId || !idConfirmed || !adminKey
   const uploadPreconditionError: FieldError = {
     type: "PRECONDITION",
     message: "Please confirm admin key & ID in first two section",
   }
+  const whitelistRequirements = watch("info.whitelistRequirements")
 
   // various functions and handlers
   const updateExternalLinks = (
-    basePath: "curator.socials" | "projectLinks",
+    basePath: "info.curator.socials" | "info.projectLinks",
     value: IconLinkType,
     index: number,
   ) => {
@@ -149,14 +156,14 @@ const BackOffice = () => {
     )
   }
   const getMinDate = (index: number) => {
-    const lastPickedEventDate = watch("timeline")[index - 1]?.date ?? null
+    const lastPickedEventDate = watch("info.timeline")[index - 1]?.date ?? null
     if (!lastPickedEventDate) return new Date()
     return lastPickedEventDate
   }
 
   const setRequirementLabel = (heldAmount: number, index: number) => {
     const newLabel = `Hold ${heldAmount} BORG in your wallet`
-    setValue(`whitelistRequirements.${index}.label`, newLabel)
+    setValue(`info.whitelistRequirements.${index}.label`, newLabel)
     return newLabel
   }
 
@@ -205,7 +212,7 @@ const BackOffice = () => {
         </div>
         <div className="flex w-full flex-col gap-4 rounded-2xl bg-gradient-to-b from-gray-200/20 to-gray-200/10 px-6 py-8 shadow-lg shadow-black">
           <Controller
-            name="title"
+            name="info.title"
             control={control}
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <TextField
@@ -218,9 +225,9 @@ const BackOffice = () => {
                     .target.value
                   if (idConfirmed) return
                   setValue(
-                    `id`,
+                    `info.id`,
                     value.toLowerCase().replaceAll(" ", "-"),
-                    valueOptions,
+                    setValueOptions,
                   )
                 }}
               />
@@ -228,7 +235,7 @@ const BackOffice = () => {
           />
           <div className="flex w-full items-start gap-2">
             <Controller
-              name="id"
+              name="info.id"
               control={control}
               render={({
                 field: { value, onChange },
@@ -283,7 +290,7 @@ const BackOffice = () => {
 
         <div className="flex w-full flex-col gap-4 rounded-2xl bg-gray-200/10 px-6 py-8 shadow-lg shadow-black/50">
           <Controller
-            name="subtitle"
+            name="info.subtitle"
             control={control}
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <TextField
@@ -295,7 +302,7 @@ const BackOffice = () => {
             )}
           />
           <Controller
-            name="logoUrl"
+            name="info.logoUrl"
             control={control}
             render={({
               field: { value, onChange, name },
@@ -316,7 +323,7 @@ const BackOffice = () => {
             )}
           />
           <Controller
-            name="sector"
+            name="info.sector"
             control={control}
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <TextField
@@ -329,7 +336,7 @@ const BackOffice = () => {
           />
 
           <Controller
-            name="origin"
+            name="info.origin"
             control={control}
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <TextField
@@ -352,7 +359,7 @@ const BackOffice = () => {
               {projectLinks?.map((_, index) => (
                 <div className="flex w-full items-center gap-8" key={index}>
                   <Controller
-                    name={`projectLinks.${index}.iconType`}
+                    name={`info.projectLinks.${index}.iconType`}
                     control={control}
                     render={({ field: { value }, fieldState: { error } }) => (
                       <DropdownField
@@ -362,7 +369,7 @@ const BackOffice = () => {
                         containerClassName="w-[128px] px-0"
                         onChange={(value) => {
                           updateExternalLinks(
-                            "projectLinks",
+                            "info.projectLinks",
                             value as IconType,
                             index,
                           )
@@ -372,13 +379,14 @@ const BackOffice = () => {
                   />
                   <Icon
                     icon={
-                      externalLinkObj[watch(`projectLinks.${index}.iconType`)]
-                        .icon
+                      externalLinkObj[
+                        watch(`info.projectLinks.${index}.iconType`)
+                      ].icon
                     }
                     className="text-2xl"
                   />
                   <Controller
-                    name={`projectLinks.${index}.url`}
+                    name={`info.projectLinks.${index}.url`}
                     control={control}
                     render={({
                       field: { value, onChange },
@@ -413,7 +421,7 @@ const BackOffice = () => {
           </BoWrapper>
           <BoWrapper title="Chain Info">
             <Controller
-              name="chain.name"
+              name="info.chain.name"
               control={control}
               render={({
                 field: { value, onChange },
@@ -429,7 +437,7 @@ const BackOffice = () => {
             />
 
             <Controller
-              name="chain.iconUrl"
+              name="info.chain.iconUrl"
               control={control}
               render={({
                 field: { value, onChange, name },
@@ -452,7 +460,7 @@ const BackOffice = () => {
           </BoWrapper>
           <BoWrapper title="Curator">
             <Controller
-              name="curator.avatarUrl"
+              name="info.curator.avatarUrl"
               control={control}
               render={({
                 field: { value, onChange, name },
@@ -473,7 +481,7 @@ const BackOffice = () => {
               )}
             />
             <Controller
-              name="curator.fullName"
+              name="info.curator.fullName"
               control={control}
               render={({
                 field: { value, onChange },
@@ -488,7 +496,7 @@ const BackOffice = () => {
               )}
             />
             <Controller
-              name="curator.position"
+              name="info.curator.position"
               control={control}
               render={({
                 field: { value, onChange },
@@ -510,10 +518,10 @@ const BackOffice = () => {
                 <span>URL</span>
                 <span></span>
               </div>
-              {watch("curator.socials")?.map((_, index) => (
+              {watch("info.curator.socials")?.map((_, index) => (
                 <div className="flex w-full items-center gap-8" key={index}>
                   <Controller
-                    name={`curator.socials.${index}.iconType`}
+                    name={`info.curator.socials.${index}.iconType`}
                     control={control}
                     render={({ field: { value } }) => (
                       <DropdownField
@@ -522,7 +530,7 @@ const BackOffice = () => {
                         containerClassName="w-[128px] px-0"
                         onChange={(value) => {
                           updateExternalLinks(
-                            "curator.socials",
+                            "info.curator.socials",
                             value as IconType,
                             index,
                           )
@@ -533,13 +541,13 @@ const BackOffice = () => {
                   <Icon
                     icon={
                       externalLinkObj[
-                        watch(`curator.socials.${index}.iconType`)
+                        watch(`info.curator.socials.${index}.iconType`)
                       ].icon
                     }
                     className="text-2xl"
                   />
                   <Controller
-                    name={`curator.socials.${index}.url`}
+                    name={`info.curator.socials.${index}.url`}
                     control={control}
                     render={({
                       field: { value, onChange },
@@ -574,7 +582,7 @@ const BackOffice = () => {
           </BoWrapper>
           <BoWrapper title="Project's Token Info">
             <Controller
-              name={`tge.projectCoin.ticker`}
+              name={`info.tge.projectCoin.ticker`}
               control={control}
               render={({
                 field: { value, onChange },
@@ -589,7 +597,7 @@ const BackOffice = () => {
               )}
             />
             <Controller
-              name="tge.projectCoin.iconUrl"
+              name="info.tge.projectCoin.iconUrl"
               control={control}
               render={({
                 field: { value, onChange, name },
@@ -613,7 +621,7 @@ const BackOffice = () => {
           <BoWrapper title="Tokens Availability">
             <div className="flex items-start gap-2">
               <Controller
-                name={`totalTokensForSale`}
+                name={`info.totalTokensForSale`}
                 control={control}
                 render={({
                   field: { value, onChange },
@@ -635,7 +643,7 @@ const BackOffice = () => {
 
           <BoWrapper title="Data Room">
             <Controller
-              name={`dataRoom.url`}
+              name={`info.dataRoom.url`}
               control={control}
               render={({
                 field: { value, onChange },
@@ -651,7 +659,7 @@ const BackOffice = () => {
             />
             <div className="flex flex-col items-start gap-1">
               <Controller
-                name="dataRoom.backgroundImgUrl"
+                name="info.dataRoom.backgroundImgUrl"
                 control={control}
                 render={({
                   field: { value, onChange, name },
@@ -672,8 +680,8 @@ const BackOffice = () => {
                 )}
               />
               <span className="text-xs">
-                Image should be black & white (see
-                existing projects). Opacity will automatically be lowered to 10%.
+                Image should be black & white (see existing projects). Opacity
+                will automatically be lowered to 10%.
               </span>
             </div>
           </BoWrapper>
@@ -683,7 +691,7 @@ const BackOffice = () => {
           <BoWrapper>
             <div className="flex items-start gap-2">
               <Controller
-                name={`tge.raiseTarget`}
+                name={`info.tge.raiseTarget`}
                 control={control}
                 render={({
                   field: { value, onChange },
@@ -700,7 +708,7 @@ const BackOffice = () => {
               <span className="mt-9 opacity-30">$BORG</span>
             </div>
             <Controller
-              name={`tge.fixedCoinPriceInBorg`}
+              name={`info.tge.fixedCoinPriceInBorg`}
               control={control}
               render={({
                 field: { value, onChange },
@@ -725,7 +733,7 @@ const BackOffice = () => {
               </p>
             )}
             <Controller
-              name={`tge.tweetUrl`}
+              name={`info.tge.tweetUrl`}
               control={control}
               render={({
                 field: { value, onChange },
@@ -742,7 +750,7 @@ const BackOffice = () => {
           </BoWrapper>
           <BoWrapper title="Liquidity Pool">
             <Controller
-              name={`tge.liquidityPool.name`}
+              name={`info.tge.liquidityPool.name`}
               control={control}
               render={({
                 field: { value, onChange },
@@ -757,7 +765,7 @@ const BackOffice = () => {
               )}
             />
             <Controller
-              name="tge.liquidityPool.iconUrl"
+              name="info.tge.liquidityPool.iconUrl"
               control={control}
               render={({
                 field: { value, onChange, name },
@@ -778,7 +786,7 @@ const BackOffice = () => {
               )}
             />
             <Controller
-              name={`tge.liquidityPool.lbpType`}
+              name={`info.tge.liquidityPool.lbpType`}
               control={control}
               render={({
                 field: { value, onChange },
@@ -794,7 +802,7 @@ const BackOffice = () => {
               )}
             />
             <Controller
-              name={`tge.liquidityPool.lockingPeriod`}
+              name={`info.tge.liquidityPool.lockingPeriod`}
               control={control}
               render={({
                 field: { value, onChange },
@@ -810,7 +818,7 @@ const BackOffice = () => {
               )}
             />
             <Controller
-              name={`tge.liquidityPool.unlockDate`}
+              name={`info.tge.liquidityPool.unlockDate`}
               control={control}
               render={({
                 field: { value, onChange },
@@ -832,7 +840,7 @@ const BackOffice = () => {
                 <span className="self-center">Event Type</span>
                 <span className="font-semibold">Date</span>
               </div>
-              {watch("timeline")?.map((timelineEvent, index) => {
+              {watch("info.timeline")?.map((timelineEvent, index) => {
                 return (
                   <div
                     key={index}
@@ -840,7 +848,7 @@ const BackOffice = () => {
                   >
                     <span className="self-center">{timelineEvent.label}</span>
                     <Controller
-                      name={`timeline.${index}.date`}
+                      name={`info.timeline.${index}.date`}
                       control={control}
                       render={({
                         field: { value, onChange },
@@ -861,7 +869,7 @@ const BackOffice = () => {
           </BoWrapper>
           <BoWrapper title="Whitelist Requirements">
             <div className="flex w-full flex-col gap-2">
-              {watch("whitelistRequirements")?.map((requirement, index) => {
+              {whitelistRequirements?.map((requirement, index) => {
                 return (
                   <div
                     key={index}
@@ -869,10 +877,10 @@ const BackOffice = () => {
                   >
                     <div className="flex flex-col items-start">
                       <span className="font-semibold">
-                        {watch(`whitelistRequirements.${index}.label`)}
+                        {watch(`info.whitelistRequirements.${index}.label`)}
                       </span>
                       <Controller
-                        name={`whitelistRequirements.${index}.isMandatory`}
+                        name={`info.whitelistRequirements.${index}.isMandatory`}
                         control={control}
                         render={({
                           field: { value, onChange },
@@ -890,7 +898,7 @@ const BackOffice = () => {
                       />
                       {requirement.type === "HOLD_BORG_IN_WALLET" && (
                         <Controller
-                          name={`whitelistRequirements.${index}.heldAmount`}
+                          name={`info.whitelistRequirements.${index}.heldAmount`}
                           control={control}
                           render={({
                             field: { value, onChange },
@@ -923,24 +931,72 @@ const BackOffice = () => {
                   </div>
                 )
               })}
-              {getMissingRequirements(watch("whitelistRequirements"))?.map(
-                (item) => (
-                  <div
-                    key={item.type}
-                    className="flex items-center gap-2 opacity-30 hover:opacity-100"
-                  >
-                    <Button.Icon
-                      icon="SvgPlus"
-                      color="secondary"
-                      size="xs"
-                      onClick={() => addWhitelistRequirement(item)}
-                    />
-                    <span>Add</span>
-                    <span>{`"${item.label}"`}</span>
-                  </div>
-                ),
-              )}
+              {getMissingRequirements(whitelistRequirements)?.map((item) => (
+                <div
+                  key={item.type}
+                  className="flex items-center gap-2 opacity-30 hover:opacity-100"
+                >
+                  <Button.Icon
+                    icon="SvgPlus"
+                    color="secondary"
+                    size="xs"
+                    onClick={() => addWhitelistRequirement(item)}
+                  />
+                  <span>Add</span>
+                  <span>{`"${item.label}"`}</span>
+                </div>
+              ))}
             </div>
+          </BoWrapper>
+          <BoWrapper title="Rewards">
+            <Controller
+              name={`rewards.description`}
+              control={control}
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
+                <TextField
+                  label="Description"
+                  value={value}
+                  onChange={onChange}
+                  placeholder="linearly paid-out through 12 months"
+                  error={error?.message}
+                />
+              )}
+            />
+            <Controller
+              name={`rewards.payoutInterval`}
+              control={control}
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
+                <DropdownField
+                  options={payoutIntervalOptions}
+                  value={value}
+                  error={error?.message}
+                  containerClassName="w-[128px] px-0"
+                  onChange={onChange}
+                />
+              )}
+            />
+            <Controller
+              name={`rewards.distributionType`}
+              control={control}
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
+                <DropdownField
+                  options={distributionTypeOptions}
+                  value={value}
+                  error={error?.message}
+                  containerClassName="w-[128px] px-0"
+                  onChange={onChange}
+                />
+              )}
+            />
           </BoWrapper>
         </div>
         <div className="flex w-full justify-center pt-3">
