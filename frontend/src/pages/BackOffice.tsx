@@ -661,7 +661,7 @@ const BackOffice = () => {
                     adminKey={adminKey}
                     disabled={isUploadDisabled}
                     name={name}
-                    label="Backdrop Image"
+                    label="Backdrop Image (optional)"
                     previewClass="rounded-none h-[72px] w-[100px]"
                     fileName="data-room-backdrop"
                     projectId={projectId}
@@ -672,8 +672,8 @@ const BackOffice = () => {
                 )}
               />
               <span className="text-xs">
-                Image should be black & white and with lowered opacity (see
-                existing projects).
+                Image should be black & white (see
+                existing projects). Opacity will automatically be lowered to 10%.
               </span>
             </div>
           </BoWrapper>

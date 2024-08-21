@@ -7,6 +7,7 @@ type Props = {
   size: "4" | "5" | "6" | "10" | "20" | "none"
   customClass?: string
   showFallback?: boolean
+  isFetchingLink?: boolean
 }
 
 const avatarSize: Record<Props["size"], string> = {
@@ -22,44 +23,53 @@ const ImgSkeletonLoader = () => {
   return (
     <div
       className={twMerge(
-        "h-full w-full shrink-0 animate-pulse overflow-hidden rounded-full",
+        "h-full w-full shrink-0 animate-pulse overflow-hidden rounded-full bg-white/20",
       )}
     >
-      <div className="h-full w-full animate-slide-skeleton bg-white/60"></div>
+      <div className="h-full w-full animate-slide-skeleton bg-gradient-to-r from-white/0 via-white/40 to-white/0"></div>
     </div>
   )
 }
 
-const Img = ({ size, src, customClass, showFallback = true }: Props) => {
-  const [isLoading, setIsLoading] = useState(false)
+const Img = ({
+  size,
+  src,
+  customClass,
+  isFetchingLink = false,
+  showFallback = true,
+}: Props) => {
+  const [isLoadingImg, setIsLoadingImg] = useState(true)
   const [renderFallback, setRenderFallback] = useState(src ? false : true)
 
   const onError = () => {
     setRenderFallback(true)
-    setIsLoading(false)
+    setIsLoadingImg(false)
   }
 
   if (!src && !showFallback) return null
+
+  const renderImage = !isLoadingImg && !isFetchingLink
 
   return (
     <div
       className={twMerge(
         "shrink-0 overflow-hidden rounded-full ",
-        isLoading && "bg-white/20",
+        isLoadingImg && "bg-white/20",
         avatarSize[size],
         customClass,
       )}
     >
-      {isLoading ? (
-        <ImgSkeletonLoader />
-      ) : (
-        <img
-          src={!renderFallback ? src : fallbackImg}
-          onLoad={() => setIsLoading(false)}
-          onError={onError}
-          className={twMerge("h-full w-full object-cover", avatarSize[size])}
-        />
-      )}
+      {(isLoadingImg || isFetchingLink) && <ImgSkeletonLoader />}
+      <img
+        src={!renderFallback ? src : fallbackImg}
+        onLoad={() => setIsLoadingImg(false)}
+        onError={onError}
+        className={twMerge(
+          "h-full w-full object-cover",
+          !renderImage ? "hidden" : "",
+          avatarSize[size],
+        )}
+      />
     </div>
   )
 }

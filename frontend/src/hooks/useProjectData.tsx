@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom"
 type Context = {
   projectData: ProjectModel
   setProjectData: (data: ProjectModel) => void
+  isLoading: boolean
 }
 const ProjectDataContext = createContext<Context | undefined>(undefined)
 
@@ -22,7 +23,7 @@ export function ProjectDataProvider({ children }: { children: ReactNode }) {
   let { projectId } = useParams()
   projectId = projectId || ""
 
-  const { data: projectData } = useQuery({
+  const { data: projectData, isLoading } = useQuery({
     queryFn: () => backendApi.getProject({ projectId }),
     queryKey: ["backendApi", "getProject", projectId],
     enabled: Boolean(projectId),
@@ -48,6 +49,7 @@ export function ProjectDataProvider({ children }: { children: ReactNode }) {
       value={{
         projectData,
         setProjectData,
+        isLoading,
       }}
     >
       {children}

@@ -9,23 +9,38 @@ import { expandTimelineDataInfo } from "@/utils/timeline"
 import Timeline from "@/components/Timeline/Timeline"
 import { Icon } from "../components/Icon/Icon"
 import Img from "@/components/Image/Img"
+import Text from "@/components/Text"
 
 const Project = () => {
-  const { projectData } = useProjectDataContext()
+  const { projectData, isLoading } = useProjectDataContext()
   const { t } = useTranslation()
 
-  const expandedTimeline = expandTimelineDataInfo(projectData.info.timeline)
+  const expandedTimeline = expandTimelineDataInfo(
+    projectData?.info.timeline ?? [],
+  )
 
   return (
     <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[72px] font-normal text-fg-primary lg:py-[100px]">
       <section className="flex w-full flex-col justify-between gap-6 px-4 lg:max-w-[792px] lg:flex-row">
         <div className="flex flex-col gap-6 lg:flex-row">
-          <Img src={projectData.info.logoUrl} size="20" />
+          <Img
+            src={projectData?.info.logoUrl}
+            isFetchingLink={isLoading}
+            size="20"
+          />
           <div className="flex flex-col gap-1">
-            <h1 className="font-semibold">{projectData.info.title}</h1>
-            <span className="text-fg-primary text-opacity-75">
-              {projectData.info.subtitle}
-            </span>
+            <Text
+              text={projectData.info.title}
+              as="h1"
+              className="font-semibold"
+              isLoading={isLoading}
+            />
+            <Text
+              text={projectData.info.subtitle}
+              as="span"
+              className="text-fg-primary text-opacity-75"
+              isLoading={isLoading}
+            />
           </div>
         </div>
         <div className="flex items-start gap-2">
@@ -98,7 +113,7 @@ const Project = () => {
           <Img
             src={projectData.info.dataRoom.backgroundImgUrl}
             size={"none"}
-            customClass="!h-[72px] !w-[100px] absolute left-0"
+            customClass="!h-[72px] !w-[100px] absolute left-0 opacity-10"
             showFallback={false}
           />
           <div className="z-[1] flex flex-col">
