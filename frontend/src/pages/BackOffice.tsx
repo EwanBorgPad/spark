@@ -14,7 +14,7 @@ import { z } from "zod"
 import {
   distributionTypeOptions,
   iconOptions,
-  initialSaleData,
+  getDefaultValues,
   payoutIntervalOptions,
   setValueOptions,
 } from "@/utils/back-office"
@@ -30,7 +30,6 @@ import { DropdownField } from "@/components/InputField/DropdownField"
 import { backendApi, CreateProjectRequest } from "@/data/backendApi"
 import DateTimeField from "@/components/InputField/DateTimeField"
 import CheckboxField from "@/components/InputField/CheckboxField"
-import { getDefaultValues } from "@/utils/projectDefaultValues"
 import { TextField } from "@/components/InputField/TextField"
 import UploadField from "@/components/InputField/UploadField"
 import BoWrapper from "@/components/BackOffice/BoWrapper"
@@ -39,13 +38,12 @@ import { formatCurrencyAmount } from "@/utils/format"
 import { useFormDraft } from "@/hooks/useFormDraft"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
+import Divider from "@/components/Divider"
 
 // schema & types
-const extendedProjectSchema = projectSchema
-  .extend({
-    adminKey: z.string().min(1),
-  })
-  .omit({ saleData: true })
+const extendedProjectSchema = projectSchema.extend({
+  adminKey: z.string().min(1),
+})
 type FormType = z.infer<typeof extendedProjectSchema>
 type IconType = Exclude<IconLinkType, "NO_ICON">
 
@@ -97,15 +95,10 @@ const BackOffice = () => {
 
   // onSubmit handler
   const onSubmit: SubmitHandler<FormType> = async (data) => {
-    const { adminKey, info, rewards } = data
+    const { adminKey, ...project } = data
 
     createProject({
-      project: {
-        info: info,
-        whitelistParticipants: 0,
-        rewards: rewards,
-        saleData: initialSaleData,
-      },
+      project,
       adminKey,
     })
   }
@@ -948,6 +941,10 @@ const BackOffice = () => {
               ))}
             </div>
           </BoWrapper>
+
+          <div className="flex w-full justify-center pt-6">
+            <Divider icon="SvgMedal" />
+          </div>
           <BoWrapper title="Rewards">
             <Controller
               name={`rewards.description`}
@@ -974,9 +971,10 @@ const BackOffice = () => {
               }) => (
                 <DropdownField
                   options={payoutIntervalOptions}
+                  label="Payout Interval"
                   value={value}
                   error={error?.message}
-                  containerClassName="w-[128px] px-0"
+                  containerClassName="w-full px-0"
                   onChange={onChange}
                 />
               )}
@@ -989,10 +987,11 @@ const BackOffice = () => {
                 fieldState: { error },
               }) => (
                 <DropdownField
+                  label="Distribution Type"
                   options={distributionTypeOptions}
                   value={value}
                   error={error?.message}
-                  containerClassName="w-[128px] px-0"
+                  containerClassName="w-full px-0"
                   onChange={onChange}
                 />
               )}
