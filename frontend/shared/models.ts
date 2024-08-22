@@ -112,29 +112,32 @@ export const infoSchema = z.object({
   ),
   whitelistRequirements: z.array(whitelistRequirementsSchema()).min(0),
 })
+
+// "distributionType" and "payoutInterval" enum alternative values to be discussed. They will require further logic on backend and programs.
+export const rewardsSchema = z.object({
+  distributionType: z.enum(["linear"]), // possible alternative - exponential
+  description: z.string(),
+  payoutInterval: z.enum(["monthly"]),
+})
+
 export const projectSchema = z.object({
   info: infoSchema,
-  whitelistParticipants: z.number().optional(),
-  saleData: z
-    .object({
-      availableTokens: z.number({ coerce: true }),
-      saleSucceeded: z.boolean(),
-      totalAmountRaised: z.number({ coerce: true }),
-      sellOutPercentage: z.number({ coerce: true }),
-      participantCount: z.number({ coerce: true }),
-      averageInvestedAmount: z.number({ coerce: true }),
-    })
-    .optional(),
-  rewards: z
-    .object({
-      distributionType: z.string(),
-      description: z.string(),
-      payoutInterval: z.string(),
-    })
-    .optional(),
+  whitelistParticipants: z.number(),
+  saleData: z.object({
+    availableTokens: z.number({ coerce: true }).optional(),
+    saleSucceeded: z.boolean().optional(),
+    totalAmountRaised: z.number({ coerce: true }).optional(),
+    sellOutPercentage: z.number({ coerce: true }).optional(),
+    participantCount: z.number({ coerce: true }).optional(),
+    averageInvestedAmount: z.number({ coerce: true }).optional(),
+  }),
+  rewards: rewardsSchema,
 })
 export type ProjectInfoModel = z.infer<typeof infoSchema>
+export type ProjectRewardsModel = z.infer<typeof rewardsSchema>
 export type ProjectModel = z.infer<typeof projectSchema>
+export type DistributionType = ProjectRewardsModel["distributionType"]
+export type PayoutInterval = ProjectRewardsModel["payoutInterval"]
 
 export type CacheStoreModel = {
   cache_key: string

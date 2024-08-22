@@ -74,7 +74,7 @@ export const DropdownField = ({
           )}
         />
         {dropdownOpened && (
-          <div className="absolute left-0 top-12 z-[101] flex max-h-[400px] w-full  flex-col overflow-y-scroll rounded-lg bg-secondary py-1.5">
+          <div className="absolute left-0 top-11 z-[101] flex max-h-[400px] w-full  flex-col overflow-y-scroll rounded-lg bg-secondary py-1.5">
             {options.map((option) => (
               <div
                 key={option.id}

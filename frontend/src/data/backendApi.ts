@@ -51,15 +51,12 @@ const getProject = async ({
 }
 
 export type CreateProjectRequest = {
-  formValues: ProjectModel
+  project: ProjectModel
   adminKey: string
 }
-const createProject = async ({
-  formValues,
-  adminKey,
-}: CreateProjectRequest) => {
+const createProject = async ({ project, adminKey }: CreateProjectRequest) => {
   const url = new URL(POST_PROJECT_API_URL, window.location.href)
-  const body = JSON.stringify(formValues)
+  const body = JSON.stringify(project)
 
   const response = await fetch(url, {
     method: "POST",
