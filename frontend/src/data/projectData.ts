@@ -15,7 +15,7 @@ export const dummyData: ProjectModel = {
     origin: "🇮🇹 Italy",
     sector: "Healthcare",
     curator: {
-      avatarUrl: "/images/puffer-finance/curator-avatar.png",
+      avatarUrl: "",
       fullName: "John Doe",
       position: i18n.t("founding.contributor"),
       socials: [
@@ -62,13 +62,13 @@ export const dummyData: ProjectModel = {
     tge: {
       raiseTarget: 2000000,
       projectCoin: {
-        iconUrl: "/images/puffer-finance/project-coin-icon.svg",
+        iconUrl: "",
         ticker: "LRC",
       },
       fixedCoinPriceInBorg: 1,
       liquidityPool: {
         name: "Raydium",
-        iconUrl: "/images/puffer-finance/liquidity-pool-icon.png",
+        iconUrl: "",
         lbpType: "Full Range",
         lockingPeriod: "12-month lockup",
         unlockDate: addMonths(addDays(currentMoment, -2), 12),
@@ -78,7 +78,7 @@ export const dummyData: ProjectModel = {
         "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
     },
     dataRoom: {
-      backgroundImgUrl: "/images/puffer-finance/avatar2.png",
+      backgroundImgUrl: "",
       url: "#",
     },
     timeline: [

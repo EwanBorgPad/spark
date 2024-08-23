@@ -54,6 +54,7 @@ const BackOffice = () => {
 
   const defaultValues =
     getStoredValue("create-new-project") ?? getDefaultValues()
+
   const {
     handleSubmit,
     setValue,
@@ -1024,7 +1025,7 @@ const BackOffice = () => {
             // eslint-disable-next-line no-console
             console.log("formValues: ", watch())
             // eslint-disable-next-line no-console
-            // console.log("errors: ", errors)
+            console.log("errors: ", errors)
           }}
           btnText="LOG VALUES"
           className="bg-pink-500 text-white active:bg-pink-300"
