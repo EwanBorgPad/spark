@@ -63,8 +63,8 @@ const idSchema = () =>
     .string()
     .min(1)
     .regex(
-      new RegExp(/^[A-Za-z0-9-\s]+$/),
-      "Only letters, numbers, dashes, and spaces are allowed",
+      new RegExp(/^[A-Za-z0-9-]+$/),
+      "Only letters, numbers, and dashes are allowed",
     )
 
 /**
