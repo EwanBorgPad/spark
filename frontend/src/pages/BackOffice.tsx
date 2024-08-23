@@ -60,7 +60,7 @@ const BackOffice = () => {
     setValue,
     watch,
     control,
-    formState: { isSubmitted, errors },
+    formState: { isSubmitted },
   } = useForm<FormType>({
     defaultValues,
     resolver: zodResolver(extendedProjectSchema),
@@ -1017,7 +1017,7 @@ const BackOffice = () => {
         />
       )}
       {/* @TODO - remove this component when feature is finished */}
-      <div className="fixed right-4 top-[75vh] flex flex-col  gap-4 rounded-3xl bg-pink-100/10 p-4 ring-brand-primary">
+      {/* <div className="fixed right-4 top-[75vh] flex flex-col  gap-4 rounded-3xl bg-pink-100/10 p-4 ring-brand-primary">
         <Button
           isLoading={isPending}
           onClick={() => {
@@ -1030,7 +1030,7 @@ const BackOffice = () => {
           btnText="LOG VALUES"
           className="bg-pink-500 text-white active:bg-pink-300"
         />
-      </div>
+      </div> */}
     </main>
   )
 }
