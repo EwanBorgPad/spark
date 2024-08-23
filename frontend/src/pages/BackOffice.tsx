@@ -54,12 +54,13 @@ const BackOffice = () => {
 
   const defaultValues =
     getStoredValue("create-new-project") ?? getDefaultValues()
+
   const {
     handleSubmit,
     setValue,
     watch,
     control,
-    formState: { isSubmitted },
+    formState: { isSubmitted, errors },
   } = useForm<FormType>({
     defaultValues,
     resolver: zodResolver(extendedProjectSchema),
@@ -230,6 +231,12 @@ const BackOffice = () => {
             <Controller
               name="info.id"
               control={control}
+              rules={{
+                pattern: {
+                  value: /^[A-Za-z0-9-]+$/,
+                  message: "Only letters, numbers, and dashes are allowed",
+                },
+              }}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -1016,7 +1023,7 @@ const BackOffice = () => {
         />
       )}
       {/* @TODO - remove this component when feature is finished */}
-      {/* <div className="fixed right-4 top-[75vh] flex flex-col  gap-4 rounded-3xl bg-pink-100/10 p-4 ring-brand-primary">
+      <div className="fixed right-4 top-[75vh] flex flex-col  gap-4 rounded-3xl bg-pink-100/10 p-4 ring-brand-primary">
         <Button
           isLoading={isPending}
           onClick={() => {
@@ -1024,12 +1031,12 @@ const BackOffice = () => {
             // eslint-disable-next-line no-console
             console.log("formValues: ", watch())
             // eslint-disable-next-line no-console
-            // console.log("errors: ", errors)
+            console.log("errors: ", errors)
           }}
           btnText="LOG VALUES"
           className="bg-pink-500 text-white active:bg-pink-300"
         />
-      </div> */}
+      </div>
     </main>
   )
 }

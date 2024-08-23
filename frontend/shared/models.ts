@@ -58,16 +58,20 @@ const whitelistRequirementsSchema = () =>
     isMandatory: z.boolean(),
     heldAmount: z.number({ coerce: true }).optional(),
   })
-export type WhitelistRequirementModel = z.infer<
-  ReturnType<typeof whitelistRequirementsSchema>
->
+const idSchema = () =>
+  z
+    .string()
+    .min(1)
+    .regex(
+      new RegExp(/^[A-Za-z0-9-\s]+$/),
+      "Only letters, numbers, dashes, and spaces are allowed",
+    )
 
 /**
- * Schema for project, type should be inferred from this.
+ * Schemas for project, type should be inferred from this.
  */
-
 export const infoSchema = z.object({
-  id: z.string().min(1),
+  id: idSchema(),
   title: z.string().min(1),
   subtitle: z.string().min(1),
   logoUrl: urlSchema(),
@@ -138,6 +142,8 @@ export type ProjectRewardsModel = z.infer<typeof rewardsSchema>
 export type ProjectModel = z.infer<typeof projectSchema>
 export type DistributionType = ProjectRewardsModel["distributionType"]
 export type PayoutInterval = ProjectRewardsModel["payoutInterval"]
+export type WhitelistRequirementModel =
+  ProjectInfoModel["whitelistRequirements"][number]
 
 export type CacheStoreModel = {
   cache_key: string
