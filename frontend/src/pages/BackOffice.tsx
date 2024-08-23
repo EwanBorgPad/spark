@@ -231,12 +231,6 @@ const BackOffice = () => {
             <Controller
               name="info.id"
               control={control}
-              rules={{
-                pattern: {
-                  value: /^[A-Za-z0-9-]+$/,
-                  message: "Only letters, numbers, and dashes are allowed",
-                },
-              }}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
