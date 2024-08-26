@@ -35,12 +35,10 @@ IDL file typings do not work.
 
 ## Questions
 
-- How can we test this? 
-- How do we communicate with LBP program? 
-- IDL for LPB program?
-- What method should be called to stake? Or is it just Borg transfer to the lbp program?
-- Is there BORG on devnet?
-- 
-- Is it okay if I do this manually instead of using Anchor lib:
-  - Anchor lib has some typing issues, reducing the value of using it
-  - This should not be too hard to implement manually? (using solana/web3.js, instead of @coral-xyz/anchor)
+- What level of commitment to use? ("processed" | "confirmed" | "finalized")
+  - Use 'finalized' for now, if performance becomes a problem we can consider switching to 'confirmed'
+- How can I list all LBP accounts under the Solana Program
+- What’s the best way to debug a transaction — how to serialize it to something human readable?
+- Where can I see the arguments (config) I've uploaded to new LBP (all the args in initialize_lbp instruction)
+- How does subscribing to signature status work?
+- Is there a way to debug (log to console) rpc calls from @solana/web3.js?
