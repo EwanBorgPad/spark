@@ -61,6 +61,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: "Project with provided id already exists!", }, 409)
     }
 
+    // TODO @hardcoded values until integrated with backoffice
     const me = '5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W'
     const adminSecretKey = ctx.env.ADMIN_AUTHORITY_SECRET_KEY.split(',').map(Number)
     const uid = hashStringToU64(data.info.id)

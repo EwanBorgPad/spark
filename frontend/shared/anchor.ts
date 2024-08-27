@@ -37,9 +37,6 @@ type InitializeLpbArgs = {
 type InitializeLpbResult = {
   transactionId: string
 }
-/**
- * TOOD check if this file should be split in two: one for frontend one for backend
- */
 export const initializeLpb = async ({ args, adminSecretKey }: InitializeLbpInput): Promise<InitializeLpbResult> => {
   const connection = new Connection(SOLANA_RPC_URL, COMMITMENT_LEVEL)
 
@@ -153,12 +150,10 @@ export const initializeLpb = async ({ args, adminSecretKey }: InitializeLbpInput
 //     // Timeout promise
 //     // setTimeout(() => {
 //     //   reject(new Error("Signature subscription timed out"));
-//     // }, 60_000);
+//     // }, 30_000);
 //
 //     // signature promise
 //     connection.onSignature(txId, result => {
-//       console.log('testttttttt')
-//       console.log('testttttttt')
 //       const err = result.err
 //       if (err) reject(err)
 //       else resolve(COMMITMENT_LEVEL)
@@ -178,7 +173,7 @@ async function signatureSubscribe(connection: Connection, txId: string): Promise
     const res = await connection.getSignatureStatuses([txId])
 
     // got response
-    if (res?.value[0] && res.value[0]?.confirmationStatus) {
+    if (res.value[0]?.confirmationStatus) {
       status = res.value[0].confirmationStatus
       break
     }
