@@ -91,14 +91,6 @@ async function getFollowersForAccount(env: ENV, id: string, cursor?: string): Pr
     }
   })
 
-  const rateLimitHeaders = {
-    xRateLimitLimit: response.headers.get('x-rate-limit-limit'),
-    xRateLimitReset: response.headers.get('x-rate-limit-reset'),
-    xRateLimitRemaining: response.headers.get('x-rate-limit-remaining'),
-  }
-
-  console.log({ rateLimitHeaders })
-
   if (!response.ok) {
     const message = `Twitter scraping error! Status code=${response.status}`
     throw new Error(message)
@@ -120,6 +112,24 @@ async function getFollowersForAccount(env: ENV, id: string, cursor?: string): Pr
       screenName: user.legacy?.screen_name ?? null,
       createdAt: user.legacy?.created_at ?? null,
     }))
+
+  //// rate limit check
+  const rateLimitHeaders = {
+    xRateLimitLimit: response.headers.get('x-rate-limit-limit'),
+    xRateLimitReset: response.headers.get('x-rate-limit-reset'),
+    xRateLimitRemaining: response.headers.get('x-rate-limit-remaining'),
+  }
+  console.log({ rateLimitHeaders })
+
+  // if the rate limit is reached, sleep until the reset, then return
+  if (Number(rateLimitHeaders.xRateLimitRemaining) === 0) {
+    const rateLimitResetEpochMs = Number(rateLimitHeaders.xRateLimitReset) * 1000
+    const nowEpochMs = Date.now()
+    const deltaMs = (rateLimitResetEpochMs - nowEpochMs) + 2000 // add 2s just in case
+    console.log(`Rate limit reached! Sleeping for ${deltaMs}ms (until ${(new Date(rateLimitResetEpochMs)).toISOString()} UTC).`)
+    await sleep(deltaMs)
+  }
+
   return {
     list: users,
     cursor: bottomCursor,
