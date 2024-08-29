@@ -33,7 +33,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     // do stuff
     let cursor = undefined
     do {
-      console.log('Calling api with cursor: ', cursor)
+      console.log(`Calling API with cursor ${cursor}, now is ${new Date().toISOString()}`)
       const res = await getFollowersForAccount(env, borgPadTwitterId, cursor)
       const users = res.list
 
@@ -125,8 +125,8 @@ async function getFollowersForAccount(env: ENV, id: string, cursor?: string): Pr
   if (Number(rateLimitHeaders.xRateLimitRemaining) === 0) {
     const rateLimitResetEpochMs = Number(rateLimitHeaders.xRateLimitReset) * 1000
     const nowEpochMs = Date.now()
-    const deltaMs = (rateLimitResetEpochMs - nowEpochMs) + 2000 // add 2s just in case
-    console.log(`Rate limit reached! Sleeping for ${deltaMs}ms (until ${(new Date(rateLimitResetEpochMs)).toISOString()} UTC).`)
+    const deltaMs = (rateLimitResetEpochMs - nowEpochMs) + 10_000 // add 10s just in case
+    console.log(`Rate limit reached! Sleeping for ${deltaMs}ms (from ${new Date(nowEpochMs).toISOString()} until ${(new Date(rateLimitResetEpochMs)).toISOString()} UTC).`)
     await sleep(deltaMs)
   }
 
