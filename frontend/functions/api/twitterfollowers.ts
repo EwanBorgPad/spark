@@ -38,8 +38,13 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       const res = await getFollowersForAccount(env, borgPadTwitterId, cursor)
       const users = res.list
 
-      if (!users.length) {
-        console.log('Users list is empty, finished.')
+      //// api may return zero users sometimes, maybe it's better to check for cursor
+      // if (!users.length) {
+      //   console.log('Users list is empty, finished.')
+      //   break
+      // }
+      if (res.cursor.startsWith('0|')) {
+        console.log('Detected end cursor, finished.')
         break
       }
 
@@ -123,7 +128,7 @@ async function getFollowersForAccount(env: ENV, id: string, cursor?: string): Pr
     xRateLimitRemaining: response.headers.get('x-rate-limit-remaining'),
   }
   console.log({ rateLimitHeaders })
-  console.log({ topCursor, bottomCursor })
+  console.log({ topCursor, bottomCursor, usersCount: users?.length })
 
   // if the rate limit is reached, sleep until the reset, then return
   if (Number(rateLimitHeaders.xRateLimitRemaining) === 0) {
