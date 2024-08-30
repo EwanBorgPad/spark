@@ -25,3 +25,35 @@ The procedure to get those is the following:
 - Execute `rettiwt auth login "<email>" "<username>" "<password>"` to get api key
 - run the script `NODE_DEBUG=http,https node scripts/rettiwt.mjs` with the api key to inspect network values
 - extract Authorization, Cookie, and X-CSRF-Token headers' values
+
+## Problems
+
+### Subrequest Limit
+
+Unfortunately, CloudFlare Workers have a limit of 50 [subrequests](https://developers.cloudflare.com/workers/platform/limits/#subrequests) per function invocation.
+
+```
+A subrequest is any request that a Worker makes to either Internet resources using the Fetch API or requests to other Cloudflare services like R2, KV, or D1.
+```
+
+Example of error after 50 subrequests:
+
+```
+...
+  (log) Calling API: cursor=1807191214268185776|1829516771174907710, subrequestCounter=49, now=2024-08-30T14:04:33.000Z
+  (log) {
+  rateLimitHeaders: {
+    xRateLimitLimit: '50',
+    xRateLimitReset: '1725027573',
+    xRateLimitRemaining: '49'
+  }
+}
+  (log) {
+  topCursor: '-1|1829516771174907711',
+  bottomCursor: '1807187956517341781|1829516771174907708',
+  usersCount: 0
+}
+  (log) Calling API: cursor=1807191214268185776|1829516771174907710, subrequestCounter=50, now=2024-08-30T14:04:33.316Z
+  (error) Error: Too many subrequests.
+```
+

@@ -36,15 +36,17 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     do {
       console.log(`Calling API: cursor=${cursor}, subrequestCounter=${subrequestCounter}, now=${new Date().toISOString()}`)
       const res = await getFollowersForAccount(env, borgPadTwitterId, cursor)
-      subrequestCounter += 1
       const users = res.list
+
+      cursor = res.cursor
+      subrequestCounter += 1
 
       //// api may return zero users sometimes, maybe it's better to check for cursor
       // if (!users.length) {
       //   console.log('Users list is empty, finished.')
       //   break
       // }
-      if (res.cursor.startsWith('0|')) {
+      if (cursor.startsWith('0|')) {
         console.log('Detected end cursor, finished.')
         break
       }
@@ -73,7 +75,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
       const sleepTime = getRandomNumber()
       await sleep(sleepTime)
-      cursor = res.cursor
     } while (cursor)
 
     return jsonResponse({ message: "Ok!" }, 200)
