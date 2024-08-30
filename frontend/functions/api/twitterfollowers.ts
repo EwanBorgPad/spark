@@ -48,6 +48,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         break
       }
 
+      if (!users.length) {
+        continue
+      }
+
       // bulk insert
       const placeholders = []
       const values = []
