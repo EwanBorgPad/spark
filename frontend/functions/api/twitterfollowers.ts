@@ -46,7 +46,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       //   console.log('Users list is empty, finished.')
       //   break
       // }
-      if (cursor.startsWith('0|')) {
+      if (!cursor || cursor.startsWith('0|')) {
         console.log('Detected end cursor, finished.')
         break
       }
