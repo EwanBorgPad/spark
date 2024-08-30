@@ -123,6 +123,7 @@ async function getFollowersForAccount(env: ENV, id: string, cursor?: string): Pr
     xRateLimitRemaining: response.headers.get('x-rate-limit-remaining'),
   }
   console.log({ rateLimitHeaders })
+  console.log({ topCursor, bottomCursor })
 
   // if the rate limit is reached, sleep until the reset, then return
   if (Number(rateLimitHeaders.xRateLimitRemaining) === 0) {
