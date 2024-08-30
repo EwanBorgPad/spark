@@ -36,6 +36,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     do {
       console.log(`Calling API: cursor=${cursor}, subrequestCounter=${subrequestCounter}, now=${new Date().toISOString()}`)
       const res = await getFollowersForAccount(env, borgPadTwitterId, cursor)
+      subrequestCounter += 1
       const users = res.list
 
       //// api may return zero users sometimes, maybe it's better to check for cursor
@@ -73,8 +74,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       const sleepTime = getRandomNumber()
       await sleep(sleepTime)
       cursor = res.cursor
-
-      subrequestCounter += 1
     } while (cursor)
 
     return jsonResponse({ message: "Ok!" }, 200)
