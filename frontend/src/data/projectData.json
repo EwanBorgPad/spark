@@ -107,7 +107,7 @@
         "date": "2025-07-10"
       }
     ],
-    "whitelistingRequirements": [
+    "whitelistRequirements": [
       {
         "type": "HOLD_BORG_IN_WALLET",
         "label": "Hold 20,000 BORG in your wallet",
