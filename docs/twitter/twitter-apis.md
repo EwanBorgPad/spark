@@ -28,7 +28,44 @@ The procedure to get those is the following:
 
 ## Problems
 
-### Subrequest Limit
+### Pagination (resolved)
+
+Twitter APIs uses [cursors](https://developer.x.com/en/docs/x-api/v1/pagination) for [pagination](https://developer.x.com/en/docs/x-ads-api/pagination).
+
+The problem is that even though there's `count: 100` , it returns an arbitrary number of users each time. 
+
+```
+ (log) {
+  topCursor: '-1|1829538019120512197',
+  bottomCursor: '1806732549773649334|1829538019120512172',
+  usersCount: 22
+}
+.......  
+ (log) {
+  topCursor: '-1|1829538019120512173',
+  bottomCursor: '1806730134264717594|1829538019120512145',
+  usersCount: 25
+}
+......
+  (log) {
+  topCursor: '-1|1829538019120512146',
+  bottomCursor: '1806727616985219624|1829538019120512121',
+  usersCount: 22
+}
+.......
+  (log) {
+  topCursor: '-1|1829538019120512100',
+  bottomCursor: '1806722660012457668|1829538019120512075',
+  usersCount: 22
+}
+......
+```
+
+This means that we cannot rely on the number of users in the response to decide if we've fetched all users. 
+
+This issue is resolved by relying on cursor format instead of number of users to decide if it's all fetched. 
+
+### Subrequest Limit (unresolved)
 
 Unfortunately, CloudFlare Workers have a limit of 50 [subrequests](https://developers.cloudflare.com/workers/platform/limits/#subrequests) per function invocation.
 
