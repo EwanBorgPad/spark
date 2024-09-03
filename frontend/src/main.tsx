@@ -15,6 +15,9 @@ import { BalanceProvider } from "@/hooks/useBalanceContext.tsx"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import BackOffice from "./pages/BackOffice"
 
+import { Buffer }from 'buffer'
+window.Buffer = Buffer
+
 const queryClient = new QueryClient()
 
 const router = createBrowserRouter([

@@ -1,5 +1,15 @@
 import { UserModel, UserModelJson } from "../../shared/models"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
+import { z } from "zod"
+import { PublicKey } from "@solana/web3.js"
+import nacl from "tweetnacl"
+import { decodeUTF8 } from "tweetnacl-util"
+
+const bodySchema = z.object({
+  publicKey: z.string(),
+  message: z.string(),
+  signature: z.number().int().array(),
+})
 
 type ENV = {
   DB: D1Database
@@ -7,19 +17,28 @@ type ENV = {
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
   try {
-    // TODO @authorization - check if the user is really the owner of the address
-    const { searchParams } = new URL(ctx.request.url)
-    const address = searchParams.get("address")
+    //// validate request
+    const requestJson = await ctx.request.json()
+    const { error, data } = bodySchema.safeParse(requestJson)
 
-    if (!isAddressInCorrectFormat(address)) {
-      return new Response(
-        JSON.stringify({
-          message: "Please provide address as query param!",
-        }),
-        { status: 400 },
-      )
+    if (error) {
+      return jsonResponse(null, 404)
     }
 
+    ///// authorization
+    const { publicKey, message, signature } = data
+    const address = publicKey
+
+    const isVerified = nacl.sign.detached.verify(
+      decodeUTF8(message),
+      new Uint8Array(signature),
+      new PublicKey(publicKey).toBytes(),
+    );
+    if (!isVerified) {
+      return jsonResponse(null, 401)
+    }
+
+    //// business logic
     // check if the user is stored in the db
     const existingUser = await db
       .prepare("SELECT * FROM user WHERE address = ?1")
