@@ -31,7 +31,7 @@ pub struct ProjectRefund<'info> {
         bump
     )]
     pub lbp: Box<Account<'info, Lbp>>,
-    
+
     #[account(
         mut,
         close = project,
@@ -98,7 +98,7 @@ pub fn handler(ctx: Context<ProjectRefund>) -> Result<()> {
         return err!(ErrorCode::DoesNotHoldPosition)
     }
 
-    // Transfer funds from lbp to users
+    // Transfer funds from lbp to project
     transfer_checked(
         CpiContext::new_with_signer(
             ctx.accounts.token_program.to_account_info(),

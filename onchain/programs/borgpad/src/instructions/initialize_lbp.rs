@@ -18,19 +18,19 @@ pub struct InitializeLbp<'info> {
         seeds = [b"config".as_ref()],
         bump
     )]
-    pub config: Account<'info, Config>,
+    pub config: Box<Account<'info, Config>>,
 
     #[account(
         init,
         space = Lbp::LEN,
         seeds = [
-        b"lbp".as_ref(),
-        &lbp_initialize.uid.to_le_bytes()
+            b"lbp".as_ref(),
+            &lbp_initialize.uid.to_le_bytes()
         ],
         bump,
         payer = admin_authority
     )]
-    pub lbp: Account<'info, Lbp>,
+    pub lbp: Box<Account<'info, Lbp>>,
 
     #[account(
         init_if_needed,
@@ -39,7 +39,7 @@ pub struct InitializeLbp<'info> {
         associated_token::authority = lbp,
         associated_token::token_program = token_program,
     )]
-    pub lbp_raised_token_ata: InterfaceAccount<'info, TokenAccount>,
+    pub lbp_raised_token_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         init_if_needed,
@@ -48,17 +48,17 @@ pub struct InitializeLbp<'info> {
         associated_token::authority = lbp,
         associated_token::token_program = token_program,
     )]
-    pub lbp_launched_token_ata: InterfaceAccount<'info, TokenAccount>,
+    pub lbp_launched_token_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         constraint = lbp_initialize.raised_token_mint == raised_token_mint.key() @ ErrorCode::InvalidMint
     )]
-    pub raised_token_mint: InterfaceAccount<'info, Mint>,
+    pub raised_token_mint: Box<InterfaceAccount<'info, Mint>>,
 
     #[account(
         constraint = lbp_initialize.launched_token_mint == launched_token_mint.key() @ ErrorCode::InvalidMint
     )]
-    pub launched_token_mint: InterfaceAccount<'info, Mint>,
+    pub launched_token_mint: Box<InterfaceAccount<'info, Mint>>,
 
     pub token_program: Interface<'info, TokenInterface>,
 
@@ -73,8 +73,9 @@ pub fn handler(ctx: Context<InitializeLbp>, lbp_initialize: LbpInitializeData) -
     let lbp_data: &mut Account<Lbp> = &mut ctx.accounts.lbp;
     lbp_data.initialize(
         lbp_initialize,
-        ctx.accounts.launched_token_mint.key(),
-        ctx.accounts.raised_token_mint.key(),
+        ctx.accounts.lbp_launched_token_ata.key(),
+        ctx.accounts.lbp_raised_token_ata.key(),
+        ctx.bumps.lbp,
     );
 
     Ok(())

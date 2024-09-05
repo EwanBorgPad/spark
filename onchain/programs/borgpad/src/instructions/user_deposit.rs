@@ -25,7 +25,7 @@ pub struct UserDeposit<'info> {
         seeds = [b"config".as_ref()],
         bump
     )]
-    pub config: Account<'info, Config>,
+    pub config: Box<Account<'info, Config>>,
 
     #[account(
         seeds = [
@@ -38,6 +38,14 @@ pub struct UserDeposit<'info> {
 
     #[account(
         init,
+        payer = user,
+        mint::authority = lbp,
+        mint::decimals = 0,
+    )]
+    pub position_mint: Box<InterfaceAccount<'info, Mint>>,
+
+    #[account(
+        init,
         space = Position::LEN,
         seeds = [
             b"position".as_ref(),
@@ -46,15 +54,21 @@ pub struct UserDeposit<'info> {
         bump,
         payer = user
     )]
-    pub position: Account<'info, Position>,
+    pub position: Box<Account<'info, Position>>,
 
     #[account(
-        mut,
+        init,
+        payer = user,
         associated_token::mint = position_mint,
         associated_token::authority = user,
         associated_token::token_program = token_program,
     )]
-    pub user_position_ata: InterfaceAccount<'info, TokenAccount>,
+    pub user_position_ata: Box<InterfaceAccount<'info, TokenAccount>>,
+
+    #[account(
+        constraint = lbp.raised_token_mint == raised_token_mint.key() @ ErrorCode::InvalidMint
+    )]
+    pub raised_token_mint: Box<InterfaceAccount<'info, Mint>>,
 
     #[account(
         mut,
@@ -62,7 +76,7 @@ pub struct UserDeposit<'info> {
         associated_token::authority = user,
         associated_token::token_program = token_program,
     )]
-    pub user_raised_token_ata: InterfaceAccount<'info, TokenAccount>,
+    pub user_raised_token_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         mut,
@@ -70,20 +84,7 @@ pub struct UserDeposit<'info> {
         associated_token::authority = lbp,
         associated_token::token_program = token_program,
     )]
-    pub lbp_raised_token_ata: InterfaceAccount<'info, TokenAccount>,
-
-    #[account(
-        init,
-        payer = user,
-        mint::authority = lbp,
-        mint::decimals = 0,
-    )]
-    pub position_mint: InterfaceAccount<'info, Mint>,
-
-    #[account(
-        constraint = lbp.raised_token_mint == raised_token_mint.key() @ ErrorCode::InvalidMint
-    )]
-    pub raised_token_mint: InterfaceAccount<'info, Mint>,
+    pub lbp_raised_token_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     pub token_program: Interface<'info, TokenInterface>,
 

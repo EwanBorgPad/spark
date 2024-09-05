@@ -45,9 +45,6 @@ pub struct LbpInitializeData {
     /// The duration of the vesting phase
     /// Expressed as Unix time (i.e. seconds since the Unix epoch).
     pub vesting_duration: u64,
-
-    /// The bump of the pda
-    pub bump: u8,
 }
 
 #[account]
@@ -112,6 +109,7 @@ impl Lbp {
         lbp_initialize: LbpInitializeData,
         launched_token_ata: Pubkey,
         raised_token_ata: Pubkey,
+        bump: u8,
     ) {
         self.uid = lbp_initialize.uid;
 
@@ -126,13 +124,15 @@ impl Lbp {
         self.raised_token_ata = raised_token_ata;
         self.raised_token_min_cap = lbp_initialize.raised_token_min_cap;
         self.raised_token_max_cap = lbp_initialize.raised_token_max_cap;
+        self.raised_token_cap = 0;
 
         self.phase = Phase::FundCollection;
         self.fund_collection_start_time = lbp_initialize.fund_collection_start_time;
         self.fund_collection_end_time = lbp_initialize.fund_collection_end_time;
+        self.vesting_start_time = u64::MAX;
         self.cliff_duration = lbp_initialize.cliff_duration;
         self.vesting_duration = lbp_initialize.vesting_duration;
 
-        self.bump = lbp_initialize.bump;
+        self.bump = bump;
     }
 }

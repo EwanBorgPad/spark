@@ -379,7 +379,7 @@ dependencies = [
  "ark-std",
  "derivative",
  "hashbrown 0.13.2",
- "itertools 0.10.5",
+ "itertools",
  "num-traits",
  "zeroize",
 ]
@@ -396,7 +396,7 @@ dependencies = [
  "ark-std",
  "derivative",
  "digest 0.10.7",
- "itertools 0.10.5",
+ "itertools",
  "num-bigint 0.4.6",
  "num-traits",
  "paste",
@@ -715,9 +715,6 @@ version = "0.1.0"
 dependencies = [
  "anchor-lang",
  "anchor-spl",
- "litesvm",
- "solana-program",
- "solana-sdk",
  "solana-security-txt",
 ]
 
@@ -2002,15 +1999,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "itertools"
-version = "0.12.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba291022dbbd398a455acf126c1e341954079855bc60dfdda641363bd6922569"
-dependencies = [
- "either",
-]
-
-[[package]]
 name = "itoa"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2135,27 +2123,6 @@ name = "linux-raw-sys"
 version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78b3ae25bc7c8c38cec158d1f2757ee79e9b3740fbc7ccf0e59e4b08d793fa89"
-
-[[package]]
-name = "litesvm"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0963e4df461a414763f0348b73eb284a734534a53558fcae35f984a0c16a6e6c"
-dependencies = [
- "bincode",
- "indexmap 2.2.6",
- "itertools 0.12.1",
- "log",
- "solana-address-lookup-table-program",
- "solana-bpf-loader-program",
- "solana-compute-budget-program",
- "solana-loader-v4-program",
- "solana-program",
- "solana-program-runtime",
- "solana-sdk",
- "solana-system-program",
- "thiserror",
-]
 
 [[package]]
 name = "lock_api"
@@ -3406,46 +3373,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "solana-address-lookup-table-program"
-version = "1.18.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "76ed10ab9edfb4bf390cf15c3f5fb075a78b202e4041af3db4d3fd899c4adfc5"
-dependencies = [
- "bincode",
- "bytemuck",
- "log",
- "num-derive 0.4.2",
- "num-traits",
- "rustc_version",
- "serde",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
- "solana-program",
- "solana-program-runtime",
- "solana-sdk",
- "thiserror",
-]
-
-[[package]]
-name = "solana-bpf-loader-program"
-version = "1.18.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38d5e8dc69cfae82adf204822398688bc89ad1849964231c28037d7e5bede949"
-dependencies = [
- "bincode",
- "byteorder",
- "libsecp256k1",
- "log",
- "scopeguard",
- "solana-measure",
- "solana-program-runtime",
- "solana-sdk",
- "solana-zk-token-sdk",
- "solana_rbpf",
- "thiserror",
-]
-
-[[package]]
 name = "solana-clap-utils"
 version = "1.18.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3493,16 +3420,6 @@ dependencies = [
  "solana-udp-client",
  "thiserror",
  "tokio",
-]
-
-[[package]]
-name = "solana-compute-budget-program"
-version = "1.18.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36964b228f72bac36a820acde67cd5c80d07af26d30fdf6fe83586a139c4f53c"
-dependencies = [
- "solana-program-runtime",
- "solana-sdk",
 ]
 
 [[package]]
@@ -3576,19 +3493,6 @@ dependencies = [
  "quote",
  "rustc_version",
  "syn 2.0.72",
-]
-
-[[package]]
-name = "solana-loader-v4-program"
-version = "1.18.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "504108d5cb774abf89d0cf673ab6950bfe257aadf2fa872adb32b1473f7818f5"
-dependencies = [
- "log",
- "solana-measure",
- "solana-program-runtime",
- "solana-sdk",
- "solana_rbpf",
 ]
 
 [[package]]
@@ -3703,7 +3607,7 @@ dependencies = [
  "console_log",
  "curve25519-dalek",
  "getrandom 0.2.15",
- "itertools 0.10.5",
+ "itertools",
  "js-sys",
  "lazy_static",
  "libc",
@@ -3743,7 +3647,7 @@ dependencies = [
  "bincode",
  "eager",
  "enum-iterator",
- "itertools 0.10.5",
+ "itertools",
  "libc",
  "log",
  "num-derive 0.4.2",
@@ -3795,7 +3699,7 @@ dependencies = [
  "async-mutex",
  "async-trait",
  "futures",
- "itertools 0.10.5",
+ "itertools",
  "lazy_static",
  "log",
  "quinn",
@@ -3924,7 +3828,7 @@ dependencies = [
  "ed25519-dalek-bip32",
  "generic-array",
  "hmac 0.12.1",
- "itertools 0.10.5",
+ "itertools",
  "js-sys",
  "lazy_static",
  "libsecp256k1",
@@ -3989,7 +3893,7 @@ dependencies = [
  "futures-util",
  "histogram",
  "indexmap 2.2.6",
- "itertools 0.10.5",
+ "itertools",
  "libc",
  "log",
  "nix",
@@ -4008,20 +3912,6 @@ dependencies = [
  "thiserror",
  "tokio",
  "x509-parser",
-]
-
-[[package]]
-name = "solana-system-program"
-version = "1.18.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "244a998e66934e5a6283f69500da23af5c1d09c1f8493bc1b04d3b2f1553dad9"
-dependencies = [
- "bincode",
- "log",
- "serde",
- "serde_derive",
- "solana-program-runtime",
- "solana-sdk",
 ]
 
 [[package]]
@@ -4154,7 +4044,7 @@ dependencies = [
  "byteorder",
  "curve25519-dalek",
  "getrandom 0.1.16",
- "itertools 0.10.5",
+ "itertools",
  "lazy_static",
  "merlin",
  "num-derive 0.4.2",
