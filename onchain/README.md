@@ -12,15 +12,11 @@ Devnet example lbp: `BpWYQLwzJDJYB9awK5JYDrH7v6HcwkYuBeWeSpL17KDh`
 
 ## Dev environment
 
-Build: 
-- Run: cargo build-sbf`
+Build program and idl: `anchor build`
 
-Test: 
-- Run: `cargo test`
+Build client: `cargo build --bin client`
 
-Build idl: 
-- Go into: `programs/borgpad/`
-- Run: `anchor idl build -o ../../borgpad-idl.json`
+Test: `anchor test`
 
 Verify that the program id matches the keypair in `target/deploy/borgpad-keypair.json`: `solana-keygen verify <PROGRAM_ID> ../../target/deploy/borgpad-keypair.json`
 

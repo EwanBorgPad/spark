@@ -11,7 +11,7 @@ use anchor_client::{Client, Cluster, solana_sdk::{
 
 use borgpad::{accounts, ID, instruction};
 use borgpad::state::config::Config;
-use borgpad::state::lbp::{Lbp, LbpDynamicData, LbpStaticData};
+use borgpad::state::lbp::{Lbp};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // initialize()
@@ -71,42 +71,42 @@ fn initialize_lbp() -> Result<(), Box<dyn std::error::Error>> {
         &ID,
     );
 
-    let lbp_static_data = LbpStaticData {
-        uid,
-
-        project_owner: deployer.pubkey(),
-        project_token_mint: pubkey::Pubkey::from_str("Afn8YB1p4NsoZeS5XJBZ18LTfEy5NFPwN46wapZcBQr6").unwrap(), //devTMAC
-        project_token_lp_distribution: 50,
-        project_max_cap: 1000,
-
-        user_token_mint: pubkey::Pubkey::from_str("Jd4M8bfJG3sAkd82RsGWyEXoaBXQP7njFzBwEaCTuDa").unwrap(), // devSAMO
-        user_min_cap: 500,
-        user_max_cap: 1000,
-
-        fund_collection_phase_start_time: 13,
-        fund_collection_phase_end_time: 42,
-
-        lp_locked_phase_locking_time: 69,
-        lp_locked_phase_vesting_time: 420,
-
-        bump: lbp_info.1,
-    };
-
-    program
-        .request()
-        .accounts(accounts::InitializeLbp {
-            config: config_info.0,
-            lbp: lbp_info.0,
-            admin: deployer.pubkey(),
-            system_program: system_program::ID,
-        })
-        .args(instruction::InitializeLbp { lbp_static_data: lbp_static_data.clone() })
-        .signer(&deployer)
-        .send()?;
-
-    let lbp_data: Lbp = program.account(lbp_info.0)?;
-    assert_eq!(lbp_data.static_data, lbp_static_data);
-    assert_eq!(lbp_data.dynamic_data, LbpDynamicData {project_cap: 0, user_cap: 0, lp_locked_phase_start_time: 0 });
+    // let lbp_static_data = LbpStaticData {
+    //     uid,
+    //
+    //     project_owner: deployer.pubkey(),
+    //     project_token_mint: pubkey::Pubkey::from_str("Afn8YB1p4NsoZeS5XJBZ18LTfEy5NFPwN46wapZcBQr6").unwrap(), //devTMAC
+    //     project_token_lp_distribution: 50,
+    //     project_max_cap: 1000,
+    //
+    //     user_token_mint: pubkey::Pubkey::from_str("Jd4M8bfJG3sAkd82RsGWyEXoaBXQP7njFzBwEaCTuDa").unwrap(), // devSAMO
+    //     user_min_cap: 500,
+    //     user_max_cap: 1000,
+    //
+    //     fund_collection_phase_start_time: 13,
+    //     fund_collection_phase_end_time: 42,
+    //
+    //     lp_locked_phase_locking_time: 69,
+    //     lp_locked_phase_vesting_time: 420,
+    //
+    //     bump: lbp_info.1,
+    // };
+    //
+    // program
+    //     .request()
+    //     .accounts(accounts::InitializeLbp {
+    //         config: config_info.0,
+    //         lbp: lbp_info.0,
+    //         admin: deployer.pubkey(),
+    //         system_program: system_program::ID,
+    //     })
+    //     .args(instruction::InitializeLbp { lbp_static_data: lbp_static_data.clone() })
+    //     .signer(&deployer)
+    //     .send()?;
+    //
+    // let lbp_data: Lbp = program.account(lbp_info.0)?;
+    // assert_eq!(lbp_data.static_data, lbp_static_data);
+    // assert_eq!(lbp_data.dynamic_data, LbpDynamicData {project_cap: 0, user_cap: 0, lp_locked_phase_start_time: 0 });
 
     Ok(())
 }
