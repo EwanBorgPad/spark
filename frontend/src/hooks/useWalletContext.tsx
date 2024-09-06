@@ -29,6 +29,7 @@ type Context = {
   signInWithBackpack: () => void
   signOut: () => void
   truncatedAddress: string
+  signMessage: (message: string) => Promise<Uint8Array>
 }
 
 const WalletContext = createContext<Context | undefined>(undefined)
@@ -189,6 +190,20 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setWalletProvider("")
   }
 
+  async function signMessage(message: string) {
+    if (walletProvider === 'PHANTOM') {
+      // @ts-expect-error
+      const signature = await window.solana.signMessage(Buffer.from(message))
+      return signature.signature
+    } else if (walletProvider === 'BACKPACK') {
+      // @ts-expect-error
+      const signature = await window.backpack.signMessage(Buffer.from(message))
+      return signature.signature
+    } else {
+      throw new Error(`Unknown wallet provider: ${walletProvider} !`)
+    }
+  }
+
   const truncatedAddress = truncateAddress(address)
 
   return (
@@ -201,6 +216,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         signInWithBackpack,
         signOut,
         truncatedAddress,
+        signMessage,
       }}
     >
       {children}
