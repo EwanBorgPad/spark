@@ -22,7 +22,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const { error, data } = bodySchema.safeParse(requestJson)
 
     if (error) {
-      return jsonResponse(null, 404)
+      return jsonResponse(null, 400)
     }
 
     ///// authorization
@@ -81,8 +81,4 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
   }
-}
-
-function isAddressInCorrectFormat(address: unknown): boolean {
-  return typeof address === "string" && address.length === 44
 }
