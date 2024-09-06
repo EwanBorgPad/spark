@@ -15,7 +15,7 @@ describe("Project Deposit", () => {
     })
 
     it("It can deposit", async () => {
-        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.lbp);
+        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.lockingFundPhaseLbp);
 
         const launchedTokenProjectAta = getAssociatedTokenAddressSync(
             lbp.launchedTokenMint,
@@ -37,7 +37,7 @@ describe("Project Deposit", () => {
             .accountsPartial({
                 project: ctx.project.publicKey,
                 config: ctx.config,
-                lbp: ctx.lbp,
+                lbp: ctx.lockingFundPhaseLbp,
                 // @ts-ignore
                 launchedTokenMint: lbp.launchedTokenMint,
                 tokenProgram: TOKEN_PROGRAM_ID

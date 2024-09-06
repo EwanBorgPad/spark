@@ -17,7 +17,7 @@ describe("User Deposit", () => {
     })
 
     it("It can deposit", async () => {
-        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.lbp);
+        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.lockingFundPhaseLbp);
 
         const raisedTokenUserAta = getAssociatedTokenAddressSync(
             lbp.raisedTokenMint,
@@ -27,9 +27,9 @@ describe("User Deposit", () => {
         const userPositionMintKp = Keypair.generate()
 
         const userPositionPk = PublicKey.findProgramAddressSync(
-            [Buffer.from("position"), userPositionMintKp.publicKey.toBuffer()],
+            [Buffer.from("position"), ctx.lockingFundPhaseLbp.toBuffer(), userPositionMintKp.publicKey.toBuffer()],
             ctx.program.programId
-        )[0];
+        );
 
         const userPositionAta = getAssociatedTokenAddressSync(
             userPositionMintKp.publicKey,
@@ -46,7 +46,7 @@ describe("User Deposit", () => {
             lbp.raisedTokenAta
         )
 
-        assert.equal(await ctx.program.account.position.fetchNullable(userPositionPk), null)
+        assert.equal(await ctx.program.account.position.fetchNullable(userPositionPk[0]), null)
 
         await ctx.program.methods
             .userDeposit(amount)
@@ -54,9 +54,9 @@ describe("User Deposit", () => {
                 whitelistAuthority: ctx.whitelistAuthority.publicKey,
                 user: ctx.user.publicKey,
                 config: ctx.config,
-                lbp: ctx.lbp,
+                lbp: ctx.lockingFundPhaseLbp,
                 positionMint: userPositionMintKp.publicKey,
-                position: userPositionPk,
+                position: userPositionPk[0],
                 userPositionAta: userPositionAta,
                 // @ts-ignore
                 raisedTokenMint: lbp.raisedTokenMint,
@@ -79,16 +79,12 @@ describe("User Deposit", () => {
         assert.equal(raisedTokenLbpBalAfter.amount, amount)
         assert.equal(raisedTokenUserBalBefore.amount - raisedTokenUserBalAfter.amount, amount)
 
-        const userPosition = await ctx.program.account.position.fetchNullable(userPositionPk)
-        const bump = PublicKey.findProgramAddressSync(
-            [Buffer.from("position"), userPositionMintKp.publicKey.toBuffer()],
-            ctx.program.programId
-        )[1];
+        const userPosition = await ctx.program.account.position.fetchNullable(userPositionPk[0])
 
         assert.deepEqual(userPosition.mint, userPositionMintKp.publicKey)
-        assert.deepEqual(userPosition.lbp, ctx.lbp)
+        assert.deepEqual(userPosition.lbp, ctx.lockingFundPhaseLbp)
         assert.equal(userPosition.amount.toNumber(), amount.toNumber())
-        assert.equal(userPosition.bump, bump)
+        assert.equal(userPosition.bump, userPositionPk[1])
 
         const userPositionMint = await getMint(
             ctx.connection,

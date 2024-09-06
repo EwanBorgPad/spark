@@ -49,6 +49,7 @@ pub struct UserDeposit<'info> {
         space = Position::LEN,
         seeds = [
             b"position".as_ref(),
+            lbp.key().as_ref(),
             position_mint.key().as_ref()
         ],
         bump,

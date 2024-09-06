@@ -17,6 +17,21 @@ describe("Set whitelist authority", () => {
         newWhitelistAuthority = Keypair.generate()
     })
 
+    after('Set old authority back', async function () {
+        await ctx.program.methods
+            .setWhitelistAuthority(ctx.whitelistAuthority.publicKey)
+            .accountsPartial({
+                config: ctx.config,
+                adminAuthority: ctx.adminAuthority.publicKey
+            })
+            .signers([ctx.adminAuthority])
+            .rpc()
+
+        const config = await ctx.program.account.config.fetchNullable(ctx.config);
+
+        assert.deepEqual(config.whitelistAuthority, ctx.whitelistAuthority.publicKey)
+    })
+
     it("It can set the whitelist authority", async () => {
         let config = await ctx.program.account.config.fetchNullable(ctx.config);
 
