@@ -4,7 +4,7 @@ use crate::errors::ErrorCode;
 use crate::state::config::*;
 
 #[derive(Accounts)]
-pub struct SetAdminAuthority<'info> {
+pub struct AcceptAdminAuthority<'info> {
     #[account(
         mut,
         seeds = [b"config".as_ref()],
@@ -14,20 +14,15 @@ pub struct SetAdminAuthority<'info> {
 
     #[account(
         mut,
-        constraint = config.admin_authority == old_admin_authority.key() @ ErrorCode::NotAdminAuthority
-    )]
-    pub old_admin_authority: Signer<'info>,
-
-    #[account(
-        mut,
-        constraint = new_admin_authority.key() != old_admin_authority.key() @ ErrorCode::SameAdminAuthority
+        constraint = config.pending_admin_authority == Some(new_admin_authority.key()) @ ErrorCode::NotAdminAuthority
     )]
     pub new_admin_authority: Signer<'info>,
 }
 
-pub fn handler(ctx: Context<SetAdminAuthority>) -> Result<()> {
+pub fn handler(ctx: Context<AcceptAdminAuthority>) -> Result<()> {
     let config: &mut Account<Config> = &mut ctx.accounts.config;
     config.admin_authority = ctx.accounts.new_admin_authority.key();
+    config.pending_admin_authority = None;
 
     Ok(())
 }

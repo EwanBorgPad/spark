@@ -17,9 +17,6 @@ dotenv.config();
 export class Context {
     public provider: AnchorProvider;
     public connection: Connection;
-    public program: anchor.Program<Borgpad>;
-    public config: PublicKey;
-    public lbp: PublicKey;
 
     public deployer: Keypair;
     public adminAuthority: Keypair;
@@ -27,17 +24,10 @@ export class Context {
     public project: Keypair;
     public user: Keypair;
 
-    public launchedTokenMint: PublicKey = null;
-    public launchedTokenProjectAta: PublicKey = null;
-    public launchedTokenLbpAta: PublicKey = null;
-
-    public raisedTokenMint: PublicKey = null;
-    public raisedTokenUserAta: PublicKey = null;
-    public raisedTokenLbpAta: PublicKey = null
-
-    public userPositionMint: Keypair = null;
-    public userPosition: PublicKey = null;
-    public userPositionAta: PublicKey = null;
+    public program: anchor.Program<Borgpad>;
+    public config: PublicKey;
+    public lbpUid: number = 42;
+    public lbp: PublicKey;
 
     async init() {
         this.provider = anchor.getProvider() as AnchorProvider;
@@ -47,6 +37,8 @@ export class Context {
 
         await this.init_program_context();
 
+        await this.init_lbp_context();
+
         if (
             (await this.program.account.config.fetchNullable(this.config)) ==
             null
@@ -54,8 +46,6 @@ export class Context {
             await this.airdrop();
 
             await this.init_config();
-
-            await this.create_token();
 
             await this.init_lbp();
         }
@@ -86,6 +76,13 @@ export class Context {
             [Buffer.from("config")],
             this.program.programId
         );
+    }
+
+    async init_lbp_context() {
+        this.lbp = PublicKey.findProgramAddressSync(
+            [Buffer.from("lbp"), (new BN(this.lbpUid)).toArrayLike(Buffer, "le", 8)],
+            this.program.programId
+        )[0];
     }
 
     async airdrop() {
@@ -156,8 +153,8 @@ export class Context {
             .rpc();
     }
 
-    async create_token() {
-        this.launchedTokenMint = await createMint(
+    async init_lbp() {
+        const launchedTokenMint = await createMint(
             this.connection,
             this.project,
             this.project.publicKey,
@@ -165,23 +162,23 @@ export class Context {
             9
         )
 
-        this.launchedTokenProjectAta = (await getOrCreateAssociatedTokenAccount(
+        const launchedTokenProjectAta = (await getOrCreateAssociatedTokenAccount(
             this.connection,
             this.project,
-            this.launchedTokenMint,
+            launchedTokenMint,
             this.project.publicKey
         )).address
 
         await mintTo(
             this.connection,
             this.project,
-            this.launchedTokenMint,
-            this.launchedTokenProjectAta,
+            launchedTokenMint,
+            launchedTokenProjectAta,
             this.project.publicKey,
             42 * 10 ** 9
         )
 
-        this.raisedTokenMint = await createMint(
+        const raisedTokenMint = await createMint(
             this.connection,
             this.user,
             this.user.publicKey,
@@ -189,82 +186,56 @@ export class Context {
             9
         )
 
-        this.raisedTokenUserAta = (await getOrCreateAssociatedTokenAccount(
+        const raisedTokenUserAta = (await getOrCreateAssociatedTokenAccount(
             this.connection,
             this.user,
-            this.raisedTokenMint,
+            raisedTokenMint,
             this.user.publicKey
         )).address
 
         await mintTo(
             this.connection,
             this.user,
-            this.raisedTokenMint,
-            this.raisedTokenUserAta,
+            raisedTokenMint,
+            raisedTokenUserAta,
             this.user.publicKey,
             42 * 10 ** 9
         )
-    }
 
-    async init_lbp() {
         const lbpInitalizeData = {
-            uid: new BN(42),
+            uid: new BN(this.lbpUid),
 
             project: this.project.publicKey,
 
-            launchedTokenMint: this.launchedTokenMint,
+            launchedTokenMint: launchedTokenMint,
             launchedTokenLpDistribution: 40,
             launchedTokenCap: new BN(1_000_000),
 
-            raisedTokenMint: this.raisedTokenMint,
+            raisedTokenMint: raisedTokenMint,
             raisedTokenMinCap: new BN(500_000),
             raisedTokenMaxCap: new BN(1_000_000),
 
-            fundCollectionStartTime: new BN(0),
-            fundCollectionEndTime: new BN(Number.MAX_SAFE_INTEGER),
             cliffDuration: new BN(0),
             vestingDuration: new BN(0),
         }
+
+        const lbpPda = anchor.web3.PublicKey.findProgramAddressSync(
+            [Buffer.from("lbp"), lbpInitalizeData.uid.toArrayLike(Buffer, "le", 8)],
+            this.program.programId
+        );
 
         await this.program.methods
             .initializeLbp(lbpInitalizeData)
             .accounts({
                 adminAuthority: this.adminAuthority.publicKey,
                 // @ts-ignore
-                raisedTokenMint: this.raisedTokenMint,
-                launchedTokenMint: this.launchedTokenMint,
+                lbp: lbpPda[0],
+                // @ts-ignore
+                raisedTokenMint: raisedTokenMint,
+                launchedTokenMint: launchedTokenMint,
                 tokenProgram: TOKEN_PROGRAM_ID
             })
             .signers([this.adminAuthority])
             .rpc()
-
-        this.lbp = PublicKey.findProgramAddressSync(
-            [Buffer.from("lbp"), (new BN(42)).toArrayLike(Buffer, "le", 8)],
-            this.program.programId
-        )[0];
-
-        this.launchedTokenLbpAta = getAssociatedTokenAddressSync(
-            this.launchedTokenMint,
-            this.lbp,
-            true
-        )
-
-        this.raisedTokenLbpAta = getAssociatedTokenAddressSync(
-            this.raisedTokenMint,
-            this.lbp,
-            true
-        )
-
-        this.userPositionMint = Keypair.generate()
-
-        this.userPosition = PublicKey.findProgramAddressSync(
-            [Buffer.from("position"), this.userPositionMint.publicKey.toBuffer()],
-            this.program.programId
-        )[0];
-
-        this.userPositionAta = getAssociatedTokenAddressSync(
-            this.userPositionMint.publicKey,
-            this.user.publicKey,
-        )
     }
 }

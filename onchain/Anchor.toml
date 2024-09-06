@@ -15,24 +15,11 @@ wallet = "tests/helpers/local_deployer.json"
 
 [scripts]
 #test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/*.ts"
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/userDeposit.ts"
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/setWhitelistAuthority.ts"
 
 init-script = "yarn run ts-node scripts/initialize.ts"
-
-[test]
-startup_wait = 5000
-
-[test.validator]
-url = "https://api.mainnet-beta.solana.com"
 
 [[test.genesis]]
 address = "bpadbLrS3Mw2e1EDSEnYzYpNwAQgJQXXHkT57D4TTJ4"
 program = "target/deploy/borgpad.so"
 upgradeable = true
-
-[[test.validator.clone]]
-address = "So11111111111111111111111111111111111111112"
-[[test.validator.clone]]
-address = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-[[test.validator.clone]]
-address = "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z"

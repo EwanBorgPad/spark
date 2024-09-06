@@ -1,9 +1,11 @@
+use crate::instructions::accept_admin_authority::*;
 use crate::instructions::initialize::*;
 use crate::instructions::initialize_lbp::*;
 use crate::instructions::move_to_next_phase::*;
-use crate::instructions::set_admin_authority::*;
+use crate::instructions::nominate_new_admin_authority::*;
 use crate::instructions::set_whitelist_authority::*;
 use crate::instructions::user_deposit::*;
+use crate::instructions::project_deposit::*;
 use crate::state::lbp::{LbpInitializeData, Phase};
 use anchor_lang::prelude::*;
 use solana_security_txt::security_txt;
@@ -41,8 +43,12 @@ pub mod borgpad {
         instructions::initialize_lbp::handler(ctx, lbp_initialize)
     }
 
-    pub fn set_admin_authority(ctx: Context<SetAdminAuthority>) -> Result<()> {
-        instructions::set_admin_authority::handler(ctx)
+    pub fn nominate_new_admin_authority(ctx: Context<NominateNewAdminAuthority>, new_admin_authority: Pubkey) -> Result<()> {
+        instructions::nominate_new_admin_authority::handler(ctx, new_admin_authority)
+    }
+
+    pub fn accept_admin_authority(ctx: Context<AcceptAdminAuthority>) -> Result<()> {
+        instructions::accept_admin_authority::handler(ctx)
     }
 
     pub fn set_whitelist_authority(
@@ -64,5 +70,12 @@ pub mod borgpad {
         amount: u64
     ) -> Result<()> {
         instructions::user_deposit::handler(ctx, amount)
+    }
+
+    pub fn project_deposit(
+        ctx: Context<ProjectDeposit>,
+        amount: u64
+    ) -> Result<()> {
+        instructions::project_deposit::handler(ctx, amount)
     }
 }

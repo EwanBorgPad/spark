@@ -32,13 +32,7 @@ pub struct LbpInitializeData {
     pub raised_token_min_cap: u64,
     /// The max amount of token that the users can deposit
     pub raised_token_max_cap: u64,
-
-    /// The start time of the fund collection phase
-    /// Expressed as Unix time (i.e. seconds since the Unix epoch).
-    pub fund_collection_start_time: u64,
-    /// The end time of the fund collection phase
-    /// Expressed as Unix time (i.e. seconds since the Unix epoch).
-    pub fund_collection_end_time: u64,
+    
     /// The duration of the cliff phase
     /// Expressed as Unix time (i.e. seconds since the Unix epoch).
     pub cliff_duration: u64,
@@ -80,12 +74,6 @@ pub struct Lbp {
 
     /// The current phase of the lbp
     pub phase: Phase,
-    /// The start time of the fund collection phase
-    /// Expressed as Unix time (i.e. seconds since the Unix epoch).
-    pub fund_collection_start_time: u64,
-    /// The end time of the fund collection phase
-    /// Expressed as Unix time (i.e. seconds since the Unix epoch).
-    pub fund_collection_end_time: u64,
     /// The start time of the cliff phase
     /// Set by the program once the admin transition from fund collection to cliff phase
     /// Expressed as Unix time (i.e. seconds since the Unix epoch).
@@ -127,8 +115,6 @@ impl Lbp {
         self.raised_token_cap = 0;
 
         self.phase = Phase::FundCollection;
-        self.fund_collection_start_time = lbp_initialize.fund_collection_start_time;
-        self.fund_collection_end_time = lbp_initialize.fund_collection_end_time;
         self.vesting_start_time = u64::MAX;
         self.cliff_duration = lbp_initialize.cliff_duration;
         self.vesting_duration = lbp_initialize.vesting_duration;
