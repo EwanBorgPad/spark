@@ -7,7 +7,7 @@ import {Keypair, PublicKey} from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 
 
-describe("User Deposit", () => {
+describe("User deposit", () => {
     let ctx: Context
     let amount = new BN(420_000)
 
@@ -17,7 +17,7 @@ describe("User Deposit", () => {
     })
 
     it("It can deposit", async () => {
-        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.lockingFundPhaseLbp);
+        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.fundCollectionPhaseLbp);
 
         const raisedTokenUserAta = getAssociatedTokenAddressSync(
             lbp.raisedTokenMint,
@@ -27,7 +27,7 @@ describe("User Deposit", () => {
         const userPositionMintKp = Keypair.generate()
 
         const userPositionPk = PublicKey.findProgramAddressSync(
-            [Buffer.from("position"), ctx.lockingFundPhaseLbp.toBuffer(), userPositionMintKp.publicKey.toBuffer()],
+            [Buffer.from("position"), ctx.fundCollectionPhaseLbp.toBuffer(), userPositionMintKp.publicKey.toBuffer()],
             ctx.program.programId
         );
 
@@ -54,7 +54,7 @@ describe("User Deposit", () => {
                 whitelistAuthority: ctx.whitelistAuthority.publicKey,
                 user: ctx.user.publicKey,
                 config: ctx.config,
-                lbp: ctx.lockingFundPhaseLbp,
+                lbp: ctx.fundCollectionPhaseLbp,
                 positionMint: userPositionMintKp.publicKey,
                 position: userPositionPk[0],
                 userPositionAta: userPositionAta,
@@ -82,7 +82,7 @@ describe("User Deposit", () => {
         const userPosition = await ctx.program.account.position.fetchNullable(userPositionPk[0])
 
         assert.deepEqual(userPosition.mint, userPositionMintKp.publicKey)
-        assert.deepEqual(userPosition.lbp, ctx.lockingFundPhaseLbp)
+        assert.deepEqual(userPosition.lbp, ctx.fundCollectionPhaseLbp)
         assert.equal(userPosition.amount.toNumber(), amount.toNumber())
         assert.equal(userPosition.bump, userPositionPk[1])
 

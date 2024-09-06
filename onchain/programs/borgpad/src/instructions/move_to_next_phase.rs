@@ -22,9 +22,10 @@ pub struct MoveToNextPhase<'info> {
     pub config: Account<'info, Config>,
 
     #[account(
+        mut,
         seeds = [
-        b"lbp".as_ref(),
-        & lbp.uid.to_le_bytes()
+            b"lbp".as_ref(),
+            & lbp.uid.to_le_bytes()
         ],
         bump
     )]

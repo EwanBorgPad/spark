@@ -16,7 +16,7 @@ describe("Initialize LBP", () => {
     })
 
     it("The test LBO exists", async () => {
-        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.lockingFundPhaseLbp);
+        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.fundCollectionPhaseLbp);
         assert.notEqual(lbp, null)
     })
 

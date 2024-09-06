@@ -6,7 +6,7 @@ import {getAssociatedTokenAddressSync, getAccount, getMint} from "@solana/spl-to
 import {Keypair, PublicKey} from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 
-describe("Project Deposit", () => {
+describe("Project deposit", () => {
     let ctx: Context
 
     before('Init context', async function () {
@@ -15,7 +15,7 @@ describe("Project Deposit", () => {
     })
 
     it("It can deposit", async () => {
-        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.lockingFundPhaseLbp);
+        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.fundCollectionPhaseLbp);
 
         const launchedTokenProjectAta = getAssociatedTokenAddressSync(
             lbp.launchedTokenMint,
@@ -37,7 +37,7 @@ describe("Project Deposit", () => {
             .accountsPartial({
                 project: ctx.project.publicKey,
                 config: ctx.config,
-                lbp: ctx.lockingFundPhaseLbp,
+                lbp: ctx.fundCollectionPhaseLbp,
                 // @ts-ignore
                 launchedTokenMint: lbp.launchedTokenMint,
                 tokenProgram: TOKEN_PROGRAM_ID
