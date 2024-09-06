@@ -23,12 +23,18 @@ const getWhitelistingStatus = async ({ address }: { address: string }) => {
 
   return result
 }
-
-const confirmResidency = async ({ address }: { address: string }) => {
+type ConfirmResidencyArgs = {
+  publicKey: string
+  message: string
+  signature: unknown[]
+}
+const confirmResidency = async (args: ConfirmResidencyArgs) => {
   const url = new URL(POST_CONFIRM_RESIDENCY_URL, window.location.href)
-  url.searchParams.set("address", address)
 
-  await fetch(url, { method: "post" })
+  await fetch(url, {
+    body: JSON.stringify(args),
+    method: "post"
+  })
 }
 
 const getProject = async ({

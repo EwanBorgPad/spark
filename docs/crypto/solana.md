@@ -4,6 +4,7 @@
 - [SPL Token CLI](https://spl.solana.com/token#setup)
 - [What are the differences between Devnet, Testnet, and Mainnet?](https://solana.stackexchange.com/questions/336/what-are-the-differences-between-devnet-testnet-and-mainnet)
 - [npm:@solana/web3.js](https://www.npmjs.com/package/@solana/web3.js)
+- [Signing/Verifying messages](https://solana.com/developers/cookbook/wallets/sign-message)
 
 ## Faucets
 

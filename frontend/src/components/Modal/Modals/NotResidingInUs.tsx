@@ -16,12 +16,28 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
   const { address } = useWalletContext()
   const queryClient = useQueryClient()
 
+  const message = 'I Acknowledge That I am Not a US Resident'
+
   const {
     mutate: confirmResidency,
     isPending,
     isSuccess,
   } = useMutation({
-    mutationFn: (address: string) => backendApi.confirmResidency({ address }),
+    mutationFn: async (address: string) => {
+
+      const encodedMessage = new TextEncoder().encode(message)
+      // @ts-expect-error
+      const signature = await window.solana.signMessage(Buffer.from(message))
+
+      const data = {
+        publicKey: address,
+        // TODO no nonce or expiration, possibly a security concern
+        message,
+        signature: Array.from(signature.signature),
+      }
+
+      await backendApi.confirmResidency(data)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["getWhitelistingStatus", address],
@@ -59,7 +75,7 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
             ) : (
               <Button
                 isLoading={isPending}
-                btnText={"I Acknowledge That I am Not a US Resident"}
+                btnText={message}
                 onClick={() => confirmResidency(address)}
               />
             )}
