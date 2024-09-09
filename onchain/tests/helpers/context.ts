@@ -11,15 +11,18 @@ import dotenv from "dotenv";
 import * as Fs from "node:fs";
 import {sha256} from "js-sha256";
 import {TOKEN_PROGRAM_ID} from "@coral-xyz/anchor/dist/cjs/utils/token";
-import {createMint, getAssociatedTokenAddressSync, getOrCreateAssociatedTokenAccount, mintTo} from "@solana/spl-token";
+import {
+    createMint, getAccount,
+    getAssociatedTokenAddressSync,
+    getOrCreateAssociatedTokenAccount,
+    mintTo
+} from "@solana/spl-token";
+import assert from "assert";
 dotenv.config();
 
 export class Context {
     public provider: AnchorProvider;
     public connection: Connection;
-    public program: anchor.Program<Borgpad>;
-    public config: PublicKey;
-    public lbp: PublicKey;
 
     public deployer: Keypair;
     public adminAuthority: Keypair;
@@ -27,25 +30,36 @@ export class Context {
     public project: Keypair;
     public user: Keypair;
 
-    public launchedTokenMint: PublicKey = null;
-    public launchedTokenProjectAta: PublicKey = null;
-    public launchedTokenLbpAta: PublicKey = null;
+    public program: anchor.Program<Borgpad>;
+    public config: PublicKey;
 
-    public raisedTokenMint: PublicKey = null;
-    public raisedTokenUserAta: PublicKey = null;
-    public raisedTokenLbpAta: PublicKey = null
+    public fundCollectionPhaseLbpUid: number = 42;
+    public fundCollectionPhaseLbp: PublicKey;
 
-    public userPositionMint: Keypair = null;
-    public userPosition: PublicKey = null;
-    public userPositionAta: PublicKey = null;
+    public refundPhaseLbpUid: number = 43;
+    public refundPhaseLbp: PublicKey;
+    public refundPhaseUserPositionMintKp: Keypair;
+    public refundPhaseUserPosition: PublicKey;
+
+    public vestingPhaseLbpUid: number = 44;
+    public vestingFundPhaseLbp: PublicKey;
+
+    public phaseChangeLbpUid: number = 45;
+    public phaseChangeLbp: PublicKey;
+
+    public amount = new BN(420_000)
 
     async init() {
         this.provider = anchor.getProvider() as AnchorProvider;
         this.connection = anchor.getProvider().connection;
 
-        await this.init_wallet_context();
+        await this.initWalletContext();
 
-        await this.init_program_context();
+        await this.initProgramContext();
+
+        await this.initLbpContext();
+
+        await this.initPositionContext()
 
         if (
             (await this.program.account.config.fetchNullable(this.config)) ==
@@ -53,33 +67,31 @@ export class Context {
         ) {
             await this.airdrop();
 
-            await this.init_config();
+            await this.initConfig();
 
-            await this.create_token();
-
-            await this.init_lbp();
+            await this.initLbps();
         }
     }
 
-    async init_wallet_context() {
+    private async initWalletContext() {
         this.deployer = Keypair.fromSeed(new Uint8Array(
             JSON.parse(Fs.readFileSync("tests/helpers/local_deployer.json").toString())
         ).slice(0, 32));
-        this.adminAuthority = anchor.web3.Keypair.fromSeed(
+        this.adminAuthority = Keypair.fromSeed(
             Uint8Array.from(sha256.digest("adminAuthority"))
         );
-        this.whitelistAuthority = anchor.web3.Keypair.fromSeed(
+        this.whitelistAuthority = Keypair.fromSeed(
             Uint8Array.from(sha256.digest("whitelistAuthority"))
         );
-        this.project = anchor.web3.Keypair.fromSeed(
+        this.project = Keypair.fromSeed(
             Uint8Array.from(sha256.digest("project"))
         );
-        this.user = anchor.web3.Keypair.fromSeed(
+        this.user = Keypair.fromSeed(
             Uint8Array.from(sha256.digest("user"))
         );
     }
 
-    async init_program_context() {
+    private async initProgramContext() {
         this.program = anchor.workspace
             .Borgpad as Program<Borgpad>;
         [this.config] = anchor.web3.PublicKey.findProgramAddressSync(
@@ -88,7 +100,37 @@ export class Context {
         );
     }
 
-    async airdrop() {
+    private async initLbpContext() {
+        this.fundCollectionPhaseLbp = PublicKey.findProgramAddressSync(
+            [Buffer.from("lbp"), (new BN(this.fundCollectionPhaseLbpUid)).toArrayLike(Buffer, "le", 8)],
+            this.program.programId
+        )[0];
+
+        this.refundPhaseLbp = PublicKey.findProgramAddressSync(
+            [Buffer.from("lbp"), (new BN(this.refundPhaseLbpUid)).toArrayLike(Buffer, "le", 8)],
+            this.program.programId
+        )[0];
+
+        // TODO: vesting lbp
+
+        this.phaseChangeLbp = PublicKey.findProgramAddressSync(
+            [Buffer.from("lbp"), (new BN(this.phaseChangeLbpUid)).toArrayLike(Buffer, "le", 8)],
+            this.program.programId
+        )[0];
+    }
+
+    private async initPositionContext() {
+        this.refundPhaseUserPositionMintKp = Keypair.fromSeed(
+            Uint8Array.from(sha256.digest("refundPhaseUserPositionMintKp"))
+        );
+
+        this.refundPhaseUserPosition = PublicKey.findProgramAddressSync(
+            [Buffer.from("position"), this.refundPhaseLbp.toBuffer(), this.refundPhaseUserPositionMintKp.publicKey.toBuffer()],
+            this.program.programId
+        )[0];
+    }
+
+    private async airdrop() {
         const sig0 = await this.connection.requestAirdrop(
             this.deployer.publicKey,
             42 * LAMPORTS_PER_SOL
@@ -139,7 +181,7 @@ export class Context {
         });
     }
 
-    async init_config() {
+    private async initConfig() {
         const res = await this.connection.getParsedAccountInfo(this.program.programId)
 
         await this.program.methods
@@ -156,8 +198,8 @@ export class Context {
             .rpc();
     }
 
-    async create_token() {
-        this.launchedTokenMint = await createMint(
+    private async initLbps() {
+        const launchedTokenMint = await createMint(
             this.connection,
             this.project,
             this.project.publicKey,
@@ -165,23 +207,23 @@ export class Context {
             9
         )
 
-        this.launchedTokenProjectAta = (await getOrCreateAssociatedTokenAccount(
+        const launchedTokenProjectAta = (await getOrCreateAssociatedTokenAccount(
             this.connection,
             this.project,
-            this.launchedTokenMint,
+            launchedTokenMint,
             this.project.publicKey
         )).address
 
         await mintTo(
             this.connection,
             this.project,
-            this.launchedTokenMint,
-            this.launchedTokenProjectAta,
+            launchedTokenMint,
+            launchedTokenProjectAta,
             this.project.publicKey,
             42 * 10 ** 9
         )
 
-        this.raisedTokenMint = await createMint(
+        const raisedTokenMint = await createMint(
             this.connection,
             this.user,
             this.user.publicKey,
@@ -189,82 +231,131 @@ export class Context {
             9
         )
 
-        this.raisedTokenUserAta = (await getOrCreateAssociatedTokenAccount(
+        const raisedTokenUserAta = (await getOrCreateAssociatedTokenAccount(
             this.connection,
             this.user,
-            this.raisedTokenMint,
+            raisedTokenMint,
             this.user.publicKey
         )).address
 
         await mintTo(
             this.connection,
             this.user,
-            this.raisedTokenMint,
-            this.raisedTokenUserAta,
+            raisedTokenMint,
+            raisedTokenUserAta,
             this.user.publicKey,
             42 * 10 ** 9
         )
+
+        await this.initLbp(this.fundCollectionPhaseLbpUid, launchedTokenMint, raisedTokenMint)
+
+        await this.initLbp(this.refundPhaseLbpUid, launchedTokenMint, raisedTokenMint)
+        await this.userDeposit(this.refundPhaseLbp, this.amount, raisedTokenMint)
+        await this.projectDeposit(this.refundPhaseLbp)
+        await this.moveToNextPhase(this.refundPhaseLbp, { "refund": {} }, launchedTokenMint, raisedTokenMint)
+
+        // TODO: vesting lbp
+
+        await this.initLbp(this.phaseChangeLbpUid, launchedTokenMint, raisedTokenMint)
     }
 
-    async init_lbp() {
+    private async initLbp(lbpUid: number, launchedTokenMint: PublicKey, raisedTokenMint: PublicKey): Promise<PublicKey> {
         const lbpInitalizeData = {
-            uid: new BN(42),
+            uid: new BN(lbpUid),
 
             project: this.project.publicKey,
 
-            launchedTokenMint: this.launchedTokenMint,
+            launchedTokenMint: launchedTokenMint,
             launchedTokenLpDistribution: 40,
             launchedTokenCap: new BN(1_000_000),
 
-            raisedTokenMint: this.raisedTokenMint,
+            raisedTokenMint: raisedTokenMint,
             raisedTokenMinCap: new BN(500_000),
             raisedTokenMaxCap: new BN(1_000_000),
 
-            fundCollectionStartTime: new BN(0),
-            fundCollectionEndTime: new BN(Number.MAX_SAFE_INTEGER),
             cliffDuration: new BN(0),
             vestingDuration: new BN(0),
         }
+
+        const lbpPda = anchor.web3.PublicKey.findProgramAddressSync(
+            [Buffer.from("lbp"), lbpInitalizeData.uid.toArrayLike(Buffer, "le", 8)],
+            this.program.programId
+        );
 
         await this.program.methods
             .initializeLbp(lbpInitalizeData)
             .accounts({
                 adminAuthority: this.adminAuthority.publicKey,
                 // @ts-ignore
-                raisedTokenMint: this.raisedTokenMint,
-                launchedTokenMint: this.launchedTokenMint,
+                lbp: lbpPda[0],
+                // @ts-ignore
+                raisedTokenMint: raisedTokenMint,
+                launchedTokenMint: launchedTokenMint,
                 tokenProgram: TOKEN_PROGRAM_ID
             })
             .signers([this.adminAuthority])
             .rpc()
 
-        this.lbp = PublicKey.findProgramAddressSync(
-            [Buffer.from("lbp"), (new BN(42)).toArrayLike(Buffer, "le", 8)],
-            this.program.programId
-        )[0];
+        return lbpPda[0]
+    }
 
-        this.launchedTokenLbpAta = getAssociatedTokenAddressSync(
-            this.launchedTokenMint,
-            this.lbp,
-            true
-        )
+    private async userDeposit(lbpAddress: PublicKey, amount: BN, raisedTokenMint: PublicKey) {
 
-        this.raisedTokenLbpAta = getAssociatedTokenAddressSync(
-            this.raisedTokenMint,
-            this.lbp,
-            true
-        )
 
-        this.userPositionMint = Keypair.generate()
-
-        this.userPosition = PublicKey.findProgramAddressSync(
-            [Buffer.from("position"), this.userPositionMint.publicKey.toBuffer()],
-            this.program.programId
-        )[0];
-
-        this.userPositionAta = getAssociatedTokenAddressSync(
-            this.userPositionMint.publicKey,
+        const userPositionAta = getAssociatedTokenAddressSync(
+            this.refundPhaseUserPositionMintKp.publicKey,
             this.user.publicKey,
         )
+
+        assert.equal(await this.program.account.position.fetchNullable(this.refundPhaseUserPosition), null)
+
+        await this.program.methods
+            .userDeposit(amount)
+            .accountsPartial({
+                whitelistAuthority: this.whitelistAuthority.publicKey,
+                user: this.user.publicKey,
+                config: this.config,
+                lbp: lbpAddress,
+                positionMint: this.refundPhaseUserPositionMintKp.publicKey,
+                position: this.refundPhaseUserPosition,
+                userPositionAta: userPositionAta,
+                // @ts-ignore
+                raisedTokenMint: raisedTokenMint,
+                tokenProgram: TOKEN_PROGRAM_ID
+            })
+            .signers([this.whitelistAuthority, this.user, this.refundPhaseUserPositionMintKp])
+            .rpc()
+    }
+
+    private async projectDeposit(lbpAddress: PublicKey) {
+        const lbp = await this.program.account.lbp.fetchNullable(lbpAddress);
+
+        await this.program.methods
+            .projectDeposit(lbp.launchedTokenCap)
+            .accountsPartial({
+                project: this.project.publicKey,
+                config: this.config,
+                lbp: lbpAddress,
+                // @ts-ignore
+                launchedTokenMint: lbp.launchedTokenMint,
+                tokenProgram: TOKEN_PROGRAM_ID
+            })
+            .signers([this.project])
+            .rpc()
+    }
+
+    private async moveToNextPhase(lbpAddress: PublicKey, args, launchedTokenMint: PublicKey, raisedTokenMint: PublicKey) {
+        await this.program.methods
+            .moveToNextPhase(args)
+            .accountsPartial({
+                adminAuthority: this.adminAuthority.publicKey,
+                lbp: lbpAddress,
+                // @ts-ignore
+                raisedTokenMint: raisedTokenMint,
+                launchedTokenMint: launchedTokenMint,
+                tokenProgram: TOKEN_PROGRAM_ID
+            })
+            .signers([this.adminAuthority])
+            .rpc()
     }
 }

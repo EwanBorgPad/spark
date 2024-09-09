@@ -34,6 +34,7 @@ pub struct UserRefund<'info> {
         close = user,
         seeds = [
             b"position".as_ref(),
+            lbp.key().as_ref(),
             position_mint.key().as_ref()
         ],
         bump,
@@ -66,6 +67,7 @@ pub struct UserRefund<'info> {
     pub lbp_raised_token_ata: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
+        mut,
         constraint = position.mint == position_mint.key() @ ErrorCode::InvalidMint
     )]
     pub position_mint: InterfaceAccount<'info, Mint>,
@@ -95,32 +97,15 @@ pub fn handler(ctx: Context<UserRefund>) -> Result<()> {
         return err!(ErrorCode::DoesNotHoldPosition)
     }
 
-    // Transfer funds from lbp to users
-    transfer_checked(
-        CpiContext::new_with_signer(
-            ctx.accounts.token_program.to_account_info(),
-            TransferChecked {
-                from: ctx.accounts.lbp_raised_token_ata.to_account_info(),
-                to: ctx.accounts.user_raised_token_ata.to_account_info(),
-                mint: ctx.accounts.raised_token_mint.to_account_info(),
-                authority: ctx.accounts.lbp.to_account_info(),
-            },
-            &[&[b"lbp", &ctx.accounts.lbp.uid.to_le_bytes(), &[ctx.bumps.lbp]]],
-        ),
-        position_data.amount,
-        ctx.accounts.raised_token_mint.decimals,
-    )?;
-
     // Burn token
     burn(
-        CpiContext::new_with_signer(
+        CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
             Burn {
                 mint: ctx.accounts.position_mint.to_account_info(),
                 from: ctx.accounts.user_position_ata.to_account_info(),
-                authority: ctx.accounts.lbp.to_account_info(),
-            },
-            &[&[b"lbp", &ctx.accounts.lbp.uid.to_le_bytes(), &[ctx.bumps.lbp]]],
+                authority: ctx.accounts.user.to_account_info(),
+            }
         ),
         1,
     )?;
@@ -135,6 +120,22 @@ pub fn handler(ctx: Context<UserRefund>) -> Result<()> {
                 authority: ctx.accounts.user.to_account_info(),
             }
         )
+    )?;
+
+    // Transfer funds from lbp to users
+    transfer_checked(
+        CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            TransferChecked {
+                from: ctx.accounts.lbp_raised_token_ata.to_account_info(),
+                to: ctx.accounts.user_raised_token_ata.to_account_info(),
+                mint: ctx.accounts.raised_token_mint.to_account_info(),
+                authority: ctx.accounts.lbp.to_account_info(),
+            },
+            &[&[b"lbp", &ctx.accounts.lbp.uid.to_le_bytes(), &[ctx.bumps.lbp]]],
+        ),
+        position_data.amount,
+        ctx.accounts.raised_token_mint.decimals,
     )?;
 
     // TODO: use token2022 to close the mint as well

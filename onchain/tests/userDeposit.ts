@@ -7,73 +7,87 @@ import {Keypair, PublicKey} from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 
 
-describe("User Deposit", () => {
+describe("User deposit", () => {
     let ctx: Context
-    let amount = new BN(420_000)
 
     before('Init context', async function () {
         ctx = new Context()
         await ctx.init()
     })
 
-    it("The user can deposit", async () => {
+    it("It can deposit", async () => {
+        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.fundCollectionPhaseLbp);
+
+        const raisedTokenUserAta = getAssociatedTokenAddressSync(
+            lbp.raisedTokenMint,
+            ctx.user.publicKey
+        )
+
+        const userPositionMintKp = Keypair.generate()
+
+        const userPositionPk = PublicKey.findProgramAddressSync(
+            [Buffer.from("position"), ctx.fundCollectionPhaseLbp.toBuffer(), userPositionMintKp.publicKey.toBuffer()],
+            ctx.program.programId
+        );
+
+        const userPositionAta = getAssociatedTokenAddressSync(
+            userPositionMintKp.publicKey,
+            ctx.user.publicKey,
+        )
+
         const raisedTokenUserBalBefore = await getAccount(
             ctx.connection,
-            ctx.raisedTokenUserAta
+            raisedTokenUserAta
         )
 
         const raisedTokenLbpBalBefore = await getAccount(
             ctx.connection,
-            ctx.raisedTokenLbpAta
+            lbp.raisedTokenAta
         )
 
-        assert.equal(await ctx.program.account.position.fetchNullable(ctx.userPosition), null)
+        assert.equal(await ctx.program.account.position.fetchNullable(userPositionPk[0]), null)
 
         await ctx.program.methods
-            .userDeposit(amount)
+            .userDeposit(ctx.amount)
             .accountsPartial({
                 whitelistAuthority: ctx.whitelistAuthority.publicKey,
                 user: ctx.user.publicKey,
                 config: ctx.config,
-                lbp: ctx.lbp,
-                positionMint: ctx.userPositionMint.publicKey,
-                position: ctx.userPosition,
-                userPositionAta: ctx.userPositionAta,
+                lbp: ctx.fundCollectionPhaseLbp,
+                positionMint: userPositionMintKp.publicKey,
+                position: userPositionPk[0],
+                userPositionAta: userPositionAta,
                 // @ts-ignore
-                raisedTokenMint: ctx.raisedTokenMint,
+                raisedTokenMint: lbp.raisedTokenMint,
                 tokenProgram: TOKEN_PROGRAM_ID
             })
-            .signers([ctx.whitelistAuthority, ctx.user, ctx.userPositionMint])
+            .signers([ctx.whitelistAuthority, ctx.user, userPositionMintKp])
             .rpc()
 
         const raisedTokenUserBalAfter = await getAccount(
             ctx.connection,
-            ctx.raisedTokenUserAta
+            raisedTokenUserAta
         )
 
         const raisedTokenLbpBalAfter = await getAccount(
             ctx.connection,
-            ctx.raisedTokenLbpAta
+            lbp.raisedTokenAta
         )
 
         assert.equal(raisedTokenLbpBalBefore.amount, 0)
-        assert.equal(raisedTokenLbpBalAfter.amount, amount)
-        assert.equal(raisedTokenUserBalBefore.amount - raisedTokenUserBalAfter.amount, amount)
+        assert.equal(raisedTokenLbpBalAfter.amount, ctx.amount)
+        assert.equal(raisedTokenUserBalBefore.amount - raisedTokenUserBalAfter.amount, ctx.amount)
 
-        const userPosition = await ctx.program.account.position.fetchNullable(ctx.userPosition)
-        const bump = PublicKey.findProgramAddressSync(
-            [Buffer.from("position"), ctx.userPositionMint.publicKey.toBuffer()],
-            ctx.program.programId
-        )[1];
+        const userPosition = await ctx.program.account.position.fetchNullable(userPositionPk[0])
 
-        assert.deepEqual(userPosition.mint, ctx.userPositionMint.publicKey)
-        assert.deepEqual(userPosition.lbp, ctx.lbp)
-        assert.equal(userPosition.amount.toNumber(), amount.toNumber())
-        assert.equal(userPosition.bump, bump)
+        assert.deepEqual(userPosition.mint, userPositionMintKp.publicKey)
+        assert.deepEqual(userPosition.lbp, ctx.fundCollectionPhaseLbp)
+        assert.equal(userPosition.amount.toNumber(), ctx.amount.toNumber())
+        assert.equal(userPosition.bump, userPositionPk[1])
 
         const userPositionMint = await getMint(
             ctx.connection,
-            ctx.userPositionMint.publicKey
+            userPositionMintKp.publicKey
         )
 
         assert.equal(userPositionMint.mintAuthority, null)

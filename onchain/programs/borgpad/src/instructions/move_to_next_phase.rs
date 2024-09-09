@@ -22,9 +22,10 @@ pub struct MoveToNextPhase<'info> {
     pub config: Account<'info, Config>,
 
     #[account(
+        mut,
         seeds = [
-        b"lbp".as_ref(),
-        & lbp.uid.to_le_bytes()
+            b"lbp".as_ref(),
+            & lbp.uid.to_le_bytes()
         ],
         bump
     )]
@@ -62,19 +63,16 @@ pub struct MoveToNextPhase<'info> {
 }
 
 pub fn handler(ctx: Context<MoveToNextPhase>, phase: Phase) -> Result<()> {
-    let time = Clock::get()?.unix_timestamp as u64;
-
     match phase {
         Phase::FundCollection => { err!(ErrorCode::InvalidPhaseChange) }
-        Phase::Refund => { refund(ctx, time) }
-        Phase::Vesting => { vesting(ctx, time) }
+        Phase::Refund => { refund(ctx) }
+        Phase::Vesting => { vesting(ctx) }
     }
 }
 
-pub fn refund<'b>(ctx: Context<MoveToNextPhase>, time: u64) -> Result<()> {
+pub fn refund<'b>(ctx: Context<MoveToNextPhase>) -> Result<()> {
     let lbp_data: &mut Account<Lbp> = &mut ctx.accounts.lbp;
     if lbp_data.phase != Phase::FundCollection
-        || time < lbp_data.fund_collection_end_time
         || ctx.accounts.raised_token_ata.amount >= lbp_data.raised_token_min_cap
     {
         return err!(ErrorCode::InvalidPhaseChange);
@@ -85,15 +83,16 @@ pub fn refund<'b>(ctx: Context<MoveToNextPhase>, time: u64) -> Result<()> {
     Ok(())
 }
 
-pub fn vesting(ctx: Context<MoveToNextPhase>, time: u64) -> Result<()> {
+pub fn vesting(ctx: Context<MoveToNextPhase>) -> Result<()> {
     let lbp_data: &mut Account<Lbp> = &mut ctx.accounts.lbp;
     if lbp_data.phase != Phase::FundCollection
-        || time < lbp_data.fund_collection_end_time
         || ctx.accounts.raised_token_ata.amount < lbp_data.raised_token_min_cap
         || ctx.accounts.launched_token_ata.amount < lbp_data.launched_token_cap
     {
         return err!(ErrorCode::InvalidPhaseChange);
     }
+
+    let time = Clock::get()?.unix_timestamp as u64;
 
     lbp_data.phase = Phase::Vesting;
     lbp_data.raised_token_cap = ctx.accounts.raised_token_ata.amount;

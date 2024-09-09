@@ -5,6 +5,8 @@ use anchor_lang::prelude::*;
 pub struct Config {
     /// The authority that has admin right
     pub admin_authority: Pubkey,
+    /// The pending new authority that has admin right
+    pub pending_admin_authority: Option<Pubkey>,
     /// The authority that has whitelist right
     pub whitelist_authority: Pubkey,
     /// The bump of the pda
@@ -16,6 +18,7 @@ impl Config {
 
     pub fn initialize(&mut self, admin_authority: Pubkey, whitelist_authority: Pubkey, bump: u8) {
         self.admin_authority = admin_authority;
+        self.pending_admin_authority = None;
         self.whitelist_authority = whitelist_authority;
         self.bump = bump;
     }

@@ -49,6 +49,7 @@ pub struct UserDeposit<'info> {
         space = Position::LEN,
         seeds = [
             b"position".as_ref(),
+            lbp.key().as_ref(),
             position_mint.key().as_ref()
         ],
         bump,
@@ -97,18 +98,9 @@ pub struct UserDeposit<'info> {
 
 pub fn handler(ctx: Context<UserDeposit>, amount: u64) -> Result<()> {
     let lbp_data: &mut Account<Lbp> = &mut ctx.accounts.lbp;
-    let time = Clock::get()?.unix_timestamp as u64;
 
     if lbp_data.phase != Phase::FundCollection {
         return err!(ErrorCode::UnauthorisedOperationInCurrentPhase)
-    }
-
-    if time < lbp_data.fund_collection_start_time {
-        return err!(ErrorCode::FundCollectionPhaseNotStarted);
-    }
-
-    if time > lbp_data.fund_collection_end_time {
-        return err!(ErrorCode::FundCollectionPhaseCompleted);
     }
 
     if ctx.accounts.lbp_raised_token_ata.amount + amount > lbp_data.raised_token_max_cap {

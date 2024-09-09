@@ -3,7 +3,8 @@ import * as assert from "assert";
 import {BN} from "@coral-xyz/anchor";
 import {TOKEN_PROGRAM_ID} from "@coral-xyz/anchor/dist/cjs/utils/token";
 import * as anchor from "@coral-xyz/anchor";
-import {getAssociatedTokenAddressSync} from "@solana/spl-token";
+import {createMint, getAssociatedTokenAddressSync, getOrCreateAssociatedTokenAccount, mintTo} from "@solana/spl-token";
+import {PublicKey} from "@solana/web3.js";
 
 
 describe("Initialize LBP", () => {
@@ -15,27 +16,40 @@ describe("Initialize LBP", () => {
     })
 
     it("The test LBO exists", async () => {
-        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.lbp);
-
+        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.fundCollectionPhaseLbp);
         assert.notEqual(lbp, null)
     })
 
     it("The admin authority can initialize a new LBP", async () => {
+        const launchedTokenMint = await createMint(
+            ctx.connection,
+            ctx.project,
+            ctx.project.publicKey,
+            ctx.project.publicKey,
+            9
+        )
+
+        const raisedTokenMint = await createMint(
+            ctx.connection,
+            ctx.user,
+            ctx.user.publicKey,
+            ctx.user.publicKey,
+            9
+        )
+
         const lbpInitalizeData = {
             uid: new BN(420),
 
             project: ctx.project.publicKey,
 
-            launchedTokenMint: ctx.launchedTokenMint,
+            launchedTokenMint: launchedTokenMint,
             launchedTokenLpDistribution: 40,
             launchedTokenCap: new BN(1_000_000),
 
-            raisedTokenMint: ctx.raisedTokenMint,
+            raisedTokenMint: raisedTokenMint,
             raisedTokenMinCap: new BN(500_000),
             raisedTokenMaxCap: new BN(1_000_000),
 
-            fundCollectionStartTime: new BN(0),
-            fundCollectionEndTime: new BN(Number.MAX_SAFE_INTEGER),
             cliffDuration: new BN(0),
             vestingDuration: new BN(0),
         }
@@ -60,11 +74,12 @@ describe("Initialize LBP", () => {
 
         await ctx.program.methods
             .initializeLbp(lbpInitalizeData)
-            .accounts({
+            .accountsPartial({
                 adminAuthority: ctx.adminAuthority.publicKey,
+                lbp: lbpPda[0],
                 // @ts-ignore
-                raisedTokenMint: ctx.raisedTokenMint,
-                launchedTokenMint: ctx.launchedTokenMint,
+                raisedTokenMint: lbpInitalizeData.raisedTokenMint,
+                launchedTokenMint: lbpInitalizeData.launchedTokenMint,
                 tokenProgram: TOKEN_PROGRAM_ID
             })
             .signers([ctx.adminAuthority])
@@ -84,8 +99,6 @@ describe("Initialize LBP", () => {
         assert.deepEqual(lbp.raisedTokenMaxCap.toNumber(), lbpInitalizeData.raisedTokenMaxCap.toNumber());
         assert.deepEqual(lbp.raisedTokenCap.toNumber(), 0);
         assert.deepEqual(lbp.phase, {fundCollection: {}});
-        assert.deepEqual(lbp.fundCollectionStartTime.toNumber(), lbpInitalizeData.fundCollectionStartTime.toNumber());
-        assert.deepEqual(lbp.fundCollectionEndTime.toNumber(), lbpInitalizeData.fundCollectionEndTime.toNumber());
         assert.deepEqual(lbp.vestingStartTime.toString(), "18446744073709551615");
         assert.deepEqual(lbp.cliffDuration.toNumber(), lbpInitalizeData.cliffDuration.toNumber());
         assert.deepEqual(lbp.vestingDuration.toNumber(), lbpInitalizeData.vestingDuration.toNumber());
