@@ -38,6 +38,7 @@ export class Context {
 
     public refundPhaseLbpUid: number = 43;
     public refundPhaseLbp: PublicKey;
+    public refundPhaseUserPositionMintKp: Keypair;
     public refundPhaseUserPosition: PublicKey;
 
     public vestingPhaseLbpUid: number = 44;
@@ -58,6 +59,8 @@ export class Context {
 
         await this.initLbpContext();
 
+        await this.initPositionContext()
+
         if (
             (await this.program.account.config.fetchNullable(this.config)) ==
             null
@@ -74,16 +77,16 @@ export class Context {
         this.deployer = Keypair.fromSeed(new Uint8Array(
             JSON.parse(Fs.readFileSync("tests/helpers/local_deployer.json").toString())
         ).slice(0, 32));
-        this.adminAuthority = anchor.web3.Keypair.fromSeed(
+        this.adminAuthority = Keypair.fromSeed(
             Uint8Array.from(sha256.digest("adminAuthority"))
         );
-        this.whitelistAuthority = anchor.web3.Keypair.fromSeed(
+        this.whitelistAuthority = Keypair.fromSeed(
             Uint8Array.from(sha256.digest("whitelistAuthority"))
         );
-        this.project = anchor.web3.Keypair.fromSeed(
+        this.project = Keypair.fromSeed(
             Uint8Array.from(sha256.digest("project"))
         );
-        this.user = anchor.web3.Keypair.fromSeed(
+        this.user = Keypair.fromSeed(
             Uint8Array.from(sha256.digest("user"))
         );
     }
@@ -112,6 +115,17 @@ export class Context {
 
         this.phaseChangeLbp = PublicKey.findProgramAddressSync(
             [Buffer.from("lbp"), (new BN(this.phaseChangeLbpUid)).toArrayLike(Buffer, "le", 8)],
+            this.program.programId
+        )[0];
+    }
+
+    private async initPositionContext() {
+        this.refundPhaseUserPositionMintKp = Keypair.fromSeed(
+            Uint8Array.from(sha256.digest("refundPhaseUserPositionMintKp"))
+        );
+
+        this.refundPhaseUserPosition = PublicKey.findProgramAddressSync(
+            [Buffer.from("position"), this.refundPhaseLbp.toBuffer(), this.refundPhaseUserPositionMintKp.publicKey.toBuffer()],
             this.program.programId
         )[0];
     }
@@ -236,7 +250,7 @@ export class Context {
         await this.initLbp(this.fundCollectionPhaseLbpUid, launchedTokenMint, raisedTokenMint)
 
         await this.initLbp(this.refundPhaseLbpUid, launchedTokenMint, raisedTokenMint)
-        this.refundPhaseUserPosition = await this.userDeposit(this.refundPhaseLbp, this.amount, raisedTokenMint)
+        await this.userDeposit(this.refundPhaseLbp, this.amount, raisedTokenMint)
         await this.projectDeposit(this.refundPhaseLbp)
         await this.moveToNextPhase(this.refundPhaseLbp, { "refund": {} }, launchedTokenMint, raisedTokenMint)
 
@@ -286,19 +300,14 @@ export class Context {
     }
 
     private async userDeposit(lbpAddress: PublicKey, amount: BN, raisedTokenMint: PublicKey) {
-        const userPositionMintKp = Keypair.generate()
 
-        const userPositionPk = PublicKey.findProgramAddressSync(
-            [Buffer.from("position"), lbpAddress.toBuffer(), userPositionMintKp.publicKey.toBuffer()],
-            this.program.programId
-        );
 
         const userPositionAta = getAssociatedTokenAddressSync(
-            userPositionMintKp.publicKey,
+            this.refundPhaseUserPositionMintKp.publicKey,
             this.user.publicKey,
         )
 
-        assert.equal(await this.program.account.position.fetchNullable(userPositionPk[0]), null)
+        assert.equal(await this.program.account.position.fetchNullable(this.refundPhaseUserPosition), null)
 
         await this.program.methods
             .userDeposit(amount)
@@ -307,17 +316,15 @@ export class Context {
                 user: this.user.publicKey,
                 config: this.config,
                 lbp: lbpAddress,
-                positionMint: userPositionMintKp.publicKey,
-                position: userPositionPk[0],
+                positionMint: this.refundPhaseUserPositionMintKp.publicKey,
+                position: this.refundPhaseUserPosition,
                 userPositionAta: userPositionAta,
                 // @ts-ignore
                 raisedTokenMint: raisedTokenMint,
                 tokenProgram: TOKEN_PROGRAM_ID
             })
-            .signers([this.whitelistAuthority, this.user, userPositionMintKp])
+            .signers([this.whitelistAuthority, this.user, this.refundPhaseUserPositionMintKp])
             .rpc()
-
-        return userPositionPk[0]
     }
 
     private async projectDeposit(lbpAddress: PublicKey) {
