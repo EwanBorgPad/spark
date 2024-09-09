@@ -9,7 +9,6 @@ import * as anchor from "@coral-xyz/anchor";
 
 describe("User refund", () => {
     let ctx: Context
-    let amount = new BN(420_000)
 
     before('Init context', async function () {
         ctx = new Context()
@@ -17,82 +16,68 @@ describe("User refund", () => {
     })
 
     it("It can be refunded", async () => {
-        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.refundFundPhaseLbp);
+        const lbp = await ctx.program.account.lbp.fetchNullable(ctx.refundPhaseLbp);
+        const position = await ctx.program.account.position.fetchNullable(ctx.refundPhaseUserPosition)
 
         assert.deepEqual(lbp.phase, {refund: {}})
 
-        // const raisedTokenUserAta = getAssociatedTokenAddressSync(
-        //     lbp.raisedTokenMint,
-        //     ctx.user.publicKey
-        // )
-        //
-        // const userPositionMintKp = Keypair.generate()
-        //
-        // const userPositionPk = PublicKey.findProgramAddressSync(
-        //     [Buffer.from("position"), ctx.fundCollectionPhaseLbp.toBuffer(), userPositionMintKp.publicKey.toBuffer()],
-        //     ctx.program.programId
-        // );
-        //
-        // const userPositionAta = getAssociatedTokenAddressSync(
-        //     userPositionMintKp.publicKey,
-        //     ctx.user.publicKey,
-        // )
-        //
-        // const raisedTokenUserBalBefore = await getAccount(
-        //     ctx.connection,
-        //     raisedTokenUserAta
-        // )
-        //
-        // const raisedTokenLbpBalBefore = await getAccount(
-        //     ctx.connection,
-        //     lbp.raisedTokenAta
-        // )
-        //
-        // assert.equal(await ctx.program.account.position.fetchNullable(userPositionPk[0]), null)
-        //
-        // await ctx.program.methods
-        //     .userDeposit(amount)
-        //     .accountsPartial({
-        //         whitelistAuthority: ctx.whitelistAuthority.publicKey,
-        //         user: ctx.user.publicKey,
-        //         config: ctx.config,
-        //         lbp: ctx.fundCollectionPhaseLbp,
-        //         positionMint: userPositionMintKp.publicKey,
-        //         position: userPositionPk[0],
-        //         userPositionAta: userPositionAta,
-        //         // @ts-ignore
-        //         raisedTokenMint: lbp.raisedTokenMint,
-        //         tokenProgram: TOKEN_PROGRAM_ID
-        //     })
-        //     .signers([ctx.whitelistAuthority, ctx.user, userPositionMintKp])
-        //     .rpc()
-        //
-        // const raisedTokenUserBalAfter = await getAccount(
-        //     ctx.connection,
-        //     raisedTokenUserAta
-        // )
-        //
-        // const raisedTokenLbpBalAfter = await getAccount(
-        //     ctx.connection,
-        //     lbp.raisedTokenAta
-        // )
-        //
-        // assert.equal(raisedTokenLbpBalBefore.amount, 0)
-        // assert.equal(raisedTokenLbpBalAfter.amount, amount)
-        // assert.equal(raisedTokenUserBalBefore.amount - raisedTokenUserBalAfter.amount, amount)
-        //
-        // const userPosition = await ctx.program.account.position.fetchNullable(userPositionPk[0])
-        //
-        // assert.deepEqual(userPosition.mint, userPositionMintKp.publicKey)
-        // assert.deepEqual(userPosition.lbp, ctx.fundCollectionPhaseLbp)
-        // assert.equal(userPosition.amount.toNumber(), amount.toNumber())
-        // assert.equal(userPosition.bump, userPositionPk[1])
-        //
-        // const userPositionMint = await getMint(
-        //     ctx.connection,
-        //     userPositionMintKp.publicKey
-        // )
-        //
-        // assert.equal(userPositionMint.mintAuthority, null)
+        const raisedTokenUserAtaAddress = getAssociatedTokenAddressSync(
+            lbp.raisedTokenMint,
+            ctx.user.publicKey
+        )
+
+        const userPositionAtaAddress = getAssociatedTokenAddressSync(
+            position.mint,
+            ctx.user.publicKey,
+        )
+
+        const raisedTokenUserBalBefore = await getAccount(
+            ctx.connection,
+            raisedTokenUserAtaAddress
+        )
+
+        const raisedTokenLbpBalBefore = await getAccount(
+            ctx.connection,
+            lbp.raisedTokenAta
+        )
+
+        await ctx.program.methods
+            .userRefund()
+            .accountsPartial({
+                user: ctx.user.publicKey,
+                config: ctx.config,
+                lbp: ctx.refundPhaseLbp,
+                positionMint: position.mint,
+                position: ctx.refundPhaseUserPosition,
+                userPositionAta: userPositionAtaAddress,
+                raisedTokenMint: lbp.raisedTokenMint,
+                tokenProgram: TOKEN_PROGRAM_ID
+            })
+            .signers([ctx.user])
+            .rpc()
+
+        const raisedTokenUserBalAfter = await getAccount(
+            ctx.connection,
+            raisedTokenUserAtaAddress
+        )
+
+        const raisedTokenLbpBalAfter = await getAccount(
+            ctx.connection,
+            lbp.raisedTokenAta
+        )
+
+        assert.equal(raisedTokenLbpBalBefore.amount,  ctx.amount)
+        assert.equal(raisedTokenLbpBalAfter.amount, 0)
+        assert.equal(raisedTokenUserBalAfter.amount - raisedTokenUserBalBefore.amount, ctx.amount)
+
+        const userPosition = await ctx.program.account.position.fetchNullable(ctx.refundPhaseUserPosition)
+
+        assert.equal(userPosition, null)
+
+        try {
+            await getAccount(ctx.connection, userPositionAtaAddress)
+        } catch (e) {
+            assert.equal(e.toString().includes("TokenAccountNotFoundError"), true)
+        }
     });
 });

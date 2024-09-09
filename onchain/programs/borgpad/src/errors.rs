@@ -27,5 +27,7 @@ pub enum ErrorCode {
     #[msg("Cannot set the same admin")]
     SameAdminAuthority,
     #[msg("This operation is not authorised in the current phase")]
-    UnauthorisedOperationInCurrentPhase
+    UnauthorisedOperationInCurrentPhase,
+    #[msg("The project has already been refunded")]
+    AlreadyRefunded
 }

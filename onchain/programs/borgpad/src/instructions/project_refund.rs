@@ -65,6 +65,10 @@ pub fn handler(ctx: Context<ProjectRefund>) -> Result<()> {
         return err!(ErrorCode::UnauthorisedOperationInCurrentPhase)
     }
 
+    if ctx.accounts.project_launched_token_ata.amount == 0 {
+        return err!(ErrorCode::AlreadyRefunded)
+    }
+
     // Transfer funds from lbp to project
     transfer_checked(
         CpiContext::new_with_signer(

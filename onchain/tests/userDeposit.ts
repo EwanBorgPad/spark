@@ -9,7 +9,6 @@ import * as anchor from "@coral-xyz/anchor";
 
 describe("User deposit", () => {
     let ctx: Context
-    let amount = new BN(420_000)
 
     before('Init context', async function () {
         ctx = new Context()
@@ -49,7 +48,7 @@ describe("User deposit", () => {
         assert.equal(await ctx.program.account.position.fetchNullable(userPositionPk[0]), null)
 
         await ctx.program.methods
-            .userDeposit(amount)
+            .userDeposit(ctx.amount)
             .accountsPartial({
                 whitelistAuthority: ctx.whitelistAuthority.publicKey,
                 user: ctx.user.publicKey,
@@ -76,14 +75,14 @@ describe("User deposit", () => {
         )
 
         assert.equal(raisedTokenLbpBalBefore.amount, 0)
-        assert.equal(raisedTokenLbpBalAfter.amount, amount)
-        assert.equal(raisedTokenUserBalBefore.amount - raisedTokenUserBalAfter.amount, amount)
+        assert.equal(raisedTokenLbpBalAfter.amount, ctx.amount)
+        assert.equal(raisedTokenUserBalBefore.amount - raisedTokenUserBalAfter.amount, ctx.amount)
 
         const userPosition = await ctx.program.account.position.fetchNullable(userPositionPk[0])
 
         assert.deepEqual(userPosition.mint, userPositionMintKp.publicKey)
         assert.deepEqual(userPosition.lbp, ctx.fundCollectionPhaseLbp)
-        assert.equal(userPosition.amount.toNumber(), amount.toNumber())
+        assert.equal(userPosition.amount.toNumber(), ctx.amount.toNumber())
         assert.equal(userPosition.bump, userPositionPk[1])
 
         const userPositionMint = await getMint(

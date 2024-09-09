@@ -14,8 +14,8 @@ cluster = "localnet"
 wallet = "tests/helpers/local_deployer.json"
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/*.ts"
-#test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/setWhitelistAuthority.ts"
+#test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/*.ts"
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/projectRefund.ts"
 
 init-script = "yarn run ts-node scripts/initialize.ts"
 

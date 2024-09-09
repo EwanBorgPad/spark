@@ -5,7 +5,9 @@ use crate::instructions::move_to_next_phase::*;
 use crate::instructions::nominate_new_admin_authority::*;
 use crate::instructions::set_whitelist_authority::*;
 use crate::instructions::user_deposit::*;
+use crate::instructions::user_refund::*;
 use crate::instructions::project_deposit::*;
+use crate::instructions::project_refund::*;
 use crate::state::lbp::{LbpInitializeData, Phase};
 use anchor_lang::prelude::*;
 use solana_security_txt::security_txt;
@@ -27,6 +29,7 @@ declare_id!("bpadbLrS3Mw2e1EDSEnYzYpNwAQgJQXXHkT57D4TTJ4");
 
 #[program]
 pub mod borgpad {
+    use crate::instructions::user_refund::UserRefund;
     use super::*;
     pub fn initialize(
         ctx: Context<Initialize>,
@@ -72,10 +75,22 @@ pub mod borgpad {
         instructions::user_deposit::handler(ctx, amount)
     }
 
+    pub fn user_refund(
+        ctx: Context<UserRefund>,
+    ) -> Result<()> {
+        instructions::user_refund::handler(ctx)
+    }
+
     pub fn project_deposit(
         ctx: Context<ProjectDeposit>,
         amount: u64
     ) -> Result<()> {
         instructions::project_deposit::handler(ctx, amount)
+    }
+
+    pub fn project_refund(
+        ctx: Context<ProjectRefund>,
+    ) -> Result<()> {
+        instructions::project_refund::handler(ctx)
     }
 }

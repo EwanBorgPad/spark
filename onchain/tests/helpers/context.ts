@@ -32,14 +32,20 @@ export class Context {
 
     public program: anchor.Program<Borgpad>;
     public config: PublicKey;
+
     public fundCollectionPhaseLbpUid: number = 42;
-    public refundPhaseLbpUid: number = 43;
-    public vestingPhaseLbpUid: number = 44;
-    public phaseChangeLbpUid: number = 45;
     public fundCollectionPhaseLbp: PublicKey;
-    public refundFundPhaseLbp: PublicKey;
+
+    public refundPhaseLbpUid: number = 43;
+    public refundPhaseLbp: PublicKey;
+    public refundPhaseUserPosition: PublicKey;
+
+    public vestingPhaseLbpUid: number = 44;
     public vestingFundPhaseLbp: PublicKey;
+
+    public phaseChangeLbpUid: number = 45;
     public phaseChangeLbp: PublicKey;
+
     public amount = new BN(420_000)
 
     async init() {
@@ -97,7 +103,7 @@ export class Context {
             this.program.programId
         )[0];
 
-        this.refundFundPhaseLbp = PublicKey.findProgramAddressSync(
+        this.refundPhaseLbp = PublicKey.findProgramAddressSync(
             [Buffer.from("lbp"), (new BN(this.refundPhaseLbpUid)).toArrayLike(Buffer, "le", 8)],
             this.program.programId
         )[0];
@@ -230,9 +236,9 @@ export class Context {
         await this.initLbp(this.fundCollectionPhaseLbpUid, launchedTokenMint, raisedTokenMint)
 
         await this.initLbp(this.refundPhaseLbpUid, launchedTokenMint, raisedTokenMint)
-        await this.userDeposit(this.refundFundPhaseLbp, this.amount, raisedTokenMint)
-        await this.projectDeposit(this.refundFundPhaseLbp)
-        await this.moveToNextPhase(this.refundFundPhaseLbp, { "refund": {} }, launchedTokenMint, raisedTokenMint)
+        this.refundPhaseUserPosition = await this.userDeposit(this.refundPhaseLbp, this.amount, raisedTokenMint)
+        await this.projectDeposit(this.refundPhaseLbp)
+        await this.moveToNextPhase(this.refundPhaseLbp, { "refund": {} }, launchedTokenMint, raisedTokenMint)
 
         // TODO: vesting lbp
 
@@ -310,6 +316,8 @@ export class Context {
             })
             .signers([this.whitelistAuthority, this.user, userPositionMintKp])
             .rpc()
+
+        return userPositionPk[0]
     }
 
     private async projectDeposit(lbpAddress: PublicKey) {
