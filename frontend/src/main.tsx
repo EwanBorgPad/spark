@@ -16,6 +16,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import BackOffice from "./pages/BackOffice"
 
 import { Buffer }from 'buffer'
+import AngelStaking from "./pages/AngelStaking"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient()
@@ -48,6 +49,18 @@ const router = createBrowserRouter([
             <Project />
           </ProjectDataProvider>
         ),
+      },
+      {
+        path: "/angel-staking",
+        element: <AngelStaking />,
+      },
+      {
+        path: "/launch-pools",
+        element: <AngelStaking />,
+      },
+      {
+        path: "/manifesto",
+        element: <AngelStaking />,
       },
       {
         path: "/terms-of-service",

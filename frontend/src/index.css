@@ -60,6 +60,9 @@ h5 {
   font-size: 20px;
   line-height: 28px;
 }
+img {
+  max-width: none;
+}
 
 :root {
   /* font-family: "Geist", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; */

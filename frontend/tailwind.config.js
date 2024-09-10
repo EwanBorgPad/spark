@@ -147,12 +147,17 @@ export default {
           "0%": { transform: "translateX(-100%)" },
           "100%": { transform: "translateX(+100%)" },
         },
+        underline: {
+          "0%": { width: "0", transform: "translateY(6px)", opacity: 0 },
+          "100%": { width: "16px", transform: "translateY(0)", opacity: 1 },
+        },
       },
       animation: {
         "top-down": "top-down 0.1s ease-out forwards",
         "fade-in": "fade-in 0.2s ease-in-out",
         "fade-out": "fade-out 0.31s ease-in-out",
         "slide-skeleton": "slide-skeleton 1s ease-in-out infinite",
+        underline: "underline 0.31s ease-in-out",
       },
     },
   },

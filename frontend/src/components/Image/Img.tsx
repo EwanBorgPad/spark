@@ -8,6 +8,7 @@ type Props = {
   customClass?: string
   showFallback?: boolean
   isFetchingLink?: boolean
+  imgClassName?: string
 }
 
 const avatarSize: Record<Props["size"], string> = {
@@ -37,6 +38,7 @@ const Img = ({
   customClass,
   isFetchingLink = false,
   showFallback = true,
+  imgClassName,
 }: Props) => {
   const [isLoadingImg, setIsLoadingImg] = useState(true)
   const [renderFallback, setRenderFallback] = useState(src ? false : true)
@@ -68,6 +70,7 @@ const Img = ({
           "h-full w-full object-cover",
           !renderImage ? "hidden" : "",
           avatarSize[size],
+          imgClassName,
         )}
       />
     </div>
