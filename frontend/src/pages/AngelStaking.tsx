@@ -9,7 +9,7 @@ import { angelStakingCards } from "@/data/angelStaking"
 
 const AngelStaking = () => {
   return (
-    <main className="relative z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[48px] font-normal text-fg-primary lg:py-[72px]">
+    <main className="relative z-[10] flex w-full max-w-full flex-col items-center overflow-y-hidden bg-accent py-[48px] font-normal text-fg-primary lg:py-[72px]">
       <div className="absolute top-12 z-[-1] w-screen overflow-hidden lg:top-[72px]">
         <img
           src={angelStakingImg}
@@ -52,8 +52,8 @@ const AngelStaking = () => {
           textClassName="text-base font-normal"
         />
       </section>
-      <section className="flex w-full flex-col justify-start gap-12 px-5 pb-4 pt-16">
-        <div className="flex flex-col gap-6">
+      <section className="flex w-full flex-col justify-start gap-12 pb-20 pt-5">
+        <div className="flex flex-col gap-6  px-5 pb-4 pt-16">
           <div className="flex flex-col gap-3">
             <h2 className="w-full text-left text-4xl font-semibold leading-[44px]">
               How it works
@@ -72,7 +72,7 @@ const AngelStaking = () => {
             />
           </div>
         </div>
-        <div className="flex flex-col items-center gap-6 p-4">
+        <div className="flex flex-col items-center gap-6 p-4 pb-6">
           {angelStakingCards.map((card, index) => (
             <StakingCard key={index} index={index} card={card} />
           ))}
