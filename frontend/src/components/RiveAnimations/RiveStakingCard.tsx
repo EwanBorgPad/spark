@@ -17,13 +17,13 @@ const STATE_MACHINE_NAME = "State Machine 1"
 
 const RiveStakingCard = ({ filename, isActive, inputName }: Props) => {
   const { RiveComponent, rive } = useRive({
-    src: `animations/${filename}`,
+    src: `src/assets/animations/${filename}`,
     stateMachines: STATE_MACHINE_NAME,
     layout: new Layout({ fit: Fit.Cover, alignment: Alignment.Center }),
     autoplay: false,
   })
 
-  const toggleAnimation = useStateMachineInput(
+  const animation = useStateMachineInput(
     rive,
     STATE_MACHINE_NAME,
     inputName, // name of the boolean type input that activates animation in Rive runtime
@@ -31,11 +31,11 @@ const RiveStakingCard = ({ filename, isActive, inputName }: Props) => {
   )
 
   useEffect(() => {
-    if (rive && toggleAnimation) {
-      toggleAnimation.value = isActive
+    if (rive && animation) {
+      animation.value = isActive
       rive.play()
     }
-  }, [isActive, rive, toggleAnimation])
+  }, [isActive, rive, animation])
 
   return <RiveComponent />
 }
