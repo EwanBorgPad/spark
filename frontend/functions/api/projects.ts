@@ -61,28 +61,28 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: "Project with provided id already exists!", }, 409)
     }
 
-    // TODO @hardcoded values until integrated with backoffice
-    const me = '5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W'
-    const adminSecretKey = ctx.env.ADMIN_AUTHORITY_SECRET_KEY.split(',').map(Number)
-    const uid = hashStringToU64(data.info.id)
-    await initializeLpb({
-      args: {
-        uid,
-        projectOwner: me,
-        projectTokenMint: me,
-        projectTokenLpDistribution: 50, // Example percentage
-        projectMaxCap: 1_000_000,
-        userTokenMint: me,
-        userMinCap: 100,
-        userMaxCap: 10_000,
-        fundCollectionPhaseStartTime: new Date(1_700_000_000 * 1000),
-        fundCollectionPhaseEndTime: new Date(1_710_000_000 * 1000),
-        lpLockedPhaseLockingTime: new Date(1_720_000_000 * 1000),
-        lpLockedPhaseVestingTime: new Date(1_730_000_000 * 1000),
-        bump: 1,
-      },
-      adminSecretKey,
-    })
+    // commented out until it is integrated with the backoffice
+    // const me = ''
+    // const adminSecretKey = ctx.env.ADMIN_AUTHORITY_SECRET_KEY.split(',').map(Number)
+    // const uid = hashStringToU64(data.info.id)
+    // await initializeLpb({
+    //   args: {
+    //     uid,
+    //     projectOwner: me,
+    //     projectTokenMint: me,
+    //     projectTokenLpDistribution: 50, // Example percentage
+    //     projectMaxCap: 1_000_000,
+    //     userTokenMint: me,
+    //     userMinCap: 100,
+    //     userMaxCap: 10_000,
+    //     fundCollectionPhaseStartTime: new Date(1_700_000_000 * 1000),
+    //     fundCollectionPhaseEndTime: new Date(1_710_000_000 * 1000),
+    //     lpLockedPhaseLockingTime: new Date(1_720_000_000 * 1000),
+    //     lpLockedPhaseVestingTime: new Date(1_730_000_000 * 1000),
+    //     bump: 1,
+    //   },
+    //   adminSecretKey,
+    // })
 
     // persist in db
     await db
