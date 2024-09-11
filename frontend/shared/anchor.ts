@@ -40,17 +40,17 @@ type InitializeLpbResult = {
 export const initializeLpb = async ({ args, adminSecretKey }: InitializeLbpInput): Promise<InitializeLpbResult> => {
   const connection = new Connection(SOLANA_RPC_URL, COMMITMENT_LEVEL)
 
-  // extract programId from IDL file to avoid adding specific configuration for it
-  const programId = idl
-    .instructions.find(i => i.name === 'initialize')
-    ?.accounts.find(a => a.name === 'program')
-    ?.address
-
-  if (!programId)
-    throw new Error('Cannot extract programId from IDL!')
-
-  // the lib expects this
-  idl.address = programId
+  // // extract programId from IDL file to avoid adding specific configuration for it
+  // const programId = idl
+  //   .instructions.find(i => i.name === 'initialize')
+  //   ?.accounts.find(a => a.name === 'program')
+  //   ?.address
+  //
+  // if (!programId)
+  //   throw new Error('Cannot extract programId from IDL!')
+  //
+  // // the lib expects this
+  // idl.address = programId
 
   //// Set up your provider - Server Code
   // const provider = AnchorProvider.env();

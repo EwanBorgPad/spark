@@ -39,7 +39,7 @@ export async function getSplTokenBalance({
   const getTokenAccountsByOwner: RpcResponseGetTokenAccountsByOwner =
     await getTokenAccountsByOwnerResponse.json()
 
-  if (getTokenAccountsByOwner.result.value.length === 0) {
+  if (!getTokenAccountsByOwner.result?.value.length) {
     return null
   }
 
