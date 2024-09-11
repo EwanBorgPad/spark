@@ -13,6 +13,7 @@
     "precommit": "npm run lint && npm run format"
   },
   "dependencies": {
+    "@coral-xyz/anchor": "^0.30.1",
     "@hookform/resolvers": "^3.3.4",
     "@solana/web3.js": "^1.95.3",
     "@tanstack/react-query": "^5.35.1",
