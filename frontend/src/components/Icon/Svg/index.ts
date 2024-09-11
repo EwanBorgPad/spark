@@ -31,4 +31,8 @@ export * from "./SvgPlus"
 export * from "./SvgMedal"
 export * from "./SvgSnapshot"
 export * from "./SvgTrophy"
+export * from "./SvgDeSci"
+export * from "./SvgDePin"
+export * from "./SvgDeAi"
+export * from "./SvgDeSoc"
 

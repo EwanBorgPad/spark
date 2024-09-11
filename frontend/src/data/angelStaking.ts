@@ -1,3 +1,5 @@
+import { AvailableIcons } from "@/components/Icon/Icon"
+
 export type StakingCardType = {
   title: string
   description: string
@@ -36,4 +38,16 @@ export const angelStakingCards: StakingCardType[] = [
     filename: "angel_staking_4.riv",
     inputName: defaultInputName,
   },
+]
+
+export type InvestmentFocusItem = {
+  icon: AvailableIcons
+  title: string
+  colorHex: `#${string}`
+}
+export const investmentFocusItems: InvestmentFocusItem[] = [
+  { icon: "SvgDeSci", title: "deSci", colorHex: "#fff573" },
+  { icon: "SvgDeAi", title: "deAI", colorHex: "#7aff73" },
+  { icon: "SvgDePin", title: "dePin", colorHex: "#73ffd0" },
+  { icon: "SvgDeSoc", title: "deSoc", colorHex: "#73eaff" },
 ]

@@ -2,17 +2,21 @@ import Img from "@/components/Image/Img"
 import React from "react"
 import solanaImg from "@/assets/solana.png"
 import sanctumImg from "@/assets/sanctum.png"
-import angelStakingImg from "@/assets/angelStaking.png"
+import angelStakingTexture1 from "@/assets/angelStaking.png"
+import angelStakingTexture2 from "@/assets/angelStakingTexture2.png"
+import angelStakingTexture2Mob from "@/assets/angelStakingTexture2_mob.png"
 import { Button } from "@/components/Button/Button"
 import StakingCard from "@/components/Cards/StakingCard"
-import { angelStakingCards } from "@/data/angelStaking"
+import { angelStakingCards, investmentFocusItems } from "@/data/angelStaking"
+import { Icon } from "@/components/Icon/Icon"
+import InvestmentFocusCard from "@/components/Cards/InvestmentFocusCard"
 
 const AngelStaking = () => {
   return (
     <main className="relative z-[10] flex w-full max-w-full flex-col items-center overflow-y-hidden bg-accent py-[48px] font-normal text-fg-primary lg:py-[72px]">
       <div className="absolute top-12 z-[-1] w-screen overflow-hidden lg:top-[72px]">
         <img
-          src={angelStakingImg}
+          src={angelStakingTexture1}
           alt="abstract green stripes backdrop image"
           className="ml-[-200px] w-[852px] opacity-50 mix-blend-lighten"
         />
@@ -52,6 +56,44 @@ const AngelStaking = () => {
           textClassName="text-base font-normal"
         />
       </section>
+
+      <section className="flex w-full max-w-[1312px] flex-col items-start px-4 py-20">
+        <div className="flex w-full flex-col rounded-xl border-[1px] border-bd-primary bg-default md:flex-row-reverse">
+          <div className="z-[2] flex w-full flex-col gap-7 p-4 pt-6">
+            <h2 className="text-2xl font-semibold leading-normal">
+              Together, we invest in the most promising Web3 startups - building
+              the future we want to live in.
+            </h2>
+            <div className="flex w-full">
+              <Button
+                btnText="Read Our Manifesto"
+                color="secondary"
+                size="lg"
+                className="px-4 py-3 text-base font-medium"
+              />
+            </div>
+          </div>
+          <div className="relative flex w-full flex-col items-center gap-6 pt-4">
+            <div className="absolute bottom-0 z-[1] overflow-hidden lg:top-[72px]">
+              <img
+                src={angelStakingTexture2Mob}
+                alt="abstract green stripes backdrop image"
+                className="mb-[-2px] h-auto w-[110%] mix-blend-lighten"
+              />
+            </div>
+
+            <h3 className="z-[2] text-base font-semibold leading-normal">
+              Investment Focus
+            </h3>
+            <div className="z-[2] flex w-fit max-w-[420px] flex-wrap items-center justify-center gap-3 px-16 pb-[41px]">
+              {investmentFocusItems.map((item) => (
+                <InvestmentFocusCard card={item} key={item.icon} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="flex w-full flex-col justify-start gap-12 pb-20 pt-5">
         <div className="flex flex-col gap-6  px-5 pb-4 pt-16">
           <div className="flex flex-col gap-3">
