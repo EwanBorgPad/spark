@@ -21,6 +21,9 @@ const RiveStakingCard = ({ filename, isActive, inputName }: Props) => {
     stateMachines: STATE_MACHINE_NAME,
     layout: new Layout({ fit: Fit.Cover, alignment: Alignment.Center }),
     autoplay: false,
+
+    // line below solves issues on mobile swiping/scrolling.
+    shouldDisableRiveListeners: true,
   })
 
   const animation = useStateMachineInput(

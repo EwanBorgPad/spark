@@ -37,7 +37,8 @@ body {
   overflow-y: scroll;
 }
 #root {
-  overflow-y: hidden;
+  /* commented because of position sticky css */
+  /* overflow-y: hidden; */ 
 }
 
 h1, .h1 {

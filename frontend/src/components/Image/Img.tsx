@@ -2,22 +2,24 @@ import { useState } from "react"
 import { twMerge } from "tailwind-merge"
 import fallbackImg from "../../assets/fallback1.png"
 
+type ImgSizes = "4" | "5" | "6" | "10" | "20" | "custom"
+
 type Props = {
   src: string | undefined
-  size: "4" | "5" | "6" | "10" | "20" | "none"
+  size?: ImgSizes
   customClass?: string
   showFallback?: boolean
   isFetchingLink?: boolean
   imgClassName?: string
 }
 
-const avatarSize: Record<Props["size"], string> = {
+const avatarSize: Record<ImgSizes, string> = {
   "4": "size-4",
   "5": "size-5",
   "6": "size-6",
   "10": "size-10",
   "20": "size-20",
-  none: "",
+  custom: "",
 }
 
 const ImgSkeletonLoader = () => {
@@ -33,7 +35,7 @@ const ImgSkeletonLoader = () => {
 }
 
 const Img = ({
-  size,
+  size = "custom",
   src,
   customClass,
   isFetchingLink = false,

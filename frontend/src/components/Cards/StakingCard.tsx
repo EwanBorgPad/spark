@@ -1,7 +1,10 @@
-import { StakingCardType } from "@/data/angelStaking"
-import React, { useEffect, useRef, useState } from "react"
+import { useLayoutEffect, useRef } from "react"
+
 import RiveStakingCard from "../RiveAnimations/RiveStakingCard"
-import { Button } from "../Button/Button"
+import useScrollAnimation from "@/hooks/useScrollAnimation"
+import { StakingCardType } from "@/data/angelStaking"
+import { twMerge } from "tailwind-merge"
+import { useWindowSize } from "@/hooks/useWindowSize"
 
 type Props = {
   index: number
@@ -12,43 +15,31 @@ const StakingCard = ({
   index,
   card: { title, description, filename, inputName },
 }: Props) => {
-  const [isActive, setIsActive] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
   const riveContainerRef = useRef<HTMLDivElement>(null)
+  const { isMobile } = useWindowSize()
 
-  useEffect(() => {
-    const cardEl = cardRef.current as Element
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const isScrolledPastElement = entry.boundingClientRect.top < 0
-        if (entry.intersectionRatio > 0.8) {
-          setIsActive(true)
-        }
-        if (entry.intersectionRatio < 0.8 && !isScrolledPastElement) {
-          setIsActive(false)
-        }
-      },
-      { threshold: [0.79, 0.81] },
-    )
-    observer.observe(cardEl)
+  const { isActive } = useScrollAnimation({
+    ref: riveContainerRef,
+    threshold: 0.989,
+  })
 
-    return () => {
-      observer.unobserve(cardEl)
-    }
-  }, [cardRef])
-
-  useEffect(() => {
+  const setAspectRatio = () => {
     if (!riveContainerRef?.current) return
     const desiredAspectRatio = 1.0408
     const height =
       desiredAspectRatio * riveContainerRef.current?.clientWidth + "px"
     riveContainerRef.current.style.height = height
+  }
+
+  useLayoutEffect(() => {
+    setAspectRatio()
   }, [riveContainerRef.current?.clientWidth])
 
   return (
     <div
       ref={cardRef}
-      className="inline-flex w-full max-w-[576px] flex-col items-start justify-start gap-3 overflow-hidden rounded-xl border border-bd-primary bg-overlay"
+      className="relative z-[3] inline-flex w-full max-w-[576px] flex-col items-start justify-start gap-3 rounded-xl border border-bd-primary bg-overlay"
     >
       <div className="inline-flex flex-col items-start justify-start px-4 py-8">
         <h3 className="text-2xl font-semibold leading-loose ">
@@ -58,13 +49,26 @@ const StakingCard = ({
           {description}
         </p>
       </div>
-      <div className="w-full" ref={riveContainerRef}>
+      <div
+        className="w-full overflow-hidden rounded-b-[11px]"
+        ref={riveContainerRef}
+      >
         <RiveStakingCard
           filename={filename}
           isActive={isActive}
           inputName={inputName}
         />
       </div>
+      {!isMobile && (
+        <div className="absolute -left-[96px] top-12 rounded-full bg-accent p-2">
+          <div
+            className={twMerge(
+              " h-[15px] w-[15px] rounded-full bg-tertiary transition-colors",
+              isActive && "shadow-around bg-brand-primary",
+            )}
+          ></div>
+        </div>
+      )}
     </div>
   )
 }
