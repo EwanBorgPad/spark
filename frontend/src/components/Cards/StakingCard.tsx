@@ -1,7 +1,6 @@
 import { useLayoutEffect, useRef } from "react"
 
 import RiveStakingCard from "../RiveAnimations/RiveStakingCard"
-import useScrollAnimation from "@/hooks/useScrollAnimation"
 import { StakingCardType } from "@/data/angelStaking"
 import { twMerge } from "tailwind-merge"
 import { useWindowSize } from "@/hooks/useWindowSize"
@@ -9,20 +8,17 @@ import { useWindowSize } from "@/hooks/useWindowSize"
 type Props = {
   index: number
   card: StakingCardType
+  activeIndex: number | null
 }
 
 const StakingCard = ({
   index,
+  activeIndex,
   card: { title, description, filename, inputName },
 }: Props) => {
   const cardRef = useRef<HTMLDivElement>(null)
   const riveContainerRef = useRef<HTMLDivElement>(null)
   const { isMobile } = useWindowSize()
-
-  const { isActive } = useScrollAnimation({
-    ref: riveContainerRef,
-    threshold: 0.989,
-  })
 
   const setAspectRatio = () => {
     if (!riveContainerRef?.current) return
@@ -36,13 +32,16 @@ const StakingCard = ({
     setAspectRatio()
   }, [riveContainerRef.current?.clientWidth])
 
+  const isActive =
+    !!activeIndex || activeIndex === 0 ? activeIndex >= index : false
+
   return (
     <div
       ref={cardRef}
-      className="relative z-[3] inline-flex w-full max-w-[576px] flex-col items-start justify-start gap-3 rounded-xl border border-bd-primary bg-overlay"
+      className="relative z-[3] inline-flex w-full max-w-[343px]  flex-col items-start justify-start gap-3 rounded-xl border border-bd-primary bg-overlay md:max-w-[576px]"
     >
-      <div className="inline-flex flex-col items-start justify-start px-4 py-8">
-        <h3 className="text-2xl font-semibold leading-loose ">
+      <div className="flex flex-col items-start justify-start gap-3 px-4 py-8">
+        <h3 className="text-2xl font-semibold leading-snug ">
           {`${index + 1}. ${title}`}
         </h3>
         <p className="text-base font-normal leading-normal text-fg-secondary">
@@ -63,8 +62,9 @@ const StakingCard = ({
         <div className="absolute -left-[96px] top-12 rounded-full bg-accent p-2">
           <div
             className={twMerge(
-              " h-[15px] w-[15px] rounded-full bg-tertiary transition-colors",
-              isActive && "shadow-around bg-brand-primary",
+              "h-[15px] w-[15px] rounded-full bg-tertiary transition-colors",
+              isActive &&
+                "animate-activate-circle bg-brand-primary shadow-around",
             )}
           ></div>
         </div>
@@ -72,5 +72,4 @@ const StakingCard = ({
     </div>
   )
 }
-
 export default StakingCard
