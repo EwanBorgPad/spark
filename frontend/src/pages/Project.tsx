@@ -7,6 +7,7 @@ import { useProjectDataContext } from "@/hooks/useProjectData"
 import ProjectTester from "@/components/QA/ProjectTester"
 import { expandTimelineDataInfo } from "@/utils/timeline"
 import Timeline from "@/components/Timeline/Timeline"
+import backdropImg from "@/assets/backdropImgMin.png"
 import { Icon } from "../components/Icon/Icon"
 import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
@@ -21,6 +22,13 @@ const Project = () => {
 
   return (
     <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[72px] font-normal text-fg-primary lg:py-[100px]">
+      <div className="max-w-screen absolute left-0 top-10 -z-[-10] w-full overflow-hidden lg:top-16">
+        <img
+          src={backdropImg}
+          className="h-[740px] min-w-[1440px] lg:h-auto lg:w-screen"
+        />
+      </div>
+
       <section className="flex w-full flex-col justify-between gap-6 px-4 lg:max-w-[792px] lg:flex-row">
         <div className="flex flex-col gap-6 lg:flex-row">
           <Img
@@ -112,7 +120,7 @@ const Project = () => {
         >
           <Img
             src={projectData.info.dataRoom.backgroundImgUrl}
-            size={"none"}
+            size={"custom"}
             customClass="!h-[72px] !w-[100px] absolute left-0 opacity-10"
             showFallback={false}
           />
