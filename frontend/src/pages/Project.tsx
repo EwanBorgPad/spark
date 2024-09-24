@@ -120,7 +120,7 @@ const Project = () => {
         >
           <Img
             src={projectData.info.dataRoom.backgroundImgUrl}
-            size={"none"}
+            size={"custom"}
             customClass="!h-[72px] !w-[100px] absolute left-0 opacity-10"
             showFallback={false}
           />
