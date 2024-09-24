@@ -21,6 +21,7 @@ const VerticalTimeline = () => {
   return (
     <div ref={ref} className="flex items-start gap-4">
       {/* Scroll beam */}
+      {/* test comment */}
       {!isMobile && (
         <div className="relative h-full">
           <div className="absolute h-full px-[62px] pb-6 pt-4 md:pt-0">
