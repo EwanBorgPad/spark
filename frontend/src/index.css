@@ -37,7 +37,8 @@ body {
   overflow-y: scroll;
 }
 #root {
-  overflow-y: hidden;
+  /* commented because of position sticky css */
+  /* overflow-y: hidden; */ 
 }
 
 h1, .h1 {
@@ -59,6 +60,9 @@ h4 {
 h5 {
   font-size: 20px;
   line-height: 28px;
+}
+img {
+  max-width: none;
 }
 
 :root {
