@@ -7,7 +7,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 import "dotenv/config" // For ES module syntax
-import fetch from "node-fetch"
 /* eslint-disable no-undef */
 /* eslint-disable no-console */
 
