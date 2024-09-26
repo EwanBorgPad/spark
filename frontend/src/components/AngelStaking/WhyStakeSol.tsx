@@ -8,6 +8,8 @@ import { twMerge } from "tailwind-merge"
 import { useWindowSize } from "@/hooks/useWindowSize"
 import { useRef } from "react"
 import useScrollAnimation from "@/hooks/useScrollAnimation"
+import { useNavigate } from "react-router-dom"
+import { Button } from "../Button/Button"
 
 type ReasonType = {
   title: string
@@ -54,9 +56,10 @@ type ReasonProps = {
   isMobile: boolean
   index: number
   reason: ReasonType
+  navigate: (url: string) => void
 }
 
-const Reason = ({ reason, isMobile, index }: ReasonProps) => {
+const Reason = ({ reason, isMobile, index, navigate }: ReasonProps) => {
   const ref = useRef<HTMLDivElement>(null)
 
   const { isActive } = useScrollAnimation({
@@ -95,6 +98,15 @@ const Reason = ({ reason, isMobile, index }: ReasonProps) => {
             ></span>
           ))}
         </p>
+        {reason.link && (
+          <Button
+            color="secondary"
+            size="lg"
+            className="w-fit"
+            btnText={reason.link.label}
+            onClick={() => navigate(reason.link!.url)}
+          />
+        )}
       </div>
       <Img
         src={reason.imgUrl}
@@ -110,6 +122,7 @@ const Reason = ({ reason, isMobile, index }: ReasonProps) => {
 
 const WhyStakeSol = () => {
   const { isMobile } = useWindowSize()
+  const navigate = useNavigate()
 
   return (
     <section className="gap flex w-full flex-col items-center">
@@ -120,7 +133,13 @@ const WhyStakeSol = () => {
         </h2>
       </div>
       {reasons.map((reason, index) => (
-        <Reason key={index} index={index} reason={reason} isMobile={isMobile} />
+        <Reason
+          key={index}
+          index={index}
+          reason={reason}
+          isMobile={isMobile}
+          navigate={navigate}
+        />
       ))}
     </section>
   )

@@ -17,6 +17,8 @@ import BackOffice from "./pages/BackOffice"
 
 import { Buffer }from 'buffer'
 import AngelStaking from "./pages/AngelStaking"
+import LaunchPools from "./pages/LaunchPools"
+import Manifesto from "./pages/Manifesto"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient()
@@ -56,11 +58,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/launch-pools",
-        element: <AngelStaking />,
+        element: <LaunchPools />,
       },
       {
         path: "/manifesto",
-        element: <AngelStaking />,
+        element: <Manifesto />,
       },
       {
         path: "/terms-of-service",

@@ -9,6 +9,7 @@ import WhyStakeSol from "@/components/AngelStaking/WhyStakeSol"
 import HowItWorks from "@/components/AngelStaking/HowItWorks"
 import { Button } from "@/components/Button/Button"
 import Img from "@/components/Image/Img"
+import { ScrollRestoration } from "react-router-dom"
 
 const AngelStaking = () => {
   return (
@@ -100,6 +101,7 @@ const AngelStaking = () => {
           />
         </div>
       </section>
+      <ScrollRestoration />
     </main>
   )
 }

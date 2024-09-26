@@ -87,23 +87,27 @@ const NavigationBar = ({
 
 const Header = () => {
   const [showHamburgerMenu, setShowHamburgerMenu] = useState(false)
-  const [closeMenu, setCloseMenu] = useState(false)
+  const [isMenuClosed, setIsMenuClosed] = useState(false)
   const intersectionReferenceElement = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const { walletState } = useWalletContext()
 
   useHeaderShadow({ headerRef, intersectionReferenceElement })
 
+  const closeMenu = () => {
+    setIsMenuClosed(true)
+    setTimeout(() => {
+      setShowHamburgerMenu(false)
+      setIsMenuClosed(false)
+    }, 350)
+  }
+
   const toggleMenu = () => {
     if (!showHamburgerMenu) {
       setShowHamburgerMenu(true)
       return
     }
-    setCloseMenu(true)
-    setTimeout(() => {
-      setShowHamburgerMenu(false)
-      setCloseMenu(false)
-    }, 350)
+    closeMenu()
   }
 
   return (
@@ -127,7 +131,7 @@ const Header = () => {
 
           <NavigationBar
             className="hidden md:flex"
-            itemClickedCallback={() => setShowHamburgerMenu(false)}
+            itemClickedCallback={closeMenu}
           />
 
           {!showHamburgerMenu &&
@@ -148,12 +152,10 @@ const Header = () => {
         <div
           className={twMerge(
             "animate-fade-in-from-above fixed inset-0 z-[11] mt-12 bg-accent",
-            closeMenu && "animate-fade-out-to-above",
+            isMenuClosed && "animate-fade-out-to-above",
           )}
         >
-          <NavigationBar
-            itemClickedCallback={() => setShowHamburgerMenu(false)}
-          />
+          <NavigationBar itemClickedCallback={closeMenu} />
           <img
             src={hamburgerMenuBg}
             className="absolute bottom-0 left-0 right-0"
