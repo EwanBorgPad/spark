@@ -10,7 +10,6 @@ import useHeaderShadow from "@/hooks/useHeaderShadow"
 import { Icon } from "@/components/Icon/Icon.tsx"
 import { ConnectButton } from "./ConnectButton"
 import { Button } from "../Button/Button"
-import { useWindowSize } from "@/hooks/useWindowSize"
 
 type NavigationItem = {
   id: string
@@ -18,7 +17,7 @@ type NavigationItem = {
 }
 type NavigationBarProps = {
   className?: string
-  isMobile: boolean
+  itemClickedCallback: () => void
 }
 const navigationItems: NavigationItem[] = [
   {
@@ -33,17 +32,20 @@ const navigationItems: NavigationItem[] = [
     id: "manifesto",
     label: "Manifesto",
   },
-  {
-    id: "blog",
-    label: "Blog",
-  },
-  {
-    id: "FAQ",
-    label: "FAQ",
-  },
+  // {
+  //   id: "blog",
+  //   label: "Blog",
+  // },
+  // {
+  //   id: "FAQ",
+  //   label: "FAQ",
+  // },
 ]
 
-const NavigationBar = ({ className = "", isMobile }: NavigationBarProps) => {
+const NavigationBar = ({
+  className = "",
+  itemClickedCallback,
+}: NavigationBarProps) => {
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -52,10 +54,8 @@ const NavigationBar = ({ className = "", isMobile }: NavigationBarProps) => {
   }
 
   const onItemClick = (item: NavigationItem) => {
-    if (!isMobile) {
-      navigate(`/${item.id}`)
-      return
-    }
+    navigate(`/${item.id}`)
+    itemClickedCallback()
   }
 
   return (
@@ -110,7 +110,7 @@ const Header = () => {
     <>
       <header
         ref={headerRef}
-        className="fixed left-0 top-0 z-[12] flex h-12 w-full flex-row justify-center gap-3 border-b-[1px] border-tertiary bg-default px-4 py-2 pr-2 transition-shadow duration-500 md:h-[72px]"
+        className="fixed left-0 top-0 z-[12] flex h-12 w-full flex-row justify-center gap-3 border-b-[1px] border-tertiary bg-default px-4 py-2 pr-2 transition-shadow duration-500 md:h-[72px] md:pr-4"
       >
         <div
           className={
@@ -125,12 +125,20 @@ const Header = () => {
             </span>
           </div>
 
-          <NavigationBar className="hidden md:flex" isMobile={false} />
+          <NavigationBar
+            className="hidden md:flex"
+            itemClickedCallback={() => setShowHamburgerMenu(false)}
+          />
 
-          {walletState === "CONNECTED" ? <WalletDropdown /> : <ConnectButton />}
+          {!showHamburgerMenu &&
+            (walletState === "CONNECTED" ? (
+              <WalletDropdown />
+            ) : (
+              <ConnectButton />
+            ))}
         </div>
         <Button.Icon
-          icon="SvgHamburger"
+          icon={showHamburgerMenu ? "SvgX" : "SvgHamburger"}
           onClick={toggleMenu}
           className="p-1 md:hidden"
           color="plain"
@@ -143,13 +151,15 @@ const Header = () => {
             closeMenu && "animate-fade-out-to-above",
           )}
         >
-          <NavigationBar isMobile={true} />
+          <NavigationBar
+            itemClickedCallback={() => setShowHamburgerMenu(false)}
+          />
           <img
             src={hamburgerMenuBg}
             className="absolute bottom-0 left-0 right-0"
           />
 
-          <div className="px-5">
+          <div className="px-5 pt-4">
             {walletState === "CONNECTED" ? (
               <WalletDropdown />
             ) : (

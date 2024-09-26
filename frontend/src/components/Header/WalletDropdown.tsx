@@ -30,7 +30,7 @@ export const WalletDropdown = () => {
       <div
         ref={dropdownButtonRef}
         onClick={toggleDropdown}
-        className="flex cursor-pointer items-center gap-3 rounded-2xl border border-bd-primary bg-secondary px-3 py-1.5 hover:bg-tertiary"
+        className="flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-bd-primary bg-secondary px-3 py-1.5 hover:bg-tertiary"
       >
         <Icon icon={icon} />
         <p className="select-none">{truncatedAddress}</p>
