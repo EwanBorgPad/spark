@@ -1,13 +1,15 @@
-import React, { useRef } from "react"
-import { Button } from "../Button/Button"
-import InvestmentFocusCard from "../Cards/InvestmentFocusCard"
-import { investmentFocusItems } from "@/data/angelStaking"
-import angelStakingTexture2 from "@/assets/angelStakingTexture2.png"
-import angelStakingTexture2Mob from "@/assets/angelStakingTexture2-mob.png"
-import useScrollAnimation from "@/hooks/useScrollAnimation"
 import { twMerge } from "tailwind-merge"
+import React, { useRef } from "react"
+
+import angelStakingTexture2 from "@/assets/angelStaking/angelStakingTexture2.png"
+import angelStakingTexture2Mob from "@/assets/angelStaking/angelStakingTexture2-mob.png"
+
+import InvestmentFocusCard from "../Cards/InvestmentFocusCard"
+import useScrollAnimation from "@/hooks/useScrollAnimation"
+import { investmentFocusItems } from "@/data/angelStaking"
 import { useWindowSize } from "@/hooks/useWindowSize"
 import { groupIntoPairs } from "@/utils/format"
+import { Button } from "../Button/Button"
 
 const InvestmentFocus = () => {
   const ref = useRef<HTMLDivElement>(null)

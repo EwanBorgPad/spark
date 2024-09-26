@@ -1,27 +1,27 @@
-import angelStakingTexture1Mob from "@/assets/angelStakingTexture1-mob.png"
-import angelStakingTexture1 from "@/assets/angelStakingTexture1.png"
-import sanctumImg from "@/assets/sanctum.png"
-import solanaImg from "@/assets/solana.png"
+import angelStakingTexture1Mob from "@/assets/angelStaking/angelStakingTexture1-mob.png"
+import angelStakingTexture1 from "@/assets/angelStaking/angelStakingTexture1.png"
+import angelStakingBottom from "@/assets/angelStaking/angelStakingBottom-min.png"
+import sanctumImg from "@/assets/angelStaking/sanctum.png"
+import solanaImg from "@/assets/angelStaking/solana.png"
 
-import { angelStakingCards } from "@/data/angelStaking"
-import StakingCard from "@/components/Cards/StakingCard"
+import InvestmentFocus from "@/components/AngelStaking/InvestmentFocus"
+import WhyStakeSol from "@/components/AngelStaking/WhyStakeSol"
+import HowItWorks from "@/components/AngelStaking/HowItWorks"
 import { Button } from "@/components/Button/Button"
 import Img from "@/components/Image/Img"
-import InvestmentFocus from "@/components/AngelStaking/InvestmentFocus"
-import HowItWorks from "@/components/AngelStaking/HowItWorks"
 
 const AngelStaking = () => {
   return (
-    <main className="relative z-[10] flex w-full max-w-full flex-col items-center bg-accent py-[48px] font-normal text-fg-primary lg:py-[72px]">
+    <main className="relative z-[10] flex w-full max-w-full flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
       <div className="absolute top-12 z-[-1] flex w-screen justify-center overflow-hidden lg:top-[72px]">
         <img
           src={angelStakingTexture1Mob}
-          alt="abstract green stripes backdrop image"
+          role="presentation"
           className="ml-[-200px] w-[852px] opacity-50 mix-blend-lighten md:hidden"
         />
         <img
           src={angelStakingTexture1}
-          alt="abstract green stripes backdrop image"
+          role="presentation"
           className="hidden w-full mix-blend-lighten md:flex"
         />
       </div>
@@ -66,6 +66,40 @@ const AngelStaking = () => {
       <InvestmentFocus />
 
       <HowItWorks />
+
+      <WhyStakeSol />
+
+      <section className="relative z-[1] w-full gap-5 px-5 py-16 md:px-16 md:py-28">
+        <div className="absolute top-0 z-[-1] flex justify-center overflow-hidden lg:bottom-0">
+          <img
+            src={angelStakingTexture1Mob}
+            role="presentation"
+            className="h-[476 md:hidden"
+          />
+          <img
+            src={angelStakingBottom}
+            role="presentation"
+            className="hidden w-full md:flex"
+          />
+        </div>
+
+        <div className="flex w-full flex-col items-center gap-5 md:gap-6">
+          <h1 className="max-w-[520px] text-center text-4xl font-semibold leading-[44px] md:max-w-[768px]">
+            We&#39;re building around the clock to launch our Angel Staking
+            program.
+          </h1>
+          <h2 className="max-w-[500px] text-center text-lg font-normal leading-relaxed md:max-w-[768px]">
+            Register your interest now, before the official launch, to secure
+            your OG status.
+          </h2>
+          <Button
+            btnText="Register Your Interest"
+            size="xl"
+            className="px-4 py-5 text-lg font-medium leading-normal"
+            textClassName="text-base font-normal"
+          />
+        </div>
+      </section>
     </main>
   )
 }

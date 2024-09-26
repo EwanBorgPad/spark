@@ -1,6 +1,6 @@
 import { useRef } from "react"
 
-import howItWorks from "@/assets/how-it-works.png"
+import howItWorks from "@/assets/angelStaking/how-it-works.png"
 import VerticalTimeline from "./VerticalTimeline"
 import { Button } from "../Button/Button"
 import Img from "../Image/Img"

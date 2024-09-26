@@ -21,7 +21,6 @@ const VerticalTimeline = () => {
   return (
     <div ref={ref} className="flex items-start gap-4">
       {/* Scroll beam */}
-      {/* test comment */}
       {!isMobile && (
         <div className="relative h-full">
           <div className="absolute h-full px-[62px] pb-6 pt-4 md:pt-0">
@@ -48,6 +47,7 @@ const VerticalTimeline = () => {
         </div>
       )}
 
+      {/* cards */}
       <div className="z-[3] flex flex-col items-center gap-6 px-4 pb-6 pt-4 md:px-0 md:pt-0">
         {angelStakingCards.map((card, index) => (
           <StakingCard
