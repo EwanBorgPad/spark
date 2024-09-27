@@ -1,4 +1,4 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom"
+import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
 import ReactDOM from "react-dom/client"
 import React from "react"
 import "./index.css"
@@ -15,7 +15,7 @@ import { BalanceProvider } from "@/hooks/useBalanceContext.tsx"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import BackOffice from "./pages/BackOffice"
 
-import { Buffer }from 'buffer'
+import { Buffer } from "buffer"
 import AngelStaking from "./pages/AngelStaking"
 import LaunchPools from "./pages/LaunchPools"
 import Manifesto from "./pages/Manifesto"
@@ -44,21 +44,35 @@ const router = createBrowserRouter([
         path: "/back-office",
         element: <BackOffice />,
       },
-      {
-        path: "/project/:projectId",
-        element: (
-          <ProjectDataProvider>
-            <Project />
-          </ProjectDataProvider>
-        ),
-      },
+      // {
+      //   path: "/project/:projectId",
+      //   element: (
+      //     <ProjectDataProvider>
+      //       <Project />
+      //     </ProjectDataProvider>
+      //   ),
+      // },
       {
         path: "/angel-staking",
         element: <AngelStaking />,
       },
       {
         path: "/launch-pools",
-        element: <LaunchPools />,
+        element: <Outlet />,
+        children: [
+          {
+            path: ":projectId",
+            element: (
+              <ProjectDataProvider>
+                <Project />
+              </ProjectDataProvider>
+            ),
+          },
+          {
+            path: "",
+            element: <LaunchPools />,
+          },
+        ],
       },
       {
         path: "/manifesto",
