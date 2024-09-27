@@ -5,7 +5,9 @@ import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
 import { twMerge } from "tailwind-merge"
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard.ts"
 
-export const WalletDropdown = () => {
+type Props = { className?: string }
+
+export const WalletDropdown = ({ className }: Props) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const { address, truncatedAddress, walletProvider, signOut } =
@@ -25,7 +27,7 @@ export const WalletDropdown = () => {
   const { isCopied, copyToClipboard } = useCopyToClipboard()
 
   return (
-    <div className="relative">
+    <div className={twMerge("relative", className)}>
       {/* dropdown button */}
       <div
         ref={dropdownButtonRef}

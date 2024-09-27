@@ -65,7 +65,7 @@ const NavigationBar = ({
           <li
             key={item.id}
             className={twMerge(
-              "relative flex cursor-pointer flex-col items-center gap-1 py-3 text-lg text-fg-secondary transition-colors duration-500 md:py-0 md:text-base",
+              "relative flex w-full cursor-pointer flex-col items-start gap-1 py-3 text-left text-lg text-fg-secondary transition-colors duration-500 md:w-fit md:items-center md:py-0 md:text-center md:text-base",
               isItemActive(item) && "text-brand-primary",
             )}
             onClick={() => onItemClick(item)}
@@ -91,6 +91,7 @@ const Header = () => {
   const intersectionReferenceElement = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const { walletState } = useWalletContext()
+  const navigate = useNavigate()
 
   useHeaderShadow({ headerRef, intersectionReferenceElement })
 
@@ -121,13 +122,16 @@ const Header = () => {
             "flex w-full max-w-[1180px] flex-row items-center justify-between"
           }
         >
-          <div className="flex items-center gap-1 py-2">
-            {/* <div className="h-[19px] w-[19px] rounded-full bg-brand-primary" /> */}
+          <Button
+            color="plain"
+            className="flex items-center gap-1 py-2"
+            onClick={() => navigate("/")}
+          >
             <Icon icon="SvgLogo" className="mb-[4px] h-[20px] text-2xl" />
             <span className="font-sulphur-point text-2xl leading-[28px] text-fg-primary">
               BorgPad
             </span>
-          </div>
+          </Button>
 
           <NavigationBar
             className="hidden md:flex"
@@ -136,9 +140,9 @@ const Header = () => {
 
           {!showHamburgerMenu &&
             (walletState === "CONNECTED" ? (
-              <WalletDropdown />
+              <WalletDropdown className="animate-fade-in" />
             ) : (
-              <ConnectButton />
+              <ConnectButton btnClassName="animate-fade-in" />
             ))}
         </div>
         <Button.Icon
@@ -151,17 +155,17 @@ const Header = () => {
       {showHamburgerMenu && (
         <div
           className={twMerge(
-            "animate-fade-in-from-above fixed inset-0 z-[11] mt-12 bg-accent",
+            "fixed inset-0 z-[11] mt-12 animate-fade-in-from-above bg-accent",
             isMenuClosed && "animate-fade-out-to-above",
           )}
         >
           <NavigationBar itemClickedCallback={closeMenu} />
           <img
             src={hamburgerMenuBg}
-            className="absolute bottom-0 left-0 right-0"
+            className="absolute bottom-0 left-0 right-0 z-[-1]"
           />
 
-          <div className="px-5 pt-4">
+          <div className="z-[1] px-5 pt-4">
             {walletState === "CONNECTED" ? (
               <WalletDropdown />
             ) : (

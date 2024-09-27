@@ -13,7 +13,7 @@ import { ScrollRestoration } from "react-router-dom"
 
 const AngelStaking = () => {
   return (
-    <main className="relative z-[10] flex w-full max-w-full flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
+    <main className="relative z-[10] flex w-full max-w-full flex-col items-center overflow-x-hidden bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
       <div className="absolute top-12 z-[-1] flex w-screen justify-center overflow-hidden lg:top-[72px]">
         <img
           src={angelStakingTexture1Mob}
@@ -70,12 +70,12 @@ const AngelStaking = () => {
 
       <WhyStakeSol />
 
-      <section className="relative z-[1] w-full gap-5 px-5 py-16 md:px-16 md:py-28">
-        <div className="absolute top-0 z-[-1] flex justify-center overflow-hidden lg:bottom-0">
+      <section className="relative z-[1] w-full gap-5 overflow-hidden px-5 py-16 md:px-16 md:py-28">
+        <div className="absolute top-0 z-[-1] flex max-w-[100vw] justify-center overflow-hidden lg:bottom-0">
           <img
             src={angelStakingTexture1Mob}
             role="presentation"
-            className="h-[476 md:hidden"
+            className="h-[476px] md:hidden"
           />
           <img
             src={angelStakingBottom}
