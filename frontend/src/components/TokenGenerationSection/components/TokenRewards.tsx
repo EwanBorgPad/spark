@@ -94,7 +94,7 @@ const TokenRewards = ({
           <span className="opacity-50">{t("tge.linearly_paid_out")}</span>
         </div>
       </div>
-      <div className="flex gap-2 px-3 py-2 text-xs">
+      <div className="flex flex-wrap gap-2 px-3 py-2 text-xs">
         <span>Total:</span>
         <span className="font-geist-mono">
           {isWhitelistingEvent ? 1 : formatValue({ value: borgCoinInput }) || 0}

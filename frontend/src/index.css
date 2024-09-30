@@ -65,6 +65,15 @@ img {
   max-width: none;
 }
 
+mark {
+  background-color: transparent; /* Removes the default yellow background */
+  color: #ACFF73
+}
+button {
+  cursor: pointer !important;
+}
+
+
 :root {
   /* font-family: "Geist", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; */
   line-height: 1.5;

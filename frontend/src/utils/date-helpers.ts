@@ -1,4 +1,4 @@
-import { format } from "date-fns/format"
+import { format } from "date-fns"
 
 export const formatDateForDisplay = (date: Date) => {
   return format(date, "do MMMM, yyyy")
@@ -12,4 +12,3 @@ export const formatDateForSnapshot = (date: Date) => {
 export const formatDateAndMonth = (date: Date) => {
   return format(date, "do MMMM")
 }
-

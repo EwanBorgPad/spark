@@ -1,5 +1,3 @@
-import { transform } from "typescript"
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
@@ -143,9 +141,17 @@ export default {
           "0%": { opacity: 0, transform: "translateY(10%)" },
           "100%": { opacity: 1, transform: "translateY(0%)" },
         },
+        "fade-in-from-above": {
+          "0%": { opacity: 0, transform: "translateY(-10%)" },
+          "100%": { opacity: 1, transform: "translateY(0%)" },
+        },
         "fade-out": {
           "0%": { opacity: 1, transform: "translateY(0%)" },
           "100%": { opacity: 0, transform: "translateY(10%)" },
+        },
+        "fade-out-to-above": {
+          "0%": { opacity: 1, transform: "translateY(0%)" },
+          "100%": { opacity: 0, transform: "translateY(-10%)" },
         },
         "slide-skeleton": {
           "0%": { transform: "translateX(-100%)" },
@@ -164,7 +170,9 @@ export default {
       animation: {
         "top-down": "top-down 0.1s ease-out forwards",
         "fade-in": "fade-in 0.2s ease-in-out",
+        "fade-in-from-above": "fade-in-from-above 0.4s ease-out",
         "fade-out": "fade-out 0.31s ease-in-out",
+        "fade-out-to-above": "fade-out-to-above 0.41s ease-out",
         "slide-skeleton": "slide-skeleton 1s ease-in-out infinite",
         underline: "underline 0.31s ease-in-out",
         "activate-circle": "activate-circle 0.5s 1 ease-in-out ",

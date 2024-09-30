@@ -100,6 +100,8 @@ const LiveNowExchange = ({ whitelistRequirementsRef }: Props) => {
                       value={value}
                       allowNegativeValue={false}
                       placeholder="0"
+                      maxLength={16}
+                      autoFocus
                       className={
                         "max-w-[242px] bg-transparent font-geist-mono text-2xl focus:outline-none"
                       }

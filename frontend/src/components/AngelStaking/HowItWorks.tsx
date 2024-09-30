@@ -1,6 +1,6 @@
 import { useRef } from "react"
 
-import howItWorks from "@/assets/how-it-works.png"
+import howItWorks from "@/assets/angelStaking/how-it-works.png"
 import VerticalTimeline from "./VerticalTimeline"
 import { Button } from "../Button/Button"
 import Img from "../Image/Img"
@@ -15,8 +15,8 @@ const HowItWorks = () => {
     >
       <div className="flex flex-col justify-start gap-4 md:flex-row">
         <div className="relative flex flex-col gap-6 px-5 pb-4 pt-16 md:px-0 md:pt-0">
-          <Img src={howItWorks} customClass="absolute top-0" />
-          <div className="flex flex-col gap-3">
+          <Img src={howItWorks} customClass="absolute top-0 z-[-1]" />
+          <div className="z-[1] flex flex-col gap-3">
             <h2 className="w-full text-left text-4xl font-semibold leading-[44px]">
               How it works
             </h2>
