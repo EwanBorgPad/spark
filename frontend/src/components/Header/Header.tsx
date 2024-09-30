@@ -12,7 +12,7 @@ import { ConnectButton } from "./ConnectButton"
 import { Button } from "../Button/Button"
 
 type NavigationItem = {
-  id: string
+  path: string
   label: string
 }
 type NavigationBarProps = {
@@ -21,23 +21,23 @@ type NavigationBarProps = {
 }
 const navigationItems: NavigationItem[] = [
   {
-    id: "angel-staking",
+    path: "/angel-staking",
     label: "Angel Staking",
   },
   {
-    id: "launch-pools",
+    path: "/launch-pools",
     label: "Launch Pools",
   },
   {
-    id: "manifesto",
+    path: "/manifesto",
     label: "Manifesto",
   },
   // {
-  //   id: "blog",
+  //   path: "blog",
   //   label: "Blog",
   // },
   // {
-  //   id: "FAQ",
+  //   path: "faq",
   //   label: "FAQ",
   // },
 ]
@@ -50,11 +50,11 @@ const NavigationBar = ({
   const navigate = useNavigate()
 
   const isItemActive = (item: NavigationItem) => {
-    return location.pathname.slice(1) === item.id
+    return location.pathname === item.path
   }
 
   const onItemClick = (item: NavigationItem) => {
-    navigate(`/${item.id}`)
+    navigate(item.path)
     itemClickedCallback()
   }
 
@@ -63,7 +63,7 @@ const NavigationBar = ({
       <ul className="flex flex-col items-start px-5 py-4 md:flex-row md:items-center md:gap-6 md:p-0">
         {navigationItems.map((item) => (
           <li
-            key={item.id}
+            key={item.path}
             className={twMerge(
               "relative flex w-full cursor-pointer flex-col items-start gap-1 py-3 text-left text-lg text-fg-secondary transition-colors duration-500 md:w-fit md:items-center md:py-0 md:text-center md:text-base",
               isItemActive(item) && "text-brand-primary",
@@ -74,7 +74,7 @@ const NavigationBar = ({
             {isItemActive(item) && (
               <div
                 className={twMerge(
-                  "absolute bottom-0 hidden w-4 animate-underline border border-brand-primary md:flex",
+                  "absolute bottom-[-4px] hidden w-4 animate-underline border border-brand-primary md:flex",
                 )}
               ></div>
             )}

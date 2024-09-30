@@ -13,7 +13,10 @@ import { ScrollRestoration } from "react-router-dom"
 
 const AngelStaking = () => {
   return (
-    <main className="relative z-[10] flex w-full max-w-full flex-col items-center overflow-x-hidden bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
+    <main
+      className="relative z-[10] flex w-full max-w-[100vw] flex-col items-center
+     bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]"
+    >
       <div className="absolute top-12 z-[-1] flex w-screen justify-center overflow-hidden lg:top-[72px]">
         <img
           src={angelStakingTexture1Mob}
