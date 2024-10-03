@@ -44,10 +44,21 @@ export class Context {
     public vestingPhaseLbpUid: number = 44;
     public vestingFundPhaseLbp: PublicKey;
 
-    public phaseChangeLbpUid: number = 45;
-    public phaseChangeLbp: PublicKey;
+    public fundCollectionToRefundPhaseLbpUid: number = 45;
+    public fundCollectionToRefundPhaseLbp: PublicKey;
+
+    public fundCollectionToVestingPhaseLbpUid: number = 46;
+    public fundCollectionToVestingPhaseLbp: PublicKey;
+    public fundCollectionToVestingPhaseUserPositionMintKp: Keypair;
+    public fundCollectionToVestingPhaseUserPosition: PublicKey;
 
     public amount = new BN(420_000)
+    public raisedTokenMinCap = new BN(500_000)
+
+    public raydiumCpmmProgramId = new PublicKey("CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C")
+    public raydiumCpmmAuthority = new PublicKey("GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL")
+    public raydiumCpmmAmmConfig = new PublicKey("D4FPEruKEHrG5TenZ2mpDGEfu1iUvTiqBxvpU8HLBvC2")
+    public raydiumCpmmAmmCreatePoolFeeReceiver = new PublicKey("DNXgeM9EiiaAbaWvwjHj9fQQLAX5ZsfHyvmYUNRAdNC8")
 
     async init() {
         this.provider = anchor.getProvider() as AnchorProvider;
@@ -113,8 +124,13 @@ export class Context {
 
         // TODO: vesting lbp
 
-        this.phaseChangeLbp = PublicKey.findProgramAddressSync(
-            [Buffer.from("lbp"), (new BN(this.phaseChangeLbpUid)).toArrayLike(Buffer, "le", 8)],
+        this.fundCollectionToRefundPhaseLbp = PublicKey.findProgramAddressSync(
+            [Buffer.from("lbp"), (new BN(this.fundCollectionToRefundPhaseLbpUid)).toArrayLike(Buffer, "le", 8)],
+            this.program.programId
+        )[0];
+
+        this.fundCollectionToVestingPhaseLbp = PublicKey.findProgramAddressSync(
+            [Buffer.from("lbp"), (new BN(this.fundCollectionToVestingPhaseLbpUid)).toArrayLike(Buffer, "le", 8)],
             this.program.programId
         )[0];
     }
@@ -126,6 +142,15 @@ export class Context {
 
         this.refundPhaseUserPosition = PublicKey.findProgramAddressSync(
             [Buffer.from("position"), this.refundPhaseLbp.toBuffer(), this.refundPhaseUserPositionMintKp.publicKey.toBuffer()],
+            this.program.programId
+        )[0];
+
+        this.fundCollectionToVestingPhaseUserPositionMintKp = Keypair.fromSeed(
+            Uint8Array.from(sha256.digest("fundCollectionToVestingPhaseUserPositionMintKp"))
+        );
+
+        this.fundCollectionToVestingPhaseUserPosition = PublicKey.findProgramAddressSync(
+            [Buffer.from("position"), this.fundCollectionToVestingPhaseLbp.toBuffer(), this.fundCollectionToVestingPhaseUserPositionMintKp.publicKey.toBuffer()],
             this.program.programId
         )[0];
     }
@@ -250,13 +275,16 @@ export class Context {
         await this.initLbp(this.fundCollectionPhaseLbpUid, launchedTokenMint, raisedTokenMint)
 
         await this.initLbp(this.refundPhaseLbpUid, launchedTokenMint, raisedTokenMint)
-        await this.userDeposit(this.refundPhaseLbp, this.amount, raisedTokenMint)
+        await this.userDeposit(this.refundPhaseLbp, this.amount, raisedTokenMint, this.refundPhaseUserPositionMintKp, this.refundPhaseUserPosition)
         await this.projectDeposit(this.refundPhaseLbp)
-        await this.moveToNextPhase(this.refundPhaseLbp, { "refund": {} }, launchedTokenMint, raisedTokenMint)
+        await this.moveToRefundPhase(this.refundPhaseLbp, launchedTokenMint, raisedTokenMint)
 
         // TODO: vesting lbp
 
-        await this.initLbp(this.phaseChangeLbpUid, launchedTokenMint, raisedTokenMint)
+        await this.initLbp(this.fundCollectionToRefundPhaseLbpUid, launchedTokenMint, raisedTokenMint)
+        await this.initLbp(this.fundCollectionToVestingPhaseLbpUid, launchedTokenMint, raisedTokenMint)
+        await this.userDeposit(this.fundCollectionToVestingPhaseLbp, this.raisedTokenMinCap, raisedTokenMint, this.fundCollectionToVestingPhaseUserPositionMintKp, this.fundCollectionToVestingPhaseUserPosition)
+        await this.projectDeposit(this.fundCollectionToVestingPhaseLbp)
     }
 
     private async initLbp(lbpUid: number, launchedTokenMint: PublicKey, raisedTokenMint: PublicKey): Promise<PublicKey> {
@@ -270,7 +298,7 @@ export class Context {
             launchedTokenCap: new BN(1_000_000),
 
             raisedTokenMint: raisedTokenMint,
-            raisedTokenMinCap: new BN(500_000),
+            raisedTokenMinCap: this.raisedTokenMinCap,
             raisedTokenMaxCap: new BN(1_000_000),
 
             cliffDuration: new BN(0),
@@ -299,15 +327,15 @@ export class Context {
         return lbpPda[0]
     }
 
-    private async userDeposit(lbpAddress: PublicKey, amount: BN, raisedTokenMint: PublicKey) {
+    private async userDeposit(lbpAddress: PublicKey, amount: BN, raisedTokenMint: PublicKey, userPositionMintKp: Keypair, userPosition: PublicKey) {
 
 
         const userPositionAta = getAssociatedTokenAddressSync(
-            this.refundPhaseUserPositionMintKp.publicKey,
+            userPositionMintKp.publicKey,
             this.user.publicKey,
         )
 
-        assert.equal(await this.program.account.position.fetchNullable(this.refundPhaseUserPosition), null)
+        assert.equal(await this.program.account.position.fetchNullable(userPosition), null)
 
         await this.program.methods
             .userDeposit(amount)
@@ -316,14 +344,14 @@ export class Context {
                 user: this.user.publicKey,
                 config: this.config,
                 lbp: lbpAddress,
-                positionMint: this.refundPhaseUserPositionMintKp.publicKey,
-                position: this.refundPhaseUserPosition,
+                positionMint: userPositionMintKp.publicKey,
+                position: userPosition,
                 userPositionAta: userPositionAta,
                 // @ts-ignore
                 raisedTokenMint: raisedTokenMint,
                 tokenProgram: TOKEN_PROGRAM_ID
             })
-            .signers([this.whitelistAuthority, this.user, this.refundPhaseUserPositionMintKp])
+            .signers([this.whitelistAuthority, this.user, userPositionMintKp])
             .rpc()
     }
 
@@ -344,9 +372,9 @@ export class Context {
             .rpc()
     }
 
-    private async moveToNextPhase(lbpAddress: PublicKey, args, launchedTokenMint: PublicKey, raisedTokenMint: PublicKey) {
+    private async moveToRefundPhase(lbpAddress: PublicKey, launchedTokenMint: PublicKey, raisedTokenMint: PublicKey) {
         await this.program.methods
-            .moveToNextPhase(args)
+            .moveToRefundPhase()
             .accountsPartial({
                 adminAuthority: this.adminAuthority.publicKey,
                 lbp: lbpAddress,

@@ -56,7 +56,7 @@ pub struct Lbp {
     pub launched_token_ata: Pubkey,
     /// The part of token that is used for the liquidity pool. The rest is sent to the reward pool
     pub launched_token_lp_distribution: u8,
-    /// The max amount of token that the project must deposit
+    /// The amount of token that the project must deposit
     pub launched_token_cap: u64,
 
     /// The mint of the token supplied by the users

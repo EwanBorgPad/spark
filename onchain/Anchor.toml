@@ -14,12 +14,31 @@ cluster = "localnet"
 wallet = "tests/helpers/local_deployer.json"
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/*.ts"
-#test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/projectRefund.ts"
+#test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/*.ts"
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/moveToVestingPhase.ts"
 
 init-script = "yarn run ts-node scripts/initialize.ts"
+
+[test.validator]
+url = "https://api.mainnet-beta.solana.com"
 
 [[test.genesis]]
 address = "bpadbLrS3Mw2e1EDSEnYzYpNwAQgJQXXHkT57D4TTJ4"
 program = "target/deploy/borgpad.so"
 upgradeable = true
+
+# Raydium cp swap program id
+[[test.validator.clone]]
+address = "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C"
+
+# Authority
+[[test.validator.clone]]
+address = "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL"
+
+# Amm config 25bps
+[[test.validator.clone]]
+address = "D4FPEruKEHrG5TenZ2mpDGEfu1iUvTiqBxvpU8HLBvC2"
+
+# Create pool fee receiver
+[[test.validator.clone]]
+address = "DNXgeM9EiiaAbaWvwjHj9fQQLAX5ZsfHyvmYUNRAdNC8"

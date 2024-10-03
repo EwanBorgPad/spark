@@ -7,7 +7,7 @@ import {createMint, getAssociatedTokenAddressSync, getOrCreateAssociatedTokenAcc
 import {Keypair, PublicKey} from "@solana/web3.js";
 
 
-describe("Move to next phase", () => {
+describe("Move to refund phase", () => {
     let ctx: Context
 
     before('Init context', async function () {
@@ -16,15 +16,15 @@ describe("Move to next phase", () => {
     })
 
     it("It can move from fund collection to refund phase", async () => {
-        let lbp = await ctx.program.account.lbp.fetchNullable(ctx.phaseChangeLbp);
+        let lbp = await ctx.program.account.lbp.fetchNullable(ctx.fundCollectionToRefundPhaseLbp);
 
         assert.deepEqual(lbp.phase, {fundCollection: {}})
 
         await ctx.program.methods
-            .moveToNextPhase({ "refund": {} })
+            .moveToRefundPhase()
             .accountsPartial({
                 adminAuthority: ctx.adminAuthority.publicKey,
-                lbp: ctx.phaseChangeLbp,
+                lbp: ctx.fundCollectionToRefundPhaseLbp,
                 // @ts-ignore
                 raisedTokenMint: lbp.raisedTokenMint,
                 launchedTokenMint: lbp.launchedTokenMint,
@@ -33,7 +33,7 @@ describe("Move to next phase", () => {
             .signers([ctx.adminAuthority])
             .rpc()
 
-        lbp = await ctx.program.account.lbp.fetchNullable(ctx.phaseChangeLbp);
+        lbp = await ctx.program.account.lbp.fetchNullable(ctx.fundCollectionToRefundPhaseLbp);
 
         assert.deepEqual(lbp.phase, {refund: {}})
     });

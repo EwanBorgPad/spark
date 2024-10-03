@@ -1,14 +1,15 @@
 use crate::instructions::accept_admin_authority::*;
 use crate::instructions::initialize::*;
 use crate::instructions::initialize_lbp::*;
-use crate::instructions::move_to_next_phase::*;
+use crate::instructions::move_to_refund_phase::*;
+use crate::instructions::move_to_vesting_phase::*;
 use crate::instructions::nominate_new_admin_authority::*;
 use crate::instructions::set_whitelist_authority::*;
 use crate::instructions::user_deposit::*;
 use crate::instructions::user_refund::*;
 use crate::instructions::project_deposit::*;
 use crate::instructions::project_refund::*;
-use crate::state::lbp::{LbpInitializeData, Phase};
+use crate::state::lbp::LbpInitializeData;
 use anchor_lang::prelude::*;
 use solana_security_txt::security_txt;
 
@@ -16,6 +17,7 @@ pub mod errors;
 pub mod events;
 pub mod instructions;
 pub mod state;
+pub mod utils;
 
 #[cfg(not(feature = "no-entrypoint"))]
 security_txt! {
@@ -61,11 +63,16 @@ pub mod borgpad {
         instructions::set_whitelist_authority::handler(ctx, new_whitelist_authority)
     }
 
-    pub fn move_to_next_phase(
-        ctx: Context<MoveToNextPhase>,
-        phase: Phase
+    pub fn move_to_refund_phase(
+        ctx: Context<MoveToRefundPhase>,
     ) -> Result<()> {
-        instructions::move_to_next_phase::handler(ctx, phase)
+        instructions::move_to_refund_phase::handler(ctx)
+    }
+
+    pub fn move_to_vesting_phase(
+        ctx: Context<MoveToVestingPhase>,
+    ) -> Result<()> {
+        instructions::move_to_vesting_phase::handler(ctx)
     }
 
     pub fn user_deposit(
