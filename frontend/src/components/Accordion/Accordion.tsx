@@ -10,6 +10,8 @@ type AccordionProps = {
   children: React.ReactNode
   maxChildrenHeight?: number
   className?: string
+  questionClassName?: string
+  answerClassName?: string
 }
 
 const BORDER_HEIGHT = 1
@@ -20,6 +22,8 @@ const Accordion = ({
   children,
   className,
   maxChildrenHeight,
+  questionClassName,
+  answerClassName,
 }: AccordionProps) => {
   const [isOpen, setOpen] = useState(false)
   const accordionRef = useRef<HTMLDivElement>(null)
@@ -39,7 +43,10 @@ const Accordion = ({
         color="secondary"
         size="xl"
         onClick={() => setOpen(!isOpen)}
-        className="z-[10] scale-100 gap-1 rounded-lg p-3 hover:opacity-100 active:!scale-[100%]"
+        className={twMerge(
+          "z-[10] scale-100 gap-1 rounded-lg p-3 hover:opacity-100 active:!scale-[100%]",
+          questionClassName,
+        )}
       >
         <span className="text-sm font-normal">{label}</span>
         {subLabel && <span className="text-sm font-normal">{subLabel}</span>}
@@ -56,6 +63,7 @@ const Accordion = ({
         className={twMerge(
           "transition-height top-11 z-[-10] -mt-2.5 w-full overflow-y-scroll rounded-b-lg border-[1px] border-bd-primary bg-secondary pt-[-1px] delay-0 duration-200 ease-in-out",
           !isOpen && "!max-h-0",
+          answerClassName,
         )}
       >
         <div className="h-2 w-full"></div>

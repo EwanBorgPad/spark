@@ -6,7 +6,7 @@ import "./index.css"
 import { WalletProvider } from "@/hooks/useWalletContext"
 import TermsOfService from "./pages/TermsOfService"
 import NotFound from "./pages/NotFound"
-import Homepage from "./pages/Homepage"
+// import Homepage from "./pages/Homepage"
 import Project from "./pages/Project"
 import App from "./App"
 import { WhitelistStatusProvider } from "./hooks/useWhitelistContext"
@@ -38,20 +38,12 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Homepage />,
+        element: <LaunchPools />,
       },
       {
         path: "/back-office",
         element: <BackOffice />,
       },
-      // {
-      //   path: "/project/:projectId",
-      //   element: (
-      //     <ProjectDataProvider>
-      //       <Project />
-      //     </ProjectDataProvider>
-      //   ),
-      // },
       {
         path: "/angel-staking",
         element: <AngelStaking />,
