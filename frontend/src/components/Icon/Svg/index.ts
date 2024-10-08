@@ -36,4 +36,5 @@ export * from "./SvgDePin"
 export * from "./SvgDeAi"
 export * from "./SvgDeSoc"
 export * from "./SvgHamburger"
+export * from "./SvgQuestionCloud"
 

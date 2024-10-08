@@ -8,8 +8,9 @@ import { addMinutes } from "date-fns/addMinutes"
 import { addHours } from "date-fns/addHours"
 import { addDays } from "date-fns/addDays"
 import { Button } from "../Button/Button"
+import { addWeeks } from "date-fns/addWeeks"
 
-const TIMESPANS = ["days", "hours", "minutes"] as const
+const TIMESPANS = ["weeks", "days", "hours", "minutes"] as const
 type ChangeType = (typeof TIMESPANS)[number]
 type UpdateEventsProps = {
   changeType: ChangeType
@@ -23,7 +24,7 @@ type OffsetEventInputType = {
   ) => void
   currentOffset: Record<ChangeType, number>
 }
-const defaultOffset = { days: 0, hours: 0, minutes: 0 }
+const defaultOffset = { weeks: 0, days: 0, hours: 0, minutes: 0 }
 
 const OffsetEventInput = ({
   currentOffset,
@@ -73,6 +74,10 @@ const ProjectTester = () => {
 
   const updateEvents = (changeType: ChangeType, valueChange: -1 | 1) => {
     const updateEvent = (date: Date) => {
+      if (changeType === "weeks") {
+        setOffset({ ...offset, weeks: offset.weeks + valueChange })
+        return addWeeks(date, valueChange)
+      }
       if (changeType === "days") {
         setOffset({ ...offset, days: offset.days + valueChange })
         return addDays(date, valueChange)
@@ -137,7 +142,7 @@ const ProjectTester = () => {
             </label>
           </div>
           <div className="flex w-full flex-col gap-2 rounded-md bg-emphasis p-2">
-            <span className="text-base">Offset All Events</span>
+            <span className="text-lg">Offset All Timeline Events</span>
 
             {TIMESPANS.map((timespan) => (
               <OffsetEventInput

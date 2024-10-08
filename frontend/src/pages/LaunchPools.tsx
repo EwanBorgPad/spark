@@ -1,10 +1,14 @@
+import { Button } from "@/components/Button/Button"
 import React from "react"
-import { ScrollRestoration } from "react-router-dom"
+import { Link, ScrollRestoration } from "react-router-dom"
 
 const LaunchPools = () => {
   return (
-    <main className="h-[3000px] p-10 pt-[48px]">
-      <h1 className="mt-20">Launch Pools</h1>
+    <main className="h-[900px] p-10 pt-[48px]">
+      <h1 className="my-20">Launch Pools</h1>
+      <Link to={"/launch-pools/puffer-finance"}>
+        <Button size="xl" color="primary" btnText="Go To Puffer Finance" />
+      </Link>
       <ScrollRestoration />
     </main>
   )

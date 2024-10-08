@@ -51,3 +51,4 @@ export const investmentFocusItems: InvestmentFocusItem[] = [
   { icon: "SvgDePin", title: "dePin", colorHex: "#73ffd0" },
   { icon: "SvgDeSoc", title: "deSoc", colorHex: "#73eaff" },
 ]
+

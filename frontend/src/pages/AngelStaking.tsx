@@ -10,6 +10,8 @@ import HowItWorks from "@/components/AngelStaking/HowItWorks"
 import { Button } from "@/components/Button/Button"
 import Img from "@/components/Image/Img"
 import { ScrollRestoration } from "react-router-dom"
+import Divider from "@/components/Divider"
+import Accordion from "@/components/Accordion/Accordion"
 
 const AngelStaking = () => {
   return (
@@ -72,6 +74,20 @@ const AngelStaking = () => {
       <HowItWorks />
 
       <WhyStakeSol />
+
+      <section className="flex w-full flex-col items-center gap-6 px-5 py-16 md:px-16 md:py-28">
+        <Divider icon="SvgQuestionCloud" />
+        <h2 className="w-full text-center text-[40px] font-semibold leading-[48px]">
+          Frequently Asked Questions
+        </h2>
+        <Accordion
+          label="Kuku"
+          subLabel=""
+          className="max-w-[768px] rounded-none border-t-[1px] border-none bg-transparent"
+        >
+          <span>Pliux</span>
+        </Accordion>
+      </section>
 
       <section className="relative z-[1] w-full gap-5 overflow-hidden px-5 py-16 md:px-16 md:py-28">
         <div className="absolute top-0 z-[-1] flex max-w-[100vw] justify-center overflow-hidden lg:bottom-0">
