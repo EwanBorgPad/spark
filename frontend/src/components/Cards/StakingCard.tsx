@@ -41,7 +41,7 @@ const StakingCard = ({
       className="relative z-[3] inline-flex w-full max-w-[343px]  flex-col items-start justify-start gap-3 rounded-xl border border-bd-primary bg-overlay md:max-w-[576px]"
     >
       <div className="flex flex-col items-start justify-start gap-3 px-4 py-8">
-        <h3 className="text-2xl font-semibold leading-snug ">
+        <h3 className="text-2xl font-semibold leading-snug md:text-[32px]">
           {`${index + 1}. ${title}`}
         </h3>
         <p className="text-base font-normal leading-normal text-fg-secondary">

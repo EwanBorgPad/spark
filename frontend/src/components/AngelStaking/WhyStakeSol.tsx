@@ -87,7 +87,7 @@ const Reason = ({ reason, isMobile, index, navigate }: ReasonProps) => {
           isActive && "translate-x-0",
         )}
       >
-        <h3 className="whitespace-pre text-2xl font-semibold">
+        <h3 className="whitespace-pre text-2xl font-semibold leading-tight md:text-[40px]">
           {reason.title}
         </h3>
         <p className="flex flex-col gap-3 text-base text-fg-secondary md:max-w-[484px]">
@@ -128,7 +128,7 @@ const WhyStakeSol = () => {
     <section className="gap flex w-full flex-col items-center">
       <div className="flex w-full flex-col items-center gap-5 px-5 py-16 md:px-4 md:pb-10 md:pt-28">
         <Divider icon="SvgMedal" />
-        <h2 className="text-center font-semibold">
+        <h2 className="text-center text-4xl font-semibold leading-[120%] md:text-[56px]">
           Why Angel Stake your $SOL?
         </h2>
       </div>
