@@ -25,11 +25,11 @@ const InvestmentFocus = () => {
   return (
     <section
       ref={ref}
-      className="flex  w-full max-w-[1312px] flex-col items-start px-4 pb-16 pt-20 md:px-16 md:pb-20"
+      className="flex w-full flex-col items-center px-4 pb-16 pt-20 md:px-16 md:pb-20"
     >
       <div
         className={twMerge(
-          "transition-translate-n-opacity flex min-h-[320px] w-full translate-y-9 scale-90 flex-col rounded-xl border-[1px] border-bd-primary bg-default opacity-0 duration-[650ms] ease-out md:flex-row-reverse md:items-center",
+          "transition-translate-n-opacity flex min-h-[320px] w-full max-w-[1312px] translate-y-9 scale-90 flex-col rounded-xl border-[1px] border-bd-primary bg-default opacity-0 duration-[650ms] ease-out md:flex-row-reverse md:items-center",
           isActive && "translate-y-0 scale-100 opacity-100",
         )}
       >

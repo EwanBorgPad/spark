@@ -17,7 +17,7 @@ const HowItWorks = () => {
         <div className="relative flex flex-col gap-6 px-5 pb-4 pt-16 md:px-0 md:pt-0">
           <Img src={howItWorks} customClass="absolute top-0 z-[-1]" />
           <div className="z-[1] flex flex-col gap-3">
-            <h2 className="w-full text-left text-4xl font-semibold leading-[44px]">
+            <h2 className="w-full text-left text-4xl font-semibold leading-[44px] md:text-[48px] md:leading-[120%]">
               How it works
             </h2>
             <p className="text-base font-normal leading-normal">

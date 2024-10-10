@@ -12,6 +12,8 @@ import Img from "@/components/Image/Img"
 import { ScrollRestoration } from "react-router-dom"
 import Divider from "@/components/Divider"
 import Accordion from "@/components/Accordion/Accordion"
+import Steps from "@/components/AngelStaking/Steps"
+import MaximiseValue from "@/components/AngelStaking/MaximiseValue"
 
 const AngelStaking = () => {
   return (
@@ -31,7 +33,7 @@ const AngelStaking = () => {
           className="hidden w-full mix-blend-lighten md:flex"
         />
       </div>
-      <section className="z-[1] flex min-h-[550px] w-full flex-col items-start gap-5 px-5 pb-10 pt-20 md:min-h-[606px] md:pt-[120px]">
+      <section className="z-[1] flex w-full flex-col items-start gap-5 px-5 pb-[60px] pt-20 md:pt-[120px]">
         <div className="flex w-full flex-col items-start gap-5 md:items-center md:gap-6">
           <div className="flex flex-col gap-3 md:flex-row">
             <div className="flex gap-2 rounded-xl border border-bd-primary bg-default/75 px-3 py-2">
@@ -41,6 +43,7 @@ const AngelStaking = () => {
                 size="custom"
                 customClass="w-[108px] rounded-none"
                 imgClassName="object-contain"
+                alt="Solana logo"
               />
             </div>
             <div className="flex gap-2 rounded-xl border border-bd-primary bg-default/75 px-3 py-2">
@@ -53,7 +56,7 @@ const AngelStaking = () => {
               />
             </div>
           </div>
-          <h1 className="max-w-[520px] text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-center">
+          <h1 className="max-w-[720px] text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-center md:text-[56px] md:leading-[58px]">
             Turn your staking yield into angel investments.
           </h1>
           <h2 className="max-w-[500px] text-lg font-normal leading-relaxed md:text-center">
@@ -69,6 +72,10 @@ const AngelStaking = () => {
         </div>
       </section>
 
+      <Steps />
+
+      <MaximiseValue />
+
       <InvestmentFocus />
 
       <HowItWorks />
@@ -80,13 +87,14 @@ const AngelStaking = () => {
         <h2 className="w-full text-center text-[40px] font-semibold leading-[48px]">
           Frequently Asked Questions
         </h2>
-        <Accordion
+        {/* <Accordion
           label="Kuku"
           subLabel=""
           className="max-w-[768px] rounded-none border-t-[1px] border-none bg-transparent"
         >
           <span>Pliux</span>
-        </Accordion>
+        </Accordion> */}
+        <h2>- TBD -</h2>
       </section>
 
       <section className="relative z-[1] w-full gap-5 overflow-hidden px-5 py-16 md:px-16 md:py-28">
@@ -104,7 +112,7 @@ const AngelStaking = () => {
         </div>
 
         <div className="flex w-full flex-col items-center gap-5 md:gap-6">
-          <h1 className="max-w-[520px] text-center text-4xl font-semibold leading-[44px] md:max-w-[768px]">
+          <h1 className="max-w-[520px] text-center text-4xl font-semibold leading-[44px] md:max-w-[768px] md:text-5xl">
             We&#39;re building around the clock to launch our Angel Staking
             program.
           </h1>

@@ -11,6 +11,8 @@ type Props = {
   showFallback?: boolean
   isFetchingLink?: boolean
   imgClassName?: string
+  role?: string
+  alt?: string
 }
 
 const avatarSize: Record<ImgSizes, string> = {
@@ -35,12 +37,14 @@ const ImgSkeletonLoader = () => {
 }
 
 const Img = ({
-  size = "custom",
+  alt,
   src,
   customClass,
-  isFetchingLink = false,
-  showFallback = true,
   imgClassName,
+  size = "custom",
+  showFallback = true,
+  role = "presentation",
+  isFetchingLink = false,
 }: Props) => {
   const [isLoadingImg, setIsLoadingImg] = useState(true)
   const [renderFallback, setRenderFallback] = useState(src ? false : true)
@@ -65,6 +69,8 @@ const Img = ({
     >
       {(isLoadingImg || isFetchingLink) && <ImgSkeletonLoader />}
       <img
+        alt={alt}
+        role={role}
         src={!renderFallback ? src : fallbackImg}
         onLoad={() => setIsLoadingImg(false)}
         onError={onError}
