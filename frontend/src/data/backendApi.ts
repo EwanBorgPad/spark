@@ -1,11 +1,13 @@
 import {
   GetExchangeResponse,
   GetPresignedUrlResponse,
+  GetProjectsResponse,
   GetWhitelistingResult,
   ProjectModel,
   projectSchema,
 } from "../../shared/models.ts"
 
+// const API_BASE_URL = "http://localhost:8788/api"
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
 const GET_WHITELISTING_STATUS_API = API_BASE_URL + "/whitelisting"
 const POST_CONFIRM_RESIDENCY_URL = API_BASE_URL + "/confirmresidency"
@@ -33,7 +35,7 @@ const confirmResidency = async (args: ConfirmResidencyArgs) => {
 
   await fetch(url, {
     body: JSON.stringify(args),
-    method: "post"
+    method: "post",
   })
 }
 
@@ -51,9 +53,31 @@ const getProject = async ({
     const parsedJson = projectSchema.parse(json)
     return parsedJson
   } catch (e) {
-    console.error("GET /projects validation error!")
+    console.error("GET /projects/[id] validation error!")
     throw e
   }
+}
+
+const getProjects = async ({
+  page,
+  limit,
+}: {
+  page: number
+  limit: number
+}): Promise<GetProjectsResponse> => {
+  const url = new URL(GET_PROJECT_API_URL, window.location.href)
+  url.searchParams.set("page", page.toString())
+  url.searchParams.set("limit", (limit || 10).toString())
+
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json
+  // try {
+  // } catch (e) {
+  //   console.error("GET /projects validation error!")
+  //   throw e
+  // }
 }
 
 export type CreateProjectRequest = {
@@ -138,11 +162,12 @@ const uploadFileToBucket = async ({
 }
 
 export const backendApi = {
-  getWhitelistingStatus,
-  confirmResidency,
   getProject,
+  getProjects,
   getExchange,
   createProject,
   getPresignedUrl,
+  confirmResidency,
   uploadFileToBucket,
+  getWhitelistingStatus,
 }

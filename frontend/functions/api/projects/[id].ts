@@ -1,6 +1,10 @@
-import { ProjectModel, projectSchema } from "../../shared/models"
-import { hasAdminAccess, jsonResponse, reportError } from "./cfPagesFunctionsUtils"
-import { initializeLpb } from "../../shared/anchor"
+import { ProjectModel, projectSchema } from "../../../shared/models"
+import {
+  hasAdminAccess,
+  jsonResponse,
+  reportError,
+} from "../cfPagesFunctionsUtils"
+import { initializeLpb } from "../../../shared/anchor"
 
 type ENV = {
   DB: D1Database
@@ -58,7 +62,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     // check if exists
     const existingProject = await getProjectById(db, data.info.id)
     if (existingProject) {
-      return jsonResponse({ message: "Project with provided id already exists!", }, 409)
+      return jsonResponse(
+        { message: "Project with provided id already exists!" },
+        409,
+      )
     }
 
     // commented out until it is integrated with the backoffice
@@ -109,15 +116,15 @@ const getProjectById = async (
 }
 
 const hashStringToU64 = (input: string): number => {
-  const FNV_PRIME: number = 1099511628211;
-  const OFFSET_BASIS: number = 14695981039346656037;
+  const FNV_PRIME: number = 1099511628211
+  const OFFSET_BASIS: number = 14695981039346656037
 
-  let hash: number = OFFSET_BASIS;
+  let hash: number = OFFSET_BASIS
 
   for (let i = 0; i < input.length; i++) {
-    hash ^= input.charCodeAt(i);
-    hash = (hash * FNV_PRIME) % 2 ** 53; // Ensure the hash stays within the safe integer range
+    hash ^= input.charCodeAt(i)
+    hash = (hash * FNV_PRIME) % 2 ** 53 // Ensure the hash stays within the safe integer range
   }
 
-  return hash;
+  return hash
 }

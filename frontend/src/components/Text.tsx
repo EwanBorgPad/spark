@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge"
 type Props = {
   text?: string | number
   isLoading?: boolean
-  as?: "span" | "h1" | "h2" | "h3"
+  as?: "span" | "h1" | "h2" | "h3" | "p"
   className?: string
 }
 
@@ -12,6 +12,7 @@ const skeleton = {
   h2: { class: "h-11 min-w-[120px]" },
   h3: { class: "h-10 min-w-[60px]" },
   span: { class: "h-4 min-w-[40px]" },
+  p: { class: "h-4 min-w-[40px]" },
 }
 
 const TextSkeletonLoader = ({ className }: { className?: string }) => {
