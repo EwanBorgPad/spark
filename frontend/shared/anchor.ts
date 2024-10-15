@@ -1,11 +1,5 @@
 import { AnchorProvider, BN, Idl, Program } from "@coral-xyz/anchor"
-import {
-  Commitment,
-  Connection,
-  Keypair,
-  PublicKey,
-  SystemProgram,
-} from "@solana/web3.js"
+import { Commitment, Connection, Keypair, PublicKey } from "@solana/web3.js"
 import { COMMITMENT_LEVEL, SOLANA_RPC_URL } from "./constants"
 
 import idl from './program/borgpad.json'
@@ -23,18 +17,18 @@ type InitializeLbpInput = {
 }
 type InitializeLpbArgs = {
   uid: number
-  projectOwner: address
-  projectTokenMint: address
-  projectTokenLpDistribution: number // Example percentage
-  projectMaxCap: number
-  userTokenMint: address
-  userMinCap: number
-  userMaxCap: number
-  fundCollectionPhaseStartTime: Date
-  fundCollectionPhaseEndTime: Date
-  lpLockedPhaseLockingTime: Date
-  lpLockedPhaseVestingTime: Date
-  bump: number
+  projectOwnerAddress: address
+
+  launchedTokenMintAddress: address
+  launchedTokenLpDistribution: number
+  launchedTokenCap: number
+
+  raisedTokenMintAddress: address
+  raisedTokenMinCap: number
+  raisedTokenMaxCap: number
+
+  cliffDuration: number
+  vestingDuration: number
 }
 type InitializeLpbResult = {
   transactionId: string
@@ -51,30 +45,29 @@ export const initializeLpb = async ({ args, adminSecretKey }: InitializeLbpInput
 
   const program = new Program(idl as Idl, provider) as Program<BorgpadIdl>
 
-  const usdcTokenAddress = 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr'
-
   // Send the transaction
   const tx = await program.methods
     .initializeLbp({
       uid: new BN(args.uid),
-      project: new PublicKey(args.projectOwner),
+      project: new PublicKey(args.projectOwnerAddress),
 
-      cliffDuration: new BN(1734184258),
-      vestingDuration: new BN(1734184258 + 100_000),
+      launchedTokenMint: new PublicKey(args.launchedTokenMintAddress),
+      launchedTokenLpDistribution: args.launchedTokenLpDistribution,
+      launchedTokenCap: new BN(args.launchedTokenCap),
 
-      launchedTokenMint: new PublicKey(usdcTokenAddress),
-      launchedTokenCap: new BN(100_000),
-      launchedTokenLpDistribution: 80,
+      raisedTokenMint: new PublicKey(args.raisedTokenMintAddress),
+      raisedTokenMinCap: new BN(args.raisedTokenMinCap),
+      raisedTokenMaxCap: new BN(args.raisedTokenMaxCap),
 
-      raisedTokenMint: new PublicKey(usdcTokenAddress),
-      raisedTokenMaxCap: new BN(100_000),
+      cliffDuration: new BN(args.cliffDuration),
+      vestingDuration: new BN(args.vestingDuration),
     })
     .accounts({
       adminAuthority: adminKeypair.publicKey,
       tokenProgram: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
 
-      raisedTokenMint: new PublicKey(usdcTokenAddress),
-      launchedTokenMint: new PublicKey(usdcTokenAddress),
+      raisedTokenMint: new PublicKey(args.raisedTokenMintAddress),
+      launchedTokenMint: new PublicKey(args.launchedTokenMintAddress),
     })
     .transaction()
 

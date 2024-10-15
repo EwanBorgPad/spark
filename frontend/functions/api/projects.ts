@@ -61,25 +61,28 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: "Project with provided id already exists!", }, 409)
     }
 
-    // commented out until it is integrated with the backoffice
+    // dummy values for now
     const me = '5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W'
+    const usdcTokenAddress = 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr'
+
     const adminSecretKey = ctx.env.ADMIN_AUTHORITY_SECRET_KEY.split(',').map(Number)
     const uid = hashStringToU64(data.info.id)
     await initializeLpb({
       args: {
         uid,
-        projectOwner: me,
-        projectTokenMint: me,
-        projectTokenLpDistribution: 50, // Example percentage
-        projectMaxCap: 1_000_000,
-        userTokenMint: me,
-        userMinCap: 100,
-        userMaxCap: 10_000,
-        fundCollectionPhaseStartTime: new Date(1_700_000_000 * 1000),
-        fundCollectionPhaseEndTime: new Date(1_710_000_000 * 1000),
-        lpLockedPhaseLockingTime: new Date(1_720_000_000 * 1000),
-        lpLockedPhaseVestingTime: new Date(1_730_000_000 * 1000),
-        bump: 1,
+
+        projectOwnerAddress: me,
+
+        launchedTokenMintAddress: usdcTokenAddress,
+        launchedTokenLpDistribution: 80,
+        launchedTokenCap: 100,
+
+        raisedTokenMintAddress: usdcTokenAddress,
+        raisedTokenMinCap: 1_000,
+        raisedTokenMaxCap: 100_000,
+
+        cliffDuration: 100,
+        vestingDuration: 100,
       },
       adminSecretKey,
     })
