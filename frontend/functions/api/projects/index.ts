@@ -1,5 +1,10 @@
-import { GetProjectsResponse } from "../../../shared/models"
-import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
+import { GetProjectsResponse, projectSchema } from "../../../shared/models"
+import {
+  getProjectById,
+  hasAdminAccess,
+  jsonResponse,
+  reportError,
+} from "../cfPagesFunctionsUtils"
 
 type ENV = {
   DB: D1Database
@@ -7,7 +12,7 @@ type ENV = {
   ADMIN_AUTHORITY_SECRET_KEY: string
 }
 /**
- * Get request handler - returns a project by id
+ * Get request handler - returns a list of projects
  * @param ctx
  */
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
@@ -69,4 +74,70 @@ const getProjectsFromDB = async (
     },
   }
   return response
+}
+
+/**
+ * Post request handler - creates a project
+ * @param ctx
+ */
+export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
+  const db = ctx.env.DB
+  try {
+    // authorize request
+    if (!hasAdminAccess(ctx)) {
+      return jsonResponse(null, 401)
+    }
+
+    // parse request
+    const requestJson = await ctx.request.json()
+    const { error, data } = projectSchema.safeParse(requestJson)
+
+    // validate request
+    if (error) {
+      return jsonResponse({ message: "Invalid request!", error }, 400)
+    }
+
+    // check if exists
+    const existingProject = await getProjectById(db, data.info.id)
+    if (existingProject) {
+      return jsonResponse(
+        { message: "Project with provided id already exists!" },
+        409,
+      )
+    }
+
+    // commented out until it is integrated with the backoffice
+    // const me = ''
+    // const adminSecretKey = ctx.env.ADMIN_AUTHORITY_SECRET_KEY.split(',').map(Number)
+    // const uid = hashStringToU64(data.info.id)
+    // await initializeLpb({
+    //   args: {
+    //     uid,
+    //     projectOwner: me,
+    //     projectTokenMint: me,
+    //     projectTokenLpDistribution: 50, // Example percentage
+    //     projectMaxCap: 1_000_000,
+    //     userTokenMint: me,
+    //     userMinCap: 100,
+    //     userMaxCap: 10_000,
+    //     fundCollectionPhaseStartTime: new Date(1_700_000_000 * 1000),
+    //     fundCollectionPhaseEndTime: new Date(1_710_000_000 * 1000),
+    //     lpLockedPhaseLockingTime: new Date(1_720_000_000 * 1000),
+    //     lpLockedPhaseVestingTime: new Date(1_730_000_000 * 1000),
+    //     bump: 1,
+    //   },
+    //   adminSecretKey,
+    // })
+
+    // persist in db
+    await db
+      .prepare("INSERT INTO project (id, json) VALUES (?1, ?2)")
+      .bind(data.info.id, JSON.stringify(data))
+      .run()
+
+    return jsonResponse({ message: "Created!" }, 201)
+  } catch (e) {
+    await reportError(db, e)
+    return jsonResponse({ message: "Something went wrong..." }, 500)
+  }
 }

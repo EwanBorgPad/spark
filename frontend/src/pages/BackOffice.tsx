@@ -332,7 +332,7 @@ const BackOffice = () => {
                   name={name}
                   label="Project Thumbnail"
                   fileName="project-thumbnail"
-                  previewClass="w-[328px] h-[189px]"
+                  previewClass="w-[328px] h-[189px] rounded-none"
                   projectId={projectId}
                   error={isUploadDisabled ? uploadPreconditionError : error}
                 />
