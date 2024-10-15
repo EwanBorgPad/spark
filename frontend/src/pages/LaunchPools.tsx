@@ -5,13 +5,10 @@ import { useQuery } from "@tanstack/react-query"
 import { ScrollRestoration } from "react-router-dom"
 
 import Img from "@/components/Image/Img"
-import { getProjectsDummyResponse } from "@/data/projectsDummy"
+// import { getProjectsDummyResponse } from "@/data/projectsDummy"
 import launchPoolsBg from "@/assets/launchPools/launch-pools-background.png"
 import LaunchPoolCard from "@/components/Cards/LaunchPoolCard"
-
-// const statusMessage = {
-
-// }
+import { GetProjectsResponse } from "shared/models"
 
 const LaunchPools = () => {
   const [page, setPage] = useState(1)
@@ -19,26 +16,26 @@ const LaunchPools = () => {
   const { t } = useTranslation()
 
   // @TODO UNCOMMENT
-  // const { data } = useQuery<GetProjectsResponse>({
-  //   queryFn: () =>
-  //     backendApi.getProjects({
-  //       page,
-  //       limit,
-  //     }),
-  //   queryKey: ["getExchange", page, limit],
-  // })
+  const { data } = useQuery<GetProjectsResponse>({
+    queryFn: () =>
+      backendApi.getProjects({
+        page,
+        limit,
+      }),
+    queryKey: ["getExchange", page, limit],
+  })
   // @TODO REMOVE LINE
-  // const filteredProjects = data?.projects
-  const filteredProjects = getProjectsDummyResponse.projects
+  const filteredProjects = data?.projects
+  // const filteredProjects = getProjectsDummyResponse.projects
 
   return (
-    <main className="relative z-[10] min-h-screen w-full bg-transparent p-10 pt-[48px] md:pt-[68px]">
+    <main className="relative z-[10] min-h-screen w-full bg-transparent pt-[48px] md:pt-[68px]">
       <Img
         src={launchPoolsBg}
         customClass="w-full absolute top-[48px] md:top-[68px] z-[-1]"
       />
 
-      <section className="z-[1] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px]">
+      <section className=": z-[1] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
         <h1 className="md: w-full text-center text-[40px] leading-tight">
           Current, past & future projects
         </h1>

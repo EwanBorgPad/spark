@@ -104,6 +104,45 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   }
 }
 
+// @TODO - to be deleted
+/**
+ * Post request handler - creates a project
+ * @param ctx
+ */
+export const onRequestPut: PagesFunction<ENV> = async (ctx) => {
+  const db = ctx.env.DB
+  try {
+    // authorize request
+    if (!hasAdminAccess(ctx)) {
+      return jsonResponse(null, 401)
+    }
+
+    // parse request
+    const requestJson = await ctx.request.json()
+    const { error, data } = projectSchema.safeParse(requestJson)
+
+    // validate request
+    if (error) {
+      return jsonResponse({ message: "Invalid request!", error }, 400)
+    }
+
+    // check if exists
+    const isUpdated: D1Response = await findAndEditProjectById(db, data.info.id, data)
+    console.log(isUpdated);
+    if (!isUpdated.success) {
+      return jsonResponse(
+        { message: isUpdated.error },
+        409,
+      )
+    }
+
+    return jsonResponse({ message: `Project ${data.info.id} Updated!` }, 204)
+  } catch (e) {
+    await reportError(db, e)
+    return jsonResponse({ message: "Something went wrong..." }, 500)
+  }
+}
+
 const getProjectById = async (
   db: D1Database,
   id: string,
@@ -113,6 +152,17 @@ const getProjectById = async (
     .bind(id)
     .first<{ id: string; json: ProjectModel }>()
   return project ? JSON.parse(project.json) : null
+}
+const findAndEditProjectById = async (
+  db: D1Database,
+  id: string,
+  data: ProjectModel,
+): Promise<ProjectModel | null> => {
+  const response = await db
+    .prepare("UPDATE project SET json = ?2 WHERE id = ?1")
+    .bind(id, JSON.stringify(data))
+    .run()
+  return response
 }
 
 const hashStringToU64 = (input: string): number => {

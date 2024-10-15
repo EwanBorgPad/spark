@@ -50,6 +50,7 @@ const NavigationBar = ({
   const navigate = useNavigate()
 
   const isItemActive = (item: NavigationItem) => {
+    if (location.pathname === "/" && item.path === "/launch-pools") return true
     return location.pathname === item.path
   }
 
