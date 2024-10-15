@@ -4,7 +4,7 @@ import {
   jsonResponse,
   reportError,
 } from "../cfPagesFunctionsUtils"
-import { initializeLpb } from "../../../shared/anchor"
+// import { initializeLpb } from "../../../shared/anchor"
 
 type ENV = {
   DB: D1Database
@@ -19,7 +19,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
   try {
     const url = ctx.request.url
-    const id = new URL(url).searchParams.get("id")
+    const id = extractProjectId(url)
 
     // validate request
     if (!id) {
@@ -116,10 +116,17 @@ export const onRequestPut: PagesFunction<ENV> = async (ctx) => {
     if (!hasAdminAccess(ctx)) {
       return jsonResponse(null, 401)
     }
+    const url = ctx.request.url
+    const id = extractProjectId(url)
+
+    // validate request
+    if (!id) {
+      return jsonResponse({ message: "Please provide id query param" }, 400)
+    }
 
     // parse request
     const requestJson = await ctx.request.json()
-    const { error, data } = projectSchema.safeParse(requestJson)
+    const { error, data: updatedData } = projectSchema.safeParse(requestJson)
 
     // validate request
     if (error) {
@@ -127,16 +134,17 @@ export const onRequestPut: PagesFunction<ENV> = async (ctx) => {
     }
 
     // check if exists
-    const isUpdated: D1Response = await findAndEditProjectById(db, data.info.id, data)
-    console.log(isUpdated);
+    const isUpdated: D1Response = await findAndEditProjectById(
+      db,
+      id,
+      updatedData,
+    )
+    console.log(isUpdated)
     if (!isUpdated.success) {
-      return jsonResponse(
-        { message: isUpdated.error },
-        409,
-      )
+      return jsonResponse({ message: isUpdated.error }, 409)
     }
 
-    return jsonResponse({ message: `Project ${data.info.id} Updated!` }, 204)
+    return jsonResponse({ message: `Project ${id} Updated!` }, 204)
   } catch (e) {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
@@ -164,6 +172,16 @@ const findAndEditProjectById = async (
     .run()
   return response
 }
+const extractProjectId = (url: string) => {
+  const parsedUrl = new URL(url)
+  const pathSegments = parsedUrl.pathname.split("/")
+
+  const projectsIndex = pathSegments.indexOf("projects")
+  const id = projectsIndex !== -1 ? pathSegments[projectsIndex + 1] : null
+
+  return id
+}
+
 
 const hashStringToU64 = (input: string): number => {
   const FNV_PRIME: number = 1099511628211
