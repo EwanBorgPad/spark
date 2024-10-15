@@ -7,7 +7,7 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-borgpad = "3YWxBeMNJwxCEi2ru4UfxEhTPjzAZnwCXEsWFgdpQGi5"
+borgpad = "6Bz2wirsX2ZwJyq17GmyJ64UJiZhQDPfhHCMaKcemRXM"
 
 [provider]
 cluster = "localnet"
@@ -23,7 +23,7 @@ init-script = "yarn run ts-node scripts/initialize.ts"
 url = "https://api.mainnet-beta.solana.com"
 
 [[test.genesis]]
-address = "3YWxBeMNJwxCEi2ru4UfxEhTPjzAZnwCXEsWFgdpQGi5"
+address = "6Bz2wirsX2ZwJyq17GmyJ64UJiZhQDPfhHCMaKcemRXM"
 program = "target/deploy/borgpad.so"
 upgradeable = true
 

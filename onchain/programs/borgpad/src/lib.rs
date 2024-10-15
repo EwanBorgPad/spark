@@ -27,7 +27,7 @@ security_txt! {
     policy: "TBD"
 }
 
-declare_id!("3YWxBeMNJwxCEi2ru4UfxEhTPjzAZnwCXEsWFgdpQGi5");
+declare_id!("6Bz2wirsX2ZwJyq17GmyJ64UJiZhQDPfhHCMaKcemRXM");
 
 #[program]
 pub mod borgpad {

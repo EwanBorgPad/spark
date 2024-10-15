@@ -1,5 +1,5 @@
 {
-  "address": "3YWxBeMNJwxCEi2ru4UfxEhTPjzAZnwCXEsWFgdpQGi5",
+  "address": "6Bz2wirsX2ZwJyq17GmyJ64UJiZhQDPfhHCMaKcemRXM",
   "metadata": {
     "name": "borgpad",
     "version": "0.1.0",
@@ -85,7 +85,7 @@
         },
         {
           "name": "program",
-          "address": "3YWxBeMNJwxCEi2ru4UfxEhTPjzAZnwCXEsWFgdpQGi5"
+          "address": "6Bz2wirsX2ZwJyq17GmyJ64UJiZhQDPfhHCMaKcemRXM"
         },
         {
           "name": "program_data"
