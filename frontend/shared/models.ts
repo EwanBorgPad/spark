@@ -66,12 +66,14 @@ const idSchema = () =>
       new RegExp(/^[A-Za-z0-9-]+$/),
       "Only letters, numbers, and dashes are allowed",
     )
-
+const solanaAddress = z.string().regex(/[1-9A-HJ-NP-Za-km-z]{32,44}/)
 /**
  * Schemas for project, type should be inferred from this.
  */
 export const infoSchema = z.object({
   id: idSchema(),
+
+  ///// project metadata info /////
   title: z.string().min(1),
   subtitle: z.string().min(1),
   logoUrl: urlSchema(),
@@ -85,6 +87,21 @@ export const infoSchema = z.object({
     socials: z.array(externalUrlSchema()),
   }),
   projectLinks: z.array(externalUrlSchema()),
+
+  ///// project token info /////
+  projectOwnerAddress: solanaAddress,
+
+  launchedTokenMintAddress: solanaAddress,
+  launchedTokenLpDistribution: z.number().int(),
+  launchedTokenCap: z.number().int(),
+
+  raisedTokenMintAddress: solanaAddress,
+  raisedTokenMinCap: z.number().int(),
+  raisedTokenMaxCap: z.number().int(),
+
+  cliffDuration: z.number().int(),
+  vestingDuration: z.number().int(),
+
   totalTokensForSale: z.number({ coerce: true }).int(),
   tge: z.object({
     raiseTarget: z.number({ coerce: true }).int(),
