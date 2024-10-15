@@ -44,8 +44,10 @@ const getProject = async ({
 }: {
   projectId: string
 }): Promise<ProjectModel> => {
-  const url = new URL(GET_PROJECT_API_URL, window.location.href)
-  url.searchParams.set("id", projectId)
+  const url = new URL(
+    `${GET_PROJECT_API_URL}/${projectId}`,
+    window.location.href,
+  )
 
   const response = await fetch(url)
   const json = await response.json()
