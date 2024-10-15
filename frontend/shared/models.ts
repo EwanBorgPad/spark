@@ -75,6 +75,7 @@ export const infoSchema = z.object({
   title: z.string().min(1),
   subtitle: z.string().min(1),
   logoUrl: urlSchema(),
+  thumbnailUrl: urlSchema().optional(),
   chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
   origin: z.string().min(1),
   sector: z.string().min(1),

@@ -34,7 +34,7 @@ const LaunchPoolCard = ({ project }: { project: ProjectModel }) => {
   return (
     <li className="flex w-full max-w-[344px] flex-col overflow-hidden rounded-lg border-bd-primary bg-secondary">
       <Img
-        src={project.info?.logoUrl}
+        src={project.info?.thumbnailUrl || project.info?.logoUrl}
         customClass="h-[189px] rounded-none"
         showFallback
       />
