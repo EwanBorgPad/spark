@@ -1,13 +1,9 @@
 import { AnchorProvider, BN, Idl, Program } from "@coral-xyz/anchor"
-import {
-  Commitment,
-  Connection,
-  Keypair,
-  PublicKey,
-  SystemProgram,
-} from "@solana/web3.js"
+import { Commitment, Connection, Keypair, PublicKey } from "@solana/web3.js"
 import { COMMITMENT_LEVEL, SOLANA_RPC_URL } from "./constants"
-import idl from './idl.json'
+
+import idl from './program/borgpad.json'
+import { Borgpad as BorgpadIdl } from "./program/borgpad"
 
 //// browser code
 import { Buffer } from "buffer"
@@ -21,18 +17,18 @@ type InitializeLbpInput = {
 }
 type InitializeLpbArgs = {
   uid: number
-  projectOwner: address
-  projectTokenMint: address
-  projectTokenLpDistribution: number // Example percentage
-  projectMaxCap: number
-  userTokenMint: address
-  userMinCap: number
-  userMaxCap: number
-  fundCollectionPhaseStartTime: Date
-  fundCollectionPhaseEndTime: Date
-  lpLockedPhaseLockingTime: Date
-  lpLockedPhaseVestingTime: Date
-  bump: number
+  projectOwnerAddress: address
+
+  launchedTokenMintAddress: address
+  launchedTokenLpDistribution: number
+  launchedTokenCap: number
+
+  raisedTokenMintAddress: address
+  raisedTokenMinCap: number
+  raisedTokenMaxCap: number
+
+  cliffDuration: number
+  vestingDuration: number
 }
 type InitializeLpbResult = {
   transactionId: string
@@ -40,92 +36,46 @@ type InitializeLpbResult = {
 export const initializeLpb = async ({ args, adminSecretKey }: InitializeLbpInput): Promise<InitializeLpbResult> => {
   const connection = new Connection(SOLANA_RPC_URL, COMMITMENT_LEVEL)
 
-  // // extract programId from IDL file to avoid adding specific configuration for it
-  // const programId = idl
-  //   .instructions.find(i => i.name === 'initialize')
-  //   ?.accounts.find(a => a.name === 'program')
-  //   ?.address
-  //
-  // if (!programId)
-  //   throw new Error('Cannot extract programId from IDL!')
-  //
-  // // the lib expects this
-  // idl.address = programId
-
-  //// Set up your provider - Server Code
-  // const provider = AnchorProvider.env();
-  // setProvider(provider);
-
-  //// Set up your provider - Browser code Code
-  // Initialize the wallet provider (e.g., Phantom wallet)
-  // const wallet = window.solana; // For Phantom wallet
-  //
-  // if (!wallet) {
-  //   throw new Error('Wallet not connected');
-  // }
-
   const adminKeypair = Keypair.fromSecretKey(new Uint8Array(adminSecretKey))
 
-  // Create the AnchorProvider
   const provider = new AnchorProvider(connection, adminKeypair, {
     commitment: COMMITMENT_LEVEL,
     preflightCommitment: COMMITMENT_LEVEL,
   })
 
-  // Load the IDL (Interface Description Language) for your program
-  // Create the Program instance
-  const program = new Program(idl as Idl, provider)
-
-  // Derive PDAs
-  const [configPda] = PublicKey.findProgramAddressSync(
-    [
-      Buffer.from('config'),
-    ],
-    program.programId,
-  )
-
-  const uid = args.uid
-
-  const [lbpPda] = PublicKey.findProgramAddressSync(
-    [
-      Buffer.from('lbp'),
-      Buffer.from(new Uint8Array(new BN(uid).toArray('le', 8))),
-    ],
-    program.programId,
-  )
+  const program = new Program(idl as Idl, provider) as Program<BorgpadIdl>
 
   // Send the transaction
   const tx = await program.methods
     .initializeLbp({
       uid: new BN(args.uid),
-      projectOwner: new PublicKey(args.projectOwner),
-      projectTokenMint: new PublicKey(args.projectTokenMint),
-      projectTokenLpDistribution: new PublicKey(args.projectTokenLpDistribution), // Example percentage
-      projectMaxCap: new BN(args.projectMaxCap),
-      userTokenMint: new PublicKey(args.userTokenMint),
-      userMinCap: new BN(args.userMinCap),
-      userMaxCap: new BN(args.userMaxCap),
-      fundCollectionPhaseStartTime: new BN(args.fundCollectionPhaseStartTime.getTime() / 1000),
-      fundCollectionPhaseEndTime: new BN(args.fundCollectionPhaseEndTime.getTime() / 1000),
-      lpLockedPhaseLockingTime: new BN(args.lpLockedPhaseLockingTime.getTime() / 1000),
-      lpLockedPhaseVestingTime: new BN(args.lpLockedPhaseVestingTime.getTime() / 1000),
-      bump: 1,
+      project: new PublicKey(args.projectOwnerAddress),
+
+      launchedTokenMint: new PublicKey(args.launchedTokenMintAddress),
+      launchedTokenLpDistribution: args.launchedTokenLpDistribution,
+      launchedTokenCap: new BN(args.launchedTokenCap),
+
+      raisedTokenMint: new PublicKey(args.raisedTokenMintAddress),
+      raisedTokenMinCap: new BN(args.raisedTokenMinCap),
+      raisedTokenMaxCap: new BN(args.raisedTokenMaxCap),
+
+      cliffDuration: new BN(args.cliffDuration),
+      vestingDuration: new BN(args.vestingDuration),
     })
     .accounts({
-      config: configPda,
-      lbp: lbpPda,
-      admin: adminKeypair.publicKey,
-      systemProgram: SystemProgram.programId,
+      adminAuthority: adminKeypair.publicKey,
+      tokenProgram: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+
+      raisedTokenMint: new PublicKey(args.raisedTokenMintAddress),
+      launchedTokenMint: new PublicKey(args.launchedTokenMintAddress),
     })
-    .signers([adminKeypair])
     .transaction()
 
-  tx.feePayer = adminKeypair.publicKey
-
-  const txId = await connection.sendTransaction(tx, [adminKeypair], {
+  // @deprecated - migrate to versioned transactions
+  const txId = await connection.sendTransaction(tx, [adminKeypair],{
     //// transaction options
     // skipPreflight: true,
-    // preflightCommitment: COMMITMENT_LEVEL
+    // preflightCommitment: COMMITMENT_LEVEL,
   })
 
   console.log('Signature status subscribing...')
