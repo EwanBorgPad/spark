@@ -19,3 +19,4 @@ wrangler.toml
 
 # misc
 .env
+tmp
