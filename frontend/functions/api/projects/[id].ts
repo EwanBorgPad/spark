@@ -133,16 +133,7 @@ export const onRequestPut: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: "Invalid request!", error }, 400)
     }
 
-    // check if exists
-    const isUpdated: D1Response = await findAndEditProjectById(
-      db,
-      id,
-      updatedData,
-    )
-    console.log(isUpdated)
-    if (!isUpdated.success) {
-      return jsonResponse({ message: isUpdated.error }, 409)
-    }
+    await findAndEditProjectById(db, id, updatedData)
 
     return jsonResponse({ message: `Project ${id} Updated!` }, 204)
   } catch (e) {
