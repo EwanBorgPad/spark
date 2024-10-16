@@ -1,7 +1,9 @@
 import { GetProjectsResponse, projectSchema } from "../../../shared/models"
+import { initializeLpb } from "../../../shared/anchor"
 import {
   getProjectById,
   hasAdminAccess,
+  hashStringToU64,
   jsonResponse,
   reportError,
 } from "../cfPagesFunctionsUtils"

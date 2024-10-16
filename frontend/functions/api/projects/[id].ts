@@ -41,9 +41,10 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   }
 }
 
-// @TODO - to be deleted
+
 /**
- * Post request handler - creates a project
+ * Put request handler - updates a project
+ * We don't use this anywhere, but it was and will be helpful for updating data when we change ProjectModel
  * @param ctx
  */
 export const onRequestPut: PagesFunction<ENV> = async (ctx) => {
