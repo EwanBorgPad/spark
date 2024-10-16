@@ -100,10 +100,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     // check if exists
     const existingProject = await getProjectById(db, data.info.id)
     if (existingProject) {
-      return jsonResponse(
-        { message: "Project with provided id already exists!" },
-        409,
-      )
+      return jsonResponse({ message: "Project with provided id already exists!", }, 409)
     }
 
     // commented out until it is integrated with the backoffice

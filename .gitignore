@@ -19,3 +19,5 @@ wrangler.toml
 
 # misc
 .env
+
+.prettierignore

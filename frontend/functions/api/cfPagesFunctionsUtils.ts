@@ -10,10 +10,9 @@ export const jsonResponse = (
   retval?: string | Record<string, unknown> | null,
   statusCode?: number,
 ): Response => {
-  const body =
-    retval !== null && typeof retval === "object"
-      ? JSON.stringify(retval)
-      : (retval as string)
+  const body = (retval !== null && typeof retval === 'object')
+    ? JSON.stringify(retval)
+    : retval as string
   const status = statusCode ?? 200
   return new Response(body, {
     status,
@@ -42,9 +41,7 @@ export const reportError = async (db: D1Database, e: Error) => {
     cause: e.cause,
   })
   await db
-    .prepare(
-      "INSERT INTO error (id, message, created_at, json) VALUES (?1, ?2, ?3, ?4);",
-    )
+    .prepare('INSERT INTO error (id, message, created_at, json) VALUES (?1, ?2, ?3, ?4);')
     .bind(id, message, createdAt, json)
     .run()
 }
@@ -52,37 +49,22 @@ export const reportError = async (db: D1Database, e: Error) => {
  * Call this function to check if the user has admin privileges in provided context.
  * @param ctx
  */
-export const hasAdminAccess = (
-  ctx: EventContext<
-    { ADMIN_API_KEY_HASH: string },
-    any,
-    Record<string, unknown>
-  >,
-) => {
-  const providedApiKey = (
-    ctx.request.headers.get("authorization") ?? ""
-  ).replace("Bearer ", "")
-  const providedApiKeyHash = createHash("sha256")
-    .update(providedApiKey)
-    .digest("hex")
+export const hasAdminAccess = (ctx: EventContext<{ ADMIN_API_KEY_HASH: string }, any, Record<string, unknown>>) => {
+  const providedApiKey = (ctx.request.headers.get('authorization') ?? '').replace('Bearer ', '')
+  const providedApiKeyHash = createHash('sha256').update(providedApiKey).digest('hex')
 
   const correctApiKeyHash = ctx.env.ADMIN_API_KEY_HASH
 
-  const isValid =
-    Boolean(providedApiKey) &&
-    Boolean(correctApiKeyHash) &&
-    providedApiKeyHash === correctApiKeyHash
+  const isValid = Boolean(providedApiKey) && Boolean(correctApiKeyHash)
+    && providedApiKeyHash === correctApiKeyHash
   return isValid
 }
 /**************************************/
 /********* PRIVATE FUNCTIONS **********/
 /**************************************/
 function uuidv4() {
-  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
-    (
-      +c ^
-      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
-    ).toString(16),
+  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+    (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
   )
 }
 
