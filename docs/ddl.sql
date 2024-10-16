@@ -8,7 +8,7 @@ CREATE TABLE "user" (
 );
 CREATE TABLE project (
     id TEXT NOT NULL PRIMARY KEY,
-    json JSONB NOT NULL DEFAULT '{}',w
+    json JSONB NOT NULL DEFAULT '{}'
 );
 CREATE TABLE cache_store (
     cache_key TEXT NOT NULL PRIMARY KEY,
