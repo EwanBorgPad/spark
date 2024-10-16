@@ -1,6 +1,6 @@
 import { AnchorProvider, BN, Idl, Program } from "@coral-xyz/anchor"
 import { Commitment, Connection, Keypair, PublicKey } from "@solana/web3.js"
-import { COMMITMENT_LEVEL, SOLANA_RPC_URL } from "./constants"
+import { COMMITMENT_LEVEL } from "./constants"
 
 import idl from './program/borgpad.json'
 import { Borgpad as BorgpadIdl } from "./program/borgpad"
@@ -14,6 +14,7 @@ type address = string
 type InitializeLbpInput = {
   args: InitializeLpbArgs
   adminSecretKey: number[]
+  rpcUrl: string
 }
 type InitializeLpbArgs = {
   uid: number
@@ -33,8 +34,8 @@ type InitializeLpbArgs = {
 type InitializeLpbResult = {
   transactionId: string
 }
-export const initializeLpb = async ({ args, adminSecretKey }: InitializeLbpInput): Promise<InitializeLpbResult> => {
-  const connection = new Connection(SOLANA_RPC_URL, COMMITMENT_LEVEL)
+export const initializeLpb = async ({ args, adminSecretKey, rpcUrl }: InitializeLbpInput): Promise<InitializeLpbResult> => {
+  const connection = new Connection(rpcUrl, COMMITMENT_LEVEL)
 
   const adminKeypair = Keypair.fromSecretKey(new Uint8Array(adminSecretKey))
 

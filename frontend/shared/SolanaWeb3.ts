@@ -1,4 +1,4 @@
-import { COMMITMENT_LEVEL, SOLANA_RPC_URL } from "./constants.ts"
+import { COMMITMENT_LEVEL, SOLANA_PUBLIC_RPC_URL } from "./constants.ts"
 
 type GetSplTokenBalanceArgs = {
   address: string
@@ -14,7 +14,7 @@ export async function getSplTokenBalance({
   address,
   tokenAddress,
 }: GetSplTokenBalanceArgs): Promise<TokenAmount | null> {
-  const getTokenAccountsByOwnerResponse = await fetch(SOLANA_RPC_URL, {
+  const getTokenAccountsByOwnerResponse = await fetch(SOLANA_PUBLIC_RPC_URL, {
     method: "post",
     headers: {
       "Content-Type": "application/json", // Specify the content type

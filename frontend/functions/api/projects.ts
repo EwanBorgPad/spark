@@ -6,6 +6,7 @@ type ENV = {
   DB: D1Database
   ADMIN_API_KEY_HASH: string
   ADMIN_AUTHORITY_SECRET_KEY: string
+  SOLANA_RPC_URL: string
 }
 /**
  * Get request handler - returns a project by id
@@ -61,8 +62,14 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: "Project with provided id already exists!", }, 409)
     }
 
+    if (!ctx.env.ADMIN_AUTHORITY_SECRET_KEY) throw new Error('ADMIN_AUTHORITY_SECRET_KEY missing!')
+    if (!ctx.env.SOLANA_RPC_URL) throw new Error('SOLANA_RPC_URL missing!')
+
     const adminSecretKey = ctx.env.ADMIN_AUTHORITY_SECRET_KEY.split(',').map(Number)
+    const rpcUrl = ctx.env.SOLANA_RPC_URL
+
     const uid = hashStringToU64(data.info.id)
+
     await initializeLpb({
       args: {
         uid,
@@ -81,6 +88,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         vestingDuration: data.info.vestingDuration,
       },
       adminSecretKey,
+      rpcUrl,
     })
 
     // persist in db
