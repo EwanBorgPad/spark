@@ -68,10 +68,6 @@ const LaunchPools = () => {
             onPageClick={onPageClick}
           />
         )}
-
-        {/* <Link to={"/launch-pools/puffer-finance"}>
-          <Button size="xl" color="primary" btnText="Go To Puffer Finance" />
-        </Link> */}
       </section>
 
       <ScrollRestoration />

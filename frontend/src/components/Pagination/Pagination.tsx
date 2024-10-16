@@ -20,18 +20,21 @@ const Pagination = ({ totalPages, currentPage, onPageClick }: Props) => {
         className="rotate-90 rounded-full"
         disabled={currentPage === 1}
       />
-      {pagesArray.map((pageNumber) => (
-        <Button
-          btnText={pageNumber.toString()}
-          key={pageNumber.toString()}
-          color="plain"
-          onClick={() => onPageClick(pageNumber)}
-          className={twMerge(
-            "rounded-full",
-            currentPage === pageNumber && "bg-indigo-400",
-          )}
-        />
-      ))}
+      <div className="flex items-center">
+        {pagesArray.map((pageNumber) => (
+          <Button
+            btnText={pageNumber.toString()}
+            key={pageNumber.toString()}
+            color="plain"
+            onClick={() => onPageClick(pageNumber)}
+            className={twMerge(
+              "rounded-full p-1",
+              currentPage === pageNumber &&
+                "bg-brand-primary text-brand-dimmed-1",
+            )}
+          />
+        ))}
+      </div>
       <Button.Icon
         onClick={() => onPageClick(currentPage + 1)}
         icon="SvgChevronDown"
