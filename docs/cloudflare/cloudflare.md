@@ -78,6 +78,26 @@ Tutorial: [Serverless API with Cloudflare Workers (Hono, D1 & Drizzle ORM)](http
 - [Monorepos](https://developers.cloudflare.com/pages/configuration/monorepos/)
 - [Reddit: Vercel vs Cloudflare Pages/Workers](https://www.reddit.com/r/nextjs/comments/s3ec29/vercel_vs_cloudflare_pages_workers/)
 
+### Issues
+
+Weird issues I've encountered with CloudFlare Workers
+
+#### Problem 1 - ip blocking
+
+While trying to do a blockchain call which worked locally I got the following error:
+
+```
+"logs": [
+    {
+      "message": [
+        "Error: failed to get recent blockhash: Error: 403 Forbidden:  {\"jsonrpc\":\"2.0\",\"error\":{\"code\": 403, \"message\":\"Your IP or provider is blocked from this endpoint\"}, \"id\": \"5063da60-6aeb-4222-8d37-6305ee787355\" } \r\n"
+      ],
+      "level": "error",
+      "timestamp": 1729004238979
+    }
+  ]
+```
+
 ## Other Cloudflare services
 
 - [Cloudflare Image Optimization](https://developers.cloudflare.com/images/)

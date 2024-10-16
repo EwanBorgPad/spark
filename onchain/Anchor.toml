@@ -7,15 +7,15 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-borgpad = "bpadbLrS3Mw2e1EDSEnYzYpNwAQgJQXXHkT57D4TTJ4"
+borgpad = "6Bz2wirsX2ZwJyq17GmyJ64UJiZhQDPfhHCMaKcemRXM"
 
 [provider]
 cluster = "localnet"
 wallet = "tests/helpers/local_deployer.json"
 
 [scripts]
-#test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/*.ts"
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/moveToVestingPhase.ts"
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/*.ts"
+#test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/moveToVestingPhase.ts"
 
 init-script = "yarn run ts-node scripts/initialize.ts"
 
@@ -23,7 +23,7 @@ init-script = "yarn run ts-node scripts/initialize.ts"
 url = "https://api.mainnet-beta.solana.com"
 
 [[test.genesis]]
-address = "bpadbLrS3Mw2e1EDSEnYzYpNwAQgJQXXHkT57D4TTJ4"
+address = "6Bz2wirsX2ZwJyq17GmyJ64UJiZhQDPfhHCMaKcemRXM"
 program = "target/deploy/borgpad.so"
 upgradeable = true
 

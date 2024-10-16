@@ -10,3 +10,5 @@ test-ledger
 .env
 dist
 build
+!target/idl/borgpad.json
+!target/types/borgpad.ts

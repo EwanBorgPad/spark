@@ -5,6 +5,9 @@ import { ProjectModel } from "../../shared/models.ts"
 
 const currentMoment = addDays(new Date(), 11)
 
+/**
+ * TODO @deprecate this
+ */
 export const dummyData: ProjectModel = {
   info: {
     id: "puffer-finance",
@@ -59,6 +62,20 @@ export const dummyData: ProjectModel = {
       },
     ],
     totalTokensForSale: 2000,
+
+    "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
+
+    "launchedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+    "launchedTokenLpDistribution": 50,
+    "launchedTokenCap": 100000,
+
+    "raisedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+    "raisedTokenMinCap": 1000,
+    "raisedTokenMaxCap": 1000000,
+
+    "cliffDuration": 1728998916,
+    "vestingDuration": 1731677316,
+
     tge: {
       raiseTarget: 2000000,
       projectCoin: {

@@ -14,12 +14,12 @@ use borgpad::state::config::Config;
 use borgpad::state::lbp::{Lbp};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // initialize()
-    initialize_lbp()
+    initialize()
+    // initialize_lbp()
 }
 
 fn initialize() -> Result<(), Box<dyn std::error::Error>> {
-    let deployer = read_keypair_file("../borgpad-devnet-deployer.json")?;
+    let deployer = read_keypair_file("./borgpad-devnet-deployer.json")?;
     let client = Client::new(Cluster::Devnet, Rc::new(deployer.insecure_clone()));
     let program = client.program(ID)?;
 

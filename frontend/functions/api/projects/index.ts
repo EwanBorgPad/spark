@@ -10,6 +10,7 @@ type ENV = {
   DB: D1Database
   ADMIN_API_KEY_HASH: string
   ADMIN_AUTHORITY_SECRET_KEY: string
+  SOLANA_RPC_URL: string
 }
 /**
  * Get request handler - returns a list of projects
@@ -103,33 +104,39 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: "Project with provided id already exists!", }, 409)
     }
 
-    // commented out until it is integrated with the backoffice
-    // const me = ''
-    // const adminSecretKey = ctx.env.ADMIN_AUTHORITY_SECRET_KEY.split(',').map(Number)
-    // const uid = hashStringToU64(data.info.id)
-    // await initializeLpb({
-    //   args: {
-    //     uid,
-    //     projectOwner: me,
-    //     projectTokenMint: me,
-    //     projectTokenLpDistribution: 50, // Example percentage
-    //     projectMaxCap: 1_000_000,
-    //     userTokenMint: me,
-    //     userMinCap: 100,
-    //     userMaxCap: 10_000,
-    //     fundCollectionPhaseStartTime: new Date(1_700_000_000 * 1000),
-    //     fundCollectionPhaseEndTime: new Date(1_710_000_000 * 1000),
-    //     lpLockedPhaseLockingTime: new Date(1_720_000_000 * 1000),
-    //     lpLockedPhaseVestingTime: new Date(1_730_000_000 * 1000),
-    //     bump: 1,
-    //   },
-    //   adminSecretKey,
-    // })
+    if (!ctx.env.ADMIN_AUTHORITY_SECRET_KEY) throw new Error('ADMIN_AUTHORITY_SECRET_KEY missing!')
+    if (!ctx.env.SOLANA_RPC_URL) throw new Error('SOLANA_RPC_URL missing!')
+
+    const adminSecretKey = ctx.env.ADMIN_AUTHORITY_SECRET_KEY.split(',').map(Number)
+    const rpcUrl = ctx.env.SOLANA_RPC_URL
+
+    const uid = hashStringToU64(data.info.id)
+
+    await initializeLpb({
+      args: {
+        uid,
+
+        projectOwnerAddress: data.info.projectOwnerAddress,
+
+        launchedTokenMintAddress: data.info.launchedTokenMintAddress,
+        launchedTokenLpDistribution: data.info.launchedTokenLpDistribution,
+        launchedTokenCap: data.info.launchedTokenCap,
+
+        raisedTokenMintAddress: data.info.raisedTokenMintAddress,
+        raisedTokenMinCap: data.info.raisedTokenMinCap,
+        raisedTokenMaxCap: data.info.raisedTokenMaxCap,
+
+        cliffDuration: data.info.cliffDuration,
+        vestingDuration: data.info.vestingDuration,
+      },
+      adminSecretKey,
+      rpcUrl,
+    })
 
     // persist in db
     await db
-      .prepare("INSERT INTO project (id, json) VALUES (?1, ?2)")
-      .bind(data.info.id, JSON.stringify(data))
+      .prepare("INSERT INTO project (id, json, created_at) VALUES (?1, ?2, ?3)")
+      .bind(data.info.id, JSON.stringify(data), new Date().toISOString())
       .run()
 
     return jsonResponse({ message: "Created!" }, 201)
