@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { backendApi } from "@/data/backendApi"
 import { useQuery } from "@tanstack/react-query"
@@ -8,15 +8,17 @@ import Img from "@/components/Image/Img"
 // import { getProjectsDummyResponse } from "@/data/projectsDummy"
 import launchPoolsBg from "@/assets/launchPools/launch-pools-background.png"
 import LaunchPoolCard from "@/components/Cards/LaunchPoolCard"
-import { GetProjectsResponse } from "shared/models"
+import { GetProjectsResponse, ProjectModel } from "shared/models"
+import Pagination from "@/components/Pagination/Pagination"
 
 const LaunchPools = () => {
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10)
-  const { t } = useTranslation()
+  const [projects, setProjects] = useState<ProjectModel[]>([])
+  // const { t } = useTranslation()
+  const limit = 9
 
   // @TODO UNCOMMENT
-  const { data } = useQuery<GetProjectsResponse>({
+  const { data, dataUpdatedAt } = useQuery<GetProjectsResponse>({
     queryFn: () =>
       backendApi.getProjects({
         page,
@@ -24,9 +26,17 @@ const LaunchPools = () => {
       }),
     queryKey: ["getExchange", page, limit],
   })
-  // @TODO REMOVE LINE
-  const filteredProjects = data?.projects
-  // const filteredProjects = getProjectsDummyResponse.projects
+
+  const onPageClick = (pageNum: number) => {
+    setPage(pageNum)
+  }
+
+  useEffect(() => {
+    if (!data?.projects) return
+    setProjects(data.projects)
+  }, [data?.projects, dataUpdatedAt])
+
+  const pagination = data?.pagination
 
   return (
     <main className="relative z-[10] min-h-screen w-full bg-transparent pt-[48px] md:pt-[68px]">
@@ -46,11 +56,18 @@ const LaunchPools = () => {
 
         <div className="mt-[64px] flex max-w-[1080px] flex-col items-center">
           <ul className="grid grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredProjects?.map((project) => (
+            {projects.map((project) => (
               <LaunchPoolCard project={project} key={project.info.id} />
             ))}
           </ul>
         </div>
+        {pagination && pagination.totalPages > 1 && (
+          <Pagination
+            totalPages={pagination.totalPages}
+            currentPage={page}
+            onPageClick={onPageClick}
+          />
+        )}
 
         {/* <Link to={"/launch-pools/puffer-finance"}>
           <Button size="xl" color="primary" btnText="Go To Puffer Finance" />
