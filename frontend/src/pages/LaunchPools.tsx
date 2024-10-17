@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-import { useTranslation } from "react-i18next"
 import { backendApi } from "@/data/backendApi"
 import { useQuery } from "@tanstack/react-query"
 import { ScrollRestoration } from "react-router-dom"
@@ -8,35 +7,28 @@ import Img from "@/components/Image/Img"
 // import { getProjectsDummyResponse } from "@/data/projectsDummy"
 import launchPoolsBg from "@/assets/launchPools/launch-pools-background.png"
 import LaunchPoolCard from "@/components/Cards/LaunchPoolCard"
-import { GetProjectsResponse, ProjectModel } from "shared/models"
-import Pagination from "@/components/Pagination/Pagination"
+import { GetProjectsResponse } from "shared/models"
+import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
 
 const LaunchPools = () => {
-  const [page, setPage] = useState(1)
-  const [projects, setProjects] = useState<ProjectModel[]>([])
-  // const { t } = useTranslation()
-  const limit = 9
+  const [projects, setProjects] = useState<ExpandedProject[]>([])
+  const limit = 999
 
   // @TODO UNCOMMENT
-  const { data, dataUpdatedAt } = useQuery<GetProjectsResponse>({
+  const { data } = useQuery<GetProjectsResponse>({
     queryFn: () =>
       backendApi.getProjects({
-        page,
+        page: 1,
         limit,
       }),
-    queryKey: ["getExchange", page, limit],
+    queryKey: ["getExchange", 1, limit],
   })
-
-  const onPageClick = (pageNum: number) => {
-    setPage(pageNum)
-  }
 
   useEffect(() => {
     if (!data?.projects) return
-    setProjects(data.projects)
-  }, [data?.projects, dataUpdatedAt])
-
-  const pagination = data?.pagination
+    const sortedProjects = sortProjectsPerStatus(data.projects)
+    setProjects(sortedProjects)
+  }, [data?.projects])
 
   return (
     <main className="relative z-[10] min-h-screen w-full bg-transparent pt-[48px] md:pt-[68px]">
@@ -61,13 +53,6 @@ const LaunchPools = () => {
             ))}
           </ul>
         </div>
-        {pagination && pagination.totalPages > 1 && (
-          <Pagination
-            totalPages={pagination.totalPages}
-            currentPage={page}
-            onPageClick={onPageClick}
-          />
-        )}
       </section>
 
       <ScrollRestoration />

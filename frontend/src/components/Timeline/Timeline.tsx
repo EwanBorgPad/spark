@@ -18,13 +18,24 @@ export type Props = {
 }
 
 export const timelineEventIds = [
-  "INACTIVE",
+  "PRE_WHITELIST",
   "REGISTRATION_OPENS",
   "SALE_OPENS",
   "SALE_CLOSES",
   "REWARD_DISTRIBUTION",
   "DISTRIBUTION_OVER",
 ] as const
+export const timelineEventIdRanks: Record<
+  (typeof timelineEventIds)[number],
+  number
+> = {
+  PRE_WHITELIST: 1,
+  REGISTRATION_OPENS: 2,
+  SALE_OPENS: 3,
+  SALE_CLOSES: 4,
+  REWARD_DISTRIBUTION: 5,
+  DISTRIBUTION_OVER: 6,
+}
 export type TimelineEventType = {
   label: string
   date: Date
@@ -35,6 +46,7 @@ export type ExpandedTimelineEventType = {
   displayedTime?: string
   wasEventBeforeCurrentMoment?: boolean
   nextEventDate: Date
+  idRank: number
 } & TimelineEventType
 
 const MAX_TIMELINE_SECTION_HEIGHT = 50
@@ -173,21 +185,22 @@ const Timeline = ({ timelineEvents }: Props) => {
       </div>
 
       {/* countdown events */}
-      {currentTgeEvent?.nextEventDate && currentTgeEvent.id !== "INACTIVE" && (
-        <>
-          {/* countdown for adding circle for finished event */}
-          <CountDownCallback
-            endOfEvent={currentTgeEvent.nextEventDate}
-            callbackWhenTimeExpires={updateTimeline}
-          />
-          {/* countdown for updating line timeline lengths every minute */}
-          <CountDownCallback
-            endOfEvent={currentTgeEvent.nextEventDate}
-            callbackAsPerInterval={updateTimeline}
-            interval={60000}
-          />
-        </>
-      )}
+      {currentTgeEvent?.nextEventDate &&
+        currentTgeEvent.id !== "PRE_WHITELIST" && (
+          <>
+            {/* countdown for adding circle for finished event */}
+            <CountDownCallback
+              endOfEvent={currentTgeEvent.nextEventDate}
+              callbackWhenTimeExpires={updateTimeline}
+            />
+            {/* countdown for updating line timeline lengths every minute */}
+            <CountDownCallback
+              endOfEvent={currentTgeEvent.nextEventDate}
+              callbackAsPerInterval={updateTimeline}
+              interval={60000}
+            />
+          </>
+        )}
     </section>
   )
 }

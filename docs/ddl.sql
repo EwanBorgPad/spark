@@ -27,7 +27,3 @@ CREATE TABLE error (
     created_at TIMESTAMP NOT NULL,
     json JSONB NOT NULL DEFAULT '{}'
 );
--- Migration for adding created_at timestamp to project 
--- Reason why we have written with 2 commands is because of SQLite: https://stackoverflow.com/questions/61966855/how-to-add-column-to-database-with-default
-ALTER TABLE project ADD created_at TIMESTAMP;
-UPDATE project SET created_at = CURRENT_TIMESTAMP;

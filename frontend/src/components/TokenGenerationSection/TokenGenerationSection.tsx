@@ -33,7 +33,7 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
 
   const renderComponent = (tgeEvent: ExpandedTimelineEventType) => {
     switch (tgeEvent.id) {
-      case "INACTIVE":
+      case "PRE_WHITELIST":
         return <span>{t("tge.not_opened_yet")}</span>
       case "REGISTRATION_OPENS":
         return <Whitelisting eventData={currentTgeEvent} />
