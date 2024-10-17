@@ -22,7 +22,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   try {
     const url = new URL(ctx.request.url)
     const page = parseInt(url.searchParams.get("page") || "1")
-    const limit = parseInt(url.searchParams.get("limit") || "10")
+    const limit = parseInt(url.searchParams.get("limit") || "9")
 
     if (page < 1 || limit < 1) {
       return new Response("Invalid pagination parameters", { status: 400 })
