@@ -3,7 +3,6 @@ import { initializeLpb } from "../../../shared/anchor"
 import {
   getProjectById,
   hasAdminAccess,
-  hashStringToU64,
   jsonResponse,
   reportError,
 } from "../cfPagesFunctionsUtils"
@@ -33,11 +32,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     const projects = await getProjectsFromDB(db, page, limit, offset)
 
-    if (projects) {
-      return jsonResponse(projects, 200)
-    } else {
-      return jsonResponse({ message: "Not found!" }, 404)
-    }
+    return jsonResponse(projects, 200)
   } catch (e) {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
@@ -50,10 +45,11 @@ const getProjectsFromDB = async (
   limit: number,
   offset: number,
 ): Promise<GetProjectsResponse | null> => {
-  // SQL query to fetch paginated projects
-  const query = `SELECT * FROM project LIMIT ? OFFSET ?`
-  const statement = db.prepare(query).bind(limit, offset)
-  const result = await statement.all()
+
+  const dbResponse = await db
+    .prepare(`SELECT * FROM project LIMIT ? OFFSET ?`)
+    .bind(limit, offset)
+    .all()
 
   const totalQuery = `SELECT COUNT(*) AS total FROM project`
   const totalResult = (await db.prepare(totalQuery).first()) as {
@@ -63,7 +59,7 @@ const getProjectsFromDB = async (
   const total = totalResult?.total || 0
   const totalPages = Math.ceil(total / limit)
 
-  const projects = result.results.map((project) =>
+  const projects = dbResponse.results.map((project) =>
     JSON.parse(project.json as string),
   )
 
@@ -146,4 +142,18 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
   }
+}
+
+const hashStringToU64 = (input: string): number => {
+  const FNV_PRIME: number = 1099511628211;
+  const OFFSET_BASIS: number = 14695981039346656037;
+
+  let hash: number = OFFSET_BASIS;
+
+  for (let i = 0; i < input.length; i++) {
+    hash ^= input.charCodeAt(i);
+    hash = (hash * FNV_PRIME) % 2 ** 53; // Ensure the hash stays within the safe integer range
+  }
+
+  return hash;
 }

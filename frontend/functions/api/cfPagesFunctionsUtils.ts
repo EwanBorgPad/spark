@@ -68,21 +68,6 @@ function uuidv4() {
   )
 }
 
-// not used
-export const hashStringToU64 = (input: string): number => {
-  const FNV_PRIME: number = 1099511628211
-  const OFFSET_BASIS: number = 14695981039346656037
-
-  let hash: number = OFFSET_BASIS
-
-  for (let i = 0; i < input.length; i++) {
-    hash ^= input.charCodeAt(i)
-    hash = (hash * FNV_PRIME) % 2 ** 53 // Ensure the hash stays within the safe integer range
-  }
-
-  return hash
-}
-
 export const getProjectById = async (
   db: D1Database,
   id: string,
@@ -90,7 +75,7 @@ export const getProjectById = async (
   const project = await db
     .prepare("SELECT * FROM project WHERE id = ?1")
     .bind(id)
-    .first<{ id: string; json: ProjectModel }>()
+    .first<{ id: string; json: ProjectModel, created_at: Date }>()
   return project ? JSON.parse(project.json) : null
 }
 
@@ -103,3 +88,4 @@ export const extractProjectId = (url: string) => {
 
   return id
 }
+
