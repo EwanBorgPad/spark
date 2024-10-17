@@ -46,20 +46,19 @@ const getProjectsFromDB = async (
   offset: number,
 ): Promise<GetProjectsResponse | null> => {
 
-  const dbResponse = await db
+  const selectProjects = await db
     .prepare(`SELECT * FROM project LIMIT ? OFFSET ?`)
     .bind(limit, offset)
     .all()
 
-  const totalQuery = `SELECT COUNT(*) AS total FROM project`
-  const totalResult = (await db.prepare(totalQuery).first()) as {
-    total: number
-  }
+  const selectCount = (await db
+    .prepare(`SELECT COUNT(*) AS total FROM project`)
+    .first()) as { total: number }
 
-  const total = totalResult?.total || 0
+  const total = selectCount?.total || 0
   const totalPages = Math.ceil(total / limit)
 
-  const projects = dbResponse.results.map((project) =>
+  const projects = selectProjects.results.map((project) =>
     JSON.parse(project.json as string),
   )
 

@@ -5,14 +5,14 @@ import {
   reportError,
 } from "../cfPagesFunctionsUtils"
 
-type GetENV = {
+type ENV = {
   DB: D1Database
 }
 /**
  * Get request handler - returns a project by id
  * @param ctx
  */
-export const onRequestGet: PagesFunction<GetENV> = async (ctx) => {
+export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
   try {
     const url = ctx.request.url

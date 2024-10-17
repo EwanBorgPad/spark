@@ -75,7 +75,7 @@ export const getProjectById = async (
   const project = await db
     .prepare("SELECT * FROM project WHERE id = ?1")
     .bind(id)
-    .first<{ id: string; json: ProjectModel, created_at: Date }>()
+    .first<{ id: string; json: ProjectModel}>()
   return project ? JSON.parse(project.json) : null
 }
 
