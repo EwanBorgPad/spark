@@ -3,27 +3,24 @@ import { backendApi } from "@/data/backendApi"
 import { useQuery } from "@tanstack/react-query"
 import { ScrollRestoration } from "react-router-dom"
 
-import Img from "@/components/Image/Img"
-import { getProjectsDummyResponse } from "@/data/projectsDummy"
 import launchPoolsBg from "@/assets/launchPools/launch-pools-background.png"
-import LaunchPoolCard from "@/components/Cards/LaunchPoolCard"
+
+import Img from "@/components/Image/Img"
 import { GetProjectsResponse } from "shared/models"
+import LaunchPoolCard from "@/components/Cards/LaunchPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
 
 const LaunchPools = () => {
   const [projects, setProjects] = useState<ExpandedProject[]>([])
-  const limit = 999
-  const data = getProjectsDummyResponse
 
-  // @TODO UNCOMMENT
-  // const { data } = useQuery<GetProjectsResponse>({
-  //   queryFn: () =>
-  //     backendApi.getProjects({
-  //       page: 1,
-  //       limit,
-  //     }),
-  //   queryKey: ["getExchange", 1, limit],
-  // })
+  const { data } = useQuery<GetProjectsResponse>({
+    queryFn: () =>
+      backendApi.getProjects({
+        page: 1,
+        limit: 999,
+      }),
+    queryKey: ["getProjects", 1],
+  })
 
   useEffect(() => {
     if (!data?.projects) return
