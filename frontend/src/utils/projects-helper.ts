@@ -19,32 +19,32 @@ export const getLaunchPoolData = (tgeEvent: ExpandedTimelineEventType) => {
   switch (tgeEvent.id) {
     case "PRE_WHITELIST":
       return {
-        badgeClassName: "",
+        badgeClassName: "text-fg-primary border-bd-primary bg-default",
         endMessage: `Whitelisting opens ${formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
       }
     case "REGISTRATION_OPENS":
       return {
-        badgeClassName: "",
+        badgeClassName: "text-fg-primary border-bd-secondary bg-tertiary",
         endMessage: `Whitelisting closes ${formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
       }
     case "SALE_OPENS":
       return {
-        badgeClassName: "",
+        badgeClassName: "text-fg-alt-default border-bd-secondary bg-primary",
         endMessage: `Sale Closes ${formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
       }
     case "SALE_CLOSES":
       return {
-        badgeClassName: "",
+        badgeClassName: "text-fg-primary border-primary bg-primary",
         endMessage: `Reward Distribution starts ${formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
       }
     case "REWARD_DISTRIBUTION":
       return {
-        badgeClassName: "",
+        badgeClassName: "text-primary border-bd-secondary bg-tertiary",
         endMessage: `Reward Distribution ends ${formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
       }
     case "DISTRIBUTION_OVER":
       return {
-        badgeClassName: "",
+        badgeClassName: "text-fg-primary border-bd-primary bg-default",
         endMessage: `Reward distribution ended ${tgeEvent.date}`,
       }
   }

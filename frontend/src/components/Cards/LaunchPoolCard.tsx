@@ -7,6 +7,7 @@ import Text from "@/components/Text"
 import { Badge } from "../Badge/Badge"
 import { Button } from "../Button/Button"
 import { ExpandedProject } from "@/utils/projects-helper"
+import { twMerge } from "tailwind-merge"
 
 const LaunchPoolCard = ({ project }: { project: ExpandedProject }) => {
   const { t } = useTranslation()
@@ -26,7 +27,13 @@ const LaunchPoolCard = ({ project }: { project: ExpandedProject }) => {
         customClass="h-[189px] rounded-none"
         showFallback
       />
-      <Badge label={label} className={badgeClassName} />
+      <Badge
+        label={label}
+        className={twMerge(
+          "absolute left-4 top-4 px-3 py-1 text-sm",
+          badgeClassName,
+        )}
+      />
       <div className="flex w-full flex-1 grow flex-col justify-between gap-4 p-4">
         <div className="flex w-full flex-col gap-4">
           <div className="flex flex-wrap gap-x-4 gap-y-1">
