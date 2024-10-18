@@ -13,7 +13,6 @@ import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
 const LaunchPools = () => {
   const [projects, setProjects] = useState<ExpandedProject[]>([])
 
-  // @TODO - UNCOMMENT
   const { data } = useQuery<GetProjectsResponse>({
     queryFn: () =>
       backendApi.getProjects({
