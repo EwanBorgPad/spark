@@ -15,37 +15,48 @@ export type ExpandedProject = ProjectModel & {
   }
 }
 
-export const getLaunchPoolData = (tgeEvent: ExpandedTimelineEventType) => {
+export const generateAdditionalEventData = (
+  tgeEvent: ExpandedTimelineEventType,
+) => {
   switch (tgeEvent.id) {
-    case "PRE_WHITELIST":
+    case "UPCOMING":
       return {
         badgeClassName: "text-fg-primary border-bd-primary bg-default",
         endMessage: `Whitelisting opens ${formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        badgeLabel: "Upcoming",
       }
     case "REGISTRATION_OPENS":
       return {
-        badgeClassName: "text-fg-primary border-bd-secondary bg-tertiary",
+        badgeClassName:
+          "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
         endMessage: `Whitelisting closes ${formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        badgeLabel: "Whitelisting",
       }
     case "SALE_OPENS":
       return {
-        badgeClassName: "text-fg-alt-default border-bd-secondary bg-primary",
+        badgeClassName:
+          "text-fg-alt-default border-bd-secondary bg-brand-primary",
         endMessage: `Sale Closes ${formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        badgeLabel: "Live Now",
       }
     case "SALE_CLOSES":
       return {
-        badgeClassName: "text-fg-primary border-primary bg-primary",
+        badgeClassName: "text-fg-primary border-bd-primary bg-default",
         endMessage: `Reward Distribution starts ${formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        badgeLabel: "Sale Over",
       }
     case "REWARD_DISTRIBUTION":
       return {
-        badgeClassName: "text-primary border-bd-secondary bg-tertiary",
+        badgeClassName:
+          "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
         endMessage: `Reward Distribution ends ${formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        badgeLabel: "Reward Distribution",
       }
     case "DISTRIBUTION_OVER":
       return {
         badgeClassName: "text-fg-primary border-bd-primary bg-default",
-        endMessage: `Reward distribution ended ${tgeEvent.date}`,
+        endMessage: `Reward distribution ended ${formatDateMonthDateHours(tgeEvent.date)}`,
+        badgeLabel: "Closed",
       }
   }
 }
@@ -56,9 +67,11 @@ export const sortProjectsPerStatus = (
   const expandedProjects = projects.map((project) => {
     const expandedTimeline = expandTimelineDataInfo(project.info.timeline)
     const currentEvent = getCurrentTgeEvent(expandedTimeline)
-    const { endMessage, badgeClassName } = getLaunchPoolData(currentEvent)
 
+    const { endMessage, badgeClassName } =
+      generateAdditionalEventData(currentEvent)
     const additionalData = { currentEvent, endMessage, badgeClassName }
+
     return { additionalData, ...project }
   })
   const sortedProjects = expandedProjects.sort(

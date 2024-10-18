@@ -3,7 +3,7 @@ import { isBefore } from "date-fns/isBefore"
 
 const preWhitelistStatus: ExpandedTimelineEventType = {
   label: "Registration not opened yet",
-  id: "PRE_WHITELIST",
+  id: "UPCOMING",
   idRank: 1,
   date: new Date(),
   nextEventDate: new Date(),

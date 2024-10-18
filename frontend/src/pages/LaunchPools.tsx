@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { backendApi } from "@/data/backendApi"
 import { useQuery } from "@tanstack/react-query"
 import { ScrollRestoration } from "react-router-dom"
@@ -13,6 +13,7 @@ import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
 const LaunchPools = () => {
   const [projects, setProjects] = useState<ExpandedProject[]>([])
 
+  // @TODO - UNCOMMENT
   const { data } = useQuery<GetProjectsResponse>({
     queryFn: () =>
       backendApi.getProjects({
