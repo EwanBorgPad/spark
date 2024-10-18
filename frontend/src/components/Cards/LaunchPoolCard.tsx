@@ -13,11 +13,7 @@ const LaunchPoolCard = ({ project }: { project: ExpandedProject }) => {
   const { t } = useTranslation()
 
   const {
-    additionalData: {
-      badgeClassName,
-      endMessage,
-      currentEvent: { label },
-    },
+    additionalData: { badgeClassName, endMessage, badgeLabel },
   } = project
 
   return (
@@ -28,7 +24,7 @@ const LaunchPoolCard = ({ project }: { project: ExpandedProject }) => {
         showFallback
       />
       <Badge
-        label={label}
+        label={badgeLabel}
         className={twMerge(
           "absolute left-4 top-4 px-3 py-1 text-sm",
           badgeClassName,

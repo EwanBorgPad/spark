@@ -12,6 +12,7 @@ export type ExpandedProject = ProjectModel & {
     currentEvent: ExpandedTimelineEventType
     endMessage: string
     badgeClassName: string
+    badgeLabel: string
   }
 }
 
@@ -68,9 +69,14 @@ export const sortProjectsPerStatus = (
     const expandedTimeline = expandTimelineDataInfo(project.info.timeline)
     const currentEvent = getCurrentTgeEvent(expandedTimeline)
 
-    const { endMessage, badgeClassName } =
+    const { endMessage, badgeClassName, badgeLabel } =
       generateAdditionalEventData(currentEvent)
-    const additionalData = { currentEvent, endMessage, badgeClassName }
+    const additionalData = {
+      currentEvent,
+      endMessage,
+      badgeClassName,
+      badgeLabel,
+    }
 
     return { additionalData, ...project }
   })
