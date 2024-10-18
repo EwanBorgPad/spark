@@ -54,7 +54,7 @@ const Img = ({
     setIsLoadingImg(false)
   }
 
-  if (!src || !showFallback) return null
+  if (!src && !showFallback) return null
 
   const renderImage = !isLoadingImg && !isFetchingLink
 

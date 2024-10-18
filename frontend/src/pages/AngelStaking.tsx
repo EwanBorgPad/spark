@@ -1,19 +1,19 @@
+import { ScrollRestoration } from "react-router-dom"
+
+import solanaImg from "@/assets/angelStaking/solana.png"
+import sanctumImg from "@/assets/angelStaking/sanctum.png"
 import angelStakingTexture1Mob from "@/assets/angelStaking/angelStakingTexture1-mob.png"
 import angelStakingTexture1 from "@/assets/angelStaking/angelStakingTexture1.png"
 import angelStakingBottom from "@/assets/angelStaking/angelStakingBottom-min.png"
-import sanctumImg from "@/assets/angelStaking/sanctum.png"
-import solanaImg from "@/assets/angelStaking/solana.png"
 
-import InvestmentFocus from "@/components/AngelStaking/InvestmentFocus"
-import WhyStakeSol from "@/components/AngelStaking/WhyStakeSol"
-import HowItWorks from "@/components/AngelStaking/HowItWorks"
-import { Button } from "@/components/Button/Button"
 import Img from "@/components/Image/Img"
-import { ScrollRestoration } from "react-router-dom"
 import Divider from "@/components/Divider"
-import Accordion from "@/components/Accordion/Accordion"
 import Steps from "@/components/AngelStaking/Steps"
+import { Button } from "@/components/Button/Button"
+import HowItWorks from "@/components/AngelStaking/HowItWorks"
+import WhyStakeSol from "@/components/AngelStaking/WhyStakeSol"
 import MaximiseValue from "@/components/AngelStaking/MaximiseValue"
+import InvestmentFocus from "@/components/AngelStaking/InvestmentFocus"
 
 const AngelStaking = () => {
   return (

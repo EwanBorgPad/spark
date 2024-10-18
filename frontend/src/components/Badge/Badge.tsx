@@ -5,7 +5,7 @@ import { twMerge } from "tailwind-merge"
 
 type BadgeProps = {
   label: string
-  icon: AvailableIcons
+  icon?: AvailableIcons
   className?: string
   iconClassName?: string
 }
@@ -18,7 +18,9 @@ const BadgeRoot = ({ label, icon, className, iconClassName }: BadgeProps) => {
         className,
       )}
     >
-      <Icon icon={icon} className={twMerge("text-[18px]", iconClassName)} />
+      {icon && (
+        <Icon icon={icon} className={twMerge("text-[18px]", iconClassName)} />
+      )}
       <span className="leading-normal">{label}</span>
     </div>
   )

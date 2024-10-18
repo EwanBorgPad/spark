@@ -1,6 +1,7 @@
 import {
   GetExchangeResponse,
   GetPresignedUrlResponse,
+  GetProjectsResponse,
   GetWhitelistingResult,
   ProjectModel,
   projectSchema,
@@ -33,7 +34,7 @@ const confirmResidency = async (args: ConfirmResidencyArgs) => {
 
   await fetch(url, {
     body: JSON.stringify(args),
-    method: "post"
+    method: "post",
   })
 }
 
@@ -42,8 +43,10 @@ const getProject = async ({
 }: {
   projectId: string
 }): Promise<ProjectModel> => {
-  const url = new URL(GET_PROJECT_API_URL, window.location.href)
-  url.searchParams.set("id", projectId)
+  const url = new URL(
+    `${GET_PROJECT_API_URL}/${projectId}`,
+    window.location.href,
+  )
 
   const response = await fetch(url)
   const json = await response.json()
@@ -51,9 +54,31 @@ const getProject = async ({
     const parsedJson = projectSchema.parse(json)
     return parsedJson
   } catch (e) {
-    console.error("GET /projects validation error!")
+    console.error("GET /projects/[id] validation error!")
     throw e
   }
+}
+
+const getProjects = async ({
+  page,
+  limit,
+}: {
+  page: number
+  limit: number
+}): Promise<GetProjectsResponse> => {
+  const url = new URL(GET_PROJECT_API_URL, window.location.href)
+  url.searchParams.set("page", page.toString())
+  url.searchParams.set("limit", (limit || 10).toString())
+
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json
+  // try {
+  // } catch (e) {
+  //   console.error("GET /projects validation error!")
+  //   throw e
+  // }
 }
 
 export type CreateProjectRequest = {
@@ -138,11 +163,12 @@ const uploadFileToBucket = async ({
 }
 
 export const backendApi = {
-  getWhitelistingStatus,
-  confirmResidency,
   getProject,
+  getProjects,
   getExchange,
   createProject,
   getPresignedUrl,
+  confirmResidency,
   uploadFileToBucket,
+  getWhitelistingStatus,
 }

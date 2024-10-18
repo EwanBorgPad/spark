@@ -316,6 +316,32 @@ const BackOffice = () => {
               />
             )}
           />
+          <div className="flex w-full flex-col">
+            <Controller
+              name="info.thumbnailUrl"
+              control={control}
+              render={({
+                field: { value, onChange, name },
+                fieldState: { error },
+              }) => (
+                <UploadField
+                  imgUrl={value} // input value
+                  onChange={onChange}
+                  adminKey={adminKey}
+                  disabled={isUploadDisabled}
+                  name={name}
+                  label="Project Thumbnail"
+                  fileName="project-thumbnail"
+                  previewClass="w-[328px] h-[189px] rounded-none"
+                  projectId={projectId}
+                  error={isUploadDisabled ? uploadPreconditionError : error}
+                />
+              )}
+            />
+            <span className="text-xs text-fg-tertiary">
+              Recommended minimum size: 512 x 296 px.
+            </span>
+          </div>
           <Controller
             name="info.sector"
             control={control}

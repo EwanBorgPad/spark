@@ -18,13 +18,22 @@ export type Props = {
 }
 
 export const timelineEventIds = [
-  "INACTIVE",
+  "UPCOMING",
   "REGISTRATION_OPENS",
   "SALE_OPENS",
   "SALE_CLOSES",
   "REWARD_DISTRIBUTION",
   "DISTRIBUTION_OVER",
 ] as const
+export const timelineEventIdRanks: Record<(typeof timelineEventIds)[number], number> =
+  {
+    UPCOMING: 1,
+    REGISTRATION_OPENS: 2,
+    SALE_OPENS: 3,
+    SALE_CLOSES: 4,
+    REWARD_DISTRIBUTION: 5,
+    DISTRIBUTION_OVER: 6,
+  }
 export type TimelineEventType = {
   label: string
   date: Date
@@ -35,6 +44,7 @@ export type ExpandedTimelineEventType = {
   displayedTime?: string
   wasEventBeforeCurrentMoment?: boolean
   nextEventDate: Date
+  idRank: number
 } & TimelineEventType
 
 const MAX_TIMELINE_SECTION_HEIGHT = 50
@@ -173,7 +183,7 @@ const Timeline = ({ timelineEvents }: Props) => {
       </div>
 
       {/* countdown events */}
-      {currentTgeEvent?.nextEventDate && currentTgeEvent.id !== "INACTIVE" && (
+      {currentTgeEvent?.nextEventDate && currentTgeEvent.id !== "UPCOMING" && (
         <>
           {/* countdown for adding circle for finished event */}
           <CountDownCallback

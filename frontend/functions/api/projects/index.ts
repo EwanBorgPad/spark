@@ -1,6 +1,11 @@
-import { ProjectModel, projectSchema } from "../../shared/models"
-import { hasAdminAccess, jsonResponse, reportError } from "./cfPagesFunctionsUtils"
-import { initializeLpb } from "../../shared/anchor"
+import { GetProjectsResponse, projectSchema } from "../../../shared/models"
+import { initializeLpb } from "../../../shared/anchor"
+import {
+  getProjectById,
+  hasAdminAccess,
+  jsonResponse,
+  reportError,
+} from "../cfPagesFunctionsUtils"
 
 type ENV = {
   DB: D1Database
@@ -9,32 +14,66 @@ type ENV = {
   SOLANA_RPC_URL: string
 }
 /**
- * Get request handler - returns a project by id
+ * Get request handler - returns a list of projects
  * @param ctx
  */
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
   try {
-    const url = ctx.request.url
-    const id = new URL(url).searchParams.get("id")
+    const url = new URL(ctx.request.url)
+    const page = parseInt(url.searchParams.get("page") || "1")
+    const limit = parseInt(url.searchParams.get("limit") || "9")
 
-    // validate request
-    if (!id) {
-      return jsonResponse({ message: "Please provide id query param" }, 400)
+    if (page < 1 || limit < 1) {
+      return new Response("Invalid pagination parameters", { status: 400 })
     }
 
-    const project = await getProjectById(db, id)
+    const offset = (page - 1) * limit
 
-    if (project) {
-      return jsonResponse(project, 200)
-    } else {
-      return jsonResponse({ message: "Not found!" }, 404)
-    }
+    const projects = await getProjectsFromDB(db, page, limit, offset)
+
+    return jsonResponse(projects, 200)
   } catch (e) {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
   }
 }
+
+const getProjectsFromDB = async (
+  db: D1Database,
+  page: number,
+  limit: number,
+  offset: number,
+): Promise<GetProjectsResponse | null> => {
+
+  const selectProjects = await db
+    .prepare(`SELECT * FROM project LIMIT ? OFFSET ?`)
+    .bind(limit, offset)
+    .all()
+
+  const selectCount = (await db
+    .prepare(`SELECT COUNT(*) AS total FROM project`)
+    .first()) as { total: number }
+
+  const total = selectCount?.total || 0
+  const totalPages = Math.ceil(total / limit)
+
+  const projects = selectProjects.results.map((project) =>
+    JSON.parse(project.json as string),
+  )
+
+  const response = {
+    projects: projects,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+    },
+  }
+  return response
+}
+
 /**
  * Post request handler - creates a project
  * @param ctx
@@ -93,8 +132,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     // persist in db
     await db
-      .prepare("INSERT INTO project (id, json, created_at) VALUES (?1, ?2, ?3)")
-      .bind(data.info.id, JSON.stringify(data), new Date().toISOString())
+      .prepare("INSERT INTO project (id, json) VALUES (?1, ?2)")
+      .bind(data.info.id, JSON.stringify(data))
       .run()
 
     return jsonResponse({ message: "Created!" }, 201)
@@ -102,17 +141,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
   }
-}
-
-const getProjectById = async (
-  db: D1Database,
-  id: string,
-): Promise<ProjectModel | null> => {
-  const project = await db
-    .prepare("SELECT * FROM project WHERE id = ?1")
-    .bind(id)
-    .first<{ id: string; json: ProjectModel }>()
-  return project ? JSON.parse(project.json) : null
 }
 
 const hashStringToU64 = (input: string): number => {

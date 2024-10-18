@@ -37,6 +37,7 @@ export const whitelistRequirementsObj: Record<
 }
 
 export const timelineEvents = [
+  "UPCOMING",
   "REGISTRATION_OPENS",
   "SALE_OPENS",
   "SALE_CLOSES",
@@ -45,6 +46,7 @@ export const timelineEvents = [
 ] as const
 export type TimelineEventId = typeof timelineEvents
 export const timelineEventLabels = {
+  UPCOMING: "Upcoming",
   REGISTRATION_OPENS: "Registration Opens",
   SALE_OPENS: "Sale Opens",
   SALE_CLOSES: "Sale Closes",

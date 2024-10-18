@@ -3,6 +3,9 @@ import { format } from "date-fns"
 export const formatDateForDisplay = (date: Date) => {
   return format(date, "do MMMM, yyyy")
 }
+export const formatDateMonthDateHours = (date: Date) => {
+  return format(date, "MMMM do, ha")
+}
 export const formatDateForTimer = (date: Date) => {
   return format(date, "do MMMM, h a")
 }

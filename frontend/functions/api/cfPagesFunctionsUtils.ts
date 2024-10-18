@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto"
+import { ProjectModel } from "../../shared/models"
 
 /**
  * Easier way to return response
@@ -66,3 +67,25 @@ function uuidv4() {
     (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
   )
 }
+
+export const getProjectById = async (
+  db: D1Database,
+  id: string,
+): Promise<ProjectModel | null> => {
+  const project = await db
+    .prepare("SELECT * FROM project WHERE id = ?1")
+    .bind(id)
+    .first<{ id: string; json: ProjectModel}>()
+  return project ? JSON.parse(project.json) : null
+}
+
+export const extractProjectId = (url: string) => {
+  const parsedUrl = new URL(url)
+  const pathSegments = parsedUrl.pathname.split("/")
+
+  const projectsIndex = pathSegments.indexOf("projects")
+  const id = projectsIndex !== -1 ? pathSegments[projectsIndex + 1] : null
+
+  return id
+}
+

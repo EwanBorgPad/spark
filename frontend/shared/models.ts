@@ -77,6 +77,7 @@ export const infoSchema = z.object({
   title: z.string().min(1),
   subtitle: z.string().min(1),
   logoUrl: urlSchema(),
+  thumbnailUrl: urlSchema().optional(),
   chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
   origin: z.string().min(1),
   sector: z.string().min(1),
@@ -143,16 +144,18 @@ export const rewardsSchema = z.object({
 
 export const projectSchema = z.object({
   info: infoSchema,
-  whitelistParticipants: z.number(),
-  saleData: z.object({
-    availableTokens: z.number({ coerce: true }).optional(),
-    saleSucceeded: z.boolean().optional(),
-    totalAmountRaised: z.number({ coerce: true }).optional(),
-    sellOutPercentage: z.number({ coerce: true }).optional(),
-    participantCount: z.number({ coerce: true }).optional(),
-    averageInvestedAmount: z.number({ coerce: true }).optional(),
-  }),
-  rewards: rewardsSchema,
+  whitelistParticipants: z.number().optional(),
+  saleData: z
+    .object({
+      availableTokens: z.number({ coerce: true }).optional(),
+      saleSucceeded: z.boolean().optional(),
+      totalAmountRaised: z.number({ coerce: true }).optional(),
+      sellOutPercentage: z.number({ coerce: true }).optional(),
+      participantCount: z.number({ coerce: true }).optional(),
+      averageInvestedAmount: z.number({ coerce: true }).optional(),
+    })
+    .optional(),
+  rewards: rewardsSchema.optional(),
 })
 export type ProjectInfoModel = z.infer<typeof infoSchema>
 export type ProjectRewardsModel = z.infer<typeof rewardsSchema>
@@ -180,4 +183,14 @@ export type GetExchangeResponse = {
 export type GetPresignedUrlResponse = {
   signedUrl: string
   publicUrl: string
+}
+export type PaginationType = {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
+export type GetProjectsResponse = {
+  projects: ProjectModel[]
+  pagination: PaginationType
 }

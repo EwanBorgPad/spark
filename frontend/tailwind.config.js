@@ -51,6 +51,7 @@ export default {
         bd: {
           primary: "#333741",
           secondary: "#1F242F",
+          "brand-secondary": "#496537",
           subtle: "#1F242F",
           emphasis: "#0C111D",
           disabled: "#333741",
