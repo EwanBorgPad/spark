@@ -14,6 +14,7 @@ export const dummyData: ProjectModel = {
     title: "Puffer Finance",
     subtitle: "Anti-Slashing Liquid Staking",
     logoUrl: "/images/puffer-finance/avatar.png",
+    thumbnailUrl: "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/westeros-validator-group/project-thumbnail-824297648",
     chain: { name: "Zora", iconUrl: "/images/puffer-finance/chain-icon.png" },
     origin: "🇮🇹 Italy",
     sector: "Healthcare",
