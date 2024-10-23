@@ -37,7 +37,7 @@ const Footer = ({ showBackground = true }: Props) => {
           <Link to="/terms-of-use">
             <Button
               color="plain"
-              btnText={"Terms of Use"}
+              btnText={t("terms_of_use")}
               className="text-sm font-normal"
             />
           </Link>
@@ -45,7 +45,7 @@ const Footer = ({ showBackground = true }: Props) => {
           <Link to="/terms-and-conditions">
             <Button
               color="plain"
-              btnText={"Terms And Conditions"}
+              btnText={t("terms_and_conditions")}
               className="text-sm font-normal"
             />
           </Link>
