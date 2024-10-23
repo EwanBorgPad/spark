@@ -1,33 +1,33 @@
 {
   "info": {
-    "id": "puffer-finance",
-    "title": "Puffer Finance",
+    "id": "madagascar-ski-resort",
+    "title": "Madagascar Ski Resort",
     "subtitle": "Anti-Slashing Liquid Staking",
-    "logoUrl": "/images/puffer-finance/avatar.png",
+    "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/project-logo-524470686",
     "origin": "🇮🇹 Italy",
     "sector": "Healthcare",
     "chain": {
       "name": "Zora",
-      "iconUrl": "/images/puffer-finance/chain-icon.png"
+      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/chain-icon-712293612"
     },
     "totalTokensForSale": 25000,
     "curator": {
-      "avatarUrl": "/images/puffer-finance/curator-avatar.png",
+      "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/curator-avatar-967639233",
       "fullName": "John Doe",
       "position": "Founding Contributor",
       "socials": [
         {
-          "url": "https://medium.com/@puffer.fi",
+          "url": "https://en.wikipedia.org/wiki/Blockchain",
           "iconType": "MEDIUM",
           "label": "Medium"
         },
         {
-          "url": "https://www.linkedin.com/company/puffer-finance",
+          "url": "https://en.wikipedia.org/wiki/Blockchain",
           "iconType": "LINKED_IN",
           "label": "Linkedin"
         },
         {
-          "url": "https://twitter.com/puffer_finance",
+          "url": "https://en.wikipedia.org/wiki/Blockchain",
           "iconType": "X_TWITTER",
           "label": "X (ex-Twitter)"
         }
@@ -35,23 +35,23 @@
     },
     "projectLinks": [
       {
-        "url": "https://www.puffer.fi",
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
         "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
         "iconType": "WEB",
         "label": ""
       },
       {
-        "url": "https://medium.com/@puffer.fi",
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
         "iconType": "MEDIUM",
         "label": ""
       },
       {
-        "url": "https://www.linkedin.com/company/puffer-finance",
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
         "iconType": "LINKED_IN",
         "label": ""
       },
       {
-        "url": "https://twitter.com/puffer_finance",
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
         "iconType": "X_TWITTER",
         "label": ""
       }
@@ -73,7 +73,7 @@
     "tge": {
       "raiseTarget": 2000000,
       "projectCoin": {
-        "iconUrl": "/images/puffer-finance/project-coin-icon.svg",
+        "iconUrl": "/images/madagascar-ski-resort/project-coin-icon.svg",
         "ticker": "LRC"
       },
       "fixedCoinPriceInBorg": 1,
@@ -81,7 +81,7 @@
       "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
       "liquidityPool": {
         "name": "Raydium",
-        "iconUrl": "/images/puffer-finance/liquidity-pool-icon.png",
+        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/liquidity-pool-icon-738904576",
         "lbpType": "Full Range",
         "lockingPeriod": "12-month lockup",
         "unlockDate": "2025-07-12T12:39:16Z",
@@ -91,19 +91,19 @@
     },
     "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
     "dataRoom": {
-      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
+      "backgroundImgUrl": "",
       "url": "#"
     },
     "timeline": [
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": "2024-10-20"
+        "date": "2024-09-20"
       },
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-11-02"
+        "date": "2024-10-12"
       },
       {
         "id": "SALE_CLOSES",
