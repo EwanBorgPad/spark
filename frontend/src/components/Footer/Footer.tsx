@@ -34,10 +34,18 @@ const Footer = ({ showBackground = true }: Props) => {
           <span className="text-sm">© 2024</span>
         </div>
         <div className="flex items-center gap-5 text-sm">
-          <Link to="/terms-of-service">
+          <Link to="/terms-of-use">
             <Button
               color="plain"
-              btnText={t("terms_of_service")}
+              btnText={"Terms of Use"}
+              className="text-sm font-normal"
+            />
+          </Link>
+          <div className="h-5 border-l-[1px] border-l-fg-primary/50"></div>
+          <Link to="/terms-and-conditions">
+            <Button
+              color="plain"
+              btnText={"Terms And Conditions"}
               className="text-sm font-normal"
             />
           </Link>

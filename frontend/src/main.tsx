@@ -1,24 +1,26 @@
-import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
-import ReactDOM from "react-dom/client"
 import React from "react"
-import "./index.css"
+import ReactDOM from "react-dom/client"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
 
 import { WalletProvider } from "@/hooks/useWalletContext"
-import TermsOfService from "./pages/TermsOfService"
+import TermsOfUse from "./pages/TermsOfUse"
+import BackOffice from "./pages/BackOffice"
 import NotFound from "./pages/NotFound"
-// import Homepage from "./pages/Homepage"
 import Project from "./pages/Project"
 import App from "./App"
+
 import { WhitelistStatusProvider } from "./hooks/useWhitelistContext"
 import { ProjectDataProvider } from "./hooks/useProjectData"
 import { BalanceProvider } from "@/hooks/useBalanceContext.tsx"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import BackOffice from "./pages/BackOffice"
 
 import { Buffer } from "buffer"
 import AngelStaking from "./pages/AngelStaking"
 import LaunchPools from "./pages/LaunchPools"
 import Manifesto from "./pages/Manifesto"
+
+import "./index.css"
+import TermsAndConditions from "./pages/TermsAndConditions"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient()
@@ -71,8 +73,12 @@ const router = createBrowserRouter([
         element: <Manifesto />,
       },
       {
-        path: "/terms-of-service",
-        element: <TermsOfService />,
+        path: "/terms-of-use",
+        element: <TermsOfUse />,
+      },
+      {
+        path: "/terms-and-conditions",
+        element: <TermsAndConditions />,
       },
       {
         path: "*",
