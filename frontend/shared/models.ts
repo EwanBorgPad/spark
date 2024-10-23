@@ -141,7 +141,9 @@ export const rewardsSchema = z.object({
   description: z.string(),
   payoutInterval: z.enum(["monthly"]),
 })
-
+export const userDepositSchema = z.object({
+  transaction: z.string()
+})
 export const projectSchema = z.object({
   info: infoSchema,
   whitelistParticipants: z.number().optional(),

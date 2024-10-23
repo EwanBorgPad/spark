@@ -14,6 +14,7 @@ const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
 const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
+const USER_DEPOSIT_URL = API_BASE_URL + "/userdeposit"
 
 const getWhitelistingStatus = async ({ address }: { address: string }) => {
   const url = new URL(GET_WHITELISTING_STATUS_API, window.location.href)
@@ -28,6 +29,9 @@ type ConfirmResidencyArgs = {
   publicKey: string
   message: string
   signature: unknown[]
+}
+type UserDepositArgs = {
+  transaction: string,
 }
 const confirmResidency = async (args: ConfirmResidencyArgs) => {
   const url = new URL(POST_CONFIRM_RESIDENCY_URL, window.location.href)
@@ -162,7 +166,24 @@ const uploadFileToBucket = async ({
   })
 }
 
+const userDeposit = async ({
+  transaction
+}: UserDepositArgs): Promise<any> => {
+  const url = new URL(USER_DEPOSIT_URL, window.location.href)
+  const response = await fetch(url, {
+    method: "POST",
+    body: transaction,
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
 export const backendApi = {
+  userDeposit,
   getProject,
   getProjects,
   getExchange,
