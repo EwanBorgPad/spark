@@ -1,3 +1,6 @@
+// @ts-nocheck
+// not checking for typings here because BackOffice has been put on hold
+// when we decide to use/develop the BackOffice again, we can enable type checks
 import {
   Controller,
   FieldError,

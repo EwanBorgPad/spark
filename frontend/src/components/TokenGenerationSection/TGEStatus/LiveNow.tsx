@@ -28,6 +28,7 @@ const LiveNow = ({ eventData }: LiveNowProps) => {
       <SaleProgress />
       {!whitelistStatus?.whitelisted && (
         <div className="flex w-full flex-col items-center" ref={whitelistRef}>
+          {/* TODO is this needed here? can't find it on figma design */}
           <WhitelistStatus />
         </div>
       )}

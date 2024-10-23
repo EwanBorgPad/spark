@@ -10,6 +10,10 @@ import { backendApi } from "@/data/backendApi.ts"
 import { Badge } from "../Badge/Badge"
 import { Icon } from "../Icon/Icon"
 
+/**
+ * @deprecated
+ * @constructor
+ */
 const WhitelistStatus = () => {
   const { t } = useTranslation()
   const { address } = useWalletContext()
@@ -20,8 +24,8 @@ const WhitelistStatus = () => {
   // move true values to the beginning of an array
   const sortedRequirements = whitelistStatus?.requirements
     ? [...whitelistStatus.requirements].sort((a, b) => {
-        return Number(b.isFulfilled) - Number(a.isFulfilled)
-      })
+      return Number(b.isFulfilled) - Number(a.isFulfilled)
+    })
     : []
 
   const { data } = useQuery({
@@ -31,7 +35,7 @@ const WhitelistStatus = () => {
   })
 
   return (
-    <div className="flex w-full max-w-[432px] flex-col gap-4 px-4">
+    <div className="flex w-full max-w-[432px] flex-col gap-4 px-4 border-2 border-red">
       <div className="flex w-full items-center justify-between">
         <span>{t("tge.whitelist_status")}</span>
         <Badge.Confirmation isConfirmed={!!isUserWhitelisted} />

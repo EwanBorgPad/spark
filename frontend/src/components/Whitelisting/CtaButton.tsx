@@ -7,10 +7,10 @@ import { useTranslation } from "react-i18next"
 import { getSignInWithTwitterUrl } from "@/hooks/useTwitterContext.tsx"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 
+// TODO drop this file
 const CtaButtonRoot = () => {
   return null
 }
-
 const NotResidingInUsBtn = () => {
   const [showModal, setShowModal] = useState(false)
   const { t } = useTranslation()

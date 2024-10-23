@@ -1,8 +1,13 @@
+/**
+ * @deprecated use shared/models.ts
+ */
 export type WhitelistingRequirementType =
   | "FOLLOW_ON_X"
   | "DONT_RESIDE_IN_US"
   | "HOLD_BORG_IN_WALLET"
-
+/**
+ * @deprecated use shared/models.ts
+ */
 export type WhitelistRequirement = {
   label: string
   description: string
@@ -10,7 +15,9 @@ export type WhitelistRequirement = {
   isMandatory: boolean
   heldAmount?: number
 }
-
+/**
+ * @deprecated use shared/models.ts
+ */
 export const whitelistRequirementsObj: Record<
   WhitelistingRequirementType,
   WhitelistRequirement

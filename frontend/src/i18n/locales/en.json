@@ -97,5 +97,14 @@
   "timeline.reward_distribution": "Reward Distribution",
   "timeline.distribution_over": "Distribution Over",
 
-  "terms_of_service": "Terms of Service"
+  "terms_of_service": "Terms of Service",
+
+  "compliance": "Compliance",
+  "tiers": "Tiers",
+
+  "confirm.country.of.residence": "Confirm country of residence",
+  "accept.terms.of.use": "Accept terms of use",
+  "how.much.will.you.invest": "How much are you willing to invest?",
+  "follow.NAME.on.twitter": "Follow {{ name }} on X",
+  "hold.AMOUNT.NAME.in.your.wallet": "Hold {{ amount }} {{ name }} in your wallet"
 }

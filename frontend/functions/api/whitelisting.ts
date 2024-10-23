@@ -7,6 +7,7 @@ import {
 } from "../../shared/models"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 
+// TODO remove this file I guess
 type ENV = {
   DB: D1Database
 }
@@ -47,7 +48,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     }, 500)
   }
 }
-
+// TODO use solanaAddress regex to validate this (there's a Zod schema somewhere for it)
 function isAddressInCorrectFormat(address: unknown): boolean {
   return typeof address === "string" && address.length === 44
 }

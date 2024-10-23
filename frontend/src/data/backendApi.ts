@@ -6,15 +6,74 @@ import {
   ProjectModel,
   projectSchema,
 } from "../../shared/models.ts"
+import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
 const GET_WHITELISTING_STATUS_API = API_BASE_URL + "/whitelisting"
+const GET_ELIGIBILITY_STATUS_API = API_BASE_URL + "/eligibilitystatus"
 const POST_CONFIRM_RESIDENCY_URL = API_BASE_URL + "/confirmresidency"
 const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
 const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
 
+const getEligibilityStatus = async ({ address, projectId }: { address: string, projectId: string }): Promise<EligibilityStatus> => {
+  // TODO connect to backend
+  return {
+    eligibilityTier: {
+      id: 'tier1',
+      label: 'Tier1',
+    },
+    compliances: [
+      {
+        type: 'COUNTRY_OF_RESIDENCE',
+        isCompleted: true,
+      },
+      {
+        type: 'ACCEPT_TERMS_OF_USE',
+        isCompleted: false,
+      },
+      {
+        type: 'PROVIDE_INVESTMENT_INTENT',
+        isCompleted: false,
+      }
+    ],
+    tiers: [
+      {
+        id: 'tier1',
+        label: 'Tier1',
+        isCompleted: true,
+        quests: [
+          {
+            type: 'FOLLOW_ON_TWITTER',
+            twitterHandle: '@borgpadhq',
+            twitterLabel: 'BorgPad',
+            isCompleted: true,
+          },
+          {
+            type: 'HOLD_TOKEN',
+            tokenName: 'BORG',
+            tokenAmount: '10000',
+            isCompleted: true,
+          }
+        ]
+      },
+      {
+        id: 'tier2',
+        label: 'Tier2',
+        isCompleted: false,
+        quests: [
+          {
+            type: 'HOLD_TOKEN',
+            tokenName: 'BORG',
+            tokenAmount: '20000',
+            isCompleted: false,
+          },
+        ],
+      },
+    ],
+  }
+}
 const getWhitelistingStatus = async ({ address }: { address: string }) => {
   const url = new URL(GET_WHITELISTING_STATUS_API, window.location.href)
   url.searchParams.set("address", address)
@@ -171,4 +230,5 @@ export const backendApi = {
   confirmResidency,
   uploadFileToBucket,
   getWhitelistingStatus,
+  getEligibilityStatus,
 }

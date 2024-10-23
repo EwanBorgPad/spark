@@ -1,5 +1,8 @@
 import { WhitelistingRequirementType } from "@/utils/constants"
 
+/**
+ * @deprecated
+ */
 export type WhitelistStatusType = {
   whitelisted: boolean
   requirements: {
@@ -9,6 +12,9 @@ export type WhitelistStatusType = {
   }[]
 }
 
+/**
+ * @deprecated
+ */
 export const whitelistDummyData: WhitelistStatusType = {
   whitelisted: true,
   requirements: [

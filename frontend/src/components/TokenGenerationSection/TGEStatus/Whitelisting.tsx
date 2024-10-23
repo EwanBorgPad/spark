@@ -7,18 +7,24 @@ import CountDownTimer from "@/components/CountDownTimer"
 import { TgeWrapper } from "../components/Wrapper"
 import WhitelistStatus from "../WhitelistStatus"
 import { formatDateForTimer } from "@/utils/date-helpers"
+import { EligibilitySection } from "@/components/EligibilitySection/EligibilitySection.tsx"
 
 type WhitelistingProps = {
   eventData: ExpandedTimelineEventType
 }
-
+/**
+ * TODO rename this component to better indicate what it is
+ * @param eventData
+ * @constructor
+ */
 const Whitelisting = ({ eventData }: WhitelistingProps) => {
   const { t } = useTranslation()
 
   return (
     <div className="flex w-full flex-col items-center gap-[52px]">
       <BasicTokenInfo />
-      <WhitelistStatus />
+      <EligibilitySection />
+      {/*<WhitelistStatus />*/}
       <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
         <TgeWrapper label={t("tge.whitelisting")}>
           {eventData?.nextEventDate && (
