@@ -5,7 +5,6 @@ import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import WhitelistingContent from "../components/WhitelistingContent"
 import CountDownTimer from "@/components/CountDownTimer"
 import { TgeWrapper } from "../components/Wrapper"
-import WhitelistStatus from "../WhitelistStatus"
 import { formatDateForTimer } from "@/utils/date-helpers"
 import { EligibilitySection } from "@/components/EligibilitySection/EligibilitySection.tsx"
 

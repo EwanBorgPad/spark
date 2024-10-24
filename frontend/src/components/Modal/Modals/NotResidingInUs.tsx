@@ -16,7 +16,7 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
   const { address, signMessage } = useWalletContext()
   const queryClient = useQueryClient()
 
-  const message = 'I Acknowledge That I am Not a US Resident'
+  const message = "I Acknowledge That I am Not a US Resident"
 
   const {
     mutate: confirmResidency,
@@ -24,7 +24,6 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
     isSuccess,
   } = useMutation({
     mutationFn: async (address: string) => {
-
       const signature = await signMessage(message)
 
       const data = {

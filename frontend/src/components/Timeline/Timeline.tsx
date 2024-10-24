@@ -25,15 +25,17 @@ export const timelineEventIds = [
   "REWARD_DISTRIBUTION",
   "DISTRIBUTION_OVER",
 ] as const
-export const timelineEventIdRanks: Record<(typeof timelineEventIds)[number], number> =
-  {
-    UPCOMING: 1,
-    REGISTRATION_OPENS: 2,
-    SALE_OPENS: 3,
-    SALE_CLOSES: 4,
-    REWARD_DISTRIBUTION: 5,
-    DISTRIBUTION_OVER: 6,
-  }
+export const timelineEventIdRanks: Record<
+  (typeof timelineEventIds)[number],
+  number
+> = {
+  UPCOMING: 1,
+  REGISTRATION_OPENS: 2,
+  SALE_OPENS: 3,
+  SALE_CLOSES: 4,
+  REWARD_DISTRIBUTION: 5,
+  DISTRIBUTION_OVER: 6,
+}
 export type TimelineEventType = {
   label: string
   date: Date

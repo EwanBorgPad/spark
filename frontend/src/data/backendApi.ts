@@ -17,56 +17,58 @@ const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
 
-const getEligibilityStatus = async ({ address, projectId }: { address: string, projectId: string }): Promise<EligibilityStatus> => {
+const getEligibilityStatus = async ({
+  address,
+  projectId,
+}: {
+  address: string
+  projectId: string
+}): Promise<EligibilityStatus> => {
   // TODO connect to backend
   return {
     eligibilityTier: {
-      id: 'tier1',
-      label: 'Tier1',
+      id: "tier1",
+      label: "Tier1",
     },
     compliances: [
       {
-        type: 'COUNTRY_OF_RESIDENCE',
-        isCompleted: true,
-      },
-      {
-        type: 'ACCEPT_TERMS_OF_USE',
+        type: "ACCEPT_TERMS_OF_USE",
         isCompleted: false,
       },
       {
-        type: 'PROVIDE_INVESTMENT_INTENT',
+        type: "PROVIDE_INVESTMENT_INTENT",
         isCompleted: false,
-      }
+      },
     ],
     tiers: [
       {
-        id: 'tier1',
-        label: 'Tier1',
+        id: "tier1",
+        label: "Tier1",
         isCompleted: true,
         quests: [
           {
-            type: 'FOLLOW_ON_TWITTER',
-            twitterHandle: '@borgpadhq',
-            twitterLabel: 'BorgPad',
-            isCompleted: true,
+            type: "FOLLOW_ON_TWITTER",
+            twitterHandle: "@borgpadhq",
+            twitterLabel: "BorgPad",
+            isCompleted: false,
           },
           {
-            type: 'HOLD_TOKEN',
-            tokenName: 'BORG',
-            tokenAmount: '10000',
+            type: "HOLD_TOKEN",
+            tokenName: "BORG",
+            tokenAmount: "10000",
             isCompleted: true,
-          }
-        ]
+          },
+        ],
       },
       {
-        id: 'tier2',
-        label: 'Tier2',
+        id: "tier2",
+        label: "Tier2",
         isCompleted: false,
         quests: [
           {
-            type: 'HOLD_TOKEN',
-            tokenName: 'BORG',
-            tokenAmount: '20000',
+            type: "HOLD_TOKEN",
+            tokenName: "BORG",
+            tokenAmount: "20000",
             isCompleted: false,
           },
         ],

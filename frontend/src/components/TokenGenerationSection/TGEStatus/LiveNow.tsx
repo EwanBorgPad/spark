@@ -9,9 +9,9 @@ import { formatDateForTimer } from "@/utils/date-helpers"
 import CountDownTimer from "@/components/CountDownTimer"
 import { PastOrders } from "../components/PastOrders"
 import { TgeWrapper } from "../components/Wrapper"
-import WhitelistStatus from "../WhitelistStatus"
 import TopContributor from "../components/TopContributor"
 import { useRef } from "react"
+import { EligibilitySection } from "@/components/EligibilitySection/EligibilitySection.tsx"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType
@@ -29,7 +29,7 @@ const LiveNow = ({ eventData }: LiveNowProps) => {
       {!whitelistStatus?.whitelisted && (
         <div className="flex w-full flex-col items-center" ref={whitelistRef}>
           {/* TODO is this needed here? can't find it on figma design */}
-          <WhitelistStatus />
+          <EligibilitySection />
         </div>
       )}
       <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">

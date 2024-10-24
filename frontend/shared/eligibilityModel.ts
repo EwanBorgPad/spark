@@ -1,5 +1,9 @@
 import { z } from "zod"
 
+// TODO finish the work on the frontend
+// TODO finish the work on the backend
+
+
 /**
  * Base of Quests that the User does in order to become eligible.
  */
@@ -32,10 +36,11 @@ const FollowOnTwitterQuestSchema = BaseQuestSchema.extend({
 })
 /**
  * Requires the User to confirm country of residence (that they are not from a blacklisted country).
+ * THIS IS NOT DONE THROUGH TERMS OF USE
  */
-const CountryOfResidenceQuestSchema = BaseQuestSchema.extend({
-  type: z.literal('COUNTRY_OF_RESIDENCE'),
-})
+// const CountryOfResidenceQuestSchema = BaseQuestSchema.extend({
+//   type: z.literal('COUNTRY_OF_RESIDENCE'),
+// })
 /**
  * Requires the User to accept the Terms of Use.
  */
@@ -56,7 +61,6 @@ const ProvideInvestmentIntentQuestSchema = BaseQuestSchema.extend({
 const QuestSchema = z.discriminatedUnion('type', [
   HoldTokenQuestSchema,
   FollowOnTwitterQuestSchema,
-  CountryOfResidenceQuestSchema,
   AcceptTermsOfUseQuestSchema,
   ProvideInvestmentIntentQuestSchema,
 ])
@@ -72,7 +76,6 @@ const CompletionSchema = z.object({
 const QuestWithCompletionSchema = z.union([
   HoldTokenQuestSchema.merge(CompletionSchema),
   FollowOnTwitterQuestSchema.merge(CompletionSchema),
-  CountryOfResidenceQuestSchema.merge(CompletionSchema),
   AcceptTermsOfUseQuestSchema.merge(CompletionSchema),
   ProvideInvestmentIntentQuestSchema.merge(CompletionSchema),
 ])

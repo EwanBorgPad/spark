@@ -26,6 +26,9 @@ type Context = {
 
 const WhitelistStatusContext = createContext<Context | undefined>(undefined)
 
+/**
+ * TODO @eligibility remove all whitelist references before adding actual whitelising (manual csv import)
+ */
 export function useWhitelistStatusContext() {
   const context = useContext(WhitelistStatusContext)
   if (!context)
