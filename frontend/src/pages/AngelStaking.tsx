@@ -14,6 +14,7 @@ import HowItWorks from "@/components/AngelStaking/HowItWorks"
 import WhyStakeSol from "@/components/AngelStaking/WhyStakeSol"
 import MaximiseValue from "@/components/AngelStaking/MaximiseValue"
 import InvestmentFocus from "@/components/AngelStaking/InvestmentFocus"
+import AngelStakingFAQ from "@/components/AngelStaking/AngelStakingFAQ"
 
 const AngelStaking = () => {
   return (
@@ -30,7 +31,7 @@ const AngelStaking = () => {
         <img
           src={angelStakingTexture1}
           role="presentation"
-          className="hidden w-full mix-blend-lighten md:flex"
+          className="text- hidden w-full mix-blend-lighten md:flex"
         />
       </div>
       <section className="z-[1] flex w-full flex-col items-start gap-5 px-5 pb-[60px] pt-20 md:pt-[120px]">
@@ -82,20 +83,7 @@ const AngelStaking = () => {
 
       <WhyStakeSol />
 
-      <section className="flex w-full flex-col items-center gap-6 px-5 py-16 md:px-16 md:py-28">
-        <Divider icon="SvgQuestionCloud" />
-        <h2 className="w-full text-center text-[40px] font-semibold leading-[48px]">
-          Frequently Asked Questions
-        </h2>
-        {/* <Accordion
-          label="Kuku"
-          subLabel=""
-          className="max-w-[768px] rounded-none border-t-[1px] border-none bg-transparent"
-        >
-          <span>Pliux</span>
-        </Accordion> */}
-        <h2>- TBD -</h2>
-      </section>
+      <AngelStakingFAQ />
 
       <section className="relative z-[1] w-full gap-5 overflow-hidden px-5 py-16 md:px-16 md:py-28">
         <div className="absolute top-0 z-[-1] flex max-w-[100vw] justify-center overflow-hidden lg:bottom-0">
