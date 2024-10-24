@@ -2,12 +2,12 @@ import { ScrollRestoration } from "react-router-dom"
 
 import solanaImg from "@/assets/angelStaking/solana.png"
 import sanctumImg from "@/assets/angelStaking/sanctum.png"
+import mainGraph from "@/assets/angelStaking/main-graph.png"
 import angelStakingTexture1Mob from "@/assets/angelStaking/angelStakingTexture1-mob.png"
 import angelStakingTexture1 from "@/assets/angelStaking/angelStakingTexture1.png"
 import angelStakingBottom from "@/assets/angelStaking/angelStakingBottom-min.png"
 
 import Img from "@/components/Image/Img"
-import Divider from "@/components/Divider"
 import Steps from "@/components/AngelStaking/Steps"
 import { Button } from "@/components/Button/Button"
 import HowItWorks from "@/components/AngelStaking/HowItWorks"
@@ -80,6 +80,15 @@ const AngelStaking = () => {
       <InvestmentFocus />
 
       <HowItWorks />
+
+      <div className="hidden w-full max-w-[1227px] px-4 pb-10 pt-[152px] md:block">
+        <Img
+          src={mainGraph}
+          showFallback={false}
+          size="custom"
+          customClass="rounded-none"
+        />
+      </div>
 
       <WhyStakeSol />
 
