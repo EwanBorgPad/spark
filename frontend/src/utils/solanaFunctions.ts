@@ -7,10 +7,10 @@ export type Wallet = {
   signTransaction: (transaction: Transaction) => Transaction
 }
 /**
- * 
+ * Function to get serialized and signed transaction from the user
  * @param amount amount of tokens to send
  * @param wallet wallet from the user (Phantom or Backpack)
- * @returns serialized transaction ready to be sent to backend in base64 string format
+ * @returns serialized transaction in base64 string format
  */
 export async function getTransactionToSend(
   amount: number,
@@ -27,7 +27,7 @@ export async function getTransactionToSend(
   return txToSend
 }
 /**
- * 
+ * Function to create and serialize SPL token transfer transaction
  * @param amount amount of token to send
  * @param wallet users wallet
  * @param LbpWalletKey LBP wallet (receiving wallet) public key address
@@ -50,7 +50,7 @@ async function createAndSerializeTransaction(
     return serializedTx
 }
 /**
- * 
+ * Function to create transfer instruction for SPL tokens
  * @param fromTokenAccount Associated Token Account for the sender (user)
  * @param toTokenAccount Associated Token Account for the receiver (LBP wallet)
  * @param ownerPublicKey Users wallet public key
@@ -83,7 +83,7 @@ function createTransferInstruction(
   })
   }
   /**
-   * 
+   * Function to create SPL token transfer transactions
    * @param connection solana RPC connection
    * @param wallet wallet from the user (phantom/backpack)
    * @param LbpWalletAddres LBP receiving wallet public key

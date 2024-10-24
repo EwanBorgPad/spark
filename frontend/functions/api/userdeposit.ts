@@ -4,11 +4,10 @@ import { userDepositSchema } from "../../shared/models"
 import { signatureSubscribe } from "../../src/utils/solanaFunctions"
 import { COMMITMENT_LEVEL } from "../../shared/constants"
 
-// EXPLORER_LINK = https://explorer.solana.com/tx/{txId}?cluster=devnet for devnet
 type ENV = {
   DB: D1Database
   SOLANA_RPC_URL: string,
-  EXPLORER_LINK: string
+  CLUSTER_NAME: string
 }
 
 /**
@@ -17,7 +16,7 @@ type ENV = {
  * @returns 
  */
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
-  const { SOLANA_RPC_URL, EXPLORER_LINK } = ctx.env
+  const { SOLANA_RPC_URL, CLUSTER_NAME } = ctx.env
   try {
     const connection = new Connection(SOLANA_RPC_URL,{
       confirmTransactionInitialTimeout: 10000,
@@ -38,7 +37,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     console.log('Signature status subscribing...')
     const status = await signatureSubscribe(connection, txId)
     console.log(`Signature status finished: ${status}.`)
-    const explorerLink = EXPLORER_LINK.replace("{txId}", txId)
+    const explorerLink = `https://explorer.solana.com/tx/${txId}?cluster=${CLUSTER_NAME}`
     console.log(explorerLink)
     return jsonResponse({ message: "User deposited successfully!", transactionLink: explorerLink}, 200)
   } catch (e) {
