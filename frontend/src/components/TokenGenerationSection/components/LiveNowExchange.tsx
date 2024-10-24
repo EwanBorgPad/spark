@@ -5,18 +5,17 @@ import { useTranslation } from "react-i18next"
 import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import { ConnectButton } from "@/components/Header/ConnectButton"
 import { useBalanceContext } from "@/hooks/useBalanceContext.tsx"
-import { useWalletContext } from "@/hooks/useWalletContext"
+import { useWalletContext, WalletProvider } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
-import React, { RefObject } from "react"
+import { RefObject } from "react"
 import { toast } from "react-toastify"
-import { PublicKey, Transaction, SystemProgram, Connection, clusterApiUrl, TransactionInstruction, Signer, Keypair} from "@solana/web3.js"
 import { backendApi } from "@/data/backendApi"
 import { useMutation } from "@tanstack/react-query"
-import { createAndSerializeTransaction } from "@/utils/solanaFunctions"
+import { getTransactionToSend } from "@/utils/solanaFunctions"
 
 type FormInputs = {
   borgInputValue: string
@@ -34,21 +33,25 @@ type Props = {
 
 const LiveNowExchange = ({ whitelistRequirementsRef }: Props) => {
 
+  // backend API for depositing tokens to LBP
   const {
-    mutate: userDeposit,
+    mutate: userDepositFunction,
   } = useMutation({
     mutationFn: async (transaction: string) => {
       backendApi.userDeposit({
-        transaction
+        payload: {
+          transaction
+        }
       })
     },
     onSuccess: () => {
       console.log("Successful user deposit!")
+      toast(`Deposited successfully!`)
     },
   })
   const { t } = useTranslation()
 
-  const { walletState } = useWalletContext()
+  const { walletState, walletProvider } = useWalletContext()
   const { isUserWhitelisted } = useWhitelistStatusContext()
   const { balance } = useBalanceContext()
 
@@ -61,30 +64,36 @@ const LiveNowExchange = ({ whitelistRequirementsRef }: Props) => {
   } = useForm<FormInputs>()
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
-    // @ts-ignore-next-line 
-    const wallet = window?.solana
-    if (!wallet.isConnected) {
-      toast("Wallet session expired, sign in again!")
-      throw new Error("Wallet not connected, sign in again!")
+    try {
+      const inputTokens = parseInt(data.borgInputValue)
+      if (walletState === 'CONNECTED') {
+        if (walletProvider === 'PHANTOM') {
+          // @ts-ignore-next-line
+          const wallet = window?.solana
+          const transaction = await getTransactionToSend(inputTokens, wallet)
+          userDepositFunction(transaction)
+          console.log("Submitted", data)
+        }
+        if (walletProvider === 'BACKPACK') {
+          // @ts-ignore-next-line
+          const wallet = window?.backpack
+          const transaction = await getTransactionToSend(inputTokens, wallet)
+          userDepositFunction(transaction)
+          console.log("Submitted", data)
+        }
+      } else {
+        toast("Wallet session expired, sign in again!")
+        throw new Error("Wallet not connected, sign in again!")
+      }
+      /**
+       * TODO @api for providing liquidity
+       *  - refetch balance
+       *  - refetch Tokens Available
+       */
+      // eslint-disable-next-line no-console
+    } catch (error) {
+      console.log(error)
     }
-    const amount = parseInt(data.borgInputValue)
-
-    const LbpWalletKey = new PublicKey("4GvgisWbCKJCFfksnU44qyRAVwd8YjxuhhsDCDSRjMnL")  // TODO: insert the address of the LBP wallet to receive all funds from users
-
-    const connection = new Connection(clusterApiUrl('devnet'))
-    
-    const transaction = await createAndSerializeTransaction(amount, wallet, LbpWalletKey, connection)
-    // convert serialized tx to base64 string for sending it to backend
-    const uint8tx = new Uint8Array(transaction)
-    const txToSend = uint8ArrayToBase64(uint8tx)
-    userDeposit(txToSend)
-    /**
-     * TODO @api for providing liquidity
-     *  - refetch balance
-     *  - refetch Tokens Available
-     */
-    // eslint-disable-next-line no-console
-    console.log("Submitted", data)
   }
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
@@ -247,9 +256,5 @@ const LiveNowExchange = ({ whitelistRequirementsRef }: Props) => {
     </TgeWrapper.Inner>
   )
 }
-// Function to convert Uint8Array to Base64
-function uint8ArrayToBase64(uint8Array: Uint8Array) {
-  const binaryString = String.fromCharCode(...uint8Array);
-  return btoa(binaryString)
-}
+
 export default LiveNowExchange

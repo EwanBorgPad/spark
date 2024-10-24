@@ -1,7 +1,31 @@
 import { Connection, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js"
-import { USDC_DEV_ADDRESS } from "../../shared/constants"
+import { SOLANA_PUBLIC_RPC_URL, USDC_DEV_ADDRESS } from "../../shared/constants"
 import { Commitment } from "shared/SolanaWeb3"
+export type Wallet = {
+  publicKey: PublicKey,
+  isConnected: boolean,
+  signTransaction: (transaction: Transaction) => Transaction
+}
+/**
+ * 
+ * @param amount amount of tokens to send
+ * @param wallet wallet from the user (Phantom or Backpack)
+ * @returns serialized transaction ready to be sent to backend in base64 string format
+ */
+export async function getTransactionToSend(
+  amount: number,
+  wallet: Wallet,
+) {
+  const LbpWalletKey = new PublicKey("4GvgisWbCKJCFfksnU44qyRAVwd8YjxuhhsDCDSRjMnL")  // TODO: insert the address of the ACTUAL LBP wallet, this one is Vanja's
 
+  const connection = new Connection(SOLANA_PUBLIC_RPC_URL)
+  
+  const transaction = await createAndSerializeTransaction(amount, wallet, LbpWalletKey, connection)
+  // convert serialized tx to base64 string for sending it to backend
+  const uint8tx = new Uint8Array(transaction)
+  const txToSend = uint8ArrayToBase64(uint8tx)
+  return txToSend
+}
 /**
  * 
  * @param amount amount of token to send
@@ -10,9 +34,9 @@ import { Commitment } from "shared/SolanaWeb3"
  * @param connection solana RPC connection
  * @returns signed and serialized transaction
  */
-export async function createAndSerializeTransaction(
+async function createAndSerializeTransaction(
     amount: number, 
-    wallet: any, 
+    wallet: Wallet, 
     LbpWalletKey: PublicKey, 
     connection: Connection
 ) {
@@ -34,7 +58,7 @@ export async function createAndSerializeTransaction(
  * @param tokenMintAccount Mint of the token to send
  * @returns Transfer instruction to be used in the transaction
  */
-export function createTransferInstruction(
+function createTransferInstruction(
     fromTokenAccount: PublicKey,
     toTokenAccount: PublicKey,
     ownerPublicKey: PublicKey,
@@ -67,7 +91,7 @@ export function createTransferInstruction(
    * @param amount amount of token to send
    * @returns transaction with spl token transfer instruction
    */
-  async function createSplTokenTransaction(connection: Connection, wallet: any, LbpWalletAddres: PublicKey, mintAddress: PublicKey, amount: number) {
+  async function createSplTokenTransaction(connection: Connection, wallet: Wallet, LbpWalletAddres: PublicKey, mintAddress: PublicKey, amount: number) {
     // Get the associated token accounts
     const fromTokenAccount = await connection.getTokenAccountsByOwner(
         wallet.publicKey,
@@ -101,6 +125,12 @@ export function createTransferInstruction(
     // Add the instruction to the transaction
     tx.add(transferInstruction)
     return tx
+}
+
+// Function to convert Uint8Array to Base64
+function uint8ArrayToBase64(uint8Array: Uint8Array) {
+  const binaryString = String.fromCharCode(...uint8Array);
+  return btoa(binaryString)
 }
 
 export async function signatureSubscribe(connection: Connection, txId: string): Promise<Commitment> {

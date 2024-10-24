@@ -25,13 +25,16 @@ const getWhitelistingStatus = async ({ address }: { address: string }) => {
 
   return result
 }
+export type TransactionRequest = {
+  transaction: string
+}
 type ConfirmResidencyArgs = {
   publicKey: string
   message: string
   signature: unknown[]
 }
 type UserDepositArgs = {
-  transaction: string,
+  payload: TransactionRequest,
 }
 const confirmResidency = async (args: ConfirmResidencyArgs) => {
   const url = new URL(POST_CONFIRM_RESIDENCY_URL, window.location.href)
@@ -167,14 +170,15 @@ const uploadFileToBucket = async ({
 }
 
 const userDeposit = async ({
-  transaction
+  payload
 }: UserDepositArgs): Promise<any> => {
   const url = new URL(USER_DEPOSIT_URL, window.location.href)
+  const tx = JSON.stringify(payload)
   const response = await fetch(url, {
     method: "POST",
-    body: transaction,
+    body: tx,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     }
   })
   const json = await response.json()
