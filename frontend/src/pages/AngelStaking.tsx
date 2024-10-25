@@ -120,11 +120,12 @@ const AngelStaking = () => {
           <Button
             btnText="Register Your Interest"
             size="xl"
-            className="px-4 py-5 text-lg font-medium leading-normal"
+            className="px-4 py-5 text-lg leading-normal"
             textClassName="text-base font-normal"
           />
         </div>
       </section>
+
       <ScrollRestoration />
     </main>
   )

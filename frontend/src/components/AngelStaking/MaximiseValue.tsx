@@ -40,7 +40,7 @@ const MaximiseValue = () => {
 
   const { isActive } = useScrollAnimation({
     ref: ref,
-    threshold: isMobile ? 0.45 : 0.25,
+    threshold: isMobile ? 0.15 : 0.25,
   })
 
   return (
