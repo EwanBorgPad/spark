@@ -30,9 +30,10 @@ const LaunchPools = () => {
 
   return (
     <main className="relative z-[10] min-h-screen w-full bg-transparent pt-[48px] md:pt-[68px]">
-      <Img
+      <img
         src={launchPoolsBg}
-        customClass="w-full absolute top-[48px] md:top-[68px] z-[-1]"
+        className="absolute top-[48px] z-[-1] w-full md:top-[68px]"
+        role="presentation"
       />
 
       <section className=": z-[1] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">

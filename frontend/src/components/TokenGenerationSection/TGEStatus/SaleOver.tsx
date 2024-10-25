@@ -98,7 +98,7 @@ const SaleOver = ({ eventData }: LiveProps) => {
       {projectData?.saleData?.saleSucceeded && (
         <div
           ref={contributionsRef}
-          className="relative flex w-full flex-col items-center gap-9 pt-[80px]"
+          className="relative flex w-full flex-col items-center gap-9 px-4 pt-[80px]"
         >
           <Divider icon="SvgHandWithWallet" />
           <div

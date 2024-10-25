@@ -99,22 +99,22 @@
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": "2024-06-20"
+        "date": "2024-10-20"
       },
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-07-02"
+        "date": "2024-11-02"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-07-07"
+        "date": "2024-11-12"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2024-07-10"
+        "date": "2024-11-20"
       },
       {
         "id": "DISTRIBUTION_OVER",

@@ -1,34 +1,34 @@
 {
   "info": {
-    "id": "puffer-finance",
-    "title": "Puffer Finance",
-    "subtitle": "Anti-Slashing Liquid Staking",
-    "logoUrl": "/images/puffer-finance/avatar.png",
-    "thumbnailUrl": "",
-    "origin": "🇮🇹 Italy",
+    "id": "felicia-ai",
+    "title": "Felicia AI",
+    "subtitle": "Decentralized GPUs for AI Inference API",
+    "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/felicia-ai/project-logo-369908242",
+    "thumbnailUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/felicia-ai/project-logo-369908242",
+    "origin": "🇪🇺 Europe",
     "sector": "Healthcare",
     "chain": {
-      "name": "Zora",
-      "iconUrl": "/images/puffer-finance/chain-icon.png"
+      "name": "Zoraa",
+      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/felicia-ai/chain-icon-388759332"
     },
-    "totalTokensForSale": 25000,
+    "totalTokensForSale": 900000,
     "curator": {
-      "avatarUrl": "/images/puffer-finance/curator-avatar.png",
-      "fullName": "John Doe",
-      "position": "Founding Contributor",
+      "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/felicia-ai/curator-avatar-12692976",
+      "fullName": "Molly Millions",
+      "position": "Web3 Veteran",
       "socials": [
         {
-          "url": "https://medium.com/@puffer.fi",
+          "url": "https://en.wikipedia.org/wiki/Blockchain",
           "iconType": "MEDIUM",
           "label": "Medium"
         },
         {
-          "url": "https://www.linkedin.com/company/puffer-finance",
+          "url": "https://en.wikipedia.org/wiki/Blockchain",
           "iconType": "LINKED_IN",
           "label": "Linkedin"
         },
         {
-          "url": "https://twitter.com/puffer_finance",
+          "url": "https://en.wikipedia.org/wiki/Blockchain",
           "iconType": "X_TWITTER",
           "label": "X (ex-Twitter)"
         }
@@ -36,23 +36,23 @@
     },
     "projectLinks": [
       {
-        "url": "https://www.puffer.fi",
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
         "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
         "iconType": "WEB",
         "label": ""
       },
       {
-        "url": "https://medium.com/@puffer.fi",
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
         "iconType": "MEDIUM",
         "label": ""
       },
       {
-        "url": "https://www.linkedin.com/company/puffer-finance",
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
         "iconType": "LINKED_IN",
         "label": ""
       },
       {
-        "url": "https://twitter.com/puffer_finance",
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
         "iconType": "X_TWITTER",
         "label": ""
       }
@@ -72,17 +72,17 @@
     "vestingDuration": 1731677316,
 
     "tge": {
-      "raiseTarget": 2000000,
+      "raiseTarget": 39332,
       "projectCoin": {
-        "iconUrl": "/images/puffer-finance/project-coin-icon.svg",
+        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/felicia-ai/project-coin-icon-363631647",
         "ticker": "LRC"
       },
-      "fixedCoinPriceInBorg": 1,
-      "whitelistParticipants": 1698,
+      "fixedCoinPriceInBorg": 0.05111,
+      "whitelistParticipants": 332,
       "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
       "liquidityPool": {
         "name": "Raydium",
-        "iconUrl": "/images/puffer-finance/liquidity-pool-icon.png",
+        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/liquidity-pool-icon-738904576",
         "lbpType": "Full Range",
         "lockingPeriod": "12-month lockup",
         "unlockDate": "2025-07-12T12:39:16Z",
@@ -92,29 +92,29 @@
     },
     "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
     "dataRoom": {
-      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
+      "backgroundImgUrl": "",
       "url": "#"
     },
     "timeline": [
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": "2024-10-20"
+        "date": "2024-09-20"
       },
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-11-02"
+        "date": "2024-09-12"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-11-07"
+        "date": "2024-09-21"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2024-11-10"
+        "date": "2024-10-20"
       },
       {
         "id": "DISTRIBUTION_OVER",
@@ -128,7 +128,7 @@
         "label": "Hold 20,000 BORG in your wallet",
         "description": "",
         "isMandatory": true,
-        "heldAmount": 20000
+        "heldAmount": 11000
       },
       {
         "type": "FOLLOW_ON_X",
@@ -144,7 +144,7 @@
       }
     ]
   },
-  "whitelistParticipants": 768,
+  "whitelistParticipants": 211,
   "saleData": {
     "availableTokens": 12403,
     "saleSucceeded": true,

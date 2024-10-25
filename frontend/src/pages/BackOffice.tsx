@@ -700,8 +700,9 @@ const BackOffice = () => {
                 )}
               />
               <span className="text-xs">
-                Image should be black & white (see existing projects). Opacity
-                will automatically be lowered to 10%.
+                Image should be black & white (see existing projects) with
+                transparent background. Opacity will automatically be lowered to
+                10%.
               </span>
             </div>
           </BoWrapper>
