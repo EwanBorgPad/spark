@@ -12,7 +12,7 @@ type WhitelistingProps = {
   eventData: ExpandedTimelineEventType
 }
 /**
- * TODO rename this component to better indicate what it is
+ * TODO rename this component to better indicate what it is =>> RegistrationOpensPhase
  * @param eventData
  * @constructor
  */

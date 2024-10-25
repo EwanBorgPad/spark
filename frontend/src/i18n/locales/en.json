@@ -102,8 +102,19 @@
   "compliance": "Compliance",
   "tiers": "Tiers",
 
-  "accept.terms.of.use": "Accept terms of use",
   "how.much.will.you.invest": "How much are you willing to invest?",
   "follow.NAME.on.twitter": "Follow {{ name }} on X",
-  "hold.AMOUNT.NAME.in.your.wallet": "Hold {{ amount }} {{ name }} in your wallet"
+  "hold.AMOUNT.NAME.in.your.wallet": "Hold {{ amount }} {{ name }} in your wallet",
+
+  "accept.terms.of.use.quest.heading": "Accept our Terms of Use",
+  "accept.terms.of.use.quest.button": "Proceed to disclaimer",
+  "accept.terms.of.use.quest.description": "This LBP is not available for US residents. To be whitelisted, please acknowledge that you don’t reside in the USA.",
+  "accept.terms.of.use.quest.modal.button": "Confirm",
+  "accept.terms.of.use.quest.message": "I acknowledge that I have read and accepted the Terms of Use",
+
+  "investment.intent.quest.heading": "Express your investment interest.",
+  "investment.intent.quest.button": "Enter Amount.",
+  "investment.intent.quest.description": "Express your investment interest in this project.",
+  "investment.intent.quest.modal.button": "Confirm Amount",
+  "investment.intent.quest.message": "I acknowledge that I plan to invest {{ amount }} in {{ projectId }}"
 }

@@ -142,6 +142,50 @@
         "description": "",
         "isMandatory": true
       }
+    ],
+    "tiers": [
+      {
+        "id": "tier1",
+        "label": "Tier1",
+        "isCompleted": true,
+        "quests": [
+          {
+            "type": "FOLLOW_ON_TWITTER",
+            "twitterHandle": "@borgpadhq",
+            "twitterLabel": "BorgPad",
+            "isCompleted": true
+          },
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "BORG",
+            "tokenAmount": "10000",
+            "isCompleted": true
+          }
+        ],
+        "benefits": {
+          "startDate": "2024-10-23",
+          "minInvestment": "10",
+          "maxInvestment": "999"
+        }
+      },
+      {
+        "id": "tier2",
+        "label": "Tier2",
+        "isCompleted": false,
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "BORG",
+            "tokenAmount": "20000",
+            "isCompleted": false
+          }
+        ],
+        "benefits": {
+          "startDate": "2024-10-21",
+          "minInvestment": "10",
+          "maxInvestment": "999999"
+        }
+      }
     ]
   },
   "whitelistParticipants": 768,

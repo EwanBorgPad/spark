@@ -7,23 +7,21 @@ import { backendApi } from "@/data/backendApi.ts"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-type NotResidingInUsModalProps = {
+type AcceptTermsOfUseModalProps = {
   onClose: () => void
 }
-
-const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
+const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
   const { t } = useTranslation()
   const { address, signMessage } = useWalletContext()
   const queryClient = useQueryClient()
 
-  const message = "I Acknowledge That I am Not a US Resident"
-
   const {
-    mutate: confirmResidency,
+    mutate: acceptTermsOfUse,
     isPending,
     isSuccess,
   } = useMutation({
     mutationFn: async (address: string) => {
+      const message = t('accept.terms.of.use.quest.message')
       const signature = await signMessage(message)
 
       const data = {
@@ -33,11 +31,11 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
         signature: Array.from(signature),
       }
 
-      await backendApi.confirmResidency(data)
+      await backendApi.postAcceptTermsOfUse(data)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["getWhitelistingStatus", address],
+        queryKey: ["getEligibilityStatus", address],
       })
     },
   })
@@ -49,7 +47,7 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
           {/* Heading */}
           <div className="w-full p-4 text-center">
             <h1 className="text-body-xl-semibold text-white">
-              {t("whitelisting.us_residency")}
+              {t("accept.terms.of.use.quest.heading")}
             </h1>
           </div>
           {/* Body */}
@@ -59,21 +57,21 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
             )}
           >
             <p className="text-center text-base text-fg-tertiary">
-              {t("whitelisting.not_available_in_us")}
+              {t("accept.terms.of.use.quest.description")}
             </p>
             {isSuccess ? (
               <div className="flex w-full justify-center">
                 <Badge.Confirmation
                   isConfirmed={true}
-                  label={"Location Confirmed"}
+                  label={"Terms Accepted"}
                   classNames="w-fit bg-transparent border-none"
                 />
               </div>
             ) : (
               <Button
                 isLoading={isPending}
-                btnText={message}
-                onClick={() => confirmResidency(address)}
+                btnText={t('accept.terms.of.use.quest.modal.button')}
+                onClick={() => acceptTermsOfUse(address)}
               />
             )}
           </div>
@@ -83,4 +81,6 @@ const NotResidingInUsModal = ({ onClose }: NotResidingInUsModalProps) => {
   )
 }
 
-export default NotResidingInUsModal
+export default AcceptTermsOfUseModal
+
+// TODO search and remove getWhitelistingStatus from everywhere

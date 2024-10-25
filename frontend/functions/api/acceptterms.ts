@@ -1,15 +1,18 @@
-import { UserModel, UserModelJson } from "../../shared/models"
+import { AcceptTermsRequestSchema, UserModel, UserModelJson } from "../../shared/models"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
-import { z } from "zod"
 import { PublicKey } from "@solana/web3.js"
 import nacl from "tweetnacl"
 import { decodeUTF8 } from "tweetnacl-util"
 
-const bodySchema = z.object({
-  publicKey: z.string(),
-  message: z.string(),
-  signature: z.number().int().array(),
-})
+/**
+ * Countries that are not allowed to participate.
+ * Countries in this list will be denied access.
+ * Countries are listed as ISO 3166 A2 country codes (two-letter country codes)
+ * List of codes: https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes
+ * TODO currently unused, implement the necessary checks when we specify how?
+ */
+const COUNTRIES_BLACKLIST: string[] = ['US']
+
 
 type ENV = {
   DB: D1Database
@@ -19,7 +22,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   try {
     //// validate request
     const requestJson = await ctx.request.json()
-    const { error, data } = bodySchema.safeParse(requestJson)
+    const { error, data } = AcceptTermsRequestSchema.safeParse(requestJson)
 
     if (error) {
       return jsonResponse(null, 400)
@@ -45,16 +48,19 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       .bind(address)
       .first<UserModel>()
 
+    const countryOfOrigin = ctx.request.cf.country
+
     console.log({ existingUser })
+
+    const termsOfUse = {
+      acceptedAt: new Date(),
+      acceptedTextSigned: message,
+      countryOfOrigin,
+    }
 
     if (!existingUser) {
       console.log("User not found in db, inserting...")
-      const json: UserModelJson = {
-        residency: {
-          isNotUsaResident: true,
-          isNotUsaResidentConfirmationTimestamp: new Date().toISOString(),
-        }
-      }
+      const json: UserModelJson = { termsOfUse }
       await db
         .prepare("INSERT INTO user (address, json) VALUES (?1, ?2)")
         .bind(address, JSON.stringify(json))
@@ -65,10 +71,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       const json: UserModelJson = existingUser.json
         ? JSON.parse(existingUser.json)
         : {}
-      json.residency = {
-        isNotUsaResident: true,
-        isNotUsaResidentConfirmationTimestamp: new Date().toISOString(),
-      }
+      json.termsOfUse = termsOfUse
       await db
         .prepare("UPDATE user SET json = ?2 WHERE address = ?1")
         .bind(address, JSON.stringify(json))

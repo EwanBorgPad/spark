@@ -119,3 +119,10 @@ export const EligibilityStatusSchema = z.object({
   tiers: TierWithCompletionSchema.omit( { benefits: true }).array(),
 })
 export type EligibilityStatus = z.infer<typeof EligibilityStatusSchema>
+/**
+ * EligibilityStatusRequestSchema
+ */
+export const EligibilityStatusRequestSchema = z.object({
+  projectId: z.string(),
+  address: z.string(),
+})

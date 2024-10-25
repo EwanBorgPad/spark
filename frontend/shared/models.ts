@@ -8,17 +8,25 @@ export type UserModel = {
   wallet_address: string
   json: null | string
 }
+type TwitterHandle = string
+type ProjectId = string
 /**
  * UserModelJson, json column in user database.
  */
 export type UserModelJson = {
   twitter?: {
     twitterId: string
-    isFollowingOnX: boolean
+    follows: Record<TwitterHandle, boolean>
   }
-  residency?: {
-    isNotUsaResident?: boolean
-    isNotUsaResidentConfirmationTimestamp?: string
+  investmentIntent?: Record<ProjectId, {
+    amount: string
+    message: string
+    signature: string
+  }>
+  termsOfUse?: {
+    acceptedAt: Date
+    acceptedTextSigned: string
+    countryOfOrigin: string
   }
 }
 /**
@@ -182,5 +190,21 @@ export type GetProjectsResponse = {
   projects: ProjectModel[]
   pagination: PaginationType
 }
+
+export const AcceptTermsRequestSchema = z.object({
+  publicKey: z.string(),
+  message: z.string(),
+  signature: z.array(z.number().int()),
+})
+export type AcceptTermsRequest = z.infer<typeof AcceptTermsRequestSchema>
+
+export const InvestmentIntentRequestSchema = z.object({
+  publicKey: z.string(),
+  projectId: z.string(),
+  amount: z.string(),
+  message: z.string(),
+  signature: z.array(z.number().int()),
+})
+export type InvestmentIntentRequest = z.infer<typeof InvestmentIntentRequestSchema>
 
 // TODO search all 'whitelist' in project and check if the naming is ok (isCompliant, isEligible, isWhitelisted)

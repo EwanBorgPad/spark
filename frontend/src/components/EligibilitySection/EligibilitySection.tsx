@@ -8,10 +8,11 @@ import { twMerge } from "tailwind-merge"
 import React, { ReactNode, useMemo, useState } from "react"
 import { QuestWithCompletion } from "../../../shared/eligibilityModel.ts"
 import { Button } from "@/components/Button/Button.tsx"
-import NotResidingInUsModal from "@/components/Modal/Modals/NotResidingInUs.tsx"
+import AcceptTermsOfUseModal from "@/components/Modal/Modals/AcceptTermsOfUseModal.tsx"
 import { getSignInWithTwitterUrl } from "@/hooks/useTwitterContext.tsx"
 import { ExternalLink } from "@/components/Button/ExternalLink.tsx"
 import { useParams } from "react-router-dom"
+import ProvideInvestmentIntentModal from "@/components/Modal/Modals/ProvideInvestmentIntentModal.tsx"
 
 export const EligibilitySection = () => {
   const { t } = useTranslation()
@@ -102,7 +103,7 @@ const QuestComponent = ({ quest }: QuestComponentProps) => {
   } => {
     if (type === "ACCEPT_TERMS_OF_USE")
       return {
-        label: t("accept.terms.of.use"),
+        label: t("accept.terms.of.use.quest.heading"),
         description: "",
         ctaButton: <AcceptTermsOfUseBtn />,
       }
@@ -211,10 +212,10 @@ const AcceptTermsOfUseBtn = () => {
         className="rounded-lg px-3"
         onClick={() => setShowModal(!showModal)}
       >
-        {t("accept.terms.of.use")}
+        {t("accept.terms.of.use.quest.button")}
       </Button>
       {showModal && (
-        <NotResidingInUsModal onClose={() => setShowModal(false)} />
+        <AcceptTermsOfUseModal onClose={() => setShowModal(false)} />
       )}
     </div>
   )
@@ -235,7 +236,7 @@ const ProvideInvestmentIntentBtn = () => {
         Provide Value
       </Button>
       {showModal && (
-        <NotResidingInUsModal onClose={() => setShowModal(false)} />
+        <ProvideInvestmentIntentModal onClose={() => setShowModal(false)} />
       )}
     </div>
   )
