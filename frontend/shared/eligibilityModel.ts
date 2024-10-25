@@ -23,6 +23,7 @@ const BaseQuestSchema = z.object({
  */
 const HoldTokenQuestSchema = BaseQuestSchema.extend({
   type: z.literal('HOLD_TOKEN'),
+  tokenMintAddress: z.string(),
   tokenName: z.string(),
   tokenAmount: z.string(),
 })
@@ -64,6 +65,7 @@ const QuestSchema = z.discriminatedUnion('type', [
   AcceptTermsOfUseQuestSchema,
   ProvideInvestmentIntentQuestSchema,
 ])
+export type Quest = z.infer<typeof QuestSchema>
 /**
  * CompletionSchema for merging with QuestSchemas.
  */
@@ -109,8 +111,10 @@ export const TierWithCompletionSchema = TierSchema.extend({
   quests: z.array(QuestWithCompletionSchema).min(1),
   isCompleted: z.boolean(),
 })
+export type TierWithCompletion = z.infer<typeof TierWithCompletionSchema>
 
 export const EligibilityStatusSchema = z.object({
+  isEligible: z.boolean(),
   /**
    * The Tier the User is eligible for, or null if the User is not eligible for any.
    */

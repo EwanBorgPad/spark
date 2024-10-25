@@ -3,9 +3,9 @@
 
 ## Terminology
 
-- isCompliant - user is compliant with BorgPad by completing compliance quests. Compliance quests are mandatory for all users that wish to participate 
-- isWhitelisted - user is eligible to participate by being manually whitelisted by admin, but they still need to also be compliant
+- isCompliant - user becomes compliant with BorgPad by completing compliance quests. Compliance quests are mandatory for all users that wish to participate. 
 - hasTiered - user has made it onto one of the tiers by completing quests
+- isWhitelisted - user becomes eligible to participate by being manually whitelisted by admin, but they still need to also be Compliant.
 - isEligible - user is eligible to participate
 
 ```

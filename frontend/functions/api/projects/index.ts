@@ -1,11 +1,10 @@
 import { GetProjectsResponse, projectSchema } from "../../../shared/models"
-import { initializeLpb } from "../../../shared/anchor"
 import {
-  getProjectById,
   hasAdminAccess,
   jsonResponse,
   reportError,
 } from "../cfPagesFunctionsUtils"
+import { ProjectService } from "../../services/projectService"
 
 type ENV = {
   DB: D1Database
@@ -96,7 +95,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     // check if exists
-    const existingProject = await getProjectById(db, data.info.id)
+    const existingProject = await ProjectService.findProjectById({ db, id: data.info.id })
     if (existingProject) {
       return jsonResponse({ message: "Project with provided id already exists!", }, 409)
     }

@@ -20,64 +20,19 @@ const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
 
-const getEligibilityStatus = async ({
-  address,
-  projectId,
-}: {
+type GetEligibilityStatusArgs = {
   address: string
   projectId: string
-}): Promise<EligibilityStatus> => {
-  // TODO connect to backend
-  return {
-    eligibilityTier: {
-      id: "tier1",
-      label: "Tier1",
-    },
-    compliances: [
-      {
-        type: "ACCEPT_TERMS_OF_USE",
-        isCompleted: false,
-      },
-      {
-        type: "PROVIDE_INVESTMENT_INTENT",
-        isCompleted: false,
-      },
-    ],
-    tiers: [
-      {
-        id: "tier1",
-        label: "Tier1",
-        isCompleted: true,
-        quests: [
-          {
-            type: "FOLLOW_ON_TWITTER",
-            twitterHandle: "@borgpadhq",
-            twitterLabel: "BorgPad",
-            isCompleted: false,
-          },
-          {
-            type: "HOLD_TOKEN",
-            tokenName: "BORG",
-            tokenAmount: "10000",
-            isCompleted: true,
-          },
-        ],
-      },
-      {
-        id: "tier2",
-        label: "Tier2",
-        isCompleted: false,
-        quests: [
-          {
-            type: "HOLD_TOKEN",
-            tokenName: "BORG",
-            tokenAmount: "20000",
-            isCompleted: false,
-          },
-        ],
-      },
-    ],
-  }
+}
+const getEligibilityStatus = async ({ address, projectId, }: GetEligibilityStatusArgs): Promise<EligibilityStatus> => {
+  const url = new URL(GET_ELIGIBILITY_STATUS_API, window.location.href)
+  url.searchParams.set("address", address)
+  url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json
 }
 const getWhitelistingStatus = async ({ address }: { address: string }) => {
   const url = new URL(GET_WHITELISTING_STATUS_API, window.location.href)

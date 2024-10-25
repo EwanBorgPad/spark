@@ -147,19 +147,17 @@
       {
         "id": "tier1",
         "label": "Tier1",
-        "isCompleted": true,
         "quests": [
           {
             "type": "FOLLOW_ON_TWITTER",
             "twitterHandle": "@borgpadhq",
-            "twitterLabel": "BorgPad",
-            "isCompleted": true
+            "twitterLabel": "BorgPad"
           },
           {
             "type": "HOLD_TOKEN",
-            "tokenName": "BORG",
-            "tokenAmount": "10000",
-            "isCompleted": true
+            "tokenName": "USDC",
+            "tokenAmount": "100",
+            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
           }
         ],
         "benefits": {
@@ -171,13 +169,12 @@
       {
         "id": "tier2",
         "label": "Tier2",
-        "isCompleted": false,
         "quests": [
           {
             "type": "HOLD_TOKEN",
-            "tokenName": "BORG",
+            "tokenName": "USDC",
             "tokenAmount": "20000",
-            "isCompleted": false
+            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
           }
         ],
         "benefits": {

@@ -6,7 +6,7 @@ import { TierSchema } from "./eligibilityModel.ts"
  */
 export type UserModel = {
   wallet_address: string
-  json: null | string
+  json: UserModelJson
 }
 type TwitterHandle = string
 type ProjectId = string
@@ -16,7 +16,9 @@ type ProjectId = string
 export type UserModelJson = {
   twitter?: {
     twitterId: string
-    follows: Record<TwitterHandle, boolean>
+    follows: Record<TwitterHandle, {
+      isFollowing: boolean,
+    }>
   }
   investmentIntent?: Record<ProjectId, {
     amount: string

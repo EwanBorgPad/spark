@@ -1,8 +1,9 @@
-import { InvestmentIntentRequestSchema, UserModel, UserModelJson } from "../../shared/models"
+import { InvestmentIntentRequestSchema, UserModelJson } from "../../shared/models"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { PublicKey } from "@solana/web3.js"
 import nacl from "tweetnacl"
 import { decodeUTF8 } from "tweetnacl-util"
+import { UserService } from "../services/userService"
 
 
 type ENV = {
@@ -33,10 +34,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     //// business logic
     // check if the user is stored in the db
-    const existingUser = await db
-      .prepare("SELECT * FROM user WHERE address = ?1")
-      .bind(publicKey)
-      .first<UserModel>()
+    const existingUser = await UserService.findUserByAddress({ db, address: publicKey })
 
     console.log({ existingUser })
 
@@ -56,13 +54,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       console.log("User inserted into db.")
     } else {
       console.log("User found in db, updating...")
-      const json: UserModelJson = existingUser.json
-        ? JSON.parse(existingUser.json)
-        : {}
 
+      const json: UserModelJson = existingUser.json ?? {}
       if (!json.investmentIntent) json.investmentIntent = {}
-
       json.investmentIntent[projectId] = investmentIntent
+
       await db
         .prepare("UPDATE user SET json = ?2 WHERE address = ?1")
         .bind(publicKey, JSON.stringify(json))

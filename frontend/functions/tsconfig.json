@@ -5,5 +5,8 @@
     "lib": ["esnext"],
     "types": ["@cloudflare/workers-types"],
     "resolveJsonModule": true,
+
+    /* Linting */
+    "strict": true
   }
 }

@@ -1,8 +1,9 @@
-import { AcceptTermsRequestSchema, UserModel, UserModelJson } from "../../shared/models"
+import { AcceptTermsRequestSchema, UserModelJson } from "../../shared/models"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { PublicKey } from "@solana/web3.js"
 import nacl from "tweetnacl"
 import { decodeUTF8 } from "tweetnacl-util"
+import { UserService } from "../services/userService"
 
 /**
  * Countries that are not allowed to participate.
@@ -38,17 +39,21 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       new PublicKey(publicKey).toBytes(),
     );
     if (!isVerified) {
+      await reportError(db, new Error(`Invalid signature! publicKey: ${publicKey}, message: ${message}, signature: ${signature}`))
       return jsonResponse(null, 401)
     }
 
     //// business logic
     // check if the user is stored in the db
-    const existingUser = await db
-      .prepare("SELECT * FROM user WHERE address = ?1")
-      .bind(address)
-      .first<UserModel>()
+    const existingUser = await UserService.findUserByAddress({ db, address })
 
-    const countryOfOrigin = ctx.request.cf.country
+    const countryOfOrigin = ctx.request.cf?.country ?? 'UnknownCountry'
+
+    if (COUNTRIES_BLACKLIST.includes(countryOfOrigin)) {
+      const message = `Access denied for country (${countryOfOrigin}) per countries blacklist.`
+      await reportError(db, new Error(message))
+      return jsonResponse({ message }, 403)
+    }
 
     console.log({ existingUser })
 
@@ -68,10 +73,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       console.log("User inserted into db.")
     } else {
       console.log("User found in db, updating...")
-      const json: UserModelJson = existingUser.json
-        ? JSON.parse(existingUser.json)
-        : {}
+
+      const json: UserModelJson = existingUser.json ?? {}
       json.termsOfUse = termsOfUse
+
       await db
         .prepare("UPDATE user SET json = ?2 WHERE address = ?1")
         .bind(address, JSON.stringify(json))
