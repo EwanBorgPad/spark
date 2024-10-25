@@ -1,6 +1,7 @@
 import { Connection, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js"
 import { SOLANA_PUBLIC_RPC_URL, USDC_DEV_ADDRESS } from "../../shared/constants"
-import { Commitment } from "shared/SolanaWeb3"
+import { Commitment, getSplTokenBalance } from "../../shared/SolanaWeb3"
+import { toast } from "react-toastify"
 export type Wallet = {
   publicKey: PublicKey,
   isConnected: boolean,
@@ -65,7 +66,7 @@ function createTransferInstruction(
     amount: number,
     tokenMintAccount: PublicKey
   ) {
-    const amountInLamports = amount * Math.pow(10, 6); // This is hardcoded for now because of USDC dev 6 decimals. Check the used token specs for decimals
+    const amountInLamports = amount * Math.pow(10, 6) // This is hardcoded for now because of USDC dev 6 decimals. Check the used token specs for decimals
   
       const data = Buffer.alloc(9) // 1 byte for instruction type + 8 bytes for amount
       data.writeUInt8(3, 0) // Instruction type for transfer (3 is the code for TRANFSER instruction)
@@ -109,6 +110,19 @@ function createTransferInstruction(
     if (toTokenAccount.value.length === 0) {
         throw new Error('Recipient does not have a token account for this mint.')
     }
+    // Check users funds to see if he can make the transaction
+    const userBalance = await getSplTokenBalance({address: wallet.publicKey.toBase58(), tokenAddress: mintAddress.toBase58()})  // TODO: replace this with the token mint we will be using
+    if (userBalance) {
+      const convertedUserBalanced = parseFloat(userBalance.amount) * Math.pow(0.1, 6)
+      if (convertedUserBalanced < amount) {
+        toast("You don't have enough funds, check your wallet again.")
+        throw new Error("Not enough funds!")
+      }
+    } else {
+      toast("You don't have enough funds, check your wallet again.")
+      throw new Error("Not enough funds!")
+    }
+    
     // Extract public keys from ATA accounts
     const fromAccountKey = fromTokenAccount.value[0].pubkey
     const toAccountKey = toTokenAccount.value[0].pubkey

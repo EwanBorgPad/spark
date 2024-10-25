@@ -22,18 +22,26 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       confirmTransactionInitialTimeout: 10000,
       commitment: COMMITMENT_LEVEL
     })
-    // TODO: all validations and verifications
+    // TODO: all validations and verifications - IMO should be done on frontend because thats where we make the transaction and sign it
+    /*
+      List of checks that needs to be implemented provided by Yann on slack
+      Check the user eligible
+      Check the amount the user deposit is in a defined range [min deposit amount, max deposit amount]
+      Check current deposited amount + user deposit amount < max cap -> need DB integration and tracking users deposits for this
+      Check the user have enough funds in his wallet to perform the deposit -> I would validate this on frontend before signing the transaction
+      Check that we are within the time window of the fund collection phase
+    */
     const { data, error } = userDepositSchema.safeParse(await ctx.request.json())
     if (error) {
       return jsonResponse({message: "Bad request"}, 400)
     }
     const serializedTransaction = data.transaction
-    console.log("Sending transaction!")
+    console.log("Sending transaction...")
     const txId = await connection.sendRawTransaction(Buffer.from(serializedTransaction, 'base64'), {
       preflightCommitment: COMMITMENT_LEVEL,
       skipPreflight: false
     })
-    console.log("Finished sending the transaction!")
+    console.log("Finished sending the transaction...")
     console.log('Signature status subscribing...')
     const status = await signatureSubscribe(connection, txId)
     console.log(`Signature status finished: ${status}.`)

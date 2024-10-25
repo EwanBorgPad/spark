@@ -64,20 +64,42 @@ const LiveNowExchange = ({ whitelistRequirementsRef }: Props) => {
   } = useForm<FormInputs>()
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
+    // TODO: all validations and verifications
+    /*
+      List of checks that needs to be implemented provided by Yann on slack:
+      Check the user eligible -> isEligible needs to be true (Check if the user is not from list of countries and he meets terms of service) (NOT DONE)
+      Check the amount the user deposit is in a defined range [min deposit amount, max deposit amount] -> I will hardcode this range for now (0-2000 tokens) (DONE)
+      Check current deposited amount + user deposit amount < max cap -> need DB integration and tracking users deposits into the LBP for this (NOT DONE)
+      Check the user have enough funds in his wallet to perform the deposit -> Implemented in createSplTokenTransaction function (DONE)
+      Check that we are within the time window of the fund collection phase -> Frontend already validates this by having phases and limits user by UI (DONE)
+    */
     try {
-      const inputTokens = parseInt(data.borgInputValue)
+      const tokenAmount = parseInt(data.borgInputValue)
+      //
+      if (tokenAmount < 0 || tokenAmount > 2000) {
+        toast("Limit range for tokens is from 0 to 2000, please change input value")
+        throw new Error("User deposit range error!")
+      }
       if (walletState === 'CONNECTED') {
         if (walletProvider === 'PHANTOM') {
           // @ts-ignore-next-line
           const wallet = window?.solana
-          const transaction = await getTransactionToSend(inputTokens, wallet)
+          if (!wallet.isConnected) {
+            toast("Wallet session timed out, please sign in again")
+            throw new Error("Wallet not signed in!")
+          }
+          const transaction = await getTransactionToSend(tokenAmount, wallet)
           userDepositFunction(transaction)
           console.log("Submitted", data)
         }
         if (walletProvider === 'BACKPACK') {
           // @ts-ignore-next-line
           const wallet = window?.backpack
-          const transaction = await getTransactionToSend(inputTokens, wallet)
+          if (!wallet.isConnected) {
+            toast("Wallet session timed out, please sign in again")
+            throw new Error("Wallet not signed in!")
+          }
+          const transaction = await getTransactionToSend(tokenAmount, wallet)
           userDepositFunction(transaction)
           console.log("Submitted", data)
         }
