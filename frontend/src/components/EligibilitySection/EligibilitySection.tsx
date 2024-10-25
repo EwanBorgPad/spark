@@ -157,9 +157,6 @@ const QuestComponent = ({ quest }: QuestComponentProps) => {
     </div>
   )
 }
-
-// TODO @eligibility implement button for each quest
-
 const HoldTokenBtn = ({ tokenName }: { tokenName: string }) => {
   const { t } = useTranslation()
 

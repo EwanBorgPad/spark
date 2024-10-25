@@ -1,8 +1,9 @@
-import { AcceptTermsRequestSchema, UserModelJson } from "../../shared/models"
-import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { PublicKey } from "@solana/web3.js"
 import nacl from "tweetnacl"
 import { decodeUTF8 } from "tweetnacl-util"
+
+import { AcceptTermsRequestSchema, UserModelJson } from "../../shared/models"
+import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { UserService } from "../services/userService"
 
 /**
@@ -10,7 +11,6 @@ import { UserService } from "../services/userService"
  * Countries in this list will be denied access.
  * Countries are listed as ISO 3166 A2 country codes (two-letter country codes)
  * List of codes: https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes
- * TODO currently unused, implement the necessary checks when we specify how?
  */
 const COUNTRIES_BLACKLIST: string[] = ['US']
 

@@ -3,6 +3,10 @@ import { UserService } from "./userService"
 import { ProjectService } from "./projectService"
 import { getSplTokenBalance } from "../../shared/SolanaWeb3"
 
+/**
+ * List of mandatory compliances.
+ * Mandatory for each user, regardless if they are whitelisted manually.
+ */
 const MANDATORY_COMPLIANCES: Quest[] = [
   {
     type: 'ACCEPT_TERMS_OF_USE',

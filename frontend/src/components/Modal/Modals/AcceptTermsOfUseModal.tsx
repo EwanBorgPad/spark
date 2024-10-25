@@ -56,7 +56,7 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
               "flex w-full grow flex-col justify-start gap-5 px-10 pb-8 pt-3",
             )}
           >
-            <p className="text-center text-base text-fg-tertiary">
+            <p className="text-center text-base text-fg-tertiary whitespace-pre-wrap">
               {t("accept.terms.of.use.quest.description")}
             </p>
             {isSuccess ? (

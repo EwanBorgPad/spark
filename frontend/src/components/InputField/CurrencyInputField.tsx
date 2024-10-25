@@ -26,6 +26,7 @@ export const CurrencyInputField = ({
   disabled,
   label,
   placeholder,
+  maxLength,
   ...props
 }: CurrencyInputFieldProps) => {
   const containerClassName = twMerge(
@@ -46,6 +47,7 @@ export const CurrencyInputField = ({
       </label>
       <div className={inputClasses}>
         <CurrencyInput
+          maxLength={maxLength}
           value={value}
           allowNegativeValue={false}
           placeholder={placeholder ?? "0"}

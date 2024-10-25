@@ -69,6 +69,7 @@ const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentIntentModalP
             {t('investment.intent.quest.description')}
           </p>
           <CurrencyInputField
+            maxLength={12}
             containerClassName='max-w-[999px]'
             inputClassName='bg-emphasis text-white'
             value={amount}

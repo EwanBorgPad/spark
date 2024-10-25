@@ -108,7 +108,7 @@
 
   "accept.terms.of.use.quest.heading": "Accept our Terms of Use",
   "accept.terms.of.use.quest.button": "Proceed to disclaimer",
-  "accept.terms.of.use.quest.description": "This LBP is not available for US residents. To be whitelisted, please acknowledge that you don’t reside in the USA.",
+  "accept.terms.of.use.quest.description": "No representation or warranty is made concerning any aspect of the BorgPad Protocol, including its suitability, quality, availability, accessibility, accuracy or safety. As more fully explained in the Terms of Use (available [link]), your access to and use of the BorgPad Protocol through this Interface is entirely at your own risk and could lead to substantial losses, for which you take full responsibility.\n\nThis Interface is not available to residents of Belarus, Burundi, the Central African Republic, the Democratic Republic of Congo, the Democratic People’s Republic of Korea, the temporarily occupied regions of Ukraine, Cuba, Iran, Libya, the People’s Republic of China, the Russian Federation, Somalia, Sudan, South Sudan, Syria, the United States of America, Venezuela, Yemen, and Zimbabwe or any other jurisdiction in which accessing or using the BorgPad Protocol is prohibited (“Prohibited Jurisdictions”). In using this Interface, you confirm that you are not located in, incorporated or otherwise established in, or resident of, a Prohibited Jurisdiction.\n",
   "accept.terms.of.use.quest.modal.button": "Confirm",
   "accept.terms.of.use.quest.message": "I acknowledge that I have read and accepted the Terms of Use",
 
