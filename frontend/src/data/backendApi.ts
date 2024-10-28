@@ -3,15 +3,13 @@ import {
   GetExchangeResponse,
   GetPresignedUrlResponse,
   GetProjectsResponse,
-  GetWhitelistingResult, InvestmentIntentRequest,
+  InvestmentIntentRequest,
   ProjectModel,
   projectSchema,
 } from "../../shared/models.ts"
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
-import { z } from "zod"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
-const GET_WHITELISTING_STATUS_API = API_BASE_URL + "/whitelisting"
 const GET_ELIGIBILITY_STATUS_API = API_BASE_URL + "/eligibilitystatus"
 const POST_ACCEPT_TERMS_OF_USE_API = API_BASE_URL + "/acceptterms"
 const POST_INVESTMENT_INTENT_API = API_BASE_URL + "/investmentintent"
@@ -33,15 +31,6 @@ const getEligibilityStatus = async ({ address, projectId, }: GetEligibilityStatu
   const json = await response.json()
 
   return json
-}
-const getWhitelistingStatus = async ({ address }: { address: string }) => {
-  const url = new URL(GET_WHITELISTING_STATUS_API, window.location.href)
-  url.searchParams.set("address", address)
-
-  const response = await fetch(url)
-  const result = (await response.json()) as GetWhitelistingResult
-
-  return result
 }
 type AcceptTermsOfUseArgs = AcceptTermsRequest
 const postAcceptTermsOfUse = async (args: AcceptTermsOfUseArgs) => {
@@ -195,6 +184,5 @@ export const backendApi = {
   postAcceptTermsOfUse,
   postInvestmentIntent,
   uploadFileToBucket,
-  getWhitelistingStatus,
   getEligibilityStatus,
 }

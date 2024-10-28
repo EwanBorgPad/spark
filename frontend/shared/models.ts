@@ -32,14 +32,6 @@ export type UserModelJson = {
   }
 }
 /**
- * GET /whitelisting api response type
- */
-export type GetWhitelistingResult = {
-  balance: TokenAmount
-  isFollowingOnX: boolean
-  isNotUsaResident: boolean
-}
-/**
  * Represents url type
  * Not sure what we wanna validate there ATM, so leave it as string for now.
  */

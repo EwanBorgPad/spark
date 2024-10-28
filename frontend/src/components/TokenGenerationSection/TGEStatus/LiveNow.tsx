@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next"
 
 import BasicTokenInfo from "@/components/TokenGenerationSection/components/BasicTokenInfo"
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
-import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import LiveNowExchange from "../components/LiveNowExchange"
 import SaleProgress from "../components/SaleProgress"
 import { formatDateForTimer } from "@/utils/date-helpers"
@@ -12,6 +11,10 @@ import { TgeWrapper } from "../components/Wrapper"
 import TopContributor from "../components/TopContributor"
 import { useRef } from "react"
 import { EligibilitySection } from "@/components/EligibilitySection/EligibilitySection.tsx"
+import { useWalletContext } from "@/hooks/useWalletContext.tsx"
+import { useParams } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
+import { backendApi } from "@/data/backendApi.ts"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType
@@ -19,16 +22,26 @@ type LiveNowProps = {
 
 const LiveNow = ({ eventData }: LiveNowProps) => {
   const { t } = useTranslation()
-  const whitelistRef = useRef<HTMLDivElement>(null)
-  const { whitelistStatus } = useWhitelistStatusContext()
+  const eligibilitySectionRef = useRef<HTMLDivElement>(null)
+
+  const { address } = useWalletContext()
+  const { projectId } = useParams()
+  const { data } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getEligibilityStatus({ address, projectId })
+    },
+    queryKey: ["getEligibilityStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
+  const isUserEligible = data?.isEligible
 
   return (
     <div className="flex w-full flex-col items-center gap-[52px]">
       <BasicTokenInfo />
       <SaleProgress />
-      {!whitelistStatus?.whitelisted && (
-        <div className="flex w-full flex-col items-center" ref={whitelistRef}>
-          {/* TODO is this needed here? can't find it on figma design */}
+      {!isUserEligible && (
+        <div className="flex w-full flex-col items-center" ref={eligibilitySectionRef}>
           <EligibilitySection />
         </div>
       )}
@@ -40,9 +53,9 @@ const LiveNow = ({ eventData }: LiveNowProps) => {
               labelAboveTimer={`Ends on ${formatDateForTimer(eventData.nextEventDate)}`}
             />
           )}
-          <LiveNowExchange whitelistRequirementsRef={whitelistRef} />
+          <LiveNowExchange eligibilitySectionRef={eligibilitySectionRef} />
         </TgeWrapper>
-        {whitelistStatus?.whitelisted && (
+        {isUserEligible && (
           <>
             <TopContributor />
             <PastOrders />

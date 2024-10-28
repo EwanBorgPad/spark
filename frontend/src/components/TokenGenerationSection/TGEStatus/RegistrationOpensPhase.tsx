@@ -8,22 +8,20 @@ import { TgeWrapper } from "../components/Wrapper"
 import { formatDateForTimer } from "@/utils/date-helpers"
 import { EligibilitySection } from "@/components/EligibilitySection/EligibilitySection.tsx"
 
-type WhitelistingProps = {
+type RegistrationOpensPhaseProps = {
   eventData: ExpandedTimelineEventType
 }
 /**
- * TODO rename this component to better indicate what it is =>> RegistrationOpensPhase
  * @param eventData
  * @constructor
  */
-const Whitelisting = ({ eventData }: WhitelistingProps) => {
+const RegistrationOpensPhase = ({ eventData }: RegistrationOpensPhaseProps) => {
   const { t } = useTranslation()
 
   return (
     <div className="flex w-full flex-col items-center gap-[52px]">
       <BasicTokenInfo />
       <EligibilitySection />
-      {/*<WhitelistStatus />*/}
       <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
         <TgeWrapper label={t("tge.whitelisting")}>
           {eventData?.nextEventDate && (
@@ -41,4 +39,4 @@ const Whitelisting = ({ eventData }: WhitelistingProps) => {
   )
 }
 
-export default Whitelisting
+export default RegistrationOpensPhase

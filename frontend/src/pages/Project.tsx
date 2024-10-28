@@ -4,13 +4,13 @@ import { useTranslation } from "react-i18next"
 import TokenGenerationSection from "../components/TokenGenerationSection/TokenGenerationSection"
 import { ExternalLink } from "../components/Button/ExternalLink"
 import { useProjectDataContext } from "@/hooks/useProjectData"
-import ProjectTester from "@/components/QA/ProjectTester"
 import { expandTimelineDataInfo } from "@/utils/timeline"
 import Timeline from "@/components/Timeline/Timeline"
 import backdropImg from "@/assets/backdropImgMin.png"
 import { Icon } from "../components/Icon/Icon"
 import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
+import ProjectTester2 from "@/components/QA/ProjectTester2.tsx"
 
 const Project = () => {
   const { projectData, isLoading } = useProjectDataContext()
@@ -142,7 +142,7 @@ const Project = () => {
       <Timeline timelineEvents={projectData.info.timeline} />
       <ScrollRestoration />
 
-      {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && <ProjectTester />}
+      {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && <ProjectTester2 />}
     </main>
   )
 }

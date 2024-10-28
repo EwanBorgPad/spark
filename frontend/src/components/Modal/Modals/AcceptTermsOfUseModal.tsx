@@ -82,5 +82,3 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
 }
 
 export default AcceptTermsOfUseModal
-
-// TODO search and remove getWhitelistingStatus from everywhere
