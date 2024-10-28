@@ -12,8 +12,28 @@ import { UserService } from "../services/userService"
  * Countries are listed as ISO 3166 A2 country codes (two-letter country codes)
  * List of codes: https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes
  */
-const COUNTRIES_BLACKLIST: string[] = ['US']
-
+const COUNTRIES_BLACKLIST: string[] = [
+  "BY", // Belarus
+  "BI", // Burundi
+  "CF", // Central African Republic
+  "CD", // Democratic Republic of Congo
+  "KP", // Democratic People’s Republic of Korea (North Korea)
+  // TODO this is a bit harder to geolocate, let's enable it for now
+  // "UA", // Temporarily occupied regions of Ukraine
+  "CU", // Cuba
+  "IR", // Iran
+  "LY", // Libya
+  "CN", // People's Republic of China
+  "RU", // Russian Federation
+  "SO", // Somalia
+  "SD", // Sudan
+  "SS", // South Sudan
+  "SY", // Syria
+  "US", // United States of America
+  "VE", // Venezuela
+  "YE", // Yemen
+  "ZW"  // Zimbabwe
+]
 
 type ENV = {
   DB: D1Database
