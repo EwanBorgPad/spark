@@ -65,7 +65,7 @@ export const EligibilitySection = () => {
         </div>
         <div
           id="tiersContainer"
-          className="rounded-lg border-[1px] border-bd-primary bg-secondary"
+          className="rounded-lg border-[1px] border-bd-primary bg-secondary p-2"
         >
           {eligibilityStatus.tiers.map((tier) => {
             const tierQuests = sortByCompletionStatus(tier.quests)

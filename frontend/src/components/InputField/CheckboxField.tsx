@@ -1,8 +1,9 @@
 import { HTMLProps } from "@/@types/general"
 import { twMerge } from "tailwind-merge"
+import { ReactNode } from "react"
 
 type CheckboxProps = {
-  label?: string
+  label?: ReactNode
   containerClassName?: HTMLProps["className"]
   inputClassName?: HTMLProps["className"]
   value: boolean
