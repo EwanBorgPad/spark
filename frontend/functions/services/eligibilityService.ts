@@ -58,7 +58,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     for (const quest of tier.quests) {
       if (quest.type === 'FOLLOW_ON_TWITTER') {
         const twitterHandle = quest.twitterHandle
-        const isFollowingProjectOnTwitter = Boolean(user.json.twitter?.follows[twitterHandle])
+        const isFollowingProjectOnTwitter = Boolean(user.json.twitter?.follows?.[twitterHandle])
         tierQuestsWithCompletion.push({
           ...quest,
           isCompleted: isFollowingProjectOnTwitter,
