@@ -145,6 +145,23 @@
     ],
     "tiers": [
       {
+        "id": "tier0",
+        "label": "Tier0",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "USDC",
+            "tokenAmount": "1",
+            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
+          }
+        ],
+        "benefits": {
+          "startDate": "2024-10-30",
+          "minInvestment": "10",
+          "maxInvestment": "999"
+        }
+      },
+      {
         "id": "tier1",
         "label": "Tier1",
         "quests": [

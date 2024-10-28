@@ -3,10 +3,13 @@ import { EligibilityService } from "../services/eligibilityService"
 
 type ENV = {
   DB: D1Database
+  SOLANA_RPC_URL: string
 }
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   try {
     const db = ctx.env.DB
+    const rpcUrl = ctx.env.SOLANA_RPC_URL
+
     const { searchParams } = new URL(ctx.request.url)
     const address = searchParams.get("address")
     const projectId = searchParams.get("projectId")
@@ -15,7 +18,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     if (!projectId) return jsonResponse({ message: 'projectId is missing!' }, 400)
 
     const eligibilityStatus = await EligibilityService.getEligibilityStatus({
-      db, address, projectId
+      db, address, projectId, rpcUrl,
     })
 
     return jsonResponse(eligibilityStatus, 200)

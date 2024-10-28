@@ -21,8 +21,9 @@ type GetEligibilityStatusArgs = {
   db: D1Database
   address: string
   projectId: string
+  rpcUrl: string
 }
-const getEligibilityStatus = async ({ db, address, projectId }: GetEligibilityStatusArgs): EligibilityStatus => {
+const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligibilityStatusArgs): EligibilityStatus => {
   let user = await UserService.findUserByAddress({ db, address })
   if (!user) user = {
     wallet_address: address,
@@ -66,6 +67,7 @@ const getEligibilityStatus = async ({ db, address, projectId }: GetEligibilitySt
         const balance = await getSplTokenBalance({
           address,
           tokenAddress: quest.tokenMintAddress,
+          rpcUrl,
         })
 
         if (balance) {
@@ -94,7 +96,7 @@ const getEligibilityStatus = async ({ db, address, projectId }: GetEligibilitySt
     tiersWithCompletion.push({
       ...tier,
       quests: tierQuestsWithCompletion,
-      isTierCompleted: isTierCompleted,
+      isCompleted: isTierCompleted,
     })
   }
 

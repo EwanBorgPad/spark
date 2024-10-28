@@ -1,5 +1,5 @@
 import { Commitment } from "./SolanaWeb3.ts"
-
+// TODO @hardcoded
 export const USDC_DEV_ADDRESS = "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
 /**
  * Solana public RPC endpoint.
