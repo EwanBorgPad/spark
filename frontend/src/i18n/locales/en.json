@@ -116,5 +116,8 @@
   "investment.intent.quest.button": "Enter Amount.",
   "investment.intent.quest.description": "Express your investment interest in this project.",
   "investment.intent.quest.modal.button": "Confirm Amount",
-  "investment.intent.quest.message": "I acknowledge that I plan to invest {{ amount }} in {{ projectId }}"
+  "investment.intent.quest.message": "I acknowledge that I plan to invest {{ amount }} in {{ projectId }}",
+
+  "terms_of_use": "Terms of Use",
+  "terms_and_conditions": "Terms and Conditions"
 }

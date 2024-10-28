@@ -1,18 +1,3 @@
-// @backOffice
-
-// import {
-//   Controller,
-//   FieldError,
-//   SubmitHandler,
-//   useFieldArray,
-//   useForm,
-// } from "react-hook-form"
-// import { zodResolver } from "@hookform/resolvers/zod"
-// import { useMutation } from "@tanstack/react-query"
-// import React, { useState } from "react"
-// import { toast } from "react-toastify"
-// import { z } from "zod"
-//
 // import {
 //   distributionTypeOptions,
 //   iconOptions,
@@ -191,9 +176,9 @@
 //               name="adminKey"
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <TextField
 //                   label="Admin Key"
 //                   type="password"
@@ -234,9 +219,9 @@
 //               name="info.id"
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <TextField
 //                   disabled={idConfirmed}
 //                   label="Project ID"
@@ -301,9 +286,9 @@
 //             name="info.logoUrl"
 //             control={control}
 //             render={({
-//               field: { value, onChange, name },
-//               fieldState: { error },
-//             }) => (
+//                        field: { value, onChange, name },
+//                        fieldState: { error },
+//                      }) => (
 //               <UploadField
 //                 imgUrl={value} // input value
 //                 onChange={onChange}
@@ -323,9 +308,9 @@
 //               name="info.thumbnailUrl"
 //               control={control}
 //               render={({
-//                 field: { value, onChange, name },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange, name },
+//                          fieldState: { error },
+//                        }) => (
 //                 <UploadField
 //                   imgUrl={value} // input value
 //                   onChange={onChange}
@@ -403,7 +388,7 @@
 //                     icon={
 //                       externalLinkObj[
 //                         watch(`info.projectLinks.${index}.iconType`)
-//                       ].icon
+//                         ].icon
 //                     }
 //                     className="text-2xl"
 //                   />
@@ -411,9 +396,9 @@
 //                     name={`info.projectLinks.${index}.url`}
 //                     control={control}
 //                     render={({
-//                       field: { value, onChange },
-//                       fieldState: { error },
-//                     }) => (
+//                                field: { value, onChange },
+//                                fieldState: { error },
+//                              }) => (
 //                       <TextField
 //                         value={value}
 //                         onChange={onChange}
@@ -446,9 +431,9 @@
 //               name="info.chain.name"
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <TextField
 //                   label="Chain Name"
 //                   value={value}
@@ -462,9 +447,9 @@
 //               name="info.chain.iconUrl"
 //               control={control}
 //               render={({
-//                 field: { value, onChange, name },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange, name },
+//                          fieldState: { error },
+//                        }) => (
 //                 <UploadField
 //                   adminKey={adminKey}
 //                   disabled={isUploadDisabled}
@@ -485,9 +470,9 @@
 //               name="info.curator.avatarUrl"
 //               control={control}
 //               render={({
-//                 field: { value, onChange, name },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange, name },
+//                          fieldState: { error },
+//                        }) => (
 //                 <UploadField
 //                   adminKey={adminKey}
 //                   disabled={isUploadDisabled}
@@ -506,9 +491,9 @@
 //               name="info.curator.fullName"
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <TextField
 //                   label="Full Name"
 //                   value={value}
@@ -521,9 +506,9 @@
 //               name="info.curator.position"
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <TextField
 //                   label="Position"
 //                   value={value}
@@ -564,7 +549,7 @@
 //                     icon={
 //                       externalLinkObj[
 //                         watch(`info.curator.socials.${index}.iconType`)
-//                       ].icon
+//                         ].icon
 //                     }
 //                     className="text-2xl"
 //                   />
@@ -572,9 +557,9 @@
 //                     name={`info.curator.socials.${index}.url`}
 //                     control={control}
 //                     render={({
-//                       field: { value, onChange },
-//                       fieldState: { error },
-//                     }) => (
+//                                field: { value, onChange },
+//                                fieldState: { error },
+//                              }) => (
 //                       <TextField
 //                         value={value}
 //                         onChange={onChange}
@@ -607,9 +592,9 @@
 //               name={`info.tge.projectCoin.ticker`}
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <TextField
 //                   label="Ticker"
 //                   value={value}
@@ -622,9 +607,9 @@
 //               name="info.tge.projectCoin.iconUrl"
 //               control={control}
 //               render={({
-//                 field: { value, onChange, name },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange, name },
+//                          fieldState: { error },
+//                        }) => (
 //                 <UploadField
 //                   adminKey={adminKey}
 //                   disabled={isUploadDisabled}
@@ -646,9 +631,9 @@
 //                 name={`info.totalTokensForSale`}
 //                 control={control}
 //                 render={({
-//                   field: { value, onChange },
-//                   fieldState: { error },
-//                 }) => (
+//                            field: { value, onChange },
+//                            fieldState: { error },
+//                          }) => (
 //                   <CurrencyInputField
 //                     label="total"
 //                     value={value}
@@ -668,9 +653,9 @@
 //               name={`info.dataRoom.url`}
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <TextField
 //                   label="Link"
 //                   value={value}
@@ -684,9 +669,9 @@
 //                 name="info.dataRoom.backgroundImgUrl"
 //                 control={control}
 //                 render={({
-//                   field: { value, onChange, name },
-//                   fieldState: { error },
-//                 }) => (
+//                            field: { value, onChange, name },
+//                            fieldState: { error },
+//                          }) => (
 //                   <UploadField
 //                     adminKey={adminKey}
 //                     disabled={isUploadDisabled}
@@ -702,8 +687,9 @@
 //                 )}
 //               />
 //               <span className="text-xs">
-//                 Image should be black & white (see existing projects). Opacity
-//                 will automatically be lowered to 10%.
+//                 Image should be black & white (see existing projects) with
+//                 transparent background. Opacity will automatically be lowered to
+//                 10%.
 //               </span>
 //             </div>
 //           </BoWrapper>
@@ -716,9 +702,9 @@
 //                 name={`info.tge.raiseTarget`}
 //                 control={control}
 //                 render={({
-//                   field: { value, onChange },
-//                   fieldState: { error },
-//                 }) => (
+//                            field: { value, onChange },
+//                            fieldState: { error },
+//                          }) => (
 //                   <CurrencyInputField
 //                     label="Raise Target"
 //                     value={value}
@@ -733,9 +719,9 @@
 //               name={`info.tge.fixedCoinPriceInBorg`}
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <CurrencyInputField
 //                   label="Fixed Token Price in $BORG"
 //                   value={value}
@@ -758,9 +744,9 @@
 //               name={`info.tge.tweetUrl`}
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <TextField
 //                   label="Tweet Url - shown in Reward Distribution Phase"
 //                   value={value}
@@ -775,9 +761,9 @@
 //               name={`info.tge.liquidityPool.name`}
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <TextField
 //                   label="Name"
 //                   value={value}
@@ -790,9 +776,9 @@
 //               name="info.tge.liquidityPool.iconUrl"
 //               control={control}
 //               render={({
-//                 field: { value, onChange, name },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange, name },
+//                          fieldState: { error },
+//                        }) => (
 //                 <UploadField
 //                   adminKey={adminKey}
 //                   disabled={isUploadDisabled}
@@ -811,9 +797,9 @@
 //               name={`info.tge.liquidityPool.lbpType`}
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <TextField
 //                   label="LBP Type"
 //                   value={value}
@@ -827,9 +813,9 @@
 //               name={`info.tge.liquidityPool.lockingPeriod`}
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <TextField
 //                   label="Locking Period (short description)"
 //                   value={value}
@@ -843,9 +829,9 @@
 //               name={`info.tge.liquidityPool.unlockDate`}
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <DateTimeField
 //                   label="Unlock Date"
 //                   value={value}
@@ -873,9 +859,9 @@
 //                       name={`info.timeline.${index}.date`}
 //                       control={control}
 //                       render={({
-//                         field: { value, onChange },
-//                         fieldState: { error },
-//                       }) => (
+//                                  field: { value, onChange },
+//                                  fieldState: { error },
+//                                }) => (
 //                         <DateTimeField
 //                           value={value}
 //                           onChange={onChange}
@@ -905,9 +891,9 @@
 //                         name={`info.whitelistRequirements.${index}.isMandatory`}
 //                         control={control}
 //                         render={({
-//                           field: { value, onChange },
-//                           fieldState: { error },
-//                         }) => {
+//                                    field: { value, onChange },
+//                                    fieldState: { error },
+//                                  }) => {
 //                           return (
 //                             <CheckboxField
 //                               value={value}
@@ -923,9 +909,9 @@
 //                           name={`info.whitelistRequirements.${index}.heldAmount`}
 //                           control={control}
 //                           render={({
-//                             field: { value, onChange },
-//                             fieldState: { error },
-//                           }) => (
+//                                      field: { value, onChange },
+//                                      fieldState: { error },
+//                                    }) => (
 //                             <CurrencyInputField
 //                               label="Held Amount"
 //                               value={value}
@@ -979,9 +965,9 @@
 //               name={`rewards.description`}
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <TextField
 //                   label="Description"
 //                   value={value}
@@ -995,9 +981,9 @@
 //               name={`rewards.payoutInterval`}
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <DropdownField
 //                   options={payoutIntervalOptions}
 //                   label="Payout Interval"
@@ -1012,9 +998,9 @@
 //               name={`rewards.distributionType`}
 //               control={control}
 //               render={({
-//                 field: { value, onChange },
-//                 fieldState: { error },
-//               }) => (
+//                          field: { value, onChange },
+//                          fieldState: { error },
+//                        }) => (
 //                 <DropdownField
 //                   label="Distribution Type"
 //                   options={distributionTypeOptions}

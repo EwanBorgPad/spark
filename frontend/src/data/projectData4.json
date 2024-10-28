@@ -1,58 +1,58 @@
 {
   "info": {
-    "id": "milan-crypto-test",
-    "title": "Milan Crypto",
-    "subtitle": "Anti-Slashing Liquid Staking Crypto Manic Automated Market",
-    "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar.png",
-    "thumbnailUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/westeros-validator-group/project-thumbnail-824297648",
-    "origin": "\uD83C\uDDF7\uD83C\uDDF8 Serbia",
+    "id": "aurelia",
+    "title": "Aurelia",
+    "subtitle": "Data ownership for the decentralized digital age",
+    "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/aurelia/project-logo-867281999",
+    "thumbnailUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/aurelia/project-logo-867281999",
+    "origin": "🇪🇺 Italy",
     "sector": "Healthcare",
     "chain": {
-      "name": "Zora",
-      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/chain-icon.png"
+      "name": "Zora 3",
+      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/chain-icon-712293612"
     },
-    "totalTokensForSale": 32000,
+    "totalTokensForSale": 42000,
     "curator": {
-      "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/curator-avatar.jpg",
-      "fullName": "Milan Miljus",
-      "position": "Software Developer",
+      "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/aurelia/curator-avatar-862037941",
+      "fullName": "Molly Millions",
+      "position": "Web3 Veteran",
       "socials": [
         {
-          "url": "#",
+          "url": "https://en.wikipedia.org/wiki/Blockchain",
+          "iconType": "MEDIUM",
+          "label": "Medium"
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Blockchain",
           "iconType": "LINKED_IN",
           "label": "Linkedin"
         },
         {
-          "url": "#",
+          "url": "https://en.wikipedia.org/wiki/Blockchain",
           "iconType": "X_TWITTER",
           "label": "X (ex-Twitter)"
-        },
-        {
-          "url": "#",
-          "iconType": "MEDIUM",
-          "label": "Medium"
         }
       ]
     },
     "projectLinks": [
       {
-        "url": "#",
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
         "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
         "iconType": "WEB",
         "label": ""
       },
       {
-        "url": "#",
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
         "iconType": "MEDIUM",
         "label": ""
       },
       {
-        "url": "#",
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
         "iconType": "LINKED_IN",
         "label": ""
       },
       {
-        "url": "#",
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
         "iconType": "X_TWITTER",
         "label": ""
       }
@@ -72,17 +72,17 @@
     "vestingDuration": 1731677316,
 
     "tge": {
-      "raiseTarget": 2000000,
+      "raiseTarget": 39332,
       "projectCoin": {
-        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/project-coin-icon.svg",
+        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/aurelia/chain-icon-967667980",
         "ticker": "LRC"
       },
-      "fixedCoinPriceInBorg": 1,
-      "whitelistParticipants": 1698,
+      "fixedCoinPriceInBorg": 0.398,
+      "whitelistParticipants": 332,
       "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
       "liquidityPool": {
         "name": "Raydium",
-        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/liquidity-pool-icon.png",
+        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/liquidity-pool-icon-738904576",
         "lbpType": "Full Range",
         "lockingPeriod": "12-month lockup",
         "unlockDate": "2025-07-12T12:39:16Z",
@@ -92,24 +92,24 @@
     },
     "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
     "dataRoom": {
-      "backgroundImgUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar2.png",
+      "backgroundImgUrl": "",
       "url": "#"
     },
     "timeline": [
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": "2024-10-20"
+        "date": "2024-09-20"
       },
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-11-02"
+        "date": "2024-10-12"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-11-12"
+        "date": "2024-10-22"
       },
       {
         "id": "REWARD_DISTRIBUTION",
@@ -128,7 +128,7 @@
         "label": "Hold 20,000 BORG in your wallet",
         "description": "",
         "isMandatory": true,
-        "heldAmount": 20000
+        "heldAmount": 31000
       },
       {
         "type": "FOLLOW_ON_X",
@@ -142,52 +142,11 @@
         "description": "",
         "isMandatory": true
       }
-    ],
-    "tiers": [
-      {
-        "id": "tier1",
-        "label": "Tier1",
-        "quests": [
-          {
-            "type": "FOLLOW_ON_TWITTER",
-            "twitterHandle": "@borgpadhq",
-            "twitterLabel": "BorgPad"
-          },
-          {
-            "type": "HOLD_TOKEN",
-            "tokenName": "USDC",
-            "tokenAmount": "10000",
-            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
-          }
-        ],
-        "benefits": {
-          "startDate": "2024-10-23",
-          "minInvestment": "10",
-          "maxInvestment": "999"
-        }
-      },
-      {
-        "id": "tier2",
-        "label": "Tier2",
-        "quests": [
-          {
-            "type": "HOLD_TOKEN",
-            "tokenName": "USDC",
-            "tokenAmount": "20000",
-            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
-          }
-        ],
-        "benefits": {
-          "startDate": "2024-10-21",
-          "minInvestment": "10",
-          "maxInvestment": "999999"
-        }
-      }
     ]
   },
-  "whitelistParticipants": 768,
+  "whitelistParticipants": 119,
   "saleData": {
-    "availableTokens": 14300,
+    "availableTokens": 12403,
     "saleSucceeded": true,
     "totalAmountRaised": 800402.5661,
     "sellOutPercentage": 78,
