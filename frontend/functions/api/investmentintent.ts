@@ -1,15 +1,10 @@
-import { UserModel, UserModelJson } from "../../shared/models"
+import { InvestmentIntentRequestSchema, UserModelJson } from "../../shared/models"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
-import { z } from "zod"
 import { PublicKey } from "@solana/web3.js"
 import nacl from "tweetnacl"
 import { decodeUTF8 } from "tweetnacl-util"
+import { UserService } from "../services/userService"
 
-const bodySchema = z.object({
-  publicKey: z.string(),
-  message: z.string(),
-  signature: z.number().int().array(),
-})
 
 type ENV = {
   DB: D1Database
@@ -19,15 +14,14 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   try {
     //// validate request
     const requestJson = await ctx.request.json()
-    const { error, data } = bodySchema.safeParse(requestJson)
+    const { error, data } = InvestmentIntentRequestSchema.safeParse(requestJson)
 
     if (error) {
       return jsonResponse(null, 400)
     }
 
     ///// authorization
-    const { publicKey, message, signature } = data
-    const address = publicKey
+    const { publicKey, projectId, amount, message, signature } = data
 
     const isVerified = nacl.sign.detached.verify(
       decodeUTF8(message),
@@ -40,38 +34,34 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     //// business logic
     // check if the user is stored in the db
-    const existingUser = await db
-      .prepare("SELECT * FROM user WHERE address = ?1")
-      .bind(address)
-      .first<UserModel>()
+    const existingUser = await UserService.findUserByAddress({ db, address: publicKey })
 
     console.log({ existingUser })
+
+    const investmentIntent = { amount, message, signature }
 
     if (!existingUser) {
       console.log("User not found in db, inserting...")
       const json: UserModelJson = {
-        residency: {
-          isNotUsaResident: true,
-          isNotUsaResidentConfirmationTimestamp: new Date().toISOString(),
+        investmentIntent: {
+          [projectId]: investmentIntent,
         }
       }
       await db
         .prepare("INSERT INTO user (address, json) VALUES (?1, ?2)")
-        .bind(address, JSON.stringify(json))
+        .bind(publicKey, JSON.stringify(json))
         .run()
       console.log("User inserted into db.")
     } else {
       console.log("User found in db, updating...")
-      const json: UserModelJson = existingUser.json
-        ? JSON.parse(existingUser.json)
-        : {}
-      json.residency = {
-        isNotUsaResident: true,
-        isNotUsaResidentConfirmationTimestamp: new Date().toISOString(),
-      }
+
+      const json: UserModelJson = existingUser.json ?? {}
+      if (!json.investmentIntent) json.investmentIntent = {}
+      json.investmentIntent[projectId] = investmentIntent
+
       await db
         .prepare("UPDATE user SET json = ?2 WHERE address = ?1")
-        .bind(address, JSON.stringify(json))
+        .bind(publicKey, JSON.stringify(json))
         .run()
       console.log("User updated")
     }

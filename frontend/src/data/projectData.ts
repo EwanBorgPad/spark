@@ -126,7 +126,7 @@ export const dummyData: ProjectModel = {
         id: "DISTRIBUTION_OVER",
       },
     ],
-    whitelistRequirements: [],
+    tiers: [],
   },
   whitelistParticipants: 769,
   saleData: {

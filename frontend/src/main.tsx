@@ -1,3 +1,8 @@
+// see ProjectTester2.tsx
+import { mockDate } from "@/utils/mockDate.ts"
+mockDate()
+
+
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
@@ -5,14 +10,13 @@ import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
 
 import { WalletProvider } from "@/hooks/useWalletContext"
 import TermsOfUse from "./pages/TermsOfUse"
-import BackOffice from "./pages/BackOffice"
 import NotFound from "./pages/NotFound"
 import Project from "./pages/Project"
 import App from "./App"
-
-import { WhitelistStatusProvider } from "./hooks/useWhitelistContext"
 import { ProjectDataProvider } from "./hooks/useProjectData"
 import { BalanceProvider } from "@/hooks/useBalanceContext.tsx"
+// @backOffice
+// import BackOffice from "./pages/BackOffice"
 
 import { Buffer } from "buffer"
 import AngelStaking from "./pages/AngelStaking"
@@ -42,10 +46,11 @@ const router = createBrowserRouter([
         path: "/",
         element: <LaunchPools />,
       },
-      {
-        path: "/back-office",
-        element: <BackOffice />,
-      },
+      // @backOffice
+      // {
+      //   path: "/back-office",
+      //   element: <BackOffice />,
+      // },
       {
         path: "/angel-staking",
         element: <AngelStaking />,
@@ -90,8 +95,6 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <WhitelistStatusProvider>
-      <RouterProvider router={router} />
-    </WhitelistStatusProvider>
+    <RouterProvider router={router} />
   </React.StrictMode>,
 )

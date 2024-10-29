@@ -1,36 +1,49 @@
 import {
+  AcceptTermsRequest,
   GetExchangeResponse,
   GetPresignedUrlResponse,
   GetProjectsResponse,
-  GetWhitelistingResult,
+  InvestmentIntentRequest,
   ProjectModel,
   projectSchema,
 } from "../../shared/models.ts"
+import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
-const GET_WHITELISTING_STATUS_API = API_BASE_URL + "/whitelisting"
-const POST_CONFIRM_RESIDENCY_URL = API_BASE_URL + "/confirmresidency"
+const GET_ELIGIBILITY_STATUS_API = API_BASE_URL + "/eligibilitystatus"
+const POST_ACCEPT_TERMS_OF_USE_API = API_BASE_URL + "/acceptterms"
+const POST_INVESTMENT_INTENT_API = API_BASE_URL + "/investmentintent"
 const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
 const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
 
-const getWhitelistingStatus = async ({ address }: { address: string }) => {
-  const url = new URL(GET_WHITELISTING_STATUS_API, window.location.href)
+type GetEligibilityStatusArgs = {
+  address: string
+  projectId: string
+}
+const getEligibilityStatus = async ({ address, projectId, }: GetEligibilityStatusArgs): Promise<EligibilityStatus> => {
+  const url = new URL(GET_ELIGIBILITY_STATUS_API, window.location.href)
   url.searchParams.set("address", address)
+  url.searchParams.set("projectId", projectId)
 
   const response = await fetch(url)
-  const result = (await response.json()) as GetWhitelistingResult
+  const json = await response.json()
 
-  return result
+  return json
 }
-type ConfirmResidencyArgs = {
-  publicKey: string
-  message: string
-  signature: unknown[]
+type AcceptTermsOfUseArgs = AcceptTermsRequest
+const postAcceptTermsOfUse = async (args: AcceptTermsOfUseArgs) => {
+  const url = new URL(POST_ACCEPT_TERMS_OF_USE_API, window.location.href)
+
+  await fetch(url, {
+    body: JSON.stringify(args),
+    method: "post",
+  })
 }
-const confirmResidency = async (args: ConfirmResidencyArgs) => {
-  const url = new URL(POST_CONFIRM_RESIDENCY_URL, window.location.href)
+type PostInvestmentIntentArgs = InvestmentIntentRequest
+const postInvestmentIntent = async (args: PostInvestmentIntentArgs) => {
+  const url = new URL(POST_INVESTMENT_INTENT_API, window.location.href)
 
   await fetch(url, {
     body: JSON.stringify(args),
@@ -168,7 +181,8 @@ export const backendApi = {
   getExchange,
   createProject,
   getPresignedUrl,
-  confirmResidency,
+  postAcceptTermsOfUse,
+  postInvestmentIntent,
   uploadFileToBucket,
-  getWhitelistingStatus,
+  getEligibilityStatus,
 }

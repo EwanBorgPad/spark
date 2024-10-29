@@ -1,32 +1,35 @@
 import { TokenAmount } from "./SolanaWeb3"
 import { z } from "zod"
+import { TierSchema } from "./eligibilityModel.ts"
 /**
  * UserModel, user table in the database.
  */
 export type UserModel = {
   wallet_address: string
-  json: null | string
+  json: UserModelJson
 }
+type TwitterHandle = string
+type ProjectId = string
 /**
  * UserModelJson, json column in user database.
  */
 export type UserModelJson = {
   twitter?: {
     twitterId: string
-    isFollowingOnX: boolean
+    follows: Record<TwitterHandle, {
+      isFollowing: boolean,
+    }>
   }
-  residency?: {
-    isNotUsaResident?: boolean
-    isNotUsaResidentConfirmationTimestamp?: string
+  investmentIntent?: Record<ProjectId, {
+    amount: string
+    message: string
+    signature: string
+  }>
+  termsOfUse?: {
+    acceptedAt: Date
+    acceptedTextSigned: string
+    countryOfOrigin: string
   }
-}
-/**
- * GET /whitelisting api response type
- */
-export type GetWhitelistingResult = {
-  balance: TokenAmount
-  isFollowingOnX: boolean
-  isNotUsaResident: boolean
 }
 /**
  * Represents url type
@@ -50,14 +53,7 @@ const timelineEventsSchema = () =>
     "REWARD_DISTRIBUTION",
     "DISTRIBUTION_OVER",
   ])
-const whitelistRequirementsSchema = () =>
-  z.object({
-    type: z.enum(["HOLD_BORG_IN_WALLET", "FOLLOW_ON_X", "DONT_RESIDE_IN_US"]),
-    label: z.string().min(1),
-    description: z.string(),
-    isMandatory: z.boolean(),
-    heldAmount: z.number({ coerce: true }).optional(),
-  })
+
 const idSchema = () =>
   z
     .string()
@@ -132,7 +128,7 @@ export const infoSchema = z.object({
       label: z.string().min(1),
     }),
   ),
-  whitelistRequirements: z.array(whitelistRequirementsSchema()).min(0),
+  tiers: z.array(TierSchema).min(1)
 })
 
 // "distributionType" and "payoutInterval" enum alternative values to be discussed. They will require further logic on backend and programs.
@@ -157,13 +153,7 @@ export const projectSchema = z.object({
     .optional(),
   rewards: rewardsSchema.optional(),
 })
-export type ProjectInfoModel = z.infer<typeof infoSchema>
-export type ProjectRewardsModel = z.infer<typeof rewardsSchema>
 export type ProjectModel = z.infer<typeof projectSchema>
-export type DistributionType = ProjectRewardsModel["distributionType"]
-export type PayoutInterval = ProjectRewardsModel["payoutInterval"]
-export type WhitelistRequirementModel =
-  ProjectInfoModel["whitelistRequirements"][number]
 
 export type CacheStoreModel = {
   cache_key: string
@@ -194,3 +184,21 @@ export type GetProjectsResponse = {
   projects: ProjectModel[]
   pagination: PaginationType
 }
+
+export const AcceptTermsRequestSchema = z.object({
+  publicKey: z.string(),
+  message: z.string(),
+  signature: z.array(z.number().int()),
+})
+export type AcceptTermsRequest = z.infer<typeof AcceptTermsRequestSchema>
+
+export const InvestmentIntentRequestSchema = z.object({
+  publicKey: z.string(),
+  projectId: z.string(),
+  amount: z.string(),
+  message: z.string(),
+  signature: z.array(z.number().int()),
+})
+export type InvestmentIntentRequest = z.infer<typeof InvestmentIntentRequestSchema>
+
+// TODO search all 'whitelist' in project and check if the naming is ok (isCompliant, isEligible, isWhitelisted)

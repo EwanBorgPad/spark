@@ -1,5 +1,6 @@
-import { UserModel, UserModelJson } from "../../shared/models"
+import { UserModelJson } from "../../shared/models"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
+import { UserService } from "../services/userService"
 
 const TWITTER_API_OAUTH2_TOKEN_URL = "https://api.twitter.com/2/oauth2/token"
 const TWITTER_API_GET_ME_URL = "https://api.twitter.com/2/users/me" // ?user.fields=profile_image_url
@@ -18,8 +19,8 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     const code = new URL(url).searchParams.get("code")
     const address = new URL(url).searchParams.get("address")
 
-    if (!code) {
-      return new Response(JSON.stringify({ message: "Code is missing!" }), {
+    if (!code || !address) {
+      return new Response(JSON.stringify({ message: "Code or address is missing!" }), {
         status: 400,
       })
     }
@@ -67,21 +68,17 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     const twitterId = getMeResponse.data.id
 
     // check if the user is stored in the db
-    const existingUser = await db
-      .prepare("SELECT * FROM user WHERE address = ?1")
-      .bind(address)
-      .first<UserModel>()
+    const existingUser = await UserService.findUserByAddress({ db, address })
 
     console.log({ existingUser })
 
+    const initialTwitterData = {
+      twitterId,
+      follows: {},
+    }
     if (!existingUser) {
       console.log("User not found in db, inserting...")
-      const json: UserModelJson = {
-        twitter: {
-          twitterId,
-          isFollowingOnX: true,
-        },
-      }
+      const json: UserModelJson = { twitter: initialTwitterData }
       await db
         .prepare("INSERT INTO user (address, json) VALUES (?1, ?2)")
         .bind(address, JSON.stringify(json))
@@ -89,13 +86,10 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
       console.log("User inserted into db.")
     } else {
       console.log("User found in db, updating...")
-      const json = existingUser.json
-        ? (JSON.parse(existingUser.json) as UserModelJson)
-        : {}
-      json.twitter = {
-        twitterId,
-        isFollowingOnX: true,
-      },
+
+      const json = existingUser.json ?? {}
+      if (!json.twitter) json.twitter = initialTwitterData
+
       await db
         .prepare("UPDATE user SET json = ?2 WHERE address = ?1")
         .bind(address, JSON.stringify(json))

@@ -2,7 +2,6 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import CurrencyInput from "react-currency-input-field"
 import { useTranslation } from "react-i18next"
 
-import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import { ConnectButton } from "@/components/Header/ConnectButton"
 import { useBalanceContext } from "@/hooks/useBalanceContext.tsx"
 import { useWalletContext } from "@/hooks/useWalletContext"
@@ -12,6 +11,9 @@ import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
 import React, { RefObject } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { backendApi } from "@/data/backendApi.ts"
+import { useParams } from "react-router-dom"
 
 type FormInputs = {
   borgInputValue: string
@@ -24,15 +26,26 @@ const inputButtons = [
 ]
 
 type Props = {
-  whitelistRequirementsRef: RefObject<HTMLDivElement>
+  eligibilitySectionRef: RefObject<HTMLDivElement>
 }
 
-const LiveNowExchange = ({ whitelistRequirementsRef }: Props) => {
+const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()
-  const { isUserWhitelisted } = useWhitelistStatusContext()
   const { balance } = useBalanceContext()
+
+  const { address } = useWalletContext()
+  const { projectId } = useParams()
+  const { data } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getEligibilityStatus({ address, projectId })
+    },
+    queryKey: ["getEligibilityStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
+  const isUserEligible = data?.isEligible
 
   const {
     handleSubmit,
@@ -66,7 +79,7 @@ const LiveNowExchange = ({ whitelistRequirementsRef }: Props) => {
 
   const scrollToWhitelistRequriements = () => {
     const top =
-      whitelistRequirementsRef.current?.getBoundingClientRect().top ?? 0
+      eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
     window.scrollBy({
       behavior: "smooth",
       top: top - 100,
@@ -169,7 +182,7 @@ const LiveNowExchange = ({ whitelistRequirementsRef }: Props) => {
                 type="submit"
                 size="lg"
                 btnText="Supply $BORG"
-                disabled={!isUserWhitelisted}
+                disabled={!isUserEligible}
                 className={"w-full"}
               />
               <Button
@@ -193,7 +206,7 @@ const LiveNowExchange = ({ whitelistRequirementsRef }: Props) => {
           )}
         </div>
       </form>
-      {!isUserWhitelisted && (
+      {!isUserEligible && (
         <div className="absolute bottom-0 left-0 right-0 top-10 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
           <div className="flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
             <span className="text-fg-error-primary">

@@ -1,9 +1,9 @@
 import {
   extractProjectId,
-  getProjectById,
   jsonResponse,
   reportError,
 } from "../cfPagesFunctionsUtils"
+import { ProjectService } from "../../services/projectService"
 
 type ENV = {
   DB: D1Database
@@ -23,7 +23,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: "Please provide id query param" }, 400)
     }
 
-    const project = await getProjectById(db, id)
+    const project = await ProjectService.findProjectById({ db, id })
 
     if (project) {
       return jsonResponse(project, 200)
