@@ -122,27 +122,6 @@
         "date": "2025-07-10"
       }
     ],
-    "whitelistRequirements": [
-      {
-        "type": "HOLD_BORG_IN_WALLET",
-        "label": "Hold 20,000 BORG in your wallet",
-        "description": "",
-        "isMandatory": true,
-        "heldAmount": 20000
-      },
-      {
-        "type": "FOLLOW_ON_X",
-        "label": "Follow BorgPad on X",
-        "description": "",
-        "isMandatory": true
-      },
-      {
-        "type": "DONT_RESIDE_IN_US",
-        "label": "Don’t reside in the US",
-        "description": "",
-        "isMandatory": true
-      }
-    ],
     "tiers": [
       {
         "id": "tier1",

@@ -1,7 +1,7 @@
 {
   "info": {
-    "id": "puffer-finance-02",
-    "title": "Puffer Finance 02",
+    "id": "puffer-finance",
+    "title": "Puffer Finance",
     "subtitle": "Anti-Slashing Liquid Staking",
     "logoUrl": "/images/puffer-finance/avatar.png",
     "thumbnailUrl": "",
@@ -120,27 +120,6 @@
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
         "date": "2025-07-10"
-      }
-    ],
-    "whitelistRequirements": [
-      {
-        "type": "HOLD_BORG_IN_WALLET",
-        "label": "Hold 20,000 BORG in your wallet",
-        "description": "",
-        "isMandatory": true,
-        "heldAmount": 20000
-      },
-      {
-        "type": "FOLLOW_ON_X",
-        "label": "Follow BorgPad on X",
-        "description": "",
-        "isMandatory": true
-      },
-      {
-        "type": "DONT_RESIDE_IN_US",
-        "label": "Don’t reside in the US",
-        "description": "",
-        "isMandatory": true
       }
     ],
     "tiers": [
