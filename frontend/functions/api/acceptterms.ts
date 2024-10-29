@@ -18,8 +18,7 @@ const COUNTRIES_BLACKLIST: string[] = [
   "CF", // Central African Republic
   "CD", // Democratic Republic of Congo
   "KP", // Democratic People’s Republic of Korea (North Korea)
-  // TODO this is a bit harder to geolocate, let's enable it for now
-  // "UA", // Temporarily occupied regions of Ukraine
+  "UA", // Temporarily occupied regions of Ukraine
   "CU", // Cuba
   "IR", // Iran
   "LY", // Libya
