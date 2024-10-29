@@ -6,6 +6,8 @@ import { getSplTokenBalance } from "../../shared/SolanaWeb3"
 /**
  * List of mandatory compliances.
  * Mandatory for each user, regardless if they are whitelisted manually.
+ * Return SUM investment.
+ * SqlQuery: SELECT SUM(json -> 'investmentIntent' -> 'puffer-finance' -> 'amount') FROM user;
  */
 const MANDATORY_COMPLIANCES: Quest[] = [
   {

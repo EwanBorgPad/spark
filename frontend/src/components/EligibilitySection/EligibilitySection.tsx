@@ -126,7 +126,7 @@ const QuestComponent = ({ quest }: QuestComponentProps) => {
       }
     if (type === "PROVIDE_INVESTMENT_INTENT")
       return {
-        label: t("how.much.will.you.invest"),
+        label: t("investment.intent.quest.heading"),
         description: "",
         ctaButton: <ProvideInvestmentIntentBtn />,
       }
@@ -236,8 +236,8 @@ const AcceptTermsOfUseBtn = () => {
 }
 
 const ProvideInvestmentIntentBtn = () => {
-  const [showModal, setShowModal] = useState(false)
   const { t } = useTranslation()
+  const [showModal, setShowModal] = useState(false)
 
   return (
     <div className="mt-2 flex justify-start">
@@ -247,7 +247,7 @@ const ProvideInvestmentIntentBtn = () => {
         className="rounded-lg px-3"
         onClick={() => setShowModal(!showModal)}
       >
-        Provide Value
+        {t('investment.intent.quest.button')}
       </Button>
       {showModal && (
         <ProvideInvestmentIntentModal onClose={() => setShowModal(false)} />

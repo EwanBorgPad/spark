@@ -102,7 +102,6 @@
   "compliance": "Compliance",
   "tiers": "Tiers",
 
-  "how.much.will.you.invest": "How much are you willing to invest?",
   "follow.NAME.on.twitter": "Follow {{ name }} on X",
   "hold.AMOUNT.NAME.in.your.wallet": "Hold {{ amount }} {{ name }} in your wallet",
 
@@ -112,10 +111,11 @@
   "accept.terms.of.use.quest.modal.button": "Confirm",
   "accept.terms.of.use.quest.message": "I acknowledge that I have read and accepted the Terms of Use",
 
-  "investment.intent.quest.heading": "Express your investment interest.",
-  "investment.intent.quest.button": "Enter Amount.",
-  "investment.intent.quest.description": "Express your investment interest in this project.",
-  "investment.intent.quest.modal.button": "Confirm Amount",
+  "investment.intent.quest.heading": "Express Your Investment Interest",
+  "investment.intent.quest.button": "Enter Amount",
+  "investment.intent.quest.description": "Let us know how much you would like to invest",
+  "investment.intent.quest.placeholder": "Enter amount in USDC (e.g. 5000)",
+  "investment.intent.quest.modal.button": "Confirm Interest",
   "investment.intent.quest.message": "I acknowledge that I plan to invest {{ amount }} in {{ projectId }}",
 
   "terms_of_use": "Terms of Use",

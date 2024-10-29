@@ -19,14 +19,14 @@ const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentIntentModalP
   const { projectId } = useParams()
   const queryClient = useQueryClient()
 
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState<null | number>(null)
 
   const {
     mutate: provideInvestmentIntent,
     isPending,
   } = useMutation({
     mutationFn: async (address: string) => {
-      if (!projectId) return
+      if (!projectId || !amount) return
 
       const message = t('investment.intent.quest.message', { amount, projectId })
 
@@ -62,20 +62,25 @@ const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentIntentModalP
         {/* Body */}
         <div
           className={twMerge(
-            "flex w-full grow flex-col justify-start gap-5 px-10 pb-8 pt-3",
+            "flex w-full grow flex-col justify-start gap-6 px-10 pb-8 pt-3",
           )}
         >
-          <p className="text-center text-base text-fg-tertiary">
-            {t('investment.intent.quest.description')}
-          </p>
-          <CurrencyInputField
-            maxLength={12}
-            containerClassName='max-w-[999px]'
-            inputClassName='bg-emphasis text-white'
-            value={amount}
-            onChange={(e) => setAmount(Number(e) || 0)}
-          />
+          <div>
+            <p className="text-center text-base text-fg-tertiary">
+              {t('investment.intent.quest.description')}
+            </p>
+            <CurrencyInputField
+              maxLength={12}
+              containerClassName='max-w-[999px]'
+              inputClassName='bg-emphasis text-white'
+              placeholder={t('investment.intent.quest.placeholder')}
+              value={amount ?? undefined}
+              onChange={(e) => setAmount(Number(e) || 0)}
+            />
+          </div>
+
           <Button
+            disabled={!Boolean(amount)}
             isLoading={isPending}
             btnText={t('investment.intent.quest.modal.button')}
             onClick={() => provideInvestmentIntent(address)}
