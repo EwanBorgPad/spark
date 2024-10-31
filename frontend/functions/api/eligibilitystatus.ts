@@ -1,13 +1,15 @@
 import { jsonResponse } from "./cfPagesFunctionsUtils"
 import { EligibilityService } from "../services/eligibilityService"
+import { drizzle } from "drizzle-orm/d1"
 
 type ENV = {
   DB: D1Database
   SOLANA_RPC_URL: string
 }
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
+  const db = drizzle(ctx.env.DB, { logger: true })
+
   try {
-    const db = ctx.env.DB
     const rpcUrl = ctx.env.SOLANA_RPC_URL
 
     const { searchParams } = new URL(ctx.request.url)

@@ -21,4 +21,4 @@ wrangler.toml
 .env
 
 .prettierignore
-tmp
+tmp/
