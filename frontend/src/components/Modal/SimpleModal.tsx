@@ -78,7 +78,7 @@ export function CloseButton({
   className?: string
 }) {
   const cls = twMerge(
-    "absolute top-4 left-4",
+    "absolute top-2 left-2 p-2",
     "rounded-md",
     "flex items-center justify-center",
     "cursor-pointer",

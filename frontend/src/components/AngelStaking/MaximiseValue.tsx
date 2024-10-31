@@ -1,4 +1,4 @@
-import React, { useRef } from "react"
+import { useRef } from "react"
 import maximise1 from "@/assets/angelStaking/maximise1.png"
 import maximise2 from "@/assets/angelStaking/maximise2.png"
 import maximise3 from "@/assets/angelStaking/maximise3.png"
@@ -6,6 +6,7 @@ import Img from "../Image/Img"
 import useScrollAnimation from "@/hooks/useScrollAnimation"
 import { useWindowSize } from "@/hooks/useWindowSize"
 import { twMerge } from "tailwind-merge"
+import RegisterYourInterest from "../Button/RegisterYourInterest"
 
 type Item = {
   title: string
@@ -51,26 +52,19 @@ const MaximiseValue = () => {
         isActive && "translate-y-0 scale-100 opacity-100",
       )}
     >
-      <h2 className="text-center text-4xl font-semibold leading-normal md:text-5xl">
-        Maximise the value of your SOL
-      </h2>
-      <div
-        className={
-          "flex w-full flex-col items-center justify-center gap-12 md:flex-row"
-        }
-      >
+      <h2 className="text-center text-4xl font-semibold leading-normal md:text-5xl">Maximise the value of your SOL</h2>
+      <div className={"flex w-full flex-col items-center justify-center gap-12 md:flex-row"}>
         {content.map((item, index) => (
           <div key={index} className="flex max-w-[405px] flex-col gap-6">
             <Img src={item.imgUrl} />
             <div className="flex w-full flex-col gap-3">
-              <h3 className="text-2xl font-semibold text-fg-primary">
-                {item.title}
-              </h3>
+              <h3 className="text-2xl font-semibold text-fg-primary">{item.title}</h3>
               <p className="text-fg-secondary">{item.description}</p>
             </div>
           </div>
         ))}
       </div>
+      <RegisterYourInterest />
     </section>
   )
 }
