@@ -9,6 +9,7 @@ import { CurrencyInputField } from "@/components/InputField/CurrencyInputField.t
 import { useState } from "react"
 import { useParams } from "react-router-dom"
 import { InvestmentIntentRequest } from "../../../../shared/models.ts"
+import { Badge } from "@/components/Badge/Badge.tsx"
 
 type ProvideInvestmentIntentModalProps = {
   onClose: () => void
@@ -24,6 +25,7 @@ const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentIntentModalP
   const {
     mutate: provideInvestmentIntent,
     isPending,
+    isSuccess,
   } = useMutation({
     mutationFn: async (address: string) => {
       if (!projectId || !amount) return
@@ -79,12 +81,22 @@ const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentIntentModalP
             />
           </div>
 
-          <Button
-            disabled={!Boolean(amount)}
-            isLoading={isPending}
-            btnText={t('investment.intent.quest.modal.button')}
-            onClick={() => provideInvestmentIntent(address)}
-          />
+          {
+            isSuccess
+              ? <div className="flex w-full justify-center">
+                <Badge.Confirmation
+                  isConfirmed={true}
+                  label={t('done')}
+                  classNames="w-fit bg-transparent border-none"
+                />
+              </div>
+              : <Button
+                disabled={!Boolean(amount) || isPending}
+                isLoading={isPending}
+                btnText={t("investment.intent.quest.modal.button")}
+                onClick={() => provideInvestmentIntent(address)}
+              />
+          }
         </div>
       </div>
     </SimpleModal>
