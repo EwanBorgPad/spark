@@ -1,4 +1,3 @@
-import { TokenAmount } from "./SolanaWeb3"
 import { z } from "zod"
 import { TierSchema } from "./eligibilityModel.ts"
 /**

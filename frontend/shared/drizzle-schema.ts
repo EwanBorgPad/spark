@@ -1,7 +1,5 @@
 import { primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core"
 import { ProjectModel, UserModelJson } from "./models"
-// import { drizzle } from "drizzle-orm/d1"
-// import { eq } from "drizzle-orm"
 
 export const whitelistTable = sqliteTable('whitelist', {
   address: text().notNull(),

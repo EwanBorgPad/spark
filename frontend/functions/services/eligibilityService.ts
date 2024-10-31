@@ -27,6 +27,17 @@ type GetEligibilityStatusArgs = {
   projectId: string
   rpcUrl: string
 }
+/**
+ * Returns eligibility status for a user/project combo.
+ * Main function for eligibility functionality.
+ * Optimization: HOLD_TOKEN currently makes one RPC call per quest, which is not needed if that currency was already checked.
+ *  Can be optimized by storing the amounts in memory during the check.
+ *  Can be further optimized by caching the amounts in the database for some time.
+ * @param db
+ * @param address
+ * @param projectId
+ * @param rpcUrl
+ */
 const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligibilityStatusArgs): EligibilityStatus => {
   let user = await db
     .select()
