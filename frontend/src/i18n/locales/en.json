@@ -19,6 +19,8 @@
   "fdv": "FDV",
   "liquidity_pool": "Liquidity Pool",
   "lp_sale_progress": "LP Sale Progress",
+  "total_investment_interest": "Total Commitment",
+  "average_commitment_from_users": "Average Commitment ${{ avg }} from {{ count }} users.",
 
   "tge.eligible": "Eligible",
   "tge.not_eligible": "Not Eligible",
