@@ -6,6 +6,7 @@ import { backendApi } from "@/data/backendApi.ts"
 import SimpleLoader from "@/components/Loaders/SimpleLoader"
 import { formatDateAndMonth } from "@/utils/date-helpers"
 import { useProjectDataContext } from "@/hooks/useProjectData"
+import { useParams } from "react-router-dom"
 
 const BasicTokenInfo = () => {
   const { t } = useTranslation()
@@ -14,17 +15,27 @@ const BasicTokenInfo = () => {
       info: { timeline },
     },
   } = useProjectDataContext()
+  const { projectId } = useParams()
 
   // TODO @hardcoded switch to projectCoin instead of hardcoded BORG
   const baseCurrency = "swissborg"
   const targetCurrency = "usd"
-  const { data } = useQuery({
+  const { data: exchangeData } = useQuery({
     queryFn: () =>
       backendApi.getExchange({
         baseCurrency,
         targetCurrency,
       }),
     queryKey: ["getExchange", baseCurrency, targetCurrency],
+  })
+
+  const { data: investmentSummaryData } = useQuery({
+    queryFn: () =>
+      backendApi.getInvestmentIntentSummary({
+        projectId: projectId!,
+      }),
+    queryKey: ["getInvestmentIntentSummary", projectId],
+    enabled: Boolean(projectId),
   })
 
   const rewardDistributionStartDate = timeline.find(
@@ -35,10 +46,10 @@ const BasicTokenInfo = () => {
     <section className="max-w-screen flex w-full flex-col gap-[25px] px-4 lg:max-w-[792px]">
       <div className="mt-[28px] flex w-full flex-wrap justify-between gap-6">
         <div className="flex flex-1 flex-col gap-2">
-          <span className="text-sm text-fg-tertiary">{t("market_cap")}</span>
+          <span className="text-sm text-fg-tertiary">{t('total_investment_interest')}</span>
           <span className="font-geist-mono text-base text-fg-primary">
-            {data?.marketCap ? (
-              formatCurrencyAmount(data.marketCap)
+            {investmentSummaryData ? (
+              formatCurrencyAmount(investmentSummaryData.sum)
             ) : (
               <SimpleLoader />
             )}
@@ -54,8 +65,8 @@ const BasicTokenInfo = () => {
         <div className="flex flex-1 flex-col gap-2">
           <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
           <span className="font-geist-mono text-base text-fg-primary">
-            {data?.fullyDilutedValuation ? (
-              formatCurrencyAmount(data?.fullyDilutedValuation)
+            {exchangeData?.fullyDilutedValuation ? (
+              formatCurrencyAmount(exchangeData?.fullyDilutedValuation)
             ) : (
               <SimpleLoader />
             )}

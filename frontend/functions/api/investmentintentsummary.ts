@@ -28,7 +28,13 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       .bind(projectId)
       .first()
 
-    return jsonResponse(result, 200)
+    const response = {
+      sum: result?.sum ?? 0,
+      avg: result?.avg ?? 0,
+      count: result?.count ?? 0,
+    }
+
+    return jsonResponse(response, 200)
   } catch (e) {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
