@@ -1,7 +1,9 @@
+import { DrizzleD1Database } from "drizzle-orm/d1/driver"
+import { and, eq } from "drizzle-orm"
+
 import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } from "../../shared/eligibilityModel"
-import { UserService } from "./userService"
-import { ProjectService } from "./projectService"
 import { getSplTokenBalance } from "../../shared/SolanaWeb3"
+import { projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
 
 /**
  * List of mandatory compliances.
@@ -20,19 +22,28 @@ const MANDATORY_COMPLIANCES: Quest[] = [
 
 
 type GetEligibilityStatusArgs = {
-  db: D1Database
+  db: DrizzleD1Database
   address: string
   projectId: string
   rpcUrl: string
 }
 const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligibilityStatusArgs): EligibilityStatus => {
-  let user = await UserService.findUserByAddress({ db, address })
+  let user = await db
+    .select()
+    .from(userTable)
+    .where(eq(userTable.address, address))
+    .get()
+
   if (!user) user = {
     wallet_address: address,
     json: {}
   }
 
-  const project = await ProjectService.findProjectByIdOrFail({ db, id: projectId })
+  const project = await db
+    .select()
+    .from(projectTable)
+    .where(eq(projectTable.id, projectId))
+    .get()
 
   const compliancesWithCompletion: QuestWithCompletion[] = []
   for (const quest of MANDATORY_COMPLIANCES) {
@@ -54,7 +65,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
   }
 
   const tiersWithCompletion: TierWithCompletion[] = []
-  for (const tier of project.info.tiers) {
+  for (const tier of project.json.info.tiers) {
     const tierQuestsWithCompletion: QuestWithCompletion[] = []
 
     for (const quest of tier.quests) {
@@ -102,16 +113,39 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     })
   }
 
-  // TODO @manualWhitelist also account for those users
+  const whitelist = await db
+    .select()
+    .from(whitelistTable)
+    .where(
+      and(
+        eq(whitelistTable.address, address),
+        eq(whitelistTable.projectId, projectId),
+      )
+    )
+    .get()
+  const whitelistTierId = whitelist.tierId
+  const whitelistedTier = whitelistTierId
+    ? project.json.info.tiers.find(tier => tier.id === whitelistTierId)
+    // silently fail if tier is not found
+    : null
+
   const isCompliant = compliancesWithCompletion.every(quest => quest.isCompleted)
+  // user must be compliant to be eligible
   const eligibilityTier = isCompliant
-    ? (tiersWithCompletion.findLast(tier => tier.isCompleted) ?? null)
+    // if user is manually whitelisted
+    ? Boolean(whitelistedTier)
+      // load the whitelisted tier
+      ? whitelistedTier
+      // else, check if they have tiered by completing quests
+      : (tiersWithCompletion.findLast(tier => tier.isCompleted) ?? null)
     : null
   const isEligible = Boolean(eligibilityTier)
 
   return {
     isEligible,
     eligibilityTier,
+    whitelistTierId,
+    whitelistedTier,
     compliances: compliancesWithCompletion,
     tiers: tiersWithCompletion
   }

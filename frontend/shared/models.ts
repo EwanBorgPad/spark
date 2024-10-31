@@ -2,6 +2,7 @@ import { TokenAmount } from "./SolanaWeb3"
 import { z } from "zod"
 import { TierSchema } from "./eligibilityModel.ts"
 /**
+ * @deprecated deprecate , use drizzle
  * UserModel, user table in the database.
  */
 export type UserModel = {
