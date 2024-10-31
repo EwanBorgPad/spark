@@ -134,7 +134,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
       )
     )
     .get()
-  const whitelistTierId = whitelist.tierId ?? null
+  const whitelistTierId = whitelist?.tierId ?? null
   const whitelistedTier = whitelistTierId
     ? project.json.info.tiers.find(tier => tier.id === whitelistTierId)
     // silently fail if tier is not found
