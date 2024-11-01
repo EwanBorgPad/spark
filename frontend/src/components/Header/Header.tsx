@@ -28,10 +28,10 @@ const navigationItems: NavigationItem[] = [
     path: "/launch-pools",
     label: "Launch Pools",
   },
-  {
-    path: "/manifesto",
-    label: "Manifesto",
-  },
+  // {
+  //   path: "/manifesto",
+  //   label: "Manifesto",
+  // },
   // {
   //   path: "blog",
   //   label: "Blog",

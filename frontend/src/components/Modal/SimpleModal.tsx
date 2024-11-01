@@ -1,4 +1,4 @@
-import { ReactNode, useRef } from "react"
+import { ReactNode, useEffect, useRef } from "react"
 import { Portal } from "@/components/Portal/Portal"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "@/components/Icon/Icon.tsx"
@@ -10,12 +10,7 @@ type Props = {
   onClose?: () => void
   className?: string
 }
-export function SimpleModal({
-  children,
-  showCloseBtn,
-  onClose,
-  className,
-}: Props) {
+export function SimpleModal({ children, showCloseBtn, onClose, className }: Props) {
   const modalClasses = twMerge(
     "relative h-full",
     "w-[460px]",
@@ -37,27 +32,26 @@ export function SimpleModal({
 
   useCheckOutsideClick(modalRef, () => closeModalCallback())
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden" // remove scroll when modal is opened
+
+    return () => {
+      document.body.style.overflowY = "scroll"
+    }
+  }, [])
+
   return (
     <Portal id="simple-modal">
       {/* fixed backdrop */}
-      <div
-        ref={backdropRef}
-        className="fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75"
-      ></div>
+      <div ref={backdropRef} className="fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75"></div>
 
       {/* fixed modal container*/}
       <div className="fixed inset-0 z-30 overflow-y-auto">
         {/*  */}
-        <div
-          className={
-            "px-s flex min-h-full items-center justify-center max-sm:h-full md:px-[50px]"
-          }
-        >
+        <div className={"px-s flex min-h-full items-center justify-center max-sm:h-full md:px-[50px]"}>
           {/* modal */}
           <div ref={modalRef} className={modalClasses}>
-            {onClose && showCloseBtn && (
-              <CloseButton onClose={closeModalCallback} />
-            )}
+            {onClose && showCloseBtn && <CloseButton onClose={closeModalCallback} />}
 
             {children}
           </div>
@@ -70,13 +64,7 @@ export function SimpleModal({
 const ICON_SIZE_PX = 12
 // const BTN_SIZE_PX = 20
 
-export function CloseButton({
-  onClose,
-  className = "",
-}: {
-  onClose?: () => void
-  className?: string
-}) {
+export function CloseButton({ onClose, className = "" }: { onClose?: () => void; className?: string }) {
   const cls = twMerge(
     "absolute top-2 left-2 p-2",
     "rounded-md",
