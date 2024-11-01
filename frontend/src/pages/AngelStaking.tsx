@@ -1,4 +1,4 @@
-import { ScrollRestoration } from "react-router-dom"
+import { ScrollRestoration, useNavigate } from "react-router-dom"
 
 import solanaImg from "@/assets/angelStaking/solana.png"
 import sanctumImg from "@/assets/angelStaking/sanctum.png"
@@ -14,8 +14,20 @@ import WhyStakeSol from "@/components/AngelStaking/WhyStakeSol"
 import MaximiseValue from "@/components/AngelStaking/MaximiseValue"
 import InvestmentFocus from "@/components/AngelStaking/InvestmentFocus"
 import RegisterYourInterest from "@/components/Button/RegisterYourInterest"
+import { useEffect } from "react"
 
 const AngelStaking = () => {
+  const navigate = useNavigate()
+
+  //////////////////////////////////////////////////////////////////////////////
+  // @SolanaId - useEffect below is for Solana ID whitelisting launch (01.11.2024) - remove this //redirection when we officially launch the rest of the app
+  //////////////////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (import.meta.env.VITE_ENVIRONMENT_TYPE === "production") {
+      navigate("/launch-pools/solana-id")
+    }
+  }, [navigate])
+
   return (
     <main
       className="relative z-[10] flex w-full max-w-[100vw] flex-col items-center

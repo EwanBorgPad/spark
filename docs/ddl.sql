@@ -27,3 +27,9 @@ CREATE TABLE error (
     created_at TIMESTAMP NOT NULL,
     json JSONB NOT NULL DEFAULT '{}'
 );
+CREATE TABLE whitelist (
+    address TEXT NOT NULL,
+    project_id TEXT NOT NULL,
+    tier_id TEXT NOT NULL,
+    PRIMARY KEY (address, project_id)
+);

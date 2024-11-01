@@ -3,7 +3,7 @@ import {
   GetExchangeResponse,
   GetPresignedUrlResponse,
   GetProjectsResponse,
-  InvestmentIntentRequest,
+  InvestmentIntentRequest, InvestmentIntentSummary,
   ProjectModel,
   projectSchema,
 } from "../../shared/models.ts"
@@ -17,6 +17,7 @@ const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
 const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
+const GET_INVESTMENT_INTENT_SUMMARY_URL = API_BASE_URL + "/investmentintentsummary"
 
 type GetEligibilityStatusArgs = {
   address: string
@@ -25,6 +26,18 @@ type GetEligibilityStatusArgs = {
 const getEligibilityStatus = async ({ address, projectId, }: GetEligibilityStatusArgs): Promise<EligibilityStatus> => {
   const url = new URL(GET_ELIGIBILITY_STATUS_API, window.location.href)
   url.searchParams.set("address", address)
+  url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json
+}
+type GetInvestmentIntentSummary = {
+  projectId: string
+}
+const getInvestmentIntentSummary = async ({  projectId, }: GetInvestmentIntentSummary): Promise<InvestmentIntentSummary> => {
+  const url = new URL(GET_INVESTMENT_INTENT_SUMMARY_URL, window.location.href)
   url.searchParams.set("projectId", projectId)
 
   const response = await fetch(url)
@@ -185,4 +198,5 @@ export const backendApi = {
   postInvestmentIntent,
   uploadFileToBucket,
   getEligibilityStatus,
+  getInvestmentIntentSummary,
 }

@@ -6,7 +6,8 @@ D1 is a distributed SQLite-like database developed by CloudFlare.
 - [Documentation](https://developers.cloudflare.com/d1/)
 - [Bindings Concept](https://developers.cloudflare.com/pages/functions/bindings/#d1-databases)
 - [Local Development](https://developers.cloudflare.com/d1/build-with-d1/local-development/)
-- [JSON columns](https://developers.cloudflare.com/d1/build-with-d1/query-json)
+- [JSON Columns](https://developers.cloudflare.com/d1/build-with-d1/query-json)
+- [PRAGMA Statements](https://developers.cloudflare.com/d1/reference/sql-statements/)
 
 ## Local Development
 

@@ -114,6 +114,7 @@ const Project = () => {
 
       <TokenGenerationSection expandedTimeline={expandedTimeline} />
 
+      {/* Section - Data Room  */}
       <section className="group w-full px-4 lg:max-w-[792px]">
         <a
           className="data-room w-full"
@@ -121,12 +122,12 @@ const Project = () => {
           rel="noreferrer"
           href={projectData.info.dataRoom.url}
         >
-          <Img
+          {/* <Img
             src={projectData.info.dataRoom.backgroundImgUrl}
             size={"custom"}
             customClass="!h-[72px] !w-[100px] absolute left-0 opacity-10 rounded-none"
             showFallback={false}
-          />
+          /> */}
           <div className="z-[1] flex flex-col">
             <span className="font-medium">
               {projectData.info.title} {t("data_room")}
@@ -145,7 +146,9 @@ const Project = () => {
       <Timeline timelineEvents={projectData.info.timeline} />
       <ScrollRestoration />
 
-      {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && <ProjectTester2 />}
+      {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && (
+        <ProjectTester2 />
+      )}
     </main>
   )
 }
