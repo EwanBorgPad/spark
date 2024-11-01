@@ -134,6 +134,7 @@ const Header = () => {
             </span>
           </Button>
 
+          {/* @SolanaID - uncomment NavigationBar below */}
           {/* <NavigationBar
             className="hidden md:flex"
             itemClickedCallback={closeMenu}
@@ -153,6 +154,7 @@ const Header = () => {
           color="plain"
         />
       </header>
+      {/* @SolanaID - uncomment hamburger menu below */}
       {/* {showHamburgerMenu && (
         <div
           className={twMerge(

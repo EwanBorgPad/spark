@@ -23,7 +23,7 @@ const LaunchPools = () => {
   })
 
   //////////////////////////////////////////////////////////////////////////////
-  // @TODO - useEffect below is for Solana ID whitelisting launch (01.11.2024) - remove this //redirection when we officially launch the rest of the app
+  // @SolanaId - useEffect below is for Solana ID whitelisting launch (01.11.2024) - remove this //redirection when we officially launch the rest of the app
   //////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (import.meta.env.VITE_ENVIRONMENT_TYPE === "production") {
