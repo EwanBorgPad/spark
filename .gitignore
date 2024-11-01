@@ -22,3 +22,6 @@ wrangler.toml
 
 target
 tmp
+
+.prettierignore
+tmp/

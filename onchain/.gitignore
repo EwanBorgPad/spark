@@ -1,0 +1,14 @@
+.anchor
+.DS_Store
+target
+**/*.rs.bk
+node_modules
+test-ledger
+.yarn
+.vscode
+.idea
+.env
+dist
+build
+!target/idl/borgpad.json
+!target/types/borgpad.ts

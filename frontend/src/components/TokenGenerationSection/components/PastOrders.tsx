@@ -5,13 +5,14 @@ import { formatDateForDisplay } from "@/utils/date-helpers"
 import Accordion from "@/components/Accordion/Accordion"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Icon } from "@/components/Icon/Icon"
+import { useQuery } from "@tanstack/react-query"
+import { backendApi } from "@/data/backendApi.ts"
 
 // to be replaced with API calls
 import {
   ContributionAndRewardsType,
   contributionAndRewardsData,
 } from "@/data/contributionAndRewardsData"
-import { dummyBorgPriceInUSD } from "@/data/borgPriceInUsd"
 
 type PastOrdersProps = {
   label?: string
@@ -65,8 +66,21 @@ export const PastOrder = ({
 }
 
 export const PastOrders = ({ label, className }: PastOrdersProps) => {
+  // borg price
+  const baseCurrency = "swissborg"
+  const targetCurrency = "usd"
+  const { data } = useQuery({
+    queryFn: () =>
+      backendApi.getExchange({
+        baseCurrency,
+        targetCurrency,
+      }),
+    queryKey: ["getExchange", baseCurrency, targetCurrency],
+  })
+  const borgPriceInUSD = data?.currentPrice || 0
+
   ///////////////////////////////////////////////////////
-  // @TODO - replace dummy call below with past orders //
+  // TODO @api replace dummy call below with past orders //
   ///////////////////////////////////////////////////////
   const getContributions = () => {
     return contributionAndRewardsData
@@ -74,15 +88,6 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
   const pastOrders = getContributions().suppliedBorg.pastOrders
   const numberOfPastOrders = pastOrders.length
   if (numberOfPastOrders === 0) return null
-
-  const getBorgPriceInUSD = () => {
-    //////////////////////////////////////////////
-    // @TODO - GET current BORG/USD price ////////
-    // below is arbitrary value from 07.06.2024 //
-    //////////////////////////////////////////////
-    return dummyBorgPriceInUSD
-  }
-  const borgPriceInUSD = getBorgPriceInUSD()
 
   return (
     <Accordion
@@ -94,7 +99,7 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
       {pastOrders.map((order, index) => {
         return (
           <PastOrder
-            // @TODO - use past order ID for key prop when available
+            // TODO @api - use past order ID for key prop when available
             key={index}
             numberOfPastOrders={numberOfPastOrders}
             order={order}

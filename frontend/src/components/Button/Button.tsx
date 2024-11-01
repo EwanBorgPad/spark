@@ -3,8 +3,13 @@ import { forwardRef, PropsWithChildren, ReactNode, useMemo } from "react"
 import { twMerge as classNames } from "tailwind-merge"
 import { AvailableIcons, Icon } from "../Icon/Icon"
 
-type ButtonColor = "primary" | "secondary" | "tertiary" | "danger" | "plain"
-type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl"
+export type ButtonColor =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "danger"
+  | "plain"
+export type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl"
 type ButtonSizeClassKey = "btnContainer" | "btnText"
 type ButtonIconSizeClassKey = "btnContainer" | "iconContainer"
 
@@ -102,7 +107,7 @@ const ButtonRoot = forwardRef<HTMLButtonElement, ButtonProps<"button">>(
     }, [isLoading, prefixElement])
 
     const btnContainerClasses = classNames([
-      "relative flex items-center justify-center font-medium transition-opacity",
+      "relative flex items-center justify-center font-medium transition-opacity cursor-pointer-link",
       "hover:opacity-85 active:scale-[98%]",
       "focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-black",
       "disabled:cursor-not-allowed disabled:bg-opacity-50",

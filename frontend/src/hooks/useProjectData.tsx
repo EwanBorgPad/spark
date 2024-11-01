@@ -1,11 +1,15 @@
-import { dummyData, ProjectData } from "@/data/projectData"
-import { createContext, ReactNode, useContext, useState } from "react"
+import { dummyData } from "@/data/projectData.ts"
+import { ProjectModel } from "../../shared/models.ts"
+import { createContext, ReactNode, useCallback, useContext } from "react"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { backendApi } from "@/data/backendApi.ts"
+import { useParams } from "react-router-dom"
 
 type Context = {
-  projectData: ProjectData
-  setProjectData: (data: ProjectData) => void
+  projectData: ProjectModel
+  setProjectData: (data: ProjectModel) => void
+  isLoading: boolean
 }
-
 const ProjectDataContext = createContext<Context | undefined>(undefined)
 
 export function useProjectDataContext() {
@@ -16,17 +20,36 @@ export function useProjectDataContext() {
 }
 
 export function ProjectDataProvider({ children }: { children: ReactNode }) {
-  const [projectData, setProjectData] = useState<ProjectData>(dummyData)
+  let { projectId } = useParams()
+  projectId = projectId || ""
 
-  /////////////////////////////////////////////////////////////////
-  // @TODO - add GET api for project data and remove state above //
-  /////////////////////////////////////////////////////////////////
+  const { data: projectData, isLoading } = useQuery({
+    queryFn: () => backendApi.getProject({ projectId }),
+    queryKey: ["backendApi", "getProject", projectId],
+    enabled: Boolean(projectId),
+    // TODO @hardcoded remove initialData/dummyData after implementing loading states
+    initialData: dummyData,
+  })
+
+  const queryClient = useQueryClient()
+
+  /**
+   * TODO @qaTesting this is only for testing
+   * @param data
+   */
+  const setProjectData = useCallback(
+    (data: ProjectModel) => {
+      queryClient.setQueryData(["backendApi", "getProject", projectId], data)
+    },
+    [queryClient, projectId],
+  )
 
   return (
     <ProjectDataContext.Provider
       value={{
         projectData,
         setProjectData,
+        isLoading,
       }}
     >
       {children}

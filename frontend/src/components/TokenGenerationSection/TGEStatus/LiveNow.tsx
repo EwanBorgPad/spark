@@ -1,32 +1,51 @@
 import { useTranslation } from "react-i18next"
 
-import MarketAndTokensData from "@/components/TokenGenerationSection/components/MarketAndTokensData"
+import BasicTokenInfo from "@/components/TokenGenerationSection/components/BasicTokenInfo"
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
-import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import LiveNowExchange from "../components/LiveNowExchange"
+import SaleProgress from "../components/SaleProgress"
+import { formatDateForTimer } from "@/utils/date-helpers"
 import CountDownTimer from "@/components/CountDownTimer"
 import { PastOrders } from "../components/PastOrders"
 import { TgeWrapper } from "../components/Wrapper"
-import WhitelistStatus from "../WhitelistStatus"
-import { ProjectData } from "@/data/projectData"
-import { formatDateForTimer } from "@/utils/date-helpers"
+import TopContributor from "../components/TopContributor"
+import { useRef } from "react"
+import { EligibilitySection } from "@/components/EligibilitySection/EligibilitySection.tsx"
+import { useWalletContext } from "@/hooks/useWalletContext.tsx"
+import { useParams } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
+import { backendApi } from "@/data/backendApi.ts"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType
-  projectData: ProjectData
 }
 
-const LiveNow = ({ eventData, projectData }: LiveNowProps) => {
+const LiveNow = ({ eventData }: LiveNowProps) => {
   const { t } = useTranslation()
+  const eligibilitySectionRef = useRef<HTMLDivElement>(null)
 
-  const { whitelistStatus } = useWhitelistStatusContext()
-
-  const tgeData = projectData.tge
+  const { address } = useWalletContext()
+  const { projectId } = useParams()
+  const { data } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getEligibilityStatus({ address, projectId })
+    },
+    queryKey: ["getEligibilityStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
+  const isUserEligible = data?.isEligible
 
   return (
-    <>
-      <MarketAndTokensData projectData={projectData} />
-      <div className="flex w-full max-w-[400px] flex-col gap-5">
+    <div className="flex w-full flex-col items-center gap-[52px]">
+      <BasicTokenInfo />
+      <SaleProgress />
+      {!isUserEligible && (
+        <div className="flex w-full flex-col items-center" ref={eligibilitySectionRef}>
+          <EligibilitySection />
+        </div>
+      )}
+      <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
         <TgeWrapper label={t("tge.live_now")}>
           {eventData?.nextEventDate && (
             <CountDownTimer
@@ -34,11 +53,16 @@ const LiveNow = ({ eventData, projectData }: LiveNowProps) => {
               labelAboveTimer={`Ends on ${formatDateForTimer(eventData.nextEventDate)}`}
             />
           )}
-          <LiveNowExchange tgeData={tgeData} />
+          <LiveNowExchange eligibilitySectionRef={eligibilitySectionRef} />
         </TgeWrapper>
-        {whitelistStatus?.whitelisted ? <PastOrders /> : <WhitelistStatus />}
+        {isUserEligible && (
+          <>
+            <TopContributor />
+            <PastOrders />
+          </>
+        )}
       </div>
-    </>
+    </div>
   )
 }
 

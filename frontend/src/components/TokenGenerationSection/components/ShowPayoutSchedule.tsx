@@ -4,6 +4,7 @@ import { PayoutScheduleType } from "@/data/contributionAndRewardsData"
 import { formatDateForDisplay } from "@/utils/date-helpers"
 import Accordion from "@/components/Accordion/Accordion"
 import { formatCurrencyAmount } from "@/utils/format"
+import Img from "@/components/Image/Img"
 
 type PayoutProps = {
   index: number
@@ -44,7 +45,7 @@ const Payout = ({
           <span>{formatCurrencyAmount(payout.amount, false)}</span>{" "}
           <span>{ticker}</span>
         </p>
-        <img src={tokenIconUrl} className="h-4 w-4" />
+        <Img src={tokenIconUrl} size="4" />
       </div>
     </div>
   )

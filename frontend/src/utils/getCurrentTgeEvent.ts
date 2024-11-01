@@ -1,9 +1,10 @@
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { isBefore } from "date-fns/isBefore"
 
-const inactiveStatus: ExpandedTimelineEventType = {
+const preWhitelistStatus: ExpandedTimelineEventType = {
   label: "Registration not opened yet",
-  id: "INACTIVE",
+  id: "UPCOMING",
+  idRank: 1,
   date: new Date(),
   nextEventDate: new Date(),
 }
@@ -13,12 +14,13 @@ export const getCurrentTgeEvent = (timeline: ExpandedTimelineEventType[]) => {
   const status = timeline.find((event) => {
     const isEventFinished = isBefore(event.date, currentMoment)
     if (!isEventFinished) return false
+    if (!event?.nextEventDate) return true
 
     const isThisLastActivatedEvent = Boolean(
-      event?.nextEventDate && isBefore(new Date(), event.nextEventDate),
+      isBefore(new Date(), event.nextEventDate),
     )
     return isThisLastActivatedEvent
   })
-  if (!status) return inactiveStatus
+  if (!status) return preWhitelistStatus
   return status
 }

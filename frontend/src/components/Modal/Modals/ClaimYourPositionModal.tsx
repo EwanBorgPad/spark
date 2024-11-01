@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useLayoutEffect, useRef, useState } from "react"
+import React, { useLayoutEffect, useRef, useState } from "react"
 import { SimpleModal } from "../SimpleModal"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "@/components/Icon/Icon"
@@ -8,6 +8,7 @@ import { formatCurrencyAmount } from "@/utils/format"
 import { CustomInputSlider } from "@/components/InputField/CustomInputSlider"
 import { Button } from "@/components/Button/Button"
 import { useTranslation } from "react-i18next"
+import Img from "@/components/Image/Img"
 
 type ClaimYourPositionModalProps = {
   onClose: () => void
@@ -27,7 +28,7 @@ const ClaimYourPositionModal = ({
 
   const claimChosenValueHandler = () => {
     console.log("Claim amount: ", claimPercent)
-    // @TODO - add API for claiming main position
+    // TODO @api add API for claiming main position
     onClose()
   }
 
@@ -117,12 +118,12 @@ const ClaimYourPositionModal = ({
               <Icon icon="SvgPlus" className="rounded-full text-fg-disabled" />
               <div className="flex flex-1 flex-col items-start justify-start gap-[34px] rounded-lg border border-bd-primary bg-tertiary p-4">
                 <div className="flex items-center justify-center gap-2">
-                  <img
-                    src={projectData.tge.projectCoin.iconUrl}
-                    className="h-5 w-5 object-cover"
+                  <Img
+                    src={projectData.info.tge.projectCoin.iconUrl}
+                    size="5"
                   />
                   <span className="text-base font-medium leading-tight text-neutral-100">
-                    {projectData.tge.projectCoin.ticker}
+                    {projectData.info.tge.projectCoin.ticker}
                   </span>
                 </div>
                 <div className="flex flex-col items-start justify-start gap-2 self-stretch">

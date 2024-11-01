@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next"
 
-import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import CountDownTimer from "@/components/CountDownTimer"
 import ShowPayoutSchedule from "./ShowPayoutSchedule"
@@ -14,20 +13,16 @@ import { formatCurrencyAmount } from "@/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 import { formatDateForTimer } from "@/utils/date-helpers"
 import { isBefore } from "date-fns/isBefore"
+import Img from "@/components/Image/Img"
 
 type RewardsProps = {
-  eventData: ExpandedTimelineEventType
   hasDistributionStarted: boolean
   rewards: ContributionAndRewardsType["claimPositions"]["rewards"]
 }
 
-const Rewards = ({
-  eventData,
-  hasDistributionStarted,
-  rewards,
-}: RewardsProps) => {
+const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
   const { projectData } = useProjectDataContext()
-  const { iconUrl, ticker } = projectData.tge.projectCoin
+  const { iconUrl, ticker } = projectData.info.tge.projectCoin
   const { t } = useTranslation()
 
   const currentMoment = new Date()
@@ -49,9 +44,11 @@ const Rewards = ({
   )
 
   const claimRewardsHandler = () => {
-    // @TODO - add API for claiming rewards
+    /**
+     * TODO @api for claiming rewards
+     * - refetch rewards
+     */
     console.log("CLAIM REWARDS")
-    // @TODO - refetch rewards
   }
 
   return (
@@ -70,7 +67,7 @@ const Rewards = ({
         {nextScheduledPayment ? (
           <>
             <CountDownTimer
-              labelAboveTimer={`Next Payment in: ${formatDateForTimer(nextScheduledPayment.date)}`}
+              labelAboveTimer={`Next Payment: ${formatDateForTimer(nextScheduledPayment.date)}`}
               endOfEvent={nextScheduledPayment.date}
             />
             <div className="w-full px-4 pb-6">
@@ -102,12 +99,12 @@ const Rewards = ({
                   {t("reward_distribution.claimed")}
                 </span>
                 <div className="flex items-center gap-2">
-                  <img src={iconUrl} className="h-4 w-4" />
+                  <Img src={iconUrl} size="4" />
                   <p>
                     <span className="mr-1">{rewards.claimedTokens}</span>
                     <span className="mr-1">/</span>
                     <span className="mr-1">{rewards.totalTokens}</span>
-                    <span>{projectData.tge.projectCoin.ticker}</span>
+                    <span>{projectData.info.tge.projectCoin.ticker}</span>
                   </p>
                 </div>
               </div>
@@ -122,7 +119,7 @@ const Rewards = ({
       {hasDistributionStarted && (
         <ShowPayoutSchedule
           ticker={ticker}
-          tokenIconUrl={iconUrl}
+          tokenIconUrl={iconUrl ?? ""}
           payoutSchedule={rewards.payoutSchedule}
         />
       )}

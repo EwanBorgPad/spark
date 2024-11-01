@@ -16,6 +16,7 @@
   }
 }
 
+
 *,
 *:before,
 *:after  {
@@ -36,18 +37,19 @@ body {
   overflow-y: scroll;
 }
 #root {
-  overflow-y: hidden;
+  /* commented because of position sticky css */
+  /* overflow-y: hidden; */ 
 }
 
-h1 {
+h1, .h1 {
   font-size: 40px;
   line-height: 48px;
 }
-h2 {
+h2, .h2 {
   font-size: 36px;
   line-height: 44px;
 }
-h3 {
+h3, .h3 {
   font-size: 32px;
   line-height: 40px;
 }
@@ -59,6 +61,18 @@ h5 {
   font-size: 20px;
   line-height: 28px;
 }
+img {
+  max-width: none;
+}
+
+mark {
+  background-color: transparent; /* Removes the default yellow background */
+  color: #ACFF73
+}
+button {
+  cursor: pointer !important;
+}
+
 
 :root {
   /* font-family: "Geist", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; */
@@ -101,3 +115,14 @@ input[type="checkbox"] {
   @apply relative mt-10 flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-lg border border-bd-secondary bg-secondary/50 from-brand-primary/10 via-black/0 via-30% px-4 py-3 transition-colors hover:border-brand-secondary/30 hover:bg-gradient-to-l
 }
 
+/* Date Picker */
+.react-datepicker__calendar-icon {
+  fill: gray;
+  margin-top: 4px;
+}
+.react-datepicker__input-container {
+  cursor: pointer !important;
+}
+.react-datepicker__month-container {
+  height: 294px !important;
+}

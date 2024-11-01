@@ -21,5 +21,8 @@ export function useWindowSize() {
     handleResize()
     return () => window.removeEventListener("resize", handleResize)
   }, [])
-  return windowSize
+
+  const isMobile = windowSize?.width ? windowSize?.width < 768 : false
+
+  return { ...windowSize, isMobile }
 }

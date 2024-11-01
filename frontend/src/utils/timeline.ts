@@ -1,5 +1,6 @@
 import {
   ExpandedTimelineEventType,
+  timelineEventIdRanks,
   TimelineEventType,
 } from "@/components/Timeline/Timeline"
 import { formatDateForDisplay } from "./date-helpers"
@@ -15,6 +16,7 @@ export const expandTimelineDataInfo = (
       label: event.label,
       date: event.date,
       id: event.id,
+      idRank: timelineEventIdRanks[event.id],
       nextEventDate: nextEventDates[index]?.date,
       displayedTime: formatDateForDisplay(event.date),
       wasEventBeforeCurrentMoment: isBefore(event.date, currentMoment),

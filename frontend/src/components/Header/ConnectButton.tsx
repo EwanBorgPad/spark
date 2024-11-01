@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button"
+import { Button, ButtonColor, ButtonSize } from "@/components/Button/Button"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { SimpleModal } from "@/components/Modal/SimpleModal.tsx"
 import { useEffect, useState } from "react"
@@ -8,6 +8,9 @@ import { twMerge } from "tailwind-merge"
 type ConnectButtonProps = {
   btnClassName?: string
   customBtnText?: string
+  size?: ButtonSize
+  color?: ButtonColor
+  isLoading?: boolean
 }
 
 /**
@@ -17,6 +20,9 @@ type ConnectButtonProps = {
 export const ConnectButton = ({
   btnClassName,
   customBtnText = "Connect Wallet",
+  size,
+  color,
+  isLoading = false,
 }: ConnectButtonProps) => {
   const {
     walletState,
@@ -56,10 +62,11 @@ export const ConnectButton = ({
     <>
       <Button
         onClick={onClick}
-        size="xs"
-        color="primary"
+        size={size || "xs"}
+        color={color || "primary"}
         btnText={btnText}
         className={btnClassName}
+        isLoading={isLoading}
       />
       {showModal && (
         <SimpleModal

@@ -1,0 +1,198 @@
+{
+  "info": {
+    "id": "romana-id",
+    "title": "Romana ID",
+    "subtitle": "Decentralized digital identity and data ownership",
+    "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/romana-id/project-logo-560819528",
+    "thumbnailUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/romana-id/project-logo-560819528",
+    "origin": "🇪🇺 Europe",
+    "sector": "Healthcare",
+    "chain": {
+      "name": "Zoraa",
+      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/felicia-ai/chain-icon-388759332"
+    },
+    "totalTokensForSale": 900000,
+    "curator": {
+      "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/felicia-ai/curator-avatar-12692976",
+      "fullName": "Molly Millions",
+      "position": "Web3 Veteran",
+      "socials": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Blockchain",
+          "iconType": "MEDIUM",
+          "label": "Medium"
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Blockchain",
+          "iconType": "LINKED_IN",
+          "label": "Linkedin"
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Blockchain",
+          "iconType": "X_TWITTER",
+          "label": "X (ex-Twitter)"
+        }
+      ]
+    },
+    "projectLinks": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
+        "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
+        "iconType": "WEB",
+        "label": ""
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
+        "iconType": "MEDIUM",
+        "label": ""
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
+        "iconType": "LINKED_IN",
+        "label": ""
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Blockchain",
+        "iconType": "X_TWITTER",
+        "label": ""
+      }
+    ],
+
+    "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
+
+    "launchedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+    "launchedTokenLpDistribution": 50,
+    "launchedTokenCap": 100000,
+
+    "raisedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+    "raisedTokenMinCap": 1000,
+    "raisedTokenMaxCap": 1000000,
+
+    "cliffDuration": 1728998916,
+    "vestingDuration": 1731677316,
+
+    "tge": {
+      "raiseTarget": 39332,
+      "projectCoin": {
+        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/romana-id/project-logo-560819528",
+        "ticker": "LRC"
+      },
+      "fixedCoinPriceInBorg": 0.771,
+      "whitelistParticipants": 332,
+      "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
+      "liquidityPool": {
+        "name": "Raydium",
+        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/liquidity-pool-icon-738904576",
+        "lbpType": "Full Range",
+        "lockingPeriod": "12-month lockup",
+        "unlockDate": "2025-07-12T12:39:16Z",
+        "url": "#"
+      },
+      "tweetUrl": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
+    },
+    "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
+    "dataRoom": {
+      "backgroundImgUrl": "",
+      "url": "#"
+    },
+    "timeline": [
+      {
+        "id": "REGISTRATION_OPENS",
+        "label": "Registration Opens",
+        "date": "2024-09-20"
+      },
+      {
+        "id": "SALE_OPENS",
+        "label": "Sale Opens",
+        "date": "2024-10-12"
+      },
+      {
+        "id": "SALE_CLOSES",
+        "label": "Sale Closes",
+        "date": "2024-11-21"
+      },
+      {
+        "id": "REWARD_DISTRIBUTION",
+        "label": "Reward Distribution",
+        "date": "2024-12-31"
+      },
+      {
+        "id": "DISTRIBUTION_OVER",
+        "label": "Distribution Over",
+        "date": "2025-12-31"
+      }
+    ],
+    "tiers": [
+      {
+        "id": "tier0",
+        "label": "Tier0",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "USDC",
+            "tokenAmount": "1",
+            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
+          }
+        ],
+        "benefits": {
+          "startDate": "2024-10-30",
+          "minInvestment": "10",
+          "maxInvestment": "999"
+        }
+      },
+      {
+        "id": "tier1",
+        "label": "Tier1",
+        "quests": [
+          {
+            "type": "FOLLOW_ON_TWITTER",
+            "twitterHandle": "@borgpadhq",
+            "twitterLabel": "BorgPad"
+          },
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "USDC",
+            "tokenAmount": "100",
+            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
+          }
+        ],
+        "benefits": {
+          "startDate": "2024-10-23",
+          "minInvestment": "10",
+          "maxInvestment": "999"
+        }
+      },
+      {
+        "id": "tier2",
+        "label": "Tier2",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "USDC",
+            "tokenAmount": "20000",
+            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
+          }
+        ],
+        "benefits": {
+          "startDate": "2024-10-21",
+          "minInvestment": "10",
+          "maxInvestment": "999999"
+        }
+      }
+    ]
+  },
+  "whitelistParticipants": 211,
+  "saleData": {
+    "availableTokens": 12403,
+    "saleSucceeded": true,
+    "totalAmountRaised": 800402.5661,
+    "sellOutPercentage": 78,
+    "participantCount": 578,
+    "averageInvestedAmount": 1200.34
+  },
+  "rewards": {
+    "distributionType": "linear",
+    "description": "linearly paid-out through 12 months",
+    "payoutInterval": "monthly"
+  }
+}

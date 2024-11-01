@@ -2,20 +2,18 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import CurrencyInput from "react-currency-input-field"
 import { useTranslation } from "react-i18next"
 
-import { useWhitelistStatusContext } from "@/hooks/useWhitelistContext"
 import { ConnectButton } from "@/components/Header/ConnectButton"
 import { useBalanceContext } from "@/hooks/useBalanceContext.tsx"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
-import { ProjectData } from "@/data/projectData"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
-
-type LiveNowExchangeProps = {
-  tgeData: ProjectData["tge"]
-}
+import React, { RefObject } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { backendApi } from "@/data/backendApi.ts"
+import { useParams } from "react-router-dom"
 
 type FormInputs = {
   borgInputValue: string
@@ -27,13 +25,27 @@ const inputButtons = [
   { label: "100%", percentage: 100 },
 ]
 
-const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
+type Props = {
+  eligibilitySectionRef: RefObject<HTMLDivElement>
+}
+
+const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()
-  const { isUserWhitelisted } = useWhitelistStatusContext()
-
   const { balance } = useBalanceContext()
+
+  const { address } = useWalletContext()
+  const { projectId } = useParams()
+  const { data } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getEligibilityStatus({ address, projectId })
+    },
+    queryKey: ["getEligibilityStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
+  const isUserEligible = data?.isEligible
 
   const {
     handleSubmit,
@@ -44,16 +56,19 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
   } = useForm<FormInputs>()
 
   const onSubmit: SubmitHandler<FormInputs> = (data) => {
+    /**
+     * TODO @api for providing liquidity
+     *  - refetch balance
+     *  - refetch Tokens Available
+     */
     // eslint-disable-next-line no-console
     console.log("Submitted", data)
-    // @TODO - add API for providing liquidity
-    // @TODO - refetch balance
-    // @TODO - refetch Tokens Available
   }
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
     if (!balance) return
-    const floatValue = (balancePercentage / 100) * Number(balance.amount)
+    const floatValue =
+      (balancePercentage / 100) * Number(balance.uiAmountString)
     setValue("borgInputValue", floatValue.toString(), {
       shouldValidate: true,
       shouldDirty: true,
@@ -61,6 +76,15 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
   }
 
   const borgCoinInput = watch("borgInputValue")
+
+  const scrollToWhitelistRequriements = () => {
+    const top =
+      eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
+    window.scrollBy({
+      behavior: "smooth",
+      top: top - 100,
+    })
+  }
 
   return (
     <TgeWrapper.Inner className="gap-0">
@@ -89,6 +113,8 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
                       value={value}
                       allowNegativeValue={false}
                       placeholder="0"
+                      maxLength={16}
+                      autoFocus
                       className={
                         "max-w-[242px] bg-transparent font-geist-mono text-2xl focus:outline-none"
                       }
@@ -147,7 +173,6 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
           <TokenRewards
             borgCoinInput={borgCoinInput}
             isWhitelistingEvent={false}
-            tgeData={tgeData}
           />
         </div>
         <div className="flex w-full flex-col items-center gap-4">
@@ -157,7 +182,7 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
                 type="submit"
                 size="lg"
                 btnText="Supply $BORG"
-                disabled={!isUserWhitelisted}
+                disabled={!isUserEligible}
                 className={"w-full"}
               />
               <Button
@@ -165,7 +190,7 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
                 color="secondary"
                 btnText="Buy $BORG"
                 className="w-full py-2"
-                // @TODO - add click event when we get a link
+                // TODO - add click event when we get a link
               />
             </>
           ) : (
@@ -181,14 +206,14 @@ const LiveNowExchange = ({ tgeData }: LiveNowExchangeProps) => {
           )}
         </div>
       </form>
-      {!isUserWhitelisted && (
+      {!isUserEligible && (
         <div className="absolute bottom-0 left-0 right-0 top-10 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
-          <div className="flex w-full max-w-[340px] flex-col rounded-lg bg-default p-4 shadow-sm shadow-white/5">
+          <div className="flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
             <span className="text-fg-error-primary">
               Your Wallet was not whitelisted for this deal
             </span>
             <Button
-              onClick={() => scrollBy({ top: 400, behavior: "smooth" })}
+              onClick={scrollToWhitelistRequriements}
               size="md"
               color="plain"
               btnText="See Whitelist Requirements"

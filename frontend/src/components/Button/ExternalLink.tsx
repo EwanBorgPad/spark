@@ -11,23 +11,25 @@ export type ExternalLinkType = {
   iconType: IconLinkType
   label?: string
 }
-export type IconLinkType =
-  | "MEDIUM"
-  | "LINKED_IN"
-  | "WEB"
-  | "X_TWITTER"
-  | "OUTER_LINK"
-  | "NO_ICON"
+export const ALL_ICON_LINK_TYPES = [
+  "MEDIUM",
+  "LINKED_IN",
+  "WEB",
+  "X_TWITTER",
+  "OUTER_LINK",
+  "NO_ICON",
+] as const
+export type IconLinkType = (typeof ALL_ICON_LINK_TYPES)[number]
 
-const icons: Record<
-  Exclude<Props["externalLink"]["iconType"], "NO_ICON">,
-  AvailableIcons
+export const externalLinkObj: Record<
+  Exclude<IconLinkType, "NO_ICON">,
+  { icon: AvailableIcons; label: string }
 > = {
-  MEDIUM: "SvgMedium",
-  LINKED_IN: "SvgLinkedin",
-  WEB: "SvgWeb",
-  X_TWITTER: "SvgTwitter",
-  OUTER_LINK: "SvgExternalLink",
+  MEDIUM: { icon: "SvgMedium", label: "Medium" },
+  LINKED_IN: { icon: "SvgLinkedin", label: "LinkedIn" },
+  WEB: { icon: "SvgWeb", label: "Web Url" },
+  X_TWITTER: { icon: "SvgTwitter", label: "X (ex Twitter)" },
+  OUTER_LINK: { icon: "SvgExternalLink", label: "External Link" },
 }
 
 const ExternalLinkWithLabel = ({
@@ -38,7 +40,7 @@ const ExternalLinkWithLabel = ({
   return (
     <a
       href={externalLink.url}
-      target="_blank"
+      target={"_blank"}
       rel="noreferrer"
       className={twMerge(
         "flex items-center gap-2 rounded-full border-[1px] border-bd-primary px-2 py-1.5 hover:bg-bd-primary/40 active:scale-[98%]",
@@ -47,7 +49,7 @@ const ExternalLinkWithLabel = ({
     >
       {externalLink.iconType !== "NO_ICON" && (
         <Icon
-          icon={icons[externalLink.iconType]}
+          icon={externalLinkObj[externalLink.iconType].icon}
           className={twMerge("text-xl leading-none", iconClassName)}
         />
       )}
@@ -72,7 +74,7 @@ const ExternalLinkIcon = ({
     >
       {externalLink.iconType !== "NO_ICON" && (
         <Icon
-          icon={icons[externalLink.iconType]}
+          icon={externalLinkObj[externalLink.iconType].icon}
           className={twMerge("leading-none", iconClassName)}
         />
       )}

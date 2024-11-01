@@ -3,18 +3,17 @@ import { useTranslation } from "react-i18next"
 
 import { ExpandedTimelineEventType } from "../Timeline/Timeline"
 import { getCurrentTgeEvent } from "@/utils/getCurrentTgeEvent"
-import { useProjectDataContext } from "@/hooks/useProjectData"
 import { CountDownCallback } from "../CountDownCallback"
-import Whitelisting from "./TGEStatus/Whitelisting"
+import RegistrationOpensPhase from "./TGEStatus/RegistrationOpensPhase.tsx"
 import SaleOver from "./TGEStatus/SaleOver"
 import LiveNow from "./TGEStatus/LiveNow"
+import DistributionOver from "./TGEStatus/DistributionOver"
 
 type Props = {
   expandedTimeline: ExpandedTimelineEventType[]
 }
 
 const TokenGenerationSection = ({ expandedTimeline }: Props) => {
-  const { projectData } = useProjectDataContext()
   const { t } = useTranslation()
   const [currentTgeEvent, setCurrentTgeEvent] =
     useState<ExpandedTimelineEventType>(getCurrentTgeEvent(expandedTimeline))
@@ -34,30 +33,28 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
 
   const renderComponent = (tgeEvent: ExpandedTimelineEventType) => {
     switch (tgeEvent.id) {
-      case "INACTIVE":
+      case "UPCOMING":
         return <span>{t("tge.not_opened_yet")}</span>
       case "REGISTRATION_OPENS":
-        return (
-          <Whitelisting eventData={currentTgeEvent} projectData={projectData} />
-        )
+        return <RegistrationOpensPhase eventData={currentTgeEvent} />
       case "SALE_OPENS":
-        return <LiveNow eventData={tgeEvent} projectData={projectData} />
+        return <LiveNow eventData={tgeEvent} />
       case "SALE_CLOSES":
       case "REWARD_DISTRIBUTION":
-        return <SaleOver eventData={tgeEvent} projectData={projectData} />
-      case "UNKNOWN":
-        return <span>{"PHASE TO BE DETERMINED"}</span>
+        return <SaleOver eventData={tgeEvent} />
+      case "DISTRIBUTION_OVER":
+        return <DistributionOver eventData={tgeEvent} />
     }
   }
 
   return (
-    <>
+    <section className="flex w-full flex-col items-center">
       <CountDownCallback
         endOfEvent={currentTgeEvent.nextEventDate}
         callbackWhenTimeExpires={updateTgeStatus}
       />
       {renderComponent(currentTgeEvent)}
-    </>
+    </section>
   )
 }
 

@@ -1,192 +1,145 @@
 import { addDays } from "date-fns/addDays"
+import { addMonths } from "date-fns"
 import i18n from "@/i18n/i18n"
+import { ProjectModel } from "../../shared/models.ts"
 
-import { ExternalLinkType } from "@/components/Button/ExternalLink"
-import { TimelineEventType } from "@/components/Timeline/Timeline"
+const currentMoment = addDays(new Date(), 11)
 
-import secondaryImgUrl from "../assets/secondaryImgUrl.png"
-import raydiumImg from "@/assets/raydium.png"
-import lrcCoinImg from "@/assets/lrcCoin.png"
-import chainImg from "../assets/zoraImg.png"
-import curator from "../assets/curator.png"
-
-const currentMoment = new Date()
-
-// Data defined through Back Office
-
-export type ProjectData = {
-  title: string
-  subtitle: string
-  projectLinks: ExternalLinkType[]
-  chain: {
-    name: string
-    picUrl: string
-  }
-  lbpType: string
-  origin: string
-  createdAt: Date
-  curator: {
-    avatarUrl: string
-    fullName: string
-    position: string
-    socials: ExternalLinkType[]
-  }
-  tokens: {
-    available: number
-    total: number
-  }
-  tge: {
-    raiseTarget: number
-    projectCoin: {
-      iconUrl: string
-      ticker: string
-    }
-    fixedCoinPriceInBorg: number
-    registrations: number
-    vesting: {
-      tgePercentage: number
-      cliffPercentage: number
-    }
-    tokenGenerationEventDate: Date
-    lockupDetails: LockupDetails
-    liquidityPoolDetails: {
-      lbType: string
-      lockingPeriod: string
-    }
-    tweetURL: string
-  }
-  secondaryImgUrl: string
-  timeline: TimelineEventType[]
-  saleResults: {
-    totalAmountRaised: number
-    sellOutPercentage: number
-    participantCount: number
-    averageInvestedAmount: number
-  }
-}
-
-export const dummyData: ProjectData = {
-  title: "Puffer Finance",
-  subtitle: "Anti-Slashing Liquid Staking",
-  projectLinks: [
-    {
-      url: "#",
-      iconType: "WEB",
-      label: undefined,
+/**
+ * TODO @deprecate this
+ */
+export const dummyData: ProjectModel = {
+  info: {
+    id: "puffer-finance",
+    title: "Puffer Finance",
+    subtitle: "Anti-Slashing Liquid Staking",
+    logoUrl: "/images/puffer-finance/avatar.png",
+    thumbnailUrl: "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/westeros-validator-group/project-thumbnail-824297648",
+    chain: { name: "Zora", iconUrl: "/images/puffer-finance/chain-icon.png" },
+    origin: "🇮🇹 Italy",
+    sector: "Healthcare",
+    curator: {
+      avatarUrl: "",
+      fullName: "John Doe",
+      position: i18n.t("founding.contributor"),
+      socials: [
+        {
+          url: "https://medium.com/@puffer.fi",
+          iconType: "MEDIUM",
+          label: "Medium",
+        },
+        {
+          url: "https://www.linkedin.com/company/puffer-finance",
+          iconType: "LINKED_IN",
+          label: "Linkedin",
+        },
+        {
+          url: "https://twitter.com/puffer_finance",
+          iconType: "X_TWITTER",
+          label: "X (ex-Twitter)",
+        },
+      ],
     },
-    {
-      url: "#",
-      iconType: "MEDIUM",
-      label: undefined,
-    },
-    {
-      url: "#",
-      iconType: "LINKED_IN",
-      label: undefined,
-    },
-    {
-      url: "#",
-      iconType: "X_TWITTER",
-      label: undefined,
-    },
-  ],
-  chain: { name: "Zora", picUrl: chainImg },
-  lbpType: "Buy Only",
-  origin: "🇮🇹 Italy",
-  createdAt: new Date(),
-  curator: {
-    avatarUrl: curator,
-    fullName: "John Doe",
-    position: i18n.t("founding.contributor"),
-    socials: [
+    projectLinks: [
       {
-        url: "#",
-        iconType: "LINKED_IN",
-        label: "Linkedin",
+        url: "https://www.puffer.fi",
+        iconType: "WEB",
+        label: "",
       },
       {
-        url: "#",
-        iconType: "X_TWITTER",
-        label: "X (ex-Twitter)",
-      },
-      {
-        url: "#",
+        url: "https://medium.com/@puffer.fi",
         iconType: "MEDIUM",
-        label: "Medium",
+        label: "",
+      },
+      {
+        url: "https://www.linkedin.com/company/puffer-finance",
+        iconType: "LINKED_IN",
+        label: "",
+      },
+      {
+        url: "https://twitter.com/puffer_finance",
+        iconType: "X_TWITTER",
+        label: "",
       },
     ],
-  },
-  tokens: {
-    available: 1565,
-    total: 2000,
-  },
-  tge: {
-    raiseTarget: 2000000,
-    projectCoin: {
-      iconUrl: lrcCoinImg,
-      ticker: "LRC",
-    },
-    fixedCoinPriceInBorg: 1,
-    registrations: 1698,
-    vesting: {
-      tgePercentage: 20,
-      cliffPercentage: 20,
-    },
-    tokenGenerationEventDate: currentMoment,
-    lockupDetails: {
+    totalTokensForSale: 2000,
+
+    "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
+
+    "launchedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+    "launchedTokenLpDistribution": 50,
+    "launchedTokenCap": 100000,
+
+    "raisedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+    "raisedTokenMinCap": 1000,
+    "raisedTokenMaxCap": 1000000,
+
+    "cliffDuration": 1728998916,
+    "vestingDuration": 1731677316,
+
+    tge: {
+      raiseTarget: 2000000,
+      projectCoin: {
+        iconUrl: "",
+        ticker: "LRC",
+      },
+      fixedCoinPriceInBorg: 1,
       liquidityPool: {
         name: "Raydium",
-        imgUrl: raydiumImg,
+        iconUrl: "",
+        lbpType: "Full Range",
+        lockingPeriod: "12-month lockup",
+        unlockDate: addMonths(addDays(currentMoment, -2), 12),
+        url: "#",
       },
-      description: "12 months",
+      tweetUrl:
+        "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
     },
-    liquidityPoolDetails: {
-      lbType: "Full Range",
-      lockingPeriod: "12 months",
+    dataRoom: {
+      backgroundImgUrl: "",
+      url: "#",
     },
-    tweetURL:
-      "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
+    timeline: [
+      {
+        label: i18n.t("timeline.registration_opens"),
+        date: addDays(currentMoment, -22),
+        id: "REGISTRATION_OPENS",
+      },
+      {
+        label: i18n.t("timeline.sale_opens"),
+        date: addDays(currentMoment, -10),
+        id: "SALE_OPENS",
+      },
+      {
+        label: i18n.t("timeline.sale_closes"),
+        date: addDays(currentMoment, -5),
+        id: "SALE_CLOSES",
+      },
+      {
+        label: i18n.t("timeline.reward_distribution"),
+        date: addDays(currentMoment, -2),
+        id: "REWARD_DISTRIBUTION",
+      },
+      {
+        label: i18n.t("timeline.distribution_over"),
+        date: addDays(currentMoment, 24),
+        id: "DISTRIBUTION_OVER",
+      },
+    ],
+    tiers: [],
   },
-  secondaryImgUrl: secondaryImgUrl,
-  timeline: [
-    {
-      label: i18n.t("timeline.registration_opens"),
-      date: addDays(currentMoment, -22),
-      id: "REGISTRATION_OPENS",
-    },
-    {
-      label: i18n.t("timeline.sale_opens"),
-      date: addDays(currentMoment, -10),
-      id: "SALE_OPENS",
-    },
-    {
-      label: i18n.t("timeline.sale_closes"),
-      date: addDays(currentMoment, -5),
-      id: "SALE_CLOSES",
-    },
-    {
-      label: i18n.t("timeline.reward_distribution"),
-      date: addDays(currentMoment, -2),
-      id: "REWARD_DISTRIBUTION",
-    },
-    {
-      label: "?",
-      date: addDays(currentMoment, 24),
-      id: "UNKNOWN",
-    },
-  ],
-  saleResults: {
+  whitelistParticipants: 769,
+  saleData: {
+    availableTokens: 1200,
+    saleSucceeded: true,
     totalAmountRaised: 800402.5661,
     sellOutPercentage: 78,
     participantCount: 578,
     averageInvestedAmount: 1200.34,
   },
-}
-
-export type LockupDetails = {
-  liquidityPool: {
-    name: string
-    imgUrl: string
-  }
-  description: string
+  rewards: {
+    distributionType: "linear", // I think alternative is "exponential", but we should check and discuss this
+    description: "linearly paid-out through 12 months",
+    payoutInterval: "monthly", // used for calculating payout schedule
+  },
 }
