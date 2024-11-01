@@ -134,10 +134,10 @@ const Header = () => {
             </span>
           </Button>
 
-          <NavigationBar
+          {/* <NavigationBar
             className="hidden md:flex"
             itemClickedCallback={closeMenu}
-          />
+          /> */}
 
           {!showHamburgerMenu &&
             (walletState === "CONNECTED" ? (
@@ -153,7 +153,7 @@ const Header = () => {
           color="plain"
         />
       </header>
-      {showHamburgerMenu && (
+      {/* {showHamburgerMenu && (
         <div
           className={twMerge(
             "fixed inset-0 z-[11] mt-12 animate-fade-in-from-above bg-accent",
@@ -174,7 +174,7 @@ const Header = () => {
             )}
           </div>
         </div>
-      )}
+      )} */}
 
       {/* full height reference element for intersection observer that is used inside useHeaderShadow */}
       <div

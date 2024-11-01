@@ -2,29 +2,27 @@
 import { mockDate } from "@/utils/mockDate.ts"
 mockDate()
 
-
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
 
-import { WalletProvider } from "@/hooks/useWalletContext"
-import TermsOfUse from "./pages/TermsOfUse"
-import NotFound from "./pages/NotFound"
-import Project from "./pages/Project"
 import App from "./App"
+import Project from "./pages/Project"
+import NotFound from "./pages/NotFound"
+import Manifesto from "./pages/Manifesto"
+import TermsOfUse from "./pages/TermsOfUse"
+import LaunchPools from "./pages/LaunchPools"
+import AngelStaking from "./pages/AngelStaking"
+import { WalletProvider } from "@/hooks/useWalletContext"
+import TermsAndConditions from "./pages/TermsAndConditions"
 import { ProjectDataProvider } from "./hooks/useProjectData"
 import { BalanceProvider } from "@/hooks/useBalanceContext.tsx"
-// @backOffice
-// import BackOffice from "./pages/BackOffice"
-
-import { Buffer } from "buffer"
-import AngelStaking from "./pages/AngelStaking"
-import LaunchPools from "./pages/LaunchPools"
-import Manifesto from "./pages/Manifesto"
+import SomethingWentWrong from "./components/SomethingWentWrong"
 
 import "./index.css"
-import TermsAndConditions from "./pages/TermsAndConditions"
+
+import { Buffer } from "buffer"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient()
@@ -57,6 +55,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/launch-pools",
+        errorElement: <SomethingWentWrong />,
         element: <Outlet />,
         children: [
           {
