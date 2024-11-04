@@ -129,6 +129,8 @@ export const infoSchema = z.object({
     }),
   ),
   tiers: z.array(TierSchema).min(1),
+  // TODO @prodRush @finalSnapshotTimestamp make this mandatory to avoid null checks
+  finalSnapshotTimestamp: dateSchema().optional(),
 })
 
 // "distributionType" and "payoutInterval" enum alternative values to be discussed. They will require further logic on backend and programs.

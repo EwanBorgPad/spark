@@ -132,6 +132,7 @@ export const dummyData: ProjectModel = {
       },
     ],
     tiers: [],
+    finalSnapshotTimestamp: new Date('2024-10-10T00:00:00Z'),
   },
   // TODO @whitelistParticipants remove this and pull from the backend dynamically
   whitelistParticipants: 769,

@@ -164,7 +164,8 @@
           "maxInvestment": "999999"
         }
       }
-    ]
+    ],
+    "finalSnapshotTimestamp": null
   },
   "whitelistParticipants": 768,
   "saleData": {
