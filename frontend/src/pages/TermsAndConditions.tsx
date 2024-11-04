@@ -730,7 +730,7 @@ const TermsAndConditions = () => {
               copies of our Communications by printing a paper copy or saving an
               electronic copy. You may also contact our support team to request
               additional electronic copies of our Communications by filing a
-              support request at support@borgpad.com
+              support request at team@borgpad.com
             </p>
           </li>
         </ol>
