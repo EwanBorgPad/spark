@@ -12,7 +12,7 @@ const preWhitelistStatus: ExpandedTimelineEventType = {
 export const getCurrentTgeEvent = (timeline: ExpandedTimelineEventType[]) => {
   const currentMoment = new Date()
   const status = timeline.find((event) => {
-    const isEventFinished = isBefore(event.date, currentMoment)
+    const isEventFinished = event.date && isBefore(event.date, currentMoment)
     if (!isEventFinished) return false
     if (!event?.nextEventDate) return true
 
