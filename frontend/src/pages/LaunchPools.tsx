@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react"
 import { backendApi } from "@/data/backendApi"
 import { useQuery } from "@tanstack/react-query"
-import { ScrollRestoration } from "react-router-dom"
+import { ScrollRestoration, useNavigate } from "react-router-dom"
 
 import launchPoolsBg from "@/assets/launchPools/launch-pools-background.png"
 
-import Img from "@/components/Image/Img"
 import { GetProjectsResponse } from "shared/models"
 import LaunchPoolCard from "@/components/Cards/LaunchPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
 
 const LaunchPools = () => {
   const [projects, setProjects] = useState<ExpandedProject[]>([])
+  const navigate = useNavigate()
 
   const { data } = useQuery<GetProjectsResponse>({
     queryFn: () =>
@@ -22,6 +22,15 @@ const LaunchPools = () => {
     queryKey: ["getProjects", 1],
   })
 
+  //////////////////////////////////////////////////////////////////////////////
+  // @SolanaId - useEffect below is for Solana ID whitelisting launch (01.11.2024) - remove this //redirection when we officially launch the rest of the app
+  //////////////////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (import.meta.env.VITE_ENVIRONMENT_TYPE === "production") {
+      navigate("/launch-pools/solana-id")
+    }
+  }, [navigate])
+
   useEffect(() => {
     if (!data?.projects) return
     const sortedProjects = sortProjectsPerStatus(data.projects)
@@ -30,9 +39,10 @@ const LaunchPools = () => {
 
   return (
     <main className="relative z-[10] min-h-screen w-full bg-transparent pt-[48px] md:pt-[68px]">
-      <Img
+      <img
         src={launchPoolsBg}
-        customClass="w-full absolute top-[48px] md:top-[68px] z-[-1]"
+        className="absolute top-[48px] z-[-1] w-full md:top-[68px]"
+        role="presentation"
       />
 
       <section className=": z-[1] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">

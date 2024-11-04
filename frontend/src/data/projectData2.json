@@ -99,22 +99,22 @@
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": "2024-06-20"
+        "date": "2024-10-20"
       },
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-07-02"
+        "date": "2024-11-02"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-07-07"
+        "date": "2024-11-12"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2024-07-10"
+        "date": "2024-11-20"
       },
       {
         "id": "DISTRIBUTION_OVER",
@@ -122,25 +122,45 @@
         "date": "2025-07-10"
       }
     ],
-    "whitelistRequirements": [
+    "tiers": [
       {
-        "type": "HOLD_BORG_IN_WALLET",
-        "label": "Hold 20,000 BORG in your wallet",
-        "description": "",
-        "isMandatory": true,
-        "heldAmount": 20000
+        "id": "tier1",
+        "label": "Tier1",
+        "quests": [
+          {
+            "type": "FOLLOW_ON_TWITTER",
+            "twitterHandle": "@borgpadhq",
+            "twitterLabel": "BorgPad"
+          },
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "USDC",
+            "tokenAmount": "10000",
+            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
+          }
+        ],
+        "benefits": {
+          "startDate": "2024-10-23",
+          "minInvestment": "10",
+          "maxInvestment": "999"
+        }
       },
       {
-        "type": "FOLLOW_ON_X",
-        "label": "Follow BorgPad on X",
-        "description": "",
-        "isMandatory": true
-      },
-      {
-        "type": "DONT_RESIDE_IN_US",
-        "label": "Don’t reside in the US",
-        "description": "",
-        "isMandatory": true
+        "id": "tier2",
+        "label": "Tier2",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "USDC",
+            "tokenAmount": "20000",
+            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
+          }
+        ],
+        "benefits": {
+          "startDate": "2024-10-21",
+          "minInvestment": "10",
+          "maxInvestment": "999999"
+        }
       }
     ]
   },

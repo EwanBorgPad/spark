@@ -10,8 +10,8 @@ type DateTimeFieldProps = {
   error?: string
   label?: string
   minDate?: Date
-  value: Date | undefined
-  onChange: (value: unknown) => void
+  value: null | Date | undefined
+  onChange: (value: null | Date) => void
 }
 const DateTimeField = ({
   error,

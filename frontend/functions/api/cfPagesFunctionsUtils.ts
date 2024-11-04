@@ -30,7 +30,9 @@ export const jsonResponse = (
  * @param db
  * @param e
  */
-export const reportError = async (db: D1Database, e: Error) => {
+export const reportError = async (db: D1Database, error: unknown) => {
+  const e = error instanceof Error ? error : new Error(String(error))
+
   console.error(e)
 
   const id = uuidv4()
@@ -67,17 +69,6 @@ function uuidv4() {
   return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
     (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
   )
-}
-
-export const getProjectById = async (
-  db: D1Database,
-  id: string,
-): Promise<ProjectModel | null> => {
-  const project = await db
-    .prepare("SELECT * FROM project WHERE id = ?1")
-    .bind(id)
-    .first<{ id: string; json: ProjectModel}>()
-  return project ? JSON.parse(project.json) : null
 }
 
 export const extractProjectId = (url: string) => {

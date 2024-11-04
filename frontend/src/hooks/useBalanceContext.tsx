@@ -8,7 +8,7 @@ import {
 } from "react"
 import { getSplTokenBalance, TokenAmount } from "../../shared/SolanaWeb3.ts"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
-import { USDC_DEV_ADDRESS } from "../../shared/constants.ts"
+import { SOLANA_PUBLIC_RPC_URL, USDC_DEV_ADDRESS } from "../../shared/constants.ts"
 
 type Context = {
   balance: null | TokenAmount
@@ -37,6 +37,7 @@ export function BalanceProvider({ children }: { children: ReactNode }) {
     const tokenAmount = await getSplTokenBalance({
       address,
       tokenAddress: USDC_DEV_ADDRESS,
+      rpcUrl: SOLANA_PUBLIC_RPC_URL,
     })
 
     if (tokenAmount) {

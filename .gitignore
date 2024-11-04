@@ -20,5 +20,8 @@ wrangler.toml
 # misc
 .env
 
-.prettierignore
+target
 tmp
+
+.prettierignore
+tmp/

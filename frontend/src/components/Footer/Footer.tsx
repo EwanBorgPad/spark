@@ -33,11 +33,19 @@ const Footer = ({ showBackground = true }: Props) => {
           <Logo />
           <span className="text-sm">© 2024</span>
         </div>
-        <div className="flex items-center gap-5 text-sm">
-          <Link to="/terms-of-service">
+        <div className="flex items-center gap-2 lg:gap-5 text-sm">
+          <Link to="/terms-of-use">
             <Button
               color="plain"
-              btnText={t("terms_of_service")}
+              btnText={t("terms_of_use")}
+              className="text-sm font-normal"
+            />
+          </Link>
+          <div className="h-5 border-l-[1px] border-l-fg-primary/50"></div>
+          <Link to="/terms-and-conditions">
+            <Button
+              color="plain"
+              btnText={t("terms_and_conditions")}
               className="text-sm font-normal"
             />
           </Link>

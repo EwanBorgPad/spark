@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { ExpandedTimelineEventType } from "../Timeline/Timeline"
 import { getCurrentTgeEvent } from "@/utils/getCurrentTgeEvent"
 import { CountDownCallback } from "../CountDownCallback"
-import Whitelisting from "./TGEStatus/Whitelisting"
+import RegistrationOpensPhase from "./TGEStatus/RegistrationOpensPhase.tsx"
 import SaleOver from "./TGEStatus/SaleOver"
 import LiveNow from "./TGEStatus/LiveNow"
 import DistributionOver from "./TGEStatus/DistributionOver"
@@ -36,7 +36,7 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
       case "UPCOMING":
         return <span>{t("tge.not_opened_yet")}</span>
       case "REGISTRATION_OPENS":
-        return <Whitelisting eventData={currentTgeEvent} />
+        return <RegistrationOpensPhase eventData={currentTgeEvent} />
       case "SALE_OPENS":
         return <LiveNow eventData={tgeEvent} />
       case "SALE_CLOSES":

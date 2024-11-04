@@ -6,5 +6,8 @@
     "types": ["@cloudflare/workers-types"],
     "moduleResolution": "Node",
     "resolveJsonModule": true,
+
+    /* Linting */
+    "strict": true
   }
 }
