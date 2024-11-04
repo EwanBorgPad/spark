@@ -179,7 +179,8 @@
           "maxInvestment": "999999"
         }
       }
-    ]
+    ],
+    "finalSnapshotTimestamp": "2024-10-10T00:00:00Z"
   },
   "whitelistParticipants": 768,
   "saleData": {

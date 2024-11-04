@@ -13,8 +13,7 @@ import { getSignInWithTwitterUrl } from "@/hooks/useTwitterContext.tsx"
 import { ExternalLink } from "@/components/Button/ExternalLink.tsx"
 import { useParams } from "react-router-dom"
 import ProvideInvestmentIntentModal from "@/components/Modal/Modals/ProvideInvestmentIntentModal.tsx"
-import { formatDateForSnapshot } from "@/utils/date-helpers.ts"
-import { addHours } from "date-fns"
+import { FinalSnapshotTaken } from "@/components/EligibilitySection/FinalSnapshotTaken.tsx"
 
 export const EligibilitySection = () => {
   const { t } = useTranslation()
@@ -86,21 +85,7 @@ export const EligibilitySection = () => {
           })}
         </div>
       </section>
-      <section>
-        <div className="flex w-full flex-wrap items-center justify-center gap-1">
-          <Icon
-            icon="SvgSnapshot"
-            className="shrink-0 text-xl text-brand-primary"
-          />
-          <span className="text-nowrap text-sm text-fg-tertiary">
-            {t("whitelisting.snapshot_taken")}
-          </span>{" "}
-          <span className="text-nowrap text-sm text-fg-primary">
-            {/* TODO @api @hardcoded swap dummy date below with real snapshot data */}
-            {formatDateForSnapshot(addHours(new Date(), -4.4))}
-          </span>
-        </div>
-      </section>
+      <FinalSnapshotTaken />
     </section>
   )
 }
