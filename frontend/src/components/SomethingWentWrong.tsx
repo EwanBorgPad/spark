@@ -5,7 +5,7 @@ import angelStakingTexture1 from "@/assets/angelStaking/angelStakingTexture1.png
 const SomethingWentWrong = () => {
   return (
     <main className="relative z-[10] min-h-screen w-full bg-transparent pt-[48px] text-white md:pt-[68px]">
-      <div className="flex flex-col items-center py-[160px]">
+      <div className="flex flex-col items-center text-center py-[160px]">
         <h2 className="pb-4">Something went wrong!</h2>
         <p className="font-light">Please contact us if this happens again at</p>
         <p className="font-semibold">team@borgpad.com</p>
