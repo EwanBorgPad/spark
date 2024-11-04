@@ -80,7 +80,6 @@ export const getDefaultValues = () => {
           ticker: "",
         },
         fixedTokenPriceInUSD: 0,
-        whitelistParticipants: 1698,
         liquidityPool: {
           name: "",
           iconUrl: "",
@@ -123,7 +122,6 @@ export const getDefaultValues = () => {
       ] as WhitelistRequirementModel[],
     },
     saleData: initialSaleData,
-    whitelistParticipants: 0,
     rewards: {
       description: "",
       distributionType: undefined,

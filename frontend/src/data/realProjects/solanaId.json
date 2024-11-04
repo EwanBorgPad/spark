@@ -63,7 +63,6 @@
         "ticker": "SOLID"
       },
       "fixedTokenPriceInUSD": 0.02,
-      "whitelistParticipants": -1,
       "tokenGenerationEventDate": "#",
       "liquidityPool": {
         "name": "Raydium",
@@ -167,7 +166,6 @@
     ],
     "finalSnapshotTimestamp": null
   },
-  "whitelistParticipants": 768,
   "saleData": {
     "availableTokens": 12403,
     "saleSucceeded": true,
