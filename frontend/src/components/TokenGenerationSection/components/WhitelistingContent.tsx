@@ -47,7 +47,7 @@ const WhitelistingContent = () => {
   return (
     <div
       className={
-        "relative flex w-full flex-col items-center gap-2 rounded-3xl border border-bd-secondary bg-secondary bg-texture bg-cover p-4 pt-[26px] text-sm text-fg-primary bg-blend-multiply"
+        "relative flex w-full flex-col items-center gap-2 rounded-3xl border border-bd-secondary bg-secondary bg-texture bg-cover p-4 pt-[26px] text-sm text-fg-primary"
       }
     >
       <div className="flex w-full flex-col gap-2">
