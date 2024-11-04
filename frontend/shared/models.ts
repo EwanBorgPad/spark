@@ -142,7 +142,6 @@ export const rewardsSchema = z.object({
 
 export const projectSchema = z.object({
   info: infoSchema,
-  whitelistParticipants: z.number().optional(),
   saleData: z
     .object({
       availableTokens: z.number({ coerce: true }).optional(),

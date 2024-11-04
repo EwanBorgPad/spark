@@ -77,7 +77,6 @@
         "ticker": "LRC"
       },
       "fixedTokenPriceInUSD": 1,
-      "whitelistParticipants": 1698,
       "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
       "liquidityPool": {
         "name": "Raydium",
@@ -181,7 +180,6 @@
     ],
     "finalSnapshotTimestamp": "2024-10-10T00:00:00Z"
   },
-  "whitelistParticipants": 768,
   "saleData": {
     "availableTokens": 12403,
     "saleSucceeded": true,

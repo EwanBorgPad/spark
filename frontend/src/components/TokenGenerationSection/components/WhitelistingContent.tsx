@@ -10,6 +10,7 @@ import { backendApi } from "@/data/backendApi.ts"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import SimpleLoader from "@/components/Loaders/SimpleLoader"
 import Img from "@/components/Image/Img"
+import { useParams } from "react-router-dom"
 
 const WhitelistingContent = () => {
   const { t } = useTranslation()
@@ -34,6 +35,16 @@ const WhitelistingContent = () => {
   const tokenPriceInBORG = !borgPriceInUsd
     ? null
     : borgPriceInUsd / tokenPriceInUSD
+
+  const { projectId } = useParams()
+  const { data: investmentSummaryData } = useQuery({
+    queryFn: () =>
+      backendApi.getInvestmentIntentSummary({
+        projectId: projectId!,
+      }),
+    queryKey: ["getInvestmentIntentSummary", projectId],
+    enabled: Boolean(projectId),
+  })
 
   return (
     <div
@@ -97,8 +108,8 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.whitelist_participants")}</span>
           <span className="font-geist-mono">
-            {projectData?.whitelistParticipants &&
-              formatCurrencyAmount(projectData.whitelistParticipants, false, 0)}
+            {investmentSummaryData?.count &&
+              formatCurrencyAmount(investmentSummaryData?.count, false, 0)}
           </span>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
