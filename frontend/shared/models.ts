@@ -112,7 +112,7 @@ export const infoSchema = z.object({
       iconUrl: urlSchema(),
       lbpType: z.string().min(1),
       lockingPeriod: z.string().min(1),
-      unlockDate: dateSchema(),
+      unlockDate: dateSchema().nullable(),
       url: z.string().min(1),
     }),
     tweetUrl: z.string(),
