@@ -14,6 +14,7 @@ import React, { RefObject } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import { useParams } from "react-router-dom"
+import { useProjectDataContext } from "@/hooks/useProjectData"
 
 type FormInputs = {
   borgInputValue: string
@@ -29,14 +30,17 @@ type Props = {
   eligibilitySectionRef: RefObject<HTMLDivElement>
 }
 
+// input data for "getExchange"
+const baseCurrency = "swissborg"
+const targetCurrency = "usd"
+
 const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const { t } = useTranslation()
-
-  const { walletState } = useWalletContext()
   const { balance } = useBalanceContext()
-
-  const { address } = useWalletContext()
+  const { projectData } = useProjectDataContext()
+  const { address, walletState } = useWalletContext()
   const { projectId } = useParams()
+
   const { data } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
@@ -46,6 +50,20 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     enabled: Boolean(address) && Boolean(projectId),
   })
   const isUserEligible = data?.isEligible
+
+  const { data: exchangeData } = useQuery({
+    queryFn: () =>
+      backendApi.getExchange({
+        baseCurrency,
+        targetCurrency,
+      }),
+    queryKey: ["getExchange", baseCurrency, targetCurrency],
+  })
+  const borgPriceInUsd = exchangeData?.currentPrice || null
+  const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
+  const tokenPriceInBORG = !borgPriceInUsd
+    ? null
+    : borgPriceInUsd / tokenPriceInUSD
 
   const {
     handleSubmit,
@@ -78,8 +96,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const borgCoinInput = watch("borgInputValue")
 
   const scrollToWhitelistRequriements = () => {
-    const top =
-      eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
+    const top = eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
     window.scrollBy({
       behavior: "smooth",
       top: top - 100,
@@ -173,6 +190,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
           <TokenRewards
             borgCoinInput={borgCoinInput}
             isWhitelistingEvent={false}
+            tokenPriceInBORG={tokenPriceInBORG}
           />
         </div>
         <div className="flex w-full flex-col items-center gap-4">

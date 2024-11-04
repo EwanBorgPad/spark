@@ -106,7 +106,7 @@ export const infoSchema = z.object({
       iconUrl: urlSchema(),
       ticker: z.string().min(1),
     }),
-    fixedCoinPriceInBorg: z.number({ coerce: true }),
+    fixedTokenPriceInUSD: z.number({ coerce: true }),
     liquidityPool: z.object({
       name: z.string().min(1),
       iconUrl: urlSchema(),
@@ -124,11 +124,11 @@ export const infoSchema = z.object({
   timeline: z.array(
     z.object({
       id: timelineEventsSchema(),
-      date: dateSchema(),
+      date: dateSchema().nullable(),
       label: z.string().min(1),
     }),
   ),
-  tiers: z.array(TierSchema).min(1)
+  tiers: z.array(TierSchema).min(1),
 })
 
 // "distributionType" and "payoutInterval" enum alternative values to be discussed. They will require further logic on backend and programs.

@@ -8,31 +8,42 @@ import Img from "@/components/Image/Img"
 type TokenRewardsProps = {
   borgCoinInput: string
   isWhitelistingEvent: boolean
+  tokenPriceInBORG: number | null
 }
 
 const TokenRewards = ({
   borgCoinInput,
   isWhitelistingEvent,
+  tokenPriceInBORG,
 }: TokenRewardsProps) => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
   const tgeData = projectData.info.tge
 
   const getTokenReward = () => {
-    if (!borgCoinInput) return 0
-    const tokenPriceInBorg = Number(projectData.info.tge.fixedCoinPriceInBorg)
-    if (Number.isNaN(tokenPriceInBorg)) {
-      console.error(tokenPriceInBorg)
-      return 0
-    }
-    const tokenReward = +borgCoinInput * tokenPriceInBorg
+    if (!borgCoinInput || !tokenPriceInBORG) return 0
+    const tokenReward = +borgCoinInput / tokenPriceInBORG
     return tokenReward
+  }
+  const getTotalTokensToBeReceived = () => {
+    // for each 1 token in locking period user gets total of 1 in Reward Distribution sum
+    const totalTokensFromLockingPeriod = getTokenReward()
+    const totalTokensReceivedInRewardsDistribution = getTokenReward()
+    const totalTargetToken =
+      totalTokensReceivedInRewardsDistribution + totalTokensFromLockingPeriod
+    return totalTargetToken
   }
 
   const rewards = {
     borg: borgCoinInput,
-    targetToken: formatValue({ value: getTokenReward().toString() }),
-    totalTargetToken: formatValue({ value: (2 * getTokenReward()).toString() }),
+    targetToken: formatValue({
+      value: getTokenReward().toString(),
+      decimalScale: 5,
+    }),
+    totalTargetToken: formatValue({
+      value: getTotalTokensToBeReceived().toString(),
+      decimalScale: 5,
+    }),
   }
 
   return (

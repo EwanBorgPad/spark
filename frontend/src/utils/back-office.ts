@@ -79,7 +79,7 @@ export const getDefaultValues = () => {
           iconUrl: "",
           ticker: "",
         },
-        fixedCoinPriceInBorg: undefined,
+        fixedTokenPriceInUSD: 0,
         whitelistParticipants: 1698,
         liquidityPool: {
           name: "",
