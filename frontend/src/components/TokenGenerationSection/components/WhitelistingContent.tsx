@@ -62,9 +62,9 @@ const WhitelistingContent = () => {
           <span>{t("tge.raise_target")}</span>
           <div className="flex gap-2">
             <span className="font-geist-mono">
-              {formatCurrencyAmount(tgeData.raiseTarget, false, 0)}
+              ${formatCurrencyAmount(tgeData.raiseTarget, false, 0)}
             </span>
-            <span>BORG</span>
+            <span>in BORG</span>
           </div>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
