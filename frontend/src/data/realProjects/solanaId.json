@@ -108,59 +108,78 @@
     ],
     "tiers": [
       {
-        "id": "tier0",
-        "label": "Silver",
+        "id": "tier1",
+        "label": "Priority Pass Holders",
         "quests": [
           {
             "type": "HOLD_TOKEN",
-            "tokenName": "USDC",
+            "tokenName": "Priority Pass NFT",
             "tokenAmount": "1",
-            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
+            "tokenMintAddress": "4jYzKMx7Qjq98rUk4FxzAEPMhrSdABztazqmGeKnhvg1"
           }
         ],
         "benefits": {
-          "startDate": "2024-10-30",
-          "minInvestment": "10",
-          "maxInvestment": "999"
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
         }
       },
       {
-        "id": "tier1",
-        "label": "Gold",
+        "id": "tier3",
+        "label": "Solidian Origins: Drip Collector’s Edition",
         "quests": [
           {
-            "type": "FOLLOW_ON_TWITTER",
-            "twitterHandle": "@borgpadhq",
-            "twitterLabel": "BorgPad"
+            "type": "HOLD_TOKEN",
+            "tokenName": "DRiP Solana ID x Drip Collectible Holders",
+            "tokenAmount": "1",
+            "tokenMintAddress": "BD5EpsrZmPGK8DMMhu1DYAzKXEp5nMrTEyhSsWrjWKP1"
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
+        }
+      },
+      {
+        "id": "tier4",
+        "label": "SOLID Community Partners",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "SMB Gen2",
+            "tokenAmount": "1",
+            "tokenMintAddress": "SMBtHCCC6RYRutFEPb4gZqeBLUZbMNhRKaMKZZLHi7W"
           },
           {
             "type": "HOLD_TOKEN",
-            "tokenName": "USDC",
-            "tokenAmount": "100",
-            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
-          }
-        ],
-        "benefits": {
-          "startDate": "2024-10-23",
-          "minInvestment": "10",
-          "maxInvestment": "999"
-        }
-      },
-      {
-        "id": "tier2",
-        "label": "Diamond",
-        "quests": [
+            "tokenName": "SMB Gen3",
+            "tokenAmount": "1",
+            "tokenMintAddress": "8Rt3Ayqth4DAiPnW9MDFi63TiQJHmohfTWLMQFHi4KZH"
+          },
           {
             "type": "HOLD_TOKEN",
-            "tokenName": "USDC",
-            "tokenAmount": "20000",
-            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
+            "tokenName": "Sensei Panda",
+            "tokenAmount": "1",
+            "tokenMintAddress": "GMoemLuVAksjvGph8dmujuqijWsodt7nJsvwoMph3uzj"
+          },
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "FlashTrade Beast",
+            "tokenAmount": "1",
+            "tokenMintAddress": "H4EQ8pcE7PQSQGG1WYW4hAA1nizU6ULYipHZcYk9b64u"
+          },
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "Herman",
+            "tokenAmount": "1",
+            "tokenMintAddress": "3UwNGy8JAaCp3xCV26EwBqfEvXo8cdHRjjMGCCc7qDGB"
           }
         ],
         "benefits": {
-          "startDate": "2024-10-21",
-          "minInvestment": "10",
-          "maxInvestment": "999999"
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
         }
       }
     ],
