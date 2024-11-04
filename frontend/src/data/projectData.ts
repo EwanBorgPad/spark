@@ -128,6 +128,7 @@ export const dummyData: ProjectModel = {
     ],
     tiers: [],
   },
+  // TODO @whitelistParticipants remove this and pull from the backend dynamically
   whitelistParticipants: 769,
   saleData: {
     availableTokens: 1200,
