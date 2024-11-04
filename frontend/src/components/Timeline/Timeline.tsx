@@ -38,14 +38,15 @@ export const timelineEventIdRanks: Record<
 }
 export type TimelineEventType = {
   label: string
-  date: Date
+  date: Date | null
   id: (typeof timelineEventIds)[number]
 }
 
 export type ExpandedTimelineEventType = {
-  displayedTime?: string
+  // @SolanaID - added null at nextEventDate & displayedTime
+  displayedTime?: string | null
   wasEventBeforeCurrentMoment?: boolean
-  nextEventDate: Date
+  nextEventDate: Date | null
   idRank: number
 } & TimelineEventType
 
@@ -78,10 +79,11 @@ const Timeline = ({ timelineEvents }: Props) => {
       if (isTimelineFinished) return 1
       if (!event.wasEventBeforeCurrentMoment) return 0
       if (!event?.nextEventDate) return 0
-      const timelineDurationInMs = differenceInMilliseconds(
-        event.nextEventDate,
-        event.date,
-      )
+
+      // @SolanaId
+      const timelineDurationInMs = event.date
+        ? differenceInMilliseconds(event.nextEventDate, event.date)
+        : 0
       const timelineLeftInMs = differenceInMilliseconds(
         event.nextEventDate,
         new Date(),
@@ -149,7 +151,7 @@ const Timeline = ({ timelineEvents }: Props) => {
             {event.label}
           </span>
           <span className="truncate text-xs leading-[18px] opacity-50">
-            {event.displayedTime}
+            {event.displayedTime || "TBD"}
           </span>
         </div>
       </div>
