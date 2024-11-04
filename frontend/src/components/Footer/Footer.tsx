@@ -33,7 +33,7 @@ const Footer = ({ showBackground = true }: Props) => {
           <Logo />
           <span className="text-sm">© 2024</span>
         </div>
-        <div className="flex items-center gap-5 text-sm">
+        <div className="flex items-center gap-2 lg:gap-5 text-sm">
           <Link to="/terms-of-use">
             <Button
               color="plain"
