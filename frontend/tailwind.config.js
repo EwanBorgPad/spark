@@ -66,7 +66,7 @@ export default {
       },
       backgroundImage: {
         texture: "url(/src/assets/grainy-main.png)",
-        "texture-zoomed-out": "url(/src/assets/grainy-top.png)",
+        "texture-zoomed-out": "url(/src/assets/grainy-top1.png)",
         "top-contributor": "url(/src/assets/bg-top-contributor.png)",
         fallback: "url(/src/assets/fallback.png)",
       },
