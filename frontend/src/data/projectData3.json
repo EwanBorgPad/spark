@@ -76,7 +76,7 @@
         "iconUrl": "/images/madagascar-ski-resort/project-coin-icon.svg",
         "ticker": "LRC"
       },
-      "fixedCoinPriceInBorg": 1,
+      "fixedTokenPriceInUSD": 1,
       "whitelistParticipants": 1698,
       "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
       "liquidityPool": {

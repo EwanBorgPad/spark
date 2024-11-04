@@ -21,7 +21,7 @@ const WhitelistingContent = () => {
   const baseCurrency = "swissborg"
   const targetCurrency = "usd"
   // TODO @hardcoded swissborg coin, replace with project's token later
-  const { data: projectTokenData } = useQuery({
+  const { data } = useQuery({
     queryFn: () =>
       backendApi.getExchange({
         baseCurrency,
@@ -29,20 +29,11 @@ const WhitelistingContent = () => {
       }),
     queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
-
-  const { data: borgData } = useQuery({
-    queryFn: () =>
-      backendApi.getExchange({
-        baseCurrency,
-        targetCurrency,
-      }),
-    queryKey: ["getExchange", baseCurrency, targetCurrency],
-  })
-
-  const tokenPriceInBORG =
-    !projectTokenData || !borgData
-      ? null
-      : projectTokenData.currentPrice / borgData.currentPrice
+  const borgPriceInUsd = data?.currentPrice || null
+  const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
+  const tokenPriceInBORG = !borgPriceInUsd
+    ? null
+    : borgPriceInUsd / tokenPriceInUSD
 
   return (
     <div
@@ -59,7 +50,11 @@ const WhitelistingContent = () => {
           </p>
           <span className="text-fg-tertiary">Gives you:</span>
         </div>
-        <TokenRewards borgCoinInput={"1"} isWhitelistingEvent={true} />
+        <TokenRewards
+          borgCoinInput={"1"}
+          isWhitelistingEvent={true}
+          tokenPriceInBORG={tokenPriceInBORG}
+        />
       </div>
 
       <div className="flex w-full flex-col">
@@ -67,9 +62,9 @@ const WhitelistingContent = () => {
           <span>{t("tge.raise_target")}</span>
           <div className="flex gap-2">
             <span className="font-geist-mono">
-              {formatCurrencyAmount(tgeData.raiseTarget, false, 0)}
+              ${formatCurrencyAmount(tgeData.raiseTarget, false, 0)}
             </span>
-            <span>BORG</span>
+            <span>in BORG</span>
           </div>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
@@ -82,12 +77,7 @@ const WhitelistingContent = () => {
           </div>
           <div className="flex flex-col items-end">
             <span className="font-geist-mono">
-              {projectTokenData ? (
-                formatCurrencyAmount(projectTokenData.currentPrice, true, 5)
-              ) : (
-                // @TODO - add skeleton instead of loader
-                <SimpleLoader />
-              )}
+              {formatCurrencyAmount(tokenPriceInUSD, true, 5)}
             </span>
             <div className="flex gap-2">
               <span className="font-geist-mono">

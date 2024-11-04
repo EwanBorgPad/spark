@@ -1,34 +1,29 @@
 {
   "info": {
-    "id": "aurelia",
-    "title": "Aurelia",
-    "subtitle": "Data ownership for the decentralized digital age",
-    "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/aurelia/project-logo-867281999",
-    "thumbnailUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/aurelia/project-logo-867281999",
-    "origin": "🇪🇺 Italy",
-    "sector": "Healthcare",
+    "id": "solana-id",
+    "title": "Solana ID",
+    "subtitle": "Solana's Digital Identity Layer",
+    "logoUrl": "https://imgcdn.stablediffusionweb.com/2024/4/19/5acb9020-70dd-42c5-afca-3fe165e87d2c.jpg",
+    "thumbnailUrl": "",
+    "origin": "The Trenches 🪖",
+    "sector": "Digital Identity",
     "chain": {
-      "name": "Zora 3",
-      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/chain-icon-712293612"
+      "name": "Solana",
+      "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
     },
-    "totalTokensForSale": 42000,
+    "totalTokensForSale": 13125000,
     "curator": {
-      "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/aurelia/curator-avatar-862037941",
-      "fullName": "Molly Millions",
-      "position": "Web3 Veteran",
+      "avatarUrl": "https://cdn.sanity.io/images/bor5n0ip/production/7afa9288154ca24e2e34e72d01ba1138f58f5f70-600x600.png?q=80&auto=format",
+      "fullName": "SwissBorg Alpha",
+      "position": "Sold-Out Early Deal",
       "socials": [
         {
-          "url": "https://en.wikipedia.org/wiki/Blockchain",
-          "iconType": "MEDIUM",
-          "label": "Medium"
+          "url": "https://swissborg.com/alpha/solana-id",
+          "iconType": "WEB",
+          "label": "Web"
         },
         {
-          "url": "https://en.wikipedia.org/wiki/Blockchain",
-          "iconType": "LINKED_IN",
-          "label": "Linkedin"
-        },
-        {
-          "url": "https://en.wikipedia.org/wiki/Blockchain",
+          "url": "https://x.com/swissborg",
           "iconType": "X_TWITTER",
           "label": "X (ex-Twitter)"
         }
@@ -36,23 +31,13 @@
     },
     "projectLinks": [
       {
-        "url": "https://en.wikipedia.org/wiki/Blockchain",
+        "url": "https://www.solana.id/",
         "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
         "iconType": "WEB",
         "label": ""
       },
       {
-        "url": "https://en.wikipedia.org/wiki/Blockchain",
-        "iconType": "MEDIUM",
-        "label": ""
-      },
-      {
-        "url": "https://en.wikipedia.org/wiki/Blockchain",
-        "iconType": "LINKED_IN",
-        "label": ""
-      },
-      {
-        "url": "https://en.wikipedia.org/wiki/Blockchain",
+        "url": "https://x.com/solanaidentity",
         "iconType": "X_TWITTER",
         "label": ""
       }
@@ -61,71 +46,71 @@
     "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
 
     "launchedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-    "launchedTokenLpDistribution": 50,
-    "launchedTokenCap": 100000,
+    "launchedTokenLpDistribution": 0,
+    "launchedTokenCap": 0,
 
-    "raisedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-    "raisedTokenMinCap": 1000,
-    "raisedTokenMaxCap": 1000000,
+    "raisedTokenMintAddress": "BNi33DZbWNj8N86eQj7jFKtUZzMSUCCSEV8oeEkuAgzL",
+    "raisedTokenMinCap": 0,
+    "raisedTokenMaxCap": 0,
 
-    "cliffDuration": 1728998916,
-    "vestingDuration": 1731677316,
+    "cliffDuration": 0,
+    "vestingDuration": 0,
 
     "tge": {
-      "raiseTarget": 39332,
+      "raiseTarget": 250000,
       "projectCoin": {
-        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/aurelia/chain-icon-967667980",
-        "ticker": "LRC"
+        "iconUrl": "/images/puffer-finance/project-coin-icon.svg",
+        "ticker": "SOLID"
       },
-      "fixedTokenPriceInUSD": 0.398,
-      "whitelistParticipants": 332,
-      "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
+      "fixedTokenPriceInUSD": 0.02,
+      "whitelistParticipants": -1,
+      "tokenGenerationEventDate": "#",
       "liquidityPool": {
         "name": "Raydium",
-        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/liquidity-pool-icon-738904576",
-        "lbpType": "Full Range",
-        "lockingPeriod": "12-month lockup",
-        "unlockDate": "2025-07-12T12:39:16Z",
+        "iconUrl": "https://a-us.storyblok.com/f/1016390/2000x2000/1ea13be3ae/raydium-logo.webp",
+        "lbpType": "Concentrated Liquidity",
+        "lockingPeriod": "9-month vesting.",
+        "unlockDate": null,
         "url": "#"
       },
-      "tweetUrl": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
+      "tweetUrl": "#"
     },
-    "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
+    "__comment": "secondary image is the one behind: 'Solana ID Data Room Learn more about the project and see the deal details'",
     "dataRoom": {
-      "backgroundImgUrl": "",
-      "url": "#"
+      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
+      "url": "https://solana-id.notion.site/It-is-time-to-get-SOLID-c93e1ec428fe4272b2ce1c5c224a5560"
     },
     "timeline": [
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": "2024-09-20"
+        "date": "2024-11-04"
       },
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-10-12"
+        "date": null
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-10-22"
+        "date": null
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2024-11-20"
+        "date": null
       },
       {
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
-        "date": "2025-07-10"
+        "date": null
       }
     ],
     "tiers": [
       {
         "id": "tier0",
-        "label": "Tier0",
+        "label": "Silver",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -142,7 +127,7 @@
       },
       {
         "id": "tier1",
-        "label": "Tier1",
+        "label": "Gold",
         "quests": [
           {
             "type": "FOLLOW_ON_TWITTER",
@@ -164,7 +149,7 @@
       },
       {
         "id": "tier2",
-        "label": "Tier2",
+        "label": "Diamond",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -181,7 +166,7 @@
       }
     ]
   },
-  "whitelistParticipants": 119,
+  "whitelistParticipants": 768,
   "saleData": {
     "availableTokens": 12403,
     "saleSucceeded": true,

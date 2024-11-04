@@ -17,9 +17,11 @@ export const expandTimelineDataInfo = (
       date: event.date,
       id: event.id,
       idRank: timelineEventIdRanks[event.id],
-      nextEventDate: nextEventDates[index]?.date,
-      displayedTime: formatDateForDisplay(event.date),
-      wasEventBeforeCurrentMoment: isBefore(event.date, currentMoment),
+      nextEventDate: nextEventDates[index]?.date ?? null,
+      displayedTime: event.date ? formatDateForDisplay(event.date) : null,
+      wasEventBeforeCurrentMoment: event.date
+        ? isBefore(event.date, currentMoment)
+        : false,
     }
   })
 }

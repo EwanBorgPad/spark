@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
-import SimpleLoader from "@/components/Loaders/SimpleLoader"
 import { formatCurrencyAmount } from "@/utils/format"
 import { backendApi } from "@/data/backendApi.ts"
 import Text from "@/components/Text"
