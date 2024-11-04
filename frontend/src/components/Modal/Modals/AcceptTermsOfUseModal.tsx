@@ -108,3 +108,5 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
 }
 
 export default AcceptTermsOfUseModal
+
+// TODO search for window.phantom window.solana window.backpack, all that stuff to discover hardcoded shit

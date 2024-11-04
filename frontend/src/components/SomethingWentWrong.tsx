@@ -8,7 +8,7 @@ const SomethingWentWrong = () => {
       <div className="flex flex-col items-center py-[160px]">
         <h2 className="pb-4">Something went wrong!</h2>
         <p className="font-light">Please contact us if this happens again at</p>
-        <p className="font-semibold">support@borgpad.com</p>
+        <p className="font-semibold">team@borgpad.com</p>
       </div>
 
       <div className="absolute top-12 z-[-1] flex w-screen justify-center overflow-hidden lg:top-[72px]">
