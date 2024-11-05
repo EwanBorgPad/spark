@@ -21,7 +21,6 @@ const RegistrationOpensPhase = ({ eventData }: RegistrationOpensPhaseProps) => {
   return (
     <div className="flex w-full flex-col items-center gap-[52px]">
       <BasicTokenInfo />
-      <EligibilitySection />
       <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
         <TgeWrapper label={t("tge.whitelisting")}>
           {eventData?.nextEventDate && (
@@ -35,6 +34,7 @@ const RegistrationOpensPhase = ({ eventData }: RegistrationOpensPhaseProps) => {
           <WhitelistingContent />
         </TgeWrapper>
       </div>
+      <EligibilitySection />
     </div>
   )
 }

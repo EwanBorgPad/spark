@@ -36,23 +36,6 @@ export const EligibilitySection = () => {
 
   return (
     <section className="flex w-full max-w-[432px] flex-col gap-4 px-4">
-      <section id="complianceSection">
-        <div
-          id="complianceHeading"
-          className="flex w-full items-center justify-between py-2"
-        >
-          <span>{t("compliance")}</span>
-        </div>
-        <div
-          id="compliancesContainer"
-          className="flex flex-col gap-2 rounded-lg"
-        >
-          {complianceQuests.map((quest) => (
-            <QuestComponent key={quest.type} quest={quest} />
-          ))}
-        </div>
-      </section>
-
       <section id="tiersSection">
         <div
           id="tiersHeading"
@@ -83,6 +66,22 @@ export const EligibilitySection = () => {
               </div>
             )
           })}
+        </div>
+      </section>
+      <section id="complianceSection">
+        <div
+          id="complianceHeading"
+          className="flex w-full items-center justify-between py-2"
+        >
+          <span>{t("compliance")}</span>
+        </div>
+        <div
+          id="compliancesContainer"
+          className="flex flex-col gap-2 rounded-lg"
+        >
+          {complianceQuests.map((quest) => (
+            <QuestComponent key={quest.type} quest={quest} />
+          ))}
         </div>
       </section>
       <FinalSnapshotTaken />
