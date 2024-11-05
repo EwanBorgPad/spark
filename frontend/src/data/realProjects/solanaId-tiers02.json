@@ -1,0 +1,246 @@
+{
+  "info": {
+    "id": "solana-id-03",
+    "title": "Solana ID",
+    "subtitle": "Solana's Digital Identity Layer",
+    "logoUrl": "https://imgcdn.stablediffusionweb.com/2024/4/19/5acb9020-70dd-42c5-afca-3fe165e87d2c.jpg",
+    "thumbnailUrl": "",
+    "origin": "The Trenches 🪖",
+    "sector": "Digital Identity",
+    "chain": {
+      "name": "Solana",
+      "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
+    },
+    "totalTokensForSale": 13125000,
+    "curator": {
+      "avatarUrl": "https://cdn.sanity.io/images/bor5n0ip/production/7afa9288154ca24e2e34e72d01ba1138f58f5f70-600x600.png?q=80&auto=format",
+      "fullName": "SwissBorg Alpha",
+      "position": "Sold-Out Early Deal",
+      "socials": [
+        {
+          "url": "https://swissborg.com/alpha/solana-id",
+          "iconType": "WEB",
+          "label": "Web"
+        },
+        {
+          "url": "https://x.com/swissborg",
+          "iconType": "X_TWITTER",
+          "label": "X (ex-Twitter)"
+        }
+      ]
+    },
+    "projectLinks": [
+      {
+        "url": "https://www.solana.id/",
+        "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
+        "iconType": "WEB",
+        "label": ""
+      },
+      {
+        "url": "https://x.com/solanaidentity",
+        "iconType": "X_TWITTER",
+        "label": ""
+      }
+    ],
+
+    "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
+
+    "launchedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+    "launchedTokenLpDistribution": 0,
+    "launchedTokenCap": 0,
+
+    "raisedTokenMintAddress": "BNi33DZbWNj8N86eQj7jFKtUZzMSUCCSEV8oeEkuAgzL",
+    "raisedTokenMinCap": 0,
+    "raisedTokenMaxCap": 0,
+
+    "cliffDuration": 0,
+    "vestingDuration": 0,
+
+    "tge": {
+      "raiseTarget": 250000,
+      "projectCoin": {
+        "iconUrl": "/images/puffer-finance/project-coin-icon.svg",
+        "ticker": "SOLID"
+      },
+      "fixedTokenPriceInUSD": 0.02,
+      "tokenGenerationEventDate": "#",
+      "fdv": 2000000,
+      "liquidityPool": {
+        "name": "Raydium",
+        "iconUrl": "https://a-us.storyblok.com/f/1016390/2000x2000/1ea13be3ae/raydium-logo.webp",
+        "lbpType": "Concentrated Liquidity",
+        "lockingPeriod": "9-month vesting.",
+        "unlockDate": null,
+        "url": "#"
+      },
+      "tweetUrl": "#"
+    },
+    "__comment": "secondary image is the one behind: 'Solana ID Data Room Learn more about the project and see the deal details'",
+    "dataRoom": {
+      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
+      "url": "https://solana-id.notion.site/It-is-time-to-get-SOLID-c93e1ec428fe4272b2ce1c5c224a5560"
+    },
+    "timeline": [
+      {
+        "id": "REGISTRATION_OPENS",
+        "label": "Registration Opens",
+        "date": "2024-11-04"
+      },
+      {
+        "id": "SALE_OPENS",
+        "label": "Sale Opens",
+        "date": null
+      },
+      {
+        "id": "SALE_CLOSES",
+        "label": "Sale Closes",
+        "date": null
+      },
+      {
+        "id": "REWARD_DISTRIBUTION",
+        "label": "Reward Distribution",
+        "date": null
+      },
+      {
+        "id": "DISTRIBUTION_OVER",
+        "label": "Distribution Over",
+        "date": null
+      }
+    ],
+    "tiers": [
+      {
+        "id": "tier10",
+        "label": "Tier1: Priority Pass Holders",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "Priority Pass NFT",
+            "tokenAmount": "1",
+            "tokenMintAddress": "4jYzKMx7Qjq98rUk4FxzAEPMhrSdABztazqmGeKnhvg1"
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
+        }
+      },
+      {
+        "id": "tier30",
+        "label": "Tier3: Solidian Origins: Drip Collector’s Edition",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "DRiP Solana ID x Drip Collectible Holders",
+            "tokenAmount": "1",
+            "tokenMintAddress": "BD5EpsrZmPGK8DMMhu1DYAzKXEp5nMrTEyhSsWrjWKP1"
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
+        }
+      },
+      {
+        "id": "tier40",
+        "label": "Tier4: SOLID Community Partners",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "SMB Gen2",
+            "tokenAmount": "1",
+            "tokenMintAddress": "SMBtHCCC6RYRutFEPb4gZqeBLUZbMNhRKaMKZZLHi7W"
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
+        }
+      },
+      {
+        "id": "tier41",
+        "label": "",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "SMB Gen3",
+            "tokenAmount": "1",
+            "tokenMintAddress": "8Rt3Ayqth4DAiPnW9MDFi63TiQJHmohfTWLMQFHi4KZH"
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
+        }
+      },
+      {
+        "id": "tier42",
+        "label": "",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "Sensei Panda",
+            "tokenAmount": "1",
+            "tokenMintAddress": "GMoemLuVAksjvGph8dmujuqijWsodt7nJsvwoMph3uzj"
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
+        }
+      },
+      {
+        "id": "tier43",
+        "label": "",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "FlashTrade Beast",
+            "tokenAmount": "1",
+            "tokenMintAddress": "H4EQ8pcE7PQSQGG1WYW4hAA1nizU6ULYipHZcYk9b64u"
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
+        }
+      },
+      {
+        "id": "tier44",
+        "label": "",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "Herman",
+            "tokenAmount": "1",
+            "tokenMintAddress": "3UwNGy8JAaCp3xCV26EwBqfEvXo8cdHRjjMGCCc7qDGB"
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
+        }
+      }
+    ],
+    "finalSnapshotTimestamp": null
+  },
+  "saleData": {
+    "availableTokens": 12403,
+    "saleSucceeded": true,
+    "totalAmountRaised": 800402.5661,
+    "sellOutPercentage": 78,
+    "participantCount": 578,
+    "averageInvestedAmount": 1200.34
+  },
+  "rewards": {
+    "distributionType": "linear",
+    "description": "linearly paid-out through 12 months",
+    "payoutInterval": "monthly"
+  }
+}

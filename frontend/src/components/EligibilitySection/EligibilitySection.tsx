@@ -101,7 +101,7 @@ const QuestComponent = ({ quest }: QuestComponentProps) => {
   const typeData = ((): {
     label: string
     description: string
-    ctaButton: ReactNode
+    ctaButton?: ReactNode
   } => {
     if (type === "ACCEPT_TERMS_OF_USE")
       return {
@@ -129,7 +129,8 @@ const QuestComponent = ({ quest }: QuestComponentProps) => {
           name: quest.tokenName,
         }),
         description: "",
-        ctaButton: <HoldTokenBtn tokenName={quest.tokenName} />,
+        // TODO @productionPush
+        // ctaButton: <HoldTokenBtn tokenName={quest.tokenName} />,
       }
     else throw new Error("Unknown type")
   })()
