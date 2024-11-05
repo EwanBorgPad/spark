@@ -75,7 +75,7 @@ const WhitelistingContent = () => {
             <span className="font-geist-mono">
               ${formatCurrencyAmount(tgeData.raiseTarget, false, 0)}
             </span>
-            <span>in BORG</span>
+            {/* <span>in BORG</span> */}
           </div>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
