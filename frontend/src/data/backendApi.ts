@@ -10,6 +10,7 @@ import {
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
+// const API_BASE_URL = "http://localhost:8788/api"
 const GET_ELIGIBILITY_STATUS_API = API_BASE_URL + "/eligibilitystatus"
 const POST_ACCEPT_TERMS_OF_USE_API = API_BASE_URL + "/acceptterms"
 const POST_INVESTMENT_INTENT_API = API_BASE_URL + "/investmentintent"
@@ -46,8 +47,15 @@ const getInvestmentIntentSummary = async ({  projectId, }: GetInvestmentIntentSu
 
   return json
 }
-export type TransactionRequest = {
-  transaction: string
+export type PostUserDepositRequest = {
+  transaction: string,
+  amount: number,
+  walletAddress: string,
+  projectId: string
+}
+export type GetUserDepositRequest = {
+  walletAddress: string,
+  projectId: string
 }
 type AcceptTermsOfUseArgs = AcceptTermsRequest
 const postAcceptTermsOfUse = async (args: AcceptTermsOfUseArgs) => {
@@ -192,14 +200,20 @@ const uploadFileToBucket = async ({
   })
 }
 
-const userDeposit = async ({
-  payload
-}: UserDepositArgs): Promise<any> => {
+const postUserDeposit = async ({
+  amount, projectId, transaction, walletAddress
+}: PostUserDepositRequest): Promise<any> => {
   const url = new URL(USER_DEPOSIT_URL, window.location.href)
-  const tx = JSON.stringify(payload)
+  const requestObject = {
+    amount,
+    projectId,
+    transaction,
+    walletAddress
+  }
+  const request = JSON.stringify(requestObject)
   const response = await fetch(url, {
     method: "POST",
-    body: tx,
+    body: request,
     headers: {
       "Content-Type": "application/json",
     }
@@ -209,8 +223,25 @@ const userDeposit = async ({
   return json
 }
 
+const getUserDeposit = async ({
+  projectId, walletAddress
+}: GetUserDepositRequest): Promise<any> => {
+  const url = new URL(USER_DEPOSIT_URL, window.location.href)
+  url.searchParams.set("walletAddress", walletAddress)
+  url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  const json = await response.json()
+  return json
+}
+
 export const backendApi = {
-  userDeposit,
+  postUserDeposit,
+  getUserDeposit,
   getProject,
   getProjects,
   getExchange,

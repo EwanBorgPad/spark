@@ -138,7 +138,14 @@ export const rewardsSchema = z.object({
   payoutInterval: z.enum(["monthly"]),
 })
 export const userDepositSchema = z.object({
-  transaction: z.string()
+  transaction: z.string(),
+  amount: z.number(),
+  walletAddress: z.string(),
+  projectId: z.string()
+})
+export const getUserDepositSchema = userDepositSchema.omit({
+  transaction: true,
+  amount: true
 })
 export const projectSchema = z.object({
   info: infoSchema,

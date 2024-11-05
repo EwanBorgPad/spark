@@ -12,7 +12,7 @@ import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
 import { RefObject } from "react"
 import { toast } from "react-toastify"
-import { backendApi } from "@/data/backendApi"
+import { backendApi, PostUserDepositRequest } from "@/data/backendApi"
 import { useMutation } from "@tanstack/react-query"
 import { getTransactionToSend } from "@/utils/solanaFunctions"
 import { useQuery } from "@tanstack/react-query"
@@ -38,16 +38,14 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const {
     mutate: userDepositFunction,
   } = useMutation({
-    mutationFn: async (transaction: string) => {
-      backendApi.userDeposit({
-        payload: {
-          transaction
-        }
-      })
+    mutationFn: async (payload: PostUserDepositRequest) => {
+      backendApi.postUserDeposit(payload)
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       console.log("Successful user deposit!")
       toast(`Deposited successfully!`)
+      // refetching User deposited amount after successful deposit
+      await refetchDeposit()
     },
   })
   const { t } = useTranslation()
@@ -65,6 +63,14 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
   })
+  const { data: depositData, refetch: refetchDeposit } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getUserDeposit({ walletAddress: address, projectId })
+    },
+    queryKey: ["getUserDeposit", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
   const isUserEligible = data?.isEligible
 
   const {
@@ -79,18 +85,27 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     // TODO: all validations and verifications
     /*
       List of checks that needs to be implemented provided by Yann on slack:
-      Check the user eligible -> isEligible needs to be true (Check if the user is not from list of countries and he meets terms of service) (NOT DONE)
+      Check the user eligible -> isEligible needs to be true (Check if the user is not from list of countries and he meets terms of service) (DONE)
       Check the amount the user deposit is in a defined range [min deposit amount, max deposit amount] -> I will hardcode this range for now (0-2000 tokens) (DONE)
-      Check current deposited amount + user deposit amount < max cap -> need DB integration and tracking users deposits into the LBP for this (NOT DONE)
+      Check current deposited amount + user deposit amount < max cap -> need DB integration and tracking users deposits into the LBP for this (DONE)
       Check the user have enough funds in his wallet to perform the deposit -> Implemented in createSplTokenTransaction function (DONE)
       Check that we are within the time window of the fund collection phase -> Frontend already validates this by having phases and limits user by UI (DONE)
     */
     try {
+      if (!isUserEligible) {
+        toast("You are not eligible to make a deposit!")
+        throw new Error("User not eligible")
+      }
       const tokenAmount = parseInt(data.borgInputValue)
-      //
+      // Hardcoded limit cap range from 0 to 2000, TODO: get limit cap input from Daniel 
       if (tokenAmount < 0 || tokenAmount > 2000) {
         toast("Limit range for tokens is from 0 to 2000, please change input value")
         throw new Error("User deposit range error!")
+      }
+      // Hardcoded limit cap for now on 10k TODO: get limit cap from project
+      if (depositData.depositedAmount + tokenAmount >= 10000) {
+        toast("You have reached the maximum token deposit cap, transaction will not continue")
+        throw new Error("User deposit maximum cap for LBP reached")
       }
       if (walletState === 'CONNECTED') {
         if (walletProvider === 'PHANTOM') {
@@ -101,7 +116,12 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
             throw new Error("Wallet not signed in!")
           }
           const transaction = await getTransactionToSend(tokenAmount, wallet)
-          userDepositFunction(transaction)
+          userDepositFunction({
+            amount: tokenAmount,
+            projectId: projectId ?? "",
+            transaction,
+            walletAddress: wallet.publicKey
+          })
           console.log("Submitted", data)
         }
         if (walletProvider === 'BACKPACK') {
@@ -112,8 +132,14 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
             throw new Error("Wallet not signed in!")
           }
           const transaction = await getTransactionToSend(tokenAmount, wallet)
-          userDepositFunction(transaction)
+          userDepositFunction({
+            amount: tokenAmount,
+            projectId: projectId ?? "",
+            transaction,
+            walletAddress: wallet.publicKey
+          })
           console.log("Submitted", data)
+          refetchDeposit()
         }
       } else {
         toast("Wallet session expired, sign in again!")

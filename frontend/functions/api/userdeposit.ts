@@ -1,8 +1,10 @@
 import { jsonResponse } from "./cfPagesFunctionsUtils"
-import { Connection, clusterApiUrl } from "@solana/web3.js"
+import { Connection } from "@solana/web3.js"
 import { userDepositSchema } from "../../shared/models"
 import { signatureSubscribe } from "../../src/utils/solanaFunctions"
 import { COMMITMENT_LEVEL } from "../../shared/constants"
+import { Buffer } from "buffer"
+import { DepositService } from "../services/depositService"
 
 type ENV = {
   DB: D1Database
@@ -17,6 +19,7 @@ type ENV = {
  */
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const { SOLANA_RPC_URL, CLUSTER_NAME } = ctx.env
+  const db = ctx.env.DB
   try {
     const connection = new Connection(SOLANA_RPC_URL,{
       confirmTransactionInitialTimeout: 10000,
@@ -35,9 +38,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     if (error) {
       return jsonResponse({message: "Bad request"}, 400)
     }
-    const serializedTransaction = data.transaction
+    const { amount, projectId, transaction, walletAddress } = data
     console.log("Sending transaction...")
-    const txId = await connection.sendRawTransaction(Buffer.from(serializedTransaction, 'base64'), {
+    const txId = await connection.sendRawTransaction(Buffer.from(transaction, 'base64'), {
       preflightCommitment: COMMITMENT_LEVEL,
       skipPreflight: false
     })
@@ -47,7 +50,45 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     console.log(`Signature status finished: ${status}.`)
     const explorerLink = `https://explorer.solana.com/tx/${txId}?cluster=${CLUSTER_NAME}`
     console.log(explorerLink)
+    if (status === 'confirmed') {
+      await DepositService.updateUserDepositAmount({
+        db,
+        amount,
+        projectId,
+        walletAddress
+      }).then(() => {
+        console.log("Updated deposited amount successfuly")
+      })
+    }
     return jsonResponse({ message: "User deposited successfully!", transactionLink: explorerLink}, 200)
+  } catch (e) {
+    console.error(e)
+    return jsonResponse({ message: "Something went wrong..." }, 500)
+  }
+}
+
+/**
+ * Get request handler - gets the amount user has deposited to the projects LBP
+ * @param ctx 
+ * @returns amount the user has deposited to the LBP
+ */
+export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
+  const db = ctx.env.DB
+  try {
+    //// validate request
+    const { searchParams } = new URL(ctx.request.url)
+    const projectId = searchParams.get("projectId")
+    const walletAddress = searchParams.get("walletAddress")
+    if (!projectId) return jsonResponse({ message: 'projectId is missing!' }, 400)
+    if (!walletAddress) return jsonResponse({ message: 'walletAddress is missing!' }, 400)
+
+    const depositedAmount = await DepositService.getUsersDepositedAmount({
+        db,
+        projectId,
+        walletAddress
+    })
+
+    return jsonResponse({ depositedAmount: depositedAmount.amount_deposited }, 200)
   } catch (e) {
     console.error(e)
     return jsonResponse({ message: "Something went wrong..." }, 500)

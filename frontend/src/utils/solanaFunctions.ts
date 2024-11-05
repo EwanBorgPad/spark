@@ -111,7 +111,7 @@ function createTransferInstruction(
         throw new Error('Recipient does not have a token account for this mint.')
     }
     // Check users funds to see if he can make the transaction
-    const userBalance = await getSplTokenBalance({address: wallet.publicKey.toBase58(), tokenAddress: mintAddress.toBase58()})  // TODO: replace this with the token mint we will be using
+    const userBalance = await getSplTokenBalance({rpcUrl: SOLANA_PUBLIC_RPC_URL, address: wallet.publicKey.toBase58(), tokenAddress: mintAddress.toBase58()})  // TODO: replace this with the token mint we will be using
     if (userBalance) {
       const convertedUserBalanced = parseFloat(userBalance.amount) * Math.pow(0.1, 6)
       if (convertedUserBalanced < amount) {

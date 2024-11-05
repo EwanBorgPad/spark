@@ -31,5 +31,6 @@ CREATE TABLE whitelist (
     address TEXT NOT NULL,
     project_id TEXT NOT NULL,
     tier_id TEXT NOT NULL,
+    amount_deposited REAL DEFAULT 0,
     PRIMARY KEY (address, project_id)
 );
