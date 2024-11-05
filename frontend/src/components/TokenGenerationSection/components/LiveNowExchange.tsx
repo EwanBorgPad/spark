@@ -75,8 +75,8 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   })
   const isUserEligible = data?.isEligible
   // Get users max token limit cap
-  const holdTokenCompliance = data?.compliances.find(compliance => compliance.type === 'HOLD_TOKEN')
-  const userCap = holdTokenCompliance?.tokenAmount
+  const userMaxCap = data?.eligibilityTier?.benefits.maxInvestment
+  const userMinCap = data?.eligibilityTier?.benefits.minInvestment
 
   const {
     handleSubmit,
@@ -101,10 +101,11 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
         throw new Error("User not eligible")
       }
       const tokenAmount = parseFloat(data.borgInputValue)
-      if (!userCap) throw new Error("User limit cap is not defined!")
+      if (!userMaxCap) throw new Error("User max limit cap is not defined!")
+      if (!userMinCap) throw new Error("User min limit cap is not defined!")
       // Check the amount the user deposit is in a defined range [min deposit amount, max deposit amount]
-      if (tokenAmount < minTokenLimit || tokenAmount > parseFloat(userCap)) {
-        toast(`Limit range for tokens for your tier is from ${minTokenLimit} to ${userCap}. Please change your investment token value`)
+      if (tokenAmount < parseFloat(userMinCap) || tokenAmount > parseFloat(userMaxCap)) {
+        toast(`Limit range for tokens for your tier is from ${userMinCap} to ${userMaxCap}. Please change your investment token value`)
         throw new Error("User deposit range error!")
       }
       // Check current deposited amount + user deposit amount < max cap
