@@ -34,6 +34,8 @@ export const EligibilitySection = () => {
 
   const complianceQuests = sortByCompletionStatus(eligibilityStatus.compliances)
 
+  const eligibilityTierId = eligibilityStatus.eligibilityTier?.id ?? null
+
   return (
     <section className="flex w-full max-w-[432px] flex-col gap-4 px-4">
       <section id="tiersSection">
@@ -60,7 +62,7 @@ export const EligibilitySection = () => {
                 <div className="flex flex-col gap-2 rounded-2xl">
                   {/* singular tier */}
                   {tierQuests.map((quest) => (
-                    <QuestComponent key={quest.type} quest={quest} />
+                    <QuestComponent key={quest.type} quest={quest} autoCheck={tier.id === eligibilityTierId} />
                   ))}
                 </div>
               </div>
@@ -91,11 +93,13 @@ export const EligibilitySection = () => {
 
 type QuestComponentProps = {
   quest: QuestWithCompletion
+  autoCheck?: boolean
 }
-const QuestComponent = ({ quest }: QuestComponentProps) => {
+const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
   const { t } = useTranslation()
 
-  const { type, isCompleted } = quest
+  const { type } = quest
+  const isCompleted = autoCheck ?? quest.isCompleted
 
   const typeData = ((): {
     label: string
