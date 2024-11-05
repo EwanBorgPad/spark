@@ -127,8 +127,8 @@
         }
       },
       {
-        "id": "tier3",
-        "label": "Solidian Origins: Drip Collector’s Edition",
+        "id": "tier30",
+        "label": "Tier3: Solidian Origins: Drip Collector’s Edition",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -144,33 +144,77 @@
         }
       },
       {
-        "id": "tier4",
-        "label": "SOLID Community Partners",
+        "id": "tier40",
+        "label": "Tier4: SOLID Community Partners",
         "quests": [
           {
             "type": "HOLD_TOKEN",
             "tokenName": "SMB Gen2",
             "tokenAmount": "1",
             "tokenMintAddress": "SMBtHCCC6RYRutFEPb4gZqeBLUZbMNhRKaMKZZLHi7W"
-          },
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
+        }
+      },
+      {
+        "id": "tier41",
+        "label": "",
+        "quests": [
           {
             "type": "HOLD_TOKEN",
             "tokenName": "SMB Gen3",
             "tokenAmount": "1",
             "tokenMintAddress": "8Rt3Ayqth4DAiPnW9MDFi63TiQJHmohfTWLMQFHi4KZH"
-          },
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
+        }
+      },
+      {
+        "id": "tier42",
+        "label": "",
+        "quests": [
           {
             "type": "HOLD_TOKEN",
             "tokenName": "Sensei Panda",
             "tokenAmount": "1",
             "tokenMintAddress": "GMoemLuVAksjvGph8dmujuqijWsodt7nJsvwoMph3uzj"
-          },
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
+        }
+      },
+      {
+        "id": "tier43",
+        "label": "",
+        "quests": [
           {
             "type": "HOLD_TOKEN",
             "tokenName": "FlashTrade Beast",
             "tokenAmount": "1",
             "tokenMintAddress": "H4EQ8pcE7PQSQGG1WYW4hAA1nizU6ULYipHZcYk9b64u"
-          },
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
+        }
+      },
+      {
+        "id": "tier44",
+        "label": "",
+        "quests": [
           {
             "type": "HOLD_TOKEN",
             "tokenName": "Herman",
