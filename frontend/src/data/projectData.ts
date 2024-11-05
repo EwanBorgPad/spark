@@ -63,7 +63,8 @@ export const dummyData: ProjectModel = {
         label: "",
       },
     ],
-    totalTokensForSale: 2000,
+    totalTokensForSale: 12500000,
+    totalTokensForRewardDistribution: 9375000,
 
     projectOwnerAddress: "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
 
@@ -82,9 +83,9 @@ export const dummyData: ProjectModel = {
       raiseTarget: 2000000,
       projectCoin: {
         iconUrl: "",
-        ticker: "LRC",
+        ticker: "SOLID",
       },
-      fixedTokenPriceInUSD: 1,
+      fixedTokenPriceInUSD: 0.02,
       tokenGenerationEventDate: "Q4 2024",
       fdv: 2301444,
       liquidityPool: {

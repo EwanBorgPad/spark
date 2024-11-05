@@ -100,6 +100,7 @@ export const infoSchema = z.object({
   vestingDuration: z.number().int(),
 
   totalTokensForSale: z.number({ coerce: true }).int(),
+  totalTokensForRewardDistribution: z.number({ coerce: true }).int(),
   tge: z.object({
     raiseTarget: z.number({ coerce: true }).int(),
     projectCoin: z.object({
