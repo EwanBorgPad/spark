@@ -12,7 +12,7 @@ const BasicTokenInfo = () => {
   const { t } = useTranslation()
   const {
     projectData: {
-      info: { timeline },
+      info: { timeline, tge },
     },
   } = useProjectDataContext()
   const { projectId } = useParams()
@@ -38,15 +38,18 @@ const BasicTokenInfo = () => {
     enabled: Boolean(projectId),
   })
 
-  const rewardDistributionStartDate = timeline.find(
-    (event) => event.id === "REWARD_DISTRIBUTION",
-  )?.date
+  // @SolanaID - we don't have specific date in timeline yet
+  // const rewardDistributionStartDate = timeline.find(
+  //   (event) => event.id === "REWARD_DISTRIBUTION",
+  // )?.date
 
   return (
     <section className="max-w-screen flex w-full flex-col gap-[25px] px-4 lg:max-w-[792px]">
       <div className="mt-[28px] flex w-full flex-wrap justify-between gap-6">
         <div className="flex flex-1 flex-col gap-2">
-          <span className="text-sm text-fg-tertiary">{t('total_investment_interest')}</span>
+          <span className="text-sm text-fg-tertiary">
+            {t("total_investment_interest")}
+          </span>
           <span className="font-geist-mono text-base text-fg-primary">
             {investmentSummaryData ? (
               formatCurrencyAmount(investmentSummaryData.sum)
@@ -58,8 +61,9 @@ const BasicTokenInfo = () => {
         <div className="flex flex-1 flex-col gap-2">
           <span className="text-sm text-fg-tertiary">TGE</span>
           <span className="text-nowrap font-geist-mono text-base text-fg-primary">
-            {rewardDistributionStartDate &&
-              formatDateAndMonth(rewardDistributionStartDate)}
+            {tge.tokenGenerationEventDate}
+            {/* @SolanaID - we don't have specific date in timeline yet */}
+            {/* {rewardDistributionStartDate && formatDateAndMonth(rewardDistributionStartDate)} */}
           </span>
         </div>
         <div className="flex flex-1 flex-col gap-2">

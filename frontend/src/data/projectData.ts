@@ -85,6 +85,7 @@ export const dummyData: ProjectModel = {
         ticker: "LRC",
       },
       fixedTokenPriceInUSD: 1,
+      tokenGenerationEventDate: "Q4 2024",
       liquidityPool: {
         name: "Raydium",
         iconUrl: "",
@@ -132,7 +133,7 @@ export const dummyData: ProjectModel = {
       },
     ],
     tiers: [],
-    finalSnapshotTimestamp: new Date('2024-10-10T00:00:00Z'),
+    finalSnapshotTimestamp: new Date("2024-10-10T00:00:00Z"),
   },
   saleData: {
     availableTokens: 1200,
