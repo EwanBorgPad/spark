@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import fallbackImg from "../../assets/fallback1.png"
 
@@ -53,6 +53,10 @@ const Img = ({
     setRenderFallback(true)
     setIsLoadingImg(false)
   }
+
+  useEffect(() => {
+    if (src) setRenderFallback(false)
+  }, [src])
 
   if (!src && !showFallback) return null
 
