@@ -47,7 +47,7 @@ const Img = ({
   isFetchingLink = false,
 }: Props) => {
   const [isLoadingImg, setIsLoadingImg] = useState(true)
-  const [renderFallback, setRenderFallback] = useState(src ? false : true)
+  const [renderFallback, setRenderFallback] = useState(false)
 
   const onError = () => {
     setRenderFallback(true)
