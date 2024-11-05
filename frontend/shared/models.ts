@@ -142,7 +142,10 @@ export const rewardsSchema = z.object({
   payoutInterval: z.enum(["monthly"]),
 })
 
+const SolanaClusterSchema = z.enum(['mainnet', 'devnet'])
+
 export const projectSchema = z.object({
+  cluster: SolanaClusterSchema.optional(),
   info: infoSchema,
   saleData: z
     .object({
