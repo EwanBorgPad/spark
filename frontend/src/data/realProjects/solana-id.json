@@ -12,7 +12,7 @@
       "name": "Solana",
       "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
     },
-    "totalTokensForSale": 13125000,
+    "totalTokensForSale": 12500000,
     "curator": {
       "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
       "fullName": "SwissBorg",
@@ -70,16 +70,16 @@
         "name": "Raydium",
         "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
         "lbpType": "Concentrated Liquidity",
-        "lockingPeriod": "9-month vesting.",
+        "lockingPeriod": "6-month.",
         "unlockDate": null,
         "url": "#"
       },
       "tweetUrl": "#"
     },
-    "__comment": "secondary image is the one behind: 'Solana ID Data Room Learn more about the project and see the deal details'",
+    "__comment": "secondary image is the one behind: 'Solana ID Data Room Learn more about the project.'",
     "dataRoom": {
       "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
-      "url": "https://solana-id.notion.site/It-is-time-to-get-SOLID-c93e1ec428fe4272b2ce1c5c224a5560"
+      "url": "http://solid.solana.id"
     },
     "timeline": [
       {
@@ -241,7 +241,7 @@
   },
   "rewards": {
     "distributionType": "linear",
-    "description": "linearly paid-out over 9 months",
+    "description": "linearly paid-out over 6 months",
     "payoutInterval": "monthly"
   }
 }
