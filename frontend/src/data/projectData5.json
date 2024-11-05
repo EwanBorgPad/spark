@@ -77,9 +77,9 @@
         "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/felicia-ai/project-coin-icon-363631647",
         "ticker": "LRC"
       },
-      "fixedCoinPriceInBorg": 0.05111,
-      "whitelistParticipants": 332,
+      "fixedTokenPriceInUSD": 0.05111,
       "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
+      "fdv": 3319401313,
       "liquidityPool": {
         "name": "Raydium",
         "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/liquidity-pool-icon-738904576",
@@ -181,7 +181,6 @@
       }
     ]
   },
-  "whitelistParticipants": 211,
   "saleData": {
     "availableTokens": 12403,
     "saleSucceeded": true,

@@ -103,6 +103,8 @@ export const TierWithCompletionSchema = TierSchema.extend({
 export type TierWithCompletion = z.infer<typeof TierWithCompletionSchema>
 
 export const EligibilityStatusSchema = z.object({
+  // TODO @twitterAcc
+  isTwitterAccountConnected: z.boolean(),
   isEligible: z.boolean(),
   /**
    * The Tier the User is eligible for, or null if the User is not eligible for any.

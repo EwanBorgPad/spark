@@ -90,7 +90,11 @@ const Project = () => {
           <div className="w-full rounded-lg bg-gradient-to-r from-brand-primary/50 to-brand-secondary/15 p-[1px]">
             <div className="flex h-full w-full flex-col items-start justify-between gap-4 rounded-[7px] bg-gradient-to-br from-brand-dimmed-1 via-brand-dimmed-2 via-50% to-brand-dimmed-2 px-4 py-3 lg:flex-row lg:items-center lg:bg-gradient-to-r">
               <div className="flex items-center gap-4">
-                <Img src={projectData.info.curator.avatarUrl} size="10" />
+                <Img
+                  src={projectData.info.curator.avatarUrl}
+                  size="10"
+                  isFetchingLink={isLoading}
+                />
                 <div className="flex flex-col">
                   <span className="text-base">
                     {projectData.info.curator.fullName}

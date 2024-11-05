@@ -106,13 +106,15 @@ export const infoSchema = z.object({
       iconUrl: urlSchema(),
       ticker: z.string().min(1),
     }),
-    fixedCoinPriceInBorg: z.number({ coerce: true }),
+    fixedTokenPriceInUSD: z.number({ coerce: true }),
+    tokenGenerationEventDate: z.string().optional(),
+    fdv: z.number().int().optional(),
     liquidityPool: z.object({
       name: z.string().min(1),
       iconUrl: urlSchema(),
       lbpType: z.string().min(1),
       lockingPeriod: z.string().min(1),
-      unlockDate: dateSchema(),
+      unlockDate: dateSchema().nullable(),
       url: z.string().min(1),
     }),
     tweetUrl: z.string(),
@@ -124,11 +126,13 @@ export const infoSchema = z.object({
   timeline: z.array(
     z.object({
       id: timelineEventsSchema(),
-      date: dateSchema(),
+      date: dateSchema().nullable(),
       label: z.string().min(1),
     }),
   ),
-  tiers: z.array(TierSchema).min(1)
+  tiers: z.array(TierSchema).min(1),
+  // TODO @prodRush @finalSnapshotTimestamp make this mandatory to avoid null checks
+  finalSnapshotTimestamp: dateSchema().optional(),
 })
 
 // "distributionType" and "payoutInterval" enum alternative values to be discussed. They will require further logic on backend and programs.
@@ -138,9 +142,11 @@ export const rewardsSchema = z.object({
   payoutInterval: z.enum(["monthly"]),
 })
 
+const SolanaClusterSchema = z.enum(['mainnet', 'devnet'])
+
 export const projectSchema = z.object({
+  cluster: SolanaClusterSchema.optional(),
   info: infoSchema,
-  whitelistParticipants: z.number().optional(),
   saleData: z
     .object({
       availableTokens: z.number({ coerce: true }).optional(),

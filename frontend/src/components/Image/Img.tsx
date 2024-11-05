@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import fallbackImg from "../../assets/fallback1.png"
 
@@ -47,12 +47,16 @@ const Img = ({
   isFetchingLink = false,
 }: Props) => {
   const [isLoadingImg, setIsLoadingImg] = useState(true)
-  const [renderFallback, setRenderFallback] = useState(src ? false : true)
+  const [renderFallback, setRenderFallback] = useState(false)
 
   const onError = () => {
     setRenderFallback(true)
     setIsLoadingImg(false)
   }
+
+  useEffect(() => {
+    if (src) setRenderFallback(false)
+  }, [src])
 
   if (!src && !showFallback) return null
 
@@ -75,7 +79,7 @@ const Img = ({
         onLoad={() => setIsLoadingImg(false)}
         onError={onError}
         className={twMerge(
-          "h-full w-full object-cover",
+          "h-full w-full scale-[102%] object-cover",
           !renderImage ? "hidden" : "",
           avatarSize[size],
           imgClassName,

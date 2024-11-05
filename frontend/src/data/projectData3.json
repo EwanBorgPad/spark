@@ -76,9 +76,9 @@
         "iconUrl": "/images/madagascar-ski-resort/project-coin-icon.svg",
         "ticker": "LRC"
       },
-      "fixedCoinPriceInBorg": 1,
-      "whitelistParticipants": 1698,
+      "fixedTokenPriceInUSD": 1,
       "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
+      "fdv": 19401444,
       "liquidityPool": {
         "name": "Raydium",
         "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/liquidity-pool-icon-738904576",
@@ -178,9 +178,9 @@
           "maxInvestment": "999999"
         }
       }
-    ]
+    ],
+    "finalSnapshotTimestamp": "2024-10-10T00:00:00Z"
   },
-  "whitelistParticipants": 768,
   "saleData": {
     "availableTokens": 12403,
     "saleSucceeded": true,

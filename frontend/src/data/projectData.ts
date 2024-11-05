@@ -14,7 +14,8 @@ export const dummyData: ProjectModel = {
     title: "Puffer Finance",
     subtitle: "Anti-Slashing Liquid Staking",
     logoUrl: "/images/puffer-finance/avatar.png",
-    thumbnailUrl: "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/westeros-validator-group/project-thumbnail-824297648",
+    thumbnailUrl:
+      "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/westeros-validator-group/project-thumbnail-824297648",
     chain: { name: "Zora", iconUrl: "/images/puffer-finance/chain-icon.png" },
     origin: "🇮🇹 Italy",
     sector: "Healthcare",
@@ -64,18 +65,18 @@ export const dummyData: ProjectModel = {
     ],
     totalTokensForSale: 2000,
 
-    "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
+    projectOwnerAddress: "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
 
-    "launchedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-    "launchedTokenLpDistribution": 50,
-    "launchedTokenCap": 100000,
+    launchedTokenMintAddress: "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+    launchedTokenLpDistribution: 50,
+    launchedTokenCap: 100000,
 
-    "raisedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-    "raisedTokenMinCap": 1000,
-    "raisedTokenMaxCap": 1000000,
+    raisedTokenMintAddress: "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+    raisedTokenMinCap: 1000,
+    raisedTokenMaxCap: 1000000,
 
-    "cliffDuration": 1728998916,
-    "vestingDuration": 1731677316,
+    cliffDuration: 1728998916,
+    vestingDuration: 1731677316,
 
     tge: {
       raiseTarget: 2000000,
@@ -83,7 +84,9 @@ export const dummyData: ProjectModel = {
         iconUrl: "",
         ticker: "LRC",
       },
-      fixedCoinPriceInBorg: 1,
+      fixedTokenPriceInUSD: 1,
+      tokenGenerationEventDate: "Q4 2024",
+      fdv: 2301444,
       liquidityPool: {
         name: "Raydium",
         iconUrl: "",
@@ -107,29 +110,32 @@ export const dummyData: ProjectModel = {
       },
       {
         label: i18n.t("timeline.sale_opens"),
-        date: addDays(currentMoment, -10),
+        date: null,
+        // date: addDays(currentMoment, -2),
         id: "SALE_OPENS",
       },
       {
         label: i18n.t("timeline.sale_closes"),
-        date: addDays(currentMoment, -5),
+        date: null,
+        // date: addDays(currentMoment, -5),
         id: "SALE_CLOSES",
       },
       {
         label: i18n.t("timeline.reward_distribution"),
-        date: addDays(currentMoment, -2),
+        date: null,
+        // date: addDays(currentMoment, -2),
         id: "REWARD_DISTRIBUTION",
       },
       {
         label: i18n.t("timeline.distribution_over"),
-        date: addDays(currentMoment, 24),
+        date: null,
+        // date: addDays(currentMoment, 24),
         id: "DISTRIBUTION_OVER",
       },
     ],
     tiers: [],
+    finalSnapshotTimestamp: new Date("2024-10-10T00:00:00Z"),
   },
-  // TODO @whitelistParticipants remove this and pull from the backend dynamically
-  whitelistParticipants: 769,
   saleData: {
     availableTokens: 1200,
     saleSucceeded: true,

@@ -28,8 +28,10 @@ const YourContribution = ({
   const { liquidityPool, projectCoin } = projectData.info.tge
 
   const hasDistributionStarted =
-    eventData.id === "REWARD_DISTRIBUTION" &&
-    isBefore(liquidityPool.unlockDate, new Date())
+    eventData.id === "REWARD_DISTRIBUTION"
+    && liquidityPool.unlockDate
+    && isBefore(liquidityPool.unlockDate, new Date())
+
   const alreadyClaimedPercent = +(
     (mainPosition.borg.claimed / mainPosition.borg.total) *
     100
@@ -91,7 +93,7 @@ const YourContribution = ({
           ) : (
             <span className="text-xs">
               {t("sale_over.unlocks_on")}{" "}
-              {formatDateForDisplay(liquidityPool.unlockDate)}
+              {liquidityPool.unlockDate ? formatDateForDisplay(liquidityPool.unlockDate) : 'TBC'}
             </span>
           )}
 

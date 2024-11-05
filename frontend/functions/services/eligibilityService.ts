@@ -2,8 +2,8 @@ import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 import { and, eq } from "drizzle-orm"
 
 import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } from "../../shared/eligibilityModel"
-import { getSplTokenBalance } from "../../shared/SolanaWeb3"
-import { projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
+import { followerTable, projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
+import { getAssetOwner } from "../../shared/solana/getAssetOwner"
 
 /**
  * List of mandatory compliances.
@@ -50,6 +50,9 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     json: {}
   }
 
+  const userTwitterId = user.json.twitter?.twitterId ?? null
+  const isTwitterAccountConnected = Boolean(userTwitterId)
+
   const project = await db
     .select()
     .from(projectTable)
@@ -81,36 +84,57 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
 
     for (const quest of tier.quests) {
       if (quest.type === 'FOLLOW_ON_TWITTER') {
-        const twitterHandle = quest.twitterHandle
-        const isFollowingProjectOnTwitter = Boolean(user.json.twitter?.follows?.[twitterHandle])
+        // TODO @twitterAcc
+        const isFollower = isTwitterAccountConnected
+          ? Boolean(
+            await db
+              .select()
+              .from(followerTable)
+              .where(eq(followerTable.id, userTwitterId))
+              .get()
+          )
+          : false
+
+        // const twitterHandle = quest.twitterHandle
+        // const isFollowingProjectOnTwitter = Boolean(user.json.twitter?.follows?.[twitterHandle])
+
         tierQuestsWithCompletion.push({
           ...quest,
-          isCompleted: isFollowingProjectOnTwitter,
+          isCompleted: isFollower,
         })
       } else if (quest.type === 'HOLD_TOKEN') {
-        const balance = await getSplTokenBalance({
-          address,
+        // TODO @productionPush commented this out for now as it does not work for NFTs for some reason, and currently we have only NFTs
+        // const balance = await getSplTokenBalance({
+        //   address,
+        //   tokenAddress: quest.tokenMintAddress,
+        //   rpcUrl,
+        // })
+        // if (balance) {
+        //   const balanceAmount = Number(balance.amount) / (10 ** balance.decimals)
+        //   const neededAmount = Number(quest.tokenAmount)
+        //
+        //   const holdsEnoughToken = balanceAmount >= neededAmount
+        //   tierQuestsWithCompletion.push({
+        //     ...quest,
+        //     holds: balanceAmount,
+        //     needs: neededAmount,
+        //     isCompleted: holdsEnoughToken,
+        //   })
+        // } else {
+        //   tierQuestsWithCompletion.push({
+        //     ...quest,
+        //     isCompleted: false,
+        //   })
+        // }
+        const owner = await getAssetOwner({
           tokenAddress: quest.tokenMintAddress,
           rpcUrl,
         })
-
-        if (balance) {
-          const balanceAmount = Number(balance.amount) / (10 ** balance.decimals)
-          const neededAmount = Number(quest.tokenAmount)
-
-          const holdsEnoughToken = balanceAmount >= neededAmount
-          tierQuestsWithCompletion.push({
-            ...quest,
-            holds: balanceAmount,
-            needs: neededAmount,
-            isCompleted: holdsEnoughToken,
-          })
-        } else {
-          tierQuestsWithCompletion.push({
-            ...quest,
-            isCompleted: false,
-          })
-        }
+        const isOwner = address === owner
+        tierQuestsWithCompletion.push({
+          ...quest,
+          isCompleted: isOwner,
+        })
       } else {
         throw new Error(`Unknown tier quest type (${quest.type})!`)
       }
@@ -153,10 +177,15 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
   const isEligible = Boolean(eligibilityTier)
 
   return {
-    isEligible,
-    eligibilityTier,
+    address,
+
+    isTwitterAccountConnected,
+
     whitelistTierId,
     whitelistedTier,
+
+    isEligible,
+    eligibilityTier,
     compliances: compliancesWithCompletion,
     tiers: tiersWithCompletion
   }
