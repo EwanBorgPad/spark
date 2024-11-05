@@ -20,7 +20,7 @@ export const FinalSnapshotTaken = () => {
             {t("whitelisting.snapshot_taken")}
         </span>{" "}
         <span className="text-nowrap text-sm text-fg-primary">
-            {timestamp ? formatDateForSnapshot(timestamp) : 'TBD'}
+            {(timestamp && timestamp.getTime()) ? formatDateForSnapshot(timestamp) : 'TBD'}
         </span>
       </div>
     </section>
