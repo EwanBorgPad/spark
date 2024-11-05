@@ -1,6 +1,6 @@
 {
   "info": {
-    "id": "milan-crypto-test",
+    "id": "milan-crypto-test-02",
     "title": "Milan Crypto",
     "subtitle": "Anti-Slashing Liquid Staking Crypto Manic Automated Market",
     "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar.png",
@@ -123,6 +123,23 @@
       }
     ],
     "tiers": [
+      {
+        "id": "tier0",
+        "label": "NFT Tier",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "MILAN NFT",
+            "tokenAmount": "1",
+            "tokenMintAddress": "7cXD2qNZU59x2SVr6ZBUK6T6XSDp4uXzuVqKhj6CyLri"
+          }
+        ],
+        "benefits": {
+          "startDate": "2024-10-23",
+          "minInvestment": "10",
+          "maxInvestment": "999"
+        }
+      },
       {
         "id": "tier1",
         "label": "Tier1",
