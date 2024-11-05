@@ -45,7 +45,7 @@ export async function getSplTokenBalance({
     await getTokenAccountsByOwnerResponse.json()
 
   if (!getTokenAccountsByOwner.result?.value.length) {
-    console.log({ tokenAccounts: getTokenAccountsByOwner.result })
+    // console.log({ tokenAccounts: getTokenAccountsByOwner.result })
     return null
   }
 

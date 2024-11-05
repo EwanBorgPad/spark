@@ -1,4 +1,5 @@
 {
+  "cluster": "mainnet",
   "info": {
     "id": "solana-id",
     "title": "Solana ID",
