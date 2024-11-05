@@ -107,7 +107,7 @@ export const EligibilityStatusSchema = z.object({
   /**
    * The Tier the User is eligible for, or null if the User is not eligible for any.
    */
-  eligibilityTier: TierSchema.omit({ quests: true, benefits: true }).nullable(),
+  eligibilityTier: TierSchema.nullable(),
   compliances: QuestWithCompletionSchema.array(),
   tiers: TierWithCompletionSchema.omit( { benefits: true }).array(),
 })

@@ -38,7 +38,7 @@ type GetEligibilityStatusArgs = {
  * @param projectId
  * @param rpcUrl
  */
-const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligibilityStatusArgs): EligibilityStatus => {
+const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligibilityStatusArgs): Promise<EligibilityStatus => {
   let user = await db
     .select()
     .from(userTable)
@@ -46,7 +46,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     .get()
 
   if (!user) user = {
-    wallet_address: address,
+    address,
     json: {}
   }
 
@@ -76,6 +76,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
   }
 
   const tiersWithCompletion: TierWithCompletion[] = []
+  if (!project) throw new Error("Project not found!")
   for (const tier of project.json.info.tiers) {
     const tierQuestsWithCompletion: QuestWithCompletion[] = []
 
@@ -101,8 +102,6 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
           const holdsEnoughToken = balanceAmount >= neededAmount
           tierQuestsWithCompletion.push({
             ...quest,
-            holds: balanceAmount,
-            needs: neededAmount,
             isCompleted: holdsEnoughToken,
           })
         } else {

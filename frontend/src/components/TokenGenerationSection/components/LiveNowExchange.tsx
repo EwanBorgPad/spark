@@ -74,6 +74,9 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     enabled: Boolean(address) && Boolean(projectId),
   })
   const isUserEligible = data?.isEligible
+  // Get users max token limit cap
+  const holdTokenCompliance = data?.compliances.find(compliance => compliance.type === 'HOLD_TOKEN')
+  const userCap = holdTokenCompliance?.tokenAmount
 
   const {
     handleSubmit,
@@ -87,7 +90,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     /*
       List of checks that needs to be implemented provided by Yann on slack:
       Check the user eligible -> isEligible needs to be true (Check if the user is not from list of countries and he meets terms of service) (DONE)
-      Check the amount the user deposit is in a defined range [min deposit amount, max deposit amount] -> I will hardcode this range for now (0-2000 tokens) (DONE)
+      Check the amount the user deposit is in a defined range [min deposit amount, max deposit amount] -> (DONE)
       Check current deposited amount + user deposit amount < max cap -> need DB integration and tracking users deposits into the LBP. (DONE)
       Check the user have enough funds in his wallet to perform the deposit -> Implemented in createSplTokenTransaction function (DONE)
       Check that we are within the time window of the fund collection phase -> Frontend already validates this by having phases and limits user by UI (DONE)
@@ -97,15 +100,16 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
         toast("You are not eligible to make a deposit!")
         throw new Error("User not eligible")
       }
-      const tokenAmount = parseInt(data.borgInputValue)
+      const tokenAmount = parseFloat(data.borgInputValue)
+      if (!userCap) throw new Error("User limit cap is not defined!")
       // Check the amount the user deposit is in a defined range [min deposit amount, max deposit amount]
-      if (tokenAmount < minTokenLimit || tokenAmount > maxTokenLimit) {
-        toast(`Limit range for tokens is from ${minTokenLimit} to ${maxTokenLimit}, please change input value`)
+      if (tokenAmount < minTokenLimit || tokenAmount > parseFloat(userCap)) {
+        toast(`Limit range for tokens for your tier is from ${minTokenLimit} to ${userCap}. Please change your investment token value`)
         throw new Error("User deposit range error!")
       }
       // Check current deposited amount + user deposit amount < max cap
       if (depositData.depositedAmount + tokenAmount >= maxTokenLimit) {
-        toast(`Transaction will not go throgh because you reached deposit token limit cap which is ${maxTokenLimit}`)
+        toast(`Transaction will not go throgh because you reached deposit token limit cap for LBP which is ${maxTokenLimit}`)
         throw new Error("User deposit maximum cap for LBP reached")
       }
       if (walletState === 'CONNECTED') {
