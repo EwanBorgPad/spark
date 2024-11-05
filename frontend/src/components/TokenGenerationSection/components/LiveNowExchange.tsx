@@ -17,6 +17,7 @@ import { useMutation } from "@tanstack/react-query"
 import { getTransactionToSend } from "@/utils/solanaFunctions"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
+import { useProjectDataContext } from "@/hooks/useProjectData"
 
 type FormInputs = {
   borgInputValue: string
@@ -34,6 +35,9 @@ type Props = {
 
 const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
 
+  const { projectData } = useProjectDataContext()
+  const maxTokenLimit = projectData.info.raisedTokenMaxCap
+  const minTokenLimit = projectData.info.raisedTokenMinCap
   // backend API for depositing tokens to LBP
   const {
     mutate: userDepositFunction,
@@ -84,7 +88,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
       List of checks that needs to be implemented provided by Yann on slack:
       Check the user eligible -> isEligible needs to be true (Check if the user is not from list of countries and he meets terms of service) (DONE)
       Check the amount the user deposit is in a defined range [min deposit amount, max deposit amount] -> I will hardcode this range for now (0-2000 tokens) (DONE)
-      Check current deposited amount + user deposit amount < max cap -> need DB integration and tracking users deposits into the LBP for this (DONE)
+      Check current deposited amount + user deposit amount < max cap -> need DB integration and tracking users deposits into the LBP. (DONE)
       Check the user have enough funds in his wallet to perform the deposit -> Implemented in createSplTokenTransaction function (DONE)
       Check that we are within the time window of the fund collection phase -> Frontend already validates this by having phases and limits user by UI (DONE)
     */
@@ -94,14 +98,14 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
         throw new Error("User not eligible")
       }
       const tokenAmount = parseInt(data.borgInputValue)
-      // Hardcoded limit cap range from 0 to 2000, TODO: get limit cap input from Daniel 
-      if (tokenAmount < 0 || tokenAmount > 2000) {
-        toast("Limit range for tokens is from 0 to 2000, please change input value")
+      // Check the amount the user deposit is in a defined range [min deposit amount, max deposit amount]
+      if (tokenAmount < minTokenLimit || tokenAmount > maxTokenLimit) {
+        toast(`Limit range for tokens is from ${minTokenLimit} to ${maxTokenLimit}, please change input value`)
         throw new Error("User deposit range error!")
       }
-      // Hardcoded limit cap for now on 10k TODO: get limit cap from project
-      if (depositData.depositedAmount + tokenAmount >= 10000) {
-        toast("You have reached the maximum token deposit cap, transaction will not continue")
+      // Check current deposited amount + user deposit amount < max cap
+      if (depositData.depositedAmount + tokenAmount >= maxTokenLimit) {
+        toast(`Transaction will not go throgh because you reached deposit token limit cap which is ${maxTokenLimit}`)
         throw new Error("User deposit maximum cap for LBP reached")
       }
       if (walletState === 'CONNECTED') {
