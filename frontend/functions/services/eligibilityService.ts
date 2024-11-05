@@ -2,8 +2,8 @@ import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 import { and, eq } from "drizzle-orm"
 
 import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } from "../../shared/eligibilityModel"
-import { getSplTokenBalance } from "../../shared/SolanaWeb3"
 import { followerTable, projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
+import { getAssetOwner } from "../../shared/solana/getAssetOwner"
 
 /**
  * List of mandatory compliances.
@@ -103,29 +103,38 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
           isCompleted: isFollower,
         })
       } else if (quest.type === 'HOLD_TOKEN') {
-        const balance = await getSplTokenBalance({
-          address,
+        // TODO @productionPush commented this out for now as it does not work for NFTs for some reason, and currently we have only NFTs
+        // const balance = await getSplTokenBalance({
+        //   address,
+        //   tokenAddress: quest.tokenMintAddress,
+        //   rpcUrl,
+        // })
+        // if (balance) {
+        //   const balanceAmount = Number(balance.amount) / (10 ** balance.decimals)
+        //   const neededAmount = Number(quest.tokenAmount)
+        //
+        //   const holdsEnoughToken = balanceAmount >= neededAmount
+        //   tierQuestsWithCompletion.push({
+        //     ...quest,
+        //     holds: balanceAmount,
+        //     needs: neededAmount,
+        //     isCompleted: holdsEnoughToken,
+        //   })
+        // } else {
+        //   tierQuestsWithCompletion.push({
+        //     ...quest,
+        //     isCompleted: false,
+        //   })
+        // }
+        const owner = await getAssetOwner({
           tokenAddress: quest.tokenMintAddress,
           rpcUrl,
         })
-
-        if (balance) {
-          const balanceAmount = Number(balance.amount) / (10 ** balance.decimals)
-          const neededAmount = Number(quest.tokenAmount)
-
-          const holdsEnoughToken = balanceAmount >= neededAmount
-          tierQuestsWithCompletion.push({
-            ...quest,
-            holds: balanceAmount,
-            needs: neededAmount,
-            isCompleted: holdsEnoughToken,
-          })
-        } else {
-          tierQuestsWithCompletion.push({
-            ...quest,
-            isCompleted: false,
-          })
-        }
+        const isOwner = address === owner
+        tierQuestsWithCompletion.push({
+          ...quest,
+          isCompleted: isOwner,
+        })
       } else {
         throw new Error(`Unknown tier quest type (${quest.type})!`)
       }
@@ -168,6 +177,8 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
   const isEligible = Boolean(eligibilityTier)
 
   return {
+    address,
+
     isTwitterAccountConnected,
 
     whitelistTierId,
