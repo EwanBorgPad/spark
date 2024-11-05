@@ -4,17 +4,13 @@ import { useTranslation } from "react-i18next"
 import { formatCurrencyAmount } from "@/utils/format"
 import { backendApi } from "@/data/backendApi.ts"
 import SimpleLoader from "@/components/Loaders/SimpleLoader"
-import { formatDateAndMonth } from "@/utils/date-helpers"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import { useParams } from "react-router-dom"
 
 const BasicTokenInfo = () => {
   const { t } = useTranslation()
-  const {
-    projectData: {
-      info: { timeline, tge },
-    },
-  } = useProjectDataContext()
+  const { projectData } = useProjectDataContext()
+  const tge = projectData?.info.tge
   const { projectId } = useParams()
 
   // TODO @hardcoded switch to projectCoin instead of hardcoded BORG
@@ -61,7 +57,7 @@ const BasicTokenInfo = () => {
         <div className="flex flex-1 flex-col gap-2">
           <span className="text-sm text-fg-tertiary">TGE</span>
           <span className="text-nowrap font-geist-mono text-base text-fg-primary">
-            {tge.tokenGenerationEventDate}
+            {tge?.tokenGenerationEventDate}
             {/* @SolanaID - we don't have specific date in timeline yet */}
             {/* {rewardDistributionStartDate && formatDateAndMonth(rewardDistributionStartDate)} */}
           </span>

@@ -107,7 +107,7 @@ export const infoSchema = z.object({
       ticker: z.string().min(1),
     }),
     fixedTokenPriceInUSD: z.number({ coerce: true }),
-    tokenGenerationEventDate: z.string(),
+    tokenGenerationEventDate: z.string().optional(),
     liquidityPool: z.object({
       name: z.string().min(1),
       iconUrl: urlSchema(),
