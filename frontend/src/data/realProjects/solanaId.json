@@ -13,9 +13,9 @@
     },
     "totalTokensForSale": 13125000,
     "curator": {
-      "avatarUrl": "https://cdn.sanity.io/images/bor5n0ip/production/7afa9288154ca24e2e34e72d01ba1138f58f5f70-600x600.png?q=80&auto=format",
-      "fullName": "SwissBorg Alpha",
-      "position": "Sold-Out Early Deal",
+      "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
+      "fullName": "SwissBorg",
+      "position": "Sold-Out Alpha Deal",
       "socials": [
         {
           "url": "https://swissborg.com/alpha/solana-id",
@@ -63,10 +63,11 @@
         "ticker": "SOLID"
       },
       "fixedTokenPriceInUSD": 0.02,
-      "tokenGenerationEventDate": "#",
+      "tokenGenerationEventDate": "Q4 2024",
+      "fdv": 2000000,
       "liquidityPool": {
         "name": "Raydium",
-        "iconUrl": "https://a-us.storyblok.com/f/1016390/2000x2000/1ea13be3ae/raydium-logo.webp",
+        "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
         "lbpType": "Concentrated Liquidity",
         "lockingPeriod": "9-month vesting.",
         "unlockDate": null,
@@ -83,7 +84,7 @@
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": "2024-11-04"
+        "date": "2024-11-05"
       },
       {
         "id": "SALE_OPENS",
@@ -195,7 +196,7 @@
   },
   "rewards": {
     "distributionType": "linear",
-    "description": "linearly paid-out through 12 months",
+    "description": "linearly paid-out over 9 months",
     "payoutInterval": "monthly"
   }
 }
