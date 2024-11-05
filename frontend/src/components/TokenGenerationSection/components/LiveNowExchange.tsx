@@ -63,7 +63,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
   const tokenPriceInBORG = !borgPriceInUsd
     ? null
-    : borgPriceInUsd / tokenPriceInUSD
+    : tokenPriceInUSD / borgPriceInUsd 
 
   const {
     handleSubmit,

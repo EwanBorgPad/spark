@@ -34,7 +34,7 @@ const WhitelistingContent = () => {
   const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
   const tokenPriceInBORG = !borgPriceInUsd
     ? null
-    : borgPriceInUsd / tokenPriceInUSD
+    : tokenPriceInUSD / borgPriceInUsd
 
   const { projectId } = useParams()
   const { data: investmentSummaryData } = useQuery({
