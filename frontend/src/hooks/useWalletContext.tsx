@@ -25,8 +25,8 @@ type Context = {
   address: string
   walletState: WalletState
   walletProvider: SupportedWallet | ""
-  signInWithPhantom: () => void
-  signInWithBackpack: () => void
+  signInWithPhantom: () => Promise<void>
+  signInWithBackpack: () => Promise<void>
   signOut: () => void
   truncatedAddress: string
   signMessage: (message: string) => Promise<Uint8Array>

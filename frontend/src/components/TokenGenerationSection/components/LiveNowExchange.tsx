@@ -50,10 +50,8 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   })
   const { t } = useTranslation()
 
-  const { walletState, walletProvider } = useWalletContext()
+  const { walletState, walletProvider, address, signInWithBackpack, signInWithPhantom } = useWalletContext()
   const { balance } = useBalanceContext()
-
-  const { address } = useWalletContext()
   const { projectId } = useParams()
   const { data } = useQuery({
     queryFn: () => {
@@ -82,7 +80,6 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   } = useForm<FormInputs>()
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
-    // TODO: all validations and verifications
     /*
       List of checks that needs to be implemented provided by Yann on slack:
       Check the user eligible -> isEligible needs to be true (Check if the user is not from list of countries and he meets terms of service) (DONE)
@@ -113,32 +110,30 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
           const wallet = window?.solana
           if (!wallet.isConnected) {
             toast("Wallet session timed out, please sign in again")
-            throw new Error("Wallet not signed in!")
+            await signInWithPhantom()
           }
           const transaction = await getTransactionToSend(tokenAmount, wallet)
           userDepositFunction({
             amount: tokenAmount,
             projectId: projectId ?? "",
             transaction,
-            walletAddress: wallet.publicKey
+            walletAddress: address
           })
-          console.log("Submitted", data)
         }
         if (walletProvider === 'BACKPACK') {
           // @ts-ignore-next-line
           const wallet = window?.backpack
           if (!wallet.isConnected) {
             toast("Wallet session timed out, please sign in again")
-            throw new Error("Wallet not signed in!")
+            await signInWithBackpack()
           }
           const transaction = await getTransactionToSend(tokenAmount, wallet)
           userDepositFunction({
             amount: tokenAmount,
             projectId: projectId ?? "",
             transaction,
-            walletAddress: wallet.publicKey
+            walletAddress: address
           })
-          console.log("Submitted", data)
           refetchDeposit()
         }
       } else {
