@@ -16,7 +16,7 @@ const WhitelistingContent = () => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()
-  const { projectData } = useProjectDataContext()
+  const { projectData, isLoading } = useProjectDataContext()
   const tgeData = projectData.info.tge
 
   const baseCurrency = "swissborg"
@@ -82,7 +82,11 @@ const WhitelistingContent = () => {
 
         <div className="flex w-full items-center justify-between py-2">
           <div className="flex items-center gap-2">
-            <Img src={tgeData.projectCoin.iconUrl} size="6" />
+            <Img
+              src={tgeData.projectCoin.iconUrl}
+              size="6"
+              isFetchingLink={isLoading}
+            />
             <span>{tgeData.projectCoin.ticker}</span>
             <span>{t("tge.price")}</span>
           </div>
@@ -124,7 +128,11 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.defi_protocol")}</span>
           <div className="flex items-center gap-2">
-            <Img src={tgeData.liquidityPool.iconUrl} size="5" />
+            <Img
+              src={tgeData.liquidityPool.iconUrl}
+              size="5"
+              isFetchingLink={isLoading}
+            />
             <span>{tgeData.liquidityPool.name}</span>
           </div>
         </div>
