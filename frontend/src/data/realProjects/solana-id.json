@@ -60,12 +60,12 @@
     "tge": {
       "raiseTarget": 250000,
       "projectCoin": {
-        "iconUrl": "/images/puffer-finance/project-coin-icon.svg",
+        "iconUrl": "https://pbs.twimg.com/profile_images/1790569613694222336/ohYGOED1_400x400.jpg",
         "ticker": "SOLID"
       },
       "fixedTokenPriceInUSD": 0.02,
       "tokenGenerationEventDate": "Q4 2024",
-      "fdv": 2000000,
+      "fdv": 20000000,
       "liquidityPool": {
         "name": "Raydium",
         "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
