@@ -5,6 +5,7 @@ type Props = {
   isLoading?: boolean
   as?: "span" | "h1" | "h2" | "h3" | "p"
   className?: string
+  fallback?: string
 }
 
 const skeleton = {
@@ -32,10 +33,12 @@ const TextSkeletonLoader = ({ className }: { className?: string }) => {
   )
 }
 
-const Text = ({ text, isLoading, as = "span", className }: Props) => {
+const Text = ({ text, isLoading, as = "span", className, fallback }: Props) => {
   if (isLoading) return <TextSkeletonLoader className={skeleton[as].class} />
   const Component = as
-  return <Component className={className}>{text || "TBD"}</Component>
+  return (
+    <Component className={className}>{text || fallback || "TBD"}</Component>
+  )
 }
 
 export default Text

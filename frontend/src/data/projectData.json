@@ -79,6 +79,7 @@
       },
       "fixedTokenPriceInUSD": 1,
       "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
+      "fdv": 2301444,
       "liquidityPool": {
         "name": "Raydium",
         "iconUrl": "/images/puffer-finance/liquidity-pool-icon.png",

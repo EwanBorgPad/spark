@@ -86,6 +86,7 @@ export const dummyData: ProjectModel = {
       },
       fixedTokenPriceInUSD: 1,
       tokenGenerationEventDate: "Q4 2024",
+      fdv: 2301444,
       liquidityPool: {
         name: "Raydium",
         iconUrl: "",

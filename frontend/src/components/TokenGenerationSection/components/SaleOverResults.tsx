@@ -9,7 +9,8 @@ import Text from "@/components/Text"
 const SaleOverResults = () => {
   const { t } = useTranslation()
   const {
-    projectData: { saleData },
+    projectData: { saleData, info },
+    isLoading,
   } = useProjectDataContext()
 
   const baseCurrency = "swissborg"
@@ -78,9 +79,10 @@ const SaleOverResults = () => {
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
+        {/* @SolanaID - fdv is fixed from the beginning. Check if this is in every project */}
         <Text
-          text={formatCurrencyAmount(exchangeData?.fullyDilutedValuation)}
-          isLoading={isExchangeLoading}
+          text={formatCurrencyAmount(info.tge.fdv)}
+          isLoading={isLoading}
           className="font-geist-mono text-base leading-7 text-fg-primary"
         />
       </div>

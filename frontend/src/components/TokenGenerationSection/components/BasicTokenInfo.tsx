@@ -1,38 +1,29 @@
-import { useQuery } from "@tanstack/react-query"
+import { useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { useQuery } from "@tanstack/react-query"
 
-import { formatCurrencyAmount } from "@/utils/format"
 import { backendApi } from "@/data/backendApi.ts"
+import { formatCurrencyAmount } from "@/utils/format"
 import SimpleLoader from "@/components/Loaders/SimpleLoader"
 import { useProjectDataContext } from "@/hooks/useProjectData"
-import { useParams } from "react-router-dom"
+import Text from "@/components/Text"
 
 const BasicTokenInfo = () => {
   const { t } = useTranslation()
-  const { projectData } = useProjectDataContext()
+  const { projectData, isLoading } = useProjectDataContext()
   const tge = projectData?.info.tge
   const { projectId } = useParams()
 
-  // TODO @hardcoded switch to projectCoin instead of hardcoded BORG
-  const baseCurrency = "swissborg"
-  const targetCurrency = "usd"
-  const { data: exchangeData } = useQuery({
-    queryFn: () =>
-      backendApi.getExchange({
-        baseCurrency,
-        targetCurrency,
-      }),
-    queryKey: ["getExchange", baseCurrency, targetCurrency],
-  })
-
-  const { data: investmentSummaryData } = useQuery({
-    queryFn: () =>
-      backendApi.getInvestmentIntentSummary({
-        projectId: projectId!,
-      }),
-    queryKey: ["getInvestmentIntentSummary", projectId],
-    enabled: Boolean(projectId),
-  })
+  const { data: investmentSummaryData, isLoading: isLoadingSummary } = useQuery(
+    {
+      queryFn: () =>
+        backendApi.getInvestmentIntentSummary({
+          projectId: projectId!,
+        }),
+      queryKey: ["getInvestmentIntentSummary", projectId],
+      enabled: Boolean(projectId),
+    },
+  )
 
   // @SolanaID - we don't have specific date in timeline yet
   // const rewardDistributionStartDate = timeline.find(
@@ -47,11 +38,12 @@ const BasicTokenInfo = () => {
             {t("total_investment_interest")}
           </span>
           <span className="font-geist-mono text-base text-fg-primary">
-            {investmentSummaryData ? (
-              formatCurrencyAmount(investmentSummaryData.sum)
-            ) : (
-              <SimpleLoader />
-            )}
+            <Text
+              as="span"
+              className="font-geist-mono text-base text-fg-primary"
+              isLoading={isLoadingSummary}
+              text={formatCurrencyAmount(investmentSummaryData?.sum)}
+            />
           </span>
         </div>
         <div className="flex flex-1 flex-col gap-2">
@@ -65,11 +57,7 @@ const BasicTokenInfo = () => {
         <div className="flex flex-1 flex-col gap-2">
           <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
           <span className="font-geist-mono text-base text-fg-primary">
-            {exchangeData?.fullyDilutedValuation ? (
-              formatCurrencyAmount(exchangeData?.fullyDilutedValuation)
-            ) : (
-              <SimpleLoader />
-            )}
+            {!isLoading ? formatCurrencyAmount(tge.fdv) : <SimpleLoader />}
           </span>
         </div>
       </div>
