@@ -110,7 +110,7 @@
     ],
     "tiers": [
       {
-        "id": "tier1",
+        "id": "tier10",
         "label": "Priority Pass Holders",
         "quests": [
           {
