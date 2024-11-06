@@ -29,6 +29,7 @@ export const ConnectButton = ({
     truncatedAddress,
     signInWithPhantom,
     signInWithBackpack,
+    signInWithSolflare,
     signOut,
   } = useWalletContext()
 
@@ -70,6 +71,7 @@ export const ConnectButton = ({
       />
       {showModal && (
         <SimpleModal
+          className="w-1/2"
           showCloseBtn={!showNoWallet}
           onClose={() => {
             setShowModal(false)
@@ -110,6 +112,11 @@ export const ConnectButton = ({
                       icon={"SvgBackpack"}
                       label={"Backpack"}
                       onClick={signInWithBackpack}
+                    />
+                    <WalletProvider
+                      icon={"SvgSolflare"}
+                      label={"Solflare"}
+                      onClick={signInWithSolflare}
                     />
                   </div>
                   <div className="mb-8 mt-4 lg:mt-5">

@@ -16,7 +16,7 @@ export const WalletDropdown = ({ className }: Props) => {
   const toggleDropdown = () => setIsOpen((isOpen) => !isOpen)
 
   const icon: AvailableIcons =
-    walletProvider === "PHANTOM" ? "SvgPhantom" : "SvgBackpack"
+    walletProvider === "PHANTOM" ? "SvgPhantom" : walletProvider === 'BACKPACK' ? 'SvgBackpack' : 'SvgSolflare'
 
   const dropdownButtonRef = useRef<HTMLDivElement | null>(null)
   const dropdownMenuRef = useRef<HTMLDivElement | null>(null)
