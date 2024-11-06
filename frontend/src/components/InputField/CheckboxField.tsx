@@ -30,7 +30,7 @@ const CheckboxField = ({
         onChange={onChangeHandler}
         type="checkbox"
         className={twMerge(
-          "dark:accent-dark-accent accent-light-dark h-5 w-5 rounded-md",
+          "dark:accent-dark-accent accent-light-dark h-5 w-5 shrink-0 cursor-pointer rounded-md p-2",
           inputClassName,
         )}
       />

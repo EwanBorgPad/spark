@@ -65,56 +65,55 @@ const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentIntentModalP
   })
 
   return (
-    <SimpleModal showCloseBtn={true} onClose={onClose}>
+    <SimpleModal
+      showCloseBtn={true}
+      onClose={onClose}
+      title={t("investment.intent.quest.heading")}
+    >
       <div className="flex w-full max-w-[460px] flex-col items-center justify-center max-sm:h-full">
-        {/* Heading */}
-        <div className="w-full p-4 text-center">
-          <h1 className="text-body-xl-semibold text-white">
-            {t('investment.intent.quest.heading')}
-          </h1>
-        </div>
         {/* Body */}
         <div
           className={twMerge(
-            "flex w-full grow flex-col justify-start gap-4 px-10 pb-8 pt-3",
+            "flex w-full grow flex-col justify-start gap-4 px-4 pb-8 pt-3 md:px-10",
           )}
         >
           <div>
             <p className="text-center text-base text-fg-tertiary">
-              {t('investment.intent.quest.description')}
+              {t("investment.intent.quest.description")}
             </p>
             <CurrencyInputField
               maxLength={12}
-              containerClassName='max-w-[999px]'
-              inputClassName='bg-emphasis text-white'
-              placeholder={t('investment.intent.quest.placeholder')}
+              containerClassName="max-w-[999px]"
+              inputClassName="bg-emphasis text-white"
+              placeholder={t("investment.intent.quest.placeholder")}
               value={amount ?? undefined}
               onChange={(e) => setAmount(Number(e) || 0)}
             />
           </div>
 
           {/* average investment intent container */}
-          <div className='flex flex-col items-center'>
+          <div className="flex flex-col items-center">
             <span className="text-sm text-fg-tertiary">
-              {t("average_commitment_from_users", investmentSummaryData)}</span>
+              {t("average_commitment_from_users", investmentSummaryData)}
+            </span>
           </div>
 
-          {
-            isSuccess
-              ? <div className="flex w-full justify-center">
-                <Badge.Confirmation
-                  isConfirmed={true}
-                  label={t('done')}
-                  classNames="w-fit bg-transparent border-none"
-                />
-              </div>
-              : <Button
-                disabled={!Boolean(amount) || isPending}
-                isLoading={isPending}
-                btnText={t("investment.intent.quest.modal.button")}
-                onClick={() => provideInvestmentIntent(address)}
+          {isSuccess ? (
+            <div className="flex w-full justify-center">
+              <Badge.Confirmation
+                isConfirmed={true}
+                label={t("done")}
+                classNames="w-fit bg-transparent border-none"
               />
-          }
+            </div>
+          ) : (
+            <Button
+              disabled={!amount || isPending}
+              isLoading={isPending}
+              btnText={t("investment.intent.quest.modal.button")}
+              onClick={() => provideInvestmentIntent(address)}
+            />
+          )}
         </div>
       </div>
     </SimpleModal>
