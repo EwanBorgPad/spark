@@ -71,7 +71,7 @@
         "name": "Raydium",
         "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
         "lbpType": "Concentrated Liquidity",
-        "lockingPeriod": "6-month.",
+        "lockingPeriod": "6 months",
         "unlockDate": null,
         "url": "#"
       },
@@ -129,11 +129,11 @@
       },
       {
         "id": "tier30",
-        "label": "Tier3: Solidian Origins: Drip Collector’s Edition",
+        "label": "Solidian Origins: Drip Collectors",
         "quests": [
           {
             "type": "HOLD_TOKEN",
-            "tokenName": "DRiP Solana ID x Drip Collectible Holders",
+            "tokenName": "Solana ID x Drip Collectible",
             "tokenAmount": "1",
             "tokenMintAddress": "BD5EpsrZmPGK8DMMhu1DYAzKXEp5nMrTEyhSsWrjWKP1"
           }
@@ -146,7 +146,7 @@
       },
       {
         "id": "tier40",
-        "label": "Tier4: SOLID Community Partners",
+        "label": "SOLID Community Partners",
         "quests": [
           {
             "type": "HOLD_TOKEN",

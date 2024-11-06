@@ -89,15 +89,20 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const requestJson = await ctx.request.json()
     const { error, data } = projectSchema.safeParse(requestJson)
 
+    const { searchParams } = new URL(ctx.request.url)
+    const overwrite = searchParams.get("overwrite") === 'true'
+
     // validate request
     if (error) {
       return jsonResponse({ message: "Invalid request!", error }, 400)
     }
 
     // check if exists
-    const existingProject = await ProjectService.findProjectById({ db, id: data.info.id })
-    if (existingProject) {
-      return jsonResponse({ message: "Project with provided id already exists!", }, 409)
+    if (!overwrite) {
+      const existingProject = await ProjectService.findProjectById({ db, id: data.info.id })
+      if (existingProject) {
+        return jsonResponse({ message: "Project with provided id already exists!", }, 409)
+      }
     }
 
     // if (!ctx.env.ADMIN_AUTHORITY_SECRET_KEY) throw new Error('ADMIN_AUTHORITY_SECRET_KEY missing!')
@@ -130,12 +135,23 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     // })
 
     // persist in db
-    await db
-      .prepare("INSERT INTO project (id, json) VALUES (?1, ?2)")
-      .bind(data.info.id, JSON.stringify(data))
-      .run()
+    if (overwrite) {
+      await db
+        .prepare("REPLACE INTO project (id, json) VALUES (?1, ?2)")
+        .bind(data.info.id, JSON.stringify(data))
+        .run()
+    } else {
+      await db
+        .prepare("INSERT INTO project (id, json) VALUES (?1, ?2)")
+        .bind(data.info.id, JSON.stringify(data))
+        .run()
+    }
 
-    return jsonResponse({ message: "Created!" }, 201)
+    const retval = {
+      message: overwrite ? 'Updated!' : 'Created!'
+    }
+
+    return jsonResponse(retval, 201)
   } catch (e) {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
