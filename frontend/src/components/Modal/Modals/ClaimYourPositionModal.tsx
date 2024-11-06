@@ -67,15 +67,14 @@ const ClaimYourPositionModal = ({
   }
 
   return (
-    <SimpleModal showCloseBtn={true} onClose={onClose} className="bg-secondary">
+    <SimpleModal
+      showCloseBtn={true}
+      onClose={onClose}
+      className="bg-secondary"
+      title={t("reward_distribution.claim_your_position")}
+    >
       <div className="flex w-full max-w-[460px] flex-col items-center justify-center max-sm:h-full">
         <>
-          {/* Heading */}
-          <div className="w-full p-4 text-center">
-            <h1 className="text-body-xl-semibold text-white">
-              {t("reward_distribution.claim_your_position")}
-            </h1>
-          </div>
           {/* Body */}
           <div
             className={twMerge(

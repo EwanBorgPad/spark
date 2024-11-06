@@ -10,7 +10,10 @@ import { PastOrders } from "../components/PastOrders"
 import { TgeWrapper } from "../components/Wrapper"
 import TopContributor from "../components/TopContributor"
 import { useRef } from "react"
-import { EligibilitySection } from "@/components/EligibilitySection/EligibilitySection.tsx"
+import {
+  EligibilityCompliancesSection,
+  EligibilityTiersSection,
+} from "@/components/EligibilitySection/EligibilitySection.tsx"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
@@ -40,11 +43,7 @@ const LiveNow = ({ eventData }: LiveNowProps) => {
     <div className="flex w-full flex-col items-center gap-[52px]">
       <BasicTokenInfo />
       <SaleProgress />
-      {!isUserEligible && (
-        <div className="flex w-full flex-col items-center" ref={eligibilitySectionRef}>
-          <EligibilitySection />
-        </div>
-      )}
+      {!isUserEligible && <EligibilityCompliancesSection className='w-full max-w-[432px]' />}
       <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
         <TgeWrapper label={t("tge.live_now")}>
           {eventData?.nextEventDate && (
@@ -62,6 +61,7 @@ const LiveNow = ({ eventData }: LiveNowProps) => {
           </>
         )}
       </div>
+      {!isUserEligible && <EligibilityTiersSection className='w-full max-w-[432px]' />}
     </div>
   )
 }
