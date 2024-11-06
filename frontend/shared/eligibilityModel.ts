@@ -44,6 +44,12 @@ const ProvideInvestmentIntentQuestSchema = BaseQuestSchema.extend({
   type: z.literal('PROVIDE_INVESTMENT_INTENT'),
 })
 /**
+ * Requires the User to be explicitly whitelisted for a project
+ */
+const WhitelistQuestSchema = BaseQuestSchema.extend({
+  type: z.literal('WHITELIST'),
+})
+/**
  * Quests that the User does in order to become eligible.
  * Quests names should be in imperative, like HOLD_TOKEN, FOLLOW_ON_X, not in passive like HOLDS, FOLLOWS.
  * Previously had DONT_RESIDE_IN_US, but that is now part of compliance, not quests anymore.
@@ -53,6 +59,7 @@ const QuestSchema = z.discriminatedUnion('type', [
   FollowOnTwitterQuestSchema,
   AcceptTermsOfUseQuestSchema,
   ProvideInvestmentIntentQuestSchema,
+  WhitelistQuestSchema,
 ])
 export type Quest = z.infer<typeof QuestSchema>
 /**
@@ -69,6 +76,7 @@ const QuestWithCompletionSchema = z.union([
   FollowOnTwitterQuestSchema.merge(CompletionSchema),
   AcceptTermsOfUseQuestSchema.merge(CompletionSchema),
   ProvideInvestmentIntentQuestSchema.merge(CompletionSchema),
+  WhitelistQuestSchema.merge(CompletionSchema),
 ])
 export type QuestWithCompletion = z.infer<typeof QuestWithCompletionSchema>
 export type QuestType = z.infer<typeof QuestSchema>['type']

@@ -228,6 +228,20 @@
           "minInvestment": "0",
           "maxInvestment": "0"
         }
+      },
+      {
+        "id": "tier45",
+        "label": "Solana SuperTeams Member",
+        "quests": [
+          {
+            "type": "WHITELIST"
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "0",
+          "maxInvestment": "0"
+        }
       }
     ],
     "finalSnapshotTimestamp": null

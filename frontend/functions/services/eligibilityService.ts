@@ -135,6 +135,12 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
           ...quest,
           isCompleted: isOwner,
         })
+      } else if (quest.type === 'WHITELIST') {
+        // only way to complete this is to be explicitly whitelisted
+        tierQuestsWithCompletion.push({
+          ...quest,
+          isCompleted: false,
+        })
       } else {
         throw new Error(`Unknown tier quest type (${quest.type})!`)
       }
