@@ -13,9 +13,61 @@ import { getSignInWithTwitterUrl } from "@/hooks/useTwitterContext.tsx"
 import { ExternalLink } from "@/components/Button/ExternalLink.tsx"
 import { useParams } from "react-router-dom"
 import ProvideInvestmentIntentModal from "@/components/Modal/Modals/ProvideInvestmentIntentModal.tsx"
-import { FinalSnapshotTaken } from "@/components/EligibilitySection/FinalSnapshotTaken.tsx"
 
-export const EligibilitySection = () => {
+export const EligibilityTiersSection = ({ className }: { className?: string }) => {
+  const { t } = useTranslation()
+  const { address } = useWalletContext()
+  const { projectId } = useParams()
+
+  const { data } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getEligibilityStatus({ address, projectId })
+    },
+    queryKey: ["getEligibilityStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
+
+  const eligibilityStatus = data
+  if (!eligibilityStatus) return
+
+  const eligibilityTierId = eligibilityStatus.eligibilityTier?.id ?? null
+
+  return <section id="tiersSection" className={className}>
+    <div
+      id="tiersHeading"
+      className="flex w-full items-center justify-between py-2"
+    >
+      <span>{t("tiers")}</span>
+      <Badge.Confirmation
+        label={eligibilityStatus.eligibilityTier?.label}
+        isConfirmed={eligibilityStatus.eligibilityTier !== null}
+      />
+    </div>
+    <div
+      id="tiersContainer"
+      className="rounded-lg border-[1px] border-bd-primary bg-secondary p-2"
+    >
+      {eligibilityStatus.tiers.map((tier) => {
+        const tierQuests = sortByCompletionStatus(tier.quests)
+        return (
+          // tier container
+          <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
+            <span>{tier.label}</span>
+            <div className="flex flex-col gap-2 rounded-2xl">
+              {/* singular tier */}
+              {tierQuests.map((quest) => (
+                <QuestComponent key={quest.type} quest={quest} autoCheck={tier.id === eligibilityTierId} />
+              ))}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  </section>
+}
+
+export const EligibilityCompliancesSection = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
   const { address } = useWalletContext()
   const { projectId } = useParams()
@@ -34,61 +86,22 @@ export const EligibilitySection = () => {
 
   const complianceQuests = sortByCompletionStatus(eligibilityStatus.compliances)
 
-  const eligibilityTierId = eligibilityStatus.eligibilityTier?.id ?? null
-
-  return (
-    <section className="flex w-full max-w-[432px] flex-col gap-4 px-4">
-      <section id="tiersSection">
-        <div
-          id="tiersHeading"
-          className="flex w-full items-center justify-between py-2"
-        >
-          <span>{t("tiers")}</span>
-          <Badge.Confirmation
-            label={eligibilityStatus.eligibilityTier?.label}
-            isConfirmed={eligibilityStatus.eligibilityTier !== null}
-          />
-        </div>
-        <div
-          id="tiersContainer"
-          className="rounded-lg border-[1px] border-bd-primary bg-secondary p-2"
-        >
-          {eligibilityStatus.tiers.map((tier) => {
-            const tierQuests = sortByCompletionStatus(tier.quests)
-            return (
-              // tier container
-              <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
-                <span>{tier.label}</span>
-                <div className="flex flex-col gap-2 rounded-2xl">
-                  {/* singular tier */}
-                  {tierQuests.map((quest) => (
-                    <QuestComponent key={quest.type} quest={quest} autoCheck={tier.id === eligibilityTierId} />
-                  ))}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </section>
-      <section id="complianceSection">
-        <div
-          id="complianceHeading"
-          className="flex w-full items-center justify-between py-2"
-        >
-          <span>{t("compliance")}</span>
-        </div>
-        <div
-          id="compliancesContainer"
-          className="flex flex-col gap-2 rounded-lg"
-        >
-          {complianceQuests.map((quest) => (
-            <QuestComponent key={quest.type} quest={quest} />
-          ))}
-        </div>
-      </section>
-      <FinalSnapshotTaken />
-    </section>
-  )
+  return <section id="complianceSection" className={className}>
+    <div
+      id="complianceHeading"
+      className="flex w-full items-center justify-between py-2"
+    >
+      <span>{t("legal")}</span>
+    </div>
+    <div
+      id="compliancesContainer"
+      className="flex flex-col gap-2 rounded-lg"
+    >
+      {complianceQuests.map((quest) => (
+        <QuestComponent key={quest.type} quest={quest} />
+      ))}
+    </div>
+  </section>
 }
 
 type QuestComponentProps = {
