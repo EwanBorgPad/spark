@@ -103,6 +103,7 @@
   "terms_of_service": "Terms of Service",
 
   "compliance": "Compliance",
+  "legal": "Legal",
   "tiers": "Tiers",
 
   "follow.NAME.on.twitter": "Follow {{ name }} on X",
