@@ -26,6 +26,14 @@ export const followerTable = sqliteTable('follower', {
   json: text({ mode: 'json' }).notNull()
 })
 
+export const nftIndexTable = sqliteTable('nft_index', {
+  nftAddress: text('nft_address').primaryKey(),
+  collectionAddress: text('collection_address'),
+  ownerAddress: text('owner_address'),
+  quotedAt: text('quoted_at'),
+  json: text({ mode: 'json' }).notNull()
+})
+
 // const db = drizzle()
 // db
 //   .select()
