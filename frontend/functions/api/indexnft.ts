@@ -51,14 +51,13 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const values = []
         let index = 1
         for (const asset of batch) {
-          placeholders.push(`($${index}, $${index + 1}, $${index + 2}, $${index + 3})`)
-          values.push(asset.address, asset.collectionAddress, asset.ownerAddress, JSON.stringify(asset.rawJson))
-          index += 4
+          placeholders.push(`($${index}, $${index + 1}, $${index + 2}, $${index + 3}, $${index + 4})`)
+          values.push(asset.address, asset.collectionAddress, asset.ownerAddress, (new Date()).toISOString(), JSON.stringify(asset.rawJson))
+          index += 5
         }
         const query = `
-          INSERT INTO nft_index (nft_address, collection_address, owner_address, json)
-          VALUES ${placeholders.join(', ')}
-          ON CONFLICT DO NOTHING;
+          REPLACE INTO nft_index (nft_address, collection_address, owner_address, quoted_at, json)
+          VALUES ${placeholders.join(', ')};
         `;
 
         await db.prepare(query).bind(...values).run()

@@ -37,6 +37,7 @@ CREATE TABLE nft_index (
     nft_address TEXT NOT NULL,
     collection_address TEXT NOT NULL,
     owner_address TEXT,
+    quoted_at TIMESTAMP NOT NULL,
     json JSONB NOT NULL DEFAULT '{}',
     PRIMARY KEY (nft_address)
 );
