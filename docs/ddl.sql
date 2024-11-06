@@ -40,4 +40,4 @@ CREATE TABLE nft_index (
     json JSONB NOT NULL DEFAULT '{}',
     PRIMARY KEY (nft_address)
 );
-CREATE INDEX ON nft_index(owner_address);
+CREATE INDEX nft_index_owner_address_index ON nft_index(owner_address);
