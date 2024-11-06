@@ -148,6 +148,13 @@ const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
         // TODO @productionPush
         // ctaButton: <HoldTokenBtn tokenName={quest.tokenName} />,
       }
+    if (type === "WHITELIST")
+      return {
+        label: "Be a Superteam Member",
+        description: "",
+        // TODO @productionPush
+        // ctaButton: <HoldTokenBtn tokenName={quest.tokenName} />,
+      }
     else throw new Error("Unknown type")
   })()
 
