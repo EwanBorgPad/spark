@@ -59,9 +59,9 @@ const Project = () => {
           </div>
         </div>
 
-        <div className="flex w-full flex-wrap gap-x-5 gap-y-3 text-sm lg:max-w-[760px]">
+        <div className="flex w-full flex-col gap-x-5 gap-y-3 text-sm md:flex-row lg:max-w-[760px]">
           <div className="flex gap-5">
-            <div className="flex items-center gap-2 border-r-[1px] border-r-fg-gray-line pr-5">
+            <div className="flex items-center gap-2 border-r-fg-gray-line pr-5 md:border-r-[1px]">
               <span className="text-fg-primary text-opacity-50">
                 {t("chain")}
               </span>
@@ -69,8 +69,8 @@ const Project = () => {
               <span>{projectData.info.chain.name}</span>
             </div>
           </div>
-          <div className="flex gap-5">
-            <div className="flex items-center gap-2 border-r-[1px] border-r-fg-gray-line pr-5">
+          <div className="flex flex-col gap-3 md:flex-row md:gap-5">
+            <div className="flex items-center gap-2 pr-5 md:border-r-[1px] md:border-r-fg-gray-line">
               <span className="text-fg-primary text-opacity-50">
                 {t("origin")}
               </span>
