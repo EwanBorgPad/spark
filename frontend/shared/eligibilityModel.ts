@@ -97,6 +97,7 @@ const BenefitsSchema = z.object({
 export const TierSchema = z.object({
   id: z.string(),
   label: z.string(),
+  description: z.string().default(''),
   quests: z.array(QuestSchema).min(1),
   benefits: BenefitsSchema,
 })

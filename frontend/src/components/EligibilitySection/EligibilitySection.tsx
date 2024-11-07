@@ -54,6 +54,7 @@ export const EligibilityTiersSection = ({ className }: { className?: string }) =
           // tier container
           <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
             <span>{tier.label}</span>
+            { tier.description && <span className='text-xs text-fg-secondary'>{tier.description}</span> }
             <div className="flex flex-col gap-2 rounded-2xl">
               {/* singular tier */}
               {tierQuests.map((quest) => (
