@@ -42,7 +42,7 @@ const BasicTokenInfo = () => {
               as="span"
               className="font-geist-mono text-base text-fg-primary"
               isLoading={isLoadingSummary}
-              text={formatCurrencyAmount(investmentSummaryData?.sum)}
+              text={formatCurrencyAmount(investmentSummaryData?.sum, true, 0)}
             />
           </span>
         </div>
@@ -57,7 +57,7 @@ const BasicTokenInfo = () => {
         <div className="flex flex-1 flex-col gap-2">
           <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
           <span className="font-geist-mono text-base text-fg-primary">
-            {!isLoading ? formatCurrencyAmount(tge.fdv) : <SimpleLoader />}
+            {!isLoading ? formatCurrencyAmount(tge.fdv, true, 0) : <SimpleLoader />}
           </span>
         </div>
       </div>
