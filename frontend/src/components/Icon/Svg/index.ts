@@ -39,3 +39,4 @@ export * from "./SvgHamburger"
 export * from "./SvgQuestionCloud"
 export * from "./SvgEmptyCircle"
 
+export * from "./SvgSolflare"

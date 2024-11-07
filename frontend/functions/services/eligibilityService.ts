@@ -2,7 +2,8 @@ import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 import { and, eq } from "drizzle-orm"
 
 import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } from "../../shared/eligibilityModel"
-import { followerTable, nftIndexTable, projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
+import { followerTable, projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
+import { isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
 
 /**
  * List of mandatory compliances.
@@ -77,6 +78,18 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     }
   }
 
+  const collections = project.json.info.tiers
+    .map(tier => tier.quests)
+    .flat()
+    .filter(quest => quest.type === 'HOLD_TOKEN')
+    .map(quest => quest.tokenMintAddress)
+
+  const collectionMap = await isHoldingNftFromCollections({
+    rpcUrl,
+    ownerAddress: address,
+    collections,
+  })
+
   const tiersWithCompletion: TierWithCompletion[] = []
   for (const tier of project.json.info.tiers) {
     const tierQuestsWithCompletion: QuestWithCompletion[] = []
@@ -102,45 +115,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
           isCompleted: isFollower,
         })
       } else if (quest.type === 'HOLD_TOKEN') {
-        // TODO @productionPush commented this out for now as it does not work for NFTs for some reason, and currently we have only NFTs
-        // const balance = await getSplTokenBalance({
-        //   address,
-        //   tokenAddress: quest.tokenMintAddress,
-        //   rpcUrl,
-        // })
-        // if (balance) {
-        //   const balanceAmount = Number(balance.amount) / (10 ** balance.decimals)
-        //   const neededAmount = Number(quest.tokenAmount)
-        //
-        //   const holdsEnoughToken = balanceAmount >= neededAmount
-        //   tierQuestsWithCompletion.push({
-        //     ...quest,
-        //     holds: balanceAmount,
-        //     needs: neededAmount,
-        //     isCompleted: holdsEnoughToken,
-        //   })
-        // } else {
-        //   tierQuestsWithCompletion.push({
-        //     ...quest,
-        //     isCompleted: false,
-        //   })
-        // }
-        const nft = await db
-          .select()
-          .from(nftIndexTable)
-          .where(
-            and(
-              eq(nftIndexTable.collectionAddress, quest.tokenMintAddress),
-              eq(nftIndexTable.ownerAddress, address)
-            )
-          )
-          .get()
-
-        // const owner = await getAssetOwner({
-        //   tokenAddress: quest.tokenMintAddress,
-        //   rpcUrl,
-        // })
-        const isOwner = Boolean(nft)
+        const isOwner = collectionMap[quest.tokenMintAddress]
         tierQuestsWithCompletion.push({
           ...quest,
           isCompleted: isOwner,
