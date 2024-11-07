@@ -32,7 +32,7 @@ const BasicTokenInfo = () => {
 
   return (
     <section className="max-w-screen flex w-full flex-col gap-[25px] px-4 lg:max-w-[792px]">
-      <div className="mt-[28px] flex w-full flex-wrap justify-between gap-6">
+      <div className="flex w-full flex-wrap justify-between gap-6">
         <div className="flex flex-1 flex-col gap-2">
           <span className="text-sm text-fg-tertiary">
             {t("total_investment_interest")}
