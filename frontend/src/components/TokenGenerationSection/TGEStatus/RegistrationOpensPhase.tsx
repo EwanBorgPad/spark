@@ -11,6 +11,7 @@ import {
   EligibilityTiersSection,
 } from "@/components/EligibilitySection/EligibilitySection.tsx"
 import React from "react"
+import DataRoom from "@/components/LaunchPool/DataRoom"
 
 type RegistrationOpensPhaseProps = {
   eventData: ExpandedTimelineEventType
@@ -25,10 +26,13 @@ const RegistrationOpensPhase = ({ eventData }: RegistrationOpensPhaseProps) => {
   return (
     <div className="flex w-full flex-col items-center gap-[52px] px-4">
       <BasicTokenInfo />
-      <EligibilityCompliancesSection className='w-full max-w-[432px]' />
+
+      <DataRoom />
+
+      <EligibilityCompliancesSection className="w-full max-w-[432px]" />
       {/* main section with borg/token math */}
       <div className="flex w-full max-w-[432px] flex-col gap-5">
-        <TgeWrapper label={t("tge.whitelisting")}>
+        <TgeWrapper label={t("tge.lp_terms")}>
           {eventData?.nextEventDate && (
             <>
               <CountDownTimer
@@ -40,7 +44,7 @@ const RegistrationOpensPhase = ({ eventData }: RegistrationOpensPhaseProps) => {
           <WhitelistingContent />
         </TgeWrapper>
       </div>
-      <EligibilityTiersSection className='w-full max-w-[432px]' />
+      <EligibilityTiersSection className="w-full max-w-[432px]" />
     </div>
   )
 }

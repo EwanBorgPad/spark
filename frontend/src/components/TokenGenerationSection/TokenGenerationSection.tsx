@@ -23,10 +23,6 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
     setCurrentTgeEvent(newTgeStatus)
   }, [expandedTimeline])
 
-  ///////////////////////////////////////////////////////////
-  // @TODO - Add API for checking user eligibility //////////
-  ///////////////////////////////////////////////////////////
-
   useEffect(() => {
     updateTgeStatus()
   }, [expandedTimeline, updateTgeStatus])
