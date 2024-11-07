@@ -2,8 +2,7 @@ import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 import { and, eq } from "drizzle-orm"
 
 import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } from "../../shared/eligibilityModel"
-import { followerTable, projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
-import { getAssetOwner } from "../../shared/solana/getAssetOwner"
+import { followerTable, nftIndexTable, projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
 
 /**
  * List of mandatory compliances.
@@ -126,11 +125,22 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
         //     isCompleted: false,
         //   })
         // }
-        const owner = await getAssetOwner({
-          tokenAddress: quest.tokenMintAddress,
-          rpcUrl,
-        })
-        const isOwner = address === owner
+        const nft = await db
+          .select()
+          .from(nftIndexTable)
+          .where(
+            and(
+              eq(nftIndexTable.collectionAddress, quest.tokenMintAddress),
+              eq(nftIndexTable.ownerAddress, address)
+            )
+          )
+          .get()
+
+        // const owner = await getAssetOwner({
+        //   tokenAddress: quest.tokenMintAddress,
+        //   rpcUrl,
+        // })
+        const isOwner = Boolean(nft)
         tierQuestsWithCompletion.push({
           ...quest,
           isCompleted: isOwner,

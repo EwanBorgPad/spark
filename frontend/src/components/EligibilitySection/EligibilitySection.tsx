@@ -112,7 +112,7 @@ const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
   const { t } = useTranslation()
 
   const { type } = quest
-  const isCompleted = autoCheck ?? quest.isCompleted
+  const isCompleted = autoCheck || quest.isCompleted
 
   const typeData = ((): {
     label: string
