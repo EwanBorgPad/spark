@@ -10,11 +10,14 @@ import React, { useState } from "react"
 import { useParams } from "react-router-dom"
 import { InvestmentIntentRequest } from "../../../../shared/models.ts"
 import { Badge } from "@/components/Badge/Badge.tsx"
+import { toast } from "react-toastify"
 
 type ProvideInvestmentIntentModalProps = {
   onClose: () => void
 }
-const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentIntentModalProps) => {
+const ProvideInvestmentIntentModal = ({
+  onClose,
+}: ProvideInvestmentIntentModalProps) => {
   const { t } = useTranslation()
   const { address, signMessage } = useWalletContext()
   const { projectId } = useParams()
@@ -39,7 +42,10 @@ const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentIntentModalP
     mutationFn: async (address: string) => {
       if (!projectId || !amount) return
 
-      const message = t('investment.intent.quest.message', { amount, projectId })
+      const message = t("investment.intent.quest.message", {
+        amount,
+        projectId,
+      })
 
       const signature = await signMessage(message)
 
@@ -62,6 +68,7 @@ const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentIntentModalP
         queryKey: ["getInvestmentIntentSummary", projectId],
       })
     },
+    onError: (error) => toast.error(error.message, { theme: "colored" }),
   })
 
   return (
