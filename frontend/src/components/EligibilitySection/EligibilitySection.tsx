@@ -54,6 +54,7 @@ export const EligibilityTiersSection = ({ className }: { className?: string }) =
           // tier container
           <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
             <span>{tier.label}</span>
+            { tier.description && <span className='text-xs text-fg-secondary'>{tier.description}</span> }
             <div className="flex flex-col gap-2 rounded-2xl">
               {/* singular tier */}
               {tierQuests.map((quest) => (
@@ -112,7 +113,7 @@ const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
   const { t } = useTranslation()
 
   const { type } = quest
-  const isCompleted = autoCheck ?? quest.isCompleted
+  const isCompleted = autoCheck || quest.isCompleted
 
   const typeData = ((): {
     label: string
@@ -169,10 +170,10 @@ const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
           {typeData.label}
         </span>
         <Icon
-          icon={isCompleted ? "SvgRoundCheckmark" : "SvgCircledX"}
+          icon={isCompleted ? "SvgRoundCheckmark" : "SvgEmptyCircle"}
           className={twMerge(
             "text-xl",
-            isCompleted ? "text-fg-success-primary" : "text-fg-error-primary",
+            isCompleted ? "text-fg-success-primary" : "",
           )}
         />
       </div>

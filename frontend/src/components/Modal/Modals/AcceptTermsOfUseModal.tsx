@@ -8,6 +8,7 @@ import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import CheckboxField from "@/components/InputField/CheckboxField.tsx"
 import { useState } from "react"
+import { toast } from "react-toastify"
 
 type AcceptTermsOfUseModalProps = {
   onClose: () => void
@@ -23,7 +24,7 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
     isSuccess,
   } = useMutation({
     mutationFn: async (address: string) => {
-      const message = t('accept.terms.of.use.quest.message')
+      const message = t("accept.terms.of.use.quest.message")
       const signature = await signMessage(message)
 
       const data = {
@@ -40,6 +41,7 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
         queryKey: ["getEligibilityStatus", address],
       })
     },
+    onError: (error) => toast.error(error.message, { theme: "colored" }),
   })
 
   const [isConfirmed, setIsConfirmed] = useState(false)

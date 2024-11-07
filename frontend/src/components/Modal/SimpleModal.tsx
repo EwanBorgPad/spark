@@ -48,27 +48,32 @@ export function SimpleModal({
         className="fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75"
       ></div>
 
-      {/* modal */}
-      <div
-        ref={modalRef}
-        className={twMerge(
-          "fixed inset-0 z-[30] mx-auto my-auto overflow-x-hidden overflow-y-scroll",
-          "h-fit max-h-[95vh] w-[460px] max-w-[90vw]",
-          "rounded-[10px] border border-solid border-bd-primary bg-secondary",
-          "animate-fade-in",
-          className,
-        )}
-      >
-        <div className="grid-cols-modal-header sticky left-0 right-0 top-0 z-[31] grid w-full grid-rows-1 items-start bg-secondary p-4 text-center">
-          {onClose && showCloseBtn && (
-            <CloseButton onClose={closeModalCallback} />
+      {/* modal wrapper */}
+      <div className="fixed inset-0 z-[30] flex h-screen w-screen items-center">
+        {/* modal */}
+        <div
+          ref={modalRef}
+          className={twMerge(
+            "mx-auto my-auto overflow-x-hidden overflow-y-scroll",
+            "max-h-[95vh] w-[460px] max-w-[90vw]",
+            "rounded-[10px] border border-solid border-bd-primary bg-secondary",
+            "animate-fade-in",
+            className,
           )}
-          {title && (
-            <h1 className="flex-1 text-body-xl-semibold text-white">{title}</h1>
-          )}
-        </div>
+        >
+          <div className="grid-cols-modal-header sticky left-0 right-0 top-0 z-[31] grid w-full grid-rows-1 items-start bg-secondary p-4 text-center">
+            {onClose && showCloseBtn && (
+              <CloseButton onClose={closeModalCallback} />
+            )}
+            {title && (
+              <h1 className="flex-1 text-body-xl-semibold text-white">
+                {title}
+              </h1>
+            )}
+          </div>
 
-        {children}
+          {children}
+        </div>
       </div>
     </Portal>
   )

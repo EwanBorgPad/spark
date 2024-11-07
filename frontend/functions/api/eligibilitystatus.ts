@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/d1"
 
-import { jsonResponse } from "./cfPagesFunctionsUtils"
+import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { EligibilityService } from "../services/eligibilityService"
 import { projectTable } from "../../shared/drizzle-schema"
 
@@ -45,7 +45,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     return jsonResponse(retval, 200)
   } catch (e) {
-    console.error(e)
+    await reportError(ctx.env.DB, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
   }
 }

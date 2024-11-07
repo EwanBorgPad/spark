@@ -33,7 +33,7 @@ const TokenRewards = ({
       tokenLp: {
         formatted: formatValue({
           value: tokenLpUnformatted.toString(),
-          decimalScale: 5,
+          decimalScale: 2,
         }),
         unformatted: tokenLpUnformatted,
       },
@@ -61,7 +61,7 @@ const TokenRewards = ({
       unformatted: tokenReward,
       formatted: formatValue({
         value: tokenReward.toString(),
-        decimalScale: 5,
+        decimalScale: 2,
       }),
     }
   }
@@ -85,7 +85,7 @@ const TokenRewards = ({
     tokenRewardDistribution: getTokenReward().formatted,
     totalTargetToken: formatValue({
       value: getTotalTokensToBeReceived().toString(),
-      decimalScale: 5,
+      decimalScale: 2,
     }),
   }
 
