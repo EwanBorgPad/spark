@@ -169,10 +169,10 @@ const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
           {typeData.label}
         </span>
         <Icon
-          icon={isCompleted ? "SvgRoundCheckmark" : "SvgCircledX"}
+          icon={isCompleted ? "SvgRoundCheckmark" : "SvgEmptyCircle"}
           className={twMerge(
             "text-xl",
-            isCompleted ? "text-fg-success-primary" : "text-fg-error-primary",
+            isCompleted ? "text-fg-success-primary" : "",
           )}
         />
       </div>
