@@ -163,7 +163,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
       // load the whitelisted tier
       ? whitelistedTier
       // else, check if they have tiered by completing quests
-      : (tiersWithCompletion.findLast(tier => tier.isCompleted) ?? null)
+      : (tiersWithCompletion.find(tier => tier.isCompleted) ?? null)
     : null
   const isEligible = Boolean(eligibilityTier)
 
