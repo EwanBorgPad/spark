@@ -171,8 +171,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         const url = `${PAGE_URL}/?autoConnect=${wallet}`
         const encodedUrl = encodeURIComponent(url)
         const encodedPageUrl = encodeURIComponent(PAGE_URL)
-        const deepLink = `https://${wallet}.app/ul/browse/${encodedUrl}?ref=${encodedPageUrl}`
-        window.location.href = deepLink
+        if (wallet === 'SOLFLARE') {
+          const deepLink = `https://solflare.com/ul/v1/${encodedUrl}?ref=${encodedPageUrl}`
+          window.location.href = deepLink
+        } else {
+          const deepLink = `https://${wallet}.app/ul/v1/browse/${encodedUrl}?ref=${encodedPageUrl}`
+          window.location.href = deepLink
+        }
         return
       } else {
         const message = `${wallet} not detected!`
