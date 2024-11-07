@@ -65,13 +65,14 @@ export async function rpcSearchAssets({ rpcUrl, ownerAddress, collections, limit
 type HasCollectionNftArgs = {
   rpcUrl: string
   ownerAddress: string
-  collectionAddress: string
+  collections: string[]
 }
-export async function isHoldingNftFromCollection({ rpcUrl, ownerAddress, collectionAddress }: HasCollectionNftArgs): Promise<boolean> {
+type HasCollectionNftResponse = Record<string, boolean>
+export async function isHoldingNftFromCollections({ rpcUrl, ownerAddress, collections }: HasCollectionNftArgs): Promise<HasCollectionNftResponse> {
   const response = await rpcSearchAssets({
     rpcUrl,
     ownerAddress,
-    collections: [collectionAddress],
+    collections,
     // hardcoding pagination, assuming no one will check for ownership of 1k+ tokens at a time
     limit: 1000,
     page: 1,
@@ -81,13 +82,18 @@ export async function isHoldingNftFromCollection({ rpcUrl, ownerAddress, collect
     throw new Error(`SearchAssets Limit exceeded!`)
   }
 
-  const holdsNftFromCollection = response.items.some(nft =>
-    nft.ownership.owner === ownerAddress
-    && nft.grouping.some(group =>
-      group.group_key === 'collection'
-      && group.group_value === collectionAddress
-      )
-  )
+  const retval: Record<string, boolean> = {}
 
-  return holdsNftFromCollection
+  for (const collection of collections) {
+    const holdsNftFromCollection = response.items.some(nft =>
+        nft.ownership.owner === ownerAddress
+        && nft.grouping.some(group =>
+          group.group_key === 'collection'
+          && group.group_value === collection
+        )
+    )
+    retval[collection] = holdsNftFromCollection
+  }
+
+  return retval
 }

@@ -3,7 +3,7 @@ import { and, eq } from "drizzle-orm"
 
 import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } from "../../shared/eligibilityModel"
 import { followerTable, projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
-import { isHoldingNftFromCollection } from "../../shared/solana/searchAssets"
+import { isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
 
 /**
  * List of mandatory compliances.
@@ -78,6 +78,18 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     }
   }
 
+  const collections = project.json.info.tiers
+    .map(tier => tier.quests)
+    .flat()
+    .filter(quest => quest.type === 'HOLD_TOKEN')
+    .map(quest => quest.tokenMintAddress)
+
+  const collectionMap = await isHoldingNftFromCollections({
+    rpcUrl,
+    ownerAddress: address,
+    collections,
+  })
+
   const tiersWithCompletion: TierWithCompletion[] = []
   for (const tier of project.json.info.tiers) {
     const tierQuestsWithCompletion: QuestWithCompletion[] = []
@@ -103,11 +115,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
           isCompleted: isFollower,
         })
       } else if (quest.type === 'HOLD_TOKEN') {
-        const isOwner = await isHoldingNftFromCollection({
-          rpcUrl,
-          ownerAddress: address,
-          collectionAddress: quest.tokenMintAddress,
-        })
+        const isOwner = collectionMap[quest.tokenMintAddress]
         tierQuestsWithCompletion.push({
           ...quest,
           isCompleted: isOwner,
