@@ -175,7 +175,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           const deepLink = `https://solflare.com/ul/v1/${encodedUrl}?ref=${encodedPageUrl}`
           window.location.href = deepLink
         } else {
-          const deepLink = `https://${wallet}.app/ul/v1/browse/${encodedUrl}?ref=${encodedPageUrl}`
+          const deepLink = `https://${wallet}.app/ul/browse/${encodedUrl}?ref=${encodedPageUrl}`
           window.location.href = deepLink
         }
         return
