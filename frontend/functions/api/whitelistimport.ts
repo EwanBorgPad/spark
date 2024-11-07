@@ -37,22 +37,34 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     //// Check if projects/tiers exist /////
     ////////////////////////////////////////
 
-    // bulk insert
-    const placeholders = []
-    const values = []
-    let index = 1
-    for (const user of data.rows) {
-      placeholders.push(`($${index}, $${index + 1}, $${index + 2})`)
-      values.push(user.address, user.projectId, user.tierId)
-      index += 3
-    }
+    // batchSize 35 fails because of Error: D1_ERROR: too many SQL variables at offset 637: SQLITE_ERROR
+    // let's go with 30 so we're safe
+    const batches = splitIntoBatches(data.rows, 30)
 
-    const query = `
+    let batchCount = 1
+    for (const batch of batches) {
+      console.log(`Batch (${batchCount}/${batches.length}) importing...`)
+      batchCount += 1
+
+      // bulk insert
+      const placeholders = []
+      const values = []
+      let index = 1
+
+      console.log({ placeholders, values, index })
+      for (const user of batch) {
+        placeholders.push(`($${index}, $${index + 1}, $${index + 2})`)
+        values.push(user.address, user.projectId, user.tierId)
+        index += 3
+      }
+
+      const query = `
         REPLACE INTO whitelist (address, project_id, tier_id)
         VALUES ${placeholders.join(', ')};
     `;
 
-    await db.prepare(query).bind(...values).run()
+      await db.prepare(query).bind(...values).run()
+    }
 
     return jsonResponse({ message: "Created!" }, 201)
   } catch (e) {
@@ -60,4 +72,15 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
   }
+}
+
+function splitIntoBatches<T>(list: T[], batchSize: number): T[][] {
+  const batches: T[][] = [];
+
+  for (let i = 0; i < list.length; i += batchSize) {
+    const batch = list.slice(i, i + batchSize);
+    batches.push(batch);
+  }
+
+  return batches;
 }

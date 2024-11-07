@@ -8,31 +8,85 @@ import Img from "@/components/Image/Img"
 type TokenRewardsProps = {
   borgCoinInput: string
   isWhitelistingEvent: boolean
+  tokenPriceInBORG: number | null
 }
 
 const TokenRewards = ({
   borgCoinInput,
   isWhitelistingEvent,
+  tokenPriceInBORG,
 }: TokenRewardsProps) => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
   const tgeData = projectData.info.tge
 
-  const getTokenReward = () => {
-    if (!borgCoinInput) return 0
-    const tokenPriceInBorg = Number(projectData.info.tge.fixedCoinPriceInBorg)
-    if (Number.isNaN(tokenPriceInBorg)) {
-      console.error(tokenPriceInBorg)
-      return 0
+  const getLiquidityPoolValues = () => {
+    if (!borgCoinInput || !tokenPriceInBORG)
+      return {
+        tokenLp: { formatted: "", unformatted: null },
+        borgLp: { formatted: "", unformatted: null },
+      }
+    // input is divided equally amongst token and borg lp values
+    const tokenLpUnformatted = +borgCoinInput / tokenPriceInBORG / 2
+    const borgLpUnformatted = +borgCoinInput / 2
+    return {
+      tokenLp: {
+        formatted: formatValue({
+          value: tokenLpUnformatted.toString(),
+          decimalScale: 2,
+        }),
+        unformatted: tokenLpUnformatted,
+      },
+      borgLp: {
+        formatted: formatValue({
+          value: borgLpUnformatted.toString(),
+          decimalScale: 2,
+        }),
+        unformatted: borgLpUnformatted,
+      },
     }
-    const tokenReward = +borgCoinInput * tokenPriceInBorg
-    return tokenReward
+  }
+  // @TODO - .....
+  const getTokenReward = () => {
+    if (!borgCoinInput || !tokenPriceInBORG)
+      return { formatted: "", unformatted: null }
+    const tokenRewardRatioAsPerLP =
+      projectData.info.totalTokensForSale /
+      projectData.info.totalTokensForRewardDistribution
+
+    const tokenReward =
+      (+borgCoinInput / tokenPriceInBORG / 2) * tokenRewardRatioAsPerLP
+
+    return {
+      unformatted: tokenReward,
+      formatted: formatValue({
+        value: tokenReward.toString(),
+        decimalScale: 2,
+      }),
+    }
+  }
+
+  const liquidityPoolValues = getLiquidityPoolValues()
+  // @TODO - .....
+  const getTotalTokensToBeReceived = () => {
+    // for each 1 token in locking period user gets total of 1 in Reward Distribution sum
+    const totalTokensFromLiquidityPool =
+      liquidityPoolValues.tokenLp?.unformatted || 0
+    const totalTokensReceivedInRewardsDistribution =
+      getTokenReward().unformatted || 0
+    const totalTargetToken =
+      totalTokensReceivedInRewardsDistribution + totalTokensFromLiquidityPool
+    return totalTargetToken
   }
 
   const rewards = {
-    borg: borgCoinInput,
-    targetToken: formatValue({ value: getTokenReward().toString() }),
-    totalTargetToken: formatValue({ value: (2 * getTokenReward()).toString() }),
+    borgLP: liquidityPoolValues.borgLp?.formatted,
+    tokenLP: liquidityPoolValues.tokenLp?.formatted,
+    tokenRewardDistribution: getTokenReward().formatted,
+    totalTargetToken: formatValue({
+      value: getTotalTokensToBeReceived().toString(),
+      decimalScale: 2,
+    }),
   }
 
   return (
@@ -40,11 +94,7 @@ const TokenRewards = ({
       <div className="relative flex flex-col items-center border-b-[1px] border-b-bd-primary px-3 py-2">
         <div className="flex h-fit w-full flex-wrap items-center gap-2 rounded-full pb-1 text-base font-medium">
           <Icon icon="SvgBorgCoin" />
-          <span className="font-geist-mono text-base">
-            {isWhitelistingEvent
-              ? 1
-              : formatValue({ value: borgCoinInput }) || 0}
-          </span>
+          <span className="font-geist-mono text-base">{rewards.borgLP}</span>
           <span className="font-geist-mono">BORG</span>
           <div className="flex items-center gap-2">
             <Icon
@@ -52,9 +102,7 @@ const TokenRewards = ({
               className="text-base text-fg-disabled opacity-50"
             />
             <Img src={tgeData.projectCoin.iconUrl} size="4" />
-            <span className="font-geist-mono text-base">
-              {rewards.targetToken}
-            </span>
+            <span className="font-geist-mono text-base">{rewards.tokenLP}</span>
             <span className="font-geist-mono text-base">
               {tgeData.projectCoin.ticker}
             </span>
@@ -83,7 +131,7 @@ const TokenRewards = ({
         <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
           <Img src={tgeData.projectCoin.iconUrl} size="4" />
           <span className="font-geist-mono text-base">
-            {rewards.targetToken}
+            {rewards.tokenRewardDistribution}
           </span>
           <span className="font-geist-mono text-base">
             {tgeData.projectCoin.ticker}
@@ -96,9 +144,7 @@ const TokenRewards = ({
       </div>
       <div className="flex flex-wrap gap-2 px-3 py-2 text-xs">
         <span>Total:</span>
-        <span className="font-geist-mono">
-          {isWhitelistingEvent ? 1 : formatValue({ value: borgCoinInput }) || 0}
-        </span>
+        <span className="font-geist-mono">{rewards.borgLP}</span>
         <span className="font-geist-mono">{"BORG"}</span>
         <span>{"+"}</span>
         <span className="font-geist-mono">{rewards.totalTargetToken}</span>

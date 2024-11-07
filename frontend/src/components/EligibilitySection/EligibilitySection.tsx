@@ -13,10 +13,62 @@ import { getSignInWithTwitterUrl } from "@/hooks/useTwitterContext.tsx"
 import { ExternalLink } from "@/components/Button/ExternalLink.tsx"
 import { useParams } from "react-router-dom"
 import ProvideInvestmentIntentModal from "@/components/Modal/Modals/ProvideInvestmentIntentModal.tsx"
-import { formatDateForSnapshot } from "@/utils/date-helpers.ts"
-import { addHours } from "date-fns"
 
-export const EligibilitySection = () => {
+export const EligibilityTiersSection = ({ className }: { className?: string }) => {
+  const { t } = useTranslation()
+  const { address } = useWalletContext()
+  const { projectId } = useParams()
+
+  const { data } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getEligibilityStatus({ address, projectId })
+    },
+    queryKey: ["getEligibilityStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
+
+  const eligibilityStatus = data
+  if (!eligibilityStatus) return
+
+  const eligibilityTierId = eligibilityStatus.eligibilityTier?.id ?? null
+
+  return <section id="tiersSection" className={className}>
+    <div
+      id="tiersHeading"
+      className="flex w-full items-center justify-between py-2"
+    >
+      <span>{t("tiers")}</span>
+      <Badge.Confirmation
+        label={eligibilityStatus.eligibilityTier?.label}
+        isConfirmed={eligibilityStatus.eligibilityTier !== null}
+      />
+    </div>
+    <div
+      id="tiersContainer"
+      className="rounded-lg border-[1px] border-bd-primary bg-secondary p-2"
+    >
+      {eligibilityStatus.tiers.map((tier) => {
+        const tierQuests = sortByCompletionStatus(tier.quests)
+        return (
+          // tier container
+          <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
+            <span>{tier.label}</span>
+            { tier.description && <span className='text-xs text-fg-secondary'>{tier.description}</span> }
+            <div className="flex flex-col gap-2 rounded-2xl">
+              {/* singular tier */}
+              {tierQuests.map((quest) => (
+                <QuestComponent key={quest.type} quest={quest} autoCheck={tier.id === eligibilityTierId} />
+              ))}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  </section>
+}
+
+export const EligibilityCompliancesSection = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
   const { address } = useWalletContext()
   const { projectId } = useParams()
@@ -35,88 +87,38 @@ export const EligibilitySection = () => {
 
   const complianceQuests = sortByCompletionStatus(eligibilityStatus.compliances)
 
-  return (
-    <section className="flex w-full max-w-[432px] flex-col gap-4 px-4">
-      <section id="complianceSection">
-        <div
-          id="complianceHeading"
-          className="flex w-full items-center justify-between py-2"
-        >
-          <span>{t("compliance")}</span>
-        </div>
-        <div
-          id="compliancesContainer"
-          className="flex flex-col gap-2 rounded-lg"
-        >
-          {complianceQuests.map((quest) => (
-            <QuestComponent key={quest.type} quest={quest} />
-          ))}
-        </div>
-      </section>
-
-      <section id="tiersSection">
-        <div
-          id="tiersHeading"
-          className="flex w-full items-center justify-between py-2"
-        >
-          <span>{t("tiers")}</span>
-          <Badge.Confirmation
-            label={eligibilityStatus.eligibilityTier?.label}
-            isConfirmed={eligibilityStatus.eligibilityTier !== null}
-          />
-        </div>
-        <div
-          id="tiersContainer"
-          className="rounded-lg border-[1px] border-bd-primary bg-secondary p-2"
-        >
-          {eligibilityStatus.tiers.map((tier) => {
-            const tierQuests = sortByCompletionStatus(tier.quests)
-            return (
-              // tier container
-              <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
-                <span>{tier.label}</span>
-                <div className="flex flex-col gap-2 rounded-2xl">
-                  {/* singular tier */}
-                  {tierQuests.map((quest) => (
-                    <QuestComponent key={quest.type} quest={quest} />
-                  ))}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </section>
-      <section>
-        <div className="flex w-full flex-wrap items-center justify-center gap-1">
-          <Icon
-            icon="SvgSnapshot"
-            className="shrink-0 text-xl text-brand-primary"
-          />
-          <span className="text-nowrap text-sm text-fg-tertiary">
-            {t("whitelisting.snapshot_taken")}
-          </span>{" "}
-          <span className="text-nowrap text-sm text-fg-primary">
-            {/* TODO @api @hardcoded swap dummy date below with real snapshot data */}
-            {formatDateForSnapshot(addHours(new Date(), -4.4))}
-          </span>
-        </div>
-      </section>
-    </section>
-  )
+  return <section id="complianceSection" className={className}>
+    <div
+      id="complianceHeading"
+      className="flex w-full items-center justify-between py-2"
+    >
+      <span>{t("legal")}</span>
+    </div>
+    <div
+      id="compliancesContainer"
+      className="flex flex-col gap-2 rounded-lg"
+    >
+      {complianceQuests.map((quest) => (
+        <QuestComponent key={quest.type} quest={quest} />
+      ))}
+    </div>
+  </section>
 }
 
 type QuestComponentProps = {
   quest: QuestWithCompletion
+  autoCheck?: boolean
 }
-const QuestComponent = ({ quest }: QuestComponentProps) => {
+const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
   const { t } = useTranslation()
 
-  const { type, isCompleted } = quest
+  const { type } = quest
+  const isCompleted = autoCheck || quest.isCompleted
 
   const typeData = ((): {
     label: string
     description: string
-    ctaButton: ReactNode
+    ctaButton?: ReactNode
   } => {
     if (type === "ACCEPT_TERMS_OF_USE")
       return {
@@ -144,7 +146,15 @@ const QuestComponent = ({ quest }: QuestComponentProps) => {
           name: quest.tokenName,
         }),
         description: "",
-        ctaButton: <HoldTokenBtn tokenName={quest.tokenName} />,
+        // TODO @productionPush
+        // ctaButton: <HoldTokenBtn tokenName={quest.tokenName} />,
+      }
+    if (type === "WHITELIST")
+      return {
+        label: "Be a Superteam Member",
+        description: "",
+        // TODO @productionPush
+        // ctaButton: <HoldTokenBtn tokenName={quest.tokenName} />,
       }
     else throw new Error("Unknown type")
   })()
@@ -160,10 +170,10 @@ const QuestComponent = ({ quest }: QuestComponentProps) => {
           {typeData.label}
         </span>
         <Icon
-          icon={isCompleted ? "SvgRoundCheckmark" : "SvgCircledX"}
+          icon={isCompleted ? "SvgRoundCheckmark" : "SvgEmptyCircle"}
           className={twMerge(
             "text-xl",
-            isCompleted ? "text-fg-success-primary" : "text-fg-error-primary",
+            isCompleted ? "text-fg-success-primary" : "",
           )}
         />
       </div>

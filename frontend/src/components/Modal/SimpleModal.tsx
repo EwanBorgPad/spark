@@ -1,7 +1,8 @@
-import { ReactNode, useRef } from "react"
-import { Portal } from "@/components/Portal/Portal"
 import { twMerge } from "tailwind-merge"
-import { Icon } from "@/components/Icon/Icon.tsx"
+import { ReactNode, useEffect, useRef } from "react"
+
+import { Portal } from "@/components/Portal/Portal"
+import { Button } from "../Button/Button"
 import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
 
 type Props = {
@@ -9,21 +10,15 @@ type Props = {
   showCloseBtn: boolean
   onClose?: () => void
   className?: string
+  title?: string
 }
 export function SimpleModal({
   children,
   showCloseBtn,
   onClose,
   className,
+  title,
 }: Props) {
-  const modalClasses = twMerge(
-    "relative h-full",
-    "w-[460px]",
-    "bg-secondary lg:rounded-[10px] overflow-hidden",
-    "border-solid border border-bd-primary animate-fade-in",
-    className,
-  )
-
   const modalRef = useRef<HTMLDivElement | null>(null)
   const backdropRef = useRef<HTMLDivElement | null>(null)
 
@@ -37,6 +32,14 @@ export function SimpleModal({
 
   useCheckOutsideClick(modalRef, () => closeModalCallback())
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden" // disable document's scroll if modal is active
+
+    return () => {
+      document.body.style.overflow = ""
+    }
+  }, [])
+
   return (
     <Portal id="simple-modal">
       {/* fixed backdrop */}
@@ -45,30 +48,36 @@ export function SimpleModal({
         className="fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75"
       ></div>
 
-      {/* fixed modal container*/}
-      <div className="fixed inset-0 z-30 overflow-y-auto">
-        {/*  */}
+      {/* modal wrapper */}
+      <div className="fixed inset-0 z-[30] flex h-screen w-screen items-center">
+        {/* modal */}
         <div
-          className={
-            "px-s flex min-h-full items-center justify-center max-sm:h-full md:px-[50px]"
-          }
+          ref={modalRef}
+          className={twMerge(
+            "mx-auto my-auto overflow-x-hidden overflow-y-scroll",
+            "max-h-[95vh] w-[460px] max-w-[90vw]",
+            "rounded-[10px] border border-solid border-bd-primary bg-secondary",
+            "animate-fade-in",
+            className,
+          )}
         >
-          {/* modal */}
-          <div ref={modalRef} className={modalClasses}>
+          <div className="grid-cols-modal-header sticky left-0 right-0 top-0 z-[31] grid w-full grid-rows-1 items-start bg-secondary p-4 text-center">
             {onClose && showCloseBtn && (
               <CloseButton onClose={closeModalCallback} />
             )}
-
-            {children}
+            {title && (
+              <h1 className="flex-1 text-body-xl-semibold text-white">
+                {title}
+              </h1>
+            )}
           </div>
+
+          {children}
         </div>
       </div>
     </Portal>
   )
 }
-
-const ICON_SIZE_PX = 12
-// const BTN_SIZE_PX = 20
 
 export function CloseButton({
   onClose,
@@ -77,17 +86,15 @@ export function CloseButton({
   onClose?: () => void
   className?: string
 }) {
-  const cls = twMerge(
-    "absolute top-4 left-4",
-    "rounded-md",
-    "flex items-center justify-center",
-    "cursor-pointer",
-    "hover:bg-tertiary text-2xl text-white",
-    className,
-  )
   return (
-    <div onClick={onClose} className={cls}>
-      <Icon icon="SvgClose" width={ICON_SIZE_PX} height={ICON_SIZE_PX} />
-    </div>
+    <Button.Icon
+      icon="SvgClose"
+      color="plain"
+      className={twMerge(
+        "rounded-md px-1 py-0.5 align-top text-2xl leading-none text-white hover:bg-tertiary",
+        className,
+      )}
+      onClick={onClose}
+    />
   )
 }

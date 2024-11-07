@@ -29,13 +29,14 @@
   "tge.provide_liquidity": "Provide Liquidity",
   "tge.youre_paying": "You're Paying",
   "tge.whitelisting": "Whitelisting",
+  "tge.lp_terms": "Launch Pool Terms",
   "tge.live_now": "Live Now",
   "tge.sale_finished": "Sale Finished",
   "tge.launchpad_live": "Launchpad Live",
   "tge.liquidity_pool": "Liquidity Pool",
   "tge.to_receive": "To receive",
   "tge.month_lockup": "month lockup",
-  "tge.linearly_paid_out": "Linearly paid-out through 12 months",
+  "tge.linearly_paid_out": "Linearly paid-out through 6 months",
   "tge.participation_status": "Participation Status",
   "tge.whitelisted": "Whitelisted",
   "tge.distribution_starts_in": "Distribution starts in",
@@ -70,7 +71,7 @@
   "sale_over.your_reward": "Your Reward",
   "sale_over.rewards": "Rewards",
   "sale_over.monthly_payments_need_to": "Monthly payments need to be Claimed manually. Liquidity pool will become accessible on 12th December 2024.",
-  "sale_over.learn_more_about": "Learn More About Reward Terms",
+  "sale_over.learn_more_about": "Learn More About Reward Terms.",
   "sale_over.monthly_payout": "Monthly Payout",
   "sale_over.sale_unsuccessful": "The initial pool investment criteria were not met.Therefore, the pool will be canceled and all contributions refunded.",
 
@@ -93,7 +94,7 @@
 
   "data_room": "Data Room",
 
-  "timeline.learn_more_about": "Learn more about the project and...",
+  "timeline.learn_more_about": "Learn more about the project",
   "timeline.registration_opens": "Registration Opens",
   "timeline.sale_opens": "Sale Opens",
   "timeline.sale_closes": "Sale Closes",
@@ -103,6 +104,7 @@
   "terms_of_service": "Terms of Service",
 
   "compliance": "Compliance",
+  "legal": "Legal",
   "tiers": "Tiers",
 
   "follow.NAME.on.twitter": "Follow {{ name }} on X",

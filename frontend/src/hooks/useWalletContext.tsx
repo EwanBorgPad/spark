@@ -18,15 +18,16 @@ const PAGE_DOMAIN = window.location.host
 
 export type WalletState = "NOT_CONNECTED" | "CONNECTING" | "CONNECTED"
 
-const SupportedWallets = ["PHANTOM", "BACKPACK"] as const
-type SupportedWallet = (typeof SupportedWallets)[number]
+const SupportedWallets = ["PHANTOM", "BACKPACK", 'SOLFLARE'] as const
+export type SupportedWallet = (typeof SupportedWallets)[number]
 
 type Context = {
   address: string
   walletState: WalletState
   walletProvider: SupportedWallet | ""
-  signInWithPhantom: () => Promise<void>
-  signInWithBackpack: () => Promise<void>
+  signInWithPhantom: () => void
+  signInWithBackpack: () => void
+  signInWithSolflare: () => void
   signOut: () => void
   truncatedAddress: string
   signMessage: (message: string) => Promise<Uint8Array>
@@ -43,7 +44,7 @@ export function useWalletContext() {
 
 /**
  * Provider provided by the extension
- * e.g. window.phantom.solana or window.backpack
+ * e.g. window.phantom.solana or window.backpack or window.solflare
  * Typing not complete.
  */
 type Provider = {
@@ -92,6 +93,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       signInWithPhantom()
     } else if (autoConnect.toUpperCase() === "BACKPACK") {
       signInWithBackpack()
+    } else if (autoConnect.toUpperCase() === 'SOLFLARE') {
+      signInWithSolflare()
     }
 
     setSearchParams((searchParams) => {
@@ -140,6 +143,24 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     })
   }
 
+  async function signInWithSolflare() {
+    await signInWith({
+      wallet: "SOLFLARE",
+      // @ts-expect-error no typings
+      getProvider: () => window?.solflare,
+      signIn: async () => {
+        // @ts-expect-error no typings
+        const connected = await window?.solflare?.connect({
+          domain: PAGE_DOMAIN,
+        })
+        if (!connected) throw new Error("Connection failed!")
+        // @ts-expect-error no typings
+        const address = window.solflare.publicKey.toString()
+        return address
+      },
+    })
+}
+
   async function signInWith({ wallet, getProvider, signIn }: SignInWithArgs) {
     const provider = getProvider()
 
@@ -150,8 +171,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         const url = `${PAGE_URL}/?autoConnect=${wallet}`
         const encodedUrl = encodeURIComponent(url)
         const encodedPageUrl = encodeURIComponent(PAGE_URL)
-        const deepLink = `https://${wallet}.app/ul/browse/${encodedUrl}?ref=${encodedPageUrl}`
-        window.location.href = deepLink
+        if (wallet === 'SOLFLARE') {
+          const deepLink = `https://solflare.com/ul/v1/${encodedUrl}?ref=${encodedPageUrl}`
+          window.location.href = deepLink
+        } else {
+          const deepLink = `https://${wallet}.app/ul/browse/${encodedUrl}?ref=${encodedPageUrl}`
+          window.location.href = deepLink
+        }
         return
       } else {
         const message = `${wallet} not detected!`
@@ -188,6 +214,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setAddress("")
     setWalletState("NOT_CONNECTED")
     setWalletProvider("")
+    // disconnecting needs to be done manually for Solflare wallet
+    // @ts-expect-error no typings
+    await window.solflare.disconnect()
   }
 
   async function signMessage(message: string) {
@@ -198,6 +227,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     } else if (walletProvider === 'BACKPACK') {
       // @ts-expect-error
       const signature = await window.backpack.signMessage(Buffer.from(message))
+      return signature.signature
+    } else if (walletProvider === 'SOLFLARE') {
+      // @ts-expect-error
+      const signature = await window.solflare.signMessage(Buffer.from(message))
       return signature.signature
     } else {
       throw new Error(`Unknown wallet provider: ${walletProvider} !`)
@@ -214,6 +247,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         walletProvider,
         signInWithPhantom,
         signInWithBackpack,
+        signInWithSolflare,
         signOut,
         truncatedAddress,
         signMessage,

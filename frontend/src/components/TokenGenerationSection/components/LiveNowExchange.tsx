@@ -33,6 +33,10 @@ type Props = {
   eligibilitySectionRef: RefObject<HTMLDivElement>
 }
 
+// input data for "getExchange"
+const baseCurrency = "swissborg"
+const targetCurrency = "usd"
+
 const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
 
   const { projectData } = useProjectDataContext()
@@ -57,6 +61,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const { walletState, walletProvider, address, signInWithBackpack, signInWithPhantom } = useWalletContext()
   const { balance } = useBalanceContext()
   const { projectId } = useParams()
+
   const { data } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
@@ -77,6 +82,20 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   // Get users max token limit cap
   const userMaxCap = data?.eligibilityTier?.benefits.maxInvestment
   const userMinCap = data?.eligibilityTier?.benefits.minInvestment
+
+  const { data: exchangeData } = useQuery({
+    queryFn: () =>
+      backendApi.getExchange({
+        baseCurrency,
+        targetCurrency,
+      }),
+    queryKey: ["getExchange", baseCurrency, targetCurrency],
+  })
+  const borgPriceInUsd = exchangeData?.currentPrice || null
+  const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
+  const tokenPriceInBORG = !borgPriceInUsd
+    ? null
+    : tokenPriceInUSD / borgPriceInUsd 
 
   const {
     handleSubmit,
@@ -173,8 +192,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const borgCoinInput = watch("borgInputValue")
 
   const scrollToWhitelistRequriements = () => {
-    const top =
-      eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
+    const top = eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
     window.scrollBy({
       behavior: "smooth",
       top: top - 100,
@@ -268,6 +286,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
           <TokenRewards
             borgCoinInput={borgCoinInput}
             isWhitelistingEvent={false}
+            tokenPriceInBORG={tokenPriceInBORG}
           />
         </div>
         <div className="flex w-full flex-col items-center gap-4">
