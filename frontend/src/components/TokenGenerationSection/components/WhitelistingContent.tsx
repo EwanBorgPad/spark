@@ -92,12 +92,12 @@ const WhitelistingContent = () => {
           </div>
           <div className="flex flex-col items-end">
             <span className="font-geist-mono">
-              {formatCurrencyAmount(tokenPriceInUSD, true, 5)}
+              {formatCurrencyAmount(tokenPriceInUSD, true, 2)}
             </span>
             <div className="flex gap-2">
               <span className="font-geist-mono">
                 {tokenPriceInBORG ? (
-                  formatCurrencyAmount(tokenPriceInBORG, false, 5)
+                  formatCurrencyAmount(tokenPriceInBORG, false, 2)
                 ) : (
                   // @TODO - add skeleton instead of loader
                   <SimpleLoader />
