@@ -19,7 +19,7 @@ const PAGE_DOMAIN = window.location.host
 export type WalletState = "NOT_CONNECTED" | "CONNECTING" | "CONNECTED"
 
 const SupportedWallets = ["PHANTOM", "BACKPACK", 'SOLFLARE'] as const
-type SupportedWallet = (typeof SupportedWallets)[number]
+export type SupportedWallet = (typeof SupportedWallets)[number]
 
 type Context = {
   address: string
