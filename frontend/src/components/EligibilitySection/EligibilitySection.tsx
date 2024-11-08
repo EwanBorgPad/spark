@@ -26,7 +26,7 @@ export const EligibilityTiersSection = ({
   const { address, walletState } = useWalletContext()
   const { projectId } = useParams()
 
-  const { data: eligibilityStatus, isLoading } = useQuery({
+  const { data: eligibilityStatus, isFetching } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
       return backendApi.getEligibilityStatus({ address, projectId })
@@ -35,6 +35,7 @@ export const EligibilityTiersSection = ({
     enabled: Boolean(address) && Boolean(projectId),
   })
 
+  // @TODO - replace checkup below with more reliable source of data
   if (walletState !== "CONNECTED") return null
 
   const eligibilityTierId = eligibilityStatus?.eligibilityTier?.id
@@ -59,31 +60,34 @@ export const EligibilityTiersSection = ({
         id="tiersContainer"
         className="rounded-lg border-[1px] border-bd-primary bg-secondary p-2"
       >
-        {eligibilityStatus?.tiers.map((tier) => {
-          const tierQuests = sortByCompletionStatus(tier.quests)
-          return (
-            // tier container
-            <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
-              <span>{tier.label}</span>
-              {tier.description && (
-                <span className="text-xs text-fg-secondary">
-                  {tier.description}
-                </span>
-              )}
-              <div className="flex flex-col gap-2 rounded-2xl">
-                {/* singular tier */}
-                {tierQuests.map((quest) => (
-                  <QuestComponent
-                    key={quest.type}
-                    quest={quest}
-                    autoCheck={tier.id === eligibilityTierId}
-                  />
-                ))}
+        {!isFetching ? (
+          eligibilityStatus?.tiers.map((tier) => {
+            const tierQuests = sortByCompletionStatus(tier.quests)
+            return (
+              // tier container
+              <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
+                <span>{tier.label}</span>
+                {tier.description && (
+                  <span className="text-xs text-fg-secondary">
+                    {tier.description}
+                  </span>
+                )}
+                <div className="flex flex-col gap-2 rounded-2xl">
+                  {/* singular tier */}
+                  {tierQuests.map((quest) => (
+                    <QuestComponent
+                      key={quest.type}
+                      quest={quest}
+                      autoCheck={tier.id === eligibilityTierId}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          )
-        })}
-        {isLoading && walletState === "CONNECTED" && <TierSkeletonContainer />}
+            )
+          })
+        ) : (
+          <TierSkeletonContainer />
+        )}
       </div>
     </section>
   )
@@ -107,6 +111,7 @@ export const EligibilityCompliancesSection = ({
     enabled: Boolean(address) && Boolean(projectId),
   })
 
+  // @TODO - replace checkup below with more reliable source of data
   if (walletState !== "CONNECTED") return null
 
   const skeletonCompliances = Array.from({ length: 2 }, (_, i) => i)
@@ -123,14 +128,13 @@ export const EligibilityCompliancesSection = ({
         <span>{t("tge.join_launch_pool")}</span>
       </div>
       <div id="compliancesContainer" className="flex flex-col gap-2 rounded-lg">
-        {complianceQuests?.map((quest) => (
-          <QuestComponent key={quest.type} quest={quest} />
-        ))}
-        {walletState === "CONNECTED" &&
-          isFetching &&
-          skeletonCompliances.map((quest) => (
-            <Skeleton.Compliance key={quest} />
-          ))}
+        {!isFetching
+          ? complianceQuests?.map((quest) => (
+              <QuestComponent key={quest.type} quest={quest} />
+            ))
+          : skeletonCompliances.map((quest) => (
+              <Skeleton.Compliance key={quest} />
+            ))}
       </div>
     </section>
   )
