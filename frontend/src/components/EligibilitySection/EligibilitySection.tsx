@@ -35,6 +35,8 @@ export const EligibilityTiersSection = ({
     enabled: Boolean(address) && Boolean(projectId),
   })
 
+  if (walletState !== "CONNECTED") return null
+
   const eligibilityTierId = eligibilityStatus?.eligibilityTier?.id
     ? eligibilityStatus.eligibilityTier.id
     : null
@@ -105,12 +107,9 @@ export const EligibilityCompliancesSection = ({
     enabled: Boolean(address) && Boolean(projectId),
   })
 
-  // if (!eligibilityStatus) return
-  const numberOfExpectedCompliances = 2
-  const skeletonCompliances = Array.from(
-    { length: numberOfExpectedCompliances },
-    (_, i) => i,
-  )
+  if (walletState !== "CONNECTED") return null
+
+  const skeletonCompliances = Array.from({ length: 2 }, (_, i) => i)
   const complianceQuests = eligibilityStatus?.compliances
     ? sortByCompletionStatus(eligibilityStatus.compliances)
     : null
