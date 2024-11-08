@@ -41,6 +41,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
 
   const { projectData } = useProjectDataContext()
   const maxTokenLimit = projectData.info.raisedTokenMaxCap
+  // minTokenLimit cap not used for now but I will leave it here if neccessary in future
   const minTokenLimit = projectData.info.raisedTokenMinCap
   // backend API for depositing tokens to LBP
   const {
@@ -58,7 +59,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   })
   const { t } = useTranslation()
 
-  const { walletState, walletProvider, address, signInWithBackpack, signInWithPhantom } = useWalletContext()
+  const { walletState, walletProvider, address, signInWithBackpack, signInWithPhantom, signInWithSolflare } = useWalletContext()
   const { balance } = useBalanceContext()
   const { projectId } = useParams()
 
@@ -135,7 +136,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
       if (walletState === 'CONNECTED') {
         if (walletProvider === 'PHANTOM') {
           // @ts-ignore-next-line
-          const wallet = window?.solana
+          const wallet = window?.phantom?.solana
           if (!wallet.isConnected) {
             toast("Wallet session timed out, please sign in again")
             await signInWithPhantom()
@@ -154,6 +155,22 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
           if (!wallet.isConnected) {
             toast("Wallet session timed out, please sign in again")
             await signInWithBackpack()
+          }
+          const transaction = await getTransactionToSend(tokenAmount, wallet)
+          userDepositFunction({
+            amount: tokenAmount,
+            projectId: projectId ?? "",
+            transaction,
+            walletAddress: address
+          })
+          refetchDeposit()
+        }
+        if (walletProvider === 'SOLFLARE') {
+          // @ts-ignore-next-line
+          const wallet = window?.solflare
+          if (!wallet.isConnected) {
+            toast("Wallet session timed out, please sign in again")
+            await signInWithSolflare()
           }
           const transaction = await getTransactionToSend(tokenAmount, wallet)
           userDepositFunction({
