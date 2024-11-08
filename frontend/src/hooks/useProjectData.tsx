@@ -9,6 +9,7 @@ type Context = {
   projectData: ProjectModel
   setProjectData: (data: ProjectModel) => void
   isLoading: boolean
+  isFetching: boolean
 }
 const ProjectDataContext = createContext<Context | undefined>(undefined)
 
@@ -23,7 +24,11 @@ export function ProjectDataProvider({ children }: { children: ReactNode }) {
   let { projectId } = useParams()
   projectId = projectId || ""
 
-  const { data: projectData, isLoading } = useQuery({
+  const {
+    data: projectData,
+    isLoading,
+    isFetching,
+  } = useQuery({
     queryFn: () => backendApi.getProject({ projectId }),
     queryKey: ["backendApi", "getProject", projectId],
     enabled: Boolean(projectId),
@@ -50,6 +55,7 @@ export function ProjectDataProvider({ children }: { children: ReactNode }) {
         projectData,
         setProjectData,
         isLoading,
+        isFetching,
       }}
     >
       {children}
