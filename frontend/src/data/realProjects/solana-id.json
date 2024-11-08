@@ -113,6 +113,7 @@
       {
         "id": "tier10",
         "label": "Priority Pass Holders",
+        "description": "First access to invest with the highest maximum ticket size available",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -130,6 +131,7 @@
       {
         "id": "tier30",
         "label": "Solidian Origins: Drip Collectors",
+        "description": "Invest after Tier 1, with a high maximum ticket size",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -147,6 +149,7 @@
       {
         "id": "tier40",
         "label": "SOLID Community Partners",
+        "description": "Access following Tiers 1 & 2, with a moderate maximum ticket size",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -232,6 +235,7 @@
       {
         "id": "tier45",
         "label": "Solana SuperTeams Member",
+        "description": "Access granted after Tiers 1-3, with a lower maximum ticket size",
         "quests": [
           {
             "type": "WHITELIST"

@@ -43,6 +43,11 @@ const RegistrationOpensPhase = ({ eventData }: RegistrationOpensPhaseProps) => {
           )}
           <WhitelistingContent />
         </TgeWrapper>
+        <a
+          href='https://swissborg.com/blog/become-market-maker-with-agora-alpha'
+          target='_blank'
+          className='text-center underline text-sm text-fg-secondary font-light'
+        >{t("tge.learn_more_about")}</a>
       </div>
       <EligibilityTiersSection className="w-full max-w-[432px]" />
     </div>

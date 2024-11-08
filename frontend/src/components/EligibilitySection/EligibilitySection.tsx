@@ -92,7 +92,7 @@ export const EligibilityCompliancesSection = ({ className }: { className?: strin
       id="complianceHeading"
       className="flex w-full items-center justify-between py-2"
     >
-      <span>{t("legal")}</span>
+      <span>{t("tge.join_launch_pool")}</span>
     </div>
     <div
       id="compliancesContainer"
