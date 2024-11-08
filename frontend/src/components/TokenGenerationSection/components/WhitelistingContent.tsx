@@ -125,6 +125,7 @@ const WhitelistingContent = () => {
         </span>
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
+        {/* DeFi Protocol */}
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.defi_protocol")}</span>
           <div className="flex items-center gap-2">
@@ -138,12 +139,24 @@ const WhitelistingContent = () => {
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
+        {/* Crypto App Listing */}
+        <div className="flex w-full items-center justify-between py-3">
+          <span>{t("tge.crypto_app_listing")}</span>
+          <div className="flex items-center gap-2">
+            <Icon className='text-lg' icon="SvgBorgCoin" />
+            <span>{t('swissborg')}</span>
+          </div>
+        </div>
+        <hr className="w-full border-bd-primary opacity-50"></hr>
+
+        {/* LP Type */}
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.lbp_type")}</span>
           <span>{tgeData.liquidityPool.lbpType}</span>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
+        {/* Locking Period */}
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.locking_period")}</span>
           <span>{tgeData.liquidityPool.lockingPeriod}</span>
