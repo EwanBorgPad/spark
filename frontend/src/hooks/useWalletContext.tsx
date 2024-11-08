@@ -72,8 +72,8 @@ export type signAndSendTransactionArgs = {
 }
 
 type SignInWithArgs = {
-  getProvider: () => Provider,
   wallet: SupportedWallet
+  getProvider: () => Provider
   /**
    * SignIn (or connect, tbd) and return the address
    */
