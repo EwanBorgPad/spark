@@ -14,10 +14,10 @@ import { RefObject } from "react"
 import { toast } from "react-toastify"
 import { backendApi, PostUserDepositRequest } from "@/data/backendApi"
 import { useMutation } from "@tanstack/react-query"
-import { getTransactionToSend } from "@/utils/solanaFunctions"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
 import { useProjectDataContext } from "@/hooks/useProjectData"
+import { PublicKey } from "@solana/web3.js"
 
 type FormInputs = {
   borgInputValue: string
@@ -53,13 +53,13 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     onSuccess: async () => {
       console.log("Successful user deposit!")
       toast(`Deposited successfully!`)
-      // refetching User deposited amount after successful deposit
+      // refetching User deposited amount after successful deposit for checking validations of his pool deposit amount
       await refetchDeposit()
     },
   })
   const { t } = useTranslation()
 
-  const { walletState, walletProvider, address, signInWithBackpack, signInWithPhantom, signInWithSolflare } = useWalletContext()
+  const { walletState, signAndSendTransaction , address, walletProvider } = useWalletContext()
   const { balance } = useBalanceContext()
   const { projectId } = useParams()
 
@@ -81,8 +81,10 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   })
   const isUserEligible = data?.isEligible
   // Get users max token limit cap
-  const userMaxCap = data?.eligibilityTier?.benefits.maxInvestment
+  const userMaxCap = data?.eligibilityTier?.benefits.maxInvestment // TODO: reverse these
   const userMinCap = data?.eligibilityTier?.benefits.minInvestment
+  const rpcUrl = import.meta.env.VITE_SOLANA_RPC_URL
+  const tokenMintAddress = new PublicKey(projectData.info.raisedTokenMintAddress)
 
   const { data: exchangeData } = useQuery({
     queryFn: () =>
@@ -124,7 +126,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
       if (!userMaxCap) throw new Error("User max limit cap is not defined!")
       if (!userMinCap) throw new Error("User min limit cap is not defined!")
       // Check the amount the user deposit is in a defined range [min deposit amount, max deposit amount]
-      if (tokenAmount < parseFloat(userMinCap) || tokenAmount > parseFloat(userMaxCap)) {
+      if ((tokenAmount > parseFloat(userMaxCap)) || (tokenAmount < parseFloat(userMinCap))) {
         toast(`Limit range for tokens for your tier is from ${userMinCap} to ${userMaxCap}. Please change your investment token value`)
         throw new Error("User deposit range error!")
       }
@@ -133,57 +135,23 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
         toast(`Transaction will not go throgh because you reached deposit token limit cap for LBP which is ${maxTokenLimit}`)
         throw new Error("User deposit maximum cap for LBP reached")
       }
+      if (walletProvider === "") throw new Error("No wallet provider!")
       if (walletState === 'CONNECTED') {
-        if (walletProvider === 'PHANTOM') {
-          // @ts-ignore-next-line
-          const wallet = window?.phantom?.solana
-          if (!wallet.isConnected) {
-            toast("Wallet session timed out, please sign in again")
-            await signInWithPhantom()
-          }
-          const transaction = await getTransactionToSend(tokenAmount, wallet)
-          userDepositFunction({
-            amount: tokenAmount,
-            projectId: projectId ?? "",
-            transaction,
-            walletAddress: address
-          })
-        }
-        if (walletProvider === 'BACKPACK') {
-          // @ts-ignore-next-line
-          const wallet = window?.backpack
-          if (!wallet.isConnected) {
-            toast("Wallet session timed out, please sign in again")
-            await signInWithBackpack()
-          }
-          const transaction = await getTransactionToSend(tokenAmount, wallet)
-          userDepositFunction({
-            amount: tokenAmount,
-            projectId: projectId ?? "",
-            transaction,
-            walletAddress: address
-          })
-          refetchDeposit()
-        }
-        if (walletProvider === 'SOLFLARE') {
-          // @ts-ignore-next-line
-          const wallet = window?.solflare
-          if (!wallet.isConnected) {
-            toast("Wallet session timed out, please sign in again")
-            await signInWithSolflare()
-          }
-          const transaction = await getTransactionToSend(tokenAmount, wallet)
-          userDepositFunction({
-            amount: tokenAmount,
-            projectId: projectId ?? "",
-            transaction,
-            walletAddress: address
-          })
-          refetchDeposit()
-        }
+        const transaction = await signAndSendTransaction({
+          rpcUrl,
+          tokenAmount: parseFloat(data.borgInputValue),
+          tokenMintAddress,
+          walletType: walletProvider
+        })
+        userDepositFunction({
+          amount: tokenAmount,
+          projectId: projectId ?? "",
+          transaction,
+          walletAddress: address
+        })
       } else {
-        toast("Wallet session expired, sign in again!")
-        throw new Error("Wallet not connected, sign in again!")
+          toast("Wallet error. Please try again or contact our support.")
+          throw new Error("Wallet Error")
       }
       /**
        * TODO @api for providing liquidity

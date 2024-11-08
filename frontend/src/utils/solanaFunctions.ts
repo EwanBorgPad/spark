@@ -2,6 +2,7 @@ import { Connection, PublicKey, Transaction, TransactionInstruction } from "@sol
 import { SOLANA_PUBLIC_RPC_URL, USDC_DEV_ADDRESS } from "../../shared/constants"
 import { Commitment, getSplTokenBalance } from "../../shared/SolanaWeb3"
 import { toast } from "react-toastify"
+import { Provider } from "@/hooks/useWalletContext"
 export type Wallet = {
   publicKey: PublicKey,
   isConnected: boolean,
@@ -9,19 +10,21 @@ export type Wallet = {
 }
 /**
  * Function to get serialized and signed transaction from the user
- * @param amount amount of tokens to send
- * @param wallet wallet from the user (Phantom or Backpack)
+ * @param tokenAmount amount of tokens to send
+ * @param walletProvider wallet provider from the user (Phantom, Backpack or Solflare)
+ * @param rpcUrl url of the RPC we will be using
+ * @param tokenMintAddress mint of the token to be transfered
  * @returns serialized transaction in base64 string format
  */
 export async function getTransactionToSend(
-  amount: number,
-  wallet: Wallet,
+  tokenAmount: number,
+  walletProvider: Provider,
+  rpcUrl: string,
+  tokenMintAddress: PublicKey
 ) {
-  const LbpWalletKey = new PublicKey("4GvgisWbCKJCFfksnU44qyRAVwd8YjxuhhsDCDSRjMnL")  // TODO: insert the address of the ACTUAL LBP wallet, this one is Vanja's
-
-  const connection = new Connection(SOLANA_PUBLIC_RPC_URL)
+  const LbpWalletKey = new PublicKey("4GvgisWbCKJCFfksnU44qyRAVwd8YjxuhhsDCDSRjMnL")  // TODO: insert the address of the ACTUAL LBP wallet, this one is Vanja's/ should be done through ctx.env
   
-  const transaction = await createAndSerializeTransaction(amount, wallet, LbpWalletKey, connection)
+  const transaction = await createAndSerializeTransaction(tokenAmount, walletProvider, LbpWalletKey, rpcUrl, tokenMintAddress)
   // convert serialized tx to base64 string for sending it to backend
   const uint8tx = new Uint8Array(transaction)
   const txToSend = uint8ArrayToBase64(uint8tx)
@@ -32,21 +35,24 @@ export async function getTransactionToSend(
  * @param amount amount of token to send
  * @param wallet users wallet
  * @param LbpWalletKey LBP wallet (receiving wallet) public key address
- * @param connection solana RPC connection
+ * @param rpcUrl rpcUrl we use for connection
+ * @param tokenMintAddress mint of the token to be transfered
  * @returns signed and serialized transaction
  */
 async function createAndSerializeTransaction(
     amount: number, 
-    wallet: Wallet, 
+    walletProvider: Provider, 
     LbpWalletKey: PublicKey, 
-    connection: Connection
+    rpcUrl: string,
+    tokenMintAddress: PublicKey
 ) {
-    const tokenMintAddress = new PublicKey(USDC_DEV_ADDRESS)  // hardcoded for now on USDC dev address
-    const transaction = await createSplTokenTransaction(connection, wallet, LbpWalletKey, tokenMintAddress, amount)
-    transaction.feePayer = wallet.publicKey
+    const connection = new Connection(rpcUrl)
+    // TODO: get address of the token we will be using from project
+    const transaction = await createSplTokenTransaction(connection, walletProvider, LbpWalletKey, tokenMintAddress, amount, rpcUrl)
+    transaction.feePayer = walletProvider.publicKey
     transaction.recentBlockhash = ((await connection.getLatestBlockhash()).blockhash)
     // Sign transaction
-    const signedTransaction = await wallet.signTransaction(transaction)
+    const signedTransaction = await walletProvider.signTransaction(transaction)
     const serializedTx = await signedTransaction.serialize()
     return serializedTx
 }
@@ -85,17 +91,17 @@ function createTransferInstruction(
   }
   /**
    * Function to create SPL token transfer transactions
-   * @param connection solana RPC connection
-   * @param wallet wallet from the user (phantom/backpack)
+   * @param walletProvider wallet provider from the user (phantom/backpack/solflare)
    * @param LbpWalletAddres LBP receiving wallet public key
    * @param mintAddress token mint address
    * @param amount amount of token to send
+   * @param rpcUrl url of the rpc used
    * @returns transaction with spl token transfer instruction
    */
-  async function createSplTokenTransaction(connection: Connection, wallet: Wallet, LbpWalletAddres: PublicKey, mintAddress: PublicKey, amount: number) {
+  async function createSplTokenTransaction(connection: Connection, walletProvider: Provider, LbpWalletAddres: PublicKey, mintAddress: PublicKey, amount: number, rpcUrl: string) {
     // Get the associated token accounts
     const fromTokenAccount = await connection.getTokenAccountsByOwner(
-        wallet.publicKey,
+        walletProvider.publicKey,
         { mint: new PublicKey(mintAddress) }
     )
     const toTokenAccount = await connection.getTokenAccountsByOwner(
@@ -111,7 +117,7 @@ function createTransferInstruction(
         throw new Error('Recipient does not have a token account for this mint.')
     }
     // Check users funds to see if he can make the transaction
-    const userBalance = await getSplTokenBalance({rpcUrl: SOLANA_PUBLIC_RPC_URL, address: wallet.publicKey.toBase58(), tokenAddress: mintAddress.toBase58()})  // TODO: replace this with the token mint we will be using
+    const userBalance = await getSplTokenBalance({rpcUrl , address: walletProvider.publicKey.toBase58(), tokenAddress: mintAddress.toBase58()})
     if (userBalance) {
       const convertedUserBalanced = parseFloat(userBalance.amount) * Math.pow(0.1, 6)
       if (convertedUserBalanced < amount) {
@@ -132,7 +138,7 @@ function createTransferInstruction(
     const transferInstruction = createTransferInstruction(
         fromAccountKey,
         toAccountKey,
-        wallet.publicKey,
+        walletProvider.publicKey,
         amount,
         mintAddress
     )
