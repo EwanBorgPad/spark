@@ -98,7 +98,7 @@ export const EligibilityCompliancesSection = ({
   const { address, walletState } = useWalletContext()
   const { projectId } = useParams()
 
-  const { data: eligibilityStatus } = useQuery({
+  const { data: eligibilityStatus, isFetching } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
       return backendApi.getEligibilityStatus({ address, projectId })
@@ -127,6 +127,7 @@ export const EligibilityCompliancesSection = ({
           <QuestComponent key={quest.type} quest={quest} />
         ))}
         {walletState === "CONNECTED" &&
+          isFetching &&
           skeletonCompliances.map((quest) => (
             <Skeleton.Compliance key={quest} />
           ))}
