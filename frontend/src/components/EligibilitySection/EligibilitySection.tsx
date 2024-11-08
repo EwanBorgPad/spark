@@ -23,7 +23,7 @@ export const EligibilityTiersSection = ({
   className?: string
 }) => {
   const { t } = useTranslation()
-  const { address } = useWalletContext()
+  const { address, walletState } = useWalletContext()
   const { projectId } = useParams()
 
   const { data: eligibilityStatus, isLoading } = useQuery({
@@ -81,7 +81,7 @@ export const EligibilityTiersSection = ({
             </div>
           )
         })}
-        {isLoading && <TierSkeletonContainer />}
+        {isLoading && walletState === "CONNECTED" && <TierSkeletonContainer />}
       </div>
     </section>
   )
@@ -93,7 +93,7 @@ export const EligibilityCompliancesSection = ({
   className?: string
 }) => {
   const { t } = useTranslation()
-  const { address } = useWalletContext()
+  const { address, walletState } = useWalletContext()
   const { projectId } = useParams()
 
   const { data: eligibilityStatus } = useQuery({
@@ -124,13 +124,13 @@ export const EligibilityCompliancesSection = ({
         <span>{t("tge.join_launch_pool")}</span>
       </div>
       <div id="compliancesContainer" className="flex flex-col gap-2 rounded-lg">
-        {complianceQuests
-          ? complianceQuests?.map((quest) => (
-              <QuestComponent key={quest.type} quest={quest} />
-            ))
-          : skeletonCompliances.map((quest) => (
-              <Skeleton.Compliance key={quest} />
-            ))}
+        {complianceQuests?.map((quest) => (
+          <QuestComponent key={quest.type} quest={quest} />
+        ))}
+        {walletState === "CONNECTED" &&
+          skeletonCompliances.map((quest) => (
+            <Skeleton.Compliance key={quest} />
+          ))}
       </div>
     </section>
   )
