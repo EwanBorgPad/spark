@@ -91,7 +91,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
   })
 
   const tiersWithCompletion: TierWithCompletion[] = []
-  if (!project) throw new Error("Project not found!")
+  if (!project) throw new Error(`EligibilityService: Project (id=?) not found!`)
   for (const tier of project.json.info.tiers) {
     const tierQuestsWithCompletion: QuestWithCompletion[] = []
 

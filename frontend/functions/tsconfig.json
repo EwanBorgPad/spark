@@ -4,7 +4,7 @@
     "module": "esnext",
     "lib": ["esnext"],
     "types": ["@cloudflare/workers-types"],
-    "moduleResolution": "Node",
+    "moduleResolution": "Classic",
     "resolveJsonModule": true,
 
     /* Linting */
