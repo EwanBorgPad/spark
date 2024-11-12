@@ -56,7 +56,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
  * @param rpcUrl
  * @param cluster
  */
-function getRpcUrlForCluster(rpcUrl: string, cluster: 'mainnet' | 'devnet'): string {
+export function getRpcUrlForCluster(rpcUrl: string, cluster: 'mainnet' | 'devnet'): string {
   if (cluster === 'mainnet') {
     return rpcUrl
       .replace('devnet', 'mainnet')

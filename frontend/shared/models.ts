@@ -146,7 +146,10 @@ export const userDepositSchema = z.object({
   transaction: z.string(),
   amount: z.number(),
   walletAddress: z.string(),
-  projectId: z.string()
+  projectId: z.string(),
+  lbpAddress: z.string(),
+  tokenAddress: z.string(),
+  cluster: z.literal('devnet').or(z.literal('mainnet'))
 })
 export const getUserDepositSchema = userDepositSchema.omit({
   transaction: true,

@@ -22,7 +22,7 @@ export async function getTransactionToSend(
   rpcUrl: string,
   tokenMintAddress: PublicKey
 ) {
-  const LbpWalletKey = new PublicKey("4GvgisWbCKJCFfksnU44qyRAVwd8YjxuhhsDCDSRjMnL")  // TODO: insert the address of the ACTUAL LBP wallet, this one is Vanja's/ should be done through ctx.env
+  const LbpWalletKey = new PublicKey(import.meta.env.VITE_LBP_WALLET_ADDRESS)
   
   const transaction = await createAndSerializeTransaction(tokenAmount, walletProvider, LbpWalletKey, rpcUrl, tokenMintAddress)
   // convert serialized tx to base64 string for sending it to backend
@@ -40,14 +40,13 @@ export async function getTransactionToSend(
  * @returns signed and serialized transaction
  */
 async function createAndSerializeTransaction(
-    amount: number, 
+    amount: number,
     walletProvider: Provider, 
     LbpWalletKey: PublicKey, 
     rpcUrl: string,
     tokenMintAddress: PublicKey
 ) {
     const connection = new Connection(rpcUrl)
-    // TODO: get address of the token we will be using from project
     const transaction = await createSplTokenTransaction(connection, walletProvider, LbpWalletKey, tokenMintAddress, amount, rpcUrl)
     transaction.feePayer = walletProvider.publicKey
     transaction.recentBlockhash = ((await connection.getLatestBlockhash()).blockhash)
@@ -70,9 +69,10 @@ function createTransferInstruction(
     toTokenAccount: PublicKey,
     ownerPublicKey: PublicKey,
     amount: number,
-    tokenMintAccount: PublicKey
+    tokenMintAccount: PublicKey,
+    decimals: number
   ) {
-    const amountInLamports = amount * Math.pow(10, 6) // This is hardcoded for now because of USDC dev 6 decimals. Check the used token specs for decimals
+    const amountInLamports = amount * Math.pow(10, decimals)
   
       const data = Buffer.alloc(9) // 1 byte for instruction type + 8 bytes for amount
       data.writeUInt8(3, 0) // Instruction type for transfer (3 is the code for TRANFSER instruction)
@@ -88,17 +88,23 @@ function createTransferInstruction(
       programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), // SPL Token Program ID
       data,
   })
-  }
-  /**
-   * Function to create SPL token transfer transactions
-   * @param walletProvider wallet provider from the user (phantom/backpack/solflare)
-   * @param LbpWalletAddres LBP receiving wallet public key
-   * @param mintAddress token mint address
-   * @param amount amount of token to send
-   * @param rpcUrl url of the rpc used
-   * @returns transaction with spl token transfer instruction
-   */
-  async function createSplTokenTransaction(connection: Connection, walletProvider: Provider, LbpWalletAddres: PublicKey, mintAddress: PublicKey, amount: number, rpcUrl: string) {
+}
+
+/**
+ * Function to create SPL token transfer transactions
+ * @param walletProvider wallet provider from the user (phantom/backpack/solflare)
+ * @param LbpWalletAddres LBP receiving wallet public key
+ * @param mintAddress token mint address
+ * @param amount amount of token to send
+ * @param rpcUrl url of the rpc used
+ * @returns transaction with spl token transfer instruction
+ */
+async function createSplTokenTransaction(connection: Connection, walletProvider: Provider, LbpWalletAddres: PublicKey, mintAddress: PublicKey, amount: number, rpcUrl: string) {
+    // get decimal number from mint account
+    const mintAccountInfo = await connection.getParsedAccountInfo(mintAddress)
+    if (!mintAccountInfo.value) throw new Error ("Mint address not existent")
+    // @ts-expect-error
+    const decimals: number = mint.value.data.parsed.info.decimals
     // Get the associated token accounts
     const fromTokenAccount = await connection.getTokenAccountsByOwner(
         walletProvider.publicKey,
@@ -116,16 +122,15 @@ function createTransferInstruction(
     if (toTokenAccount.value.length === 0) {
         throw new Error('Recipient does not have a token account for this mint.')
     }
-    // Check users funds to see if he can make the transaction
     const userBalance = await getSplTokenBalance({rpcUrl , address: walletProvider.publicKey.toBase58(), tokenAddress: mintAddress.toBase58()})
     if (userBalance) {
-      const convertedUserBalanced = parseFloat(userBalance.amount) * Math.pow(0.1, 6)
+      const convertedUserBalanced = parseFloat(userBalance.amount) * Math.pow(0.1, decimals)
       if (convertedUserBalanced < amount) {
-        toast("You don't have enough funds, check your wallet again.")
+        toast("You don't have enough tokens, check your wallet again.")
         throw new Error("Not enough funds!")
       }
     } else {
-      toast("You don't have enough funds, check your wallet again.")
+      toast("You don't have enough tokens, check your wallet again.")
       throw new Error("Not enough funds!")
     }
     
@@ -140,7 +145,8 @@ function createTransferInstruction(
         toAccountKey,
         walletProvider.publicKey,
         amount,
-        mintAddress
+        mintAddress,
+        decimals
     )
     // Add the instruction to the transaction
     tx.add(transferInstruction)

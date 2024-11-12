@@ -5,11 +5,11 @@ import { signatureSubscribe } from "../../src/utils/solanaFunctions"
 import { COMMITMENT_LEVEL } from "../../shared/constants"
 import { Buffer } from "buffer"
 import { DepositService } from "../services/depositService"
+import { getRpcUrlForCluster } from "./eligibilitystatus"
 
 type ENV = {
   DB: D1Database
   SOLANA_RPC_URL: string,
-  CLUSTER_NAME: string
 }
 
 /**
@@ -18,35 +18,37 @@ type ENV = {
  * @returns 
  */
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
-  const { SOLANA_RPC_URL, CLUSTER_NAME } = ctx.env
+  const { SOLANA_RPC_URL } = ctx.env
   const db = ctx.env.DB
   try {
-    const connection = new Connection(SOLANA_RPC_URL,{
-      confirmTransactionInitialTimeout: 10000,
-      commitment: COMMITMENT_LEVEL
-    })
     const { data, error } = userDepositSchema.safeParse(await ctx.request.json())
     if (error) {
       return jsonResponse({message: "Bad request"}, 400)
     }
-    const { amount, projectId, transaction, walletAddress } = data
-    console.log("Sending transaction...")
-    const txId = await connection.sendRawTransaction(Buffer.from(transaction, 'base64'), {
-      preflightCommitment: COMMITMENT_LEVEL,
-      skipPreflight: false
+    const cluster = data.cluster ?? 'devnet'
+    const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
+    const connection = new Connection(rpcUrl,{
+      confirmTransactionInitialTimeout: 10000,
+      commitment: COMMITMENT_LEVEL
     })
+    const { amount, projectId, transaction, walletAddress, lbpAddress, tokenAddress } = data
+    console.log("Sending transaction...")
+    const txId = await connection.sendRawTransaction(Buffer.from(transaction, 'base64'))
     console.log("Finished sending the transaction...")
     console.log('Signature status subscribing...')
     const status = await signatureSubscribe(connection, txId)
     console.log(`Signature status finished: ${status}.`)
-    const explorerLink = `https://explorer.solana.com/tx/${txId}?cluster=${CLUSTER_NAME}`
+    const explorerLink = `https://explorer.solana.com/tx/${txId}?cluster=${cluster}`
     console.log(explorerLink)
     if (status === 'confirmed') {
       await DepositService.updateUserDepositAmount({
         db,
         amount,
         projectId,
-        walletAddress
+        walletAddress,
+        lbpAddress,
+        tokenAddress,
+        txId
       }).then(() => {
         console.log("Updated deposited amount successfuly")
       })
@@ -78,6 +80,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
         projectId,
         walletAddress
     })
+    if (!depositedAmount) return jsonResponse({ depositedAmount: 0}, 200)
 
     return jsonResponse({ depositedAmount: depositedAmount.amount_deposited }, 200)
   } catch (e) {

@@ -2,7 +2,10 @@ type UpdateUserDepositAmountArgs = {
     db: D1Database,
     amount: number,
     walletAddress: string,
-    projectId: string
+    projectId: string,
+    lbpAddress: string,
+    txId: string,
+    tokenAddress: string
 }
 
 type GetUsersDepositedAmountArgs = {
@@ -11,16 +14,30 @@ type GetUsersDepositedAmountArgs = {
     projectId: string
 }
 
-const updateUserDepositAmount = async ({ db, amount, projectId, walletAddress }: UpdateUserDepositAmountArgs) => {
-    await db
-    .prepare("UPDATE whitelist SET amount_deposited = amount_deposited + ?1 WHERE address = ?2 AND project_id = ?3 ;")
-    .bind(amount, walletAddress, projectId)
-    .run()
+const updateUserDepositAmount = async ({ db, amount, projectId, walletAddress, lbpAddress, tokenAddress, txId }: UpdateUserDepositAmountArgs) => {
+    // first we check if user exists/if he made any deposits to this LBP
+    let user = await db
+    .prepare("SELECT 1 FROM deposit WHERE from_address = ?1 AND project_id = ?2;")
+    .bind(walletAddress, projectId)
+    .first()
+    if (!user) {
+        // user does not exist with this wallet address and project id combo so we create him
+        await db
+        .prepare("INSERT INTO deposit (from_address, to_address, amount_deposited, project_id, token_address, transaction_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6);")
+        .bind(walletAddress, lbpAddress, amount, projectId, tokenAddress, txId)
+        .first()
+    } else {
+        // user exists, so we update his amount deposited status and last transaction
+        await db
+        .prepare("UPDATE deposit SET amount_deposited = amount_deposited + ?1, transaction_id = ?2 WHERE from_address = ?3 AND project_id = ?4;")
+        .bind(amount, txId, walletAddress, projectId)
+        .first()
+    }
 }
 
 const getUsersDepositedAmount = async ({ db, projectId, walletAddress }: GetUsersDepositedAmountArgs): Promise<any> => {
     const depositedAmount = await db
-    .prepare("SELECT amount_deposited FROM whitelist WHERE address = ?1 AND project_id = ?2 ;")
+    .prepare("SELECT amount_deposited FROM deposit WHERE from_address = ?1 AND project_id = ?2 ;")
     .bind(walletAddress, projectId)
     .first()
 

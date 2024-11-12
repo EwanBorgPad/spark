@@ -31,7 +31,6 @@ CREATE TABLE whitelist (
     address TEXT NOT NULL,
     project_id TEXT NOT NULL,
     tier_id TEXT NOT NULL,
-    amount_deposited REAL DEFAULT 0,
     PRIMARY KEY (address, project_id)
 );
 CREATE TABLE nft_index (
@@ -41,5 +40,14 @@ CREATE TABLE nft_index (
     quoted_at TIMESTAMP NOT NULL,
     json JSONB NOT NULL DEFAULT '{}',
     PRIMARY KEY (nft_address)
+);
+CREATE TABLE deposit (
+    transaction_id TEXT NOT NULL,
+    token_address TEXT NOT NULL,
+    from_address TEXT NOT NULL,
+    to_address TEXT NOT NULL,
+    amount_deposited BIGINT NOT NULL DEFAULT 0,
+    project_id TEXT NOT NULL,
+    PRIMARY KEY (from_address, project_id)
 );
 CREATE INDEX nft_index_owner_address_index ON nft_index(owner_address);

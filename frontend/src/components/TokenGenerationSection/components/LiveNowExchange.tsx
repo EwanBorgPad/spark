@@ -81,9 +81,11 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   })
   const isUserEligible = data?.isEligible
   // Get users max token limit cap
-  const userMaxCap = data?.eligibilityTier?.benefits.maxInvestment // TODO: reverse these
+  const userMaxCap = data?.eligibilityTier?.benefits.maxInvestment
   const userMinCap = data?.eligibilityTier?.benefits.minInvestment
   const rpcUrl = import.meta.env.VITE_SOLANA_RPC_URL
+  const cluster = projectData.cluster
+  const lbpAddress = import.meta.env.VITE_LBP_WALLET_ADDRESS
   const tokenMintAddress = new PublicKey(projectData.info.raisedTokenMintAddress)
 
   const { data: exchangeData } = useQuery({
@@ -126,7 +128,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
       if (!userMaxCap) throw new Error("User max limit cap is not defined!")
       if (!userMinCap) throw new Error("User min limit cap is not defined!")
       // Check the amount the user deposit is in a defined range [min deposit amount, max deposit amount]
-      if ((tokenAmount > parseFloat(userMaxCap)) || (tokenAmount < parseFloat(userMinCap))) {
+      if ((tokenAmount > parseInt(userMaxCap)) || (tokenAmount < parseInt(userMinCap))) {
         toast(`Limit range for tokens for your tier is from ${userMinCap} to ${userMaxCap}. Please change your investment token value`)
         throw new Error("User deposit range error!")
       }
@@ -139,7 +141,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
       if (walletState === 'CONNECTED') {
         const transaction = await signAndSendTransaction({
           rpcUrl,
-          tokenAmount: parseFloat(data.borgInputValue),
+          tokenAmount,
           tokenMintAddress,
           walletType: walletProvider
         })
@@ -147,18 +149,16 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
           amount: tokenAmount,
           projectId: projectId ?? "",
           transaction,
-          walletAddress: address
+          walletAddress: address,
+          lbpAddress,
+          cluster: cluster ?? 'devnet',
+          tokenAddress: projectData.info.raisedTokenMintAddress
+
         })
       } else {
           toast("Wallet error. Please try again or contact our support.")
           throw new Error("Wallet Error")
       }
-      /**
-       * TODO @api for providing liquidity
-       *  - refetch balance
-       *  - refetch Tokens Available
-       */
-      // eslint-disable-next-line no-console
     } catch (error) {
       console.log(error)
     }

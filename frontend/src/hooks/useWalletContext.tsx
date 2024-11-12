@@ -227,32 +227,38 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   async function signAndSendTransaction({ walletType, tokenAmount, rpcUrl, tokenMintAddress }: signAndSendTransactionArgs) {
     let provider
-    if (walletType === 'BACKPACK') {
-      // @ts-ignore-next-line 
-      provider = window?.backpack
-      if (!provider.isConnected) {
-        toast("Wallet session timed out, please sign in again")
-        await signInWithBackpack()
+    try {
+      if (walletType === 'BACKPACK') {
+        // @ts-ignore-next-line 
+        provider = window?.backpack
+        if (!provider.isConnected) {
+          toast("Wallet session timed out, please sign in again")
+          await signInWithBackpack()
+        }
+      } else if (walletType === 'PHANTOM') {
+        // @ts-ignore-next-line 
+        provider = window?.phantom.solana
+        if (!provider.isConnected) {
+          toast("Wallet session timed out, please sign in again")
+          await signInWithPhantom()
+        }
+      } else if (walletType === 'SOLFLARE') {
+        // @ts-ignore-next-line 
+        provider = window?.solflare
+        if (!provider.isConnected) {
+          toast("Wallet session timed out, please sign in again")
+          await signInWithSolflare()
+        }
       }
-    } else if (walletType === 'PHANTOM') {
-      // @ts-ignore-next-line 
-      provider = window?.phantom.solana
-      if (!provider.isConnected) {
-        toast("Wallet session timed out, please sign in again")
-        await signInWithPhantom()
-      }
-    } else if (walletType === 'SOLFLARE') {
-      // @ts-ignore-next-line 
-      provider = window?.solflare
-      if (!provider.isConnected) {
-        toast("Wallet session timed out, please sign in again")
-        await signInWithSolflare()
-      }
+      if (!provider) throw new Error('Provider not found!')
+      const transaction = await getTransactionToSend(tokenAmount, provider, rpcUrl, tokenMintAddress)
+  
+      return transaction
+    } catch (error) {
+      console.log(error)
+      alert(error)
+      return "noTransaction"
     }
-
-    const transaction = await getTransactionToSend(tokenAmount, provider, rpcUrl, tokenMintAddress)
-
-    return transaction
   }
 
   async function signOut() {
