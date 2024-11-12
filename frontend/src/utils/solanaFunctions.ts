@@ -104,7 +104,7 @@ async function createSplTokenTransaction(connection: Connection, walletProvider:
     const mintAccountInfo = await connection.getParsedAccountInfo(mintAddress)
     if (!mintAccountInfo.value) throw new Error ("Mint address not existent")
     // @ts-expect-error
-    const decimals: number = mint.value.data.parsed.info.decimals
+    const decimals: number = mintAccountInfo.value.data.parsed.info.decimals
     // Get the associated token accounts
     const fromTokenAccount = await connection.getTokenAccountsByOwner(
         walletProvider.publicKey,

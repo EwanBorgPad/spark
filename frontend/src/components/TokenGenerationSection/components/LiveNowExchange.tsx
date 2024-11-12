@@ -150,10 +150,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
           projectId: projectId ?? "",
           transaction,
           walletAddress: address,
-          lbpAddress,
-          cluster: cluster ?? 'devnet',
           tokenAddress: projectData.info.raisedTokenMintAddress
-
         })
       } else {
           toast("Wallet error. Please try again or contact our support.")
