@@ -3,6 +3,8 @@
   "language.de": "Deutch",
   "general.english": "English!",
 
+  "swissborg": "SwissBorg",
+
   "connect_wallet": "Connect Wallet",
 
   "done": "Done",
@@ -55,6 +57,9 @@
   "tge.whitelisting.connect_wallet_to_see": "Connect wallet to see the whitelist status",
   "tge.select_wallet": "Select Wallet",
   "tge.please_input_value": "Please input value",
+  "tge.crypto_app_listing": "Crypto App Listing",
+  "tge.learn_more_about": "Learn More about Launch Pool Investing",
+  "tge.join_launch_pool": "Join the Launch Pool",
 
   "sale_over": "Sale Over",
   "sale_over.thank_you": "Thank you for your participation",

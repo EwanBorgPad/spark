@@ -13,13 +13,20 @@ import { getSignInWithTwitterUrl } from "@/hooks/useTwitterContext.tsx"
 import { ExternalLink } from "@/components/Button/ExternalLink.tsx"
 import { useParams } from "react-router-dom"
 import ProvideInvestmentIntentModal from "@/components/Modal/Modals/ProvideInvestmentIntentModal.tsx"
+import Text from "@/components/Text.tsx"
+import SimpleLoader from "../Loaders/SimpleLoader.tsx"
+import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
-export const EligibilityTiersSection = ({ className }: { className?: string }) => {
+export const EligibilityTiersSection = ({
+  className,
+}: {
+  className?: string
+}) => {
   const { t } = useTranslation()
-  const { address } = useWalletContext()
+  const { address, walletState } = useWalletContext()
   const { projectId } = useParams()
 
-  const { data } = useQuery({
+  const { data: eligibilityStatus, isFetching } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
       return backendApi.getEligibilityStatus({ address, projectId })
@@ -28,52 +35,74 @@ export const EligibilityTiersSection = ({ className }: { className?: string }) =
     enabled: Boolean(address) && Boolean(projectId),
   })
 
-  const eligibilityStatus = data
-  if (!eligibilityStatus) return
+  // @TODO - replace checkup below with more reliable source of data
+  if (walletState !== "CONNECTED") return null
 
-  const eligibilityTierId = eligibilityStatus.eligibilityTier?.id ?? null
+  const eligibilityTierId = eligibilityStatus?.eligibilityTier?.id
+    ? eligibilityStatus.eligibilityTier.id
+    : null
 
-  return <section id="tiersSection" className={className}>
-    <div
-      id="tiersHeading"
-      className="flex w-full items-center justify-between py-2"
-    >
-      <span>{t("tiers")}</span>
-      <Badge.Confirmation
-        label={eligibilityStatus.eligibilityTier?.label}
-        isConfirmed={eligibilityStatus.eligibilityTier !== null}
-      />
-    </div>
-    <div
-      id="tiersContainer"
-      className="rounded-lg border-[1px] border-bd-primary bg-secondary p-2"
-    >
-      {eligibilityStatus.tiers.map((tier) => {
-        const tierQuests = sortByCompletionStatus(tier.quests)
-        return (
-          // tier container
-          <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
-            <span>{tier.label}</span>
-            { tier.description && <span className='text-xs text-fg-secondary'>{tier.description}</span> }
-            <div className="flex flex-col gap-2 rounded-2xl">
-              {/* singular tier */}
-              {tierQuests.map((quest) => (
-                <QuestComponent key={quest.type} quest={quest} autoCheck={tier.id === eligibilityTierId} />
-              ))}
-            </div>
-          </div>
-        )
-      })}
-    </div>
-  </section>
+  return (
+    <section id="tiersSection" className={className}>
+      <div
+        id="tiersHeading"
+        className="flex w-full items-center justify-between py-2"
+      >
+        <span>{t("tiers")}</span>
+        {eligibilityStatus && (
+          <Badge.Confirmation
+            label={eligibilityStatus.eligibilityTier?.label}
+            isConfirmed={eligibilityStatus.eligibilityTier !== null}
+          />
+        )}
+      </div>
+      <div
+        id="tiersContainer"
+        className="rounded-lg border-[1px] border-bd-primary bg-secondary p-2"
+      >
+        {!isFetching ? (
+          eligibilityStatus?.tiers.map((tier) => {
+            const tierQuests = sortByCompletionStatus(tier.quests)
+            return (
+              // tier container
+              <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
+                <span>{tier.label}</span>
+                {tier.description && (
+                  <span className="text-xs text-fg-secondary">
+                    {tier.description}
+                  </span>
+                )}
+                <div className="flex flex-col gap-2 rounded-2xl">
+                  {/* singular tier */}
+                  {tierQuests.map((quest) => (
+                    <QuestComponent
+                      key={quest.type}
+                      quest={quest}
+                      autoCheck={tier.id === eligibilityTierId}
+                    />
+                  ))}
+                </div>
+              </div>
+            )
+          })
+        ) : (
+          <TierSkeletonContainer />
+        )}
+      </div>
+    </section>
+  )
 }
 
-export const EligibilityCompliancesSection = ({ className }: { className?: string }) => {
+export const EligibilityCompliancesSection = ({
+  className,
+}: {
+  className?: string
+}) => {
   const { t } = useTranslation()
-  const { address } = useWalletContext()
+  const { address, walletState } = useWalletContext()
   const { projectId } = useParams()
 
-  const { data } = useQuery({
+  const { data: eligibilityStatus, isFetching } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
       return backendApi.getEligibilityStatus({ address, projectId })
@@ -82,27 +111,33 @@ export const EligibilityCompliancesSection = ({ className }: { className?: strin
     enabled: Boolean(address) && Boolean(projectId),
   })
 
-  const eligibilityStatus = data
-  if (!eligibilityStatus) return
+  // @TODO - replace checkup below with more reliable source of data
+  if (walletState !== "CONNECTED") return null
 
-  const complianceQuests = sortByCompletionStatus(eligibilityStatus.compliances)
+  const skeletonCompliances = Array.from({ length: 2 }, (_, i) => i)
+  const complianceQuests = eligibilityStatus?.compliances
+    ? sortByCompletionStatus(eligibilityStatus.compliances)
+    : null
 
-  return <section id="complianceSection" className={className}>
-    <div
-      id="complianceHeading"
-      className="flex w-full items-center justify-between py-2"
-    >
-      <span>{t("legal")}</span>
-    </div>
-    <div
-      id="compliancesContainer"
-      className="flex flex-col gap-2 rounded-lg"
-    >
-      {complianceQuests.map((quest) => (
-        <QuestComponent key={quest.type} quest={quest} />
-      ))}
-    </div>
-  </section>
+  return (
+    <section id="complianceSection" className={className}>
+      <div
+        id="complianceHeading"
+        className="flex w-full items-center justify-between py-2"
+      >
+        <span>{t("tge.join_launch_pool")}</span>
+      </div>
+      <div id="compliancesContainer" className="flex flex-col gap-2 rounded-lg">
+        {!isFetching
+          ? complianceQuests?.map((quest) => (
+              <QuestComponent key={quest.type} quest={quest} />
+            ))
+          : skeletonCompliances.map((quest) => (
+              <Skeleton.Compliance key={quest} />
+            ))}
+      </div>
+    </section>
+  )
 }
 
 type QuestComponentProps = {
@@ -257,7 +292,7 @@ const ProvideInvestmentIntentBtn = () => {
         className="rounded-lg px-3"
         onClick={() => setShowModal(!showModal)}
       >
-        {t('investment.intent.quest.button')}
+        {t("investment.intent.quest.button")}
       </Button>
       {showModal && (
         <ProvideInvestmentIntentModal onClose={() => setShowModal(false)} />
@@ -275,5 +310,97 @@ function sortByCompletionStatus<T extends { isCompleted: boolean }>(
       return 0 // Preserve original order when both are the same
     }
     return a.isCompleted ? -1 : 1 // Completed comes first
+  })
+}
+
+const ComplianceSkeleton = () => {
+  return (
+    <div
+      className={twMerge(
+        "flex w-full flex-col justify-start gap-1 rounded-lg border-b-[1px] border-b-bd-primary bg-emphasis p-4 text-sm",
+      )}
+    >
+      <div className="flex w-full items-center justify-between gap-2">
+        <Text isLoading={true} className="h-[20px] max-w-[220px]" />
+        <SimpleLoader className="text-lg opacity-50" />
+      </div>
+      <div className="mt-2 flex w-full justify-start">
+        <Button
+          color="secondary"
+          size="xs"
+          className="w-[118px] rounded-lg px-3"
+          disabled
+        >
+          <Text isLoading={true} />
+        </Button>
+      </div>
+    </div>
+  )
+}
+const TierQuestSkeleton = () => {
+  return (
+    <div
+      className={twMerge(
+        "flex w-full flex-col justify-start gap-1 rounded-lg border-b-[1px] border-b-bd-primary bg-emphasis p-4 text-sm",
+      )}
+    >
+      <div className="flex w-full items-center justify-between gap-2">
+        <Text isLoading={true} className="h-[18px] max-w-[220px]" />
+        <SimpleLoader className="max-h-[20px] text-lg opacity-50" />
+      </div>
+    </div>
+  )
+}
+
+const Skeleton = {
+  Compliance: ComplianceSkeleton,
+  TierQuest: TierQuestSkeleton,
+}
+
+const TierSkeletonContainer = () => {
+  const { projectData, isFetching } = useProjectDataContext()
+
+  // arbitrary number of quests before projectData is fetched
+  const skeletonArray = Array.from({ length: 3 }, (_, i) => i)
+
+  if (isFetching) {
+    return (
+      <>
+        <div className="flex w-full flex-col gap-2 rounded-lg p-2">
+          <Text isLoading className="!max-w-[240px]" />
+          <div className="flex flex-col gap-2 rounded-2xl">
+            {skeletonArray.map((item) => (
+              <Skeleton.TierQuest key={item} />
+            ))}
+          </div>
+        </div>
+        <div className="flex w-full flex-col gap-2 rounded-lg p-2">
+          <Text isLoading className="!max-w-[240px]" />
+          <div className="flex flex-col gap-2 rounded-2xl">
+            {skeletonArray.map((item) => (
+              <Skeleton.TierQuest key={item} />
+            ))}
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  return projectData.info?.tiers.map((tier) => {
+    return (
+      // tier container
+      <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
+        <span>{tier.label}</span>
+        {tier.description && (
+          <span className="text-xs text-fg-secondary">{tier.description}</span>
+        )}
+        <div className="flex flex-col gap-2 rounded-2xl">
+          {/* singular tier */}
+          {tier.quests.map((_, index) => (
+            <Skeleton.TierQuest key={index} />
+          ))}
+        </div>
+      </div>
+    )
   })
 }
