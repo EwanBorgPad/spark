@@ -1,0 +1,228 @@
+import { Button } from "@/components/Button/Button"
+import React from "react"
+import { Link } from "react-router-dom"
+
+import solanaImg from "@/assets/angelStaking/solana.png"
+import sanctumImg from "@/assets/angelStaking/sanctum.png"
+import angelStakingTexture1Mob from "@/assets/angelStaking/angelStakingTexture1-mob.png"
+import angelStakingTexture1 from "@/assets/angelStaking/angelStakingTexture1.png"
+import angelStakingBottom from "@/assets/angelStaking/angelStakingBottom-min.png"
+import fearlessBackdrop from "@/assets/landingPage/fearless-backdrop-min.png"
+import fearlessBackdropMobile from "@/assets/landingPage/fearless-backdrop-mobile-min.png"
+import divider from "@/assets/landingPage/fearless-divider-min.png"
+import dividerMobile from "@/assets/landingPage/fearless-divider-min.png"
+
+import Img from "@/components/Image/Img"
+import { addDays } from "date-fns"
+import { formatDateForTimer } from "@/utils/date-helpers"
+import CountDownTimer from "@/components/CountDownTimer"
+import DiscoverSection from "@/components/LandingPage/DiscoverSection"
+
+const LAUNCH_DATE = addDays(new Date(), 5.1411)
+
+const LandingPage = () => {
+  return (
+    <main
+      className="relative z-[10] flex w-full max-w-[100vw] flex-col items-center
+     bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]"
+    >
+      <div className="absolute top-12 z-[-1] flex w-screen justify-center overflow-hidden lg:top-[72px]">
+        <img
+          src={angelStakingTexture1Mob}
+          role="presentation"
+          className="ml-[-200px] w-[852px] opacity-50 mix-blend-lighten md:hidden"
+        />
+        <img
+          src={angelStakingTexture1}
+          role="presentation"
+          className="hidden w-full mix-blend-lighten md:flex"
+        />
+      </div>
+      <section className="z-[1] flex w-full flex-col items-start gap-5 px-5 pb-[60px] pt-20 md:pb-[88px] md:pt-[56px]">
+        <div className="flex w-full flex-col items-start md:items-center ">
+          <div className="flex flex-col gap-3 pb-10 md:flex-row md:pb-20">
+            <div className="flex gap-2 rounded-xl border border-bd-primary bg-default/75 px-3 py-2">
+              <span>Built on</span>
+              <Img
+                src={solanaImg}
+                size="custom"
+                customClass="w-[108px] rounded-none"
+                imgClassName="object-contain"
+                alt="Solana logo"
+              />
+            </div>
+            <div className="flex gap-2 rounded-xl border border-bd-primary bg-default/75 px-3 py-2">
+              <span>Powered by</span>
+              <Img
+                src={sanctumImg}
+                size="custom"
+                customClass="w-[85px] rounded-none"
+                imgClassName="object-contain"
+              />
+            </div>
+          </div>
+          <h2 className="pb-4 text-2xl font-semibold leading-snug md:pb-7 md:text-center">
+            <span className="opacity-60"> Unsatisfied with</span>{" "}
+            <span>Exchanges dumping on you?</span>
+          </h2>
+          <h1 className="max-w-[720px] pb-[66px] text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
+            <span>Experience</span>{" "}
+            <span className="text-brand-primary">BetterThanCEX</span>
+          </h1>
+          <CountDownTimer
+            endOfEvent={LAUNCH_DATE}
+            labelAboveTimer={`Launching on ${formatDateForTimer(LAUNCH_DATE)}`}
+            className="bg-none pt-0"
+            timerClass="gap-6 pt-5"
+            labelClass="text-sm font-medium leading-tight opacity-50 text-fg-primary"
+          />
+        </div>
+      </section>
+
+      <section className="relative z-[1] w-full gap-5 overflow-hidden px-5 pt-16 md:px-16 md:pt-28">
+        <div className="absolute bottom-0 left-0 right-0 z-[-1] flex max-w-[1282px] justify-center overflow-hidden md:pb-10">
+          <img
+            src={fearlessBackdropMobile}
+            role="presentation"
+            className="w-screen min-w-0 md:hidden"
+          />
+          <img
+            src={fearlessBackdrop}
+            role="presentation"
+            className="hidden w-full md:flex"
+          />
+        </div>
+
+        <div className="flex w-full flex-col items-center gap-5 pb-6 md:gap-6">
+          <h2 className="max-w-[700px] text-left text-4xl font-semibold leading-[44px] md:text-center md:text-5xl md:text-[40px] md:leading-[48px]">
+            Home of the Fearless Founders, Land of the Thriving TGEs.
+          </h2>
+          <h2 className="max-w-[700px] text-left text-lg font-normal leading-relaxed opacity-75 md:text-center">
+            It&#39;s time to bring the upside back on-chain & fall in love with
+            token launches again. We&#39;re empowering Teams & Communities to
+            reclaim TGEs from the CEX-Cartel.
+          </h2>
+          <Button
+            btnText="Join the Community"
+            size="xl"
+            className="mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal md:mt-[24px] md:w-auto"
+            textClassName="text-base font-medium"
+          />
+          <div className="z-[-1] flex w-screen min-w-0 justify-center overflow-hidden px-0 md:pt-[200px]">
+            <img
+              src={dividerMobile}
+              role="presentation"
+              className="w-screen min-w-0 md:hidden"
+            />
+            <img
+              src={divider}
+              role="presentation"
+              className="hidden w-screen min-w-0 max-w-[800px] md:flex"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="relative z-[1] flex w-full flex-col items-center overflow-hidden px-5 pb-16 pt-0 md:px-16">
+        <h2 className="max-w-[700px] pb-10 text-left text-4xl font-semibold leading-[44px] md:text-center md:text-5xl">
+          Don&#39;t be a CEX-Toy
+        </h2>
+        <div className="flex w-full flex-col items-center">
+          <div className="flex w-full max-w-[800px] flex-col items-start border-t border-bd-primary pb-10 pt-7 md:flex-row md:gap-20 md:py-[60px]">
+            <h3 className="text-nowrap pb-6 text-[32px] font-medium leading-10 md:min-w-[240px] md:text-4xl md:leading-[44px]">
+              For Investors
+            </h3>
+            <div className="flex w-full flex-col md:pt-2">
+              <h4 className="pb-2 text-xl font-medium leading-7 md:text-2xl md:leading-snug">
+                Invest into Real Potential
+              </h4>
+              <p className="flex w-full flex-col gap-2 pb-10 opacity-60">
+                <span>Truly Fair Valuations</span>
+                <span>Minimised Vesting Terms</span>
+                <span>Guaranteed Timeline for TGE</span>
+              </p>
+              <h4 className="pb-2 text-xl font-medium leading-7 md:text-2xl md:leading-snug">
+                And have Nothing Hidden from You
+              </h4>
+              <p className="flex w-full flex-col gap-2 opacity-60">
+                <span>
+                  Full visibility on all terms, from initial angel rounds to the
+                  final OTC deal.
+                </span>
+              </p>
+            </div>
+          </div>
+          <div className="flex w-full max-w-[800px] flex-col items-start border-t border-bd-primary pb-10 pt-7 md:flex-row md:gap-20 md:py-[60px]">
+            <h3 className="text-nowrap pb-6 text-[32px] font-medium leading-10 md:min-w-[240px] md:text-4xl md:leading-[44px]">
+              For Projects
+            </h3>
+            <div className="flex w-full flex-col md:pt-2">
+              <h4 className="pb-2 text-xl font-medium leading-7 md:text-2xl md:leading-snug">
+                Work for your community, not the CEX-Cartel.
+              </h4>
+              <p className="flex w-full flex-col gap-2 opacity-60">
+                <span>Community-Driven Fundraising</span>
+                <span>Listing Execution on DEXs + SwissBorg</span>
+                <span>No Fees BS. Keep your treasury.</span>
+                <span>
+                  TGE-Success Campaign (manage your sellers & generate demand)
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="flex w-full flex-col gap-4 pt-3 md:mt-10 md:max-w-[320px] md:pt-4">
+          <Button
+            btnText="Read our GitBook"
+            size="xl"
+            className="mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal md:w-auto"
+            textClassName="text-base font-medium"
+          />
+          <Button
+            btnText="Committed Founder? Apply Here"
+            size="xl"
+            color="tertiary"
+            className="mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal md:w-auto"
+            textClassName="text-base font-medium"
+          />
+        </div>
+      </section>
+
+      <DiscoverSection />
+
+      <section className="relative z-[1] w-full gap-5 overflow-hidden px-5 py-16 md:px-16 md:py-28">
+        <div className="absolute top-0 z-[-1] flex max-w-[100vw] justify-center overflow-hidden lg:bottom-0">
+          <img
+            src={angelStakingTexture1Mob}
+            role="presentation"
+            className="h-[476px] md:hidden"
+          />
+          <img
+            src={angelStakingBottom}
+            role="presentation"
+            className="hidden w-full md:flex"
+          />
+        </div>
+
+        <div className="flex w-full flex-col items-center md:gap-6">
+          <h2 className="max-w-[520px] pb-5 text-center text-4xl font-semibold leading-[44px] md:max-w-[768px] md:text-5xl">
+            Let&#39;s Heal Web3, Together.
+          </h2>
+          <h3 className="max-w-[500px] pb-10 text-center text-lg font-normal leading-relaxed md:max-w-[768px]">
+            Web3 was built by the degens, for the community. Today, VCs, Market
+            Makers, & CEXs groom young projects as cash cows & exploit
+            communities as exit liquidity.
+          </h3>
+          <Button
+            btnText="Join the Community"
+            size="xl"
+            className="px-4 py-5 text-lg font-medium leading-normal"
+            textClassName="text-lg font-medium"
+          />
+        </div>
+      </section>
+    </main>
+  )
+}
+
+export default LandingPage
