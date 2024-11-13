@@ -4,10 +4,17 @@ import { useQuery } from "@tanstack/react-query"
 import { ScrollRestoration, useNavigate } from "react-router-dom"
 
 import launchPoolsBg from "@/assets/launchPools/launch-pools-background.png"
+import swissborgLogo from "@/assets/launchPools/swissborg-logo.png"
+import jupiterLogo from "@/assets/launchPools/jupiter-logo.png"
+import orcaLogo from "@/assets/launchPools/orca-logo.png"
+import raydiumLogo from "@/assets/launchPools/raydium-logo.png"
 
 import { GetProjectsResponse } from "shared/models"
 import LaunchPoolCard from "@/components/Cards/LaunchPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
+import Img from "@/components/Image/Img"
+
+const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
 const LaunchPools = () => {
   const [projects, setProjects] = useState<ExpandedProject[]>([])
@@ -45,14 +52,30 @@ const LaunchPools = () => {
         role="presentation"
       />
 
-      <section className=": z-[1] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
-        <h1 className="md: w-full text-center text-[40px] leading-tight">
-          Current, past & future projects
+      <section className="z-[1] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
+        <h1 className="text-center text-[40px] font-semibold leading-[120%] md:w-full">
+          Liquidity to the Founders.<br></br>
+          <span className="text-fg-brand-primary">Power to the People.</span>
         </h1>
-        <p className="max-w-[522px] text-center text-xl">
-          Invest in the most promising Web3 startups - building the future we
-          want to live in.
+        <p className="max-w-[522px] text-center text-lg font-normal">
+          Provide liquidity to launch your favorite projects.<br></br>
+          Earn rewards at fixed pre-TGE prices.
         </p>
+        <div className="flex flex-col items-center gap-4 pt-6">
+          <span className="text-sm font-normal text-fg-primary opacity-90">
+            Successful Launch Pools Secure Listings On:
+          </span>
+          <div className="flex items-center justify-center gap-10">
+            {displayLogos.map((logo) => (
+              <Img
+                key={logo}
+                src={logo}
+                imgClassName="object-contain"
+                customClass="rounded-none w-full max-w-[117px]"
+              />
+            ))}
+          </div>
+        </div>
 
         <div className="mt-[64px] flex max-w-[1080px] flex-col items-center">
           <ul className="grid grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
