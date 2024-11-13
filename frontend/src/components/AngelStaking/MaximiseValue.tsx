@@ -7,6 +7,7 @@ import useScrollAnimation from "@/hooks/useScrollAnimation"
 import { useWindowSize } from "@/hooks/useWindowSize"
 import { twMerge } from "tailwind-merge"
 import RegisterYourInterest from "../Button/RegisterYourInterest"
+import JoinCommunityBtn from "../Button/JoinCommunityBtn"
 
 type Item = {
   title: string
@@ -64,7 +65,11 @@ const MaximiseValue = () => {
           </div>
         ))}
       </div>
-      <RegisterYourInterest />
+      <JoinCommunityBtn
+        label="Register Your Interest"
+        className="max-w-[240px] py-3"
+        textClass="px-0 text-base font-medium"
+      />
     </section>
   )
 }

@@ -15,6 +15,7 @@ import MaximiseValue from "@/components/AngelStaking/MaximiseValue"
 import InvestmentFocus from "@/components/AngelStaking/InvestmentFocus"
 import RegisterYourInterest from "@/components/Button/RegisterYourInterest"
 import { useEffect } from "react"
+import JoinCommunityBtn from "@/components/Button/JoinCommunityBtn"
 
 const AngelStaking = () => {
   const navigate = useNavigate()
@@ -65,7 +66,11 @@ const AngelStaking = () => {
           <h2 className="max-w-[500px] text-lg font-normal leading-relaxed md:text-center">
             Automatically accumulate BorgPad investments directly into your wallet, simply by staking $SOL.
           </h2>
-          <RegisterYourInterest />
+          <JoinCommunityBtn
+            label="Register Your Interest"
+            className="max-w-[240px] py-3"
+            textClass="px-0 text-base font-medium"
+          />
         </div>
       </section>
 
@@ -98,7 +103,11 @@ const AngelStaking = () => {
           <h2 className="max-w-[500px] text-center text-lg font-normal leading-relaxed md:max-w-[768px]">
             Register your interest now, before the official launch, to secure your OG status.
           </h2>
-          <RegisterYourInterest />
+          <JoinCommunityBtn
+            label="Register Your Interest"
+            className="max-w-[240px] py-3"
+            textClass="px-0 text-base font-medium"
+          />
         </div>
       </section>
 

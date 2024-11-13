@@ -78,12 +78,7 @@ const Img = ({
         src={!renderFallback ? src : fallbackImg}
         onLoad={() => setIsLoadingImg(false)}
         onError={onError}
-        className={twMerge(
-          "h-full w-full scale-[102%] object-cover",
-          !renderImage ? "hidden" : "",
-          avatarSize[size],
-          imgClassName,
-        )}
+        className={twMerge("h-full w-full object-cover", !renderImage ? "hidden" : "", avatarSize[size], imgClassName)}
       />
     </div>
   )
