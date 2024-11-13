@@ -15,33 +15,21 @@ type GetUsersDepositedAmountArgs = {
 }
 
 const updateUserDepositAmount = async ({ db, amount, projectId, walletAddress, lbpAddress, tokenAddress, txId }: UpdateUserDepositAmountArgs) => {
-    // first we check if user exists/if he made any deposits to this LBP
-    let user = await db
-    .prepare("SELECT 1 FROM deposit WHERE from_address = ?1 AND project_id = ?2;")
-    .bind(walletAddress, projectId)
-    .first()
-    if (!user) {
-        // user does not exist with this wallet address and project id combo so we create him
-        await db
-        .prepare("INSERT INTO deposit (from_address, to_address, amount_deposited, project_id, token_address, transaction_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6);")
-        .bind(walletAddress, lbpAddress, amount, projectId, tokenAddress, txId)
-        .first()
-    } else {
-        // user exists, so we update his amount deposited status and last transaction
-        await db
-        .prepare("UPDATE deposit SET amount_deposited = amount_deposited + ?1, transaction_id = ?2 WHERE from_address = ?3 AND project_id = ?4;")
-        .bind(amount, txId, walletAddress, projectId)
-        .first()
-    }
+    await db
+    .prepare("INSERT INTO deposit (from_address, to_address, amount_deposited, project_id, token_address, transaction_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6);")
+    .bind(walletAddress, lbpAddress, amount, projectId, tokenAddress, txId)
+    .run()
 }
 
-const getUsersDepositedAmount = async ({ db, projectId, walletAddress }: GetUsersDepositedAmountArgs): Promise<any> => {
-    const depositedAmount = await db
-    .prepare("SELECT amount_deposited FROM deposit WHERE from_address = ?1 AND project_id = ?2 ;")
+const getUsersDepositedAmount = async ({ db, projectId, walletAddress }: GetUsersDepositedAmountArgs): Promise<number> => {
+    const data = await db
+    .prepare("SELECT amount_deposited FROM deposit WHERE from_address = ?1 AND project_id = ?2;")
     .bind(walletAddress, projectId)
-    .first()
-
-    return depositedAmount
+    .all<any>()
+    if (!data.results.length) return 0
+    const amountsDeposited = data.results.map(obj => obj.amount_deposited)
+    const depositedAmountSum = amountsDeposited.reduce((accumulator, current) => accumulator + current)
+    return depositedAmountSum
 }
 
 

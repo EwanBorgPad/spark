@@ -84,8 +84,6 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const userMaxCap = data?.eligibilityTier?.benefits.maxInvestment
   const userMinCap = data?.eligibilityTier?.benefits.minInvestment
   const rpcUrl = import.meta.env.VITE_SOLANA_RPC_URL
-  const cluster = projectData.cluster
-  const lbpAddress = import.meta.env.VITE_LBP_WALLET_ADDRESS
   const tokenMintAddress = new PublicKey(projectData.info.raisedTokenMintAddress)
 
   const { data: exchangeData } = useQuery({
@@ -111,14 +109,6 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   } = useForm<FormInputs>()
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
-    /*
-      List of checks that needs to be implemented provided by Yann on slack:
-      Check the user eligible -> isEligible needs to be true (Check if the user is not from list of countries and he meets terms of service) (DONE)
-      Check the amount the user deposit is in a defined range [min deposit amount, max deposit amount] -> (DONE)
-      Check current deposited amount + user deposit amount < max cap -> need DB integration and tracking users deposits into the LBP. (DONE)
-      Check the user have enough funds in his wallet to perform the deposit -> Implemented in createSplTokenTransaction function (DONE)
-      Check that we are within the time window of the fund collection phase -> Frontend already validates this by having phases and limits user by UI (DONE)
-    */
     try {
       if (!isUserEligible) {
         toast("You are not eligible to make a deposit!")
@@ -149,7 +139,6 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
           amount: tokenAmount,
           projectId: projectId ?? "",
           transaction,
-          walletAddress: address,
           tokenAddress: projectData.info.raisedTokenMintAddress
         })
       } else {

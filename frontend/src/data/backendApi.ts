@@ -9,7 +9,8 @@ import {
 } from "../../shared/models.ts"
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
+const API_BASE_URL = 'http://localhost:8788/api'
 const GET_ELIGIBILITY_STATUS_API = API_BASE_URL + "/eligibilitystatus"
 const POST_ACCEPT_TERMS_OF_USE_API = API_BASE_URL + "/acceptterms"
 const POST_INVESTMENT_INTENT_API = API_BASE_URL + "/investmentintent"
@@ -49,7 +50,6 @@ const getInvestmentIntentSummary = async ({  projectId, }: GetInvestmentIntentSu
 export type PostUserDepositRequest = {
   transaction: string,
   amount: number,
-  walletAddress: string,
   projectId: string,
   tokenAddress: string
 }
@@ -201,14 +201,13 @@ const uploadFileToBucket = async ({
 }
 
 const postUserDeposit = async ({
-  amount, projectId, transaction, walletAddress, tokenAddress
+  amount, projectId, transaction, tokenAddress
 }: PostUserDepositRequest): Promise<any> => {
   const url = new URL(USER_DEPOSIT_URL, window.location.href)
   const requestObject = {
     amount,
     projectId,
     transaction,
-    walletAddress,
     tokenAddress
   }
   const request = JSON.stringify(requestObject)

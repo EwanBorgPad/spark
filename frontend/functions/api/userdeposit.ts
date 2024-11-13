@@ -1,6 +1,6 @@
 import { jsonResponse } from "./cfPagesFunctionsUtils"
-import { Connection } from "@solana/web3.js"
-import { userDepositSchema } from "../../shared/models"
+import { Connection, Transaction } from "@solana/web3.js"
+import { ProjectModel, userDepositSchema } from "../../shared/models"
 import { signatureSubscribe } from "../../src/utils/solanaFunctions"
 import { COMMITMENT_LEVEL } from "../../shared/constants"
 import { Buffer } from "buffer"
@@ -8,12 +8,13 @@ import { DepositService } from "../services/depositService"
 import { getRpcUrlForCluster } from "./eligibilitystatus"
 import { ProjectService } from "../services/projectService"
 import { EligibilityService } from "../services/eligibilityService"
-import { drizzle, DrizzleD1Database } from "drizzle-orm/d1"
+import { drizzle } from "drizzle-orm/d1"
+import { decodeBase64 } from "tweetnacl-util"
 
 type ENV = {
   DB: D1Database
   SOLANA_RPC_URL: string,
-  LBP_ADDRESS: string
+  LBP_WALLET_ADDRESS: string
 }
 
 /**
@@ -22,7 +23,7 @@ type ENV = {
  * @returns 
  */
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
-  const { SOLANA_RPC_URL, LBP_ADDRESS } = ctx.env
+  const { SOLANA_RPC_URL, LBP_WALLET_ADDRESS } = ctx.env
   // TODO: refactor all services to use DrizzleDb
   const db = ctx.env.DB
   const drizzleDb = drizzle(ctx.env.DB, { logger: true })
@@ -32,7 +33,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     if (error) {
       return jsonResponse({message: "Bad request"}, 400)
     }
-    const { amount, projectId, transaction, walletAddress, tokenAddress } = data
+    const { amount, projectId, transaction, tokenAddress } = data
+
+    const deserializedTx = Transaction.from(Buffer.from(transaction, 'base64'))
+    const userWalletAddress = deserializedTx.signatures[0].publicKey.toBase58()
 
     // All validations
     const project = await ProjectService.findProjectById({db, id: projectId})
@@ -40,8 +44,14 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const depositedAmount: number = await DepositService.getUsersDepositedAmount({
       db,
       projectId,
-      walletAddress
+      walletAddress: userWalletAddress
     })
+    const startDate = project?.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date
+    const endDate = project?.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
+    const now = new Date(Date.now())
+    if (startDate && endDate){
+      if (now < startDate || now > endDate) return jsonResponse({ message: "You are trying to invest "})
+    }
     const cluster = project?.cluster ?? 'devnet'
     const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
     const connection = new Connection(rpcUrl,{
@@ -49,7 +59,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       commitment: COMMITMENT_LEVEL
     })
     const eligibilityData = await EligibilityService.getEligibilityStatus({
-      address: walletAddress,
+      address: userWalletAddress,
       db: drizzleDb,
       projectId,
       rpcUrl
@@ -83,10 +93,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         db,
         amount,
         projectId,
-        walletAddress,
+        walletAddress: userWalletAddress,
         tokenAddress,
         txId,
-        lbpAddress: LBP_ADDRESS
+        lbpAddress: LBP_WALLET_ADDRESS
       })
     }
     return jsonResponse({ message: "User deposited successfully!", transactionLink: explorerLink}, 200)
@@ -122,7 +132,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     })
     if (!depositedAmount) return jsonResponse({ depositedAmount: 0}, 200)
 
-    return jsonResponse({ depositedAmount: depositedAmount.amount_deposited }, 200)
+    return jsonResponse({ depositedAmount: depositedAmount }, 200)
   } catch (e) {
     console.error(e)
     return jsonResponse({ message: "Something went wrong..." }, 500)

@@ -146,7 +146,6 @@ export const rewardsSchema = z.object({
 export const userDepositSchema = z.object({
   transaction: z.string(),
   amount: z.number(),
-  walletAddress: z.string(),
   projectId: z.string(),
   tokenAddress: z.string(),
 })

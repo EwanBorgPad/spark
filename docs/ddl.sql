@@ -48,6 +48,6 @@ CREATE TABLE deposit (
     to_address TEXT NOT NULL,
     amount_deposited BIGINT NOT NULL DEFAULT 0,
     project_id TEXT NOT NULL,
-    PRIMARY KEY (from_address, project_id)
+    PRIMARY KEY (transaction_id)
 );
 CREATE INDEX nft_index_owner_address_index ON nft_index(owner_address);
