@@ -1,10 +1,14 @@
 import { isAfter } from "date-fns/isAfter"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { twMerge } from "tailwind-merge"
 
 type CountDownTimerProps = {
   endOfEvent: Date
   labelAboveTimer: string
+  className?: string
+  timerClass?: string
+  labelClass?: string
 }
 
 type TUseTimer = {
@@ -45,6 +49,9 @@ const calculateTimeLeft = (endOfEvent: Date) =>
 const CountDownTimer = ({
   endOfEvent,
   labelAboveTimer,
+  className,
+  timerClass,
+  labelClass,
 }: CountDownTimerProps) => {
   const { t } = useTranslation()
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(endOfEvent))
@@ -67,8 +74,15 @@ const CountDownTimer = ({
   const { days, hours, minutes, seconds } = getCountdownTime(timeLeft)
 
   return (
-    <div className="flex h-[120px] w-full flex-col items-center rounded-t-xl bg-[radial-gradient(50%_65%_at_50%_0%,rgba(188,254,143,0.15)_0%,rgba(0,0,0,0.0)_100%)] pt-8">
-      <span className="text-sm font-light text-fg-primary/60">
+    <div
+      className={twMerge(
+        "flex h-[120px] w-full flex-col items-center rounded-t-xl bg-[radial-gradient(50%_65%_at_50%_0%,rgba(188,254,143,0.15)_0%,rgba(0,0,0,0.0)_100%)] pt-8",
+        className,
+      )}
+    >
+      <span
+        className={twMerge("text-sm font-light text-fg-primary/60", labelClass)}
+      >
         {labelAboveTimer}
       </span>
       {isEventFinished ? (
@@ -76,7 +90,12 @@ const CountDownTimer = ({
           {t("tge.distribution_ended")}
         </span>
       ) : (
-        <div className="flex items-start font-geist-mono text-2xl">
+        <div
+          className={twMerge(
+            "flex items-start font-geist-mono text-2xl",
+            timerClass,
+          )}
+        >
           <div className="flex flex-col items-center">
             <span className="font-semibold">{days}</span>
             <span className="text-[10px] leading-none opacity-60">days</span>

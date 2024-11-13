@@ -28,7 +28,12 @@ const Project = () => {
       <section className="flex w-full flex-col items-center gap-10 px-4">
         <div className="flex w-full flex-col justify-between gap-6 lg:max-w-[760px] lg:flex-row">
           <div className="flex flex-col gap-6 lg:flex-row">
-            <Img src={projectData?.info.logoUrl} isFetchingLink={isLoading} size="20" imgClassName="scale-[102%]" />
+            <Img
+              src={projectData?.info.logoUrl}
+              isFetchingLink={isLoading}
+              size="20"
+              imgClassName="scale-[102%]"
+            />
             <div className="flex flex-col gap-1">
               <Text text={projectData.info.title} as="h1" className="font-semibold" isLoading={isLoading} />
               <Text

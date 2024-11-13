@@ -50,7 +50,6 @@ const NavigationBar = ({
   const navigate = useNavigate()
 
   const isItemActive = (item: NavigationItem) => {
-    if (location.pathname === "/" && item.path === "/launch-pools") return true
     return location.pathname === item.path
   }
 
@@ -112,6 +111,10 @@ const Header = () => {
     closeMenu()
   }
 
+  // @SolanaID - remove header before web app is official launched
+  const displayNavigationBar =
+    import.meta.env.VITE_ENVIRONMENT_TYPE !== "production"
+
   return (
     <>
       <header
@@ -135,10 +138,12 @@ const Header = () => {
           </Button>
 
           {/* @SolanaID - uncomment NavigationBar below */}
-          {/* <NavigationBar
-            className="hidden md:flex"
-            itemClickedCallback={closeMenu}
-          /> */}
+          {displayNavigationBar && (
+            <NavigationBar
+              className="hidden md:flex"
+              itemClickedCallback={closeMenu}
+            />
+          )}
 
           {!showHamburgerMenu &&
             (walletState === "CONNECTED" ? (

@@ -180,6 +180,7 @@ export default {
       animation: {
         "top-down": "top-down 0.1s ease-out forwards",
         "fade-in": "fade-in 0.2s ease-in-out",
+        "fade-in-from-below-slow": "fade-in 1s ease-in-out forwards",
         "fade-in-from-above": "fade-in-from-above 0.4s ease-out",
         "fade-out": "fade-out 0.31s ease-in-out",
         "fade-out-to-above": "fade-out-to-above 0.41s ease-out",

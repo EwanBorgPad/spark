@@ -44,7 +44,7 @@ export function SimpleModal({
       {/* fixed backdrop */}
       <div
         ref={backdropRef}
-        className="fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75 px-5 backdrop-blur"
+        className="fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75 px-5"
       ></div>
 
       {/* modal wrapper */}
@@ -61,8 +61,14 @@ export function SimpleModal({
           )}
         >
           <div className="sticky left-0 right-0 top-0 z-[31] grid w-full grid-cols-modal-header grid-rows-1 items-start bg-transparent p-4 text-center">
-            {onClose && showCloseBtn && <CloseButton onClose={closeModalCallback} />}
-            {title && <h1 className="flex-1 text-body-xl-semibold text-white">{title}</h1>}
+            {onClose && showCloseBtn && (
+              <CloseButton onClose={closeModalCallback} />
+            )}
+            {title && (
+              <h1 className="flex-1 text-body-xl-semibold text-white">
+                {title}
+              </h1>
+            )}
           </div>
 
           {children}

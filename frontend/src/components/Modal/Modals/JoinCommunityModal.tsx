@@ -1,8 +1,8 @@
 import React from "react"
 import { SimpleModal } from "../SimpleModal"
 import Img from "@/components/Image/Img"
-import backdrop from "@/assets/angelStaking/RYI-backdrop.png"
-import telegram from "@/assets/angelStaking/telegram.png"
+import backdrop from "@/assets/landingPage/RYI-backdrop.png"
+import telegram from "@/assets/landingPage/telegram.png"
 import { Icon } from "@/components/Icon/Icon"
 
 type Props = {
@@ -16,15 +16,16 @@ const JoinCommunityModal = ({ onClose }: Props) => {
       onClose={onClose}
       className="relative flex w-full max-w-[800px] flex-col items-center gap-10 rounded-xl bg-[#090E19] pb-20"
     >
-      <div className="z-[2] flex max-w-[510px] flex-col items-center gap-4 px-5">
+      <div className="z-[2] flex max-w-[510px] flex-col items-center gap-4">
         <h2 className="text-center text-[32px] font-semibold leading-[40px] text-fg-primary">
           Ready to put on your angel wings?
         </h2>
         <p className="px-10 text-center text-fg-secondary">
-          Join our official channels and you&#39;ll be the first to know when it&#39;s time to fly!
+          Join our official channels and you&#39;ll be the first to know when
+          it&#39;s time to fly!
         </p>
       </div>
-      <div className="z-[2] flex w-full max-w-[370px] flex-col gap-4 px-4">
+      <div className="z-[2] flex w-full max-w-[370px] flex-col gap-4">
         <a
           href={"https://x.com/BorgPadHQ"}
           target={"_blank"}
@@ -36,10 +37,14 @@ const JoinCommunityModal = ({ onClose }: Props) => {
           <div className="rounded-full bg-black p-[7px]">
             <Icon icon={"SvgTwitter"} className={"text-xl leading-none"} />
           </div>
-          <span className="text-nowrap text-base font-medium">Follow @BorgPadHQ on X</span>
+          <span className="text-nowrap text-base font-medium">
+            Follow @BorgPadHQ on X
+          </span>
           <Icon
             icon={"SvgArrowRight"}
-            className={"text-xl leading-none opacity-50 transition-transform group-hover:translate-x-3"}
+            className={
+              "text-xl leading-none opacity-50 transition-transform group-hover:translate-x-3"
+            }
           />
         </a>
         <a
@@ -51,10 +56,14 @@ const JoinCommunityModal = ({ onClose }: Props) => {
           }
         >
           <img src={telegram} className="h-8 w-8" />
-          <span className="text-nowrap text-base font-medium">Join Our Telegram Group</span>
+          <span className="text-nowrap text-base font-medium">
+            Join Our Telegram Group
+          </span>
           <Icon
             icon={"SvgArrowRight"}
-            className={"text-xl leading-none opacity-50 transition-transform group-hover:translate-x-3"}
+            className={
+              "text-xl leading-none opacity-50 transition-transform group-hover:translate-x-3"
+            }
           />
         </a>
       </div>
