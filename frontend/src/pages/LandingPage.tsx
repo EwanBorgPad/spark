@@ -1,6 +1,5 @@
-import { Button } from "@/components/Button/Button"
-import React from "react"
-import { Link, ScrollRestoration } from "react-router-dom"
+import { useEffect } from "react"
+import { ScrollRestoration, useNavigate } from "react-router-dom"
 
 import solanaImg from "@/assets/angelStaking/solana.png"
 import sanctumImg from "@/assets/angelStaking/sanctum.png"
@@ -24,6 +23,17 @@ import DontBeACexToy from "@/components/LandingPage/DontBeACexToy"
 const LAUNCH_DATE = addDays(new Date(), 5.1411)
 
 const LandingPage = () => {
+  const navigate = useNavigate()
+
+  //////////////////////////////////////////////////////////////////////////////
+  // @SolanaId - useEffect below is for Solana ID whitelisting launch (01.11.2024) - remove this //redirection when we officially launch the rest of the app
+  //////////////////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (import.meta.env.VITE_ENVIRONMENT_TYPE === "production") {
+      navigate("/launch-pools/solana-id")
+    }
+  }, [navigate])
+
   return (
     <main
       className="relative z-[10] flex w-full max-w-[100vw] flex-col items-center
