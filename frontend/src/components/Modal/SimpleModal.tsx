@@ -1,6 +1,5 @@
 import { twMerge } from "tailwind-merge"
 import { ReactNode, useEffect, useRef } from "react"
-
 import { Portal } from "@/components/Portal/Portal"
 import { Button } from "../Button/Button"
 import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
@@ -45,13 +44,11 @@ export function SimpleModal({
       {/* fixed backdrop */}
       <div
         ref={backdropRef}
-        className={
-          "fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75 backdrop-blur"
-        }
+        className="fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75 px-5"
       ></div>
 
       {/* modal wrapper */}
-      <div className="fixed inset-0 z-[30] flex h-screen w-screen items-center">
+      <div className="fixed inset-0 z-[30] flex h-screen w-screen items-center px-5 ">
         {/* modal */}
         <div
           ref={modalRef}

@@ -1,8 +1,13 @@
-import React from "react"
+import { useRef } from "react"
 import maximise1 from "@/assets/angelStaking/maximise1.png"
 import maximise2 from "@/assets/angelStaking/maximise2.png"
 import maximise3 from "@/assets/angelStaking/maximise3.png"
 import Img from "../Image/Img"
+import useScrollAnimation from "@/hooks/useScrollAnimation"
+import { useWindowSize } from "@/hooks/useWindowSize"
+import { twMerge } from "tailwind-merge"
+import RegisterYourInterest from "../Button/RegisterYourInterest"
+import JoinCommunityBtn from "../Button/JoinCommunityBtn"
 
 type Item = {
   title: string
@@ -32,24 +37,39 @@ const content: Item[] = [
 ]
 
 const MaximiseValue = () => {
+  const ref = useRef<HTMLDivElement>(null)
+  const { isMobile } = useWindowSize()
+
+  const { isActive } = useScrollAnimation({
+    ref: ref,
+    threshold: isMobile ? 0.15 : 0.25,
+  })
+
   return (
-    <section className="flex w-full flex-col items-center gap-12 px-5 py-16 md:gap-20 md:px-16 md:py-28">
-      <h2 className="text-center text-4xl font-semibold leading-normal md:text-5xl">
-        Maximise the value of your SOL
-      </h2>
-      <div className="flex w-full flex-col items-center justify-center gap-12 md:flex-row">
+    <section
+      ref={ref}
+      className={twMerge(
+        "transition-translate-n-opacity flex w-full scale-90 flex-col items-center gap-12 px-5 py-16 opacity-0 duration-[650ms] ease-out md:gap-20 md:px-16 md:py-28",
+        isActive && "translate-y-0 scale-100 opacity-100",
+      )}
+    >
+      <h2 className="text-center text-4xl font-semibold leading-normal md:text-5xl">Maximise the value of your SOL</h2>
+      <div className={"flex w-full flex-col items-center justify-center gap-12 md:flex-row"}>
         {content.map((item, index) => (
           <div key={index} className="flex max-w-[405px] flex-col gap-6">
             <Img src={item.imgUrl} />
             <div className="flex w-full flex-col gap-3">
-              <h3 className="text-2xl font-semibold text-fg-primary">
-                {item.title}
-              </h3>
+              <h3 className="text-2xl font-semibold text-fg-primary">{item.title}</h3>
               <p className="text-fg-secondary">{item.description}</p>
             </div>
           </div>
         ))}
       </div>
+      <JoinCommunityBtn
+        label="Register Your Interest"
+        className="max-w-[240px] py-3"
+        textClass="px-0 text-base font-medium"
+      />
     </section>
   )
 }
