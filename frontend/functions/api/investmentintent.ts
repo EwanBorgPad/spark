@@ -38,7 +38,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     console.log({ existingUser })
 
-    const investmentIntent = { amount, message, signature }
+    const investmentIntent = { amount, message, signature, providedAt: new Date() }
 
     if (!existingUser) {
       console.log("User not found in db, inserting...")

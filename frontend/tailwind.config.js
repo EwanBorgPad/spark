@@ -65,8 +65,8 @@ export default {
         // other colors
       },
       backgroundImage: {
-        texture: "url(/src/assets/texture-min.png)",
-        "texture-zoomed-out": "url(/src/assets/grainy-horizontal.png)",
+        texture: "url(/src/assets/grainy-main.png)",
+        "texture-zoomed-out": "url(/src/assets/grainy-top1.png)",
         "top-contributor": "url(/src/assets/bg-top-contributor.png)",
         fallback: "url(/src/assets/fallback.png)",
       },
@@ -87,6 +87,7 @@ export default {
       },
       gridTemplateColumns: {
         "borg-input": "minmax(180px, 1fr) 88px",
+        "modal-header": "24px minmax(24px, 1fr)",
         "curator-socials": "128px, 24px, 328px, 32px",
         "bo-timeline": "160px minmax(320px, 1fr)",
       },

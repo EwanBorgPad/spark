@@ -4,7 +4,11 @@ mockDate()
 
 import React from "react"
 import ReactDOM from "react-dom/client"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query"
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
 
 import App from "./App"
@@ -23,9 +27,14 @@ import SomethingWentWrong from "./components/SomethingWentWrong"
 import "./index.css"
 
 import { Buffer } from "buffer"
+import { toast } from "react-toastify"
 window.Buffer = Buffer
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error) => toast.error(error.message, { theme: "colored" }), // catch all useQuery errors
+  }),
+})
 
 const router = createBrowserRouter([
   {

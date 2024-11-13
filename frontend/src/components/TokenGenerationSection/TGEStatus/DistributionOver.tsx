@@ -43,7 +43,7 @@ const DistributionOver = ({ eventData }: DistributionOverProps) => {
             {t("distribution_over.distribution_ended")}
           </span>{" "}
           <span className="text-center">
-            {formatDateForDisplay(eventData.date)}
+            {eventData.date && formatDateForDisplay(eventData.date)}
           </span>
         </p>
         <span className="text-sm text-fg-tertiary">

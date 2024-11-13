@@ -535,7 +535,7 @@ const TermsOfUse = () => {
             <h2 className="text-xl">24. CONTACT</h2>{" "}
             <p>
               If you wish to contact us please do so at the following e-mail
-              address: support@borgpad.com
+              address: team@borgpad.com
             </p>
           </li>
         </ol>

@@ -12,6 +12,7 @@
       "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/chain-icon-712293612"
     },
     "totalTokensForSale": 42000,
+    "totalTokensForRewardDistribution": 18020,
     "curator": {
       "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/aurelia/curator-avatar-862037941",
       "fullName": "Molly Millions",
@@ -77,9 +78,9 @@
         "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/aurelia/chain-icon-967667980",
         "ticker": "LRC"
       },
-      "fixedCoinPriceInBorg": 0.398,
-      "whitelistParticipants": 332,
+      "fixedTokenPriceInUSD": 0.398,
       "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
+      "fdv": 319401313,
       "liquidityPool": {
         "name": "Raydium",
         "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/liquidity-pool-icon-738904576",
@@ -181,7 +182,6 @@
       }
     ]
   },
-  "whitelistParticipants": 119,
   "saleData": {
     "availableTokens": 12403,
     "saleSucceeded": true,

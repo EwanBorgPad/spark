@@ -6,7 +6,12 @@ import WhitelistingContent from "../components/WhitelistingContent"
 import CountDownTimer from "@/components/CountDownTimer"
 import { TgeWrapper } from "../components/Wrapper"
 import { formatDateForTimer } from "@/utils/date-helpers"
-import { EligibilitySection } from "@/components/EligibilitySection/EligibilitySection.tsx"
+import {
+  EligibilityCompliancesSection,
+  EligibilityTiersSection,
+} from "@/components/EligibilitySection/EligibilitySection.tsx"
+import React from "react"
+import DataRoom from "@/components/LaunchPool/DataRoom"
 
 type RegistrationOpensPhaseProps = {
   eventData: ExpandedTimelineEventType
@@ -19,11 +24,15 @@ const RegistrationOpensPhase = ({ eventData }: RegistrationOpensPhaseProps) => {
   const { t } = useTranslation()
 
   return (
-    <div className="flex w-full flex-col items-center gap-[52px]">
+    <div className="flex w-full flex-col items-center gap-[52px] px-4">
       <BasicTokenInfo />
-      <EligibilitySection />
-      <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
-        <TgeWrapper label={t("tge.whitelisting")}>
+
+      <DataRoom />
+
+      <EligibilityCompliancesSection className="w-full max-w-[432px]" />
+      {/* main section with borg/token math */}
+      <div className="flex w-full max-w-[432px] flex-col gap-5">
+        <TgeWrapper label={t("tge.lp_terms")}>
           {eventData?.nextEventDate && (
             <>
               <CountDownTimer
@@ -34,7 +43,16 @@ const RegistrationOpensPhase = ({ eventData }: RegistrationOpensPhaseProps) => {
           )}
           <WhitelistingContent />
         </TgeWrapper>
+        <a
+          href="https://swissborg.com/blog/become-market-maker-with-agora-alpha"
+          target="_blank"
+          className="text-center text-sm font-light text-fg-secondary underline"
+          rel="noreferrer"
+        >
+          {t("tge.learn_more_about")}
+        </a>
       </div>
+      <EligibilityTiersSection className="w-full max-w-[432px]" />
     </div>
   )
 }

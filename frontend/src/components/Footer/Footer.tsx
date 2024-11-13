@@ -33,7 +33,11 @@ const Footer = ({ showBackground = true }: Props) => {
           <Logo />
           <span className="text-sm">© 2024</span>
         </div>
-        <div className="flex items-center gap-5 text-sm">
+        <div
+          className={twMerge(
+            "flex flex-col items-center gap-2 text-sm md:flex-row lg:gap-5",
+          )}
+        >
           <Link to="/terms-of-use">
             <Button
               color="plain"
@@ -41,7 +45,7 @@ const Footer = ({ showBackground = true }: Props) => {
               className="text-sm font-normal"
             />
           </Link>
-          <div className="h-5 border-l-[1px] border-l-fg-primary/50"></div>
+          <div className="hidden h-5 border-l-[1px] border-l-fg-primary/50 md:block"></div>
           <Link to="/terms-and-conditions">
             <Button
               color="plain"
@@ -49,10 +53,10 @@ const Footer = ({ showBackground = true }: Props) => {
               className="text-sm font-normal"
             />
           </Link>
-          <div className="h-5 border-l-[1px] border-l-fg-primary/50"></div>
+          <div className="hidden h-5 border-l-[1px] border-l-fg-primary/50 md:block"></div>
           <ExternalLink.Icon
             externalLink={{ iconType: "X_TWITTER", url: "#" }}
-            className="mx-2 h-[1em] w-[1em] border-none p-0 text-3xl"
+            className="mx-2 my-[4px] h-[1em] w-[1em] border-none p-0 text-3xl"
             iconClassName="text-xl"
           />
         </div>

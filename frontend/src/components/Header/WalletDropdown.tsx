@@ -1,5 +1,5 @@
 import { useRef, useState } from "react"
-import { useWalletContext } from "@/hooks/useWalletContext.tsx"
+import { SupportedWallet, useWalletContext, WalletState } from "@/hooks/useWalletContext.tsx"
 import { AvailableIcons, Icon } from "@/components/Icon/Icon.tsx"
 import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
 import { twMerge } from "tailwind-merge"
@@ -14,9 +14,13 @@ export const WalletDropdown = ({ className }: Props) => {
     useWalletContext()
 
   const toggleDropdown = () => setIsOpen((isOpen) => !isOpen)
-
-  const icon: AvailableIcons =
-    walletProvider === "PHANTOM" ? "SvgPhantom" : "SvgBackpack"
+  const iconMap: Record<SupportedWallet | "", AvailableIcons> = {
+    'BACKPACK' : 'SvgBackpack',
+    'PHANTOM' : 'SvgPhantom',
+    'SOLFLARE' : 'SvgSolflare',
+    "" : 'SvgX'
+  }
+  const icon: AvailableIcons = iconMap[walletProvider]
 
   const dropdownButtonRef = useRef<HTMLDivElement | null>(null)
   const dropdownMenuRef = useRef<HTMLDivElement | null>(null)
