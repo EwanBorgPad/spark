@@ -20,10 +20,10 @@ type NavigationBarProps = {
   itemClickedCallback: () => void
 }
 const navigationItems: NavigationItem[] = [
-  // {
-  //   path: "/angel-staking",
-  //   label: "Angel Staking",
-  // },
+  {
+    path: "/angel-staking",
+    label: "Angel Staking",
+  },
   {
     path: "/launch-pools",
     label: "Launch Pools",
