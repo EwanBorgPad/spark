@@ -33,3 +33,12 @@ CREATE TABLE whitelist (
     tier_id TEXT NOT NULL,
     PRIMARY KEY (address, project_id)
 );
+CREATE TABLE nft_index (
+    nft_address TEXT NOT NULL,
+    collection_address TEXT NOT NULL,
+    owner_address TEXT,
+    quoted_at TIMESTAMP NOT NULL,
+    json JSONB NOT NULL DEFAULT '{}',
+    PRIMARY KEY (nft_address)
+);
+CREATE INDEX nft_index_owner_address_index ON nft_index(owner_address);

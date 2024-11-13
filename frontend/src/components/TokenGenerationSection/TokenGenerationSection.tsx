@@ -23,10 +23,6 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
     setCurrentTgeEvent(newTgeStatus)
   }, [expandedTimeline])
 
-  ///////////////////////////////////////////////////////////
-  // @TODO - Add API for checking user eligibility //////////
-  ///////////////////////////////////////////////////////////
-
   useEffect(() => {
     updateTgeStatus()
   }, [expandedTimeline, updateTgeStatus])
@@ -49,10 +45,12 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
 
   return (
     <section className="flex w-full flex-col items-center">
-      <CountDownCallback
-        endOfEvent={currentTgeEvent.nextEventDate}
-        callbackWhenTimeExpires={updateTgeStatus}
-      />
+      {currentTgeEvent.nextEventDate && (
+        <CountDownCallback
+          endOfEvent={currentTgeEvent.nextEventDate}
+          callbackWhenTimeExpires={updateTgeStatus}
+        />
+      )}
       {renderComponent(currentTgeEvent)}
     </section>
   )

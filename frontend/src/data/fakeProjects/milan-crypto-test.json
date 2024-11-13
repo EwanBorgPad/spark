@@ -1,6 +1,6 @@
 {
   "info": {
-    "id": "milan-crypto-test",
+    "id": "milan-crypto-test-02",
     "title": "Milan Crypto",
     "subtitle": "Anti-Slashing Liquid Staking Crypto Manic Automated Market",
     "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar.png",
@@ -12,6 +12,7 @@
       "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/chain-icon.png"
     },
     "totalTokensForSale": 32000,
+    "totalTokensForRewardDistribution": 1000000,
     "curator": {
       "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/curator-avatar.jpg",
       "fullName": "Milan Miljus",
@@ -77,15 +78,15 @@
         "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/project-coin-icon.svg",
         "ticker": "LRC"
       },
-      "fixedCoinPriceInBorg": 1,
-      "whitelistParticipants": 1698,
+      "fixedTokenPriceInUSD": 1,
       "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
+      "fdv": 4401444,
       "liquidityPool": {
         "name": "Raydium",
         "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/liquidity-pool-icon.png",
         "lbpType": "Full Range",
         "lockingPeriod": "12-month lockup",
-        "unlockDate": "2025-07-12T12:39:16Z",
+        "unlockDate": null,
         "url": "#"
       },
       "tweetUrl": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
@@ -104,25 +105,42 @@
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-11-02"
+        "date": "2024-12-02"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-11-12"
+        "date": "2024-12-12"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2024-11-20"
+        "date": "2024-12-20"
       },
       {
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
-        "date": "2025-07-10"
+        "date": null
       }
     ],
     "tiers": [
+      {
+        "id": "tier0",
+        "label": "NFT Tier",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "MILAN NFT",
+            "tokenAmount": "1",
+            "tokenMintAddress": "7cXD2qNZU59x2SVr6ZBUK6T6XSDp4uXzuVqKhj6CyLri"
+          }
+        ],
+        "benefits": {
+          "startDate": "2024-10-23",
+          "minInvestment": "10",
+          "maxInvestment": "999"
+        }
+      },
       {
         "id": "tier1",
         "label": "Tier1",
@@ -162,9 +180,9 @@
           "maxInvestment": "999999"
         }
       }
-    ]
+    ],
+    "finalSnapshotTimestamp": "2024-10-10T00:00:00Z"
   },
-  "whitelistParticipants": 768,
   "saleData": {
     "availableTokens": 14300,
     "saleSucceeded": true,

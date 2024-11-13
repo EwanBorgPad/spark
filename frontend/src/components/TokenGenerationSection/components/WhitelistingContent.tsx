@@ -10,18 +10,19 @@ import { backendApi } from "@/data/backendApi.ts"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import SimpleLoader from "@/components/Loaders/SimpleLoader"
 import Img from "@/components/Image/Img"
+import { useParams } from "react-router-dom"
 
 const WhitelistingContent = () => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()
-  const { projectData } = useProjectDataContext()
+  const { projectData, isLoading } = useProjectDataContext()
   const tgeData = projectData.info.tge
 
   const baseCurrency = "swissborg"
   const targetCurrency = "usd"
   // TODO @hardcoded swissborg coin, replace with project's token later
-  const { data: projectTokenData } = useQuery({
+  const { data } = useQuery({
     queryFn: () =>
       backendApi.getExchange({
         baseCurrency,
@@ -29,20 +30,21 @@ const WhitelistingContent = () => {
       }),
     queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
+  const borgPriceInUsd = data?.currentPrice || null
+  const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
+  const tokenPriceInBORG = !borgPriceInUsd
+    ? null
+    : tokenPriceInUSD / borgPriceInUsd
 
-  const { data: borgData } = useQuery({
+  const { projectId } = useParams()
+  const { data: investmentSummaryData } = useQuery({
     queryFn: () =>
-      backendApi.getExchange({
-        baseCurrency,
-        targetCurrency,
+      backendApi.getInvestmentIntentSummary({
+        projectId: projectId!,
       }),
-    queryKey: ["getExchange", baseCurrency, targetCurrency],
+    queryKey: ["getInvestmentIntentSummary", projectId],
+    enabled: Boolean(projectId),
   })
-
-  const tokenPriceInBORG =
-    !projectTokenData || !borgData
-      ? null
-      : projectTokenData.currentPrice / borgData.currentPrice
 
   return (
     <div
@@ -59,7 +61,11 @@ const WhitelistingContent = () => {
           </p>
           <span className="text-fg-tertiary">Gives you:</span>
         </div>
-        <TokenRewards borgCoinInput={"1"} isWhitelistingEvent={true} />
+        <TokenRewards
+          borgCoinInput={"1"}
+          isWhitelistingEvent={true}
+          tokenPriceInBORG={tokenPriceInBORG}
+        />
       </div>
 
       <div className="flex w-full flex-col">
@@ -67,32 +73,31 @@ const WhitelistingContent = () => {
           <span>{t("tge.raise_target")}</span>
           <div className="flex gap-2">
             <span className="font-geist-mono">
-              {formatCurrencyAmount(tgeData.raiseTarget, false, 0)}
+              ${formatCurrencyAmount(tgeData.raiseTarget, false, 0)}
             </span>
-            <span>BORG</span>
+            {/* <span>in BORG</span> */}
           </div>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
         <div className="flex w-full items-center justify-between py-2">
           <div className="flex items-center gap-2">
-            <Img src={tgeData.projectCoin.iconUrl} size="6" />
+            <Img
+              src={tgeData.projectCoin.iconUrl}
+              size="6"
+              isFetchingLink={isLoading}
+            />
             <span>{tgeData.projectCoin.ticker}</span>
             <span>{t("tge.price")}</span>
           </div>
           <div className="flex flex-col items-end">
             <span className="font-geist-mono">
-              {projectTokenData ? (
-                formatCurrencyAmount(projectTokenData.currentPrice, true, 5)
-              ) : (
-                // @TODO - add skeleton instead of loader
-                <SimpleLoader />
-              )}
+              {formatCurrencyAmount(tokenPriceInUSD, true, 2)}
             </span>
             <div className="flex gap-2">
               <span className="font-geist-mono">
                 {tokenPriceInBORG ? (
-                  formatCurrencyAmount(tokenPriceInBORG, false, 5)
+                  formatCurrencyAmount(tokenPriceInBORG, false, 2)
                 ) : (
                   // @TODO - add skeleton instead of loader
                   <SimpleLoader />
@@ -107,8 +112,8 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.whitelist_participants")}</span>
           <span className="font-geist-mono">
-            {projectData?.whitelistParticipants &&
-              formatCurrencyAmount(projectData.whitelistParticipants, false, 0)}
+            {investmentSummaryData?.count &&
+              formatCurrencyAmount(investmentSummaryData?.count, false, 0)}
           </span>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
@@ -120,21 +125,38 @@ const WhitelistingContent = () => {
         </span>
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
+        {/* DeFi Protocol */}
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.defi_protocol")}</span>
           <div className="flex items-center gap-2">
-            <Img src={tgeData.liquidityPool.iconUrl} size="5" />
+            <Img
+              src={tgeData.liquidityPool.iconUrl}
+              size="5"
+              isFetchingLink={isLoading}
+            />
             <span>{tgeData.liquidityPool.name}</span>
           </div>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
+        {/* Crypto App Listing */}
+        <div className="flex w-full items-center justify-between py-3">
+          <span>{t("tge.crypto_app_listing")}</span>
+          <div className="flex items-center gap-2">
+            <Icon className='text-lg' icon="SvgBorgCoin" />
+            <span>{t('swissborg')}</span>
+          </div>
+        </div>
+        <hr className="w-full border-bd-primary opacity-50"></hr>
+
+        {/* LP Type */}
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.lbp_type")}</span>
           <span>{tgeData.liquidityPool.lbpType}</span>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
+        {/* Locking Period */}
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.locking_period")}</span>
           <span>{tgeData.liquidityPool.lockingPeriod}</span>

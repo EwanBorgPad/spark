@@ -7,7 +7,6 @@ import { useProjectDataContext } from "@/hooks/useProjectData"
 import { expandTimelineDataInfo } from "@/utils/timeline"
 import Timeline from "@/components/Timeline/Timeline"
 import backdropImg from "@/assets/backdropImgMin.png"
-import { Icon } from "../components/Icon/Icon"
 import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
 import ProjectTester2 from "@/components/QA/ProjectTester2.tsx"
@@ -59,9 +58,9 @@ const Project = () => {
           </div>
         </div>
 
-        <div className="flex w-full flex-wrap gap-x-5 gap-y-3 text-sm lg:max-w-[760px]">
+        <div className="flex w-full flex-col gap-x-5 gap-y-3 text-sm md:flex-row lg:max-w-[760px]">
           <div className="flex gap-5">
-            <div className="flex items-center gap-2 border-r-[1px] border-r-fg-gray-line pr-5">
+            <div className="flex items-center gap-2 border-r-fg-gray-line pr-5 md:border-r-[1px]">
               <span className="text-fg-primary text-opacity-50">
                 {t("chain")}
               </span>
@@ -69,8 +68,8 @@ const Project = () => {
               <span>{projectData.info.chain.name}</span>
             </div>
           </div>
-          <div className="flex gap-5">
-            <div className="flex items-center gap-2 border-r-[1px] border-r-fg-gray-line pr-5">
+          <div className="flex flex-col gap-3 md:flex-row md:gap-5">
+            <div className="flex items-center gap-2 pr-5 md:border-r-[1px] md:border-r-fg-gray-line">
               <span className="text-fg-primary text-opacity-50">
                 {t("origin")}
               </span>
@@ -90,7 +89,11 @@ const Project = () => {
           <div className="w-full rounded-lg bg-gradient-to-r from-brand-primary/50 to-brand-secondary/15 p-[1px]">
             <div className="flex h-full w-full flex-col items-start justify-between gap-4 rounded-[7px] bg-gradient-to-br from-brand-dimmed-1 via-brand-dimmed-2 via-50% to-brand-dimmed-2 px-4 py-3 lg:flex-row lg:items-center lg:bg-gradient-to-r">
               <div className="flex items-center gap-4">
-                <Img src={projectData.info.curator.avatarUrl} size="10" />
+                <Img
+                  src={projectData.info.curator.avatarUrl}
+                  size="10"
+                  isFetchingLink={isLoading}
+                />
                 <div className="flex flex-col">
                   <span className="text-base">
                     {projectData.info.curator.fullName}
@@ -113,35 +116,6 @@ const Project = () => {
       <hr className="w-full max-w-[calc(100vw-32px)] border-bd-primary lg:max-w-[760px]"></hr>
 
       <TokenGenerationSection expandedTimeline={expandedTimeline} />
-
-      {/* Section - Data Room  */}
-      <section className="group w-full px-4 lg:max-w-[792px]">
-        <a
-          className="data-room w-full"
-          target="_blank"
-          rel="noreferrer"
-          href={projectData.info.dataRoom.url}
-        >
-          {/* <Img
-            src={projectData.info.dataRoom.backgroundImgUrl}
-            size={"custom"}
-            customClass="!h-[72px] !w-[100px] absolute left-0 opacity-10 rounded-none"
-            showFallback={false}
-          /> */}
-          <div className="z-[1] flex flex-col">
-            <span className="font-medium">
-              {projectData.info.title} {t("data_room")}
-            </span>
-            <span className="font-normal opacity-50">
-              {t("timeline.learn_more_about")}
-            </span>
-          </div>
-          <Icon
-            icon="SvgArrowRight"
-            className="group-hover:scale-140 text-[20px] transition-transform"
-          />
-        </a>
-      </section>
 
       <Timeline timelineEvents={projectData.info.timeline} />
       <ScrollRestoration />

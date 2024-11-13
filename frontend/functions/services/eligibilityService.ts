@@ -2,8 +2,8 @@ import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 import { and, eq } from "drizzle-orm"
 
 import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } from "../../shared/eligibilityModel"
-import { getSplTokenBalance } from "../../shared/SolanaWeb3"
-import { projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
+import { followerTable, projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
+import { isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
 
 /**
  * List of mandatory compliances.
@@ -50,6 +50,9 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     json: {}
   }
 
+  const userTwitterId = user.json.twitter?.twitterId ?? null
+  const isTwitterAccountConnected = Boolean(userTwitterId)
+
   const project = await db
     .select()
     .from(projectTable)
@@ -75,42 +78,54 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     }
   }
 
+  const collections = project.json.info.tiers
+    .map(tier => tier.quests)
+    .flat()
+    .filter(quest => quest.type === 'HOLD_TOKEN')
+    .map(quest => quest.tokenMintAddress)
+
+  const collectionMap = await isHoldingNftFromCollections({
+    rpcUrl,
+    ownerAddress: address,
+    collections,
+  })
+
   const tiersWithCompletion: TierWithCompletion[] = []
   for (const tier of project.json.info.tiers) {
     const tierQuestsWithCompletion: QuestWithCompletion[] = []
 
     for (const quest of tier.quests) {
       if (quest.type === 'FOLLOW_ON_TWITTER') {
-        const twitterHandle = quest.twitterHandle
-        const isFollowingProjectOnTwitter = Boolean(user.json.twitter?.follows?.[twitterHandle])
+        // TODO @twitterAcc
+        const isFollower = isTwitterAccountConnected
+          ? Boolean(
+            await db
+              .select()
+              .from(followerTable)
+              .where(eq(followerTable.id, userTwitterId))
+              .get()
+          )
+          : false
+
+        // const twitterHandle = quest.twitterHandle
+        // const isFollowingProjectOnTwitter = Boolean(user.json.twitter?.follows?.[twitterHandle])
+
         tierQuestsWithCompletion.push({
           ...quest,
-          isCompleted: isFollowingProjectOnTwitter,
+          isCompleted: isFollower,
         })
       } else if (quest.type === 'HOLD_TOKEN') {
-        const balance = await getSplTokenBalance({
-          address,
-          tokenAddress: quest.tokenMintAddress,
-          rpcUrl,
+        const isOwner = collectionMap[quest.tokenMintAddress]
+        tierQuestsWithCompletion.push({
+          ...quest,
+          isCompleted: isOwner,
         })
-
-        if (balance) {
-          const balanceAmount = Number(balance.amount) / (10 ** balance.decimals)
-          const neededAmount = Number(quest.tokenAmount)
-
-          const holdsEnoughToken = balanceAmount >= neededAmount
-          tierQuestsWithCompletion.push({
-            ...quest,
-            holds: balanceAmount,
-            needs: neededAmount,
-            isCompleted: holdsEnoughToken,
-          })
-        } else {
-          tierQuestsWithCompletion.push({
-            ...quest,
-            isCompleted: false,
-          })
-        }
+      } else if (quest.type === 'WHITELIST') {
+        // only way to complete this is to be explicitly whitelisted
+        tierQuestsWithCompletion.push({
+          ...quest,
+          isCompleted: false,
+        })
       } else {
         throw new Error(`Unknown tier quest type (${quest.type})!`)
       }
@@ -148,15 +163,20 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
       // load the whitelisted tier
       ? whitelistedTier
       // else, check if they have tiered by completing quests
-      : (tiersWithCompletion.findLast(tier => tier.isCompleted) ?? null)
+      : (tiersWithCompletion.find(tier => tier.isCompleted) ?? null)
     : null
   const isEligible = Boolean(eligibilityTier)
 
   return {
-    isEligible,
-    eligibilityTier,
+    address,
+
+    isTwitterAccountConnected,
+
     whitelistTierId,
     whitelistedTier,
+
+    isEligible,
+    eligibilityTier,
     compliances: compliancesWithCompletion,
     tiers: tiersWithCompletion
   }

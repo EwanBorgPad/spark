@@ -12,6 +12,8 @@
       "iconUrl": "/images/puffer-finance/chain-icon.png"
     },
     "totalTokensForSale": 25000,
+    "totalTokensForRewardDistribution": 1800,
+
     "curator": {
       "avatarUrl": "/images/puffer-finance/curator-avatar.png",
       "fullName": "John Doe",
@@ -77,9 +79,9 @@
         "iconUrl": "/images/puffer-finance/project-coin-icon.svg",
         "ticker": "LRC"
       },
-      "fixedCoinPriceInBorg": 1,
-      "whitelistParticipants": 1698,
+      "fixedTokenPriceInUSD": 1,
       "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
+      "fdv": 2301444,
       "liquidityPool": {
         "name": "Raydium",
         "iconUrl": "/images/puffer-finance/liquidity-pool-icon.png",
@@ -179,9 +181,9 @@
           "maxInvestment": "999999"
         }
       }
-    ]
+    ],
+    "finalSnapshotTimestamp": "2024-10-10T00:00:00Z"
   },
-  "whitelistParticipants": 768,
   "saleData": {
     "availableTokens": 12403,
     "saleSucceeded": true,
