@@ -101,7 +101,10 @@ const ProvideInvestmentIntentModal = ({
           {/* average investment intent container */}
           <div className="flex flex-col items-center">
             <span className="text-sm text-fg-tertiary">
-              {t("average_commitment_from_users", investmentSummaryData)}
+              {t("average_commitment_from_users", {
+                avg: investmentSummaryData?.avg.toFixed(2),
+                count: investmentSummaryData?.count,
+              })}
             </span>
           </div>
 

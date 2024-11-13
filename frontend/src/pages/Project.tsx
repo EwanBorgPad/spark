@@ -35,6 +35,7 @@ const Project = () => {
               src={projectData?.info.logoUrl}
               isFetchingLink={isLoading}
               size="20"
+              imgClassName="scale-[102%]"
             />
             <div className="flex flex-col gap-1">
               <Text

@@ -28,6 +28,7 @@ import "./index.css"
 
 import { Buffer } from "buffer"
 import { toast } from "react-toastify"
+import LandingPage from "./pages/LandingPage"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -51,7 +52,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <LaunchPools />,
+        element: <LandingPage />,
       },
       // @backOffice
       // {

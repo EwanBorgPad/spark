@@ -79,7 +79,7 @@ const Img = ({
         onLoad={() => setIsLoadingImg(false)}
         onError={onError}
         className={twMerge(
-          "h-full w-full scale-[102%] object-cover",
+          "h-full w-full object-cover",
           !renderImage ? "hidden" : "",
           avatarSize[size],
           imgClassName,
