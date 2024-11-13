@@ -40,10 +40,6 @@ const targetCurrency = "usd"
 const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
 
   const { projectData } = useProjectDataContext()
-  const maxTokenLimit = projectData.info.raisedTokenMaxCap
-  // minTokenLimit cap not used for now but I will leave it here if neccessary in future
-  const minTokenLimit = projectData.info.raisedTokenMinCap
-  // backend API for depositing tokens to LBP
   const {
     mutate: userDepositFunction,
   } = useMutation({
@@ -53,13 +49,11 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     onSuccess: async () => {
       console.log("Successful user deposit!")
       toast(`Deposited successfully!`)
-      // refetching User deposited amount after successful deposit for checking validations of his pool deposit amount
-      await refetchDeposit()
     },
   })
   const { t } = useTranslation()
 
-  const { walletState, signAndSendTransaction , address, walletProvider } = useWalletContext()
+  const { walletState, signTransaction , address, walletProvider } = useWalletContext()
   const { balance } = useBalanceContext()
   const { projectId } = useParams()
 
@@ -71,18 +65,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
   })
-  const { data: depositData, refetch: refetchDeposit } = useQuery({
-    queryFn: () => {
-      if (!address || !projectId) return
-      return backendApi.getUserDeposit({ walletAddress: address, projectId })
-    },
-    queryKey: ["getUserDeposit", address, projectId],
-    enabled: Boolean(address) && Boolean(projectId),
-  })
   const isUserEligible = data?.isEligible
-  // Get users max token limit cap
-  const userMaxCap = data?.eligibilityTier?.benefits.maxInvestment
-  const userMinCap = data?.eligibilityTier?.benefits.minInvestment
   const rpcUrl = import.meta.env.VITE_SOLANA_RPC_URL
   const tokenMintAddress = new PublicKey(projectData.info.raisedTokenMintAddress)
 
@@ -110,26 +93,10 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
-      if (!isUserEligible) {
-        toast("You are not eligible to make a deposit!")
-        throw new Error("User not eligible")
-      }
       const tokenAmount = parseFloat(data.borgInputValue)
-      if (!userMaxCap) throw new Error("User max limit cap is not defined!")
-      if (!userMinCap) throw new Error("User min limit cap is not defined!")
-      // Check the amount the user deposit is in a defined range [min deposit amount, max deposit amount]
-      if ((tokenAmount > parseInt(userMaxCap)) || (tokenAmount < parseInt(userMinCap))) {
-        toast(`Limit range for tokens for your tier is from ${userMinCap} to ${userMaxCap}. Please change your investment token value`)
-        throw new Error("User deposit range error!")
-      }
-      // Check current deposited amount + user deposit amount < max cap
-      if (depositData.depositedAmount + tokenAmount >= maxTokenLimit) {
-        toast(`Transaction will not go throgh because you reached deposit token limit cap for LBP which is ${maxTokenLimit}`)
-        throw new Error("User deposit maximum cap for LBP reached")
-      }
       if (walletProvider === "") throw new Error("No wallet provider!")
       if (walletState === 'CONNECTED') {
-        const transaction = await signAndSendTransaction({
+        const transaction = await signTransaction({
           rpcUrl,
           tokenAmount,
           tokenMintAddress,

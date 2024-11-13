@@ -1,14 +1,15 @@
-import { jsonResponse } from "./cfPagesFunctionsUtils"
+import { drizzle } from "drizzle-orm/d1"
 import { Connection, Transaction } from "@solana/web3.js"
-import { ProjectModel, userDepositSchema } from "../../shared/models"
+import { Buffer } from "buffer"
+
+import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
+import { userDepositSchema } from "../../shared/models"
 import { signatureSubscribe } from "../../src/utils/solanaFunctions"
 import { COMMITMENT_LEVEL } from "../../shared/constants"
-import { Buffer } from "buffer"
 import { DepositService } from "../services/depositService"
-import { getRpcUrlForCluster } from "./eligibilitystatus"
 import { ProjectService } from "../services/projectService"
 import { EligibilityService } from "../services/eligibilityService"
-import { drizzle } from "drizzle-orm/d1"
+import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 import { decodeBase64 } from "tweetnacl-util"
 
 type ENV = {
@@ -16,7 +17,6 @@ type ENV = {
   SOLANA_RPC_URL: string,
   LBP_WALLET_ADDRESS: string
 }
-
 /**
  * Post request handler - creates user deposit to the LBP wallet
  * @param ctx 
@@ -33,61 +33,100 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     if (error) {
       return jsonResponse({message: "Bad request"}, 400)
     }
+    // TODO: Extract amount from deserialized tx (figure out how)
     const { amount, projectId, transaction, tokenAddress } = data
 
-    const deserializedTx = Transaction.from(Buffer.from(transaction, 'base64'))
+    // data loading
+    const deserializedTx = Transaction.from(decodeBase64(transaction))
     const userWalletAddress = deserializedTx.signatures[0].publicKey.toBase58()
 
-    // All validations
     const project = await ProjectService.findProjectById({db, id: projectId})
-    const projectTokenLimit = project?.info.raisedTokenMaxCap
-    const depositedAmount: number = await DepositService.getUsersDepositedAmount({
-      db,
-      projectId,
-      walletAddress: userWalletAddress
-    })
-    const startDate = project?.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date
-    const endDate = project?.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
-    const now = new Date(Date.now())
-    if (startDate && endDate){
-      if (now < startDate || now > endDate) return jsonResponse({ message: "You are trying to invest "})
+
+    if (!project) {
+      return jsonResponse({ message: "Project not found!"}, 404)
     }
+    // TODO: revisit this logic for user deposited amount and checks that go with it
+    // const userTotalDepositAmount = await DepositService.getUsersDepositedAmount({
+    //   db,
+    //   projectId,
+    //   walletAddress: userWalletAddress
+    // })
     const cluster = project?.cluster ?? 'devnet'
     const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
     const connection = new Connection(rpcUrl,{
-      confirmTransactionInitialTimeout: 10000,
       commitment: COMMITMENT_LEVEL
     })
-    const eligibilityData = await EligibilityService.getEligibilityStatus({
+  
+    ///////////////////////////////////////////////////
+    ////////////////// Data Loading ///////////////////
+    ///////////////////////////////////////////////////
+
+    const projectTokenLimit = BigInt(project.info.raisedTokenMaxCap)
+    if (!projectTokenLimit)
+      return jsonResponse({ message: "Project cap is not defined"}, 500)
+
+    const eligibilityStatus = await EligibilityService.getEligibilityStatus({
       address: userWalletAddress,
       db: drizzleDb,
       projectId,
-      rpcUrl
+      rpcUrl,
     })
-    // checking user eligibility
-    if (!eligibilityData.isEligible) return jsonResponse({ message: "You are not eligible to make a deposit!"}, 401)
-    const maxInvestment = eligibilityData.eligibilityTier?.benefits.maxInvestment
-    const minInvestment = eligibilityData.eligibilityTier?.benefits.minInvestment
+
+    if (!eligibilityStatus.eligibilityTier) {
+      return jsonResponse({ message: 'User is not eligible!' }, 409)
+    }
+
+    const eligibilityTier = eligibilityStatus.eligibilityTier
+
+    const minInvestmentPerUser = BigInt(eligibilityTier.benefits.minInvestment)
+    const maxInvestmentPerUser = BigInt(eligibilityTier.benefits.maxInvestment)
+
     // checking user tier limitations and project cap limitations
-    if (!minInvestment) return jsonResponse({ message:"Minimum investment for your tier is not defined!"}, 500)
-    if (!maxInvestment) return jsonResponse({ message:"Maximum investment for your tier is not defined!"}, 500)
-    if (!projectTokenLimit) return jsonResponse({ message: "Project cap is not defined"}, 500)
-    if (amount < parseInt(minInvestment) || amount > parseInt(maxInvestment)) {
-      return jsonResponse({ message: `Your amount exceeds token limits for your tier. Minimum amount is : ${minInvestment} and maximum amount is : ${maxInvestment}`}, 401)
+    if (!minInvestmentPerUser) {
+      return jsonResponse({ message: "Minimum investment for your tier is not defined!" }, 500)
     }
-    if (amount + depositedAmount > projectTokenLimit) {
-      return jsonResponse({ message: `Your amount exceeds token limit for the project token cap`}, 401)
+    if (!maxInvestmentPerUser) {
+      return jsonResponse({ message: "Maximum investment for your tier is not defined!" }, 500)
     }
+
+    ///////////////////////////////////////////////////
+    ///////////////////// CHECKS //////////////////////
+    ///////////////////////////////////////////////////
+
+    if (!eligibilityStatus.isEligible || !eligibilityStatus.eligibilityTier) {
+      return jsonResponse({ message: 'User is not eligible!' }, 409)
+    }
+
+    // TODO: take into account the userTotalDepositAmount instead of just amount for below checks
+
+    if (amount < minInvestmentPerUser) {
+      return jsonResponse({ message: `Investment amount (${amount}) is less than the minimum amount for your eligibility tier (${minInvestmentPerUser})`}, 409)
+    }
+
+    if (amount > maxInvestmentPerUser) {
+      return jsonResponse({ message: `Investment amount (${amount}) is more than the maximum amount for your eligibility tier (${maxInvestmentPerUser})`}, 409)
+    }
+
+    // TODO: check if projectTotalDepositAmount > projectTokenLimit
+
+    // const totalAmount = BigInt(amount) + userTotalDepositAmount
+
+    // if (totalAmount > projectTokenLimit) {
+    //   return jsonResponse({ message: `The total investment amount exceeds the project token cap!` }, 409)
+    // }
 
     // After all validations passed we send the tx
     console.log("Sending transaction...")
     const txId = await connection.sendRawTransaction(Buffer.from(transaction, 'base64'))
     console.log("Finished sending the transaction...")
+
     console.log('Signature status subscribing...')
     const status = await signatureSubscribe(connection, txId)
     console.log(`Signature status finished: ${status}.`)
+
     const explorerLink = `https://explorer.solana.com/tx/${txId}?cluster=${cluster}`
     console.log(explorerLink)
+
     if (status === 'confirmed') {
       await DepositService.updateUserDepositAmount({
         db,
@@ -99,9 +138,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         lbpAddress: LBP_WALLET_ADDRESS
       })
     }
-    return jsonResponse({ message: "User deposited successfully!", transactionLink: explorerLink}, 200)
+    return jsonResponse({ message: "Ok!", transactionLink: explorerLink }, 200)
   } catch (e) {
-    console.error(e)
+    await reportError(db, e)
     // @ts-expect-error
     if (e.message.includes('failed to deserialize')) {
       return jsonResponse({ message: "Your transaction cannot be deserialized. Please make sure you signed the transaction!"}, 400)
@@ -112,7 +151,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
 /**
  * Get request handler - gets the amount user has deposited to the projects LBP
- * @param ctx 
+ * @param ctx
  * @returns amount the user has deposited to the LBP
  */
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
@@ -132,7 +171,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     })
     if (!depositedAmount) return jsonResponse({ depositedAmount: 0}, 200)
 
-    return jsonResponse({ depositedAmount: depositedAmount }, 200)
+    return jsonResponse({ depositedAmount: depositedAmount.toString() }, 200)
   } catch (e) {
     console.error(e)
     return jsonResponse({ message: "Something went wrong..." }, 500)

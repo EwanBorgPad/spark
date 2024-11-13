@@ -21,15 +21,15 @@ const updateUserDepositAmount = async ({ db, amount, projectId, walletAddress, l
     .run()
 }
 
-const getUsersDepositedAmount = async ({ db, projectId, walletAddress }: GetUsersDepositedAmountArgs): Promise<number> => {
+const getUsersDepositedAmount = async ({ db, projectId, walletAddress }: GetUsersDepositedAmountArgs): Promise<bigint> => {
     const data = await db
     .prepare("SELECT amount_deposited FROM deposit WHERE from_address = ?1 AND project_id = ?2;")
     .bind(walletAddress, projectId)
     .all<any>()
-    if (!data.results.length) return 0
+    if (!data.results.length) return BigInt(0)
     const amountsDeposited = data.results.map(obj => obj.amount_deposited)
     const depositedAmountSum = amountsDeposited.reduce((accumulator, current) => accumulator + current)
-    return depositedAmountSum
+    return BigInt(depositedAmountSum)
 }
 
 

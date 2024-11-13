@@ -34,7 +34,7 @@ type Context = {
   signOut: () => void
   truncatedAddress: string
   signMessage: (message: string) => Promise<Uint8Array>
-  signAndSendTransaction: (payload: signAndSendTransactionArgs) => Promise<string>
+  signTransaction: (payload: signTransactionArgs) => Promise<string>
 }
 
 const WalletContext = createContext<Context | undefined>(undefined)
@@ -64,7 +64,7 @@ export type Provider = {
   isConnected: boolean
 }
 
-export type signAndSendTransactionArgs = {
+export type signTransactionArgs = {
   walletType: SupportedWallet,
   tokenAmount: number,
   rpcUrl: string,
@@ -225,7 +225,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  async function signAndSendTransaction({ walletType, tokenAmount, rpcUrl, tokenMintAddress }: signAndSendTransactionArgs) {
+  async function signTransaction({ walletType, tokenAmount, rpcUrl, tokenMintAddress }: signTransactionArgs) {
     let provider
     try {
       if (walletType === 'BACKPACK') {
@@ -251,9 +251,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         }
       }
       if (!provider) throw new Error('Provider not found!')
-      const transaction = await getTransactionToSend(tokenAmount, provider, rpcUrl, tokenMintAddress)
+      const txToSend = await getTransactionToSend(tokenAmount, provider, rpcUrl, tokenMintAddress)
   
-      return transaction
+      return txToSend
     } catch (error) {
       console.log(error)
       alert(error)
@@ -302,7 +302,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         signOut,
         truncatedAddress,
         signMessage,
-        signAndSendTransaction,
+        signTransaction,
       }}
     >
       {children}
