@@ -1,6 +1,6 @@
 import { Button } from "@/components/Button/Button"
 import React from "react"
-import { Link } from "react-router-dom"
+import { Link, ScrollRestoration } from "react-router-dom"
 
 import solanaImg from "@/assets/angelStaking/solana.png"
 import sanctumImg from "@/assets/angelStaking/sanctum.png"
@@ -18,7 +18,9 @@ import { formatDateForTimer } from "@/utils/date-helpers"
 import CountDownTimer from "@/components/CountDownTimer"
 import DiscoverSection from "@/components/LandingPage/DiscoverSection"
 import JoinCommunityBtn from "@/components/Button/JoinTheCommunityBtn"
+import DontBeACexToy from "@/components/LandingPage/DontBeACexToy"
 
+// Arbitrary launch date
 const LAUNCH_DATE = addDays(new Date(), 5.1411)
 
 const LandingPage = () => {
@@ -66,9 +68,26 @@ const LandingPage = () => {
             <span className="opacity-60"> Unsatisfied with</span>{" "}
             <span>Exchanges dumping on you?</span>
           </h2>
-          <h1 className="max-w-[720px] pb-[66px] text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
+          <h1 className="animate-fade-in-from-below-slow max-w-[720px] pb-[66px] text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
             <span>Experience</span>{" "}
-            <span className="text-brand-primary">BetterThanCEX</span>
+            <span
+              style={{ animationDelay: "500ms" }}
+              className="animate-fade-in-from-below-slow tran translate-y-[50px] text-brand-primary opacity-0"
+            >
+              Better
+            </span>
+            <span
+              style={{ animationDelay: "1200ms" }}
+              className="animate-fade-in-from-below-slow translate-y-[10%] text-brand-primary opacity-0"
+            >
+              Than
+            </span>
+            <span
+              style={{ animationDelay: "1900ms" }}
+              className="animate-fade-in-from-below-slow translate-y-[10%] text-brand-primary opacity-0"
+            >
+              CEX
+            </span>
           </h1>
           <CountDownTimer
             endOfEvent={LAUNCH_DATE}
@@ -119,70 +138,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="relative z-[1] flex w-full flex-col items-center overflow-hidden px-5 pb-16 pt-0 md:px-16">
-        <h2 className="max-w-[700px] pb-10 text-left text-4xl font-semibold leading-[44px] md:text-center md:text-5xl">
-          Don&#39;t be a CEX-Toy
-        </h2>
-        <div className="flex w-full flex-col items-center">
-          <div className="flex w-full max-w-[800px] flex-col items-start border-t border-bd-primary pb-10 pt-7 md:flex-row md:gap-20 md:py-[60px]">
-            <h3 className="text-nowrap pb-6 text-[32px] font-medium leading-10 md:min-w-[240px] md:text-4xl md:leading-[44px]">
-              For Investors
-            </h3>
-            <div className="flex w-full flex-col md:pt-2">
-              <h4 className="pb-2 text-xl font-medium leading-7 md:text-2xl md:leading-snug">
-                Invest into Real Potential
-              </h4>
-              <p className="flex w-full flex-col gap-2 pb-10 opacity-60">
-                <span>Truly Fair Valuations</span>
-                <span>Minimised Vesting Terms</span>
-                <span>Guaranteed Timeline for TGE</span>
-              </p>
-              <h4 className="pb-2 text-xl font-medium leading-7 md:text-2xl md:leading-snug">
-                And have Nothing Hidden from You
-              </h4>
-              <p className="flex w-full flex-col gap-2 opacity-60">
-                <span>
-                  Full visibility on all terms, from initial angel rounds to the
-                  final OTC deal.
-                </span>
-              </p>
-            </div>
-          </div>
-          <div className="flex w-full max-w-[800px] flex-col items-start border-t border-bd-primary pb-10 pt-7 md:flex-row md:gap-20 md:py-[60px]">
-            <h3 className="text-nowrap pb-6 text-[32px] font-medium leading-10 md:min-w-[240px] md:text-4xl md:leading-[44px]">
-              For Projects
-            </h3>
-            <div className="flex w-full flex-col md:pt-2">
-              <h4 className="pb-2 text-xl font-medium leading-7 md:text-2xl md:leading-snug">
-                Work for your community, not the CEX-Cartel.
-              </h4>
-              <p className="flex w-full flex-col gap-2 opacity-60">
-                <span>Community-Driven Fundraising</span>
-                <span>Listing Execution on DEXs + SwissBorg</span>
-                <span>No Fees BS. Keep your treasury.</span>
-                <span>
-                  TGE-Success Campaign (manage your sellers & generate demand)
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="flex w-full flex-col gap-4 pt-3 md:mt-10 md:max-w-[320px] md:pt-4">
-          <Button
-            btnText="Read our GitBook"
-            size="xl"
-            className="mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal md:w-auto"
-            textClassName="text-base font-medium"
-          />
-          <Button
-            btnText="Committed Founder? Apply Here"
-            size="xl"
-            color="tertiary"
-            className="mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal md:w-auto"
-            textClassName="text-base font-medium"
-          />
-        </div>
-      </section>
+      <DontBeACexToy />
 
       <DiscoverSection />
 
@@ -209,9 +165,14 @@ const LandingPage = () => {
             Makers, & CEXs groom young projects as cash cows & exploit
             communities as exit liquidity.
           </h3>
-          <JoinCommunityBtn />
+          <div className="relative h-fit">
+            <JoinCommunityBtn className="mt-0 md:mt-0" />
+            <div className="absolute inset-0 z-[-1] h-full w-full animate-pulse rounded-xl shadow-around shadow-brand-primary/60"></div>
+          </div>
         </div>
       </section>
+
+      <ScrollRestoration />
     </main>
   )
 }
