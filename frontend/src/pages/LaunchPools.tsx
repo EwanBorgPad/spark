@@ -13,12 +13,14 @@ import { GetProjectsResponse } from "shared/models"
 import LaunchPoolCard from "@/components/Cards/LaunchPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
 import Img from "@/components/Image/Img"
+import { useTranslation } from "react-i18next"
 
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
 const LaunchPools = () => {
   const [projects, setProjects] = useState<ExpandedProject[]>([])
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const { data } = useQuery<GetProjectsResponse>({
     queryFn: () =>
@@ -54,16 +56,20 @@ const LaunchPools = () => {
 
       <section className="z-[1] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
         <h1 className="text-center text-[40px] font-semibold leading-[120%] md:w-full">
-          Liquidity to the Founders.<br></br>
-          <span className="text-fg-brand-primary">Power to the People.</span>
+          {t("launch_pools.liquidity_to_the")}
+          <br></br>
+          <span className="text-fg-brand-primary">
+            {t("launch_pools.power_to_the")}
+          </span>
         </h1>
         <p className="max-w-[522px] text-center text-lg font-normal">
-          Provide liquidity to launch your favorite projects.<br></br>
-          Earn rewards at fixed pre-TGE prices.
+          {t("launch_pools.provide_liquidity")}
+          <br></br>
+          {t("launch_pools.earn_rewards")}
         </p>
         <div className="flex flex-col items-center gap-4 pt-6">
           <span className="text-sm font-normal text-fg-primary opacity-90">
-            Successful Launch Pools Secure Listings On:
+            {t("launch_pools.successful_lp")}
           </span>
           <div className="flex items-center justify-center gap-10">
             {displayLogos.map((logo) => (
