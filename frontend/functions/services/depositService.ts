@@ -36,10 +36,11 @@ const updateUserDepositAmount = async ({ db, amount, projectId, walletAddress, l
 }
 
 const getUsersDepositedAmount = async ({ db, projectId, walletAddress }: GetUsersDepositedAmountArgs): Promise<any> => {
+    // TODO we won't do updates on deposit table, but only inserts, so this function should return a result of an aggregate function SUM
     const depositedAmount = await db
-    .prepare("SELECT amount_deposited FROM deposit WHERE from_address = ?1 AND project_id = ?2 ;")
-    .bind(walletAddress, projectId)
-    .first()
+        .prepare("SELECT amount_deposited FROM deposit WHERE from_address = ?1 AND project_id = ?2 ;")
+        .bind(walletAddress, projectId)
+        .first()
 
     return depositedAmount
 }

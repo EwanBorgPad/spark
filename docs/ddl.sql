@@ -41,13 +41,16 @@ CREATE TABLE nft_index (
     json JSONB NOT NULL DEFAULT '{}',
     PRIMARY KEY (nft_address)
 );
+CREATE INDEX nft_index_owner_address_index ON nft_index(owner_address);
+
+-- migration: user deposit
 CREATE TABLE deposit (
-    transaction_id TEXT NOT NULL,
-    token_address TEXT NOT NULL,
+    transaction_id TEXT NOT NULL PRIMARY KEY,
     from_address TEXT NOT NULL,
     to_address TEXT NOT NULL,
-    amount_deposited BIGINT NOT NULL DEFAULT 0,
+    token_address TEXT NOT NULL,
+    amount_deposited BIGINT NOT NULL,
     project_id TEXT NOT NULL,
-    PRIMARY KEY (from_address, project_id)
+    tier_id TEXT NOT NULL
 );
-CREATE INDEX nft_index_owner_address_index ON nft_index(owner_address);
+CREATE INDEX deposit_from_address_idx ON deposit(from_address);
