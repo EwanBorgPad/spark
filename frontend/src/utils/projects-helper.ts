@@ -23,40 +23,40 @@ export const generateAdditionalEventData = (
     case "UPCOMING":
       return {
         badgeClassName: "text-fg-primary border-bd-primary bg-default",
-        endMessage: `Whitelisting opens ${tgeEvent.nextEventDate && formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        endMessage: `Whitelisting opens ${tgeEvent.nextEventDate ? formatDateMonthDateHours(tgeEvent.nextEventDate) : "at TBD"}`,
         badgeLabel: "Upcoming",
       }
     case "REGISTRATION_OPENS":
       return {
         badgeClassName:
           "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
-        endMessage: `Whitelisting closes ${tgeEvent.nextEventDate && formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        endMessage: `Whitelisting closes ${tgeEvent.nextEventDate ? formatDateMonthDateHours(tgeEvent.nextEventDate) : "at TBD"}`,
         badgeLabel: "Whitelisting",
       }
     case "SALE_OPENS":
       return {
         badgeClassName:
           "text-fg-alt-default border-bd-secondary bg-brand-primary",
-        endMessage: `Sale Closes ${tgeEvent.nextEventDate && formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        endMessage: `Sale Closes ${tgeEvent.nextEventDate ? formatDateMonthDateHours(tgeEvent.nextEventDate) : "at TBD"}`,
         badgeLabel: "Live Now",
       }
     case "SALE_CLOSES":
       return {
         badgeClassName: "text-fg-primary border-bd-primary bg-default",
-        endMessage: `Reward Distribution starts ${tgeEvent.nextEventDate && formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        endMessage: `Reward Distribution starts ${tgeEvent.nextEventDate ? formatDateMonthDateHours(tgeEvent.nextEventDate) : "at TBD"}`,
         badgeLabel: "Sale Over",
       }
     case "REWARD_DISTRIBUTION":
       return {
         badgeClassName:
           "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
-        endMessage: `Reward Distribution ends ${tgeEvent.nextEventDate && formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        endMessage: `Reward Distribution ends ${tgeEvent.nextEventDate ? formatDateMonthDateHours(tgeEvent.nextEventDate) : "at TBD"}`,
         badgeLabel: "Reward Distribution",
       }
     case "DISTRIBUTION_OVER":
       return {
         badgeClassName: "text-fg-primary border-bd-primary bg-default",
-        endMessage: `Reward distribution ended ${tgeEvent.date && formatDateMonthDateHours(tgeEvent.date)}`,
+        endMessage: `Reward distribution ended ${tgeEvent.date ? formatDateMonthDateHours(tgeEvent.date) : ""}`,
         badgeLabel: "Closed",
       }
   }
