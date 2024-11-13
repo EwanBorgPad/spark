@@ -21,11 +21,10 @@ const JoinCommunityModal = ({ onClose }: Props) => {
           Ready to put on your angel wings?
         </h2>
         <p className="px-10 text-center text-fg-secondary">
-          Join our official channels and you&#39;ll be the first to know when
-          it&#39;s time to fly!
+          Join our official channels and you&#39;ll be the first to know when it&#39;s time to fly!
         </p>
       </div>
-      <div className="z-[2] flex w-full max-w-[370px] flex-col gap-4">
+      <div className="z-[2] flex w-full max-w-[370px] flex-col gap-4 px-4">
         <a
           href={"https://x.com/BorgPadHQ"}
           target={"_blank"}
@@ -37,14 +36,10 @@ const JoinCommunityModal = ({ onClose }: Props) => {
           <div className="rounded-full bg-black p-[7px]">
             <Icon icon={"SvgTwitter"} className={"text-xl leading-none"} />
           </div>
-          <span className="text-nowrap text-base font-medium">
-            Follow @BorgPadHQ on X
-          </span>
+          <span className="text-nowrap text-base font-medium">Follow @BorgPadHQ on X</span>
           <Icon
             icon={"SvgArrowRight"}
-            className={
-              "text-xl leading-none opacity-50 transition-transform group-hover:translate-x-3"
-            }
+            className={"text-xl leading-none opacity-50 transition-transform group-hover:translate-x-3"}
           />
         </a>
         <a
@@ -56,14 +51,10 @@ const JoinCommunityModal = ({ onClose }: Props) => {
           }
         >
           <img src={telegram} className="h-8 w-8" />
-          <span className="text-nowrap text-base font-medium">
-            Join Our Telegram Group
-          </span>
+          <span className="text-nowrap text-base font-medium">Join Our Telegram Group</span>
           <Icon
             icon={"SvgArrowRight"}
-            className={
-              "text-xl leading-none opacity-50 transition-transform group-hover:translate-x-3"
-            }
+            className={"text-xl leading-none opacity-50 transition-transform group-hover:translate-x-3"}
           />
         </a>
       </div>
