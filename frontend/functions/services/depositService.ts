@@ -1,11 +1,12 @@
-type UpdateUserDepositAmountArgs = {
+type CreateUserDepositArgs = {
     db: D1Database,
-    amount: number,
+    amount: string,
     walletAddress: string,
     projectId: string,
     lbpAddress: string,
     txId: string,
-    tokenAddress: string
+    tokenAddress: string,
+    tierId: string
 }
 
 type GetUsersDepositedAmountArgs = {
@@ -14,10 +15,15 @@ type GetUsersDepositedAmountArgs = {
     projectId: string
 }
 
-const updateUserDepositAmount = async ({ db, amount, projectId, walletAddress, lbpAddress, tokenAddress, txId }: UpdateUserDepositAmountArgs) => {
+type GetProjectsDepositedAmountArgs = {
+    db: D1Database,
+    projectId: string
+}
+
+const createUserDeposit = async ({ db, amount, projectId, walletAddress, lbpAddress, tokenAddress, txId, tierId }: CreateUserDepositArgs) => {
     await db
-    .prepare("INSERT INTO deposit (from_address, to_address, amount_deposited, project_id, token_address, transaction_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6);")
-    .bind(walletAddress, lbpAddress, amount, projectId, tokenAddress, txId)
+    .prepare("INSERT INTO deposit (from_address, to_address, amount_deposited, project_id, token_address, transaction_id, tier_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7);")
+    .bind(walletAddress, lbpAddress, amount, projectId, tokenAddress, txId, tierId)
     .run()
 }
 
@@ -27,13 +33,23 @@ const getUsersDepositedAmount = async ({ db, projectId, walletAddress }: GetUser
     .bind(walletAddress, projectId)
     .all<any>()
     if (!data.results.length) return BigInt(0)
-    const amountsDeposited = data.results.map(obj => obj.amount_deposited)
-    const depositedAmountSum = amountsDeposited.reduce((accumulator, current) => accumulator + current)
-    return BigInt(depositedAmountSum)
+    const amountsDeposited = data.results.map(obj => BigInt(obj.amount_deposited))
+    const userDepositSum = amountsDeposited.reduce((accumulator, current) => accumulator + current)
+    return BigInt(userDepositSum)
 }
 
+const getProjectsDepositedAmount = async ({ db, projectId }: GetProjectsDepositedAmountArgs) => {
+    const data = await db
+    .prepare("SELECT amount_deposited FROM deposit WHERE project_id = ?1;")
+    .bind(projectId)
+    .all<any>()
+    const amountsDeposited = data.results.map(obj => BigInt(obj.amount_deposited))
+    const projectDepositedSum = amountsDeposited.reduce((accumulator, current) => accumulator + current)
+    return BigInt(projectDepositedSum)
+}
 
 export const DepositService = {
-    updateUserDepositAmount,
-    getUsersDepositedAmount
+    createUserDeposit,
+    getUsersDepositedAmount,
+    getProjectsDepositedAmount
 }

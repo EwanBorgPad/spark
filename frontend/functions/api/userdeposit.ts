@@ -34,6 +34,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({message: "Bad request"}, 400)
     }
     // TODO: Extract amount from deserialized tx (figure out how)
+    // TODO: Currently only works if user inputs integer values for token deposit (does not work for floating point because we extract amount as float for now)
     const { amount, projectId, transaction, tokenAddress } = data
 
     // data loading
@@ -45,12 +46,13 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     if (!project) {
       return jsonResponse({ message: "Project not found!"}, 404)
     }
-    // TODO: revisit this logic for user deposited amount and checks that go with it
-    // const userTotalDepositAmount = await DepositService.getUsersDepositedAmount({
-    //   db,
-    //   projectId,
-    //   walletAddress: userWalletAddress
-    // })
+
+    const userTotalDepositAmount = await DepositService.getUsersDepositedAmount({
+      db,
+      projectId,
+      walletAddress: userWalletAddress
+    })
+
     const cluster = project?.cluster ?? 'devnet'
     const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
     const connection = new Connection(rpcUrl,{
@@ -61,7 +63,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     ////////////////// Data Loading ///////////////////
     ///////////////////////////////////////////////////
 
-    const projectTokenLimit = BigInt(project.info.raisedTokenMaxCap)
+    const projectTokenLimit = project.info.raisedTokenMaxCap
     if (!projectTokenLimit)
       return jsonResponse({ message: "Project cap is not defined"}, 500)
 
@@ -77,12 +79,15 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     const eligibilityTier = eligibilityStatus.eligibilityTier
+    const tierId = eligibilityTier.id
 
     const minInvestmentPerUser = BigInt(eligibilityTier.benefits.minInvestment)
     const maxInvestmentPerUser = BigInt(eligibilityTier.benefits.maxInvestment)
 
+    const projectTotalDepositedAmount = await DepositService.getProjectsDepositedAmount({ db, projectId })
+
     // checking user tier limitations and project cap limitations
-    if (!minInvestmentPerUser) {
+    if (minInvestmentPerUser === undefined || minInvestmentPerUser === null) {
       return jsonResponse({ message: "Minimum investment for your tier is not defined!" }, 500)
     }
     if (!maxInvestmentPerUser) {
@@ -99,21 +104,19 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     // TODO: take into account the userTotalDepositAmount instead of just amount for below checks
 
-    if (amount < minInvestmentPerUser) {
+    if (BigInt(amount) + userTotalDepositAmount  < minInvestmentPerUser) {
       return jsonResponse({ message: `Investment amount (${amount}) is less than the minimum amount for your eligibility tier (${minInvestmentPerUser})`}, 409)
     }
 
-    if (amount > maxInvestmentPerUser) {
+    if (BigInt(amount) + userTotalDepositAmount > maxInvestmentPerUser) {
       return jsonResponse({ message: `Investment amount (${amount}) is more than the maximum amount for your eligibility tier (${maxInvestmentPerUser})`}, 409)
     }
 
-    // TODO: check if projectTotalDepositAmount > projectTokenLimit
-
-    // const totalAmount = BigInt(amount) + userTotalDepositAmount
-
-    // if (totalAmount > projectTokenLimit) {
-    //   return jsonResponse({ message: `The total investment amount exceeds the project token cap!` }, 409)
-    // }
+    const totalAmount = BigInt(amount) + projectTotalDepositedAmount
+    console.log(projectTotalDepositedAmount)
+    if (totalAmount > projectTokenLimit) {
+      return jsonResponse({ message: `The total investment amount exceeds the project token cap!` }, 409)
+    }
 
     // After all validations passed we send the tx
     console.log("Sending transaction...")
@@ -128,14 +131,15 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     console.log(explorerLink)
 
     if (status === 'confirmed') {
-      await DepositService.updateUserDepositAmount({
+      await DepositService.createUserDeposit({
         db,
-        amount,
+        amount: BigInt(amount).toLocaleString(),
         projectId,
         walletAddress: userWalletAddress,
         tokenAddress,
         txId,
-        lbpAddress: LBP_WALLET_ADDRESS
+        lbpAddress: LBP_WALLET_ADDRESS, 
+        tierId
       })
     }
     return jsonResponse({ message: "Ok!", transactionLink: explorerLink }, 200)
