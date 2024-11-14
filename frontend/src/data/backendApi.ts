@@ -9,8 +9,7 @@ import {
 } from "../../shared/models.ts"
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
 
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
-const API_BASE_URL = 'http://localhost:8788/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
 const GET_ELIGIBILITY_STATUS_API = API_BASE_URL + "/eligibilitystatus"
 const POST_ACCEPT_TERMS_OF_USE_API = API_BASE_URL + "/acceptterms"
 const POST_INVESTMENT_INTENT_API = API_BASE_URL + "/investmentintent"

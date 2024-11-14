@@ -58,10 +58,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     const deserializedTransaction = await deserializeTransaction({ serializedTx: transaction, connection})
 
-    // TODO check if tokenMintAddress in the transaction is same as in project
-
-    // TODO check if toAddress is correct (should be hardcoded to borg wallet for now)
-
     const {
       depositAmount,
       fromAddress: userWalletAddress,
@@ -115,7 +111,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const maxInvestmentPerUser = BigInt(eligibilityTier.benefits.maxInvestment) * decimalMultiplier
 
     const projectTotalDepositedAmount = await DepositService.getProjectsDepositedAmount({ db, projectId })
-    // @ts-expect-error typescript BigInt and bigint
+
     const totalAmount = depositAmount + projectTotalDepositedAmount
 
     // checking user tier limitations and project cap limitations
@@ -240,7 +236,7 @@ type DeserializeTransactionResult = {
 async function deserializeTransaction({ serializedTx, connection }: DeserializeTransactionArgs): Promise<DeserializeTransactionResult> {
   // deserializing transaction
   const deserializedTx = Transaction.from(decodeBase64(serializedTx))
-  if (deserializedTx.instructions.length !== 1) {
+  if (deserializedTx.instructions.length !== 3) {
     const message = `DeserializeTransaction: invalid transaction instructions length (${deserializedTx.instructions.length})!`
     throw new Error(message)
   }
@@ -254,7 +250,7 @@ async function deserializeTransaction({ serializedTx, connection }: DeserializeT
 
   // extracting amount in lamports (BigInt) and users wallet address from instruction data
   const depositAmount = transferInstruction.data.readBigUInt64LE(1)
-  const toAddress = transferInstruction.keys[1].pubkey.toBase58()
+  const toAddress = transferInstruction.keys[4].pubkey.toBase58()
   const fromAddress = transferInstruction.keys[2].pubkey.toBase58()
   // we need token mint address to extract how much decimals the token uses
   const tokenMintAddress = transferInstruction.keys[3].pubkey
