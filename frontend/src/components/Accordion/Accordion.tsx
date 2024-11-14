@@ -12,6 +12,7 @@ type AccordionProps = {
   className?: string
   questionClassName?: string
   answerClassName?: string
+  chevronClassName?: string
 }
 
 const BORDER_HEIGHT = 1
@@ -24,6 +25,7 @@ const Accordion = ({
   maxChildrenHeight,
   questionClassName,
   answerClassName,
+  chevronClassName,
 }: AccordionProps) => {
   const [isOpen, setOpen] = useState(false)
   const accordionRef = useRef<HTMLDivElement>(null)
@@ -44,17 +46,18 @@ const Accordion = ({
         size="xl"
         onClick={() => setOpen(!isOpen)}
         className={twMerge(
-          "z-[10] scale-100 gap-1 rounded-lg p-3 hover:opacity-100 active:!scale-[100%]",
+          "z-[10] scale-100 gap-1 rounded-lg p-3 text-sm hover:opacity-100 active:!scale-[100%] ",
           questionClassName,
         )}
       >
-        <span className="text-sm font-normal">{label}</span>
+        <span className="font-normal">{label}</span>
         {subLabel && <span className="text-sm font-normal">{subLabel}</span>}
         <Icon
           icon={"SvgChevronDown"}
           className={twMerge(
             " text-fg-primary opacity-50 transition-transform duration-500",
             isOpen && "rotate-180",
+            chevronClassName,
           )}
         />
       </Button>

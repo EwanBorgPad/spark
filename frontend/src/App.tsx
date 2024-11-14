@@ -8,7 +8,7 @@ import Footer from "./components/Footer/Footer"
 
 function App() {
   return (
-    <div className="max-w-screen flex min-h-screen flex-col items-center justify-center  bg-default font-geist text-fg-primary">
+    <div className="flex min-h-screen max-w-[calc(100vw-6px)] flex-col items-center justify-center overscroll-x-none  bg-default font-geist text-fg-primary">
       <ToastContainer />
 
       <Header />

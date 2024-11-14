@@ -1,6 +1,5 @@
 import { twMerge } from "tailwind-merge"
 import { ReactNode, useEffect, useRef } from "react"
-
 import { Portal } from "@/components/Portal/Portal"
 import { Button } from "../Button/Button"
 import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
@@ -45,11 +44,11 @@ export function SimpleModal({
       {/* fixed backdrop */}
       <div
         ref={backdropRef}
-        className="fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75"
+        className="fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75 px-5"
       ></div>
 
       {/* modal wrapper */}
-      <div className="fixed inset-0 z-[30] flex h-screen w-screen items-center">
+      <div className="fixed inset-0 z-[30] flex h-screen w-screen items-center px-5 ">
         {/* modal */}
         <div
           ref={modalRef}
@@ -61,7 +60,7 @@ export function SimpleModal({
             className,
           )}
         >
-          <div className="grid-cols-modal-header sticky left-0 right-0 top-0 z-[31] grid w-full grid-rows-1 items-start bg-secondary p-4 text-center">
+          <div className="sticky left-0 right-0 top-0 z-[31] grid w-full grid-cols-modal-header grid-rows-1 items-start bg-transparent p-4 text-center">
             {onClose && showCloseBtn && (
               <CloseButton onClose={closeModalCallback} />
             )}
@@ -91,7 +90,7 @@ export function CloseButton({
       icon="SvgClose"
       color="plain"
       className={twMerge(
-        "rounded-md px-1 py-0.5 align-top text-2xl leading-none text-white hover:bg-tertiary",
+        "rounded-md px-2 py-0.5 align-top text-2xl leading-none text-white hover:bg-tertiary",
         className,
       )}
       onClick={onClose}

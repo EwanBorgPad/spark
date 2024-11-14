@@ -6,6 +6,7 @@ import { formatDateMonthDateHours } from "./date-helpers"
 import { expandTimelineDataInfo } from "./timeline"
 import { getCurrentTgeEvent } from "./getCurrentTgeEvent"
 import { ProjectModel } from "shared/models"
+import i18n from "@/i18n/i18n"
 
 export type ExpandedProject = ProjectModel & {
   additionalData: {
@@ -19,46 +20,63 @@ export type ExpandedProject = ProjectModel & {
 export const generateAdditionalEventData = (
   tgeEvent: ExpandedTimelineEventType,
 ) => {
+  const fallbackText = i18n.t("launch_pools.at_tbd")
+  const getEventDateString = (date: Date | null) => {
+    return date ? formatDateMonthDateHours(date) : fallbackText
+  }
+
   switch (tgeEvent.id) {
-    case "UPCOMING":
+    case "UPCOMING": {
+      const text = getEventDateString(tgeEvent.nextEventDate)
       return {
         badgeClassName: "text-fg-primary border-bd-primary bg-default",
-        endMessage: `Whitelisting opens ${tgeEvent.nextEventDate && formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        endMessage: i18n.t("launch_pools.whitelist_opens", { text }),
         badgeLabel: "Upcoming",
       }
-    case "REGISTRATION_OPENS":
+    }
+    case "REGISTRATION_OPENS": {
+      const text = getEventDateString(tgeEvent.nextEventDate)
       return {
         badgeClassName:
           "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
-        endMessage: `Whitelisting closes ${tgeEvent.nextEventDate && formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        endMessage: i18n.t("launch_pools.whitelist_closes", { text }),
         badgeLabel: "Whitelisting",
       }
-    case "SALE_OPENS":
+    }
+    case "SALE_OPENS": {
+      const text = getEventDateString(tgeEvent.nextEventDate)
       return {
         badgeClassName:
           "text-fg-alt-default border-bd-secondary bg-brand-primary",
-        endMessage: `Sale Closes ${tgeEvent.nextEventDate && formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        endMessage: i18n.t("launch_pools.sale_closes", { text }),
         badgeLabel: "Live Now",
       }
-    case "SALE_CLOSES":
+    }
+    case "SALE_CLOSES": {
+      const text = getEventDateString(tgeEvent.nextEventDate)
       return {
         badgeClassName: "text-fg-primary border-bd-primary bg-default",
-        endMessage: `Reward Distribution starts ${tgeEvent.nextEventDate && formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        endMessage: i18n.t("launch_pools.reward_distribution_start", { text }),
         badgeLabel: "Sale Over",
       }
-    case "REWARD_DISTRIBUTION":
+    }
+    case "REWARD_DISTRIBUTION": {
+      const text = getEventDateString(tgeEvent.nextEventDate)
       return {
         badgeClassName:
           "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
-        endMessage: `Reward Distribution ends ${tgeEvent.nextEventDate && formatDateMonthDateHours(tgeEvent.nextEventDate)}`,
+        endMessage: i18n.t("launch_pools.reward_distribution_ends", { text }),
         badgeLabel: "Reward Distribution",
       }
-    case "DISTRIBUTION_OVER":
+    }
+    case "DISTRIBUTION_OVER": {
+      const text = getEventDateString(tgeEvent.date)
       return {
         badgeClassName: "text-fg-primary border-bd-primary bg-default",
-        endMessage: `Reward distribution ended ${tgeEvent.date && formatDateMonthDateHours(tgeEvent.date)}`,
+        endMessage: i18n.t("launch_pools.reward_distribution_ended", { text }),
         badgeLabel: "Closed",
       }
+    }
   }
 }
 
