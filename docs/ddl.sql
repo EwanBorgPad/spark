@@ -51,6 +51,7 @@ CREATE TABLE deposit (
     token_address TEXT NOT NULL,
     amount_deposited TEXT NOT NULL,
     project_id TEXT NOT NULL,
-    tier_id TEXT NOT NULL
+    tier_id TEXT NOT NULL,
+    nft_address TEXT NOT NULL
 );
 CREATE INDEX deposit_from_address_index ON deposit(from_address);

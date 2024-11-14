@@ -5,7 +5,7 @@ import { Buffer } from "buffer"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { userDepositSchema } from "../../shared/models"
 import { signatureSubscribe } from "../../src/utils/solanaFunctions"
-import { COMMITMENT_LEVEL } from "../../shared/constants"
+import { COMMITMENT_LEVEL, TOKEN_PROGRAM } from "../../shared/constants"
 import { DepositService } from "../services/depositService"
 import { ProjectService } from "../services/projectService"
 import { EligibilityService } from "../services/eligibilityService"
@@ -19,8 +19,8 @@ type ENV = {
 }
 /**
  * Post request handler - creates user deposit to the LBP wallet
- * @param ctx 
- * @returns 
+ * @param ctx
+ * @returns
  */
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const { SOLANA_RPC_URL, LBP_WALLET_ADDRESS } = ctx.env
@@ -28,6 +28,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
   const drizzleDb = drizzle(ctx.env.DB, { logger: true })
   try {
+    // validate env
+    if (!LBP_WALLET_ADDRESS) {
+      throw new Error('Misconfigured env, LBP_WALLET_ADDRESS is missing!')
+    }
     // Parse request
     const { data, error } = userDepositSchema.safeParse(await ctx.request.json())
     if (error) {
@@ -40,7 +44,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     ////////////////// Data Loading ///////////////////
     ///////////////////////////////////////////////////
 
-    const project = await ProjectService.findProjectById({db, id: projectId})
+    const project = await ProjectService.findProjectById({ db, id: projectId })
+    if (!project) {
+      return jsonResponse({ message: "Project not found!"}, 404)
+    }
 
     // getting connection to the RPC
     const cluster = project?.cluster ?? 'devnet'
@@ -49,33 +56,29 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       commitment: COMMITMENT_LEVEL
     })
 
-    // deserializing transaction
-    const deserializedTx = Transaction.from(decodeBase64(transaction))
-    if (!deserializedTx.instructions.length) {
-      return jsonResponse({ message: "Transaction has no instructions!"}, 500)
+    const deserializedTransaction = await deserializeTransaction({ serializedTx: transaction, connection})
+
+    // TODO check if tokenMintAddress in the transaction is same as in project
+
+    // TODO check if toAddress is correct (should be hardcoded to borg wallet for now)
+
+    const {
+      depositAmount,
+      fromAddress: userWalletAddress,
+      decimalMultiplier,
+    } = deserializedTransaction
+
+    // check if transaction token matches the project token
+    if (project.info.raisedTokenMintAddress !== deserializedTransaction.tokenMintAddress) {
+      const message = `Raised token mint address missmatch (${project.info.raisedTokenMintAddress}===${deserializedTransaction.tokenMintAddress})!`
+      throw new Error(message)
     }
 
-    // extracting our transfer instruction from the deserialized transaction by using programId and first byte === 3 (standard for transfer instructions)
-    const transferInstruction = deserializedTx.instructions.find(instruction => instruction.programId.toBase58() === 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' && instruction.data.readUInt8(0) === 3)
-    if (!transferInstruction) {
-      return jsonResponse({ message: "No transfer instruction found in transaction!"}, 500)
+    // check if transaction recipient matches the pool wallet
+    if (LBP_WALLET_ADDRESS !== deserializedTransaction.toAddress) {
+      const message = `To address missmatch (${LBP_WALLET_ADDRESS}===${deserializedTransaction.toAddress})!`
+      throw new Error(message)
     }
-
-    // extracting amount in lamports (BigInt) and users wallet address from instruction data
-    const depositAmount = transferInstruction.data.readBigUInt64LE(1)
-    const userWalletAddress = transferInstruction.keys[2].pubkey.toBase58()
-    // we need token mint address to extract how much decimals the token uses
-    const tokenMintAddress = transferInstruction.keys[3].pubkey
-    const mintAccountInfo = await connection.getAccountInfo(tokenMintAddress)
-
-    if (!mintAccountInfo) {
-      return jsonResponse({ message: "Mint account not found in transaction!"}, 500)
-    }
-  
-    // TODO: get decimals from project.json (person who creates project puts decimals for the raisedTokenMint)
-    // The decimals are located at 44th byte for USDC devnet coin (TODO: Check if all coins work like this)
-    const decimals = BigInt(mintAccountInfo.data[44])
-    const converter = BigInt(10) ** decimals
 
     if (!depositAmount) {
       return jsonResponse({ message: "No deposit amount found in transaction!"}, 500)
@@ -84,17 +87,13 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: "No user wallet address found in transaction!"}, 500)
     }
 
-    if (!project) {
-      return jsonResponse({ message: "Project not found!"}, 404)
-    }
-
     const userTotalDepositAmount = await DepositService.getUsersDepositedAmount({
       db,
       projectId,
       walletAddress: userWalletAddress
     })
 
-    const projectTokenLimit = BigInt(project.info.raisedTokenMaxCap) * converter
+    const projectTokenLimit = BigInt(project.info.raisedTokenMaxCap) * decimalMultiplier
     if (!projectTokenLimit)
       return jsonResponse({ message: "Project cap is not defined"}, 500)
 
@@ -112,15 +111,15 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const eligibilityTier = eligibilityStatus.eligibilityTier
     const tierId = eligibilityTier.id
 
-    const minInvestmentPerUser = BigInt(eligibilityTier.benefits.minInvestment) * converter
-    const maxInvestmentPerUser = BigInt(eligibilityTier.benefits.maxInvestment) * converter
+    const minInvestmentPerUser = BigInt(eligibilityTier.benefits.minInvestment) * decimalMultiplier
+    const maxInvestmentPerUser = BigInt(eligibilityTier.benefits.maxInvestment) * decimalMultiplier
 
     const projectTotalDepositedAmount = await DepositService.getProjectsDepositedAmount({ db, projectId })
-    // @ts-expect-error typescript BigInt and bigint 
+    // @ts-expect-error typescript BigInt and bigint
     const totalAmount = depositAmount + projectTotalDepositedAmount
 
     // checking user tier limitations and project cap limitations
-    if (minInvestmentPerUser === undefined || minInvestmentPerUser === null) {
+    if (!minInvestmentPerUser) {
       return jsonResponse({ message: "Minimum investment for your tier is not defined!" }, 500)
     }
     if (!maxInvestmentPerUser) {
@@ -135,13 +134,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: 'User is not eligible!' }, 409)
     }
 
-    // @ts-expect-error typescript BigInt and bigint 
-    if (depositAmount + userTotalDepositAmount  < minInvestmentPerUser) {
+    if ((depositAmount + userTotalDepositAmount) < minInvestmentPerUser) {
       return jsonResponse({ message: `Investment amount (${depositAmount}) is less than the minimum amount for your eligibility tier (${minInvestmentPerUser})`}, 409)
     }
 
-    // @ts-expect-error typescript BigInt and bigint 
-    if (depositAmount + userTotalDepositAmount > maxInvestmentPerUser) {
+    if ((depositAmount + userTotalDepositAmount) > maxInvestmentPerUser) {
       return jsonResponse({ message: `Investment amount (${depositAmount}) is more than the maximum amount for your eligibility tier (${maxInvestmentPerUser})`}, 409)
     }
 
@@ -167,9 +164,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         amount: depositAmount.toString(),
         projectId,
         walletAddress: userWalletAddress,
-        tokenAddress: tokenMintAddress.toBase58(),
+        tokenAddress: deserializedTransaction.tokenMintAddress,
         txId,
-        lbpAddress: LBP_WALLET_ADDRESS, 
+        lbpAddress: deserializedTransaction.toAddress,
         tierId
       })
     }
@@ -226,5 +223,57 @@ export const onRequestOptions: PagesFunction<ENV> = async (ctx) => {
   })
   } catch (error) {
     return jsonResponse({message: error}, 500)
+  }
+}
+
+type DeserializeTransactionArgs = {
+  serializedTx: string
+  connection: Connection
+}
+type DeserializeTransactionResult = {
+  fromAddress: string
+  toAddress: string
+  tokenMintAddress: string
+  depositAmount: bigint
+  decimalMultiplier: bigint
+}
+async function deserializeTransaction({ serializedTx, connection }: DeserializeTransactionArgs): Promise<DeserializeTransactionResult> {
+  // deserializing transaction
+  const deserializedTx = Transaction.from(decodeBase64(serializedTx))
+  if (deserializedTx.instructions.length !== 1) {
+    const message = `DeserializeTransaction: invalid transaction instructions length (${deserializedTx.instructions.length})!`
+    throw new Error(message)
+  }
+
+  // extracting our transfer instruction from the deserialized transaction by using programId and first byte === 3 (standard for transfer instructions)
+  const transferInstruction = deserializedTx.instructions
+    .find(i => i.programId.toBase58() === TOKEN_PROGRAM && i.data.readUInt8(0) === 3)
+  if (!transferInstruction) {
+    throw new Error('No transfer instruction found in transaction!')
+  }
+
+  // extracting amount in lamports (BigInt) and users wallet address from instruction data
+  const depositAmount = transferInstruction.data.readBigUInt64LE(1)
+  const toAddress = transferInstruction.keys[1].pubkey.toBase58()
+  const fromAddress = transferInstruction.keys[2].pubkey.toBase58()
+  // we need token mint address to extract how much decimals the token uses
+  const tokenMintAddress = transferInstruction.keys[3].pubkey
+  const mintAccountInfo = await connection.getAccountInfo(tokenMintAddress)
+
+  if (!mintAccountInfo) {
+    throw new Error('Mint account not found in transaction!')
+  }
+
+  // TODO: get decimals from project.json (person who creates project puts decimals for the raisedTokenMint)
+  // The decimals are located at 44th byte for USDC devnet coin (TODO: Check if all coins work like this)
+  const decimals = BigInt(mintAccountInfo.data[44])
+  const decimalMultiplier = BigInt(10) ** decimals
+
+  return {
+    fromAddress,
+    toAddress,
+    depositAmount,
+    tokenMintAddress: tokenMintAddress.toBase58(),
+    decimalMultiplier,
   }
 }
