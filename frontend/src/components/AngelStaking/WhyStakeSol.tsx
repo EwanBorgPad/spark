@@ -45,10 +45,10 @@ const reasons: ReasonType[] = [
       "At BorgPad, we back only the projects and founders that align with our <mark>human-centric vision for AI</mark> and uphold true Web3 values, driving adoption beyond mere speculation. Read our manifesto.",
     ],
     imgUrl: reason3,
-    link: {
-      label: "Read Our Manifesto",
-      url: "/manifesto",
-    },
+    // link: {
+    //   label: "Read Our Manifesto",
+    //   url: "/manifesto",
+    // },
   },
 ]
 

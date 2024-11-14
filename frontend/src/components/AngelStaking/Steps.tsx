@@ -9,8 +9,8 @@ import largeArrow from "@/assets/angelStaking/large-arrow.png"
 const Steps = () => {
   return (
     <div className="flex w-full items-center justify-center gap-1 px-3 py-3 md:gap-3">
-      <div className="animate-slide-in-from-left relative max-w-[196px]">
-        <span className="absolute top-[8px] w-full text-center text-sm md:top-[19px] md:text-base">
+      <div className="relative max-w-[196px] animate-slide-in-from-left">
+        <span className="absolute top-[8px] w-full text-center text-xs md:top-[19px] md:text-base">
           1. Stake SOL
         </span>
         <Img
@@ -31,7 +31,7 @@ const Steps = () => {
       />
 
       <div className="relative max-w-[196px] animate-[slide-in-from-left_1s_1s_forwards] opacity-0">
-        <span className="absolute top-[8px] w-full text-center text-sm md:top-[19px] md:text-base">
+        <span className="absolute top-[8px] w-full text-center text-xs md:top-[19px] md:text-base">
           2. Invest Yield
         </span>
         <Img
@@ -51,7 +51,7 @@ const Steps = () => {
         customClass="w-[17px] rounded-none md:hidden animate-[opacity-in_1s_2s_forwards] opacity-0"
       />
       <div className="relative max-w-[196px] animate-[slide-in-from-left_1s_2s_forwards] opacity-0">
-        <span className="absolute top-[8px] w-full text-center text-sm md:top-[19px] md:text-base">
+        <span className="absolute top-[8px] w-full text-center text-xs md:top-[19px] md:text-base">
           3. Get Airdrops
         </span>
         <Img
