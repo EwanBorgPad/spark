@@ -1,4 +1,4 @@
-import { Connection, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js"
+import { Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js"
 import { SOLANA_PUBLIC_RPC_URL, USDC_DEV_ADDRESS } from "../../shared/constants"
 import { Commitment, getSplTokenBalance } from "../../shared/SolanaWeb3"
 import { toast } from "react-toastify"
@@ -23,7 +23,6 @@ export async function getTransactionToSend(
   tokenMintAddress: PublicKey
 ) {
   const LbpWalletKey = new PublicKey(import.meta.env.VITE_LBP_WALLET_ADDRESS)
-  
   const transaction = await createAndSerializeTransaction(tokenAmount, walletProvider, LbpWalletKey, rpcUrl, tokenMintAddress)
   // convert serialized tx to base64 string for sending it to backend
   const uint8tx = new Uint8Array(transaction)
@@ -48,8 +47,6 @@ async function createAndSerializeTransaction(
 ) {
     const connection = new Connection(rpcUrl)
     const transaction = await createSplTokenTransaction(connection, walletProvider, LbpWalletKey, tokenMintAddress, amount, rpcUrl)
-    transaction.feePayer = walletProvider.publicKey
-    transaction.recentBlockhash = ((await connection.getLatestBlockhash()).blockhash)
     // Sign transaction
     const signedTransaction = await walletProvider.signTransaction(transaction)
     const serializedTx = await signedTransaction.serialize()
@@ -89,6 +86,113 @@ function createTransferInstruction(
       data,
   })
 }
+
+// async function getNftInstructions (
+//   authorityPublicKey: PublicKey,
+//   connection: Connection,
+//   freezeAuthority: boolean,
+//   metadataUri: string // URI pointing to metadata of the NFT (e.g., IPFS link)
+// ) {
+  // create new keypair for mint account
+  // const mintAccount = Keypair.generate()
+
+  // generate instruction for creating mint account
+  // const lamports = await connection.getMinimumBalanceForRentExemption(82)
+  // const createMintAccountInstruction = SystemProgram.createAccount({
+  //   fromPubkey: authorityPublicKey,
+  //   newAccountPubkey: mintAccount.publicKey,
+  //   lamports,
+  //   space: 82,
+  //   programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
+  // })
+
+  // prepare data for initializing mint account
+//   const data = Buffer.alloc(67)
+//   data.writeUint8(0,0) // Initialize mint instruction is number 0 on first byte
+//   data.writeUInt8(0,1)  // Number of decimals goes to second byte, we put 0 as NFT does not have decimals
+//   data.write(authorityPublicKey.toBase58(), 2) // Mint authority at third byte
+//   if (freezeAuthority) {
+//     data.write(authorityPublicKey.toBuffer().toString(), 34) // Freeze authority at offset 34 if provided
+// } else {
+//     data.write(Buffer.alloc(32).toString(), 34)      // Write 32 bytes of 0 if no freeze authority
+// }
+//   const initializeMintAccountInstruction = new TransactionInstruction({
+//     keys: [{ pubkey: mintAccount.publicKey, isSigner: false, isWritable: true }],
+//     programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
+//     data,
+//   })
+
+  // get associated token account for minting 
+  // const associatedTokenAccountPublicKey = await PublicKey.findProgramAddress(
+  //   [
+  //     authorityPublicKey.toBuffer(),
+  //     new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA').toBuffer(),
+  //     mintAccount.publicKey.toBuffer()
+  //   ],
+  //   new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL')
+  // )
+
+  // Instruction to create associated token account if it doesnt exist
+  // const newAssociatedAccountInstruction = new TransactionInstruction({
+  //   programId: new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'),
+  //   keys: [
+  //       { pubkey: authorityPublicKey, isSigner: true, isWritable: true },
+  //       { pubkey: associatedTokenAccountPublicKey[0], isSigner: false, isWritable: true },
+  //       { pubkey: authorityPublicKey, isSigner: false, isWritable: false },
+  //       { pubkey: mintAccount.publicKey, isSigner: false, isWritable: false },
+  //       { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+  //       { pubkey: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), isSigner: false, isWritable: false },
+  //   ],
+  //   data: Buffer.alloc(0), // No additional data required
+  // })
+
+  //   // creating metadata for NFT
+    // const metadata = {
+    //   name: "NFT_TEST",
+    //   symbol: "NFTT",
+    //   uri: metadataUri, // Metadata URI (IPFS link or similar)
+    // }
+  
+    // creating instruction for metadata adding to NFT
+    // const metadataData = Buffer.from(JSON.stringify(metadata)); // Convert metadata to buffer
+    // const metadataInstruction = new TransactionInstruction({
+    //   keys: [
+    //     { pubkey: mintAccount.publicKey, isSigner: false, isWritable: true }, // Mint address
+    //     { pubkey: authorityPublicKey, isSigner: true, isWritable: false }, // Owner signing
+    //   ],
+    //   programId: new PublicKey('99hNSg9acmyg5hWTjw76GoA8k3LG5NvdPXih7sotdmZ7'),
+    //   data: metadataData, // Send the metadata as part of the instruction
+    // })
+
+  // // prepare data for minting instruction
+  // const mintInstructionData = Buffer.alloc(9) // Buffer for mint instruction
+  // data.writeUInt8(1, 0) // Minting instruction is number 1 on first byte
+  // data.writeBigUInt64LE(BigInt(1), 1) // Minting 1 token (second byte is minted amount)
+
+  // const mintInstruction = new TransactionInstruction({
+  //   keys: [
+  //     { pubkey: mintAccount.publicKey, isSigner: false, isWritable: true },
+  //     { pubkey: associatedTokenAccountPublicKey[0], isSigner: false, isWritable: true },
+  //     { pubkey: authorityPublicKey, isSigner: true, isWritable: false }, // Owner must sign
+  //   ],
+  //   programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
+  //   data: mintInstructionData,
+  // })
+
+  // const listOfInstructions : TransactionInstruction[] = [
+  //   createMintAccountInstruction,
+  //   initializeMintAccountInstruction,
+    // newAssociatedAccountInstruction,
+    // metadataInstruction,
+    // mintInstruction
+  ]
+
+  // we return list of instructions and mintAccount because we need its signature
+//   return {
+//     listOfInstructions,
+//     mintAccount
+//   }
+// }
 
 /**
  * Function to create SPL token transfer transactions
@@ -151,6 +255,12 @@ async function createSplTokenTransaction(connection: Connection, walletProvider:
     // Add the instruction to the transaction
     tx.add(transferInstruction)
     // TODO: Create nft minting instruction and add it to the transaction
+    // creating instructions for initializing mint account for nft 
+    // const { listOfInstructions, mintAccount }  = await getNftInstructions(walletProvider.publicKey, connection, true, 'ipfs://QmTy8w65yBXgyfG2ZBg5TrfB2hPjrDQH3RCQFJGkARStJb')
+    // listOfInstructions.forEach(instruction => tx.add(instruction))
+    // tx.feePayer = walletProvider.publicKey
+    // tx.recentBlockhash = ((await connection.getLatestBlockhash()).blockhash)
+    // tx.sign(mintAccount)
     return tx
 }
 
