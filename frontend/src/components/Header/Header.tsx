@@ -159,9 +159,11 @@ const Header = () => {
           <NavigationBar itemClickedCallback={closeMenu} />
           <img src={hamburgerMenuBg} className="absolute bottom-0 left-0 right-0 z-[-1]" />
 
-          <div className="z-[1] px-5 pt-4">
-            {walletState === "CONNECTED" ? <WalletDropdown /> : <ConnectButton btnClassName="w-full" size="md" />}
-          </div>
+          {isWalletShown && (
+            <div className="z-[1] px-5 pt-4">
+              {walletState === "CONNECTED" ? <WalletDropdown /> : <ConnectButton btnClassName="w-full" size="md" />}
+            </div>
+          )}
         </div>
       )}
 

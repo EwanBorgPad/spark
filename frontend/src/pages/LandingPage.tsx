@@ -107,7 +107,7 @@ const LandingPage = () => {
         </div>
 
         <div className="flex w-full flex-col items-center gap-5 pb-6 md:gap-6">
-          <h2 className="flex max-w-[700px] flex-row flex-wrap text-left text-4xl font-semibold leading-[44px] md:justify-center md:text-center md:text-5xl md:text-[40px] md:leading-[48px]">
+          <h2 className="header-mobile-size-small header-mobile-size-smallest flex max-w-[700px] flex-row flex-wrap text-left text-4xl font-semibold leading-[44px] md:justify-center md:text-center md:text-5xl md:text-[40px] md:leading-[48px]">
             <span>Home of the</span> <span>Fearless Founders,</span> <span>Land of the Thriving</span>{" "}
             <span>TGEs.</span>
           </h2>
