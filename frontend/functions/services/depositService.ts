@@ -43,6 +43,7 @@ const getProjectsDepositedAmount = async ({ db, projectId }: GetProjectsDeposite
     .prepare("SELECT amount_deposited FROM deposit WHERE project_id = ?1;")
     .bind(projectId)
     .all<any>()
+    if (!data.results.length) return BigInt(0)
     const amountsDeposited = data.results.map(obj => BigInt(obj.amount_deposited))
     const projectDepositedSum = amountsDeposited.reduce((accumulator, current) => accumulator + current)
     return BigInt(projectDepositedSum)

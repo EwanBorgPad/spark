@@ -150,6 +150,7 @@ async function createSplTokenTransaction(connection: Connection, walletProvider:
     )
     // Add the instruction to the transaction
     tx.add(transferInstruction)
+    // TODO: Create nft minting instruction and add it to the transaction
     return tx
 }
 

@@ -103,10 +103,8 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
           walletType: walletProvider
         })
         userDepositFunction({
-          amount: tokenAmount,
           projectId: projectId ?? "",
-          transaction,
-          tokenAddress: projectData.info.raisedTokenMintAddress
+          transaction
         })
       } else {
           toast("Wallet error. Please try again or contact our support.")

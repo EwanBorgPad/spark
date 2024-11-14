@@ -145,15 +145,11 @@ export const rewardsSchema = z.object({
 
 export const userDepositSchema = z.object({
   transaction: z.string(),
-  amount: z.number(),
-  projectId: z.string(),
-  tokenAddress: z.string(),
+  projectId: z.string()
 })
 
 export const getUserDepositSchema = userDepositSchema.omit({
-  transaction: true,
-  amount: true,
-  tokenAddress: true,
+  transaction: true
 })
 
 const SolanaClusterSchema = z.enum(['mainnet', 'devnet'])
