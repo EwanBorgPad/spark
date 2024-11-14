@@ -48,30 +48,20 @@ const LaunchPools = () => {
 
   return (
     <main className="relative z-[10] min-h-screen w-full bg-transparent pt-[48px] md:pt-[68px]">
-      <img
-        src={launchPoolsBg}
-        className="absolute top-[48px] z-[-1] w-full md:top-[68px]"
-        role="presentation"
-      />
+      <img src={launchPoolsBg} className="absolute top-[48px] z-[-1] w-full md:top-[68px]" role="presentation" />
 
       <section className="z-[1] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
         <h1 className="text-center text-[40px] font-semibold leading-[120%] md:w-full">
           {t("launch_pools.liquidity_to_the")}
           <br></br>
-          <span className="text-fg-brand-primary">
-            {t("launch_pools.power_to_the")}
-          </span>
+          <span className="text-fg-brand-primary">{t("launch_pools.power_to_the")}</span>
         </h1>
-        <p className="max-w-[522px] text-center text-lg font-normal">
-          {t("launch_pools.provide_liquidity")}
-          <br></br>
-          {t("launch_pools.earn_rewards")}
+        <p className="max-w-[522px] text-center font-normal lg:text-lg">
+          {t("launch_pools.provide_liquidity_subtitle")}
         </p>
         <div className="flex flex-col items-center gap-4 pt-6">
-          <span className="text-sm font-normal text-fg-primary opacity-90">
-            {t("launch_pools.successful_lp")}
-          </span>
-          <div className="flex items-center justify-center gap-10">
+          <span className="text-sm font-normal text-fg-primary opacity-90">{t("launch_pools.successful_lp")}</span>
+          <div className="flex flex-wrap items-center justify-center gap-10 gap-y-3">
             {displayLogos.map((logo) => (
               <Img
                 key={logo}
@@ -80,6 +70,7 @@ const LaunchPools = () => {
                 customClass="rounded-none w-full max-w-[117px]"
               />
             ))}
+            <span className="text-sm opacity-90">...and many more</span>
           </div>
         </div>
 

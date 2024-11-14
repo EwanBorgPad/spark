@@ -22,10 +22,7 @@ const Footer = ({ showBackground = true }: Props) => {
     >
       {showBackground && (
         <div className="max-w-screen absolute bottom-0 left-0 -z-[0] w-full rotate-180 overflow-hidden">
-          <img
-            src={backdropImg}
-            className="h-[740px] min-w-[1440px] lg:h-auto lg:w-screen"
-          />
+          <img src={backdropImg} className="h-[740px] min-w-[1440px] lg:h-auto lg:w-screen" />
         </div>
       )}
       <div className="z-[0] flex flex-col items-center justify-center gap-6">
@@ -33,29 +30,17 @@ const Footer = ({ showBackground = true }: Props) => {
           <Logo />
           <span className="text-sm">© 2024</span>
         </div>
-        <div
-          className={twMerge(
-            "flex flex-col items-center gap-2 text-sm md:flex-row lg:gap-5",
-          )}
-        >
+        <div className={twMerge("flex flex-col items-center gap-2 text-sm md:flex-row lg:gap-5")}>
           <Link to="/terms-of-use">
-            <Button
-              color="plain"
-              btnText={t("terms_of_use")}
-              className="text-sm font-normal"
-            />
+            <Button color="plain" btnText={t("terms_of_use")} className="text-sm font-normal" />
           </Link>
           <div className="hidden h-5 border-l-[1px] border-l-fg-primary/50 md:block"></div>
           <Link to="/terms-and-conditions">
-            <Button
-              color="plain"
-              btnText={t("terms_and_conditions")}
-              className="text-sm font-normal"
-            />
+            <Button color="plain" btnText={t("terms_and_conditions")} className="text-sm font-normal" />
           </Link>
           <div className="hidden h-5 border-l-[1px] border-l-fg-primary/50 md:block"></div>
           <ExternalLink.Icon
-            externalLink={{ iconType: "X_TWITTER", url: "#" }}
+            externalLink={{ iconType: "X_TWITTER", url: "https://x.com/BorgPadHQ" }}
             className="mx-2 my-[4px] h-[1em] w-[1em] border-none p-0 text-3xl"
             iconClassName="text-xl"
           />
