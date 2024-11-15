@@ -206,10 +206,11 @@ type DeserializeTransactionResult = {
 async function deserializeTransaction({ serializedTx, connection }: DeserializeTransactionArgs): Promise<DeserializeTransactionResult> {
   // deserializing transaction
   const deserializedTx = Transaction.from(decodeBase64(serializedTx))
-  if (deserializedTx.instructions.length !== 3) {
-    const message = `DeserializeTransaction: invalid transaction instructions length (${deserializedTx.instructions.length})!`
-    throw new Error(message)
-  }
+  // TODO: check the number of instructions after implementing minting nft
+  // if (deserializedTx.instructions.length !== 3) {
+  //   const message = `DeserializeTransaction: invalid transaction instructions length (${deserializedTx.instructions.length})!`
+  //   throw new Error(message)
+  // }
 
   // extracting our transfer instruction from the deserialized transaction by using programId and first byte === 3 (standard for transfer instructions)
   const transferInstruction = deserializedTx.instructions
