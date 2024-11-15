@@ -57,26 +57,28 @@ const LandingPage = () => {
             </div>
           </div>
           <RotatingSubtitle />
-          <h1 className="max-w-[720px] animate-fade-in-from-below-slow pb-[66px] text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
+          <h1 className="max-w-[720px] animate-fade-in-from-below-slow pb-[66px] text-[40px] font-semibold leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
             <span>Experience</span>{" "}
-            <span
-              style={{ animationDelay: "500ms" }}
-              className="tran translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
-            >
-              Better
-            </span>
-            <span
-              style={{ animationDelay: "1200ms" }}
-              className="translate-y-[10%] animate-fade-in-from-below-slow text-brand-primary opacity-0"
-            >
-              Than
-            </span>
-            <span
-              style={{ animationDelay: "1900ms" }}
-              className="translate-y-[10%] animate-fade-in-from-below-slow text-brand-primary opacity-0"
-            >
-              CEX
-            </span>
+            <div className="flex flex-row items-center">
+              <span
+                style={{ animationDelay: "500ms" }}
+                className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
+              >
+                Better
+              </span>
+              <span
+                style={{ animationDelay: "1200ms" }}
+                className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
+              >
+                Than
+              </span>
+              <span
+                style={{ animationDelay: "1900ms" }}
+                className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
+              >
+                CEX
+              </span>
+            </div>
           </h1>
           {/* <CountDownTimer
             endOfEvent={LAUNCH_DATE}
@@ -95,8 +97,10 @@ const LandingPage = () => {
         </div>
 
         <div className="flex w-full flex-col items-center gap-5 pb-6 md:gap-6">
-          <h2 className="header-mobile-size-small header-mobile-size-smallest flex max-w-[700px] flex-row flex-wrap text-left text-4xl font-semibold leading-[44px] md:justify-center md:text-center md:text-5xl md:text-[40px] md:leading-[48px]">
-            <span>Home of the</span> <span>Fearless Founders,</span> <span>Land of the Thriving</span>{" "}
+          <h2 className="header-mobile-size-small header-mobile-size-smallest flex max-w-[700px] flex-row flex-wrap gap-x-2.5 text-left text-4xl font-semibold leading-[44px] md:justify-center md:text-center md:text-[40px] md:leading-[48px]">
+            <span>Home of the</span>
+            <span>Fearless Founders,</span>
+            <span>Land of the Thriving</span>
             <span>TGEs.</span>
           </h2>
           <h2 className="max-w-[700px] text-left text-lg font-normal leading-relaxed opacity-75 md:text-center">
