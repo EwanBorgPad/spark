@@ -9,7 +9,6 @@ const rotatingContent = [
   "Restricted Access to Token Sales?",
   "Meaningless Airdrops?",
   "Low Float / High FDVs ?",
-  "...",
 ]
 
 type SlideProps = {
@@ -44,7 +43,7 @@ const RotatingSubtitle = () => {
   }, [currentContentIndex, fadeSwitch])
 
   useEffect(() => {
-    const rotationInterval = setInterval(intervalCallback, 3000)
+    const rotationInterval = setInterval(intervalCallback, 1500)
 
     // cleanup timeouts and interval
     return () => {
@@ -53,12 +52,12 @@ const RotatingSubtitle = () => {
   }, [intervalCallback])
 
   return (
-    <h2 className="flex h-[125px] w-full max-w-[772px] flex-col flex-wrap pb-4 text-2xl font-semibold leading-snug md:h-auto md:flex-row md:gap-2 md:pb-7 md:pl-[80px] md:text-center">
+    <h2 className="flex h-[125px] w-full max-w-[752px] flex-col flex-wrap pb-4 text-2xl font-medium leading-snug md:h-auto md:flex-row md:gap-2 md:pb-7 md:pl-[80px] md:text-center">
       <span className="text-nowrap opacity-60">Unsatisfied with</span>
-      <div ref={textRef}>
-        <span className="text-wrap">{rotatingContent[currentContentIndex]}</span>
+      <div className="flex w-full max-w-[472px]" ref={textRef}>
+        <span className="text-wrap text-left">{rotatingContent[currentContentIndex]}</span>
         {/* <span className="h-[61px]">Exchanges Dumping on You?</span> */}
-        {/* <span>Hidden Agendas Behind Token Launches?</span> */}
+        {/* <span className="w-[472px]">Hidden Agendas Behind Token Launches?</span> */}
       </div>
     </h2>
   )
