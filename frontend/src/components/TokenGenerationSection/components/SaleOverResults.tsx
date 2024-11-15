@@ -31,15 +31,15 @@ const SaleOverResults = () => {
         <Text
           text={formatCurrencyAmount(saleData?.totalAmountRaised)}
           isLoading={isExchangeLoading}
-          className="w-fit font-geist-mono text-base leading-7 text-fg-primary"
+          className="w-fit text-base leading-7 text-fg-primary"
         />
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("sale_over.sell_out_percentage")}</span>
-        <span className="font-geist-mono text-base leading-7 text-fg-primary"></span>
+        <span className="text-base leading-7 text-fg-primary"></span>
         <Text
           text={saleData?.sellOutPercentage ? `${saleData.sellOutPercentage}%` : ""}
-          className="font-geist-mono text-base leading-7 text-fg-primary"
+          className="text-base leading-7 text-fg-primary"
           isLoading={isExchangeLoading}
         />
       </div>
@@ -48,14 +48,14 @@ const SaleOverResults = () => {
         <Text
           text={saleData?.participantCount}
           isLoading={isExchangeLoading}
-          className="font-geist-mono text-base leading-7 text-fg-primary"
+          className="text-base leading-7 text-fg-primary"
         />
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("sale_over.average_invested_amount")}</span>
         <Text
           text={formatCurrencyAmount(saleData?.averageInvestedAmount)}
-          className="font-geist-mono text-base leading-7 text-fg-primary"
+          className="text-base leading-7 text-fg-primary"
           isLoading={isExchangeLoading}
         />
       </div>
@@ -63,7 +63,7 @@ const SaleOverResults = () => {
         <span className="text-sm text-fg-tertiary">{t("market_cap")}</span>
         <Text
           text={formatCurrencyAmount(exchangeData?.marketCap)}
-          className="font-geist-mono text-base leading-7 text-fg-primary"
+          className="text-base leading-7 text-fg-primary"
           isLoading={isExchangeLoading}
         />
       </div>
@@ -74,7 +74,7 @@ const SaleOverResults = () => {
         <Text
           text={formatCurrencyAmount(info.tge.fdv)}
           isLoading={isLoading}
-          className="font-geist-mono text-base leading-7 text-fg-primary"
+          className="text-base leading-7 text-fg-primary"
         />
       </div>
     </div>

@@ -14,6 +14,7 @@ const JoinCommunityModal = ({ onClose }: Props) => {
     <SimpleModal
       showCloseBtn
       onClose={onClose}
+      headerClass="bg-[#090E19]"
       className="relative flex w-full max-w-[800px] flex-col items-center gap-10 rounded-xl bg-[#090E19] pb-20"
     >
       <div className="z-[2] flex max-w-[510px] flex-col items-center gap-4">

@@ -52,15 +52,13 @@ export const CurrencyInputField = ({
           allowNegativeValue={false}
           placeholder={placeholder ?? "0"}
           className={
-            "h-[40px] w-full max-w-[360px] bg-transparent px-2 py-2.5 font-geist-mono text-sm placeholder:text-white/30 focus:outline-none"
+            "h-[40px] w-full max-w-[360px] bg-transparent px-2 py-2.5 text-sm placeholder:text-white/30 focus:outline-none"
           }
           decimalsLimit={6}
           onValueChange={onChange}
         />
       </div>
-      {error && (
-        <span className="-mt-1 text-xs text-fg-error-primary">{error}</span>
-      )}
+      {error && <span className="-mt-1 text-xs text-fg-error-primary">{error}</span>}
     </div>
   )
 }

@@ -86,13 +86,13 @@ const TokenRewards = ({
       <div className="relative flex flex-col items-center border-b-[1px] border-b-bd-primary px-3 py-2">
         <div className="flex h-fit w-full flex-wrap items-center gap-2 rounded-full pb-1 text-base font-medium">
           <Icon icon="SvgBorgCoin" />
-          <span className="font-geist-mono text-base">{rewards.borgLP}</span>
-          <span className="font-geist-mono">BORG</span>
+          <span className="text-base">{rewards.borgLP}</span>
+          <span>BORG</span>
           <div className="flex items-center gap-2">
             <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
             <Img src={tgeData.projectCoin.iconUrl} size="4" />
-            <span className="font-geist-mono text-base">{rewards.tokenLP}</span>
-            <span className="font-geist-mono text-base">{tgeData.projectCoin.ticker}</span>
+            <span className="text-base">{rewards.tokenLP}</span>
+            <span className="text-base">{tgeData.projectCoin.ticker}</span>
           </div>
         </div>
         <div className="absolute -bottom-[10px] bg-tertiary p-[2px]">
@@ -112,8 +112,8 @@ const TokenRewards = ({
       <div className="border-b-[1px] border-b-bd-primary px-3 py-2">
         <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
           <Img src={tgeData.projectCoin.iconUrl} size="4" />
-          <span className="font-geist-mono text-base">{rewards.tokenRewardDistribution}</span>
-          <span className="font-geist-mono text-base">{tgeData.projectCoin.ticker}</span>
+          <span className="text-base">{rewards.tokenRewardDistribution}</span>
+          <span className="text-base">{tgeData.projectCoin.ticker}</span>
         </div>
         <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary ">
           <Icon icon="SvgChartLine" className="text-base opacity-50" />
@@ -122,11 +122,11 @@ const TokenRewards = ({
       </div>
       <div className="flex flex-wrap gap-2 px-3 py-2 text-xs">
         <span>Total:</span>
-        <span className="font-geist-mono">{rewards.borgLP}</span>
-        <span className="font-geist-mono">{"BORG"}</span>
+        <span>{rewards.borgLP}</span>
+        <span>{"BORG"}</span>
         <span>{"+"}</span>
-        <span className="font-geist-mono">{rewards.totalTargetToken}</span>
-        <span className="font-geist-mono">{tgeData.projectCoin.ticker}</span>
+        <span>{rewards.totalTargetToken}</span>
+        <span>{tgeData.projectCoin.ticker}</span>
       </div>
     </div>
   )
