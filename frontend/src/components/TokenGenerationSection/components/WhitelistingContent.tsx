@@ -56,25 +56,19 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-start gap-2 text-base">
           <Icon icon="SvgBorgCoin" />
           <p className="flex gap-1">
-            <span className="font-geist-mono">1</span>
-            <span className="font-geist-mono">BORG</span>
+            <span>1</span>
+            <span>BORG</span>
           </p>
           <span className="text-fg-tertiary">Gives you:</span>
         </div>
-        <TokenRewards
-          borgCoinInput={"1"}
-          isWhitelistingEvent={true}
-          tokenPriceInBORG={tokenPriceInBORG}
-        />
+        <TokenRewards borgCoinInput={"1"} isWhitelistingEvent={true} tokenPriceInBORG={tokenPriceInBORG} />
       </div>
 
       <div className="flex w-full flex-col">
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.raise_target")}</span>
           <div className="flex gap-2">
-            <span className="font-geist-mono">
-              ${formatCurrencyAmount(tgeData.raiseTarget, false, 0)}
-            </span>
+            <span>${formatCurrencyAmount(tgeData.raiseTarget, false, 0)}</span>
             {/* <span>in BORG</span> */}
           </div>
         </div>
@@ -82,20 +76,14 @@ const WhitelistingContent = () => {
 
         <div className="flex w-full items-center justify-between py-2">
           <div className="flex items-center gap-2">
-            <Img
-              src={tgeData.projectCoin.iconUrl}
-              size="6"
-              isFetchingLink={isLoading}
-            />
+            <Img src={tgeData.projectCoin.iconUrl} size="6" isFetchingLink={isLoading} />
             <span>{tgeData.projectCoin.ticker}</span>
             <span>{t("tge.price")}</span>
           </div>
           <div className="flex flex-col items-end">
-            <span className="font-geist-mono">
-              {formatCurrencyAmount(tokenPriceInUSD, true, 2)}
-            </span>
+            <span>{formatCurrencyAmount(tokenPriceInUSD, true, 2)}</span>
             <div className="flex gap-2">
-              <span className="font-geist-mono">
+              <span>
                 {tokenPriceInBORG ? (
                   formatCurrencyAmount(tokenPriceInBORG, false, 2)
                 ) : (
@@ -111,10 +99,7 @@ const WhitelistingContent = () => {
 
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.whitelist_participants")}</span>
-          <span className="font-geist-mono">
-            {investmentSummaryData?.count &&
-              formatCurrencyAmount(investmentSummaryData?.count, false, 0)}
-          </span>
+          <span>{investmentSummaryData?.count && formatCurrencyAmount(investmentSummaryData?.count, false, 0)}</span>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
       </div>
@@ -129,11 +114,7 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.defi_protocol")}</span>
           <div className="flex items-center gap-2">
-            <Img
-              src={tgeData.liquidityPool.iconUrl}
-              size="5"
-              isFetchingLink={isLoading}
-            />
+            <Img src={tgeData.liquidityPool.iconUrl} size="5" isFetchingLink={isLoading} />
             <span>{tgeData.liquidityPool.name}</span>
           </div>
         </div>
@@ -143,8 +124,8 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.crypto_app_listing")}</span>
           <div className="flex items-center gap-2">
-            <Icon className='text-lg' icon="SvgBorgCoin" />
-            <span>{t('swissborg')}</span>
+            <Icon className="text-lg" icon="SvgBorgCoin" />
+            <span>{t("swissborg")}</span>
           </div>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
@@ -170,10 +151,7 @@ const WhitelistingContent = () => {
               <span className="max-w-full text-wrap py-3 text-center">
                 {t("tge.whitelisting.connect_wallet_to_see")}
               </span>
-              <ConnectButton
-                btnClassName="text-base py-3"
-                customBtnText={t("tge.select_wallet")}
-              />
+              <ConnectButton btnClassName="text-base py-3" customBtnText={t("tge.select_wallet")} />
             </div>
           </div>
         </>
