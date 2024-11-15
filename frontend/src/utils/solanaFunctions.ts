@@ -1,5 +1,5 @@
 import { Connection, Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, Transaction, TransactionInstruction } from "@solana/web3.js"
-import { ASSOCIATED_TOKEN_PROGRAM_ADDRESS, METADATA_PROGRAM_ADDRESS, METAPLEX_PROGRAM_ADDRESS, TOKEN_PROGRAM } from "../../shared/constants"
+import { ASSOCIATED_TOKEN_PROGRAM_ADDRESS, METADATA_PROGRAM_ADDRESS, TOKEN_PROGRAM } from "../../shared/constants"
 import { Commitment, getSplTokenBalance } from "../../shared/SolanaWeb3"
 import { toast } from "react-toastify"
 import { Provider } from "@/hooks/useWalletContext"
@@ -157,7 +157,7 @@ async function createSplTokenTransaction(connection: Connection, walletProvider:
     const { listOfInstructions, mintAccountKeypair } = await createMintAccountInstructions(connection, walletProvider.publicKey, walletProvider.publicKey, null)
     listOfInstructions.forEach(instruction => tx.add(instruction))
     // Create metadata for nft instruction and add it to the transaction
-    const metadataInstruction = await createMetadataInstructionForNft('https://www.arweave.net/1gF4HVnbRDXnMLvq5Z7-Y7yYhB8IHKpzJe9cZZ5RwhsA', mintAccountKeypair.publicKey, walletProvider.publicKey, walletProvider.publicKey)
+    const metadataInstruction = await createMetadataInstructionForNft('ipfs://QmRAuxeMnsjPsbwW8LkKtk6Nh6MoqTvyKwP3zwuwJnB2yP', mintAccountKeypair.publicKey, walletProvider.publicKey, walletProvider.publicKey)
     tx.add(metadataInstruction)
     // Create nft mintTo instructions and add them to the transaction
     const mintInstructions = await createMintNftToUserInstructions(walletProvider.publicKey, walletProvider.publicKey, walletProvider.publicKey, mintAccountKeypair.publicKey)
@@ -321,22 +321,21 @@ async function createMetadataInstructionForNft (
   const [metadataPDA] = await getMetadataPDA(mintPublicKey)
 
   // Initialize metadata for NFT, for now hardcoded data TODO: ask team how we handle this
-  const name = 'Strajo Nft'
+  const name = 'StrajoNft'
   const symbol = 'SNFT'
-  const sellerFeeBasisPoints = 0
+  const sellerFeeBasisPoints = '0'
 
   // TODO: figure out how to do this without errors on instruction
-  const metadataData = Buffer.alloc(300)  // Sizes for name, symbol, uri
-
-  metadataData.writeUInt8(0, 0)  // Version
-  metadataData.writeUInt8(0, 1) // Type (metadata)
-  metadataData.set(mintPublicKey.toBuffer(), 2)  // Mint Address
-  metadataData.set(ownerPublicKey.toBuffer(), 34)  // Mint Authority
-  metadataData.set(Buffer.alloc(32), 66);  // Freeze Authority or 0
-  metadataData.writeUInt16LE(sellerFeeBasisPoints, 98);  // Seller Fee
-  metadataData.write(metadataUri, 102);  // Metadata URI
-  metadataData.write(name, 134);  // Name
-  metadataData.write(symbol, 166);  // Symbol
+  // const metadataData = Buffer.alloc(100)
+  // metadataData.writeUInt8(0, 0);  // Version
+  // metadataData.writeUInt8(0, 1);  // Type (metadata)
+  // metadataData.write(Buffer.from(mintPublicKey.toBase58(), 'utf-8'), 2);  // Mint Address
+  // metadataData.write(mintAuthority.toBuffer(), 34);  // Mint Authority
+  // metadataData.write(freezeAuthority ? freezeAuthority.toBuffer() : Buffer.alloc(32), 66);  // Freeze Authority or 0
+  // metadataData.writeUInt16LE(sellerFeeBasisPoints, 98);  // Seller Fee
+  // metadataData.write(uri, 102);  // Metadata URI
+  // metadataData.write(name, 134);  // Name
+  // metadataData.write(symbol, 166);  // Symbol
 
   return new TransactionInstruction({
     keys: [

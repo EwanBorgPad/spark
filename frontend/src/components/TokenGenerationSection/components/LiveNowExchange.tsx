@@ -93,7 +93,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
-      const tokenAmount = parseFloat(data.borgInputValue)
+      const tokenAmount = parseFloat(data.borgInputValue.replace(',',''))
       if (walletProvider === "") throw new Error("No wallet provider!")
       if (walletState === 'CONNECTED') {
         const transaction = await signTransaction({
@@ -107,8 +107,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
           transaction
         })
       } else {
-          toast("Wallet error. Please try again or contact our support.")
-          throw new Error("Wallet Error")
+          toast.error("Wallet error. Please try again or contact our support.")
       }
     } catch (error) {
       console.log(error)
