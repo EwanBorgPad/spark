@@ -148,10 +148,6 @@ export const userDepositSchema = z.object({
   projectId: z.string()
 })
 
-export const getUserDepositSchema = userDepositSchema.omit({
-  transaction: true
-})
-
 const SolanaClusterSchema = z.enum(['mainnet', 'devnet'])
 
 export const projectSchema = z.object({

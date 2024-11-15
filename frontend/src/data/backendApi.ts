@@ -50,10 +50,6 @@ export type PostUserDepositRequest = {
   transaction: string,
   projectId: string
 }
-export type GetUserDepositRequest = {
-  walletAddress: string,
-  projectId: string
-}
 type AcceptTermsOfUseArgs = AcceptTermsRequest
 const postAcceptTermsOfUse = async (args: AcceptTermsOfUseArgs) => {
   const url = new URL(POST_ACCEPT_TERMS_OF_USE_API, window.location.href)
@@ -218,25 +214,8 @@ const postUserDeposit = async ({
   return json
 }
 
-const getUserDeposit = async ({
-  projectId, walletAddress
-}: GetUserDepositRequest): Promise<any> => {
-  const url = new URL(USER_DEPOSIT_URL, window.location.href)
-  url.searchParams.set("walletAddress", walletAddress)
-  url.searchParams.set("projectId", projectId)
-
-  const response = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-  const json = await response.json()
-  return json
-}
-
 export const backendApi = {
   postUserDeposit,
-  getUserDeposit,
   getProject,
   getProjects,
   getExchange,

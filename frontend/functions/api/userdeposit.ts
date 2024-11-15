@@ -176,36 +176,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     return jsonResponse({ message: "Something went wrong..." }, 500)
   }
 }
-
-/**
- * Get request handler - gets the amount user has deposited to the projects LBP
- * @param ctx
- * @returns amount the user has deposited to the LBP
- */
-export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
-  const db = ctx.env.DB
-  try {
-    //// validate request
-    const { searchParams } = new URL(ctx.request.url)
-    const projectId = searchParams.get("projectId")
-    const walletAddress = searchParams.get("walletAddress")
-    if (!projectId) return jsonResponse({ message: 'projectId is missing!' }, 400)
-    if (!walletAddress) return jsonResponse({ message: 'walletAddress is missing!' }, 400)
-
-    const depositedAmount = await DepositService.getUsersDepositedAmount({
-        db,
-        projectId,
-        walletAddress
-    })
-    if (!depositedAmount) return jsonResponse({ depositedAmount: 0}, 200)
-
-    return jsonResponse({ depositedAmount: depositedAmount.toString() }, 200)
-  } catch (e) {
-    console.error(e)
-    return jsonResponse({ message: "Something went wrong..." }, 500)
-  }
-}
-
 // Used for CORS debugging problem
 export const onRequestOptions: PagesFunction<ENV> = async (ctx) => {
   try {
