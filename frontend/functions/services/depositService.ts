@@ -21,9 +21,10 @@ type GetProjectsDepositedAmountArgs = {
 }
 
 const createUserDeposit = async ({ db, amount, projectId, walletAddress, lbpAddress, tokenAddress, txId, tierId }: CreateUserDepositArgs) => {
+    // TODO: after implementing nft minting logic, change this empty string to nft address
     await db
-    .prepare("INSERT INTO deposit (from_address, to_address, amount_deposited, project_id, token_address, transaction_id, tier_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7);")
-    .bind(walletAddress, lbpAddress, amount, projectId, tokenAddress, txId, tierId)
+    .prepare("INSERT INTO deposit (from_address, to_address, amount_deposited, project_id, token_address, transaction_id, tier_id, nft_address) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8);")
+    .bind(walletAddress, lbpAddress, amount, projectId, tokenAddress, txId, tierId, '')
     .run()
 }
 
