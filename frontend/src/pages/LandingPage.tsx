@@ -1,5 +1,4 @@
-import { useEffect } from "react"
-import { ScrollRestoration, useNavigate } from "react-router-dom"
+import { ScrollRestoration } from "react-router-dom"
 
 import solanaImg from "@/assets/angelStaking/solana.png"
 import swissborgLogo from "@/assets/landingPage/swissborg-logo.png"
@@ -17,21 +16,10 @@ import DiscoverSection from "@/components/LandingPage/DiscoverSection"
 import JoinCommunityBtn from "@/components/Button/JoinTheCommunityBtn"
 import RotatingSubtitle from "@/components/LandingPage/RotatingSubtitle"
 
-// Arbitrary launch date
+// Arbitrary launch date for Countdown timer. Currently disabled
 // const LAUNCH_DATE = addDays(new Date(), 5.1411)
 
 const LandingPage = () => {
-  const navigate = useNavigate()
-
-  //////////////////////////////////////////////////////////////////////////////
-  // @SolanaId - useEffect below is for Solana ID whitelisting launch (01.11.2024) - remove this //redirection when we officially launch the rest of the app
-  //////////////////////////////////////////////////////////////////////////////
-  useEffect(() => {
-    if (import.meta.env.VITE_ENVIRONMENT_TYPE === "production") {
-      navigate("/launch-pools/solana-id")
-    }
-  }, [navigate])
-
   return (
     <main
       className="relative z-[10] flex w-full max-w-[100vw] flex-col items-center

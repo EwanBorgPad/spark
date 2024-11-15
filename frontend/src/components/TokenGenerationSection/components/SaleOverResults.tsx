@@ -27,9 +27,7 @@ const SaleOverResults = () => {
   return (
     <div className="flex w-full max-w-[760px] flex-wrap gap-x-4 gap-y-5 rounded-lg border-[1px] border-bd-primary bg-secondary px-4 py-4 lg:px-5">
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-        <span className="w-fit text-sm text-fg-tertiary">
-          {t("sale_over.total_amount_raised")}
-        </span>
+        <span className="w-fit text-sm text-fg-tertiary">{t("sale_over.total_amount_raised")}</span>
         <Text
           text={formatCurrencyAmount(saleData?.totalAmountRaised)}
           isLoading={isExchangeLoading}
@@ -37,22 +35,16 @@ const SaleOverResults = () => {
         />
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-        <span className="text-sm text-fg-tertiary">
-          {t("sale_over.sell_out_percentage")}
-        </span>
+        <span className="text-sm text-fg-tertiary">{t("sale_over.sell_out_percentage")}</span>
         <span className="font-geist-mono text-base leading-7 text-fg-primary"></span>
         <Text
-          text={
-            saleData?.sellOutPercentage ? `${saleData.sellOutPercentage}%` : ""
-          }
+          text={saleData?.sellOutPercentage ? `${saleData.sellOutPercentage}%` : ""}
           className="font-geist-mono text-base leading-7 text-fg-primary"
           isLoading={isExchangeLoading}
         />
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-        <span className="text-sm text-fg-tertiary">
-          {t("sale_over.participants")}
-        </span>
+        <span className="text-sm text-fg-tertiary">{t("sale_over.participants")}</span>
         <Text
           text={saleData?.participantCount}
           isLoading={isExchangeLoading}
@@ -60,9 +52,7 @@ const SaleOverResults = () => {
         />
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-        <span className="text-sm text-fg-tertiary">
-          {t("sale_over.average_invested_amount")}
-        </span>
+        <span className="text-sm text-fg-tertiary">{t("sale_over.average_invested_amount")}</span>
         <Text
           text={formatCurrencyAmount(saleData?.averageInvestedAmount)}
           className="font-geist-mono text-base leading-7 text-fg-primary"
@@ -79,7 +69,8 @@ const SaleOverResults = () => {
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
-        {/* @SolanaID - fdv is fixed from the beginning. Check if this is in every project */}
+
+        {/* @TODO - Check: FDV (fully diluted value) is fixed from the beginning. Check if this is in every project */}
         <Text
           text={formatCurrencyAmount(info.tge.fdv)}
           isLoading={isLoading}

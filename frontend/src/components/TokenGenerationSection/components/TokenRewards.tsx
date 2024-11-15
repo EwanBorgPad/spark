@@ -46,16 +46,13 @@ const TokenRewards = ({
       },
     }
   }
-  // @TODO - .....
-  const getTokenReward = () => {
-    if (!borgCoinInput || !tokenPriceInBORG)
-      return { formatted: "", unformatted: null }
-    const tokenRewardRatioAsPerLP =
-      projectData.info.totalTokensForSale /
-      projectData.info.totalTokensForRewardDistribution
 
-    const tokenReward =
-      (+borgCoinInput / tokenPriceInBORG / 2) * tokenRewardRatioAsPerLP
+  const getTokenReward = () => {
+    if (!borgCoinInput || !tokenPriceInBORG) return { formatted: "", unformatted: null }
+    const tokenRewardRatioAsPerLP =
+      projectData.info.totalTokensForSale / projectData.info.totalTokensForRewardDistribution
+
+    const tokenReward = (+borgCoinInput / tokenPriceInBORG / 2) * tokenRewardRatioAsPerLP
 
     return {
       unformatted: tokenReward,
@@ -67,15 +64,10 @@ const TokenRewards = ({
   }
 
   const liquidityPoolValues = getLiquidityPoolValues()
-  // @TODO - .....
   const getTotalTokensToBeReceived = () => {
-    // for each 1 token in locking period user gets total of 1 in Reward Distribution sum
-    const totalTokensFromLiquidityPool =
-      liquidityPoolValues.tokenLp?.unformatted || 0
-    const totalTokensReceivedInRewardsDistribution =
-      getTokenReward().unformatted || 0
-    const totalTargetToken =
-      totalTokensReceivedInRewardsDistribution + totalTokensFromLiquidityPool
+    const totalTokensFromLiquidityPool = liquidityPoolValues.tokenLp?.unformatted || 0
+    const totalTokensReceivedInRewardsDistribution = getTokenReward().unformatted || 0
+    const totalTargetToken = totalTokensReceivedInRewardsDistribution + totalTokensFromLiquidityPool
     return totalTargetToken
   }
 
@@ -97,22 +89,14 @@ const TokenRewards = ({
           <span className="font-geist-mono text-base">{rewards.borgLP}</span>
           <span className="font-geist-mono">BORG</span>
           <div className="flex items-center gap-2">
-            <Icon
-              icon="SvgPlus"
-              className="text-base text-fg-disabled opacity-50"
-            />
+            <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
             <Img src={tgeData.projectCoin.iconUrl} size="4" />
             <span className="font-geist-mono text-base">{rewards.tokenLP}</span>
-            <span className="font-geist-mono text-base">
-              {tgeData.projectCoin.ticker}
-            </span>
+            <span className="font-geist-mono text-base">{tgeData.projectCoin.ticker}</span>
           </div>
         </div>
         <div className="absolute -bottom-[10px] bg-tertiary p-[2px]">
-          <Icon
-            icon="SvgPlus"
-            className="text-base text-fg-disabled opacity-50"
-          />
+          <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
         </div>
 
         <div className="flex h-fit w-full items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary">
@@ -122,20 +106,14 @@ const TokenRewards = ({
           <a href={tgeData.liquidityPool.url} className="underline">
             <span className="opacity-50">{tgeData.liquidityPool.name}</span>
           </a>
-          <span className="-ml-1.5 opacity-50">
-            , {tgeData.liquidityPool.lockingPeriod}
-          </span>
+          <span className="-ml-1.5 opacity-50">, {tgeData.liquidityPool.lockingPeriod}</span>
         </div>
       </div>
       <div className="border-b-[1px] border-b-bd-primary px-3 py-2">
         <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
           <Img src={tgeData.projectCoin.iconUrl} size="4" />
-          <span className="font-geist-mono text-base">
-            {rewards.tokenRewardDistribution}
-          </span>
-          <span className="font-geist-mono text-base">
-            {tgeData.projectCoin.ticker}
-          </span>
+          <span className="font-geist-mono text-base">{rewards.tokenRewardDistribution}</span>
+          <span className="font-geist-mono text-base">{tgeData.projectCoin.ticker}</span>
         </div>
         <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary ">
           <Icon icon="SvgChartLine" className="text-base opacity-50" />

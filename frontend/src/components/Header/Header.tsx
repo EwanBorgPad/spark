@@ -112,10 +112,7 @@ const Header = () => {
     closeMenu()
   }
 
-  // @SolanaID - remove header before web app is official launched
-  const isNavigationBarDisplayed = import.meta.env.VITE_ENVIRONMENT_TYPE !== "production"
   const isWalletShown = location.pathname !== "/"
-  console.log(location.pathname)
 
   return (
     <>
@@ -129,8 +126,7 @@ const Header = () => {
             <span className="font-sulphur-point text-2xl leading-[28px] text-fg-primary">BorgPad</span>
           </Button>
 
-          {/* @SolanaID - uncomment NavigationBar below */}
-          {isNavigationBarDisplayed && <NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />}
+          {<NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />}
 
           {!showHamburgerMenu &&
             isWalletShown &&
@@ -148,7 +144,6 @@ const Header = () => {
           color="plain"
         />
       </header>
-      {/* @SolanaID - uncomment hamburger menu below */}
       {showHamburgerMenu && (
         <div
           className={twMerge(

@@ -43,7 +43,6 @@ export type TimelineEventType = {
 }
 
 export type ExpandedTimelineEventType = {
-  // @SolanaID - added null at nextEventDate & displayedTime
   displayedTime?: string | null
   wasEventBeforeCurrentMoment?: boolean
   nextEventDate: Date | null
@@ -57,39 +56,24 @@ const HORIZONTAL_PADDING = 16
 
 const Timeline = ({ timelineEvents }: Props) => {
   const [containerWidth, setContainerWidth] = useState<number | null>(null)
-  const [timelineData, setTimelineData] = useState(
-    expandTimelineDataInfo(timelineEvents),
-  )
+  const [timelineData, setTimelineData] = useState(expandTimelineDataInfo(timelineEvents))
   const containerRef = useRef<HTMLDivElement>(null)
   const dataLength = timelineData.length
   const currentTgeEvent = getCurrentTgeEvent(timelineData)
 
   const { width } = useWindowSize()
 
-  const renderTimelineEvent = (
-    event: ExpandedTimelineEventType,
-    dataLength: number,
-    index: number,
-  ) => {
+  const renderTimelineEvent = (event: ExpandedTimelineEventType, dataLength: number, index: number) => {
     const displayTimeline = dataLength - 1 !== index
     const calculateTimelineRatio = () => {
-      const isTimelineFinished = Boolean(
-        event?.nextEventDate && isBefore(event.nextEventDate, new Date()),
-      )
+      const isTimelineFinished = Boolean(event?.nextEventDate && isBefore(event.nextEventDate, new Date()))
       if (isTimelineFinished) return 1
       if (!event.wasEventBeforeCurrentMoment) return 0
       if (!event?.nextEventDate) return 0
 
-      // @SolanaId
-      const timelineDurationInMs = event.date
-        ? differenceInMilliseconds(event.nextEventDate, event.date)
-        : 0
-      const timelineLeftInMs = differenceInMilliseconds(
-        event.nextEventDate,
-        new Date(),
-      )
-      const ratio =
-        (timelineDurationInMs - timelineLeftInMs) / timelineDurationInMs
+      const timelineDurationInMs = event.date ? differenceInMilliseconds(event.nextEventDate, event.date) : 0
+      const timelineLeftInMs = differenceInMilliseconds(event.nextEventDate, new Date())
+      const ratio = (timelineDurationInMs - timelineLeftInMs) / timelineDurationInMs
       return ratio
     }
 
@@ -97,20 +81,13 @@ const Timeline = ({ timelineEvents }: Props) => {
     const calculateHorizontalTimelineSectionWidth = () => {
       if (!containerWidth) return 0
       return (
-        (containerWidth -
-          2 * (HORIZONTAL_PADDING + BORDER_SIZE) -
-          (dataLength - 1) * GAP_SIZE) /
-          dataLength +
-        GAP_SIZE
+        (containerWidth - 2 * (HORIZONTAL_PADDING + BORDER_SIZE) - (dataLength - 1) * GAP_SIZE) / dataLength + GAP_SIZE
       )
     }
     const horizontalTimelineWidth = calculateHorizontalTimelineSectionWidth()
 
     return (
-      <div
-        key={event.id}
-        className="flex w-full flex-1 items-center gap-4 lg:max-w-[132px] lg:flex-col"
-      >
+      <div key={event.id} className="flex w-full flex-1 items-center gap-4 lg:max-w-[132px] lg:flex-col">
         <div className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-default lg:shrink">
           {displayTimeline && (
             <>
@@ -136,9 +113,7 @@ const Timeline = ({ timelineEvents }: Props) => {
               ></div>
             </>
           )}
-          {event.wasEventBeforeCurrentMoment && (
-            <div className="z-[3] h-2 w-2 rounded-full bg-brand-primary"></div>
-          )}
+          {event.wasEventBeforeCurrentMoment && <div className="z-[3] h-2 w-2 rounded-full bg-brand-primary"></div>}
         </div>
 
         <div className="flex flex-1 flex-col lg:items-center">
@@ -150,9 +125,7 @@ const Timeline = ({ timelineEvents }: Props) => {
           >
             {event.label}
           </span>
-          <span className="truncate text-xs leading-[18px] opacity-50">
-            {event.displayedTime || "TBD"}
-          </span>
+          <span className="truncate text-xs leading-[18px] opacity-50">{event.displayedTime || "TBD"}</span>
         </div>
       </div>
     )
@@ -180,9 +153,8 @@ const Timeline = ({ timelineEvents }: Props) => {
         ref={containerRef}
         className="flex w-full flex-col justify-between gap-4 rounded-lg border border-bd-secondary bg-secondary/50 px-4 py-5 lg:flex-row"
       >
-        {Object.values(timelineData).map(
-          (event: ExpandedTimelineEventType, dataIndex) =>
-            renderTimelineEvent(event, dataLength, dataIndex),
+        {Object.values(timelineData).map((event: ExpandedTimelineEventType, dataIndex) =>
+          renderTimelineEvent(event, dataLength, dataIndex),
         )}
       </div>
 
@@ -190,10 +162,7 @@ const Timeline = ({ timelineEvents }: Props) => {
       {currentTgeEvent?.nextEventDate && currentTgeEvent.id !== "UPCOMING" && (
         <>
           {/* countdown for adding circle for finished event */}
-          <CountDownCallback
-            endOfEvent={currentTgeEvent.nextEventDate}
-            callbackWhenTimeExpires={updateTimeline}
-          />
+          <CountDownCallback endOfEvent={currentTgeEvent.nextEventDate} callbackWhenTimeExpires={updateTimeline} />
           {/* countdown for updating line timeline lengths every minute */}
           <CountDownCallback
             endOfEvent={currentTgeEvent.nextEventDate}

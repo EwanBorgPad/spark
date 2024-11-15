@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { backendApi } from "@/data/backendApi"
 import { useQuery } from "@tanstack/react-query"
-import { ScrollRestoration, useNavigate } from "react-router-dom"
+import { ScrollRestoration } from "react-router-dom"
 
 import launchPoolsBg from "@/assets/launchPools/launch-pools-background.png"
 import swissborgLogo from "@/assets/launchPools/swissborg-logo.png"
@@ -19,7 +19,6 @@ const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
 const LaunchPools = () => {
   const [projects, setProjects] = useState<ExpandedProject[]>([])
-  const navigate = useNavigate()
   const { t } = useTranslation()
 
   const { data } = useQuery<GetProjectsResponse>({
@@ -30,15 +29,6 @@ const LaunchPools = () => {
       }),
     queryKey: ["getProjects", 1],
   })
-
-  //////////////////////////////////////////////////////////////////////////////
-  // @SolanaId - useEffect below is for Solana ID whitelisting launch (01.11.2024) - remove this //redirection when we officially launch the rest of the app
-  //////////////////////////////////////////////////////////////////////////////
-  useEffect(() => {
-    if (import.meta.env.VITE_ENVIRONMENT_TYPE === "production") {
-      navigate("/launch-pools/solana-id")
-    }
-  }, [navigate])
 
   useEffect(() => {
     if (!data?.projects) return
