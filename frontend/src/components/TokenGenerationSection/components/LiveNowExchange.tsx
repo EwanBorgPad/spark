@@ -97,7 +97,9 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
+      console.log("This is rpc URL: " , rpcUrl)
       const tokenAmount = parseFloat(data.borgInputValue.replace(',', ''))
+      console.log("This is tokenAmount parsed: ", tokenAmount)
       if (walletProvider === "") throw new Error("No wallet provider!")
       if (walletState === 'CONNECTED') {
         const transaction = await signTransaction({
