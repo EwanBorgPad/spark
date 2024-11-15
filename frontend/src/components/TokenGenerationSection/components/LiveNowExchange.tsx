@@ -106,18 +106,12 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   return (
     <TgeWrapper.Inner className="gap-0">
       <form
-        className={
-          "relative flex h-full w-full flex-col items-center bg-transparent"
-        }
+        className={"relative flex h-full w-full flex-col items-center bg-transparent"}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <span className="w-full pb-2.5 text-center text-base font-semibold">
-          {t("tge.provide_liquidity")}
-        </span>
+        <span className="w-full pb-2.5 text-center text-base font-semibold">{t("tge.provide_liquidity")}</span>
         <div className="re relative flex w-full max-w-[400px] flex-col items-center gap-2.5 rounded-t-2xl border border-bd-primary bg-secondary px-3 py-4">
-          <span className="w-full text-left text-xs opacity-50">
-            {t("tge.youre_paying")}
-          </span>
+          <span className="w-full text-left text-xs opacity-50">{t("tge.youre_paying")}</span>
           <div className="flex w-full flex-col justify-between gap-2">
             <div className="grid w-full grid-cols-borg-input gap-x-2">
               <div className="flex flex-col">
@@ -132,19 +126,13 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                       placeholder="0"
                       maxLength={16}
                       autoFocus
-                      className={
-                        "max-w-[242px] bg-transparent font-geist-mono text-2xl focus:outline-none"
-                      }
+                      className={"max-w-[242px] bg-transparent text-2xl focus:outline-none"}
                       decimalsLimit={6}
                       onValueChange={onChange}
                     />
                   )}
                 />
-                {errors?.borgInputValue && (
-                  <span className="text-fg-error-primary">
-                    {t("tge.please_input_value")}
-                  </span>
-                )}
+                {errors?.borgInputValue && <span className="text-fg-error-primary">{t("tge.please_input_value")}</span>}
               </div>
               <div className="flex h-fit items-center gap-2 rounded-full bg-default p-1 pr-3 text-sm font-medium">
                 <Icon icon="SvgBorgCoin" className="text-2xl" />
@@ -167,13 +155,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                   ))}
                 </div>
                 <p className="text-left text-xs opacity-50">
-                  {t("tge.balance")}:{" "}
-                  <span>
-                    {formatCurrencyAmount(
-                      Number(balance.uiAmountString),
-                      false,
-                    )}
-                  </span>
+                  {t("tge.balance")}: <span>{formatCurrencyAmount(Number(balance.uiAmountString), false)}</span>
                 </p>
               </div>
             )}
@@ -183,26 +165,14 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
           </div>
         </div>
         <div className="border-t-none relative mb-4 flex w-full max-w-[400px] flex-col items-center gap-2 rounded-b-2xl border border-t-0 border-bd-primary bg-secondary px-2 pb-2 pt-3">
-          <span className="w-full pl-1 text-left text-xs opacity-50">
-            {t("tge.to_receive")}
-          </span>
+          <span className="w-full pl-1 text-left text-xs opacity-50">{t("tge.to_receive")}</span>
 
-          <TokenRewards
-            borgCoinInput={borgCoinInput}
-            isWhitelistingEvent={false}
-            tokenPriceInBORG={tokenPriceInBORG}
-          />
+          <TokenRewards borgCoinInput={borgCoinInput} isWhitelistingEvent={false} tokenPriceInBORG={tokenPriceInBORG} />
         </div>
         <div className="flex w-full flex-col items-center gap-4">
           {walletState === "CONNECTED" ? (
             <>
-              <Button
-                type="submit"
-                size="lg"
-                btnText="Supply $BORG"
-                disabled={!isUserEligible}
-                className={"w-full"}
-              />
+              <Button type="submit" size="lg" btnText="Supply $BORG" disabled={!isUserEligible} className={"w-full"} />
               <Button
                 size="md"
                 color="secondary"
@@ -213,13 +183,8 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
             </>
           ) : (
             <div className="flex w-full flex-col rounded-xl bg-brand-primary/10">
-              <span className="max-w-full text-wrap py-3 text-center">
-                {t("tge.live_now.connect_wallet_to_see")}
-              </span>
-              <ConnectButton
-                btnClassName="text-base py-3"
-                customBtnText={t("tge.select_wallet")}
-              />
+              <span className="max-w-full text-wrap py-3 text-center">{t("tge.live_now.connect_wallet_to_see")}</span>
+              <ConnectButton btnClassName="text-base py-3" customBtnText={t("tge.select_wallet")} />
             </div>
           )}
         </div>
@@ -227,9 +192,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
       {!isUserEligible && (
         <div className="absolute bottom-0 left-0 right-0 top-10 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
           <div className="flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
-            <span className="text-fg-error-primary">
-              Your Wallet was not whitelisted for this deal
-            </span>
+            <span className="text-fg-error-primary">Your Wallet was not whitelisted for this deal</span>
             <Button
               onClick={scrollToWhitelistRequriements}
               size="md"

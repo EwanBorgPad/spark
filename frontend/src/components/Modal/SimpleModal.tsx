@@ -9,15 +9,10 @@ type Props = {
   showCloseBtn: boolean
   onClose?: () => void
   className?: string
+  headerClass?: string
   title?: string
 }
-export function SimpleModal({
-  children,
-  showCloseBtn,
-  onClose,
-  className,
-  title,
-}: Props) {
+export function SimpleModal({ children, showCloseBtn, onClose, className, headerClass, title }: Props) {
   const modalRef = useRef<HTMLDivElement | null>(null)
   const backdropRef = useRef<HTMLDivElement | null>(null)
 
@@ -42,10 +37,7 @@ export function SimpleModal({
   return (
     <Portal id="simple-modal">
       {/* fixed backdrop */}
-      <div
-        ref={backdropRef}
-        className="fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75 px-5"
-      ></div>
+      <div ref={backdropRef} className="fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75 px-5"></div>
 
       {/* modal wrapper */}
       <div className="fixed inset-0 z-[30] flex h-screen w-screen items-center px-5 ">
@@ -60,15 +52,14 @@ export function SimpleModal({
             className,
           )}
         >
-          <div className="sticky left-0 right-0 top-0 z-[31] grid w-full grid-cols-modal-header grid-rows-1 items-start bg-transparent p-4 text-center">
-            {onClose && showCloseBtn && (
-              <CloseButton onClose={closeModalCallback} />
+          <div
+            className={twMerge(
+              "sticky left-0 right-0 top-0 z-[31] grid w-full grid-cols-modal-header grid-rows-1 items-start bg-secondary/70 p-4 text-center backdrop-blur-sm",
+              headerClass,
             )}
-            {title && (
-              <h1 className="flex-1 text-body-xl-semibold text-white">
-                {title}
-              </h1>
-            )}
+          >
+            {onClose && showCloseBtn && <CloseButton onClose={closeModalCallback} />}
+            {title && <h1 className="flex-1 text-body-xl-semibold text-white">{title}</h1>}
           </div>
 
           {children}

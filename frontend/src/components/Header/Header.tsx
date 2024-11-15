@@ -92,6 +92,7 @@ const Header = () => {
   const headerRef = useRef<HTMLDivElement>(null)
   const { walletState } = useWalletContext()
   const navigate = useNavigate()
+  const location = useLocation()
 
   useHeaderShadow({ headerRef, intersectionReferenceElement })
 
@@ -111,9 +112,7 @@ const Header = () => {
     closeMenu()
   }
 
-  // @SolanaID - remove header before web app is official launched
-  const displayNavigationBar =
-    import.meta.env.VITE_ENVIRONMENT_TYPE !== "production"
+  const isWalletShown = location.pathname !== "/"
 
   return (
     <>
@@ -121,36 +120,22 @@ const Header = () => {
         ref={headerRef}
         className="fixed left-0 top-0 z-[12] flex h-12 w-full flex-row justify-center gap-3 border-b-[1px] border-tertiary bg-default px-4 py-2 pr-2 transition-shadow duration-500 md:h-[72px] md:pr-4"
       >
-        <div
-          className={
-            "flex w-full max-w-[1180px] flex-row items-center justify-between"
-          }
-        >
-          <Button
-            color="plain"
-            className="flex items-center gap-1 py-2"
-            onClick={() => navigate("/")}
-          >
+        <div className={"flex w-full max-w-[1180px] flex-row items-center justify-between"}>
+          <Button color="plain" className="flex items-center gap-1 py-2" onClick={() => navigate("/")}>
             <Icon icon="SvgLogo" className="mb-[4px] h-[20px] text-2xl" />
-            <span className="font-sulphur-point text-2xl leading-[28px] text-fg-primary">
-              BorgPad
-            </span>
+            <span className="font-sulphur-point text-2xl leading-[28px] text-fg-primary">BorgPad</span>
           </Button>
 
-          {/* @SolanaID - uncomment NavigationBar below */}
-          {displayNavigationBar && (
-            <NavigationBar
-              className="hidden md:flex"
-              itemClickedCallback={closeMenu}
-            />
-          )}
+          {<NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />}
 
           {!showHamburgerMenu &&
+            isWalletShown &&
             (walletState === "CONNECTED" ? (
               <WalletDropdown className="animate-fade-in" />
             ) : (
               <ConnectButton btnClassName="animate-fade-in" />
             ))}
+          {!isWalletShown && <div className="hidden w-[138px] md:block" />}
         </div>
         <Button.Icon
           icon={showHamburgerMenu ? "SvgX" : "SvgHamburger"}
@@ -159,8 +144,7 @@ const Header = () => {
           color="plain"
         />
       </header>
-      {/* @SolanaID - uncomment hamburger menu below */}
-      {/* {showHamburgerMenu && (
+      {showHamburgerMenu && (
         <div
           className={twMerge(
             "fixed inset-0 z-[11] mt-12 animate-fade-in-from-above bg-accent",
@@ -168,26 +152,18 @@ const Header = () => {
           )}
         >
           <NavigationBar itemClickedCallback={closeMenu} />
-          <img
-            src={hamburgerMenuBg}
-            className="absolute bottom-0 left-0 right-0 z-[-1]"
-          />
+          <img src={hamburgerMenuBg} className="absolute bottom-0 left-0 right-0 z-[-1]" />
 
-          <div className="z-[1] px-5 pt-4">
-            {walletState === "CONNECTED" ? (
-              <WalletDropdown />
-            ) : (
-              <ConnectButton btnClassName="w-full" size="md" />
-            )}
-          </div>
+          {isWalletShown && (
+            <div className="z-[1] px-5 pt-4">
+              {walletState === "CONNECTED" ? <WalletDropdown /> : <ConnectButton btnClassName="w-full" size="md" />}
+            </div>
+          )}
         </div>
-      )} */}
+      )}
 
       {/* full height reference element for intersection observer that is used inside useHeaderShadow */}
-      <div
-        ref={intersectionReferenceElement}
-        className="absolute left-0 top-0 z-[-10] h-screen w-2"
-      ></div>
+      <div ref={intersectionReferenceElement} className="absolute left-0 top-0 z-[-10] h-screen w-2"></div>
     </>
   )
 }

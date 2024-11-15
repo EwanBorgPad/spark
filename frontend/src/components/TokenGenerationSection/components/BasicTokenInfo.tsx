@@ -25,22 +25,15 @@ const BasicTokenInfo = () => {
     },
   )
 
-  // @SolanaID - we don't have specific date in timeline yet
-  // const rewardDistributionStartDate = timeline.find(
-  //   (event) => event.id === "REWARD_DISTRIBUTION",
-  // )?.date
-
   return (
     <section className="max-w-screen flex w-full flex-col gap-[25px] px-4 lg:max-w-[792px]">
       <div className="flex w-full flex-wrap justify-between gap-6">
         <div className="flex flex-1 flex-col gap-2">
-          <span className="text-sm text-fg-tertiary">
-            {t("total_investment_interest")}
-          </span>
-          <span className="font-geist-mono text-base text-fg-primary">
+          <span className="text-sm text-fg-tertiary">{t("total_investment_interest")}</span>
+          <span className="text-base text-fg-primary">
             <Text
               as="span"
-              className="font-geist-mono text-base text-fg-primary"
+              className="text-base text-fg-primary"
               isLoading={isLoadingSummary}
               text={formatCurrencyAmount(investmentSummaryData?.sum, true, 0)}
             />
@@ -48,15 +41,11 @@ const BasicTokenInfo = () => {
         </div>
         <div className="flex flex-1 flex-col gap-2">
           <span className="text-sm text-fg-tertiary">TGE</span>
-          <span className="text-nowrap font-geist-mono text-base text-fg-primary">
-            {tge?.tokenGenerationEventDate}
-            {/* @SolanaID - we don't have specific date in timeline yet */}
-            {/* {rewardDistributionStartDate && formatDateAndMonth(rewardDistributionStartDate)} */}
-          </span>
+          <span className="text-nowrap text-base text-fg-primary">{tge?.tokenGenerationEventDate}</span>
         </div>
         <div className="flex flex-1 flex-col gap-2">
           <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
-          <span className="font-geist-mono text-base text-fg-primary">
+          <span className="text-base text-fg-primary">
             {!isLoading ? formatCurrencyAmount(tge.fdv, true, 0) : <SimpleLoader />}
           </span>
         </div>

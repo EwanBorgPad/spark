@@ -67,30 +67,17 @@ const ClaimYourPositionModal = ({
   }
 
   return (
-    <SimpleModal
-      showCloseBtn={true}
-      onClose={onClose}
-      className="bg-secondary"
-      title={t("reward_distribution.claim_your_position")}
-    >
+    <SimpleModal showCloseBtn={true} onClose={onClose} title={t("reward_distribution.claim_your_position")}>
       <div className="flex w-full max-w-[460px] flex-col items-center justify-center max-sm:h-full">
         <>
           {/* Body */}
-          <div
-            className={twMerge(
-              "flex w-full grow flex-col justify-start gap-5 px-6 pb-10 pt-3",
-            )}
-          >
-            <p className="text-center text-base text-fg-tertiary">
-              {t("reward_distribution.select_how_much")}
-            </p>
+          <div className={twMerge("flex w-full grow flex-col justify-start gap-5 px-6 pb-10 pt-3")}>
+            <p className="text-center text-base text-fg-tertiary">{t("reward_distribution.select_how_much")}</p>
             <div className="flex items-center gap-2">
               <div className="flex flex-1 flex-col items-start justify-start gap-[34px] rounded-lg border border-bd-primary bg-tertiary p-4">
                 <div className="flex items-center justify-center gap-2">
                   <Icon icon="SvgBorgCoin" className="text-xl" />
-                  <div className="text-base font-medium leading-tight text-neutral-100">
-                    BORG
-                  </div>
+                  <div className="text-base font-medium leading-tight text-neutral-100">BORG</div>
                 </div>
                 <div className="flex flex-col items-start justify-start gap-2 self-stretch">
                   <div className="flex flex-col items-start justify-center self-stretch">
@@ -107,8 +94,8 @@ const ClaimYourPositionModal = ({
                         {t("reward_distribution.already_claimed")}:
                       </span>
                       <span className="text-sm text-fg-tertiary">
-                        {formatCurrencyAmount(mainPosition.borg.claimed, false)}
-                        /{formatCurrencyAmount(mainPosition.borg.total, false)}
+                        {formatCurrencyAmount(mainPosition.borg.claimed, false)}/
+                        {formatCurrencyAmount(mainPosition.borg.total, false)}
                       </span>
                     </div>
                   )}
@@ -117,10 +104,7 @@ const ClaimYourPositionModal = ({
               <Icon icon="SvgPlus" className="rounded-full text-fg-disabled" />
               <div className="flex flex-1 flex-col items-start justify-start gap-[34px] rounded-lg border border-bd-primary bg-tertiary p-4">
                 <div className="flex items-center justify-center gap-2">
-                  <Img
-                    src={projectData.info.tge.projectCoin.iconUrl}
-                    size="5"
-                  />
+                  <Img src={projectData.info.tge.projectCoin.iconUrl} size="5" />
                   <span className="text-base font-medium leading-tight text-neutral-100">
                     {projectData.info.tge.projectCoin.ticker}
                   </span>
@@ -131,11 +115,7 @@ const ClaimYourPositionModal = ({
                       {formatCurrencyAmount(toBeClaimed.projectTokens, false)}
                     </div>
                     <div className="text-base font-medium leading-snug text-neutral-400">
-                      /
-                      {formatCurrencyAmount(
-                        availableForClaim.projectTokens,
-                        false,
-                      )}
+                      /{formatCurrencyAmount(availableForClaim.projectTokens, false)}
                     </div>
                   </div>
                   {!!mainPosition.borg.claimed && (
@@ -144,15 +124,8 @@ const ClaimYourPositionModal = ({
                         {t("reward_distribution.already_claimed")}:
                       </span>
                       <span className="text-sm text-fg-tertiary">
-                        {formatCurrencyAmount(
-                          mainPosition.projectTokens.claimed,
-                          false,
-                        )}
-                        /
-                        {formatCurrencyAmount(
-                          mainPosition.projectTokens.total,
-                          false,
-                        )}
+                        {formatCurrencyAmount(mainPosition.projectTokens.claimed, false)}/
+                        {formatCurrencyAmount(mainPosition.projectTokens.total, false)}
                       </span>
                     </div>
                   )}
@@ -160,10 +133,7 @@ const ClaimYourPositionModal = ({
               </div>
             </div>
             <div className="flex w-full flex-col gap-5">
-              <CustomInputSlider
-                value={claimPercent}
-                setValue={setClaimPercent}
-              />
+              <CustomInputSlider value={claimPercent} setValue={setClaimPercent} />
               <div className="flex justify-between gap-2">
                 <div className="flex-1 rounded-lg border-[1px] border-bd-primary bg-default py-3.5 text-center text-fg-primary">
                   <input
@@ -197,9 +167,7 @@ const ClaimYourPositionModal = ({
                 className="w-full py-3 font-normal"
                 btnText={"Claim"}
               />
-              <span className="text-fg-tertiary">
-                {t("reward_distribution.continue_in_wallet")}
-              </span>
+              <span className="text-fg-tertiary">{t("reward_distribution.continue_in_wallet")}</span>
             </div>
           </div>
         </>

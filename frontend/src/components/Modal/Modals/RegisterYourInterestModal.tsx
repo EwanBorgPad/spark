@@ -14,6 +14,7 @@ const RegisterYourInterestModal = ({ onClose }: Props) => {
     <SimpleModal
       showCloseBtn
       onClose={onClose}
+      headerClass="bg-default"
       className="relative flex w-full max-w-[800px] flex-col items-center gap-10 rounded-xl bg-default px-10 py-20"
     >
       <div className="z-[2] flex max-w-[510px] flex-col items-center gap-4">

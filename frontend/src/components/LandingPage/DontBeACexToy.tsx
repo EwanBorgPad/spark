@@ -4,6 +4,9 @@ import useScrollAnimation from "@/hooks/useScrollAnimation"
 import { twMerge } from "tailwind-merge"
 import { useWindowSize } from "@/hooks/useWindowSize"
 
+const GITBOOK_URL = "https://docs.borgpad.com/"
+const FOUNDERS_APPLY_URL = "https://borgpad.formo.so/founders"
+
 const DontBeACexToy = () => {
   const headingRef = useRef<HTMLHeadingElement | null>(null)
   const div1Ref = useRef<HTMLDivElement | null>(null)
@@ -23,8 +26,7 @@ const DontBeACexToy = () => {
     threshold: isMobile ? 0.25 : 0.45,
   })
 
-  const transitionBase =
-    "transition-translate-n-opacity translate-y-9 scale-90 opacity-0 duration-[650ms]"
+  const transitionBase = "transition-translate-n-opacity translate-y-9 scale-90 opacity-0 duration-[650ms]"
   const transitionActive = "translate-y-0 scale-100 opacity-100"
 
   return (
@@ -65,10 +67,7 @@ const DontBeACexToy = () => {
               And have Nothing Hidden from You
             </h4>
             <p className="flex w-full flex-col gap-2 opacity-60">
-              <span>
-                Full visibility on all terms, from initial angel rounds to the
-                final OTC deal.
-              </span>
+              <span>Full visibility on all terms, from initial angel rounds to the final OTC deal.</span>
             </p>
           </div>
         </div>
@@ -93,27 +92,29 @@ const DontBeACexToy = () => {
               <span>Community-Driven Fundraising</span>
               <span>Listing Execution on DEXs + SwissBorg</span>
               <span>No Fees BS. Keep your treasury.</span>
-              <span>
-                TGE-Success Campaign (manage your sellers & generate demand)
-              </span>
+              <span>TGE-Success Campaign (manage your sellers & generate demand)</span>
             </p>
           </div>
         </div>
       </div>
       <div className="flex w-full flex-col gap-4 pt-3 md:mt-10 md:max-w-[320px] md:pt-4">
-        <Button
-          btnText="Read our GitBook"
-          size="xl"
-          className="mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal md:w-auto"
-          textClassName="text-base font-medium"
-        />
-        <Button
-          btnText="Committed Founder? Apply Here"
-          size="xl"
-          color="tertiary"
-          className="mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal md:w-auto"
-          textClassName="text-base font-medium px-0"
-        />
+        <a href={GITBOOK_URL} target={"_blank"} rel="noreferrer" className="w-full">
+          <Button
+            btnText="Dive into Our Vision"
+            size="xl"
+            className="mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal"
+            textClassName="text-base font-medium"
+          />
+        </a>
+        <a href={FOUNDERS_APPLY_URL} target={"_blank"} rel="noreferrer" className="w-full">
+          <Button
+            btnText="Committed Founder? Apply Here"
+            size="xl"
+            color="tertiary"
+            className="mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal"
+            textClassName="text-base font-medium px-0"
+          />
+        </a>
       </div>
     </section>
   )

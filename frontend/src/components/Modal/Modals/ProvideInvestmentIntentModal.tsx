@@ -72,20 +72,12 @@ const ProvideInvestmentIntentModal = ({
   })
 
   return (
-    <SimpleModal
-      showCloseBtn={true}
-      onClose={onClose}
-      title={t("investment.intent.quest.heading")}
-    >
+    <SimpleModal showCloseBtn={true} onClose={onClose} title={t("investment.intent.quest.heading")}>
       <div className="flex w-full max-w-[460px] flex-col items-center justify-center max-sm:h-full">
         {/* Body */}
-        <div
-          className={twMerge(
-            "flex w-full grow flex-col justify-start gap-4 px-4 pb-8 pt-3 md:px-10",
-          )}
-        >
+        <div className={twMerge("flex w-full grow flex-col justify-start gap-4 px-4 pb-8 pt-3 md:px-10")}>
           <div>
-            <p className="text-center text-base text-fg-tertiary">
+            <p className="text-left text-base text-fg-tertiary md:text-center">
               {t("investment.intent.quest.description")}
             </p>
             <CurrencyInputField
@@ -100,7 +92,7 @@ const ProvideInvestmentIntentModal = ({
 
           {/* average investment intent container */}
           <div className="flex flex-col items-center">
-            <span className="text-sm text-fg-tertiary">
+            <span className="w-full text-left text-sm text-fg-tertiary md:text-center">
               {t("average_commitment_from_users", {
                 avg: investmentSummaryData?.avg.toFixed(2),
                 count: investmentSummaryData?.count,
@@ -110,11 +102,7 @@ const ProvideInvestmentIntentModal = ({
 
           {isSuccess ? (
             <div className="flex w-full justify-center">
-              <Badge.Confirmation
-                isConfirmed={true}
-                label={t("done")}
-                classNames="w-fit bg-transparent border-none"
-              />
+              <Badge.Confirmation isConfirmed={true} label={t("done")} classNames="w-fit bg-transparent border-none" />
             </div>
           ) : (
             <Button

@@ -6,26 +6,28 @@ import Img from "../Image/Img"
 import useScrollAnimation from "@/hooks/useScrollAnimation"
 import { useWindowSize } from "@/hooks/useWindowSize"
 import { twMerge } from "tailwind-merge"
+import { Button } from "../Button/Button"
+import { Link } from "react-router-dom"
 
 type Item = {
-  title: string
+  path: string
   description: string
   imgUrl: string
 }
 
 const content: Item[] = [
   {
-    title: "",
+    path: "",
     description: "Stake $SOL, Receive Airdrops from Early Investments.",
     imgUrl: discover1,
   },
   {
-    title: "",
+    path: "",
     description: "Get Early Access to Exclusive Token Sales.",
     imgUrl: discover2,
   },
   {
-    title: "",
+    path: "/launch-pools",
     description: "Get Early Access to Exclusive Token Sales.",
     imgUrl: discover3,
   },
@@ -39,8 +41,7 @@ const DiscoverSection = () => {
     ref: ref,
     threshold: isMobile ? 0.15 : 0.75,
   })
-  const transitionBase =
-    "transition-translate-n-opacity translate-y-9 scale-90 opacity-0 duration-[800ms]"
+  const transitionBase = "transition-translate-n-opacity translate-y-9 scale-90 opacity-0 duration-[800ms]"
   const transitionActive = "translate-y-0 scale-100 opacity-100"
 
   return (
@@ -60,15 +61,14 @@ const DiscoverSection = () => {
           <div key={index} className="flex max-w-[405px] flex-col gap-3">
             <Img src={item.imgUrl} />
             <div className="flex w-full flex-col gap-4">
-              {item.title && (
-                <h3 className="text-2xl font-semibold text-fg-primary">
-                  {item.title}
-                </h3>
+              {item.path ? (
+                <Link to={item.path} className="w-full">
+                  <Button color="tertiary" btnText="Learn More" className="w-full" />
+                </Link>
+              ) : (
+                <span className="text-center opacity-50">Coming Soon</span>
               )}
-              <span className="text-center opacity-50">Coming Soon</span>
-              <p className="text-center text-fg-secondary">
-                {item.description}
-              </p>
+              <p className="text-center text-fg-secondary">{item.description}</p>
             </div>
           </div>
         ))}

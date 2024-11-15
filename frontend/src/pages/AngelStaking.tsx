@@ -13,7 +13,6 @@ import HowItWorks from "@/components/AngelStaking/HowItWorks"
 import WhyStakeSol from "@/components/AngelStaking/WhyStakeSol"
 import MaximiseValue from "@/components/AngelStaking/MaximiseValue"
 import InvestmentFocus from "@/components/AngelStaking/InvestmentFocus"
-import RegisterYourInterest from "@/components/Button/RegisterYourInterest"
 import { useEffect } from "react"
 import JoinCommunityBtn from "@/components/Button/JoinCommunityBtn"
 
@@ -25,7 +24,7 @@ const AngelStaking = () => {
   //////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (import.meta.env.VITE_ENVIRONMENT_TYPE === "production") {
-      navigate("/launch-pools/solana-id")
+      navigate("/launch-pools")
     }
   }, [navigate])
 

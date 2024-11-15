@@ -73,6 +73,7 @@ export const ConnectButton = ({
         <SimpleModal
           className="md:w-1/2"
           showCloseBtn={!showNoWallet}
+          title="Connect a Solana Wallet"
           onClose={() => {
             setShowModal(false)
             setShowNoWallet(false)
@@ -82,53 +83,27 @@ export const ConnectButton = ({
             {showNoWallet ? (
               <NoWalletModalContent close={() => setShowNoWallet(false)} />
             ) : (
-              <>
-                {/* Heading */}
-                <div className="w-full p-4 text-center">
-                  <h1 className="text-body-xl-semibold text-white">
-                    Connect a Solana Wallet
-                  </h1>
-                </div>
-                {/* Body */}
+              <div className={twMerge("flex w-full grow flex-col justify-start", "px-4 pt-4 lg:px-10 lg:pt-10")}>
                 <div
                   className={twMerge(
-                    "flex w-full grow flex-col justify-start",
-                    "px-4 pt-14 lg:px-10 lg:pt-11",
+                    "flex w-full flex-col items-center justify-center lg:flex-row",
+                    "gap-4 lg:gap-6",
+                    // 'p-4 lg:flex-row lg:gap-6 lg:p-[56px] lg:pb-[40px]',
                   )}
                 >
-                  <div
-                    className={twMerge(
-                      "flex w-full flex-col items-center justify-center lg:flex-row",
-                      "gap-4 lg:gap-6",
-                      // 'p-4 lg:flex-row lg:gap-6 lg:p-[56px] lg:pb-[40px]',
-                    )}
-                  >
-                    <WalletProvider
-                      icon={"SvgPhantom"}
-                      label={"Phantom"}
-                      onClick={signInWithPhantom}
-                    />
-                    <WalletProvider
-                      icon={"SvgBackpack"}
-                      label={"Backpack"}
-                      onClick={signInWithBackpack}
-                    />
-                    <WalletProvider
-                      icon={"SvgSolflare"}
-                      label={"Solflare"}
-                      onClick={signInWithSolflare}
-                    />
-                  </div>
-                  <div className="mb-8 mt-4 lg:mt-5">
-                    <p
-                      onClick={() => setShowNoWallet(true)}
-                      className="cursor-pointer select-none p-3 text-center text-fg-primary hover:underline"
-                    >
-                      I don&apos;t have a wallet
-                    </p>
-                  </div>
+                  <WalletProvider icon={"SvgPhantom"} label={"Phantom"} onClick={signInWithPhantom} />
+                  <WalletProvider icon={"SvgBackpack"} label={"Backpack"} onClick={signInWithBackpack} />
+                  <WalletProvider icon={"SvgSolflare"} label={"Solflare"} onClick={signInWithSolflare} />
                 </div>
-              </>
+                <div className="mb-8 mt-4 lg:mt-5">
+                  <p
+                    onClick={() => setShowNoWallet(true)}
+                    className="cursor-pointer select-none p-3 text-center text-fg-primary hover:underline"
+                  >
+                    I don&apos;t have a wallet
+                  </p>
+                </div>
+              </div>
             )}
           </div>
         </SimpleModal>
