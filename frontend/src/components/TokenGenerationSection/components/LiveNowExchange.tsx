@@ -50,6 +50,10 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
       console.log("Successful user deposit!")
       toast(`Deposited successfully!`)
     },
+    onError: async () => {
+      console.log("Transaction failed!")
+      toast.error("Deposit was unsuccessful!")
+    }
   })
   const { t } = useTranslation()
 
@@ -93,7 +97,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
-      const tokenAmount = parseFloat(data.borgInputValue.replace(',',''))
+      const tokenAmount = parseFloat(data.borgInputValue.replace(',', ''))
       if (walletProvider === "") throw new Error("No wallet provider!")
       if (walletState === 'CONNECTED') {
         const transaction = await signTransaction({
