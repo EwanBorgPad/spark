@@ -138,7 +138,7 @@ async function createSplTokenTransaction(connection: Connection, walletProvider:
     const toAccountKey = toTokenAccount.value[0].pubkey
     // Initialize the transaction
     const tx = new Transaction()
-    // Create the transfer instruction
+    // Create the transfer funds instruction
     const transferInstruction = createTransferInstruction(
         fromAccountKey,
         toAccountKey,
@@ -148,17 +148,17 @@ async function createSplTokenTransaction(connection: Connection, walletProvider:
         decimals,
         lbpWalletAddress
     )
-    // Add transfer instruction to the transaction
+    // Add transfer funds instruction to the transaction
     tx.add(transferInstruction)
-    // TODO: Create nft minting instruction and add it to the transaction
+
     tx.feePayer = walletProvider.publicKey
     tx.recentBlockhash = ((await connection.getLatestBlockhash()).blockhash)
     // Create nft mint account instructions and add them to the transaction
     const { listOfInstructions, mintAccountKeypair } = await createMintAccountInstructions(connection, walletProvider.publicKey, walletProvider.publicKey, null)
     listOfInstructions.forEach(instruction => tx.add(instruction))
-    // Create metadata for nft instruction and add it to the transaction
-    const metadataInstruction = await createMetadataInstructionForNft('ipfs://QmRAuxeMnsjPsbwW8LkKtk6Nh6MoqTvyKwP3zwuwJnB2yP', mintAccountKeypair.publicKey, walletProvider.publicKey, walletProvider.publicKey)
-    tx.add(metadataInstruction)
+    // TODO: Create metadata for nft instruction and add it to the transaction
+    // const metadataInstruction = await createMetadataInstructionForNft('ipfs://QmRAuxeMnsjPsbwW8LkKtk6Nh6MoqTvyKwP3zwuwJnB2yP', mintAccountKeypair.publicKey, walletProvider.publicKey, walletProvider.publicKey)
+    // tx.add(metadataInstruction)
     // Create nft mintTo instructions and add them to the transaction
     const mintInstructions = await createMintNftToUserInstructions(walletProvider.publicKey, walletProvider.publicKey, walletProvider.publicKey, mintAccountKeypair.publicKey)
     mintInstructions.forEach(instruction => tx.add(instruction))
@@ -207,18 +207,18 @@ export function delay(ms: number): Promise<void> {
 }
 
 async function createMintAccountInstructions (
-  connection: Connection,         // Solana connection
-  payer: PublicKey,                 // Payer's keypair
-  mintAuthority: PublicKey,      // Mint authority public key
-  freezeAuthority: PublicKey | null,    // Freeze authority public key (or null if none)
+  connection: Connection,        
+  payer: PublicKey,        
+  mintAuthority: PublicKey,  
+  freezeAuthority: PublicKey | null, 
 ) {
-  // Step 1: Create a new Keypair for the mint account
+  // Create a new Keypair for the mint account
   const mintAccountKeypair = Keypair.generate()
 
-  // Step 2: Calculate the rent exemption balance for the mint account
+  // Calculate the rent exemption balance for the mint account
   const lamports = await connection.getMinimumBalanceForRentExemption(82) // 82 bytes for mint account data
 
-  // Step 3: Create transaction to fund and allocate space for the mint account
+  // Create transaction to fund and allocate space for the mint account
   const createAccountInstruction = SystemProgram.createAccount({
       fromPubkey: payer,
       newAccountPubkey: mintAccountKeypair.publicKey,
@@ -227,18 +227,18 @@ async function createMintAccountInstructions (
       programId: new PublicKey(TOKEN_PROGRAM),
   })
 
-  // Step 4: Prepare data for initializing the mint account
-  const data = Buffer.alloc(67);
-  data.writeUInt8(0, 0);                      // InitializeMint instruction (0)
-  data.writeUInt8(0, 1);                      // Number of decimals (0 for NFTs)
-  data.set(mintAuthority.toBuffer(), 2);      // Mint authority (32 bytes)
+  // Prepare data for initializing the mint account
+  const data = Buffer.alloc(67)
+  data.writeUInt8(0, 0)                      // InitializeMint instruction (0)
+  data.writeUInt8(0, 1)                      // Number of decimals (0 for NFTs)
+  data.set(mintAuthority.toBuffer(), 2)      // Mint authority (32 bytes)
   if (freezeAuthority) {
-      data.set(freezeAuthority.toBuffer(), 34); // Freeze authority if provided (32 bytes)
+      data.set(freezeAuthority.toBuffer(), 34) // Freeze authority if provided (32 bytes)
   } else {
-      data.fill(0, 34, 66); // Fill with zeros if no freeze authority
+      data.fill(0, 34, 66) // Fill with zeros if no freeze authority
   }
 
-  // Step 5: Add InitializeMint instruction
+  // Add InitializeMint instruction
   const initializeAccountDataInstruction = new TransactionInstruction({
       keys: [
         { pubkey: mintAccountKeypair.publicKey, isSigner: false, isWritable: true },
@@ -261,12 +261,12 @@ async function createMintAccountInstructions (
 }
 
 async function createMintNftToUserInstructions (
-  payerPublicKey: PublicKey,                // Payer keypair
-  userWalletPublicKey: PublicKey,  // User's wallet public key
-  mintAuthorityPublicKey: PublicKey,        // Mint authority public key
-  mintPublicKey: PublicKey         // Mint account public key for the NFT
+  payerPublicKey: PublicKey,    
+  userWalletPublicKey: PublicKey, 
+  mintAuthorityPublicKey: PublicKey,  
+  mintPublicKey: PublicKey    
 ) {
-  // Step 1: Create/find the associated token account for the user's wallet
+  // Create/find the associated token account for the user's wallet
   const [associatedTokenAccountPublicKey] = await PublicKey.findProgramAddress(
     [
         userWalletPublicKey.toBuffer(),
@@ -275,7 +275,7 @@ async function createMintNftToUserInstructions (
     ],
     new PublicKey(ASSOCIATED_TOKEN_PROGRAM_ADDRESS)
 );
-  // Step 2: Create instruction to create the associated token account (if it doesn't already exist)
+  // Create instruction to create the associated token account
   const createAssociatedAccountInstruction = new TransactionInstruction({
       programId: new PublicKey(ASSOCIATED_TOKEN_PROGRAM_ADDRESS),
       keys: [
@@ -286,13 +286,13 @@ async function createMintNftToUserInstructions (
           { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
           { pubkey: new PublicKey(TOKEN_PROGRAM), isSigner: false, isWritable: false },
       ],
-      data: Buffer.alloc(0), // No additional data required for account creation
+      data: Buffer.alloc(0),
   })
 
-  // Step 3: Create MintTo instruction to mint the NFT to the user's associated token account
-  const mintToInstructionData = Buffer.alloc(9);
-  mintToInstructionData.writeUInt8(7, 0);  // 7 is the MintTo instruction code
-  mintToInstructionData.writeBigUInt64LE(BigInt(1), 1); // Mint 1 token (NFT)
+  // Create MintTo instruction to mint the NFT to the user's associated token account
+  const mintToInstructionData = Buffer.alloc(9)
+  mintToInstructionData.writeUInt8(7, 0) // 7 is the MintTo instruction code
+  mintToInstructionData.writeBigUInt64LE(BigInt(1), 1) // Mint 1 token (NFT)
 
   const mintToInstruction = new TransactionInstruction({
     programId: new PublicKey(TOKEN_PROGRAM),
@@ -312,18 +312,19 @@ async function createMintNftToUserInstructions (
   return listOfInstructions
 }
 
-async function createMetadataInstructionForNft (
-  metadataUri: string,
-  mintPublicKey: PublicKey,
-  payerPublicKey: PublicKey,
-  ownerPublicKey: PublicKey
-) {
-  const [metadataPDA] = await getMetadataPDA(mintPublicKey)
+// TODO: finish implementing this instruction to create Metadata for NFT (still need to figure out how)
+// async function createMetadataInstructionForNft (
+//   metadataUri: string,
+//   mintPublicKey: PublicKey,
+//   payerPublicKey: PublicKey,
+//   ownerPublicKey: PublicKey
+// ) {
+//   const [metadataPDA] = await getMetadataPDA(mintPublicKey)
 
-  // Initialize metadata for NFT, for now hardcoded data TODO: ask team how we handle this
-  const name = 'StrajoNft'
-  const symbol = 'SNFT'
-  const sellerFeeBasisPoints = '0'
+//   // Initialize metadata for NFT, for now hardcoded data TODO: ask team how we handle this
+//   const name = 'StrajoNft'
+//   const symbol = 'SNFT'
+//   const sellerFeeBasisPoints = '0'
 
   // TODO: figure out how to do this without errors on instruction
   // const metadataData = Buffer.alloc(100)
@@ -337,19 +338,20 @@ async function createMetadataInstructionForNft (
   // metadataData.write(name, 134);  // Name
   // metadataData.write(symbol, 166);  // Symbol
 
-  return new TransactionInstruction({
-    keys: [
-      { pubkey: metadataPDA, isSigner: false, isWritable: true },
-      { pubkey: mintPublicKey, isSigner: false, isWritable: false },
-      { pubkey: payerPublicKey, isSigner: true, isWritable: true },
-      { pubkey: ownerPublicKey, isSigner: true, isWritable: false },
-      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
-    ],
-    programId: new PublicKey(METADATA_PROGRAM_ADDRESS),
-    data: metadataData,
-  })
-}
+  // return new TransactionInstruction({
+  //   keys: [
+  //     { pubkey: metadataPDA, isSigner: false, isWritable: true },
+  //     { pubkey: mintPublicKey, isSigner: false, isWritable: false },
+  //     { pubkey: payerPublicKey, isSigner: true, isWritable: true },
+  //     { pubkey: ownerPublicKey, isSigner: true, isWritable: false },
+  //     { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+  //   ],
+  //   programId: new PublicKey(METADATA_PROGRAM_ADDRESS),
+  //   data: metadataData,
+  // })
+// }
 
+// function used in creating metadata for nft
 async function getMetadataPDA(mint: PublicKey) {
   return PublicKey.findProgramAddress(
     [
@@ -358,5 +360,5 @@ async function getMetadataPDA(mint: PublicKey) {
       mint.toBuffer(),
     ],
     new PublicKey(METADATA_PROGRAM_ADDRESS)
-  );
+  )
 }
