@@ -28,7 +28,7 @@ const content: Item[] = [
   },
   {
     path: "/launch-pools",
-    description: "Get Early Access to Exclusive Token Sales.",
+    description: "Provide Liquidity to Earn Rewards at Pre-TGE Valuations",
     imgUrl: discover3,
   },
 ]
