@@ -67,7 +67,7 @@ const LaunchPools = () => {
         <div className="mt-[64px] flex max-w-[1080px] flex-col items-center">
           <ul className="grid grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((project) => (
-              <LaunchPoolCard project={project} key={project.info.id} />
+              <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.info.id} />
             ))}
           </ul>
         </div>
