@@ -62,6 +62,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       depositAmount,
       fromAddress: userWalletAddress,
       decimalMultiplier,
+      nftAddress
     } = deserializedTransaction
 
     // check if transaction token matches the project token
@@ -163,7 +164,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         tokenAddress: deserializedTransaction.tokenMintAddress,
         txId,
         lbpAddress: deserializedTransaction.toAddress,
-        tierId
+        tierId,
+        nftAddress
       })
     }
     return jsonResponse({ message: "Ok!", transactionLink: explorerLink }, 200)
@@ -201,7 +203,8 @@ type DeserializeTransactionResult = {
   toAddress: string
   tokenMintAddress: string
   depositAmount: bigint
-  decimalMultiplier: bigint
+  decimalMultiplier: bigint,
+  nftAddress: string
 }
 async function deserializeTransaction({ serializedTx, connection }: DeserializeTransactionArgs): Promise<DeserializeTransactionResult> {
   // deserializing transaction
@@ -219,6 +222,10 @@ async function deserializeTransaction({ serializedTx, connection }: DeserializeT
     throw new Error('No transfer instruction found in transaction!')
   }
 
+  // extracting our transfer instruction from the deserialized transaction by using programId and first byte === 0 (standard for initialize mint account instruction)
+  const mintInstruction = deserializedTx.instructions
+    .find(i => i.programId.toBase58() === TOKEN_PROGRAM && i.data.readUInt8(0) === 0)
+
   // extracting amount in lamports (BigInt) and users wallet address from instruction data
   const depositAmount = transferInstruction.data.readBigUInt64LE(1)
   const toAddress = transferInstruction.keys[4].pubkey.toBase58()
@@ -226,6 +233,8 @@ async function deserializeTransaction({ serializedTx, connection }: DeserializeT
   // we need token mint address to extract how much decimals the token uses
   const tokenMintAddress = transferInstruction.keys[3].pubkey
   const mintAccountInfo = await connection.getAccountInfo(tokenMintAddress)
+
+  const nftAddress = mintInstruction.keys[0].pubkey.toBase58()
 
   if (!mintAccountInfo) {
     throw new Error('Mint account not found in transaction!')
@@ -242,5 +251,6 @@ async function deserializeTransaction({ serializedTx, connection }: DeserializeT
     depositAmount,
     tokenMintAddress: tokenMintAddress.toBase58(),
     decimalMultiplier,
+    nftAddress
   }
 }
