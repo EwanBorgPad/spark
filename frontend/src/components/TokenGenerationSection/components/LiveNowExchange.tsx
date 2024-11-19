@@ -44,7 +44,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     mutate: userDepositFunction,
   } = useMutation({
     mutationFn: async (payload: PostUserDepositRequest) => {
-      backendApi.postUserDeposit(payload)
+      await backendApi.postUserDeposit(payload)
     },
     onSuccess: async () => {
       console.log("Successful user deposit!")
@@ -85,7 +85,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
   const tokenPriceInBORG = !borgPriceInUsd
     ? null
-    : tokenPriceInUSD / borgPriceInUsd 
+    : tokenPriceInUSD / borgPriceInUsd
 
   const {
     handleSubmit,

@@ -229,21 +229,21 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     let provider
     try {
       if (walletType === 'BACKPACK') {
-        // @ts-ignore-next-line 
+        // @ts-ignore-next-line
         provider = window?.backpack
         if (!provider.isConnected) {
           toast("Wallet session timed out, please sign in again")
           await signInWithBackpack()
         }
       } else if (walletType === 'PHANTOM') {
-        // @ts-ignore-next-line 
+        // @ts-ignore-next-line
         provider = window?.phantom.solana
         if (!provider.isConnected) {
           toast("Wallet session timed out, please sign in again")
           await signInWithPhantom()
         }
       } else if (walletType === 'SOLFLARE') {
-        // @ts-ignore-next-line 
+        // @ts-ignore-next-line
         provider = window?.solflare
         if (!provider.isConnected) {
           toast("Wallet session timed out, please sign in again")
@@ -252,11 +252,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }
       if (!provider) throw new Error('Provider not found!')
       const txToSend = await getTransactionToSend(tokenAmount, provider, rpcUrl, tokenMintAddress)
-  
+
       return txToSend
     } catch (error) {
-      console.log(error)
-      alert(error)
+      console.error(error)
       return "noTransaction"
     }
   }

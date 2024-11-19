@@ -41,8 +41,8 @@ export async function getTransactionToSend(
  */
 async function createAndSerializeTransaction(
     amount: number,
-    walletProvider: Provider, 
-    LbpWalletKey: PublicKey, 
+    walletProvider: Provider,
+    LbpWalletKey: PublicKey,
     rpcUrl: string,
     tokenMintAddress: PublicKey
 ) {
@@ -72,11 +72,11 @@ function createTransferInstruction(
     lbpWalletAddress: PublicKey
   ) {
     const amountInLamports = amount * Math.pow(10, decimals)
-  
+
       const data = Buffer.alloc(9) // 1 byte for instruction type + 8 bytes for amount
       data.writeUInt8(3, 0) // Instruction type for transfer (3 is the code for TRANFSER instruction)
       data.writeBigUInt64LE(BigInt(amountInLamports), 1) // Amount in u64 format
-  
+
     return new TransactionInstruction({
       keys: [
           { pubkey: fromTokenAccount, isSigner: false, isWritable: true },
@@ -113,11 +113,11 @@ async function createSplTokenTransaction(connection: Connection, walletProvider:
       lbpWalletAddress,
         { mint: new PublicKey(mintAddress) }
     )
-  
+
     if (fromTokenAccount.value.length === 0) {
         throw new Error('Sender does not have a token account for this mint.')
     }
-  
+
     if (toTokenAccount.value.length === 0) {
         throw new Error('Recipient does not have a token account for this mint.')
     }
@@ -125,14 +125,14 @@ async function createSplTokenTransaction(connection: Connection, walletProvider:
     if (userBalance) {
       const convertedUserBalanced = parseFloat(userBalance.amount) * Math.pow(0.1, decimals)
       if (convertedUserBalanced < amount) {
-        toast("You don't have enough tokens, check your wallet again.")
-        throw new Error("Not enough funds!")
+        toast.error("You don't have enough tokens, check your wallet again.")
+        throw new Error("NOT_ENOUGH_FUNDS")
       }
     } else {
-      toast("You don't have enough tokens, check your wallet again.")
-      throw new Error("Not enough funds!")
+      toast.error("You don't have enough tokens, check your wallet again.")
+      throw new Error("NOT_ENOUGH_FUNDS")
     }
-    
+
     // Extract public keys from ATA accounts
     const fromAccountKey = fromTokenAccount.value[0].pubkey
     const toAccountKey = toTokenAccount.value[0].pubkey
@@ -176,20 +176,20 @@ function uint8ArrayToBase64(uint8Array: Uint8Array) {
 export async function signatureSubscribe(connection: Connection, txId: string): Promise<Commitment> {
     const delayTime = 3_000
     const delayLimit = 20_000
-  
+
     let status = null
     let delayCounter = 0
-  
+
     while (!status) {
       console.log('Fetching signature status...')
       const res = await connection.getSignatureStatuses([txId])
-  
+
       // got response
       if (res.value[0]?.confirmationStatus) {
         status = res.value[0].confirmationStatus
         break
       }
-  
+
       // didn't get response
       await delay(delayTime)
       delayCounter += 3000
@@ -197,20 +197,20 @@ export async function signatureSubscribe(connection: Connection, txId: string): 
         throw new Error('getSignatureStatuses polling timed out!')
       }
     }
-  
+
     console.log('Fetching signature status done.')
     return status
   }
-  
+
 export function delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function createMintAccountInstructions (
-  connection: Connection,        
-  payer: PublicKey,        
-  mintAuthority: PublicKey,  
-  freezeAuthority: PublicKey | null, 
+  connection: Connection,
+  payer: PublicKey,
+  mintAuthority: PublicKey,
+  freezeAuthority: PublicKey | null,
 ) {
   // Create a new Keypair for the mint account
   const mintAccountKeypair = Keypair.generate()
@@ -261,10 +261,10 @@ async function createMintAccountInstructions (
 }
 
 async function createMintNftToUserInstructions (
-  payerPublicKey: PublicKey,    
-  userWalletPublicKey: PublicKey, 
-  mintAuthorityPublicKey: PublicKey,  
-  mintPublicKey: PublicKey    
+  payerPublicKey: PublicKey,
+  userWalletPublicKey: PublicKey,
+  mintAuthorityPublicKey: PublicKey,
+  mintPublicKey: PublicKey
 ) {
   // Create/find the associated token account for the user's wallet
   const [associatedTokenAccountPublicKey] = await PublicKey.findProgramAddress(
@@ -303,7 +303,7 @@ async function createMintNftToUserInstructions (
     ],
     data: mintToInstructionData,
   })
-  
+
   const listOfInstructions = [
     createAssociatedAccountInstruction,
     mintToInstruction
