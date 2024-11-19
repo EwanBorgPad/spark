@@ -12,7 +12,7 @@ import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
 import { RefObject } from "react"
 import { toast } from "react-toastify"
-import { backendApi, PostUserDepositRequest } from "@/data/backendApi"
+import { BACKEND_RPC_URL, backendApi, PostUserDepositRequest } from "@/data/backendApi"
 import { useMutation } from "@tanstack/react-query"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
@@ -70,7 +70,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     enabled: Boolean(address) && Boolean(projectId),
   })
   const isUserEligible = data?.isEligible
-  const rpcUrl = import.meta.env.VITE_SOLANA_RPC_URL
+  const rpcUrl = BACKEND_RPC_URL
   const tokenMintAddress = new PublicKey(projectData.info.raisedTokenMintAddress)
 
   const { data: exchangeData } = useQuery({
@@ -85,7 +85,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
   const tokenPriceInBORG = !borgPriceInUsd
     ? null
-    : tokenPriceInUSD / borgPriceInUsd 
+    : tokenPriceInUSD / borgPriceInUsd
 
   const {
     handleSubmit,
