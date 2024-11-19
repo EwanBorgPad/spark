@@ -19,6 +19,7 @@ const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
 const USER_DEPOSIT_URL = API_BASE_URL + "/userdeposit"
 const GET_INVESTMENT_INTENT_SUMMARY_URL = API_BASE_URL + "/investmentintentsummary"
+export const BACKEND_RPC_URL = API_BASE_URL + "/rpcproxy"
 
 type GetEligibilityStatusArgs = {
   address: string
