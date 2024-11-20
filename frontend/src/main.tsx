@@ -21,7 +21,6 @@ import AngelStaking from "./pages/AngelStaking"
 import { WalletProvider } from "@/hooks/useWalletContext"
 import TermsAndConditions from "./pages/TermsAndConditions"
 import { ProjectDataProvider } from "./hooks/useProjectData"
-import { BalanceProvider } from "@/hooks/useBalanceContext.tsx"
 import SomethingWentWrong from "./components/SomethingWentWrong"
 
 import "./index.css"
@@ -43,9 +42,7 @@ const router = createBrowserRouter([
     element: (
       <QueryClientProvider client={queryClient}>
         <WalletProvider>
-          <BalanceProvider>
-            <App />
-          </BalanceProvider>
+          <App />
         </WalletProvider>
       </QueryClientProvider>
     ),

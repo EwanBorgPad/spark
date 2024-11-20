@@ -143,6 +143,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: `The total investment amount exceeds the project token cap!` }, 409)
     }
 
+    // TODO check if in correct phase (sale phase)
+
     // After all validations passed we send the tx
     console.log("Sending transaction...")
     const txId = await connection.sendRawTransaction(Buffer.from(transaction, 'base64'))
