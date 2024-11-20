@@ -3,8 +3,7 @@ import CurrencyInput from "react-currency-input-field"
 import { useTranslation } from "react-i18next"
 
 import { ConnectButton } from "@/components/Header/ConnectButton"
-import { useBalanceContext } from "@/hooks/useBalanceContext.tsx"
-import { useWalletContext, WalletProvider } from "@/hooks/useWalletContext"
+import { useWalletContext } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
@@ -18,6 +17,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import { PublicKey } from "@solana/web3.js"
+import { getSplTokenBalance } from "../../../../shared/SolanaWeb3.ts"
 
 type FormInputs = {
   borgInputValue: string
@@ -38,9 +38,15 @@ const baseCurrency = "swissborg"
 const targetCurrency = "usd"
 
 const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
-  const { projectData } = useProjectDataContext()
-  const { balance, refetch: balanceRefetch } = useBalanceContext()
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
+  const { projectId } = useParams()
+
+  const { projectData } = useProjectDataContext()
+  const { walletState, signTransaction , address, walletProvider } = useWalletContext()
+
+  const rpcUrl = BACKEND_RPC_URL
+  const tokenMintAddress = projectData.info.raisedTokenMintAddress
 
   const {
     mutate: userDepositFunction,
@@ -52,20 +58,29 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     onSuccess: async () => {
       console.log("Successful user deposit!")
       toast(`Deposited successfully!`)
-      balanceRefetch()
-      await queryClient.invalidateQueries({
-        queryKey: ["getDeposits"],
-      })
+      await queryClient.invalidateQueries({ queryKey: ["getDeposits"] })
+      await queryClient.invalidateQueries({ queryKey: ["getBalance"] })
     },
     onError: async () => {
       console.log("Transaction failed!")
       toast.error("Deposit was unsuccessful!")
     }
   })
-  const { t } = useTranslation()
 
-  const { walletState, signTransaction , address, walletProvider } = useWalletContext()
-  const { projectId } = useParams()
+  const { data: balance } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return  getSplTokenBalance({
+        address,
+        tokenAddress: projectData.info.raisedTokenMintAddress,
+        rpcUrl,
+      })
+    },
+    queryKey: ["getBalance", address, tokenMintAddress],
+    enabled: Boolean(address) && Boolean(tokenMintAddress),
+  })
+
+  console.log({ balance })
 
   const { data } = useQuery({
     queryFn: () => {
@@ -76,8 +91,6 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     enabled: Boolean(address) && Boolean(projectId),
   })
   const isUserEligible = data?.isEligible
-  const rpcUrl = BACKEND_RPC_URL
-  const tokenMintAddress = new PublicKey(projectData.info.raisedTokenMintAddress)
 
   const { data: exchangeData } = useQuery({
     queryFn: () =>
@@ -109,7 +122,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
         const transaction = await signTransaction({
           rpcUrl,
           tokenAmount,
-          tokenMintAddress,
+          tokenMintAddress: new PublicKey(tokenMintAddress),
           walletType: walletProvider
         })
         userDepositFunction({
@@ -196,7 +209,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                   ))}
                 </div>
                 <p className="text-left text-xs opacity-50">
-                  {t("tge.balance")}: <span>{formatCurrencyAmount(Number(balance.uiAmountString), false)}</span>
+                  {t("tge.balance")}: <span>{formatCurrencyAmount(Number(balance?.uiAmountString), false)}</span>
                 </p>
               </div>
             )}
