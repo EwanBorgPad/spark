@@ -19,6 +19,7 @@ const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
 const USER_DEPOSIT_URL = API_BASE_URL + "/userdeposit"
 const GET_INVESTMENT_INTENT_SUMMARY_URL = API_BASE_URL + "/investmentintentsummary"
+const GET_DEPOSITS_URL = API_BASE_URL + "/deposits"
 export const BACKEND_RPC_URL = API_BASE_URL + "/rpcproxy"
 
 type GetEligibilityStatusArgs = {
@@ -27,6 +28,27 @@ type GetEligibilityStatusArgs = {
 }
 const getEligibilityStatus = async ({ address, projectId, }: GetEligibilityStatusArgs): Promise<EligibilityStatus> => {
   const url = new URL(GET_ELIGIBILITY_STATUS_API, window.location.href)
+  url.searchParams.set("address", address)
+  url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json
+}
+type GetDepositsRequest = {
+  address: string
+  projectId: string
+}
+type GetDepositsResponse = {
+  deposits: {
+    transactionId: string
+    createdAt: string
+    amountDeposited: string
+  }[]
+}
+const getDeposits = async ({ address, projectId, }: GetDepositsRequest): Promise<GetDepositsResponse> => {
+  const url = new URL(GET_DEPOSITS_URL, window.location.href)
   url.searchParams.set("address", address)
   url.searchParams.set("projectId", projectId)
 
@@ -227,4 +249,5 @@ export const backendApi = {
   uploadFileToBucket,
   getEligibilityStatus,
   getInvestmentIntentSummary,
+  getDeposits,
 }

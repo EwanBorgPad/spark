@@ -13,7 +13,7 @@ import { TgeWrapper } from "./Wrapper"
 import { RefObject } from "react"
 import { toast } from "react-toastify"
 import { BACKEND_RPC_URL, backendApi, PostUserDepositRequest } from "@/data/backendApi"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
 import { useProjectDataContext } from "@/hooks/useProjectData"
@@ -38,10 +38,13 @@ const baseCurrency = "swissborg"
 const targetCurrency = "usd"
 
 const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
-
   const { projectData } = useProjectDataContext()
+  const { balance, refetch: balanceRefetch } = useBalanceContext()
+  const queryClient = useQueryClient()
+
   const {
     mutate: userDepositFunction,
+    isPending,
   } = useMutation({
     mutationFn: async (payload: PostUserDepositRequest) => {
       await backendApi.postUserDeposit(payload)
@@ -49,6 +52,10 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     onSuccess: async () => {
       console.log("Successful user deposit!")
       toast(`Deposited successfully!`)
+      balanceRefetch()
+      await queryClient.invalidateQueries({
+        queryKey: ["getDeposits"],
+      })
     },
     onError: async () => {
       console.log("Transaction failed!")
@@ -58,7 +65,6 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const { t } = useTranslation()
 
   const { walletState, signTransaction , address, walletProvider } = useWalletContext()
-  const { balance } = useBalanceContext()
   const { projectId } = useParams()
 
   const { data } = useQuery({
@@ -236,6 +242,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                 size="lg"
                 btnText="Supply $BORG"
                 disabled={!isUserEligible}
+                isLoading={isPending}
                 className={"w-full"}
               />
               <Button
