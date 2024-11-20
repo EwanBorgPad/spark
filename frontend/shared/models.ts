@@ -23,13 +23,19 @@ export type UserModelJson = {
   investmentIntent?: Record<ProjectId, {
     amount: string
     message: string
-    signature: string
+    signature: number[]
   }>
   termsOfUse?: {
     acceptedAt: Date
     acceptedTextSigned: string
     countryOfOrigin: string
   }
+  referral?: Record<ProjectId, {
+    referrerTwitterHandle: string
+    createdAt: string
+    message: string
+    signature: number[]
+  }>
 }
 /**
  * Represents url type

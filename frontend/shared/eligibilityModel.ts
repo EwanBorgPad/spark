@@ -46,7 +46,6 @@ const ProvideInvestmentIntentQuestSchema = BaseQuestSchema.extend({
 /**
  * (Optional) Requires the User to provide Referral code.
  */
-// @REFERRAL
 const ReferralQuestSchema = BaseQuestSchema.extend({
   type: z.literal('REFERRAL'),
 })
@@ -84,6 +83,7 @@ const QuestWithCompletionSchema = z.union([
   FollowOnTwitterQuestSchema.merge(CompletionSchema),
   AcceptTermsOfUseQuestSchema.merge(CompletionSchema),
   ProvideInvestmentIntentQuestSchema.merge(CompletionSchema),
+  ReferralQuestSchema.merge(CompletionSchema),
   WhitelistQuestSchema.merge(CompletionSchema),
 ])
 export type QuestWithCompletion = z.infer<typeof QuestWithCompletionSchema>
