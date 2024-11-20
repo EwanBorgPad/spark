@@ -36,7 +36,9 @@ const getEligibilityStatus = async ({ address, projectId, }: GetEligibilityStatu
 type GetInvestmentIntentSummary = {
   projectId: string
 }
-const getInvestmentIntentSummary = async ({  projectId, }: GetInvestmentIntentSummary): Promise<InvestmentIntentSummary> => {
+const getInvestmentIntentSummary = async ({
+  projectId,
+}: GetInvestmentIntentSummary): Promise<InvestmentIntentSummary> => {
   const url = new URL(GET_INVESTMENT_INTENT_SUMMARY_URL, window.location.href)
   url.searchParams.set("projectId", projectId)
 

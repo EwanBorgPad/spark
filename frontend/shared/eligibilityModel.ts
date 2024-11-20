@@ -44,6 +44,13 @@ const ProvideInvestmentIntentQuestSchema = BaseQuestSchema.extend({
   type: z.literal('PROVIDE_INVESTMENT_INTENT'),
 })
 /**
+ * (Optional) Requires the User to provide Referral code.
+ */
+// @REFERRAL
+const ReferralQuestSchema = BaseQuestSchema.extend({
+  type: z.literal('REFERRAL'),
+})
+/**
  * Requires the User to be explicitly whitelisted for a project
  */
 const WhitelistQuestSchema = BaseQuestSchema.extend({
@@ -54,12 +61,13 @@ const WhitelistQuestSchema = BaseQuestSchema.extend({
  * Quests names should be in imperative, like HOLD_TOKEN, FOLLOW_ON_X, not in passive like HOLDS, FOLLOWS.
  * Previously had DONT_RESIDE_IN_US, but that is now part of compliance, not quests anymore.
  */
-const QuestSchema = z.discriminatedUnion('type', [
+const QuestSchema = z.discriminatedUnion("type", [
   HoldTokenQuestSchema,
   FollowOnTwitterQuestSchema,
   AcceptTermsOfUseQuestSchema,
   ProvideInvestmentIntentQuestSchema,
   WhitelistQuestSchema,
+  ReferralQuestSchema,
 ])
 export type Quest = z.infer<typeof QuestSchema>
 /**

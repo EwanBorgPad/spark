@@ -77,6 +77,12 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
       throw new Error(`Unknown compliance type (${quest.type})!`)
     }
   }
+  // @REFERRAL - update logic for optional compliances
+  // OPTIONAL COMPLAINCES
+  compliancesWithCompletion.push({
+    type: "REFERRAL",
+    isCompleted: false,
+  })
 
   const collections = project.json.info.tiers
     .map(tier => tier.quests)
@@ -159,7 +165,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
   // user must be compliant to be eligible
   const eligibilityTier = isCompliant
     // if user is manually whitelisted
-    ? Boolean(whitelistedTier)
+    ? whitelistedTier
       // load the whitelisted tier
       ? whitelistedTier
       // else, check if they have tiered by completing quests
