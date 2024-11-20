@@ -218,13 +218,6 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                 size="lg"
                 btnText="Supply $BORG"
                 disabled={!isUserEligible}
-                className={"w-full"}
-              />
-              <Button
-                type="submit"
-                size="lg"
-                btnText="Supply $BORG"
-                disabled={!isUserEligible}
                 isLoading={isPending}
                 className={"w-full"}
               />
