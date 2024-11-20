@@ -46,7 +46,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     .get()
 
   if (!user) user = {
-    wallet_address: address,
+    address,
     json: {}
   }
 
@@ -91,6 +91,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
   })
 
   const tiersWithCompletion: TierWithCompletion[] = []
+  if (!project) throw new Error(`EligibilityService: Project (id=?) not found!`)
   for (const tier of project.json.info.tiers) {
     const tierQuestsWithCompletion: QuestWithCompletion[] = []
 

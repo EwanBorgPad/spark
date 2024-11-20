@@ -42,3 +42,17 @@ CREATE TABLE nft_index (
     PRIMARY KEY (nft_address)
 );
 CREATE INDEX nft_index_owner_address_index ON nft_index(owner_address);
+
+-- migration: user deposit
+CREATE TABLE deposit (
+    transaction_id TEXT NOT NULL PRIMARY KEY,
+    created_at TIMESTAMP NOT NULL,
+    from_address TEXT NOT NULL,
+    to_address TEXT NOT NULL,
+    token_address TEXT NOT NULL,
+    amount_deposited TEXT NOT NULL,
+    project_id TEXT NOT NULL,
+    tier_id TEXT NOT NULL,
+    nft_address TEXT NOT NULL
+);
+CREATE INDEX deposit_from_address_index ON deposit(from_address);

@@ -12,6 +12,7 @@ import { SOLANA_PUBLIC_RPC_URL, USDC_DEV_ADDRESS } from "../../shared/constants.
 
 type Context = {
   balance: null | TokenAmount
+  refetch: () => void
 }
 
 const BalanceContext = createContext<Context | undefined>(undefined)
@@ -23,6 +24,11 @@ export function useBalanceContext() {
   return context
 }
 
+/**
+ * TODO replace this context with react-query
+ * @param children
+ * @constructor
+ */
 export function BalanceProvider({ children }: { children: ReactNode }) {
   const [balance, setBalance] = useState<TokenAmount | null>(null)
 
@@ -51,10 +57,13 @@ export function BalanceProvider({ children }: { children: ReactNode }) {
     fetchBalance()
   }, [address, fetchBalance])
 
+  const refetch = () => fetchBalance()
+
   return (
     <BalanceContext.Provider
       value={{
         balance,
+        refetch,
       }}
     >
       {children}

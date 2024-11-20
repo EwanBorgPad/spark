@@ -4,17 +4,20 @@ import { useTranslation } from "react-i18next"
 
 import { ConnectButton } from "@/components/Header/ConnectButton"
 import { useBalanceContext } from "@/hooks/useBalanceContext.tsx"
-import { useWalletContext } from "@/hooks/useWalletContext"
+import { useWalletContext, WalletProvider } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
-import React, { RefObject } from "react"
+import { RefObject } from "react"
+import { toast } from "react-toastify"
+import { BACKEND_RPC_URL, backendApi, PostUserDepositRequest } from "@/data/backendApi"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useQuery } from "@tanstack/react-query"
-import { backendApi } from "@/data/backendApi.ts"
 import { useParams } from "react-router-dom"
 import { useProjectDataContext } from "@/hooks/useProjectData"
+import { PublicKey } from "@solana/web3.js"
 
 type FormInputs = {
   borgInputValue: string
@@ -35,10 +38,33 @@ const baseCurrency = "swissborg"
 const targetCurrency = "usd"
 
 const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
-  const { t } = useTranslation()
-  const { balance } = useBalanceContext()
   const { projectData } = useProjectDataContext()
-  const { address, walletState } = useWalletContext()
+  const { balance, refetch: balanceRefetch } = useBalanceContext()
+  const queryClient = useQueryClient()
+
+  const {
+    mutate: userDepositFunction,
+    isPending,
+  } = useMutation({
+    mutationFn: async (payload: PostUserDepositRequest) => {
+      await backendApi.postUserDeposit(payload)
+    },
+    onSuccess: async () => {
+      console.log("Successful user deposit!")
+      toast(`Deposited successfully!`)
+      balanceRefetch()
+      await queryClient.invalidateQueries({
+        queryKey: ["getDeposits"],
+      })
+    },
+    onError: async () => {
+      console.log("Transaction failed!")
+      toast.error("Deposit was unsuccessful!")
+    }
+  })
+  const { t } = useTranslation()
+
+  const { walletState, signTransaction , address, walletProvider } = useWalletContext()
   const { projectId } = useParams()
 
   const { data } = useQuery({
@@ -50,6 +76,8 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     enabled: Boolean(address) && Boolean(projectId),
   })
   const isUserEligible = data?.isEligible
+  const rpcUrl = BACKEND_RPC_URL
+  const tokenMintAddress = new PublicKey(projectData.info.raisedTokenMintAddress)
 
   const { data: exchangeData } = useQuery({
     queryFn: () =>
@@ -63,7 +91,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
   const tokenPriceInBORG = !borgPriceInUsd
     ? null
-    : tokenPriceInUSD / borgPriceInUsd 
+    : tokenPriceInUSD / borgPriceInUsd
 
   const {
     handleSubmit,
@@ -73,14 +101,27 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     formState: { errors },
   } = useForm<FormInputs>()
 
-  const onSubmit: SubmitHandler<FormInputs> = (data) => {
-    /**
-     * TODO @api for providing liquidity
-     *  - refetch balance
-     *  - refetch Tokens Available
-     */
-    // eslint-disable-next-line no-console
-    console.log("Submitted", data)
+  const onSubmit: SubmitHandler<FormInputs> = async (data) => {
+    try {
+      const tokenAmount = parseFloat(data.borgInputValue.replace(',', ''))
+      if (walletProvider === "") throw new Error("No wallet provider!")
+      if (walletState === 'CONNECTED') {
+        const transaction = await signTransaction({
+          rpcUrl,
+          tokenAmount,
+          tokenMintAddress,
+          walletType: walletProvider
+        })
+        userDepositFunction({
+          projectId: projectId ?? "",
+          transaction
+        })
+      } else {
+          toast.error("Wallet error. Please try again or contact our support.")
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
@@ -172,7 +213,21 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
         <div className="flex w-full flex-col items-center gap-4">
           {walletState === "CONNECTED" ? (
             <>
-              <Button type="submit" size="lg" btnText="Supply $BORG" disabled={!isUserEligible} className={"w-full"} />
+              <Button
+                type="submit"
+                size="lg"
+                btnText="Supply $BORG"
+                disabled={!isUserEligible}
+                className={"w-full"}
+              />
+              <Button
+                type="submit"
+                size="lg"
+                btnText="Supply $BORG"
+                disabled={!isUserEligible}
+                isLoading={isPending}
+                className={"w-full"}
+              />
               <Button
                 size="md"
                 color="secondary"

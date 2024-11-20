@@ -7,65 +7,22 @@ import { formatCurrencyAmount } from "@/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
+import { useWalletContext } from "@/hooks/useWalletContext.tsx"
+import { useParams } from "react-router-dom"
 
-// to be replaced with API calls
-import {
-  ContributionAndRewardsType,
-  contributionAndRewardsData,
-} from "@/data/contributionAndRewardsData"
+
+const MAX_ACCORDION_CONTAINER_HEIGHT = 317
+
 
 type PastOrdersProps = {
   label?: string
   className?: string
 }
-type PastOrderProps = {
-  order: ContributionAndRewardsType["suppliedBorg"]["pastOrders"][0]
-  numberOfPastOrders: number
-  index: number
-  borgPriceInUSD: number
-}
-
-const MAX_ACCORDION_CONTAINER_HEIGHT = 317
-
-export const PastOrder = ({
-  order,
-  numberOfPastOrders,
-  index,
-  borgPriceInUSD,
-}: PastOrderProps) => {
-  const getBorgValueInUSD = (amount: number) => {
-    return formatCurrencyAmount(borgPriceInUSD * amount)
-  }
-
-  return (
-    <div
-      className={twMerge(
-        "flex w-full flex-col border-b-[1px] border-b-bd-primary p-4",
-        index + 1 === numberOfPastOrders && "border-none",
-      )}
-    >
-      <div className="flex w-full items-center justify-between gap-1">
-        <div className="flex items-center gap-1">
-          <span className="text-base font-medium">{order.borgAmount}</span>
-          <span>BORG</span>
-          <Icon icon="SvgBorgCoin" className="text-xl" />
-        </div>
-        <div className="relative h-6 w-6">
-          <ExternalLink.Icon
-            externalLink={{ iconType: "OUTER_LINK", url: order.transactionUrl }}
-            className="absolute -left-1 -top-1.5 border-none text-xl text-fg-tertiary"
-          />
-        </div>
-      </div>
-      <div className="flex w-full items-center justify-between text-sm text-fg-tertiary">
-        <span>{getBorgValueInUSD(order.borgAmount)}</span>
-        <span>{formatDateForDisplay(order.date)}</span>
-      </div>
-    </div>
-  )
-}
-
 export const PastOrders = ({ label, className }: PastOrdersProps) => {
+  const { address } = useWalletContext()
+  const { projectId } = useParams()
+
+  // TODO @hardcoded
   // borg price
   const baseCurrency = "swissborg"
   const targetCurrency = "usd"
@@ -77,37 +34,96 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
       }),
     queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
-  const borgPriceInUSD = data?.currentPrice || 0
+  const raisedTokenPriceInUsd = data?.currentPrice || 0
 
-  ///////////////////////////////////////////////////////
-  // TODO @api replace dummy call below with past orders //
-  ///////////////////////////////////////////////////////
-  const getContributions = () => {
-    return contributionAndRewardsData
-  }
-  const pastOrders = getContributions().suppliedBorg.pastOrders
-  const numberOfPastOrders = pastOrders.length
-  if (numberOfPastOrders === 0) return null
+  const { data: getDepositsData } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getDeposits({
+        address, projectId,
+      })
+    },
+    queryKey: ["getDeposits", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
+
+  const deposits = getDepositsData?.deposits || []
+  const depositsCount = deposits.length
 
   return (
     <Accordion
       label={label || "Past Orders"}
-      subLabel={`(${numberOfPastOrders})`}
+      subLabel={`(${depositsCount})`}
       maxChildrenHeight={MAX_ACCORDION_CONTAINER_HEIGHT}
       className={className}
     >
-      {pastOrders.map((order, index) => {
+      {deposits.map((deposit, index) => {
         return (
           <PastOrder
-            // TODO @api - use past order ID for key prop when available
-            key={index}
-            numberOfPastOrders={numberOfPastOrders}
-            order={order}
+            key={deposit.transactionId}
+            transactionId={deposit.transactionId}
+            numberOfPastOrders={depositsCount}
+            createdAt={new Date(deposit.createdAt)}
+            amountDeposited={deposit.amountDeposited}
             index={index}
-            borgPriceInUSD={borgPriceInUSD}
+            raisedTokenPriceInUsd={raisedTokenPriceInUsd}
+            // borgPriceInUSD={borgPriceInUSD}
           />
         )
       })}
     </Accordion>
+  )
+}
+
+type PastOrderProps = {
+  transactionId: string
+  createdAt: Date
+  numberOfPastOrders: number
+  index: number
+  amountDeposited: string
+  raisedTokenPriceInUsd: number
+}
+export const PastOrder = ({
+  transactionId,
+  createdAt,
+  numberOfPastOrders,
+  index,
+  amountDeposited,
+  raisedTokenPriceInUsd,
+}: PastOrderProps) => {
+  // TODO @hardcoded
+  const cluster = 'devnet'
+  // TODO @hardcoded
+  const raisedTokenDecimals = 6
+
+  const normalizedAmountDeposited = Number(amountDeposited) / 10 ** raisedTokenDecimals
+  const borgValueInUsd = formatCurrencyAmount(raisedTokenPriceInUsd * normalizedAmountDeposited)
+  const transactionUrl = `https://explorer.solana.com/tx/${transactionId}?cluster=${cluster}`
+
+  return (
+    <div
+      className={twMerge(
+        "flex w-full flex-col border-b-[1px] border-b-bd-primary p-4",
+        index + 1 === numberOfPastOrders && "border-none",
+      )}
+    >
+      <div className="flex w-full items-center justify-between gap-1">
+        <div className="flex items-center gap-1">
+          <span className="text-base font-medium">{normalizedAmountDeposited}</span>
+          <span>BORG</span>
+          <Icon icon="SvgBorgCoin" className="text-xl" />
+        </div>
+        <div className="relative h-6 w-6">
+          <ExternalLink.Icon
+            externalLink={{ iconType: "OUTER_LINK", url: transactionUrl }}
+            className="absolute -left-1 -top-1.5 border-none text-xl text-fg-tertiary"
+          />
+        </div>
+      </div>
+      <div className="flex w-full items-center justify-between text-sm text-fg-tertiary">
+        <span>{borgValueInUsd}</span>
+        <span>{formatDateForDisplay(createdAt)}</span>
+      </div>
+    </div>
   )
 }

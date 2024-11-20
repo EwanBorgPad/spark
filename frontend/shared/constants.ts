@@ -15,3 +15,15 @@ export const SOLANA_PUBLIC_RPC_URL = "https://api.devnet.solana.com"
  * If performance becomes an issue, we can discuss switching to 'confirmed' commitment level.
  */
 export const COMMITMENT_LEVEL = "finalized" satisfies Commitment
+/**
+ * Token Program on Solana https://spl.solana.com/token
+ */
+export const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+/**
+ * Associated Token Program Address on Solana https://spl.solana.com/associated-token-account
+ */
+export const ASSOCIATED_TOKEN_PROGRAM_ADDRESS = 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+/**
+ * Metadata program address
+ */
+export const METADATA_PROGRAM_ADDRESS = 'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'

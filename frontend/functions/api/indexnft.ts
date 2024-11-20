@@ -1,5 +1,6 @@
 import { hasAdminAccess, jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { getAssetsByGroup } from "../../shared/solana/getAssetsByGroup"
+import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 
 
 
@@ -85,24 +86,4 @@ function splitIntoBatches<T>(list: T[], batchSize: number): T[][] {
   }
 
   return batches;
-}
-
-/**
- * Very bad function to fix the day -- adjust the
- * TODO @clusterSeparation(dev/test/main)
- * @param rpcUrl
- * @param cluster
- */
-function getRpcUrlForCluster(rpcUrl: string, cluster: 'mainnet' | 'devnet'): string {
-  if (cluster === 'mainnet') {
-    return rpcUrl
-      .replace('devnet', 'mainnet')
-      .replace('testnet', 'mainnet')
-  } else if (cluster === 'devnet') {
-    return rpcUrl
-      .replace('mainnet', 'devnet')
-      .replace('testnet', 'devnet')
-  } else {
-    throw new Error(`Unknown cluster=${cluster}!`)
-  }
 }
