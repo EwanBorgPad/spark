@@ -62,6 +62,8 @@ const Img = ({
 
   const renderImage = !isLoadingImg && !isFetchingLink
 
+  const crossOrigin = src?.startsWith('https://drive.google.com') ? 'anonymous' : undefined
+
   return (
     <div
       className={twMerge(
@@ -77,7 +79,7 @@ const Img = ({
         role={role}
         src={!renderFallback ? src : fallbackImg}
         onLoad={() => setIsLoadingImg(false)}
-        crossOrigin={'anonymous'}
+        crossOrigin={crossOrigin}
         onError={onError}
         className={twMerge(
           "h-full w-full object-cover",
