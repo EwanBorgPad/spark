@@ -60,7 +60,9 @@ const getDeposits = async ({ address, projectId, }: GetDepositsRequest): Promise
 type GetInvestmentIntentSummary = {
   projectId: string
 }
-const getInvestmentIntentSummary = async ({  projectId, }: GetInvestmentIntentSummary): Promise<InvestmentIntentSummary> => {
+const getInvestmentIntentSummary = async ({
+  projectId,
+}: GetInvestmentIntentSummary): Promise<InvestmentIntentSummary> => {
   const url = new URL(GET_INVESTMENT_INTENT_SUMMARY_URL, window.location.href)
   url.searchParams.set("projectId", projectId)
 
@@ -126,13 +128,7 @@ const getProjects = async ({
 
   const response = await fetch(url)
   const json = await response.json()
-
   return json
-  // try {
-  // } catch (e) {
-  //   console.error("GET /projects validation error!")
-  //   throw e
-  // }
 }
 
 export type CreateProjectRequest = {
