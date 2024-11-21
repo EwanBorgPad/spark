@@ -1,5 +1,5 @@
 import { twMerge } from "tailwind-merge"
-import { PropsWithChildren } from "react"
+import { ChangeEvent, PropsWithChildren } from "react"
 import { HTMLProps } from "@/@types/general"
 
 type TextFieldProps = HTMLProps<"input"> & {
@@ -11,7 +11,7 @@ type TextFieldProps = HTMLProps<"input"> & {
   disableFocusRing?: boolean
   label?: string
   value: string | undefined
-  onChange: (value: string) => void
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
 export const TextField = ({

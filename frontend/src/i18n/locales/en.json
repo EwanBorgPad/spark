@@ -141,5 +141,7 @@
   "launch_pools.sale_closes": "Sale Closes {{ text }}",
   "launch_pools.reward_distribution_start": "Reward Distribution starts {{ text }}",
   "launch_pools.reward_distribution_ends": "Reward distribution ends {{ text }}",
-  "launch_pools.reward_distribution_ended": "Reward distribution ended {{ text }}"
+  "launch_pools.reward_distribution_ended": "Reward distribution ended {{ text }}",
+
+  "referral.message": "I acknowledge that I have been referred to {{ projectId }} by {{ twitterHandle }}"
 }
