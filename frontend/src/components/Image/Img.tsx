@@ -77,6 +77,7 @@ const Img = ({
         role={role}
         src={!renderFallback ? src : fallbackImg}
         onLoad={() => setIsLoadingImg(false)}
+        crossOrigin={'anonymous'}
         onError={onError}
         className={twMerge(
           "h-full w-full object-cover",
