@@ -32,7 +32,7 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
   const renderComponent = (tgeEvent: ExpandedTimelineEventType) => {
     switch (tgeEvent.id) {
       case "UPCOMING":
-        return <DataRoom />
+        return <DataRoom className="px-4" />
       case "REGISTRATION_OPENS":
         return <RegistrationOpensPhase eventData={currentTgeEvent} />
       case "SALE_OPENS":
