@@ -10,10 +10,14 @@ import backdropImg from "@/assets/backdropImgMin.png"
 import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
 import ProjectTester2 from "@/components/QA/ProjectTester2.tsx"
+import { Icon } from "@/components/Icon/Icon.tsx"
+import { twMerge } from "tailwind-merge"
 
 const Project = () => {
   const { projectData, isLoading } = useProjectDataContext()
   const { t } = useTranslation()
+
+  const isDevnet = projectData.cluster !== 'mainnet'
 
   const expandedTimeline = expandTimelineDataInfo(
     projectData?.info.timeline ?? [],
@@ -26,7 +30,9 @@ const Project = () => {
       </div>
 
       <section className="flex w-full flex-col items-center gap-10 px-4">
+        {/* heading */}
         <div className="flex w-full flex-col justify-between gap-6 lg:max-w-[760px] lg:flex-row">
+          {/* left side */}
           <div className="flex flex-col gap-6 lg:flex-row">
             <Img
               src={projectData?.info.logoUrl}
@@ -35,7 +41,11 @@ const Project = () => {
               imgClassName="scale-[102%]"
             />
             <div className="flex flex-col gap-1">
-              <Text text={projectData.info.title} as="h1" className="font-semibold" isLoading={isLoading} />
+              <div className='flex items-center gap-4'>
+                <Text text={projectData.info.title} as="h1" className="font-semibold" isLoading={isLoading} />
+                { isDevnet && <DevnetFlag /> }
+              </div>
+
               <Text
                 text={projectData.info.subtitle}
                 as="span"
@@ -43,7 +53,9 @@ const Project = () => {
                 isLoading={isLoading}
               />
             </div>
+
           </div>
+          {/* right side */}
           <div className="flex items-start gap-2">
             {projectData.info.projectLinks.map((link, index) => (
               <ExternalLink.Icon key={index} externalLink={link} />
@@ -51,6 +63,7 @@ const Project = () => {
           </div>
         </div>
 
+        {/* Project details (chain, origin, sector) */}
         <div className="flex w-full flex-col gap-x-5 gap-y-3 text-sm md:flex-row lg:max-w-[760px]">
           <div className="flex gap-5">
             <div className="flex items-center gap-2 border-r-fg-gray-line pr-5 md:border-r-[1px]">
@@ -71,6 +84,7 @@ const Project = () => {
           </div>
         </div>
 
+        {/* Deal curated by: */}
         <div className="flex w-full flex-col gap-3 lg:max-w-[760px]">
           <h4 className="text-sm font-normal">{t("deal_curated_by")}</h4>
           <div className="w-full rounded-lg bg-gradient-to-r from-brand-primary/50 to-brand-secondary/15 p-[1px]">
@@ -102,6 +116,16 @@ const Project = () => {
       {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && <ProjectTester2 />}
     </main>
   )
+}
+
+function DevnetFlag() {
+  return <div className={twMerge(
+    "flex items-center gap-1",
+    "px-3 py-2 text-md rounded-full text-fg-alt-default bg-brand-primary",
+  )}>
+    <Icon className="text-black" icon={"SvgRoundCheckmark"} />
+    <p>Devnet</p>
+  </div>
 }
 
 export default Project
