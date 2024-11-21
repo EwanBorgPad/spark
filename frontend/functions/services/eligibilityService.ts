@@ -11,13 +11,17 @@ import { isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
  * Return SUM investment.
  * SqlQuery: SELECT SUM(json -> 'investmentIntent' -> 'puffer-finance' -> 'amount') FROM user;
  */
-const MANDATORY_COMPLIANCES: Quest[] = [
+const COMPLIANCES: Quest[] = [
   {
     type: 'ACCEPT_TERMS_OF_USE',
   },
   {
     type: 'PROVIDE_INVESTMENT_INTENT',
-  }
+  },
+  {
+    type: 'REFERRAL',
+    isOptional: true,
+  },
 ]
 
 
@@ -60,7 +64,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     .get()
 
   const compliancesWithCompletion: QuestWithCompletion[] = []
-  for (const quest of MANDATORY_COMPLIANCES) {
+  for (const quest of COMPLIANCES) {
     if (quest.type === 'ACCEPT_TERMS_OF_USE') {
       const hasAcceptedTermsOfUse = Boolean(user.json.termsOfUse?.acceptedAt)
       compliancesWithCompletion.push({
@@ -73,16 +77,16 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
         ...quest,
         isCompleted: providedInvestmentIntentForProject,
       })
+    } else if (quest.type === 'REFERRAL') {
+      const providedReferralForProject = Boolean(user.json.referral?.[projectId])
+      compliancesWithCompletion.push({
+        ...quest,
+        isCompleted: providedReferralForProject,
+      })
     } else {
       throw new Error(`Unknown compliance type (${quest.type})!`)
     }
   }
-  // @REFERRAL - update logic for optional compliances
-  // OPTIONAL COMPLAINCES
-  compliancesWithCompletion.push({
-    type: "REFERRAL",
-    isCompleted: false,
-  })
 
   const collections = project.json.info.tiers
     .map(tier => tier.quests)
@@ -161,7 +165,10 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     // silently fail if tier is not found
     : null
 
-  const isCompliant = compliancesWithCompletion.every(quest => quest.isCompleted)
+  const isCompliant = compliancesWithCompletion
+    .filter(quest => !quest.isOptional)
+    .every(quest => quest.isCompleted)
+
   // user must be compliant to be eligible
   const eligibilityTier = isCompliant
     // if user is manually whitelisted
@@ -180,6 +187,8 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
 
     whitelistTierId,
     whitelistedTier,
+
+    isCompliant,
 
     isEligible,
     eligibilityTier,
