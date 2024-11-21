@@ -13,6 +13,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? `${window.location.ori
 const GET_ELIGIBILITY_STATUS_API = API_BASE_URL + "/eligibilitystatus"
 const POST_ACCEPT_TERMS_OF_USE_API = API_BASE_URL + "/acceptterms"
 const POST_INVESTMENT_INTENT_API = API_BASE_URL + "/investmentintent"
+const POST_REFERRAL_API = API_BASE_URL + "/referral"
 const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
 const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
@@ -60,7 +61,9 @@ const getDeposits = async ({ address, projectId, }: GetDepositsRequest): Promise
 type GetInvestmentIntentSummary = {
   projectId: string
 }
-const getInvestmentIntentSummary = async ({  projectId, }: GetInvestmentIntentSummary): Promise<InvestmentIntentSummary> => {
+const getInvestmentIntentSummary = async ({
+  projectId,
+}: GetInvestmentIntentSummary): Promise<InvestmentIntentSummary> => {
   const url = new URL(GET_INVESTMENT_INTENT_SUMMARY_URL, window.location.href)
   url.searchParams.set("projectId", projectId)
 
@@ -85,6 +88,22 @@ const postAcceptTermsOfUse = async (args: AcceptTermsOfUseArgs) => {
 type PostInvestmentIntentArgs = InvestmentIntentRequest
 const postInvestmentIntent = async (args: PostInvestmentIntentArgs) => {
   const url = new URL(POST_INVESTMENT_INTENT_API, window.location.href)
+
+  await fetch(url, {
+    body: JSON.stringify(args),
+    method: "post",
+  })
+}
+type PostReferralArgs = {
+  referrerTwitterHandle: string
+  projectId: string
+
+  publicKey: string
+  message: string
+  signature: number[]
+}
+const postReferral = async (args: PostReferralArgs) => {
+  const url = new URL(POST_REFERRAL_API, window.location.href)
 
   await fetch(url, {
     body: JSON.stringify(args),
@@ -246,6 +265,7 @@ export const backendApi = {
   getPresignedUrl,
   postAcceptTermsOfUse,
   postInvestmentIntent,
+  postReferral,
   uploadFileToBucket,
   getEligibilityStatus,
   getInvestmentIntentSummary,
