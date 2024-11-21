@@ -234,13 +234,14 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                 isLoading={isPending}
                 className={"w-full"}
               />
-              <Button
-                size="md"
-                color="secondary"
-                btnText="Buy $BORG"
-                className="w-full py-2"
-                // TODO - add click event when we get a link
-              />
+              <a className='w-full' href='https://jup.ag/swap/SOL-BORG' target='_blank' rel='noopener noreferrer'>
+                <Button
+                  size="md"
+                  color="secondary"
+                  btnText="Buy $BORG"
+                  className="w-full py-2"
+                />
+              </a>
             </>
           ) : (
             <div className="flex w-full flex-col rounded-xl bg-brand-primary/10">
