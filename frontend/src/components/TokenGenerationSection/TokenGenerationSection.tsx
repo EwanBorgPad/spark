@@ -8,6 +8,7 @@ import RegistrationOpensPhase from "./TGEStatus/RegistrationOpensPhase.tsx"
 import SaleOver from "./TGEStatus/SaleOver"
 import LiveNow from "./TGEStatus/LiveNow"
 import DistributionOver from "./TGEStatus/DistributionOver"
+import DataRoom from "../LaunchPool/DataRoom.tsx"
 
 type Props = {
   expandedTimeline: ExpandedTimelineEventType[]
@@ -15,8 +16,9 @@ type Props = {
 
 const TokenGenerationSection = ({ expandedTimeline }: Props) => {
   const { t } = useTranslation()
-  const [currentTgeEvent, setCurrentTgeEvent] =
-    useState<ExpandedTimelineEventType>(getCurrentTgeEvent(expandedTimeline))
+  const [currentTgeEvent, setCurrentTgeEvent] = useState<ExpandedTimelineEventType>(
+    getCurrentTgeEvent(expandedTimeline),
+  )
 
   const updateTgeStatus = useCallback(() => {
     const newTgeStatus = getCurrentTgeEvent(expandedTimeline)
@@ -30,7 +32,7 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
   const renderComponent = (tgeEvent: ExpandedTimelineEventType) => {
     switch (tgeEvent.id) {
       case "UPCOMING":
-        return <span>{t("tge.not_opened_yet")}</span>
+        return <DataRoom />
       case "REGISTRATION_OPENS":
         return <RegistrationOpensPhase eventData={currentTgeEvent} />
       case "SALE_OPENS":
@@ -46,10 +48,7 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
   return (
     <section className="flex w-full flex-col items-center">
       {currentTgeEvent.nextEventDate && (
-        <CountDownCallback
-          endOfEvent={currentTgeEvent.nextEventDate}
-          callbackWhenTimeExpires={updateTgeStatus}
-        />
+        <CountDownCallback endOfEvent={currentTgeEvent.nextEventDate} callbackWhenTimeExpires={updateTgeStatus} />
       )}
       {renderComponent(currentTgeEvent)}
     </section>
