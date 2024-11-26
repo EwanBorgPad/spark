@@ -37,13 +37,14 @@ const Project = () => {
             <Img
               src={projectData?.info.logoUrl}
               isFetchingLink={isLoading}
-              size="20"
               imgClassName="scale-[102%]"
+              isRounded={true}
+              size="20"
             />
             <div className="flex flex-col gap-1">
-              <div className='flex items-center gap-4'>
+              <div className="flex items-center gap-4">
                 <Text text={projectData.info.title} as="h1" className="font-semibold" isLoading={isLoading} />
-                { isDevnet && <DevnetFlag /> }
+                {isDevnet && <DevnetFlag />}
               </div>
 
               <Text
@@ -53,7 +54,6 @@ const Project = () => {
                 isLoading={isLoading}
               />
             </div>
-
           </div>
           {/* right side */}
           <div className="flex items-start gap-2">
@@ -90,7 +90,7 @@ const Project = () => {
           <div className="w-full rounded-lg bg-gradient-to-r from-brand-primary/50 to-brand-secondary/15 p-[1px]">
             <div className="flex h-full w-full flex-col items-start justify-between gap-4 rounded-[7px] bg-gradient-to-br from-brand-dimmed-1 via-brand-dimmed-2 via-50% to-brand-dimmed-2 px-4 py-3 lg:flex-row lg:items-center lg:bg-gradient-to-r">
               <div className="flex items-center gap-4">
-                <Img src={projectData.info.curator.avatarUrl} size="10" isFetchingLink={isLoading} />
+                <Img src={projectData.info.curator.avatarUrl} size="10" isFetchingLink={isLoading} isRounded={true} />
                 <div className="flex flex-col">
                   <span className="text-base">{projectData.info.curator.fullName}</span>
                   <span className="text-sm opacity-50">{projectData.info.curator.position}</span>
@@ -110,7 +110,6 @@ const Project = () => {
 
       <TokenGenerationSection expandedTimeline={expandedTimeline} />
 
-      <Timeline timelineEvents={projectData.info.timeline} />
       <ScrollRestoration />
 
       {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && <ProjectTester2 />}
