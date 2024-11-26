@@ -40,8 +40,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     })
 
     const retval = {
-      ...eligibilityStatus,
       cluster,
+      ...eligibilityStatus,
     }
 
     return jsonResponse(retval, 200)
