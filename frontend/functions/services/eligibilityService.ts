@@ -131,11 +131,18 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
           isCompleted: isFollower,
         })
       } else if (quest.type === 'HOLD_TOKEN') {
+        const holdTokenType = collectionMap[quest.tokenMintAddress]
+          ? 'collection'
+          : fungibles[quest.tokenMintAddress]
+            ? 'fungible'
+            : 'unknown'
         const isOwner = collectionMap[quest.tokenMintAddress] // >= Number(quest.tokenAmount)
           || (fungibles[quest.tokenMintAddress]?.uiAmount ?? 0) >= Number(quest.tokenAmount)
 
         tierQuestsWithCompletion.push({
           ...quest,
+          holdTokenType,
+          holdingAmount: fungibles[quest.tokenMintAddress]?.uiAmount ?? 0,
           isCompleted: isOwner,
         })
       } else if (quest.type === 'WHITELIST') {
