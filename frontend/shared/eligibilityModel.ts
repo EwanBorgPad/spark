@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+const QUESTS_MIN_LENGTH = 0
+
 /**
  * Base of Quests that the User does in order to become eligible.
  */
@@ -106,7 +108,7 @@ export const TierSchema = z.object({
   id: z.string(),
   label: z.string(),
   description: z.string().default(''),
-  quests: z.array(QuestSchema).min(1),
+  quests: z.array(QuestSchema).min(QUESTS_MIN_LENGTH),
   benefits: BenefitsSchema,
 })
 /**
@@ -114,7 +116,7 @@ export const TierSchema = z.object({
  * This should be served to the frontend.
  */
 export const TierWithCompletionSchema = TierSchema.extend({
-  quests: z.array(QuestWithCompletionSchema).min(1),
+  quests: z.array(QuestWithCompletionSchema).min(QUESTS_MIN_LENGTH),
   isCompleted: z.boolean(),
 })
 export type TierWithCompletion = z.infer<typeof TierWithCompletionSchema>
