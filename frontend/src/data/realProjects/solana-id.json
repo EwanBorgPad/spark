@@ -168,75 +168,32 @@
         "id": "tier40",
         "label": "SOLID Community Partners",
         "description": "Access to sale at 7 PM UTC. Max Investment $1.5K",
+        "questsOperator": "OR",
         "quests": [
           {
             "type": "HOLD_TOKEN",
             "tokenName": "SMB Gen2",
             "tokenAmount": "1",
             "tokenMintAddress": "SMBtHCCC6RYRutFEPb4gZqeBLUZbMNhRKaMKZZLHi7W"
-          }
-        ],
-        "benefits": {
-          "startDate": "2030-10-10",
-          "minInvestment": "10",
-          "maxInvestment": "1500"
-        }
-      },
-      {
-        "id": "tier41",
-        "label": "",
-        "quests": [
+          },
           {
             "type": "HOLD_TOKEN",
             "tokenName": "SMB Gen3",
             "tokenAmount": "1",
             "tokenMintAddress": "8Rt3Ayqth4DAiPnW9MDFi63TiQJHmohfTWLMQFHi4KZH"
-          }
-        ],
-        "benefits": {
-          "startDate": "2030-10-10",
-          "minInvestment": "10",
-          "maxInvestment": "1500"
-        }
-      },
-      {
-        "id": "tier42",
-        "label": "",
-        "quests": [
+          },
           {
             "type": "HOLD_TOKEN",
             "tokenName": "Sensei Panda",
             "tokenAmount": "1",
             "tokenMintAddress": "GMoemLuVAksjvGph8dmujuqijWsodt7nJsvwoMph3uzj"
-          }
-        ],
-        "benefits": {
-          "startDate": "2030-10-10",
-          "minInvestment": "10",
-          "maxInvestment": "1500"
-        }
-      },
-      {
-        "id": "tier43",
-        "label": "",
-        "quests": [
+          },
           {
             "type": "HOLD_TOKEN",
             "tokenName": "FlashTrade Beast",
             "tokenAmount": "1",
             "tokenMintAddress": "H4EQ8pcE7PQSQGG1WYW4hAA1nizU6ULYipHZcYk9b64u"
-          }
-        ],
-        "benefits": {
-          "startDate": "2030-10-10",
-          "minInvestment": "10",
-          "maxInvestment": "1500"
-        }
-      },
-      {
-        "id": "tier44",
-        "label": "",
-        "quests": [
+          },
           {
             "type": "HOLD_TOKEN",
             "tokenName": "Herman",
@@ -266,7 +223,7 @@
         }
       },
       {
-        "id": "tier46",
+        "id": "tier99",
         "label": "Public Sale",
         "description": "Access to sale at 8 PM UTC. Max Investment $1K",
         "quests": [],

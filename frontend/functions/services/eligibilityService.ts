@@ -156,7 +156,10 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
       }
     }
 
-    const isTierCompleted = tierQuestsWithCompletion.every(quest => quest.isCompleted)
+    const questsOperator = tier.questsOperator || 'AND'
+    const method = questsOperator === 'OR' ? 'some' : 'every'
+
+    const isTierCompleted = tierQuestsWithCompletion[method](quest => quest.isCompleted)
     tiersWithCompletion.push({
       ...tier,
       quests: tierQuestsWithCompletion,
@@ -180,18 +183,22 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     // silently fail if tier is not found
     : null
 
+  // mark whitelisted tier and all its quests as completed
+  for (const tier of tiersWithCompletion) {
+    if (whitelistTierId === tier.id) {
+      tier.isCompleted = true
+      tier.quests.forEach(quest => quest.isCompleted = true)
+    }
+  }
+
   const isCompliant = compliancesWithCompletion
     .filter(quest => !quest.isOptional)
     .every(quest => quest.isCompleted)
 
-  // user must be compliant to be eligible
+  // user must be compliant in order to be eligible
   const eligibilityTier = isCompliant
-    // if user is manually whitelisted
-    ? whitelistedTier
-      // load the whitelisted tier
-      ? whitelistedTier
-      // else, check if they have tiered by completing quests
-      : (tiersWithCompletion.find(tier => tier.isCompleted) ?? null)
+    // find the best completed tier
+    ? (tiersWithCompletion.find(tier => tier.isCompleted) ?? null)
     : null
   const isEligible = Boolean(eligibilityTier)
 
