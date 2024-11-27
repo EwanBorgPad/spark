@@ -45,7 +45,8 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const { projectData } = useProjectDataContext()
   const { walletState, signTransaction , address, walletProvider } = useWalletContext()
 
-  const rpcUrl = BACKEND_RPC_URL
+  const cluster = projectData.cluster ?? 'devnet'
+  const rpcUrl = BACKEND_RPC_URL + '?cluster=' + cluster
   const tokenMintAddress = projectData.info.raisedTokenMintAddress
 
   const {
@@ -79,8 +80,6 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     queryKey: ["getBalance", address, tokenMintAddress],
     enabled: Boolean(address) && Boolean(tokenMintAddress),
   })
-
-  console.log({ balance })
 
   const { data } = useQuery({
     queryFn: () => {
