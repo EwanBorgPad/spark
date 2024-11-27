@@ -90,7 +90,7 @@ const TokenRewards = ({
           <span>BORG</span>
           <div className="flex items-center gap-2">
             <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
-            <Img src={tgeData.projectCoin.iconUrl} size="4" />
+            <Img src={tgeData.projectCoin.iconUrl} size="4" isRounded />
             <span className="text-base">{rewards.tokenLP}</span>
             <span className="text-base">{tgeData.projectCoin.ticker}</span>
           </div>
@@ -102,7 +102,7 @@ const TokenRewards = ({
         <div className="flex h-fit w-full items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary">
           <Icon icon="SvgLock" className="mt-[-1px] text-base opacity-50" />
           <span className="opacity-50">{t("tge.liquidity_pool")}</span>
-          <Img src={tgeData.liquidityPool.iconUrl} size="4" />
+          <Img src={tgeData.liquidityPool.iconUrl} size="4" isRounded />
           <a href={tgeData.liquidityPool.url} className="underline">
             <span className="opacity-50">{tgeData.liquidityPool.name}</span>
           </a>
@@ -111,7 +111,7 @@ const TokenRewards = ({
       </div>
       <div className="border-b-[1px] border-b-bd-primary px-3 py-2">
         <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
-          <Img src={tgeData.projectCoin.iconUrl} size="4" />
+          <Img src={tgeData.projectCoin.iconUrl} size="4" isRounded />
           <span className="text-base">{rewards.tokenRewardDistribution}</span>
           <span className="text-base">{tgeData.projectCoin.ticker}</span>
         </div>

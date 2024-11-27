@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import BasicTokenInfo from "@/components/TokenGenerationSection/components/BasicTokenInfo"
-import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
+import Timeline, { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import LiveNowExchange from "../components/LiveNowExchange"
 import SaleProgress from "../components/SaleProgress"
 import { formatDateForTimer } from "@/utils/date-helpers"
@@ -22,9 +22,10 @@ import DataRoom from "@/components/LaunchPool/DataRoom"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType
+  timeline: ExpandedTimelineEventType[]
 }
 
-const LiveNow = ({ eventData }: LiveNowProps) => {
+const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
   const { t } = useTranslation()
   const eligibilitySectionRef = useRef<HTMLDivElement>(null)
 
@@ -41,35 +42,35 @@ const LiveNow = ({ eventData }: LiveNowProps) => {
   const isUserEligible = data?.isEligible
 
   return (
-    <div className="flex w-full flex-col items-center gap-[52px]">
-      <BasicTokenInfo />
+    <div className="flex w-full flex-col items-center px-4">
+      <div className="flex w-full max-w-[764px] flex-col items-center gap-[52px]">
+        <BasicTokenInfo />
 
-      <DataRoom />
+        <DataRoom />
 
-      <SaleProgress />
-      {!isUserEligible && (
-        <EligibilityCompliancesSection className="w-full max-w-[432px]" />
-      )}
-      <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
-        <TgeWrapper label={t("tge.live_now")}>
-          {eventData?.nextEventDate && (
-            <CountDownTimer
-              endOfEvent={eventData.nextEventDate}
-              labelAboveTimer={`Ends on ${formatDateForTimer(eventData.nextEventDate)}`}
-            />
+        <Timeline timelineEvents={timeline} />
+
+        <SaleProgress />
+        {!isUserEligible && <EligibilityCompliancesSection className="w-full max-w-[432px]" />}
+        <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
+          <TgeWrapper label={t("tge.live_now")}>
+            {eventData?.nextEventDate && (
+              <CountDownTimer
+                endOfEvent={eventData.nextEventDate}
+                labelAboveTimer={`Ends on ${formatDateForTimer(eventData.nextEventDate)}`}
+              />
+            )}
+            <LiveNowExchange eligibilitySectionRef={eligibilitySectionRef} />
+          </TgeWrapper>
+          {isUserEligible && (
+            <>
+              <TopContributor />
+              <PastOrders />
+            </>
           )}
-          <LiveNowExchange eligibilitySectionRef={eligibilitySectionRef} />
-        </TgeWrapper>
-        {isUserEligible && (
-          <>
-            <TopContributor />
-            <PastOrders />
-          </>
-        )}
+        </div>
+        {!isUserEligible && <EligibilityTiersSection className="w-full max-w-[432px]" />}
       </div>
-      {!isUserEligible && (
-        <EligibilityTiersSection className="w-full max-w-[432px]" />
-      )}
     </div>
   )
 }
