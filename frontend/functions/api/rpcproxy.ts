@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
+import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 
 const allowedMethods = [
   "getAccountInfo",
@@ -21,8 +22,12 @@ type ENV = {
 }
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
-  const solanaRpcUrl = ctx.env.SOLANA_RPC_URL
+
   try {
+    const clusterParam = new URL(ctx.request.url).searchParams.get("cluster")
+    const cluster = clusterParam === 'devnet' ? 'devnet' : 'mainnet'
+    const solanaRpcUrl = getRpcUrlForCluster(ctx.env.SOLANA_RPC_URL, cluster)
+
     //// validate request
     const requestJson = await ctx.request.json()
     const { error, data } = RpcSchema.safeParse(requestJson)
@@ -43,10 +48,14 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       body: JSON.stringify(data),
     })
 
-    const response = await fetch(request)
-    const responseJson = await response.json()
+    const rpcResponse = await fetch(request)
+    const responseJson = await rpcResponse.json()
+    const response = {
+      cluster,
+      ...responseJson,
+    }
 
-    return jsonResponse(responseJson, response.status)
+    return jsonResponse(response, rpcResponse.status)
   } catch (e) {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
