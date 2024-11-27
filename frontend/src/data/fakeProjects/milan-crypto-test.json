@@ -2,7 +2,7 @@
   "info": {
     "id": "milan-crypto-test-02",
     "title": "Milan Crypto",
-    "subtitle": "Anti-Slashing Liquid Staking Crypto Manic Automated Market",
+    "subtitle": "Anti-Slashing Liquid Staking Crypto Manic Market Making",
     "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar.png",
     "thumbnailUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/westeros-validator-group/project-thumbnail-824297648",
     "origin": "\uD83C\uDDF7\uD83C\uDDF8 Serbia",
@@ -69,8 +69,8 @@
     "raisedTokenMinCap": 1000,
     "raisedTokenMaxCap": 1000000,
 
-    "cliffDuration": 1728998916,
-    "vestingDuration": 1731677316,
+    "cliffDuration": 0,
+    "vestingDuration": 0,
 
     "tge": {
       "raiseTarget": 2000000,
@@ -125,7 +125,7 @@
     ],
     "tiers": [
       {
-        "id": "tier0",
+        "id": "tier00",
         "label": "NFT Tier",
         "quests": [
           {
@@ -142,18 +142,13 @@
         }
       },
       {
-        "id": "tier1",
+        "id": "tier05",
         "label": "Tier1",
         "quests": [
           {
-            "type": "FOLLOW_ON_TWITTER",
-            "twitterHandle": "@borgpadhq",
-            "twitterLabel": "BorgPad"
-          },
-          {
             "type": "HOLD_TOKEN",
             "tokenName": "USDC",
-            "tokenAmount": "10000",
+            "tokenAmount": "100",
             "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
           }
         ],
@@ -164,13 +159,30 @@
         }
       },
       {
-        "id": "tier2",
+        "id": "tier10",
+        "label": "Tier1",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "USDC",
+            "tokenAmount": "1000",
+            "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
+          }
+        ],
+        "benefits": {
+          "startDate": "2024-10-23",
+          "minInvestment": "10",
+          "maxInvestment": "999"
+        }
+      },
+      {
+        "id": "tier20",
         "label": "Tier2",
         "quests": [
           {
             "type": "HOLD_TOKEN",
             "tokenName": "USDC",
-            "tokenAmount": "20000",
+            "tokenAmount": "2000",
             "tokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
           }
         ],

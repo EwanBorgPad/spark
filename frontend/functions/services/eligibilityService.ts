@@ -3,7 +3,7 @@ import { and, eq } from "drizzle-orm"
 
 import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } from "../../shared/eligibilityModel"
 import { followerTable, projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
-import { isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
+import { getTokenHoldingsMap, isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
 
 /**
  * List of mandatory compliances.
@@ -88,7 +88,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     }
   }
 
-  const collections = project.json.info.tiers
+  const collections: string[] = project.json.info.tiers
     .map(tier => tier.quests)
     .flat()
     .filter(quest => quest.type === 'HOLD_TOKEN')
@@ -98,6 +98,11 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     rpcUrl,
     ownerAddress: address,
     collections,
+  })
+
+  const fungibles = await getTokenHoldingsMap({
+    rpcUrl,
+    ownerAddress: address,
   })
 
   const tiersWithCompletion: TierWithCompletion[] = []
@@ -126,9 +131,18 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
           isCompleted: isFollower,
         })
       } else if (quest.type === 'HOLD_TOKEN') {
-        const isOwner = collectionMap[quest.tokenMintAddress]
+        const holdTokenType = collectionMap[quest.tokenMintAddress]
+          ? 'collection'
+          : fungibles[quest.tokenMintAddress]
+            ? 'fungible'
+            : 'unknown'
+        const isOwner = collectionMap[quest.tokenMintAddress] // >= Number(quest.tokenAmount)
+          || (fungibles[quest.tokenMintAddress]?.uiAmount ?? 0) >= Number(quest.tokenAmount)
+
         tierQuestsWithCompletion.push({
           ...quest,
+          holdTokenType,
+          holdingAmount: fungibles[quest.tokenMintAddress]?.uiAmount ?? 0,
           isCompleted: isOwner,
         })
       } else if (quest.type === 'WHITELIST') {

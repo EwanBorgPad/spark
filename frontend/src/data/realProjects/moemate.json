@@ -12,7 +12,7 @@
       "name": "Solana",
       "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
     },
-    "totalTokensForSale": 487500000,
+    "totalTokensForSale": 0,
     "totalTokensForRewardDistribution": 780000000,
     "curator": {
       "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
@@ -62,7 +62,7 @@
       "raiseTarget": 375000,
       "projectCoin": {
         "iconUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
-        "ticker": "MOE"
+        "ticker": "MATES"
       },
       "fixedTokenPriceInUSD": 0.000769,
       "tokenGenerationEventDate": "Dec 2024",
@@ -90,79 +90,64 @@
       },
       {
         "id": "SALE_OPENS",
-        "label": "Sale Opens",
-        "date": null
+        "label": "Whitelist Sale Opens",
+        "date": "2024-12-10"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": null
+        "date": "2024-12-11"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": null
+        "date": "2024-12-11"
       },
       {
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
-        "date": null
+        "date": "2025-05-11"
       }
     ],
     "tiers": [
       {
         "id": "tier10",
-        "label": "Mooemate Cohort 1",
-        "description": "First access to invest with the highest maximum ticket size available",
+        "label": "$MOE's 5 Digit Club.",
+        "description": "Hold $MOE tokens—the official currency for Moemate’s flagship AI agent, Nebula—to gain first access to the sale at 5 PM UTC. Maximum Investment: $5K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
-            "tokenName": "Priority Pass NFT",
-            "tokenAmount": "1",
-            "tokenMintAddress": "4jYzKMx7Qjq98rUk4FxzAEPMhrSdABztazqmGeKnhvg1"
+            "tokenName": "MOE",
+            "tokenAmount": "10000",
+            "tokenMintAddress": "8xzoj8mVmXtBQm6d2euJGFPvQ2QsTV5R8cdexi2qpump"
           }
         ],
         "benefits": {
           "startDate": "2030-10-10",
-          "minInvestment": "0",
-          "maxInvestment": "0"
+          "minInvestment": "100",
+          "maxInvestment": "5000"
         }
       },
       {
         "id": "tier30",
-        "label": "SwissBorg Alpha Investors",
-        "description": "Invest after Tier 1, with a high maximum ticket size",
+        "label": "BORGers Club",
+        "description": "Prove your BORGer loyalty and qualify to invest at 6 PM UTC. Max Investment $3K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
-            "tokenName": "Solana ID x Drip Collectible",
-            "tokenAmount": "1",
+            "tokenName": "BORG",
+            "tokenAmount": "1000",
             "tokenMintAddress": "BD5EpsrZmPGK8DMMhu1DYAzKXEp5nMrTEyhSsWrjWKP1"
           }
         ],
         "benefits": {
           "startDate": "2030-10-10",
-          "minInvestment": "0",
-          "maxInvestment": "0"
-        }
-      },
-      {
-        "id": "tier45",
-        "label": "Solana SuperTeams Member",
-        "description": "Access granted after Tiers 1-3, with a lower maximum ticket size",
-        "quests": [
-          {
-            "type": "WHITELIST"
-          }
-        ],
-        "benefits": {
-          "startDate": "2030-10-10",
-          "minInvestment": "0",
-          "maxInvestment": "0"
+          "minInvestment": "100",
+          "maxInvestment": "3000"
         }
       }
     ],
-    "finalSnapshotTimestamp": null
+    "finalSnapshotTimestamp": "2024-12-10T16:30:00Z"
   },
   "saleData": {
     "availableTokens": 12403,
