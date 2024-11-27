@@ -145,13 +145,7 @@ const getProjects = async ({
 
   const response = await fetch(url)
   const json = await response.json()
-
   return json
-  // try {
-  // } catch (e) {
-  //   console.error("GET /projects validation error!")
-  //   throw e
-  // }
 }
 
 export type CreateProjectRequest = {
