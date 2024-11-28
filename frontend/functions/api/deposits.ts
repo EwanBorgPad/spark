@@ -22,7 +22,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     }
 
     // happy flow
-    const deposits = await db
+    const depositsResult = await db
       .select()
       .from(depositTable)
       .where(
@@ -33,6 +33,12 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       )
       .orderBy(desc(depositTable.createdAt))
       .all()
+
+    const deposits = depositsResult.map(deposit => ({
+      ...deposit,
+      ...deposit.json,
+      transactionUrl: `https://explorer.solana.com/tx/${deposit.transactionId}?cluster=${deposit.json.cluster}`
+    }))
 
     return jsonResponse({ deposits }, 200)
   } catch (e) {

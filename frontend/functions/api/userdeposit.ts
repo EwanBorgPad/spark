@@ -168,7 +168,12 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         txId,
         lbpAddress: deserializedTransaction.toAddress,
         tierId,
-        nftAddress
+        nftAddress,
+        json: {
+          cluster,
+          uiAmount: (Number(depositAmount) / Number(decimalMultiplier)).toString(),
+          decimalMultiplier: decimalMultiplier.toString(),
+        },
       })
     }
     return jsonResponse({ message: "Ok!", transactionLink: explorerLink }, 200)

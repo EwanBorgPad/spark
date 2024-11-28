@@ -56,3 +56,6 @@ CREATE TABLE deposit (
     nft_address TEXT NOT NULL
 );
 CREATE INDEX deposit_from_address_index ON deposit(from_address);
+
+-- migration: deposit add column json
+ALTER TABLE deposit ADD COLUMN json JSON NOT NULL DEFAULT '{}';

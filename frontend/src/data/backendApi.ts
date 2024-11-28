@@ -46,6 +46,10 @@ type GetDepositsResponse = {
     transactionId: string
     createdAt: string
     amountDeposited: string
+    tokenAddress: string
+    uiAmount: string
+    decimalMultiplier: string
+    transactionUrl: string
   }[]
 }
 const getDeposits = async ({ address, projectId, }: GetDepositsRequest): Promise<GetDepositsResponse> => {
