@@ -96,6 +96,7 @@
   "whitelisting.i_dont_reside_in_us": " I Don’t Reside in the US",
   "whitelisting.not_available_in_us": "This LBP is not available for US residents. To be whitelisted, please acknowledge that you don’t reside in the USA.",
   "whitelisting.snapshot_taken": "Final Snapshot taken on",
+  "whitelisting.update_every": "{{ date }}. Updated every few minutes.",
 
   "data_room": "Data Room",
 
