@@ -17,6 +17,8 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
   const tgeData = projectData.info.tge
+  const tokenTicker = tgeData.projectCoin.ticker
+  const tokenIcon = tgeData.projectCoin.iconUrl
 
   const getLiquidityPoolValues = () => {
     if (!borgCoinInput || !tokenPriceInBORG)
@@ -29,18 +31,14 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
     const borgLpUnformatted = +borgCoinInput / 2
     return {
       tokenLp: {
-        formatted: formatValue({
-          value: tokenLpUnformatted.toString(),
-          decimalScale: 2,
-        }),
+        formatted: formatCurrencyAmount(tokenLpUnformatted, false) || "0",
         unformatted: tokenLpUnformatted,
+        usd: tokenPriceInUSD ? formatCurrencyAmount(tokenLpUnformatted * tokenPriceInUSD, true) : 0,
       },
       borgLp: {
-        formatted: formatValue({
-          value: borgLpUnformatted.toString(),
-          decimalScale: 2,
-        }),
+        formatted: formatCurrencyAmount(borgLpUnformatted, false) || "0",
         unformatted: borgLpUnformatted,
+        usd: borgPriceInUSD ? formatCurrencyAmount(borgLpUnformatted * borgPriceInUSD, true) : "0",
       },
     }
   }
@@ -54,30 +52,39 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
 
     return {
       unformatted: tokenReward,
-      formatted: formatValue({
-        value: tokenReward.toString(),
-        decimalScale: 2,
-      }),
+      formatted: formatCurrencyAmount(tokenReward, false) || "0",
+      usd: tokenPriceInUSD ? formatCurrencyAmount(tokenReward * tokenPriceInUSD, true) : "0",
     }
   }
 
   const liquidityPoolValues = getLiquidityPoolValues()
+
   const getTotalTokensToBeReceived = () => {
     const totalTokensFromLiquidityPool = liquidityPoolValues.tokenLp?.unformatted || 0
     const totalTokensReceivedInRewardsDistribution = getTokenReward().unformatted || 0
-    const totalTargetToken = totalTokensReceivedInRewardsDistribution + totalTokensFromLiquidityPool
+    const totalTargetToken = formatCurrencyAmount(
+      totalTokensReceivedInRewardsDistribution + totalTokensFromLiquidityPool,
+      false,
+    )
     return totalTargetToken
   }
 
-  const rewards = {
-    borgLP: liquidityPoolValues.borgLp?.formatted,
-    tokenLP: liquidityPoolValues.tokenLp?.formatted,
-    tokenRewardDistribution: getTokenReward().formatted,
-    totalTargetToken: formatValue({
-      value: getTotalTokensToBeReceived().toString(),
-      decimalScale: 2,
-    }),
+  const totalLpPosition = {
+    borg: liquidityPoolValues.borgLp.formatted,
+    borgInUSD: liquidityPoolValues.borgLp.usd,
+    token: liquidityPoolValues.tokenLp.formatted,
+    tokenInUSD: liquidityPoolValues.tokenLp.usd,
   }
+  const rewardDistribution = {
+    token: getTokenReward().formatted,
+    tokenInUSD: getTokenReward().usd,
+  }
+  const totalAssetsToBeReceived = {
+    borg: liquidityPoolValues.borgLp.formatted,
+    token: getTotalTokensToBeReceived(),
+  }
+
+  console.log(typeof totalLpPosition.borg)
 
   if (projectData.info.lpPositionToBeBurned) {
     return (
@@ -88,17 +95,15 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
             {/* TOP section token values */}
             <span className="w-full text-center text-sm font-normal">Liquidity Provision Rewards</span>
             <div className="flex h-fit items-start justify-center gap-2 rounded-full text-xs font-medium text-fg-primary">
-              <Img src={tgeData.projectCoin.iconUrl} size="4" customClass="mt-1" />
+              <Img src={tokenIcon} size="4" customClass="mt-1" />
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-base">{rewards.tokenRewardDistribution}</span>
-                  <span className="text-base">{tgeData.projectCoin.ticker}</span>
+                  <span className="text-base">{rewardDistribution.token}</span>
+                  <span className="text-base">{tokenTicker}</span>
                 </div>
-                {tokenPriceInUSD && (
-                  <span className="text-sm font-normal text-fg-secondary">
-                    {formatCurrencyAmount(tokenPriceInUSD, true)}
-                  </span>
-                )}
+
+                {/* total reward distr. tokens value in USD */}
+                <span className="text-sm font-normal text-fg-secondary">{rewardDistribution.tokenInUSD}</span>
               </div>
             </div>
             {/* TOP section - footer */}
@@ -122,7 +127,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
                 <Icon icon="SvgBorgCoin" className="mt-1 opacity-50" />
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-2 text-fg-tertiary">
-                    <span className="text-base">{rewards.borgLP}</span>
+                    <span className="text-base">{totalLpPosition.borg}</span>
                     <span>BORG</span>
                   </div>
                 </div>
@@ -131,12 +136,12 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
               <Icon icon="SvgPlus" className="mt-1 text-base text-fg-tertiary opacity-50" />
 
               <div className="flex gap-2 text-fg-tertiary">
-                <Img src={tgeData.projectCoin.iconUrl} size="4" customClass="mt-1 opacity-50" />
+                <Img src={tokenIcon} size="4" customClass="mt-1 opacity-50" />
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-2">
                     {/* Liquidity pool $[TOKEN] */}
-                    <span className="text-base">{rewards.tokenLP}</span>
-                    <span className="text-base">{tgeData.projectCoin.ticker}</span>
+                    <span className="text-base">{totalLpPosition.token}</span>
+                    <span className="text-base">{tokenTicker}</span>
                   </div>
                 </div>
               </div>
@@ -146,12 +151,11 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
 
         {/* label below container */}
         <span className="mt-[9px] block w-full text-center text-xs font-medium text-fg-primary opacity-50">
-          $ values for LRC are shown at TGE valuation price
+          $ values for {tokenTicker} are shown at TGE valuation price
         </span>
       </div>
     )
   }
-
   // RETURN IF TOKEN IS NOT GETTING BURNED
   return (
     <div className="w-full bg-transparent">
@@ -165,32 +169,24 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
               <Icon icon="SvgBorgCoin" className="mt-1" />
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-2">
-                  <span className="text-base">{rewards.borgLP}</span>
+                  <span className="text-base">{totalLpPosition.borg}</span>
                   <span>BORG</span>
                 </div>
-                {borgPriceInUSD && (
-                  <span className="text-sm font-normal text-fg-tertiary">
-                    {formatCurrencyAmount(borgPriceInUSD, true)}
-                  </span>
-                )}
+                <span className="text-sm font-normal text-fg-tertiary">{totalLpPosition.borgInUSD}</span>
               </div>
             </div>
 
             <Icon icon="SvgPlus" className="mt-1 text-base text-fg-disabled opacity-50" />
 
             <div className="flex gap-2">
-              <Img src={tgeData.projectCoin.iconUrl} size="4" customClass="mt-1" />
+              <Img src={tokenIcon} size="4" customClass="mt-1" />
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-2">
                   {/* Liquidity pool $[TOKEN] */}
-                  <span className="text-base">{rewards.tokenLP}</span>
-                  <span className="text-base">{tgeData.projectCoin.ticker}</span>
+                  <span className="text-base">{totalLpPosition.token}</span>
+                  <span className="text-base">{tokenTicker}</span>
                 </div>
-                {tokenPriceInUSD && (
-                  <span className="text-sm font-normal text-fg-tertiary">
-                    {formatCurrencyAmount(tokenPriceInUSD, true)}
-                  </span>
-                )}
+                <span className="text-sm font-normal text-fg-tertiary">{totalLpPosition.tokenInUSD}</span>
               </div>
             </div>
           </div>
@@ -199,7 +195,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
           <div className="flex h-fit w-full items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary">
             <Icon icon="SvgLock" className="mt-[-1px] text-base opacity-50" />
             <span className="opacity-50">{t("tge.liquidity_pool")}</span>
-            <Img src={tgeData.liquidityPool.iconUrl} size="4" />
+            <Img src={tokenIcon} size="4" />
             <a href={tgeData.liquidityPool.url} className="underline">
               <span className="opacity-50">{tgeData.liquidityPool.name}</span>
             </a>
@@ -216,17 +212,13 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
         <div className="item-start flex flex-col gap-3 border-b-[1px] border-b-bd-primary p-3">
           {/* mid section token values */}
           <div className="flex h-fit items-start gap-2 rounded-full text-xs font-medium text-fg-primary ">
-            <Img src={tgeData.projectCoin.iconUrl} size="4" customClass="mt-1" />
+            <Img src={tokenIcon} size="4" customClass="mt-1" />
             <div className="flex flex-col items-start">
               <div className="flex items-center gap-1.5">
-                <span className="text-base">{rewards.tokenRewardDistribution}</span>
-                <span className="text-base">{tgeData.projectCoin.ticker}</span>
+                <span className="text-base">{rewardDistribution.token}</span>
+                <span className="text-base">{tokenTicker}</span>
               </div>
-              {tokenPriceInUSD && (
-                <span className="text-sm font-normal text-fg-tertiary">
-                  {formatCurrencyAmount(tokenPriceInUSD, true)}
-                </span>
-              )}
+              <span className="text-sm font-normal text-fg-tertiary">{rewardDistribution.tokenInUSD}</span>
             </div>
           </div>
           {/* mid section - footer */}
@@ -240,18 +232,18 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
         <div className="flex flex-col gap-2 p-3 text-sm">
           <span>Total Rewards</span>
           <div className="flex flex-wrap gap-2 font-medium text-fg-secondary">
-            <span>{rewards.borgLP}</span>
+            <span>{totalAssetsToBeReceived.borg}</span>
             <span>{"BORG"}</span>
             <span>{"+"}</span>
-            <span>{rewards.totalTargetToken}</span>
-            <span>{tgeData.projectCoin.ticker}</span>
+            <span>{totalAssetsToBeReceived.token}</span>
+            <span>{tokenTicker}</span>
           </div>
         </div>
       </div>
 
       {/* label below container */}
       <span className="mt-[9px] block w-full text-center text-xs font-medium text-fg-primary opacity-50">
-        $ values for LRC are shown at TGE valuation price
+        $ values for {tokenTicker} are shown at TGE valuation price
       </span>
     </div>
   )
