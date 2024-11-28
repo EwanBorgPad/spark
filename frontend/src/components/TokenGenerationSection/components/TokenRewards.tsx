@@ -4,18 +4,15 @@ import { useTranslation } from "react-i18next"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import { Icon } from "@/components/Icon/Icon"
 import Img from "@/components/Image/Img"
+import { formatCurrencyAmount } from "@/utils/format"
 
 type TokenRewardsProps = {
   borgCoinInput: string
-  isWhitelistingEvent: boolean
   tokenPriceInBORG: number | null
+  borgPriceInUSD: number | null
 }
 
-const TokenRewards = ({
-  borgCoinInput,
-  isWhitelistingEvent,
-  tokenPriceInBORG,
-}: TokenRewardsProps) => {
+const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG }: TokenRewardsProps) => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
   const tgeData = projectData.info.tge
@@ -81,53 +78,180 @@ const TokenRewards = ({
     }),
   }
 
-  return (
-    <div className="border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary bg-tertiary ">
-      <div className="relative flex flex-col items-center border-b-[1px] border-b-bd-primary px-3 py-2">
-        <div className="flex h-fit w-full flex-wrap items-center gap-2 rounded-full pb-1 text-base font-medium">
-          <Icon icon="SvgBorgCoin" />
-          <span className="text-base">{rewards.borgLP}</span>
-          <span>BORG</span>
-          <div className="flex items-center gap-2">
-            <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
-            <Img src={tgeData.projectCoin.iconUrl} size="4" />
-            <span className="text-base">{rewards.tokenLP}</span>
-            <span className="text-base">{tgeData.projectCoin.ticker}</span>
+  if (projectData.info.lpPositionToBeBurned) {
+    return (
+      <div className="w-full bg-transparent">
+        <div className="border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary bg-tertiary ">
+          {/* TOP SECTION - Distributed Rewards */}
+          <div className="item-center relative flex flex-col gap-3 border-b-[1px] border-b-bd-primary px-3 py-4">
+            {/* TOP section token values */}
+            <span className="w-full text-center text-sm font-normal">Liquidity Provision Rewards</span>
+            <div className="flex h-fit items-start justify-center gap-2 rounded-full text-xs font-medium text-fg-primary">
+              <Img src={tgeData.projectCoin.iconUrl} size="4" customClass="mt-1" />
+              <div className="flex flex-col items-start">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-base">{rewards.tokenRewardDistribution}</span>
+                  <span className="text-base">{tgeData.projectCoin.ticker}</span>
+                </div>
+                {tokenPriceInBORG && (
+                  <span className="text-sm font-normal text-fg-secondary">
+                    {formatCurrencyAmount(tokenPriceInBORG, true)}
+                  </span>
+                )}
+              </div>
+            </div>
+            {/* TOP section - footer */}
+            <div className="flex h-fit items-center justify-center gap-1.5 rounded-full text-xs font-normal text-fg-primary ">
+              <Icon icon="SvgChartLine" className="text-base opacity-50" />
+              <span className="opacity-50">{t("tge.linearly_paid_out")}</span>
+            </div>
+
+            {/* PLUS icon between sections */}
+            <div className="absolute -bottom-[10px] left-[47%] bg-tertiary p-[2px]">
+              <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
+            </div>
+          </div>
+
+          {/* BOTTOM SECTION - Liquidity Pool */}
+          <div className="flex flex-col items-center gap-3 px-3 py-4">
+            <span className="text-sm font-normal text-fg-tertiary">LP Position - 100% Burned 🔥 </span>
+            <div className="flex h-fit w-full flex-wrap items-start justify-center gap-4 rounded-full pb-1 text-base font-medium">
+              {/* Liquidity pool $BORG */}
+              <div className="flex gap-2">
+                <Icon icon="SvgBorgCoin" className="mt-1 opacity-50" />
+                <div className="flex flex-col items-start">
+                  <div className="flex items-center gap-2 text-fg-tertiary">
+                    <span className="text-base">{rewards.borgLP}</span>
+                    <span>BORG</span>
+                  </div>
+                </div>
+              </div>
+
+              <Icon icon="SvgPlus" className="mt-1 text-base text-fg-tertiary opacity-50" />
+
+              <div className="flex gap-2 text-fg-tertiary">
+                <Img src={tgeData.projectCoin.iconUrl} size="4" customClass="mt-1 opacity-50" />
+                <div className="flex flex-col items-start">
+                  <div className="flex items-center gap-2">
+                    {/* Liquidity pool $[TOKEN] */}
+                    <span className="text-base">{rewards.tokenLP}</span>
+                    <span className="text-base">{tgeData.projectCoin.ticker}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="absolute -bottom-[10px] bg-tertiary p-[2px]">
-          <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
+
+        {/* label below container */}
+        <span className="mt-[9px] block w-full text-center text-xs font-medium text-fg-primary opacity-50">
+          $ values for LRC are shown at TGE valuation price
+        </span>
+      </div>
+    )
+  }
+
+  // RETURN IF TOKEN IS NOT GETTING BURNED
+  return (
+    <div className="w-full bg-transparent">
+      <div className="border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary bg-tertiary ">
+        {/* TOP SECTION - Liquidity Pool */}
+        <div className="relative flex flex-col items-center gap-3 border-b-[1px] border-b-bd-primary p-3">
+          {/* top section */}
+          <div className="flex h-fit w-full flex-wrap items-start gap-4 rounded-full pb-1 text-base font-medium">
+            {/* Liquidity pool $BORG */}
+            <div className="flex gap-2">
+              <Icon icon="SvgBorgCoin" className="mt-1" />
+              <div className="flex flex-col items-start">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">{rewards.borgLP}</span>
+                  <span>BORG</span>
+                </div>
+                {borgPriceInUSD && (
+                  <span className="text-sm font-normal text-fg-tertiary">
+                    {formatCurrencyAmount(borgPriceInUSD, true)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <Icon icon="SvgPlus" className="mt-1 text-base text-fg-disabled opacity-50" />
+
+            <div className="flex gap-2">
+              <Img src={tgeData.projectCoin.iconUrl} size="4" customClass="mt-1" />
+              <div className="flex flex-col items-start">
+                <div className="flex items-center gap-2">
+                  {/* Liquidity pool $[TOKEN] */}
+                  <span className="text-base">{rewards.tokenLP}</span>
+                  <span className="text-base">{tgeData.projectCoin.ticker}</span>
+                </div>
+                {tokenPriceInBORG && (
+                  <span className="text-sm font-normal text-fg-tertiary">
+                    {formatCurrencyAmount(tokenPriceInBORG, true)}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* top section footer */}
+          <div className="flex h-fit w-full items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary">
+            <Icon icon="SvgLock" className="mt-[-1px] text-base opacity-50" />
+            <span className="opacity-50">{t("tge.liquidity_pool")}</span>
+            <Img src={tgeData.liquidityPool.iconUrl} size="4" />
+            <a href={tgeData.liquidityPool.url} className="underline">
+              <span className="opacity-50">{tgeData.liquidityPool.name}</span>
+            </a>
+            <span className="-ml-1.5 opacity-50">, {tgeData.liquidityPool.lockingPeriod}</span>
+          </div>
+
+          {/* Plus icon between top and mid sections */}
+          <div className="absolute -bottom-[10px] bg-tertiary p-[2px]">
+            <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
+          </div>
         </div>
 
-        <div className="flex h-fit w-full items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary">
-          <Icon icon="SvgLock" className="mt-[-1px] text-base opacity-50" />
-          <span className="opacity-50">{t("tge.liquidity_pool")}</span>
-          <Img src={tgeData.liquidityPool.iconUrl} size="4" />
-          <a href={tgeData.liquidityPool.url} className="underline">
-            <span className="opacity-50">{tgeData.liquidityPool.name}</span>
-          </a>
-          <span className="-ml-1.5 opacity-50">, {tgeData.liquidityPool.lockingPeriod}</span>
+        {/* MID SECTION - Distributed Rewards */}
+        <div className="item-start flex flex-col gap-3 border-b-[1px] border-b-bd-primary p-3">
+          {/* mid section token values */}
+          <div className="flex h-fit items-start gap-2 rounded-full text-xs font-medium text-fg-primary ">
+            <Img src={tgeData.projectCoin.iconUrl} size="4" customClass="mt-1" />
+            <div className="flex flex-col items-start">
+              <div className="flex items-center gap-1.5">
+                <span className="text-base">{rewards.tokenRewardDistribution}</span>
+                <span className="text-base">{tgeData.projectCoin.ticker}</span>
+              </div>
+              {tokenPriceInBORG && (
+                <span className="text-sm font-normal text-fg-tertiary">
+                  {formatCurrencyAmount(tokenPriceInBORG, true)}
+                </span>
+              )}
+            </div>
+          </div>
+          {/* mid section - footer */}
+          <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary ">
+            <Icon icon="SvgChartLine" className="text-base opacity-50" />
+            <span className="opacity-50">{t("tge.linearly_paid_out")}</span>
+          </div>
+        </div>
+
+        {/* BOTTOM SECTION - TOTAL TO BE RECEIVED */}
+        <div className="flex flex-col gap-2 p-3 text-sm">
+          <span>Total Rewards</span>
+          <div className="flex flex-wrap gap-2 font-medium text-fg-secondary">
+            <span>{rewards.borgLP}</span>
+            <span>{"BORG"}</span>
+            <span>{"+"}</span>
+            <span>{rewards.totalTargetToken}</span>
+            <span>{tgeData.projectCoin.ticker}</span>
+          </div>
         </div>
       </div>
-      <div className="border-b-[1px] border-b-bd-primary px-3 py-2">
-        <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
-          <Img src={tgeData.projectCoin.iconUrl} size="4" />
-          <span className="text-base">{rewards.tokenRewardDistribution}</span>
-          <span className="text-base">{tgeData.projectCoin.ticker}</span>
-        </div>
-        <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary ">
-          <Icon icon="SvgChartLine" className="text-base opacity-50" />
-          <span className="opacity-50">{t("tge.linearly_paid_out")}</span>
-        </div>
-      </div>
-      <div className="flex flex-wrap gap-2 px-3 py-2 text-xs">
-        <span>Total:</span>
-        <span>{rewards.borgLP}</span>
-        <span>{"BORG"}</span>
-        <span>{"+"}</span>
-        <span>{rewards.totalTargetToken}</span>
-        <span>{tgeData.projectCoin.ticker}</span>
-      </div>
+
+      {/* label below container */}
+      <span className="mt-[9px] block w-full text-center text-xs font-medium text-fg-primary opacity-50">
+        $ values for LRC are shown at TGE valuation price
+      </span>
     </div>
   )
 }

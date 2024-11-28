@@ -12,6 +12,7 @@
       "name": "Solana",
       "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
     },
+    "lpPositionToBeBurned": true,
     "totalTokensForSale": 487500000,
     "totalTokensForRewardDistribution": 780000000,
     "curator": {

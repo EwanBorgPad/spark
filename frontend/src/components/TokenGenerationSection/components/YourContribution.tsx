@@ -41,7 +41,7 @@ const YourContribution = ({
     <>
       <div className="flex items-center gap-2 text-xl font-semibold">
         <Icon icon="SvgBorgCoin" />
-        <span>{formatCurrencyAmount(suppliedBorg.total, false, 6)}</span>
+        <span>{formatCurrencyAmount(suppliedBorg.total, false)}</span>
         <span>BORG</span>
       </div>
       <PastOrders label="All Orders" className="w-full" />

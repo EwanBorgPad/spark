@@ -30,11 +30,9 @@ const WhitelistingContent = () => {
       }),
     queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
-  const borgPriceInUsd = data?.currentPrice || null
+  const borgPriceInUSD = data?.currentPrice || null
   const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
-  const tokenPriceInBORG = !borgPriceInUsd
-    ? null
-    : tokenPriceInUSD / borgPriceInUsd
+  const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
   const { projectId } = useParams()
   const { data: investmentSummaryData } = useQuery({
@@ -61,7 +59,7 @@ const WhitelistingContent = () => {
           </p>
           <span className="text-fg-tertiary">Gives you:</span>
         </div>
-        <TokenRewards borgCoinInput={"1"} isWhitelistingEvent={true} tokenPriceInBORG={tokenPriceInBORG} />
+        <TokenRewards borgCoinInput={"1"} tokenPriceInBORG={tokenPriceInBORG} borgPriceInUSD={borgPriceInUSD} />
       </div>
 
       <div className="flex w-full flex-col">
@@ -81,11 +79,11 @@ const WhitelistingContent = () => {
             <span>{t("tge.price")}</span>
           </div>
           <div className="flex flex-col items-end">
-            <span>{formatCurrencyAmount(tokenPriceInUSD, true, 2)}</span>
+            <span>{formatCurrencyAmount(tokenPriceInUSD, true)}</span>
             <div className="flex gap-2">
               <span>
                 {tokenPriceInBORG ? (
-                  formatCurrencyAmount(tokenPriceInBORG, false, 2)
+                  formatCurrencyAmount(tokenPriceInBORG, false)
                 ) : (
                   // @TODO - add skeleton instead of loader
                   <SimpleLoader />
