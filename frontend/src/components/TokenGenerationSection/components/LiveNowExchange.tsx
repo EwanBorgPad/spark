@@ -221,6 +221,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
             borgCoinInput={borgCoinInput}
             tokenPriceInBORG={tokenPriceInBORG}
             borgPriceInUSD={borgPriceInUSD}
+            tokenPriceInUSD={tokenPriceInUSD}
           />
         </div>
         <div className="flex w-full flex-col items-center gap-4">
