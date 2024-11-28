@@ -34,6 +34,23 @@ export const nftIndexTable = sqliteTable('nft_index', {
   json: text({ mode: 'json' }).notNull()
 })
 
+type DepositJson = {
+  cluster: string
+  decimals: number
+}
+export const depositTable = sqliteTable('deposit', {
+  transactionId: text('transaction_id').primaryKey(),
+  createdAt: text('created_at').notNull().default(() => new Date().toISOString()),
+  fromAddress: text('from_address').notNull(),
+  toAddress: text('to_address').notNull(),
+  tokenAddress: text('token_address').notNull(),
+  amountDeposited: text('amount_deposited').notNull(),
+  projectId: text('project_id').notNull(),
+  tierId: text('tier_id').notNull(),
+  nftAddress: text('nft_address').notNull(),
+  json: text({ mode: 'json' }).$type<DepositJson>().notNull()
+})
+
 // const db = drizzle()
 // db
 //   .select()

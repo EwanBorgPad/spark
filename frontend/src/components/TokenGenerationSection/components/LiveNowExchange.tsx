@@ -3,18 +3,21 @@ import CurrencyInput from "react-currency-input-field"
 import { useTranslation } from "react-i18next"
 
 import { ConnectButton } from "@/components/Header/ConnectButton"
-import { useBalanceContext } from "@/hooks/useBalanceContext.tsx"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { formatCurrencyAmount } from "@/utils/format"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
-import React, { RefObject } from "react"
+import { RefObject } from "react"
+import { toast } from "react-toastify"
+import { BACKEND_RPC_URL, backendApi, PostUserDepositRequest } from "@/data/backendApi"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useQuery } from "@tanstack/react-query"
-import { backendApi } from "@/data/backendApi.ts"
 import { useParams } from "react-router-dom"
 import { useProjectDataContext } from "@/hooks/useProjectData"
+import { PublicKey } from "@solana/web3.js"
+import { getSplTokenBalance } from "../../../../shared/SolanaWeb3.ts"
 
 type FormInputs = {
   borgInputValue: string
@@ -36,10 +39,47 @@ const targetCurrency = "usd"
 
 const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const { t } = useTranslation()
-  const { balance } = useBalanceContext()
-  const { projectData } = useProjectDataContext()
-  const { address, walletState } = useWalletContext()
+  const queryClient = useQueryClient()
   const { projectId } = useParams()
+
+  const { projectData } = useProjectDataContext()
+  const { walletState, signTransaction , address, walletProvider } = useWalletContext()
+
+  const cluster = projectData.cluster ?? 'devnet'
+  const rpcUrl = BACKEND_RPC_URL + '?cluster=' + cluster
+  const tokenMintAddress = projectData.info.raisedTokenMintAddress
+
+  const {
+    mutate: userDepositFunction,
+    isPending,
+  } = useMutation({
+    mutationFn: async (payload: PostUserDepositRequest) => {
+      await backendApi.postUserDeposit(payload)
+    },
+    onSuccess: async () => {
+      console.log("Successful user deposit!")
+      toast(`Deposited successfully!`)
+      await queryClient.invalidateQueries({ queryKey: ["getDeposits"] })
+      await queryClient.invalidateQueries({ queryKey: ["getBalance"] })
+    },
+    onError: async () => {
+      console.log("Transaction failed!")
+      toast.error("Deposit was unsuccessful!")
+    }
+  })
+
+  const { data: balance } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return getSplTokenBalance({
+        address,
+        tokenAddress: projectData.info.raisedTokenMintAddress,
+        rpcUrl,
+      })
+    },
+    queryKey: ["getBalance", address, tokenMintAddress],
+    enabled: Boolean(address) && Boolean(tokenMintAddress),
+  })
 
   const { data } = useQuery({
     queryFn: () => {
@@ -59,11 +99,9 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
       }),
     queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
-  const borgPriceInUsd = exchangeData?.currentPrice || null
+  const borgPriceInUSD = exchangeData?.currentPrice || null
   const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
-  const tokenPriceInBORG = !borgPriceInUsd
-    ? null
-    : tokenPriceInUSD / borgPriceInUsd 
+  const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
   const {
     handleSubmit,
@@ -73,20 +111,32 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     formState: { errors },
   } = useForm<FormInputs>()
 
-  const onSubmit: SubmitHandler<FormInputs> = (data) => {
-    /**
-     * TODO @api for providing liquidity
-     *  - refetch balance
-     *  - refetch Tokens Available
-     */
-    // eslint-disable-next-line no-console
-    console.log("Submitted", data)
+  const onSubmit: SubmitHandler<FormInputs> = async (data) => {
+    try {
+      const tokenAmount = parseFloat(data.borgInputValue.replace(",", ""))
+      if (walletProvider === "") throw new Error("No wallet provider!")
+      if (walletState === "CONNECTED") {
+        const transaction = await signTransaction({
+          rpcUrl,
+          tokenAmount,
+          tokenMintAddress: new PublicKey(tokenMintAddress),
+          walletType: walletProvider,
+        })
+        userDepositFunction({
+          projectId: projectId ?? "",
+          transaction,
+        })
+      } else {
+        toast.error("Wallet error. Please try again or contact our support.")
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
     if (!balance) return
-    const floatValue =
-      (balancePercentage / 100) * Number(balance.uiAmountString)
+    const floatValue = (balancePercentage / 100) * Number(balance.uiAmountString)
     setValue("borgInputValue", floatValue.toString(), {
       shouldValidate: true,
       shouldDirty: true,
@@ -155,7 +205,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                   ))}
                 </div>
                 <p className="text-left text-xs opacity-50">
-                  {t("tge.balance")}: <span>{formatCurrencyAmount(Number(balance.uiAmountString), false)}</span>
+                  {t("tge.balance")}: <span>{formatCurrencyAmount(Number(balance?.uiAmountString), false)}</span>
                 </p>
               </div>
             )}
@@ -167,19 +217,27 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
         <div className="border-t-none relative mb-4 flex w-full max-w-[400px] flex-col items-center gap-2 rounded-b-2xl border border-t-0 border-bd-primary bg-secondary px-2 pb-2 pt-3">
           <span className="w-full pl-1 text-left text-xs opacity-50">{t("tge.to_receive")}</span>
 
-          <TokenRewards borgCoinInput={borgCoinInput} isWhitelistingEvent={false} tokenPriceInBORG={tokenPriceInBORG} />
+          <TokenRewards
+            borgCoinInput={borgCoinInput}
+            tokenPriceInBORG={tokenPriceInBORG}
+            borgPriceInUSD={borgPriceInUSD}
+            tokenPriceInUSD={tokenPriceInUSD}
+          />
         </div>
         <div className="flex w-full flex-col items-center gap-4">
           {walletState === "CONNECTED" ? (
             <>
-              <Button type="submit" size="lg" btnText="Supply $BORG" disabled={!isUserEligible} className={"w-full"} />
               <Button
-                size="md"
-                color="secondary"
-                btnText="Buy $BORG"
-                className="w-full py-2"
-                // TODO - add click event when we get a link
+                type="submit"
+                size="lg"
+                btnText="Supply $BORG"
+                disabled={!isUserEligible}
+                isLoading={isPending}
+                className={"w-full"}
               />
+              <a className="w-full" href="https://jup.ag/swap/SOL-BORG" target="_blank" rel="noopener noreferrer">
+                <Button size="md" color="secondary" btnText="Buy $BORG" className="w-full py-2" />
+              </a>
             </>
           ) : (
             <div className="flex w-full flex-col rounded-xl bg-brand-primary/10">

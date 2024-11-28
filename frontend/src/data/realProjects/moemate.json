@@ -1,0 +1,166 @@
+{
+  "cluster": "mainnet",
+  "info": {
+    "id": "moemate",
+    "title": "Moemate",
+    "subtitle": "Solana's Battle-tested AI Agent Platform",
+    "logoUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
+    "thumbnailUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihZkFa9w5ceE3EYBSxzEwk8VHBWVhocj1FiAC_e_D__4H3FXFRITc00kcNDJn5GOauffbdkGQi9O4DozXhJ2XhY-81EwFQEY1ZQ=s1600-rw-v1",
+    "origin": "The Timeline",
+    "sector": "AI Agents",
+    "chain": {
+      "name": "Solana",
+      "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
+    },
+    "lpPositionToBeBurned": true,
+    "totalTokensForSale": 243750000,
+    "totalTokensForRewardDistribution": 390000000,
+    "curator": {
+      "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
+      "fullName": "SwissBorg",
+      "position": "Sold-Out Alpha Deal",
+      "socials": [
+        {
+          "url": "https://swissborg.com/alpha/moemate",
+          "iconType": "WEB",
+          "label": "Web"
+        },
+        {
+          "url": "https://x.com/swissborg",
+          "iconType": "X_TWITTER",
+          "label": "X (ex-Twitter)"
+        }
+      ]
+    },
+    "projectLinks": [
+      {
+        "url": "https://www.moemate.io/",
+        "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
+        "iconType": "WEB",
+        "label": ""
+      },
+      {
+        "url": "https://x.com/MoemateAI",
+        "iconType": "X_TWITTER",
+        "label": ""
+      }
+    ],
+
+    "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
+
+    "launchedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+    "launchedTokenLpDistribution": 0,
+    "launchedTokenCap": 0,
+
+    "raisedTokenMintAddress": "BNi33DZbWNj8N86eQj7jFKtUZzMSUCCSEV8oeEkuAgzL",
+    "raisedTokenMinCap": 0,
+    "raisedTokenMaxCap": 0,
+
+    "cliffDuration": 0,
+    "vestingDuration": 0,
+
+    "tge": {
+      "raiseTarget": 375000,
+      "projectCoin": {
+        "iconUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
+        "ticker": "MATES"
+      },
+      "fixedTokenPriceInUSD": 0.000769,
+      "tokenGenerationEventDate": "Dec 2024",
+      "fdv": 15000000,
+      "liquidityPool": {
+        "name": "Raydium",
+        "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
+        "lbpType": "Concentrated Liquidity",
+        "lockingPeriod": "6 months",
+        "unlockDate": null,
+        "url": "#"
+      },
+      "tweetUrl": "#"
+    },
+    "__comment": "secondary image is the one behind: 'Moemate Data Room Learn more about the project.'",
+    "dataRoom": {
+      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
+      "url": "https://swissborg.com/alpha/moemate"
+    },
+    "timeline": [
+      {
+        "id": "REGISTRATION_OPENS",
+        "label": "Registration Opens",
+        "date": "2024-11-25"
+      },
+      {
+        "id": "SALE_OPENS",
+        "label": "Whitelist Sale Opens",
+        "date": "2024-12-10"
+      },
+      {
+        "id": "SALE_CLOSES",
+        "label": "Sale Closes",
+        "date": "2024-12-11"
+      },
+      {
+        "id": "REWARD_DISTRIBUTION",
+        "label": "Reward Distribution",
+        "date": "2024-12-11"
+      },
+      {
+        "id": "DISTRIBUTION_OVER",
+        "label": "Distribution Over",
+        "date": "2025-05-11"
+      }
+    ],
+    "tiers": [
+      {
+        "id": "tier10",
+        "label": "$MOE's 5 Digit Club.",
+        "description": "Hold $MOE tokens—the official currency for Moemate’s flagship AI agent, Nebula—to gain first access to the sale at 5 PM UTC. Maximum Investment: $5K",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "MOE",
+            "tokenAmount": "10000",
+            "tokenMintAddress": "8xzoj8mVmXtBQm6d2euJGFPvQ2QsTV5R8cdexi2qpump"
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "100",
+          "maxInvestment": "5000"
+        }
+      },
+      {
+        "id": "tier30",
+        "label": "BORGers Club",
+        "description": "Prove your BORGer loyalty and qualify to invest at 6 PM UTC. Max Investment $3K",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "BORG",
+            "tokenAmount": "1000",
+            "tokenMintAddress": "BD5EpsrZmPGK8DMMhu1DYAzKXEp5nMrTEyhSsWrjWKP1"
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "100",
+          "maxInvestment": "3000"
+        }
+      }
+    ],
+    "finalSnapshotTimestamp": "2024-12-10T16:30:00Z"
+  },
+  "saleData": {
+    "availableTokens": 12403,
+    "saleSucceeded": true,
+    "totalAmountRaised": 800402.5661,
+    "sellOutPercentage": 78,
+    "participantCount": 578,
+    "averageInvestedAmount": 1200.34
+  },
+  "rewards": {
+    "distributionType": "linear",
+    "description": "linearly paid-out over 6 months",
+    "payoutInterval": "monthly"
+  }
+}

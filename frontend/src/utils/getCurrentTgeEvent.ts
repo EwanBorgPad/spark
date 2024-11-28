@@ -1,26 +1,35 @@
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { isBefore } from "date-fns/isBefore"
 
-const preWhitelistStatus: ExpandedTimelineEventType = {
+const upcomingEventTemplate: ExpandedTimelineEventType = {
   label: "Registration not opened yet",
   id: "UPCOMING",
   idRank: 1,
   date: new Date(),
-  nextEventDate: new Date(),
+  nextEventDate: null,
+}
+
+const generateUpcomingEvent = (whitelistStartDate: Date | null) => {
+  const upcomingStatus = Object.assign(upcomingEventTemplate, { nextEventDate: whitelistStartDate })
+  return upcomingStatus
 }
 
 export const getCurrentTgeEvent = (timeline: ExpandedTimelineEventType[]) => {
   const currentMoment = new Date()
-  const status = timeline.find((event) => {
+  const activeEvent = timeline.find((event) => {
+    const hasEventStarted = event.date && !isBefore(currentMoment, event.date)
     const isEventFinished = event.date && isBefore(event.date, currentMoment)
+    if (!hasEventStarted) return false
     if (!isEventFinished) return false
     if (!event?.nextEventDate) return true
 
-    const isThisLastActivatedEvent = Boolean(
-      isBefore(new Date(), event.nextEventDate),
-    )
+    const isThisLastActivatedEvent = Boolean(isBefore(new Date(), event.nextEventDate))
     return isThisLastActivatedEvent
   })
-  if (!status) return preWhitelistStatus
-  return status
+  if (!activeEvent) {
+    const whitelistStartDate = timeline[0].date
+    const upcomingEvent = generateUpcomingEvent(whitelistStartDate)
+    return upcomingEvent
+  }
+  return activeEvent
 }

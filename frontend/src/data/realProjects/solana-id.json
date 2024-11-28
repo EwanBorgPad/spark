@@ -5,7 +5,7 @@
     "title": "Solana ID",
     "subtitle": "Solana's Digital Identity Layer",
     "logoUrl": "https://imgcdn.stablediffusionweb.com/2024/4/19/5acb9020-70dd-42c5-afca-3fe165e87d2c.jpg",
-    "thumbnailUrl": "",
+    "thumbnailUrl": "https://pub-4b018f06ec944a0693e0f9679cab6f5a.r2.dev/images/solana-id/solanaIdThumbnail-min.png",
     "origin": "The Trenches 🪖",
     "sector": "Digital Identity",
     "chain": {
@@ -49,11 +49,11 @@
 
     "launchedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
     "launchedTokenLpDistribution": 0,
-    "launchedTokenCap": 0,
+    "launchedTokenCap": 10000,
 
-    "raisedTokenMintAddress": "BNi33DZbWNj8N86eQj7jFKtUZzMSUCCSEV8oeEkuAgzL",
+    "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
     "raisedTokenMinCap": 0,
-    "raisedTokenMaxCap": 0,
+    "raisedTokenMaxCap": 10000,
 
     "cliffDuration": 0,
     "vestingDuration": 0,
@@ -65,7 +65,7 @@
         "ticker": "SOLID"
       },
       "fixedTokenPriceInUSD": 0.02,
-      "tokenGenerationEventDate": "Q4 2024",
+      "tokenGenerationEventDate": "16 Dec 2024",
       "fdv": 20000000,
       "liquidityPool": {
         "name": "Raydium",
@@ -91,29 +91,29 @@
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": null
+        "date": "2024-12-16"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": null
+        "date": "2024-12-17"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": null
+        "date": "2024-12-17"
       },
       {
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
-        "date": null
+        "date": "2025-05-17"
       }
     ],
     "tiers": [
       {
         "id": "tier10",
         "label": "Priority Pass Holders",
-        "description": "First access to invest with the highest maximum ticket size available",
+        "description": "First to access sale at 5 PM UTC. Max Investment $2K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -124,14 +124,32 @@
         ],
         "benefits": {
           "startDate": "2030-10-10",
-          "minInvestment": "0",
-          "maxInvestment": "0"
+          "minInvestment": "10",
+          "maxInvestment": "2000"
+        }
+      },
+      {
+        "id": "tier20",
+        "label": "Borgers Club",
+        "description": "Hold $BORG & qualify to invest at 6 PM UTC. Max Investment $2K",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "BORG",
+            "tokenAmount": "1000",
+            "tokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z"
+          }
+        ],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "10",
+          "maxInvestment": "2000"
         }
       },
       {
         "id": "tier30",
         "label": "Solidian Origins: Drip Collectors",
-        "description": "Invest after Tier 1, with a high maximum ticket size",
+        "description": "Access to sale at 7 PM UTC. Max Investment $1.5K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -142,83 +160,40 @@
         ],
         "benefits": {
           "startDate": "2030-10-10",
-          "minInvestment": "0",
-          "maxInvestment": "0"
+          "minInvestment": "10",
+          "maxInvestment": "1500"
         }
       },
       {
         "id": "tier40",
         "label": "SOLID Community Partners",
-        "description": "Access following Tiers 1 & 2, with a moderate maximum ticket size",
+        "description": "Access to sale at 7 PM UTC. Max Investment $1.5K",
+        "questsOperator": "OR",
         "quests": [
           {
             "type": "HOLD_TOKEN",
             "tokenName": "SMB Gen2",
             "tokenAmount": "1",
             "tokenMintAddress": "SMBtHCCC6RYRutFEPb4gZqeBLUZbMNhRKaMKZZLHi7W"
-          }
-        ],
-        "benefits": {
-          "startDate": "2030-10-10",
-          "minInvestment": "0",
-          "maxInvestment": "0"
-        }
-      },
-      {
-        "id": "tier41",
-        "label": "",
-        "quests": [
+          },
           {
             "type": "HOLD_TOKEN",
             "tokenName": "SMB Gen3",
             "tokenAmount": "1",
             "tokenMintAddress": "8Rt3Ayqth4DAiPnW9MDFi63TiQJHmohfTWLMQFHi4KZH"
-          }
-        ],
-        "benefits": {
-          "startDate": "2030-10-10",
-          "minInvestment": "0",
-          "maxInvestment": "0"
-        }
-      },
-      {
-        "id": "tier42",
-        "label": "",
-        "quests": [
+          },
           {
             "type": "HOLD_TOKEN",
             "tokenName": "Sensei Panda",
             "tokenAmount": "1",
             "tokenMintAddress": "GMoemLuVAksjvGph8dmujuqijWsodt7nJsvwoMph3uzj"
-          }
-        ],
-        "benefits": {
-          "startDate": "2030-10-10",
-          "minInvestment": "0",
-          "maxInvestment": "0"
-        }
-      },
-      {
-        "id": "tier43",
-        "label": "",
-        "quests": [
+          },
           {
             "type": "HOLD_TOKEN",
             "tokenName": "FlashTrade Beast",
             "tokenAmount": "1",
             "tokenMintAddress": "H4EQ8pcE7PQSQGG1WYW4hAA1nizU6ULYipHZcYk9b64u"
-          }
-        ],
-        "benefits": {
-          "startDate": "2030-10-10",
-          "minInvestment": "0",
-          "maxInvestment": "0"
-        }
-      },
-      {
-        "id": "tier44",
-        "label": "",
-        "quests": [
+          },
           {
             "type": "HOLD_TOKEN",
             "tokenName": "Herman",
@@ -228,14 +203,14 @@
         ],
         "benefits": {
           "startDate": "2030-10-10",
-          "minInvestment": "0",
-          "maxInvestment": "0"
+          "minInvestment": "10",
+          "maxInvestment": "1500"
         }
       },
       {
         "id": "tier45",
         "label": "Solana SuperTeams Member",
-        "description": "Access granted after Tiers 1-3, with a lower maximum ticket size",
+        "description": "Access to sale at 7 PM UTC. Max Investment $1.5K",
         "quests": [
           {
             "type": "WHITELIST"
@@ -243,12 +218,23 @@
         ],
         "benefits": {
           "startDate": "2030-10-10",
-          "minInvestment": "0",
-          "maxInvestment": "0"
+          "minInvestment": "10",
+          "maxInvestment": "1500"
+        }
+      },
+      {
+        "id": "tier99",
+        "label": "Public Sale",
+        "description": "Access to sale at 8 PM UTC. Max Investment $1K",
+        "quests": [],
+        "benefits": {
+          "startDate": "2030-10-10",
+          "minInvestment": "10",
+          "maxInvestment": "1000"
         }
       }
     ],
-    "finalSnapshotTimestamp": null
+    "finalSnapshotTimestamp": "2024-12-16T16:00:00Z"
   },
   "saleData": {
     "availableTokens": 12403,

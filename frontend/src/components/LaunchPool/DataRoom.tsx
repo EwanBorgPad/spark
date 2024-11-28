@@ -2,15 +2,20 @@ import { useProjectDataContext } from "@/hooks/useProjectData"
 import React from "react"
 import { useTranslation } from "react-i18next"
 import { Icon } from "@/components/Icon/Icon"
+import { twMerge } from "tailwind-merge"
 
-const DataRoom = () => {
+type Props = {
+  className?: string
+}
+
+const DataRoom = ({ className }: Props) => {
   const { t } = useTranslation()
   const {
     projectData: { info },
   } = useProjectDataContext()
 
   return (
-    <section className="group w-full lg:max-w-[792px]">
+    <section className={twMerge("group w-full lg:max-w-[792px]", className)}>
       <a className="data-room w-full" target="_blank" rel="noreferrer" href={info.dataRoom.url}>
         {/* @TODO - background image */}
         {/* <Img

@@ -3,7 +3,7 @@ import { and, eq } from "drizzle-orm"
 
 import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } from "../../shared/eligibilityModel"
 import { followerTable, projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
-import { isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
+import { getTokenHoldingsMap, isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
 
 /**
  * List of mandatory compliances.
@@ -50,7 +50,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     .get()
 
   if (!user) user = {
-    wallet_address: address,
+    address,
     json: {}
   }
 
@@ -88,7 +88,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     }
   }
 
-  const collections = project.json.info.tiers
+  const collections: string[] = project.json.info.tiers
     .map(tier => tier.quests)
     .flat()
     .filter(quest => quest.type === 'HOLD_TOKEN')
@@ -100,7 +100,13 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     collections,
   })
 
+  const fungibles = await getTokenHoldingsMap({
+    rpcUrl,
+    ownerAddress: address,
+  })
+
   const tiersWithCompletion: TierWithCompletion[] = []
+  if (!project) throw new Error(`EligibilityService: Project (id=?) not found!`)
   for (const tier of project.json.info.tiers) {
     const tierQuestsWithCompletion: QuestWithCompletion[] = []
 
@@ -125,9 +131,18 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
           isCompleted: isFollower,
         })
       } else if (quest.type === 'HOLD_TOKEN') {
-        const isOwner = collectionMap[quest.tokenMintAddress]
+        const holdTokenType = collectionMap[quest.tokenMintAddress]
+          ? 'collection'
+          : fungibles[quest.tokenMintAddress]
+            ? 'fungible'
+            : 'unknown'
+        const isOwner = collectionMap[quest.tokenMintAddress] // >= Number(quest.tokenAmount)
+          || (fungibles[quest.tokenMintAddress]?.uiAmount ?? 0) >= Number(quest.tokenAmount)
+
         tierQuestsWithCompletion.push({
           ...quest,
+          holdTokenType,
+          holdingAmount: fungibles[quest.tokenMintAddress]?.uiAmount ?? 0,
           isCompleted: isOwner,
         })
       } else if (quest.type === 'WHITELIST') {
@@ -141,7 +156,10 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
       }
     }
 
-    const isTierCompleted = tierQuestsWithCompletion.every(quest => quest.isCompleted)
+    const questsOperator = tier.questsOperator || 'AND'
+    const method = questsOperator === 'OR' ? 'some' : 'every'
+
+    const isTierCompleted = tierQuestsWithCompletion[method](quest => quest.isCompleted)
     tiersWithCompletion.push({
       ...tier,
       quests: tierQuestsWithCompletion,
@@ -165,18 +183,22 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     // silently fail if tier is not found
     : null
 
+  // mark whitelisted tier and all its quests as completed
+  for (const tier of tiersWithCompletion) {
+    if (whitelistTierId === tier.id) {
+      tier.isCompleted = true
+      tier.quests.forEach(quest => quest.isCompleted = true)
+    }
+  }
+
   const isCompliant = compliancesWithCompletion
     .filter(quest => !quest.isOptional)
     .every(quest => quest.isCompleted)
 
-  // user must be compliant to be eligible
+  // user must be compliant in order to be eligible
   const eligibilityTier = isCompliant
-    // if user is manually whitelisted
-    ? whitelistedTier
-      // load the whitelisted tier
-      ? whitelistedTier
-      // else, check if they have tiered by completing quests
-      : (tiersWithCompletion.find(tier => tier.isCompleted) ?? null)
+    // find the best completed tier
+    ? (tiersWithCompletion.find(tier => tier.isCompleted) ?? null)
     : null
   const isEligible = Boolean(eligibilityTier)
 

@@ -8,7 +8,7 @@ const findProjectById = async ({ db, id }: FindProjectByIdArgs): Promise<Project
   const project = await db
     .prepare("SELECT * FROM project WHERE id = ?1")
     .bind(id)
-    .first<{ id: string; json: ProjectModel}>()
+    .first<{ id: string; json: ProjectModel }>()
   return project ? (JSON.parse(project.json) as ProjectModel) : null
 }
 const findProjectByIdOrFail = async (args: FindProjectByIdArgs): Promise<ProjectModel> => {

@@ -9,7 +9,7 @@ import {
 } from "../../shared/models.ts"
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api"
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? `${window.location.origin}/api`
 const GET_ELIGIBILITY_STATUS_API = API_BASE_URL + "/eligibilitystatus"
 const POST_ACCEPT_TERMS_OF_USE_API = API_BASE_URL + "/acceptterms"
 const POST_INVESTMENT_INTENT_API = API_BASE_URL + "/investmentintent"
@@ -18,7 +18,10 @@ const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
 const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
+const USER_DEPOSIT_URL = API_BASE_URL + "/userdeposit"
 const GET_INVESTMENT_INTENT_SUMMARY_URL = API_BASE_URL + "/investmentintentsummary"
+const GET_DEPOSITS_URL = API_BASE_URL + "/deposits"
+export const BACKEND_RPC_URL = API_BASE_URL + "/rpcproxy"
 
 type GetEligibilityStatusArgs = {
   address: string
@@ -26,6 +29,31 @@ type GetEligibilityStatusArgs = {
 }
 const getEligibilityStatus = async ({ address, projectId, }: GetEligibilityStatusArgs): Promise<EligibilityStatus> => {
   const url = new URL(GET_ELIGIBILITY_STATUS_API, window.location.href)
+  url.searchParams.set("address", address)
+  url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json
+}
+type GetDepositsRequest = {
+  address: string
+  projectId: string
+}
+type GetDepositsResponse = {
+  deposits: {
+    transactionId: string
+    createdAt: string
+    amountDeposited: string
+    tokenAddress: string
+    uiAmount: string
+    decimalMultiplier: string
+    transactionUrl: string
+  }[]
+}
+const getDeposits = async ({ address, projectId, }: GetDepositsRequest): Promise<GetDepositsResponse> => {
+  const url = new URL(GET_DEPOSITS_URL, window.location.href)
   url.searchParams.set("address", address)
   url.searchParams.set("projectId", projectId)
 
@@ -47,6 +75,10 @@ const getInvestmentIntentSummary = async ({
   const json = await response.json()
 
   return json
+}
+export type PostUserDepositRequest = {
+  transaction: string,
+  projectId: string
 }
 type AcceptTermsOfUseArgs = AcceptTermsRequest
 const postAcceptTermsOfUse = async (args: AcceptTermsOfUseArgs) => {
@@ -117,13 +149,7 @@ const getProjects = async ({
 
   const response = await fetch(url)
   const json = await response.json()
-
   return json
-  // try {
-  // } catch (e) {
-  //   console.error("GET /projects validation error!")
-  //   throw e
-  // }
 }
 
 export type CreateProjectRequest = {
@@ -207,7 +233,29 @@ const uploadFileToBucket = async ({
   })
 }
 
+const postUserDeposit = async ({
+  projectId, transaction
+}: PostUserDepositRequest): Promise<any> => {
+  const url = new URL(USER_DEPOSIT_URL, window.location.href)
+  const requestObject = {
+    projectId,
+    transaction
+  }
+  const request = JSON.stringify(requestObject)
+  const response = await fetch(url, {
+    method: "POST",
+    body: request,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
 export const backendApi = {
+  postUserDeposit,
   getProject,
   getProjects,
   getExchange,
@@ -219,4 +267,5 @@ export const backendApi = {
   uploadFileToBucket,
   getEligibilityStatus,
   getInvestmentIntentSummary,
+  getDeposits,
 }

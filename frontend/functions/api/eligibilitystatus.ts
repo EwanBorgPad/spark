@@ -4,6 +4,7 @@ import { drizzle } from "drizzle-orm/d1"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { EligibilityService } from "../services/eligibilityService"
 import { projectTable } from "../../shared/drizzle-schema"
+import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 
 type ENV = {
   DB: D1Database
@@ -39,33 +40,13 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     })
 
     const retval = {
-      ...eligibilityStatus,
       cluster,
+      ...eligibilityStatus,
     }
 
     return jsonResponse(retval, 200)
   } catch (e) {
     await reportError(ctx.env.DB, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
-  }
-}
-
-/**
- * Very bad function to fix the day -- adjust the
- * TODO @clusterSeparation(dev/test/main)
- * @param rpcUrl
- * @param cluster
- */
-function getRpcUrlForCluster(rpcUrl: string, cluster: 'mainnet' | 'devnet'): string {
-  if (cluster === 'mainnet') {
-    return rpcUrl
-      .replace('devnet', 'mainnet')
-      .replace('testnet', 'mainnet')
-  } else if (cluster === 'devnet') {
-    return rpcUrl
-      .replace('mainnet', 'devnet')
-      .replace('testnet', 'devnet')
-  } else {
-    throw new Error(`Unknown cluster=${cluster}!`)
   }
 }

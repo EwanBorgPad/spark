@@ -8,6 +8,9 @@ import {
 import { usePersistedState } from "@/hooks/usePersistedState.ts"
 import { isMobile } from "@/utils/isMobile.ts"
 import { useSearchParams } from "react-router-dom"
+import { PublicKey, Transaction } from "@solana/web3.js"
+import { getTransactionToSend } from "@/utils/solanaFunctions"
+import { toast } from "react-toastify"
 
 const AUTO_CONNECT_PARAM_KEY = "autoConnect"
 const PAGE_URL = window.location.origin
@@ -31,6 +34,7 @@ type Context = {
   signOut: () => void
   truncatedAddress: string
   signMessage: (message: string) => Promise<Uint8Array>
+  signTransaction: (payload: signTransactionArgs) => Promise<string>
 }
 
 const WalletContext = createContext<Context | undefined>(undefined)
@@ -47,13 +51,24 @@ export function useWalletContext() {
  * e.g. window.phantom.solana or window.backpack or window.solflare
  * Typing not complete.
  */
-type Provider = {
+export type Provider = {
+
   signIn: (args: { domain: string }) => Promise<{
     address: { toString(): string }
   }>
   connect: () => Promise<{
     publicKey: { toString(): string }
   }>
+  signTransaction: (transacton: Transaction) => Promise<Transaction>
+  publicKey: PublicKey
+  isConnected: boolean
+}
+
+export type signTransactionArgs = {
+  walletType: SupportedWallet,
+  tokenAmount: number,
+  rpcUrl: string,
+  tokenMintAddress: PublicKey
 }
 
 type SignInWithArgs = {
@@ -210,6 +225,41 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  async function signTransaction({ walletType, tokenAmount, rpcUrl, tokenMintAddress }: signTransactionArgs) {
+    let provider
+    try {
+      if (walletType === 'BACKPACK') {
+        // @ts-ignore-next-line
+        provider = window?.backpack
+        if (!provider.isConnected) {
+          toast("Wallet session timed out, please sign in again")
+          await signInWithBackpack()
+        }
+      } else if (walletType === 'PHANTOM') {
+        // @ts-ignore-next-line
+        provider = window?.phantom.solana
+        if (!provider.isConnected) {
+          toast("Wallet session timed out, please sign in again")
+          await signInWithPhantom()
+        }
+      } else if (walletType === 'SOLFLARE') {
+        // @ts-ignore-next-line
+        provider = window?.solflare
+        if (!provider.isConnected) {
+          toast("Wallet session timed out, please sign in again")
+          await signInWithSolflare()
+        }
+      }
+      if (!provider) throw new Error('Provider not found!')
+      const txToSend = await getTransactionToSend(tokenAmount, provider, rpcUrl, tokenMintAddress)
+
+      return txToSend
+    } catch (error) {
+      console.error(error)
+      return "noTransaction"
+    }
+  }
+
   async function signOut() {
     setAddress("")
     setWalletState("NOT_CONNECTED")
@@ -251,6 +301,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         signOut,
         truncatedAddress,
         signMessage,
+        signTransaction,
       }}
     >
       {children}

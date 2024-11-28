@@ -8,15 +8,16 @@ import RegistrationOpensPhase from "./TGEStatus/RegistrationOpensPhase.tsx"
 import SaleOver from "./TGEStatus/SaleOver"
 import LiveNow from "./TGEStatus/LiveNow"
 import DistributionOver from "./TGEStatus/DistributionOver"
+import Upcoming from "./TGEStatus/Upcoming.tsx"
 
 type Props = {
   expandedTimeline: ExpandedTimelineEventType[]
 }
 
 const TokenGenerationSection = ({ expandedTimeline }: Props) => {
-  const { t } = useTranslation()
-  const [currentTgeEvent, setCurrentTgeEvent] =
-    useState<ExpandedTimelineEventType>(getCurrentTgeEvent(expandedTimeline))
+  const [currentTgeEvent, setCurrentTgeEvent] = useState<ExpandedTimelineEventType>(
+    getCurrentTgeEvent(expandedTimeline),
+  )
 
   const updateTgeStatus = useCallback(() => {
     const newTgeStatus = getCurrentTgeEvent(expandedTimeline)
@@ -30,29 +31,26 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
   const renderComponent = (tgeEvent: ExpandedTimelineEventType) => {
     switch (tgeEvent.id) {
       case "UPCOMING":
-        return <span>{t("tge.not_opened_yet")}</span>
+        return <Upcoming timeline={expandedTimeline} />
       case "REGISTRATION_OPENS":
-        return <RegistrationOpensPhase eventData={currentTgeEvent} />
+        return <RegistrationOpensPhase eventData={currentTgeEvent} timeline={expandedTimeline} />
       case "SALE_OPENS":
-        return <LiveNow eventData={tgeEvent} />
+        return <LiveNow eventData={tgeEvent} timeline={expandedTimeline} />
       case "SALE_CLOSES":
       case "REWARD_DISTRIBUTION":
-        return <SaleOver eventData={tgeEvent} />
+        return <SaleOver eventData={tgeEvent} timeline={expandedTimeline} />
       case "DISTRIBUTION_OVER":
-        return <DistributionOver eventData={tgeEvent} />
+        return <DistributionOver eventData={tgeEvent} timeline={expandedTimeline} />
     }
   }
 
   return (
-    <section className="flex w-full flex-col items-center">
+    <div className="flex w-full flex-col items-center">
       {currentTgeEvent.nextEventDate && (
-        <CountDownCallback
-          endOfEvent={currentTgeEvent.nextEventDate}
-          callbackWhenTimeExpires={updateTgeStatus}
-        />
+        <CountDownCallback endOfEvent={currentTgeEvent.nextEventDate} callbackWhenTimeExpires={updateTgeStatus} />
       )}
       {renderComponent(currentTgeEvent)}
-    </section>
+    </div>
   )
 }
 

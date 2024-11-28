@@ -17,6 +17,7 @@ import Text from "@/components/Text.tsx"
 import SimpleLoader from "../Loaders/SimpleLoader.tsx"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import EnterReferralCode from "./EnterReferralCode.tsx"
+import { FinalSnapshotTaken } from "@/components/EligibilitySection/FinalSnapshotTaken.tsx"
 
 export const EligibilityTiersSection = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
@@ -70,6 +71,7 @@ export const EligibilityTiersSection = ({ className }: { className?: string }) =
           <TierSkeletonContainer />
         )}
       </div>
+      <FinalSnapshotTaken className='mt-2' />
     </section>
   )
 }
@@ -150,7 +152,7 @@ const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
         }),
         description: "",
         // TODO @productionPush
-        // additionalElement: <HoldTokenBtn tokenName={quest.tokenName} />,
+        additionalElement: quest.tokenName === 'BORG' ? <HoldTokenBtn tokenName={quest.tokenName} /> : <></>,
       }
     if (type === "WHITELIST")
       return {
@@ -190,16 +192,19 @@ const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
 const HoldTokenBtn = ({ tokenName }: { tokenName: string }) => {
   const { t } = useTranslation()
 
+  const swapLink = `https://jup.ag/swap/SOL-${tokenName}`
+
   return (
     <div className="mt-2 flex justify-start">
-      <Button
-        color="secondary"
-        size="xs"
-        className="rounded-lg px-3"
-        onClick={() => console.log("HoldBorgInAmount")}
-      >
-        {t("buy")} {tokenName}
-      </Button>
+      <a href={swapLink} target='_blank' rel="noopener noreferrer">
+        <Button
+          color="secondary"
+          size="xs"
+          className="rounded-lg px-3"
+        >
+          {t("buy")} {tokenName}
+        </Button>
+      </a>
     </div>
   )
 }

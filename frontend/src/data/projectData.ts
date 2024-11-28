@@ -62,6 +62,7 @@ export const dummyData: ProjectModel = {
         label: "",
       },
     ],
+    lpPositionToBeBurned: true,
     totalTokensForSale: 12500000,
     totalTokensForRewardDistribution: 9375000,
 
@@ -95,8 +96,7 @@ export const dummyData: ProjectModel = {
         unlockDate: addMonths(addDays(currentMoment, -2), 12),
         url: "#",
       },
-      tweetUrl:
-        "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
+      tweetUrl: "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134",
     },
     dataRoom: {
       backgroundImgUrl: "",
