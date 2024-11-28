@@ -131,13 +131,14 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: 'User is not eligible!' }, 409)
     }
 
-    if ((depositAmount + userTotalDepositAmount) < minInvestmentPerUser) {
-      return jsonResponse({ message: `Investment amount (${depositAmount}) is less than the minimum amount for your eligibility tier (${minInvestmentPerUser})`}, 409)
-    }
-
-    if ((depositAmount + userTotalDepositAmount) > maxInvestmentPerUser) {
-      return jsonResponse({ message: `Investment amount (${depositAmount}) is more than the maximum amount for your eligibility tier (${maxInvestmentPerUser})`}, 409)
-    }
+    // commented out for testing on mainnet so that we don't waste real money
+    // if ((depositAmount + userTotalDepositAmount) < minInvestmentPerUser) {
+    //   return jsonResponse({ message: `Investment amount (${depositAmount}) is less than the minimum amount for your eligibility tier (${minInvestmentPerUser})`}, 409)
+    // }
+    //
+    // if ((depositAmount + userTotalDepositAmount) > maxInvestmentPerUser) {
+    //   return jsonResponse({ message: `Investment amount (${depositAmount}) is more than the maximum amount for your eligibility tier (${maxInvestmentPerUser})`}, 409)
+    // }
 
     if (totalAmount > projectTokenLimit) {
       return jsonResponse({ message: `The total investment amount exceeds the project token cap!` }, 409)

@@ -13,14 +13,22 @@ type RpcSearchAssetsResponse = {
     ownership: {
       owner: string
     }
+
+    token_info: {
+      balance: number
+      supply: number
+      decimals: number
+    }
   }[]
 }
 type RpcSearchAssetsArgs = {
   rpcUrl: string
+  limit?: number
+  page?: number
+
   ownerAddress: string
-  collections: string[]
-  limit: number
-  page: number
+  collections?: string[]
+  tokenType?: 'fungible'
 }
 /**
  * Docs: https://docs.helius.dev/compression-and-das-api/digital-asset-standard-das-api/search-assets
@@ -29,7 +37,13 @@ type RpcSearchAssetsArgs = {
  * @param limit
  * @param page
  */
-export async function rpcSearchAssets({ rpcUrl, ownerAddress, collections, limit, page }: RpcSearchAssetsArgs): Promise<RpcSearchAssetsResponse> {
+export async function rpcSearchAssets({
+                                        rpcUrl, limit, page,
+                                        ownerAddress, collections, tokenType,
+                                      }: RpcSearchAssetsArgs): Promise<RpcSearchAssetsResponse> {
+  limit ??= 1000
+  page ??= 1
+
   if (limit < 1 || limit > 1000) {
     throw new Error('Limit must be between 1 and 1000')
   }
@@ -48,6 +62,7 @@ export async function rpcSearchAssets({ rpcUrl, ownerAddress, collections, limit
         collections,
         limit,
         page,
+        tokenType,
       },
     }),
   })
@@ -96,4 +111,39 @@ export async function isHoldingNftFromCollections({ rpcUrl, ownerAddress, collec
   }
 
   return retval
+}
+
+type GetTokenHoldingsArgs = {
+  rpcUrl: string
+  ownerAddress: string
+}
+type GetTokenHoldingsRes = Record<string, {
+  amount: number
+  decimals: number
+  uiAmount: number
+}>
+export async function getTokenHoldingsMap({ rpcUrl, ownerAddress }: GetTokenHoldingsArgs): Promise<GetTokenHoldingsRes> {
+  const response = await rpcSearchAssets({
+    rpcUrl,
+    ownerAddress,
+    tokenType: 'fungible',
+    // hardcoding pagination, assuming no one will check for ownership of 1k+ tokens at a time
+    limit: 1000,
+    page: 1,
+  })
+
+  const tokens = response.items
+    .map(item => ({
+      id: item.id,
+      amount: item.token_info.balance ?? 0,
+      decimals: item.token_info.decimals,
+      uiAmount: item.token_info.balance
+        ? (item.token_info.balance / (10 ** item.token_info.decimals))
+        : 0,
+    }))
+
+  return tokens.reduce((acc, curr) => {
+    acc[curr.id] = curr
+    return acc
+  }, {} as GetTokenHoldingsRes)
 }

@@ -13,6 +13,7 @@ type Props = {
   imgClassName?: string
   role?: string
   alt?: string
+  isRounded?: boolean
 }
 
 const avatarSize: Record<ImgSizes, string> = {
@@ -24,11 +25,12 @@ const avatarSize: Record<ImgSizes, string> = {
   custom: "",
 }
 
-const ImgSkeletonLoader = () => {
+const ImgSkeletonLoader = ({ isRounded }: { isRounded: boolean }) => {
   return (
     <div
       className={twMerge(
-        "h-full w-full shrink-0 animate-pulse overflow-hidden rounded-full bg-white/20",
+        "h-full w-full shrink-0 animate-pulse overflow-hidden bg-white/20",
+        isRounded && "rounded-full",
       )}
     >
       <div className="h-full w-full animate-slide-skeleton bg-gradient-to-r from-white/0 via-white/40 to-white/0"></div>
@@ -45,6 +47,7 @@ const Img = ({
   showFallback = true,
   role = "presentation",
   isFetchingLink = false,
+  isRounded = false,
 }: Props) => {
   const [isLoadingImg, setIsLoadingImg] = useState(true)
   const [renderFallback, setRenderFallback] = useState(false)
@@ -62,18 +65,19 @@ const Img = ({
 
   const renderImage = !isLoadingImg && !isFetchingLink
 
-  const crossOrigin = src?.startsWith('https://drive.google.com') ? 'anonymous' : undefined
+  const crossOrigin = src?.startsWith("https://drive.google.com") ? "anonymous" : undefined
 
   return (
     <div
       className={twMerge(
-        "shrink-0 overflow-hidden rounded-full ",
+        "shrink-0 overflow-hidden",
         isLoadingImg && "bg-white/20",
+        isRounded && "rounded-full",
         avatarSize[size],
         customClass,
       )}
     >
-      {(isLoadingImg || isFetchingLink) && <ImgSkeletonLoader />}
+      {(isLoadingImg || isFetchingLink) && <ImgSkeletonLoader isRounded={isRounded} />}
       <img
         alt={alt}
         role={role}
@@ -81,12 +85,7 @@ const Img = ({
         onLoad={() => setIsLoadingImg(false)}
         crossOrigin={crossOrigin}
         onError={onError}
-        className={twMerge(
-          "h-full w-full object-cover",
-          !renderImage ? "hidden" : "",
-          avatarSize[size],
-          imgClassName,
-        )}
+        className={twMerge("h-full w-full object-cover", !renderImage ? "hidden" : "", avatarSize[size], imgClassName)}
       />
     </div>
   )

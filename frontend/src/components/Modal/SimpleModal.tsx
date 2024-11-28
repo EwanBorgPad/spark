@@ -1,5 +1,5 @@
 import { twMerge } from "tailwind-merge"
-import { ReactNode, useEffect, useRef } from "react"
+import { ReactNode, useCallback, useEffect, useRef } from "react"
 import { Portal } from "@/components/Portal/Portal"
 import { Button } from "../Button/Button"
 import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
@@ -16,23 +16,31 @@ export function SimpleModal({ children, showCloseBtn, onClose, className, header
   const modalRef = useRef<HTMLDivElement | null>(null)
   const backdropRef = useRef<HTMLDivElement | null>(null)
 
-  const closeModalCallback = () => {
+  const closeModalCallback = useCallback(() => {
     modalRef.current?.classList.add("animate-fade-out")
     backdropRef.current?.classList.add("animate-fade-out")
     setTimeout(() => {
       onClose?.()
     }, 300)
-  }
+  }, [onClose])
 
   useCheckOutsideClick(modalRef, () => closeModalCallback())
 
   useEffect(() => {
     document.body.style.overflow = "hidden" // disable document's scroll if modal is active
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeModalCallback()
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
 
     return () => {
       document.body.style.overflow = ""
+      document.removeEventListener("keydown", handleKeyDown)
     }
-  }, [])
+  }, [closeModalCallback])
 
   return (
     <Portal id="simple-modal">

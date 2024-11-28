@@ -18,25 +18,19 @@ const SaleProgress = () => {
   )
 
   return (
-    <div className="flex w-full max-w-[432px] flex-col px-4">
+    <div className="flex w-full max-w-[432px] flex-col">
       <div className="flex w-full flex-col gap-3 rounded-xl bg-secondary px-4 py-3">
         <div className="flex w-full items-center justify-between gap-4">
           <span className="text-base">{t("lp_sale_progress")}</span>
           <div className="flex flex-col items-end">
             <span className="text-sm text-fg-tertiary">
-              {saleData?.availableTokens &&
-                `${getRatioPercentage(saleData.availableTokens, info.totalTokensForSale)}%`}
+              {saleData?.availableTokens && `${getRatioPercentage(saleData.availableTokens, info.totalTokensForSale)}%`}
             </span>
-            <span className="text-base text-fg-primary">
-              {`${availableTokensFormatted}/${totalTokensFormatted}`}
-            </span>
+            <span className="text-base text-fg-primary">{`${availableTokensFormatted}/${totalTokensFormatted}`}</span>
           </div>
         </div>
         {saleData?.availableTokens && (
-          <ProgressBar
-            fulfilledAmount={saleData?.availableTokens}
-            totalAmount={info.totalTokensForSale}
-          />
+          <ProgressBar fulfilledAmount={saleData?.availableTokens} totalAmount={info.totalTokensForSale} />
         )}
       </div>
     </div>
