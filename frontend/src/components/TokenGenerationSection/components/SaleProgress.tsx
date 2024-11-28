@@ -10,11 +10,7 @@ const SaleProgress = () => {
     projectData: { info, saleData },
   } = useProjectDataContext()
 
-  const availableTokensFormatted = formatCurrencyAmount(
-    saleData?.availableTokens ?? 0,
-    false,
-    2,
-  )
+  const availableTokensFormatted = formatCurrencyAmount(saleData?.availableTokens ?? 0, false)
   const totalTokensFormatted = formatCurrencyAmount(
     info.totalTokensForSale,
     false,

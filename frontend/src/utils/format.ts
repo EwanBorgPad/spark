@@ -4,13 +4,24 @@ export const getRatioPercentage = (filled: number, total: number) => {
 export const formatCurrencyAmount = (
   amount: number | undefined,
   withSymbol: boolean = true,
-  decimals: number = 2,
+  customDecimals?: number,
 ) => {
   if (!amount) return undefined
+  let decimals: number
+
+  if (customDecimals === 0 || !!customDecimals) {
+    decimals = customDecimals
+  } else {
+    const decimalPart = amount.toString().split(".")[1] || ""
+    const leadingZeroes = decimalPart.match(/^0+/)?.[0]?.length || 0
+    decimals = Math.min(3 + leadingZeroes, 12) // Prevent too large decimals
+  }
+
   const value = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     currencyDisplay: "narrowSymbol",
+    minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   }).format(amount)
   if (!withSymbol) return value.substring(1)
