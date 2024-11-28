@@ -71,7 +71,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const { data: balance } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
-      return  getSplTokenBalance({
+      return getSplTokenBalance({
         address,
         tokenAddress: projectData.info.raisedTokenMintAddress,
         rpcUrl,
@@ -99,11 +99,9 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
       }),
     queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
-  const borgPriceInUsd = exchangeData?.currentPrice || null
+  const borgPriceInUSD = exchangeData?.currentPrice || null
   const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
-  const tokenPriceInBORG = !borgPriceInUsd
-    ? null
-    : tokenPriceInUSD / borgPriceInUsd
+  const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
   const {
     handleSubmit,
@@ -115,21 +113,21 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
-      const tokenAmount = parseFloat(data.borgInputValue.replace(',', ''))
+      const tokenAmount = parseFloat(data.borgInputValue.replace(",", ""))
       if (walletProvider === "") throw new Error("No wallet provider!")
-      if (walletState === 'CONNECTED') {
+      if (walletState === "CONNECTED") {
         const transaction = await signTransaction({
           rpcUrl,
           tokenAmount,
           tokenMintAddress: new PublicKey(tokenMintAddress),
-          walletType: walletProvider
+          walletType: walletProvider,
         })
         userDepositFunction({
           projectId: projectId ?? "",
-          transaction
+          transaction,
         })
       } else {
-          toast.error("Wallet error. Please try again or contact our support.")
+        toast.error("Wallet error. Please try again or contact our support.")
       }
     } catch (error) {
       console.log(error)
@@ -138,8 +136,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
     if (!balance) return
-    const floatValue =
-      (balancePercentage / 100) * Number(balance.uiAmountString)
+    const floatValue = (balancePercentage / 100) * Number(balance.uiAmountString)
     setValue("borgInputValue", floatValue.toString(), {
       shouldValidate: true,
       shouldDirty: true,
@@ -220,7 +217,11 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
         <div className="border-t-none relative mb-4 flex w-full max-w-[400px] flex-col items-center gap-2 rounded-b-2xl border border-t-0 border-bd-primary bg-secondary px-2 pb-2 pt-3">
           <span className="w-full pl-1 text-left text-xs opacity-50">{t("tge.to_receive")}</span>
 
-          <TokenRewards borgCoinInput={borgCoinInput} isWhitelistingEvent={false} tokenPriceInBORG={tokenPriceInBORG} />
+          <TokenRewards
+            borgCoinInput={borgCoinInput}
+            tokenPriceInBORG={tokenPriceInBORG}
+            borgPriceInUSD={borgPriceInUSD}
+          />
         </div>
         <div className="flex w-full flex-col items-center gap-4">
           {walletState === "CONNECTED" ? (
@@ -233,13 +234,8 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                 isLoading={isPending}
                 className={"w-full"}
               />
-              <a className='w-full' href='https://jup.ag/swap/SOL-BORG' target='_blank' rel='noopener noreferrer'>
-                <Button
-                  size="md"
-                  color="secondary"
-                  btnText="Buy $BORG"
-                  className="w-full py-2"
-                />
+              <a className="w-full" href="https://jup.ag/swap/SOL-BORG" target="_blank" rel="noopener noreferrer">
+                <Button size="md" color="secondary" btnText="Buy $BORG" className="w-full py-2" />
               </a>
             </>
           ) : (

@@ -12,7 +12,8 @@
       "name": "Solana",
       "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
     },
-    "totalTokensForSale": 0,
+    "lpPositionToBeBurned": true,
+    "totalTokensForSale": 487500000,
     "totalTokensForRewardDistribution": 780000000,
     "curator": {
       "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
