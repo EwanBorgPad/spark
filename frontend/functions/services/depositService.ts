@@ -1,13 +1,18 @@
 type CreateUserDepositArgs = {
-    db: D1Database,
-    amount: string,
-    walletAddress: string,
-    projectId: string,
-    lbpAddress: string,
-    txId: string,
-    tokenAddress: string,
-    tierId: string,
+    db: D1Database
+    amount: string
+    walletAddress: string
+    projectId: string
+    lbpAddress: string
+    txId: string
+    tokenAddress: string
+    tierId: string
     nftAddress: string
+    json: {
+        cluster: string
+        uiAmount: string
+        decimalMultiplier: string
+    }
 }
 
 type GetUsersDepositedAmountArgs = {
@@ -21,11 +26,12 @@ type GetProjectsDepositedAmountArgs = {
     projectId: string
 }
 
-const createUserDeposit = async ({ db, amount, projectId, walletAddress, lbpAddress, tokenAddress, txId, tierId, nftAddress }: CreateUserDepositArgs) => {
+const createUserDeposit = async ({ db, amount, projectId, walletAddress, lbpAddress, tokenAddress, txId, tierId, nftAddress, json }: CreateUserDepositArgs) => {
     const now = new Date(Date.now()).getTime()
+    const jsonString = JSON.stringify(json)
     await db
-    .prepare("INSERT INTO deposit (from_address, to_address, amount_deposited, project_id, token_address, transaction_id, tier_id, nft_address, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9);")
-    .bind(walletAddress, lbpAddress, amount, projectId, tokenAddress, txId, tierId, nftAddress, now)
+    .prepare("INSERT INTO deposit (from_address, to_address, amount_deposited, project_id, token_address, transaction_id, tier_id, nft_address, created_at, json) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10);")
+    .bind(walletAddress, lbpAddress, amount, projectId, tokenAddress, txId, tierId, nftAddress, now, jsonString)
     .run()
 }
 

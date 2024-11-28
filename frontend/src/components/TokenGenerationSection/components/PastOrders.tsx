@@ -61,13 +61,12 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
         return (
           <PastOrder
             key={deposit.transactionId}
-            transactionId={deposit.transactionId}
+            transactionUrl={deposit.transactionUrl}
             numberOfPastOrders={depositsCount}
             createdAt={new Date(deposit.createdAt)}
-            amountDeposited={deposit.amountDeposited}
+            uiAmount={deposit.uiAmount}
             index={index}
             raisedTokenPriceInUsd={raisedTokenPriceInUsd}
-            // borgPriceInUSD={borgPriceInUSD}
           />
         )
       })}
@@ -76,29 +75,22 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
 }
 
 type PastOrderProps = {
-  transactionId: string
+  transactionUrl: string
   createdAt: Date
   numberOfPastOrders: number
   index: number
-  amountDeposited: string
+  uiAmount: string
   raisedTokenPriceInUsd: number
 }
 export const PastOrder = ({
-  transactionId,
+  transactionUrl,
   createdAt,
   numberOfPastOrders,
   index,
-  amountDeposited,
+  uiAmount,
   raisedTokenPriceInUsd,
 }: PastOrderProps) => {
-  // TODO @hardcoded
-  const cluster = 'devnet'
-  // TODO @hardcoded
-  const raisedTokenDecimals = 6
-
-  const normalizedAmountDeposited = Number(amountDeposited) / 10 ** raisedTokenDecimals
-  const borgValueInUsd = formatCurrencyAmount(raisedTokenPriceInUsd * normalizedAmountDeposited)
-  const transactionUrl = `https://explorer.solana.com/tx/${transactionId}?cluster=${cluster}`
+  const borgValueInUsd = formatCurrencyAmount(raisedTokenPriceInUsd * Number(uiAmount))
 
   return (
     <div
@@ -109,7 +101,7 @@ export const PastOrder = ({
     >
       <div className="flex w-full items-center justify-between gap-1">
         <div className="flex items-center gap-1">
-          <span className="text-base font-medium">{normalizedAmountDeposited}</span>
+          <span className="text-base font-medium">{uiAmount}</span>
           <span>BORG</span>
           <Icon icon="SvgBorgCoin" className="text-xl" />
         </div>
