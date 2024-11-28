@@ -17,6 +17,7 @@ import Text from "@/components/Text.tsx"
 import SimpleLoader from "../Loaders/SimpleLoader.tsx"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import EnterReferralCode from "./EnterReferralCode.tsx"
+import { FinalSnapshotTaken } from "@/components/EligibilitySection/FinalSnapshotTaken.tsx"
 
 export const EligibilityTiersSection = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
@@ -70,6 +71,7 @@ export const EligibilityTiersSection = ({ className }: { className?: string }) =
           <TierSkeletonContainer />
         )}
       </div>
+      <FinalSnapshotTaken className='mt-2' />
     </section>
   )
 }

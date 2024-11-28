@@ -4,13 +4,16 @@ import React from "react"
 import { useTranslation } from "react-i18next"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
-export const FinalSnapshotTaken = () => {
+type Props = {
+  className?: string
+}
+export const FinalSnapshotTaken = ({ className }: Props) => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
   const timestamp = projectData.info.finalSnapshotTimestamp
 
   return (
-    <section>
+    <section className={className}>
       <div className="flex w-full flex-wrap items-center justify-center gap-1">
         <Icon
           icon="SvgSnapshot"
