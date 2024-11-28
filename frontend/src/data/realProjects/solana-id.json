@@ -65,7 +65,7 @@
         "ticker": "SOLID"
       },
       "fixedTokenPriceInUSD": 0.02,
-      "tokenGenerationEventDate": "Q4 2024",
+      "tokenGenerationEventDate": "16 Dec 2024",
       "fdv": 20000000,
       "liquidityPool": {
         "name": "Raydium",
@@ -91,7 +91,7 @@
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-12-16T17:00:00Z"
+        "date": "2024-12-16"
       },
       {
         "id": "SALE_CLOSES",
@@ -131,7 +131,7 @@
       {
         "id": "tier20",
         "label": "Borgers Club",
-        "description": "Prove your BORGer loyalty and qualify to invest at 6 PM UTC. Max Investment $2K",
+        "description": "Hold $BORG & qualify to invest at 6 PM UTC. Max Investment $2K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -234,7 +234,7 @@
         }
       }
     ],
-    "finalSnapshotTimestamp": null
+    "finalSnapshotTimestamp": "2024-12-16T16:00:00Z"
   },
   "saleData": {
     "availableTokens": 12403,
