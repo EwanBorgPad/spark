@@ -59,7 +59,12 @@ const WhitelistingContent = () => {
           </p>
           <span className="text-fg-tertiary">Gives you:</span>
         </div>
-        <TokenRewards borgCoinInput={"1"} tokenPriceInBORG={tokenPriceInBORG} borgPriceInUSD={borgPriceInUSD} />
+        <TokenRewards
+          borgCoinInput={"1"}
+          tokenPriceInBORG={tokenPriceInBORG}
+          borgPriceInUSD={borgPriceInUSD}
+          tokenPriceInUSD={tokenPriceInUSD}
+        />
       </div>
 
       <div className="flex w-full flex-col">

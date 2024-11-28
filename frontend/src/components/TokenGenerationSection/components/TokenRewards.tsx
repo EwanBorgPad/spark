@@ -10,9 +10,10 @@ type TokenRewardsProps = {
   borgCoinInput: string
   tokenPriceInBORG: number | null
   borgPriceInUSD: number | null
+  tokenPriceInUSD: number | null
 }
 
-const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG }: TokenRewardsProps) => {
+const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPriceInUSD }: TokenRewardsProps) => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
   const tgeData = projectData.info.tge
@@ -93,9 +94,9 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG }: Token
                   <span className="text-base">{rewards.tokenRewardDistribution}</span>
                   <span className="text-base">{tgeData.projectCoin.ticker}</span>
                 </div>
-                {tokenPriceInBORG && (
+                {tokenPriceInUSD && (
                   <span className="text-sm font-normal text-fg-secondary">
-                    {formatCurrencyAmount(tokenPriceInBORG, true)}
+                    {formatCurrencyAmount(tokenPriceInUSD, true)}
                   </span>
                 )}
               </div>
@@ -185,9 +186,9 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG }: Token
                   <span className="text-base">{rewards.tokenLP}</span>
                   <span className="text-base">{tgeData.projectCoin.ticker}</span>
                 </div>
-                {tokenPriceInBORG && (
+                {tokenPriceInUSD && (
                   <span className="text-sm font-normal text-fg-tertiary">
-                    {formatCurrencyAmount(tokenPriceInBORG, true)}
+                    {formatCurrencyAmount(tokenPriceInUSD, true)}
                   </span>
                 )}
               </div>
@@ -221,9 +222,9 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG }: Token
                 <span className="text-base">{rewards.tokenRewardDistribution}</span>
                 <span className="text-base">{tgeData.projectCoin.ticker}</span>
               </div>
-              {tokenPriceInBORG && (
+              {tokenPriceInUSD && (
                 <span className="text-sm font-normal text-fg-tertiary">
-                  {formatCurrencyAmount(tokenPriceInBORG, true)}
+                  {formatCurrencyAmount(tokenPriceInUSD, true)}
                 </span>
               )}
             </div>
