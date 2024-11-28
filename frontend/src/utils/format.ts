@@ -2,11 +2,11 @@ export const getRatioPercentage = (filled: number, total: number) => {
   return Math.floor((filled / total) * 100)
 }
 export const formatCurrencyAmount = (
-  amount: number | undefined,
-  withSymbol: boolean = true,
+  amount: number | undefined | null,
+  withDollarSign: boolean = true,
   customDecimals?: number,
 ) => {
-  if (!amount) return undefined
+  if (!amount) return "0"
   let decimals: number
 
   if (customDecimals === 0 || !!customDecimals) {
@@ -24,7 +24,7 @@ export const formatCurrencyAmount = (
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   }).format(amount)
-  if (!withSymbol) return value.substring(1)
+  if (!withDollarSign) return value.substring(1)
   return value
 }
 
