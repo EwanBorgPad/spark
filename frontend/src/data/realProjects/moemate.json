@@ -67,7 +67,7 @@
       },
       "fixedTokenPriceInUSD": 0.00154,
       "tokenGenerationEventDate": "Dec 2024",
-      "fdv": 15000000,
+      "fdv": 30000000,
       "liquidityPool": {
         "name": "Raydium",
         "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
@@ -87,7 +87,7 @@
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": "2024-11-25"
+        "date": "2024-11-29"
       },
       {
         "id": "SALE_OPENS",
