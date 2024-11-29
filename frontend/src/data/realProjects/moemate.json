@@ -81,7 +81,7 @@
     "__comment": "secondary image is the one behind: 'Moemate Data Room Learn more about the project.'",
     "dataRoom": {
       "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
-      "url": "https://swissborg.com/alpha/moemate"
+      "url": "https://cdn.moemate.io/cdn/Litepaper.pdf"
     },
     "timeline": [
       {
@@ -92,22 +92,22 @@
       {
         "id": "SALE_OPENS",
         "label": "Whitelist Sale Opens",
-        "date": "2024-12-10"
+        "date": null
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-12-11"
+        "date": null
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2024-12-11"
+        "date": null
       },
       {
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
-        "date": "2025-05-11"
+        "date": null
       }
     ],
     "tiers": [
