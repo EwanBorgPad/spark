@@ -61,7 +61,7 @@ export const EligibilityTiersSection = ({ className }: { className?: string }) =
                 <div className="flex flex-col gap-2 rounded-2xl">
                   {/* singular tier */}
                   {tierQuests.map((quest) => (
-                    <QuestComponent key={quest.type} quest={quest} autoCheck={tier.id === eligibilityTierId} />
+                    <QuestComponent key={quest.type} quest={quest} />
                   ))}
                 </div>
               </div>
