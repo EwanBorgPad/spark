@@ -51,11 +51,10 @@ const WhitelistingContent = () => {
       }
     >
       <div className="flex w-full flex-col gap-2">
-        <div className="flex w-full items-center justify-start gap-2 text-base">
+        <div className="flex w-full items-center justify-center gap-2 text-base">
           <Icon icon="SvgBorgCoin" />
           <p className="flex gap-1">
-            <span>1</span>
-            <span>BORG</span>
+            <span>{`1 BORG (${formatCurrencyAmount(borgPriceInUSD, true, 2)})`}</span>
           </p>
           <span className="text-fg-tertiary">Gives you:</span>
         </div>

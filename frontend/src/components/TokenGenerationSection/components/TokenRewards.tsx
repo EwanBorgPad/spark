@@ -1,4 +1,3 @@
-import { formatValue } from "react-currency-input-field"
 import { useTranslation } from "react-i18next"
 
 import { useProjectDataContext } from "@/hooks/useProjectData"
@@ -21,39 +20,65 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
   const tokenIcon = tgeData.projectCoin.iconUrl
 
   const getLiquidityPoolValues = () => {
-    if (!borgCoinInput || !tokenPriceInBORG)
+    if (!borgCoinInput || !tokenPriceInBORG || !tokenPriceInUSD || !borgPriceInUSD)
       return {
-        tokenLp: { formatted: "", unformatted: null },
-        borgLp: { formatted: "", unformatted: null },
+        tokenLp: { formatted: "0", unformatted: null },
+        borgLp: { formatted: "0", unformatted: null },
       }
+
+    // const totalTokensForLpPosition = projectData.info.totalTokensForSale
+
+    // // token pool size value in dollars is equivalent to BORG pool size, which is the raise target
+    // const tokenPoolSize = projectData.info.tge.raiseTarget
+
+    // // 1 dollar invested gives this much tokens in LP
+    // const oneInvestedDollarGives = totalTokensForLpPosition / tokenPoolSize
+
+    // // 1 BORG invested gives this much reward tokens
+    // const oneInvestedBorgGives = borgPriceInUSD * oneInvestedDollarGives
+
+    // // total invested $BORG gives this much tokens in LP
+    // const totalInvestedBorgGivesThisMuchLPTokens = +borgCoinInput * oneInvestedBorgGives
+
     // input is divided equally amongst token and borg lp values
-    const tokenLpUnformatted = +borgCoinInput / tokenPriceInBORG / 2
+    const tokenLpUnformatted = +borgCoinInput / 2 / tokenPriceInBORG
     const borgLpUnformatted = +borgCoinInput / 2
     return {
       tokenLp: {
         formatted: formatCurrencyAmount(tokenLpUnformatted, false) || "0",
         unformatted: tokenLpUnformatted,
-        usd: tokenPriceInUSD ? formatCurrencyAmount(tokenLpUnformatted * tokenPriceInUSD, true) : 0,
+        usd: formatCurrencyAmount(tokenLpUnformatted * tokenPriceInUSD, true),
       },
       borgLp: {
         formatted: formatCurrencyAmount(borgLpUnformatted, false) || "0",
         unformatted: borgLpUnformatted,
-        usd: borgPriceInUSD ? formatCurrencyAmount(borgLpUnformatted * borgPriceInUSD, true) : "0",
+        usd: formatCurrencyAmount(borgLpUnformatted * borgPriceInUSD, true),
       },
     }
   }
 
   const getTokenReward = () => {
-    if (!borgCoinInput || !tokenPriceInBORG) return { formatted: "", unformatted: null }
-    const tokenRewardRatioAsPerLP =
-      projectData.info.totalTokensForSale / projectData.info.totalTokensForRewardDistribution
+    if (!borgCoinInput || !tokenPriceInBORG || !borgPriceInUSD) return { formatted: "0", unformatted: null }
 
-    const tokenReward = (+borgCoinInput / tokenPriceInBORG / 2) * tokenRewardRatioAsPerLP
+    // new calculation
+    const totalTokensForRewardDistribution = projectData.info.totalTokensForRewardDistribution
+
+    // token pool size value in dollars is equivalent to BORG pool size, which is the raise target
+    const tokenPoolSize = projectData.info.tge.raiseTarget
+
+    // 1 dollar invested gives this much reward tokens
+    const oneInvestedDollarGives = totalTokensForRewardDistribution / tokenPoolSize
+
+    // 1 BORG invested gives this much reward tokens
+    const oneInvestedBorgGives = borgPriceInUSD * oneInvestedDollarGives
+
+    // total invested BORG gives this much reward tokens
+    const totalInvestedBorgGives = +borgCoinInput * oneInvestedBorgGives
 
     return {
-      unformatted: tokenReward,
-      formatted: formatCurrencyAmount(tokenReward, false) || "0",
-      usd: tokenPriceInUSD ? formatCurrencyAmount(tokenReward * tokenPriceInUSD, true) : "0",
+      unformatted: totalInvestedBorgGives,
+      formatted: formatCurrencyAmount(totalInvestedBorgGives, false) || "0",
+      usd: tokenPriceInUSD ? formatCurrencyAmount(totalInvestedBorgGives * tokenPriceInUSD, true) : "0",
     }
   }
 
@@ -95,7 +120,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
             {/* TOP section token values */}
             <span className="w-full text-center text-sm font-normal">Liquidity Provision Rewards</span>
             <div className="flex h-fit items-start justify-center gap-2 rounded-full text-xs font-medium text-fg-primary">
-              <Img src={tokenIcon} size="4" customClass="mt-1" />
+              <Img src={tokenIcon} size="4" customClass="mt-1" isRounded />
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-1.5">
                   <span className="text-base">{rewardDistribution.token}</span>
@@ -136,7 +161,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
               <Icon icon="SvgPlus" className="mt-1 text-base text-fg-tertiary opacity-50" />
 
               <div className="flex gap-2 text-fg-tertiary">
-                <Img src={tokenIcon} size="4" customClass="mt-1 opacity-50" />
+                <Img src={tokenIcon} size="4" customClass="mt-1 opacity-50" isRounded />
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-2">
                     {/* Liquidity pool $[TOKEN] */}
