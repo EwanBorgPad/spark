@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 
 import { backendApi } from "@/data/backendApi.ts"
-import { formatCurrencyAmount } from "@/utils/format"
+import { formatCurrencyAmount } from "shared/utils/format"
 import SimpleLoader from "@/components/Loaders/SimpleLoader"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import Text from "@/components/Text"

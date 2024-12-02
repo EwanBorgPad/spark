@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge"
 import { PayoutScheduleType } from "@/data/contributionAndRewardsData"
 import { formatDateForDisplay } from "@/utils/date-helpers"
 import Accordion from "@/components/Accordion/Accordion"
-import { formatCurrencyAmount } from "@/utils/format"
+import { formatCurrencyAmount } from "shared/utils/format"
 import Img from "@/components/Image/Img"
 
 type PayoutProps = {

@@ -21,7 +21,8 @@
 
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "shared": ["./shared/*"]
     }
   },
   // files from @types are added automatically upon creation in "include" property below

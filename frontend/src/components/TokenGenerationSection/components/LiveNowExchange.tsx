@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 
 import { ConnectButton } from "@/components/Header/ConnectButton"
 import { useWalletContext } from "@/hooks/useWalletContext"
-import { formatCurrencyAmount } from "@/utils/format"
+import { formatCurrencyAmount } from "shared/utils/format"
 import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"

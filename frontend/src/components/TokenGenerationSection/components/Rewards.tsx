@@ -9,7 +9,7 @@ import { TgeWrapper } from "./Wrapper"
 
 import { ContributionAndRewardsType } from "@/data/contributionAndRewardsData"
 import { Button } from "@/components/Button/Button"
-import { formatCurrencyAmount } from "@/utils/format"
+import { formatCurrencyAmount } from "shared/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 import { formatDateForTimer } from "@/utils/date-helpers"
 import { isBefore } from "date-fns/isBefore"

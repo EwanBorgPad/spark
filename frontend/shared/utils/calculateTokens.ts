@@ -1,5 +1,5 @@
 import { ProjectModel } from "../models"
-import { formatCurrencyAmount } from "../../src/utils/format"
+import { formatCurrencyAmount } from "./format"
 
 type Props = { projectData: ProjectModel; borgCoinInput: number | null; borgPriceInUSD: number | null }
 
