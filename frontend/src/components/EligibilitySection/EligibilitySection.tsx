@@ -152,7 +152,7 @@ const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
         }),
         description: "",
         // TODO @productionPush
-        additionalElement: quest.tokenName === 'BORG' ? <HoldTokenBtn tokenName={quest.tokenName} /> : <></>,
+        additionalElement: <HoldTokenBtn tokenName={quest.tokenName} />,
       }
     if (type === "WHITELIST")
       return {
@@ -191,6 +191,11 @@ const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
 }
 const HoldTokenBtn = ({ tokenName }: { tokenName: string }) => {
   const { t } = useTranslation()
+
+  const tokens = ['BORG', 'MOE']
+
+  if (!tokens.includes(tokenName))
+    return null
 
   const swapLink = `https://jup.ag/swap/SOL-${tokenName}`
 
