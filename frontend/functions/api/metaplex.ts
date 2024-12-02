@@ -6,12 +6,14 @@ import * as bs58 from "bs58"
 
 type ENV = {
     DB: D1Database
+    SOLANA_RPC_URL: string
 }
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const db = drizzle(ctx.env.DB, { logger: true })
+    const rpcUrl = ctx.env.SOLANA_RPC_URL
     try {
         // insert rpc url
-        const connection = new Connection('')
+        const connection = new Connection(rpcUrl)
         // insert your private key for minting nft
         const myKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode('')))
 
