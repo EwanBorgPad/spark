@@ -25,7 +25,7 @@
     }
   },
   // files from @types are added automatically upon creation in "include" property below
-  "include": ["src", "src/@types/i18next.d.ts"],
+  "include": ["src", "src/@types/i18next.d.ts", "src/shared/utils/calculateTokens.ts"],
   "exclude": ["functions/**/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

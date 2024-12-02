@@ -85,22 +85,22 @@ const CountDownTimer = ({
         <span className="text-xl text-fg-primary/60">{t("tge.distribution_ended")}</span>
       ) : (
         <div className={twMerge("flex items-start text-2xl normal-nums", timerClass)}>
-          <div className="flex flex-col items-center">
+          <div className="flex w-[33px] flex-col items-center">
             <span className="font-semibold">{days}</span>
             <span className="text-[10px] leading-none opacity-60">days</span>
           </div>
           <span className="opacity-50">:</span>
-          <div className="flex flex-col items-center">
+          <div className="flex w-[33px] flex-col items-center">
             <span className="font-semibold">{hours}</span>
             <span className="text-[10px] leading-none opacity-60">hrs</span>
           </div>
           <span className="opacity-50">:</span>
-          <div className="flex flex-col items-center">
+          <div className="flex w-[33px] flex-col items-center">
             <span className="font-semibold">{minutes}</span>
             <span className="text-[10px] leading-none opacity-60">mins</span>
           </div>
           <span className="opacity-50">:</span>
-          <div className="flex flex-col items-center">
+          <div className="flex w-[33px] flex-col items-center">
             <span className="font-semibold">{seconds}</span>
             <span className="text-[10px] leading-none opacity-60">secs</span>
           </div>
