@@ -87,27 +87,27 @@
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": "2024-11-29"
+        "date": "2024-11-24T23:00:00Z"
       },
       {
         "id": "SALE_OPENS",
-        "label": "Whitelist Sale Opens",
-        "date": null
+        "label": "Sale Opens",
+        "date": "2024-12-17T23:00:00Z"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": null
+        "date": "2024-12-17T23:00:00Z"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": null
+        "date": "2024-12-18T23:00:00Z"
       },
       {
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
-        "date": null
+        "date": "2025-05-18T23:00:00Z"
       }
     ],
     "tiers": [
