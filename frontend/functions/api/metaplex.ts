@@ -17,8 +17,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     try {
         const connection = new Connection(rpcUrl)
         const umi = createUmi(connection)
-
-        const privateKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode('5MVdNPqEktnsUdXpZ5x9JMnRXrXuENyjQqNfWMN56kM5rZmbGkrqTS7LyWa2MszcqwgmrMvSygDg8PyitMgJ7shH')))
+        // insert your wallet secret key here
+        const privateKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode('')))
         // convert to Umi compatible keypair
         const umiKeypair = umi.eddsa.createKeypairFromSecretKey(privateKeypair.secretKey)
         const signer = createSignerFromKeypair(umi, umiKeypair)
