@@ -13,7 +13,7 @@
       "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
     },
     "lpPositionToBeBurned": true,
-    "totalTokensForSale": 243750000,
+    "totalTokensForSale": 208928571,
     "totalTokensForRewardDistribution": 390000000,
     "curator": {
       "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
@@ -65,9 +65,9 @@
         "iconUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
         "ticker": "MATES"
       },
-      "fixedTokenPriceInUSD": 0.00154,
+      "fixedTokenPriceInUSD": 0.00179,
       "tokenGenerationEventDate": "Dec 2024",
-      "fdv": 30000000,
+      "fdv": 35000000,
       "liquidityPool": {
         "name": "Raydium",
         "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
@@ -87,27 +87,27 @@
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": "2024-11-29"
+        "date": "2024-11-24T23:00:00Z"
       },
       {
         "id": "SALE_OPENS",
-        "label": "Whitelist Sale Opens",
-        "date": null
+        "label": "Sale Opens",
+        "date": "2024-12-17T23:00:00Z"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": null
+        "date": "2024-12-17T23:00:00Z"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": null
+        "date": "2024-12-18T23:00:00Z"
       },
       {
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
-        "date": null
+        "date": "2025-05-18T23:00:00Z"
       }
     ],
     "tiers": [
@@ -138,13 +138,24 @@
             "type": "HOLD_TOKEN",
             "tokenName": "BORG",
             "tokenAmount": "1000",
-            "tokenMintAddress": "BD5EpsrZmPGK8DMMhu1DYAzKXEp5nMrTEyhSsWrjWKP1"
+            "tokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z"
           }
         ],
         "benefits": {
           "startDate": "2030-10-10",
           "minInvestment": "100",
           "maxInvestment": "3000"
+        }
+      },
+      {
+        "id": "tier99",
+        "label": "Public Sale",
+        "description": "Access to sale at 7 PM UTC. Max Investment $1.5K",
+        "quests": [],
+        "benefits": {
+          "startDate": "2024-12-10",
+          "minInvestment": "10",
+          "maxInvestment": "1500"
         }
       }
     ],

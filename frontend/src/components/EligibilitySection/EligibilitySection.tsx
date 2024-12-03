@@ -93,7 +93,7 @@ export const EligibilityCompliancesSection = ({ className }: { className?: strin
   // @TODO - replace checkup below with more reliable source of data
   if (walletState !== "CONNECTED") return null
 
-  const skeletonCompliances = Array.from({ length: 3 }, (_, i) => i)
+  const skeletonCompliances = Array.from({ length: 2 }, (_, i) => i)
   const complianceQuests = eligibilityStatus?.compliances ? sortByCompletionStatus(eligibilityStatus.compliances) : null
 
   return (
