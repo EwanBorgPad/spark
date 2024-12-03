@@ -18,10 +18,10 @@ const COMPLIANCES: Quest[] = [
   {
     type: 'PROVIDE_INVESTMENT_INTENT',
   },
-  {
-    type: 'REFERRAL',
-    isOptional: true,
-  },
+  // {
+  //   type: 'REFERRAL',
+  //   isOptional: true,
+  // },
 ]
 
 
