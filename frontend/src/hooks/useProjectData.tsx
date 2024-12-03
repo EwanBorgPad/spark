@@ -1,4 +1,3 @@
-import { dummyData } from "@/data/projectData.ts"
 import { ProjectModel } from "../../shared/models.ts"
 import { createContext, ReactNode, useCallback, useContext } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
@@ -6,7 +5,7 @@ import { backendApi } from "@/data/backendApi.ts"
 import { useParams } from "react-router-dom"
 
 type Context = {
-  projectData: ProjectModel
+  projectData: ProjectModel | undefined
   setProjectData: (data: ProjectModel) => void
   isLoading: boolean
   isFetching: boolean
@@ -15,8 +14,7 @@ const ProjectDataContext = createContext<Context | undefined>(undefined)
 
 export function useProjectDataContext() {
   const context = useContext(ProjectDataContext)
-  if (!context)
-    throw new Error("Component is outside of the <ProjectDataProvider />")
+  if (!context) throw new Error("Component is outside of the <ProjectDataProvider />")
   return context
 }
 
@@ -33,7 +31,7 @@ export function ProjectDataProvider({ children }: { children: ReactNode }) {
     queryKey: ["backendApi", "getProject", projectId],
     enabled: Boolean(projectId),
     // TODO @hardcoded remove initialData/dummyData after implementing loading states
-    initialData: dummyData,
+    // initialData: dummyData,
   })
 
   const queryClient = useQueryClient()

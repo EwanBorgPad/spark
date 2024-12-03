@@ -15,6 +15,7 @@ const generateUpcomingEvent = (whitelistStartDate: Date | null) => {
 }
 
 export const getCurrentTgeEvent = (timeline: ExpandedTimelineEventType[]) => {
+  if (timeline.length === 0) return null
   const currentMoment = new Date()
   const activeEvent = timeline.find((event) => {
     const hasEventStarted = event.date && !isBefore(currentMoment, event.date)
