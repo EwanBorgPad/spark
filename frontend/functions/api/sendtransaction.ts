@@ -39,8 +39,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             db,
             id: data.projectId
         })
-        const cluster = project?.cluster
-        const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster ?? 'devnet'))
+        const cluster = project?.cluster ?? 'devnet'
+        const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster))
 
         // TODO: ALL VALIDATIONS AGAIN
 
@@ -68,12 +68,22 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             userWalletAddress
         } = await getDatabaseValues(txId)
 
-        const tierId = EligibilityService.getEligibilityStatus({
+        const eligibilityStatus = await EligibilityService.getEligibilityStatus({
             db: drizzleDb,
             address: userWalletAddress,
             projectId: data.projectId,
-            rpcUrl: getRpcUrlForCluster(SOLANA_RPC_URL, cluster ?? 'devnet')
-        }).eligibilityTier?.id ?? 'tier undefined'
+            rpcUrl: getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
+        })
+
+        const eligibilityTier = eligibilityStatus.eligibilityTier
+
+        if (!eligibilityTier) {
+            return jsonResponse({ message: 'Not eligible!' }, 403)
+        }
+
+        const tierId = eligibilityTier.id
+
+        // TODO @eligibilityChecks
 
         // update db
         if (status === 'confirmed') {
@@ -88,7 +98,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
                 tierId,
                 nftAddress,
                 json: {
-                    cluster: cluster ?? '',
+                    cluster,
                     uiAmount: tokenAmount,
                     decimalMultiplier: decimals.toString(),
                 },
