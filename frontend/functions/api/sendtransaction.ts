@@ -23,6 +23,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const drizzleDb = drizzle(db)
     const SOLANA_RPC_URL = ctx.env.SOLANA_RPC_URL
     try {
+        // validate env
+        if (!SOLANA_RPC_URL) {
+            throw new Error('Misconfigured env!')
+        }
         // validate request
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
 
@@ -37,6 +41,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         })
         const cluster = project?.cluster
         const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster ?? 'devnet'))
+
+        // TODO: ALL VALIDATIONS AGAIN
 
         console.log("Sending transaction...")
         const txId = await connection.sendRawTransaction(Buffer.from(data.serializedTx, 'base64'), {

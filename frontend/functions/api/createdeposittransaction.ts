@@ -14,7 +14,7 @@ type ENV = {
     DB: D1Database,
     SOLANA_RPC_URL: string,
     LBP_WALLET_ADDRESS: string
-    PRIVATE_KEY: string
+    NFT_MINT_WALLET_PRIVATE_KEY: string
 }
 const requestSchema = z.object({
     userWalletAddress: z.string(),
@@ -25,9 +25,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const db = ctx.env.DB
     const SOLANA_RPC_URL = ctx.env.SOLANA_RPC_URL
     const LBP_WALLET_ADDRESS = ctx.env.LBP_WALLET_ADDRESS
+    const privateKey = ctx.env.NFT_MINT_WALLET_PRIVATE_KEY
     try {
         // validate env
-        if (!LBP_WALLET_ADDRESS || !SOLANA_RPC_URL) {
+        if (!LBP_WALLET_ADDRESS || !SOLANA_RPC_URL || !privateKey) {
             throw new Error('Misconfigured env!')
         }
         // request validation
@@ -57,7 +58,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             disableRetryOnRateLimit: true
         })
         const tokenMint = project.info.raisedTokenMintAddress
-        const privateKey = ctx.env.PRIVATE_KEY
 
         // TODO: ALL VALIDATIONS
 
