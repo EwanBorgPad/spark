@@ -45,9 +45,9 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const { projectData } = useProjectDataContext()
   const { walletState, signTransaction, address, walletProvider } = useWalletContext()
 
-  const cluster = projectData.cluster ?? 'devnet'
-  const rpcUrl = BACKEND_RPC_URL + '?cluster=' + cluster
-  const tokenMintAddress = projectData.info.raisedTokenMintAddress
+  const cluster = projectData?.cluster ?? "devnet"
+  const rpcUrl = BACKEND_RPC_URL + "?cluster=" + cluster
+  const tokenMintAddress = projectData?.info.raisedTokenMintAddress
 
   const {
     mutateAsync: makeDepositTransaction,
@@ -86,15 +86,15 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
 
   const { data: balance } = useQuery({
     queryFn: () => {
-      if (!address || !projectId) return
+      if (!address || !projectId || !tokenMintAddress) return
       return getSplTokenBalance({
         address,
-        tokenAddress: projectData.info.raisedTokenMintAddress,
+        tokenAddress: tokenMintAddress,
         rpcUrl,
       })
     },
     queryKey: ["getBalance", address, tokenMintAddress],
-    enabled: Boolean(address) && Boolean(tokenMintAddress),
+    enabled: Boolean(address) && Boolean(tokenMintAddress) && Boolean(tokenMintAddress),
   })
 
   const { data } = useQuery({
@@ -116,7 +116,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
   const borgPriceInUSD = exchangeData?.currentPrice || null
-  const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
+  const tokenPriceInUSD = projectData?.info.tge.fixedTokenPriceInUSD || 0
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
   const {
@@ -131,6 +131,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     try {
       const tokenAmount = parseFloat(data.borgInputValue.replace(",", ""))
       if (walletProvider === "") throw new Error("No wallet provider!")
+      if (!tokenMintAddress) throw new Error("No Mint Address!")
       if (walletState === "CONNECTED") {
         const serializedTransaction = await makeDepositTransaction({
           userWalletAddress: address,
