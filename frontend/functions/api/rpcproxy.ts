@@ -7,6 +7,7 @@ const allowedMethods = [
   "getTokenAccountsByOwner",
   "getLatestBlockhash",
   "getMinimumBalanceForRentExemption",
+  'sendTransaction'
 ] as const
 
 const RpcSchema = z.object({
@@ -69,10 +70,10 @@ export const onRequestOptions: PagesFunction<ENV> = async (ctx) => {
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:5173', // Adjust this to frontends origin
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Solana-Client',
       },
     })
   } catch (error) {
-    return jsonResponse({message: error}, 500)
+    return jsonResponse({ message: error }, 500)
   }
 }

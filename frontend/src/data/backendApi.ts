@@ -22,6 +22,8 @@ const USER_DEPOSIT_URL = API_BASE_URL + "/userdeposit"
 const GET_INVESTMENT_INTENT_SUMMARY_URL = API_BASE_URL + "/investmentintentsummary"
 const GET_DEPOSITS_URL = API_BASE_URL + "/deposits"
 export const BACKEND_RPC_URL = API_BASE_URL + "/rpcproxy"
+const CREATE_DEPOSIT_TRANSACTION = API_BASE_URL + "/createdeposittransaction"
+const SEND_TRANSACTION = API_BASE_URL + "/sendtransaction"
 
 type GetEligibilityStatusArgs = {
   address: string
@@ -254,6 +256,67 @@ const postUserDeposit = async ({
   return json
 }
 
+export type PostCreateDepositTxArgs = {
+  userWalletAddress: string,
+  tokenAmount: number,
+  projectId: string
+}
+
+type createDepositTxReturnType = {
+  transaction: string
+}
+
+const postCreateDepositTx = async ({
+  userWalletAddress,
+  tokenAmount,
+  projectId
+}: PostCreateDepositTxArgs): Promise<createDepositTxReturnType> => {
+  const url = new URL(CREATE_DEPOSIT_TRANSACTION, window.location.href)
+  const requestObject = {
+    userWalletAddress,
+    tokenAmount,
+    projectId
+  }
+  const request = JSON.stringify(requestObject)
+  const response = await fetch(url, {
+    method: 'POST',
+    body: request,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
+export type PostSendTransaction = {
+  serializedTx: string,
+  projectId: string
+}
+
+const postSendTransaction = async ({
+  serializedTx,
+  projectId
+}: PostSendTransaction): Promise<createDepositTxReturnType> => {
+  const url = new URL(SEND_TRANSACTION, window.location.href)
+  const requestObject = {
+    serializedTx,
+    projectId
+  }
+  const request = JSON.stringify(requestObject)
+  const response = await fetch(url, {
+    method: 'POST',
+    body: request,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
 export const backendApi = {
   postUserDeposit,
   getProject,
@@ -268,4 +331,6 @@ export const backendApi = {
   getEligibilityStatus,
   getInvestmentIntentSummary,
   getDeposits,
+  postCreateDepositTx,
+  postSendTransaction
 }
