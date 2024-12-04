@@ -51,7 +51,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
 
   const {
     mutateAsync: makeDepositTransaction,
-    isPending
+    isPending: isPendingMakeDepositTransaction,
   } = useMutation({
     mutationFn: async (payload: PostCreateDepositTxArgs) => {
       return (await backendApi.postCreateDepositTx(payload)).transaction
@@ -67,7 +67,8 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   })
 
   const {
-    mutateAsync: sendTransaction
+    mutateAsync: sendTransaction,
+    isPending: isPendingSendTransaction,
   } = useMutation({
     mutationFn: async (payload: PostSendTransaction) => {
       return await backendApi.postSendTransaction(payload)
@@ -255,7 +256,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                 size="lg"
                 btnText="Supply $BORG"
                 disabled={!isUserEligible}
-                isLoading={isPending}
+                isLoading={isPendingSendTransaction || isPendingMakeDepositTransaction}
                 className={"w-full"}
               />
               <a className="w-full" href="https://jup.ag/swap/SOL-BORG" target="_blank" rel="noopener noreferrer">
