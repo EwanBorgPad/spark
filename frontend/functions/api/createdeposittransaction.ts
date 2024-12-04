@@ -7,6 +7,7 @@ import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 import { ProjectService } from "../services/projectService"
 import * as bs58 from "bs58"
 import { TokenStandard } from "@metaplex-foundation/mpl-token-metadata"
+// TODO @strajo avoid using deprecated package
 import { keypairIdentity, Metaplex } from "@metaplex-foundation/js"
 import { signatureSubscribe } from "../../src/utils/solanaFunctions"
 
