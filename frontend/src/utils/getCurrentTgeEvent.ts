@@ -30,8 +30,7 @@ export const getCurrentTgeEvent = (timeline: ExpandedTimelineEventType[]) => {
   })
   if (!activeEvent) {
     // @askVanjaIfThisIsFine
-    // const whitelistStartDate = timeline[0].date
-    const whitelistStartDate = new Date(2025)
+    const whitelistStartDate = timeline[0]?.date ?? new Date('2025')
     const upcomingEvent = generateUpcomingEvent(whitelistStartDate)
     return upcomingEvent
   }
