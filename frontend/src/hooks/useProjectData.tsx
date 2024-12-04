@@ -30,8 +30,6 @@ export function ProjectDataProvider({ children }: { children: ReactNode }) {
     queryFn: () => backendApi.getProject({ projectId }),
     queryKey: ["backendApi", "getProject", projectId],
     enabled: Boolean(projectId),
-    // TODO @hardcoded remove initialData/dummyData after implementing loading states
-    // initialData: dummyData,
   })
 
   const queryClient = useQueryClient()
