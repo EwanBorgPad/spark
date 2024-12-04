@@ -126,7 +126,7 @@ export async function createTokenTransferTransaction(
 
         // tx builder for minting nft - TODO: fill with valid uri, check other values if need to be changed
         const bd = await metaplex.nfts().builders().create({
-            uri: "https://metadata.url/your-nft", // Replace with the actual URI of NFT metadata
+            uri: "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/nftmeta/nft-metadata.json", // Replace with the actual URI of NFT metadata
             name: "LBP Deposit Receipt NFT",
             sellerFeeBasisPoints: 0, // 0% royalties
             symbol: "LDRNFT",
@@ -152,7 +152,7 @@ export async function createTokenTransferTransaction(
         const nft = await metaplex.nfts().findByMint({
             mintAddress: nftMintKeypair.publicKey
         })
-        // create builder for transfering nft 
+        // create builder for transfering nft
         const builder = metaplex.nfts().builders().transfer({
             nftOrSft: {
                 tokenStandard: TokenStandard.NonFungible,
@@ -173,7 +173,7 @@ export async function createTokenTransferTransaction(
         transaction.recentBlockhash = blockhash
         transaction.lastValidBlockHeight = lastValidBlockHeight
         transaction.feePayer = fromPublicKey // User signs to pay fees
-        // sign with our minting wallet 
+        // sign with our minting wallet
         transaction.partialSign(nftMintingWalletKeypair)
         // serialize transaction for frontend
         const serializedTransaction = transaction.serialize({
