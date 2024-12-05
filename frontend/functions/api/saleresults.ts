@@ -81,7 +81,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     const exchangeData = await exchangeService.getExchangeData({
       db: d1Db,
-      baseCurrency: tokenData.coinGeckoName,
+      // TODO @hardcoded currency
+      baseCurrency: 'swissborg', // tokenData.coinGeckoName,
       targetCurrency: 'usd',
     })
 
