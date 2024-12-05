@@ -6,7 +6,6 @@ import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 import { ProjectService } from "../services/projectService"
 import { signatureSubscribe } from "../../src/utils/solanaFunctions"
 import { DepositService } from "../services/depositService"
-import { token } from "@metaplex-foundation/js"
 import { EligibilityService } from "../services/eligibilityService"
 
 type ENV = {
