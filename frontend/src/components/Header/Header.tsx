@@ -13,6 +13,7 @@ import { Button } from "../Button/Button"
 
 type NavigationItem = {
   path: string
+  url?: string
   label: string
 }
 type NavigationBarProps = {
@@ -28,10 +29,11 @@ const navigationItems: NavigationItem[] = [
     path: "/launch-pools",
     label: "Launch Pools",
   },
-  // {
-  //   path: "/manifesto",
-  //   label: "Manifesto",
-  // },
+  {
+    url: "https://docs.borgpad.com",
+    label: "Docs",
+    path: "",
+  },
   // {
   //   path: "blog",
   //   label: "Blog",
@@ -42,10 +44,7 @@ const navigationItems: NavigationItem[] = [
   // },
 ]
 
-const NavigationBar = ({
-  className = "",
-  itemClickedCallback,
-}: NavigationBarProps) => {
+const NavigationBar = ({ className = "", itemClickedCallback }: NavigationBarProps) => {
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -54,8 +53,12 @@ const NavigationBar = ({
   }
 
   const onItemClick = (item: NavigationItem) => {
-    navigate(item.path)
-    itemClickedCallback()
+    if (item.url) {
+      window.open(item.url, "_blank")
+    } else {
+      navigate(item.path)
+      itemClickedCallback()
+    }
   }
 
   return (
