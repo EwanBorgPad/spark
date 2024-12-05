@@ -31,12 +31,14 @@ export type PayoutScheduleType = {
 }
 
 export const dummyPayoutScheduleData: PayoutScheduleType[] = [
-  ...Array(12).keys(),
+  ...Array(6).keys(),
 ].map((index) => {
+  const payoutDate = addMonths(new Date('2024-12-20'), index)
+  const isClaimed = payoutDate < Date.now()
   return {
-    amount: 100,
-    isClaimed: index < 3,
-    date: addMonths(addDays(currentMoment, -1), -10 + index),
+    amount: 600,
+    isClaimed,
+    date: payoutDate,
   }
 })
 
