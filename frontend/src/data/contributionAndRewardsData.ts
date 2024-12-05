@@ -34,7 +34,7 @@ export const dummyPayoutScheduleData: PayoutScheduleType[] = [
   ...Array(6).keys(),
 ].map((index) => {
   const payoutDate = addMonths(new Date('2024-12-20'), index)
-  const isClaimed = payoutDate < Date.now()
+  const isClaimed = payoutDate < new Date()
   return {
     amount: 600,
     isClaimed,
