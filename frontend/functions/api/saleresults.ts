@@ -108,22 +108,13 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       participantsCount: totalCount,
       // TODO @hardcoded below
       sellOutPercentage: 77,
-      marketCap: 777_777_777,
-      fdv: 777_777_777,
+      marketCap: exchangeData.marketCap,
+      fdv: exchangeData.fullyDilutedValuation,
     }
 
-    console.log({ response })
-    return jsonResponse({ response }, 200)
+    return jsonResponse(response, 200)
   } catch (e) {
     await reportError(ctx.env.DB, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
   }
 }
-// export type SaleResultsResponse = {
-//   totalAmountRaised: TokenAmountModel
-//   averageDepositAmount: TokenAmountModel
-//   sellOutPercentage: string
-//   participantsCount: number
-//   marketCap: string
-//   fdv: string
-// }

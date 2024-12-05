@@ -172,6 +172,7 @@ const SolanaClusterSchema = z.enum(['mainnet', 'devnet'])
 export const projectSchema = z.object({
   cluster: SolanaClusterSchema.optional().default('devnet'),
   info: infoSchema,
+  // TODO deprecate this???
   saleData: z
     .object({
       availableTokens: z.number({ coerce: true }).optional(),

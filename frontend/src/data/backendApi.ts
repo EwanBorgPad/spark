@@ -5,7 +5,7 @@ import {
   GetProjectsResponse,
   InvestmentIntentRequest, InvestmentIntentSummary,
   ProjectModel,
-  projectSchema,
+  projectSchema, SaleResultsResponse,
 } from "../../shared/models.ts"
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
 
@@ -21,6 +21,7 @@ const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
 const USER_DEPOSIT_URL = API_BASE_URL + "/userdeposit"
 const GET_INVESTMENT_INTENT_SUMMARY_URL = API_BASE_URL + "/investmentintentsummary"
 const GET_DEPOSITS_URL = API_BASE_URL + "/deposits"
+const GET_SALE_RESULTS_URL = API_BASE_URL + "/saleresults"
 export const BACKEND_RPC_URL = API_BASE_URL + "/rpcproxy"
 const CREATE_DEPOSIT_TRANSACTION = API_BASE_URL + "/createdeposittransaction"
 const SEND_TRANSACTION = API_BASE_URL + "/sendtransaction"
@@ -64,6 +65,19 @@ const getDeposits = async ({ address, projectId, }: GetDepositsRequest): Promise
 
   return json
 }
+
+
+const getSaleResults = async ({ projectId }: { projectId: string }): Promise<SaleResultsResponse> => {
+  const url = new URL(GET_SALE_RESULTS_URL, window.location.href)
+  url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json
+}
+
+
 type GetInvestmentIntentSummary = {
   projectId: string
 }
@@ -331,6 +345,7 @@ export const backendApi = {
   getEligibilityStatus,
   getInvestmentIntentSummary,
   getDeposits,
+  getSaleResults,
   postCreateDepositTx,
   postSendTransaction
 }
