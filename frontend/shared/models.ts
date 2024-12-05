@@ -241,3 +241,36 @@ export const InvestmentIntentSummarySchema = z.object({
   count: z.number(),
 })
 export type InvestmentIntentSummary = z.infer<typeof InvestmentIntentSummarySchema>
+
+export type TokenAmountModel = {
+  /**
+   * Raw amount of tokens as a string, ignoring decimals
+   */
+  amount: string
+  /**
+   * Number of decimals configured for token's mint.
+   */
+  decimals: number
+  /**
+   * Token amount as a float, accounting for decimals.
+   */
+  uiAmount: string
+  /**
+   * Token amount value in USD
+   */
+  amountInUsd: string
+  /**
+   * Token price in USD
+   */
+  tokenPriceInUsd: string
+}
+
+
+export type SaleResultsResponse = {
+  totalAmountRaised: TokenAmountModel
+  averageDepositAmount: TokenAmountModel
+  sellOutPercentage: string
+  participantsCount: number
+  marketCap: string
+  fdv: string
+}
