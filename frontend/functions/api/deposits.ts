@@ -61,7 +61,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: 'Unknown token!' }, 500)
     }
 
-    const amount = deposits.reduce((acc, curr) => acc + curr.amountDeposited, 0)
+    const amount = deposits.reduce((acc, curr) => acc + Number(curr.amountDeposited), 0)
     const decimals = tokenData.decimals
 
     const response = {
@@ -73,7 +73,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       }
     }
 
-    return jsonResponse({ response }, 200)
+    return jsonResponse(response, 200)
   } catch (e) {
     await reportError(ctx.env.DB, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
