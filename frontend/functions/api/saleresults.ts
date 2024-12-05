@@ -3,25 +3,7 @@ import { drizzle } from "drizzle-orm/d1"
 import { depositTable, projectTable } from "../../shared/drizzle-schema"
 import { eq, sql } from "drizzle-orm"
 import { exchangeService } from "../services/exchangeService"
-
-type Cluster = 'devnet' | 'mainnet'
-// TODO @harcoded
-const tokenDataMap: Record<Cluster, Record<string, { decimals: number, coinGeckoName: string }>> = {
-  devnet: {
-    // usdc https://explorer.solana.com/address/Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr?cluster=devnet
-    'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr': {
-      decimals: 6,
-      coinGeckoName: 'usd',
-    }
-  },
-  mainnet: {
-    // borg https://explorer.solana.com/address/3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z
-    '3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z': {
-      decimals: 9,
-      coinGeckoName: 'swissborg',
-    }
-  }
-}
+import { getTokenData } from "../services/constants"
 
 
 type ENV = {
@@ -73,7 +55,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const totalCount = Number(resultGroupBy?.totalCount ?? 0)
 
     // prepare response
-    const tokenData = tokenDataMap[cluster][tokenAddress]
+    const tokenData = getTokenData({ cluster, tokenAddress })
 
     if (!tokenData) {
       return jsonResponse({ message: 'Unknown token!' }, 500)

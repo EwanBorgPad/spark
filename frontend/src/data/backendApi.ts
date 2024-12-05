@@ -5,7 +5,7 @@ import {
   GetProjectsResponse,
   InvestmentIntentRequest, InvestmentIntentSummary,
   ProjectModel,
-  projectSchema, SaleResultsResponse,
+  projectSchema, SaleResultsResponse, TokenAmountModel,
 } from "../../shared/models.ts"
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
 
@@ -54,6 +54,7 @@ type GetDepositsResponse = {
     decimalMultiplier: string
     transactionUrl: string
   }[]
+  total: TokenAmountModel,
 }
 const getDeposits = async ({ address, projectId, }: GetDepositsRequest): Promise<GetDepositsResponse> => {
   const url = new URL(GET_DEPOSITS_URL, window.location.href)
