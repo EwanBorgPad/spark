@@ -4,8 +4,18 @@ import { formatCurrencyAmount } from "./format"
 type Props = { projectData: ProjectModel; borgCoinInput: number | null; borgPriceInUSD: number | null }
 
 export const calculateTokens = ({ projectData, borgCoinInput, borgPriceInUSD }: Props) => {
-  const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD //
+  
+  const {
+    tge: { raiseTarget, fixedTokenPriceInUSD },
+    lpPositionToBeBurned,
+    totalTokensForRewardDistribution,
+  } = projectData.info
+
+  const tokenPriceInUSD = fixedTokenPriceInUSD //
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
+
+  // if LBP position is burned, lp size is twice as larger than raise target
+  const lpSizeFactor = lpPositionToBeBurned ? 1 : 0.5
 
   const getLpPositions = () => {
     if (!borgCoinInput || !tokenPriceInBORG || !tokenPriceInUSD || !borgPriceInUSD)
@@ -13,9 +23,8 @@ export const calculateTokens = ({ projectData, borgCoinInput, borgPriceInUSD }: 
         tokenLp: { formatted: "0", unformatted: null },
         borgLp: { formatted: "0", unformatted: null },
       }
-
-    const tokenLpUnformatted = +borgCoinInput / 2 / tokenPriceInBORG
-    const borgLpUnformatted = +borgCoinInput / 2
+    const tokenLpUnformatted = +borgCoinInput / lpSizeFactor / tokenPriceInBORG
+    const borgLpUnformatted = +borgCoinInput / lpSizeFactor
     return {
       tokenLp: {
         formatted: formatCurrencyAmount(tokenLpUnformatted, false) || "0",
@@ -33,11 +42,8 @@ export const calculateTokens = ({ projectData, borgCoinInput, borgPriceInUSD }: 
   const getTokenRewards = () => {
     if (!borgCoinInput || !tokenPriceInBORG || !borgPriceInUSD) return { formatted: "0", unformatted: null }
 
-    // total tokens reserved for reward distribution
-    const totalTokensForRewardDistribution = projectData.info.totalTokensForRewardDistribution
-
     // token pool size value in dollars is equivalent to BORG pool size, which is the raise target
-    const tokenPoolSize = projectData.info.tge.raiseTarget
+    const tokenPoolSize = raiseTarget
 
     // 1 dollar invested gives this much reward tokens
     const oneInvestedDollarGives = totalTokensForRewardDistribution / tokenPoolSize
