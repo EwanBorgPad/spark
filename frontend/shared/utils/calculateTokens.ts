@@ -15,7 +15,7 @@ export const calculateTokens = ({ projectData, borgCoinInput, borgPriceInUSD }: 
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
   // if LBP position is burned, lp size is twice as larger than raise target
-  const lpSizeFactor = lpPositionToBeBurned ? 1 : 0.5
+  const lpSizeFactor = lpPositionToBeBurned ? 1 : 2
 
   const getLpPositions = () => {
     if (!borgCoinInput || !tokenPriceInBORG || !tokenPriceInUSD || !borgPriceInUSD)
