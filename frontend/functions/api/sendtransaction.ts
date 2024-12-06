@@ -131,7 +131,7 @@ export const onRequestOptions: PagesFunction<ENV> = async (ctx) => {
 
 async function extractTransactionData(txId: string, heliusApiKey: string, cluster: string) {
     // api to parse with helius transactions with NFT and SPL token transfers which is ideal for our case https://docs.helius.dev/solana-apis/enhanced-transactions-api/parse-transaction-s#parse-transaction-s
-    const url = cluster === 'devnet' ? `https://api-devnet.helius.xyz/v0/transactions?api-key=${heliusApiKey}` : `https://api.helius.xyz/v0/transactions?api-key=${heliusApiKey}`   // adjust the url from cluster
+    const url = cluster === 'devnet' ? `https://api-devnet.helius.xyz/v0/transactions?api-key=${heliusApiKey}&commitment=confirmed` : `https://api.helius.xyz/v0/transactions?api-key=${heliusApiKey}&commitment=confirmed`   // adjust the url from cluster
     const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -146,6 +146,7 @@ async function extractTransactionData(txId: string, heliusApiKey: string, cluste
     const res = await response.json() as any
     const dataObject = res[0]
     // user is always the fee payer for the transaction
+    console.log(dataObject)
     const userWalletAddress = dataObject.feePayer
     const tokenTransfers = dataObject.tokenTransfers
     // @ts-expect-error typing
