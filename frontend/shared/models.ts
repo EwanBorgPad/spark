@@ -89,7 +89,8 @@ export const infoSchema = z.object({
   projectLinks: z.array(externalUrlSchema()),
 
   ///// project token info /////
-  projectOwnerAddress: SolanaAddressSchema,
+  // deprecate this
+  projectOwnerAddress: SolanaAddressSchema.nullable(),
 
   // below 3x2 fields are most important, move them into an object 'lp' or something like that
   launchedTokenMintAddress: SolanaAddressSchema,
@@ -101,6 +102,7 @@ export const infoSchema = z.object({
   raisedTokenMaxCap: z.number().int(),
 
   // remove cliffDuration and vestingDuration -- calculate from timeline, or smth else, either way -- remove redundancy
+  // do not calculate for timeline, make timeline UI online, and have hard data in the backend
   cliffDuration: z.number().int(),
   vestingDuration: z.number().int(),
 
