@@ -89,7 +89,8 @@ export const infoSchema = z.object({
   projectLinks: z.array(externalUrlSchema()),
 
   ///// project token info /////
-  projectOwnerAddress: SolanaAddressSchema,
+  // deprecate this
+  projectOwnerAddress: SolanaAddressSchema.nullable(),
 
   // below 3x2 fields are most important, move them into an object 'lp' or something like that
   launchedTokenMintAddress: SolanaAddressSchema,
@@ -101,6 +102,7 @@ export const infoSchema = z.object({
   raisedTokenMaxCap: z.number().int(),
 
   // remove cliffDuration and vestingDuration -- calculate from timeline, or smth else, either way -- remove redundancy
+  // do not calculate for timeline, make timeline UI online, and have hard data in the backend
   cliffDuration: z.number().int(),
   vestingDuration: z.number().int(),
 
@@ -172,6 +174,7 @@ const SolanaClusterSchema = z.enum(['mainnet', 'devnet'])
 export const projectSchema = z.object({
   cluster: SolanaClusterSchema.optional().default('devnet'),
   info: infoSchema,
+  // TODO deprecate this???
   saleData: z
     .object({
       availableTokens: z.number({ coerce: true }).optional(),
@@ -241,3 +244,36 @@ export const InvestmentIntentSummarySchema = z.object({
   count: z.number(),
 })
 export type InvestmentIntentSummary = z.infer<typeof InvestmentIntentSummarySchema>
+
+export type TokenAmountModel = {
+  /**
+   * Raw amount of tokens as a string, ignoring decimals
+   */
+  amount: string
+  /**
+   * Number of decimals configured for token's mint.
+   */
+  decimals: number
+  /**
+   * Token amount as a float, accounting for decimals.
+   */
+  uiAmount: string
+  /**
+   * Token amount value in USD
+   */
+  amountInUsd: string
+  /**
+   * Token price in USD
+   */
+  tokenPriceInUsd: string
+}
+
+
+export type SaleResultsResponse = {
+  totalAmountRaised: TokenAmountModel
+  averageDepositAmount: TokenAmountModel
+  sellOutPercentage: string
+  participantsCount: number
+  marketCap: string
+  fdv: string
+}
