@@ -7,7 +7,7 @@ import { getTokenData } from "../services/constants"
 type ENV = {
   DB: D1Database
 }
-const onRequestGet: PagesFunction<ENV> = async (ctx) => {
+export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
   try {
     // parse/validate request
@@ -36,8 +36,9 @@ const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       .where(eq(projectTable.id, projectId))
       .get()
 
-    const cluster = project.cluster ?? 'devnet'
-    const tokenAddress = project.json.info.raisedTokenMintAddress
+    if (!project) return jsonResponse({ error: 'Error: project not found!' }, 500)
+    const cluster = project.json.cluster ?? 'devnet'
+    const tokenAddress = project.json.info.launchedTokenMintAddress
 
     if (!project) {
       return jsonResponse({ message: 'Project not found!' }, 404)
