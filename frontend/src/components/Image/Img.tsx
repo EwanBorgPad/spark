@@ -29,7 +29,7 @@ const ImgSkeletonLoader = ({ isRounded }: { isRounded: boolean }) => {
   return (
     <div
       className={twMerge(
-        "h-full w-full shrink-0 animate-pulse overflow-hidden bg-white/20",
+        "h-full w-full shrink-0 animate-pulse overflow-hidden bg-white/10",
         isRounded && "rounded-full",
       )}
     >

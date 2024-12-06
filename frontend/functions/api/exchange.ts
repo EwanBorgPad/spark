@@ -8,6 +8,11 @@ import { addSeconds } from "date-fns/addSeconds"
  * TODO @exchange this works ok for one currencyPair, let's think about what happens when we have a lot of different queries
  * TODO @exchange think about how this service notifies us that rate limit has been hit, seems very important
  * TODO @security should we whitelist currencies? (this way anyone can post any string there)
+ *
+ * TODO handle rate limit correctly
+ * TODO check if calling this from frontend should be removed
+ * TODO migrate to drizzleorm
+ * TODO whitelist currencies to prevent api abuse
  */
 /**
  * Caching statuses terminology borrowed from CloudFlare https://developers.cloudflare.com/cache/concepts/cache-responses/
@@ -19,6 +24,7 @@ type CacheStatus =
   | 'MISS'
 /**
  * Time in seconds after which the cache is invalidated
+ * TODO document the api's actual rate limits (check http headers for that data)
  */
 const CACHE_TTL_SECONDS = 30
 
@@ -49,7 +55,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx): Promise<Response> =
       .bind(cacheKey)
       .first<CacheStoreModel>()
 
-    const isExpired = cache ? new Date() > new Date(cache.expires_at) : true
+    const isExpired = cache ? (new Date() > new Date(cache.expires_at)) : true
 
     let coinMarketData
     let cacheStatus: CacheStatus
@@ -140,5 +146,6 @@ const getCoinMarketData = async ({ baseCurrency, targetCurrency }: GetCoinMarket
     currentPrice: data.current_price,
     marketCap: data.market_cap,
     fullyDilutedValuation: data.fully_diluted_valuation,
+    quotedFrom: GET_COIN_MARKET_DATA_API_URL,
   }
 }

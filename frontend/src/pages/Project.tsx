@@ -16,7 +16,7 @@ const Project = () => {
   const { projectData, isLoading } = useProjectDataContext()
   const { t } = useTranslation()
 
-  const isDevnet = projectData.cluster !== "mainnet"
+  const isDevnet = projectData?.cluster !== "mainnet"
 
   const expandedTimeline = expandTimelineDataInfo(projectData?.info.timeline ?? [])
 
@@ -40,23 +40,28 @@ const Project = () => {
             />
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-4">
-                <Text text={projectData.info.title} as="h1" className="font-semibold" isLoading={isLoading} />
+                <Text
+                  text={projectData?.info.title}
+                  as="h1"
+                  className="font-semibold"
+                  isLoading={isLoading}
+                  loadingClass="max-w-[120px]"
+                />
                 {isDevnet && <DevnetFlag />}
               </div>
 
               <Text
-                text={projectData.info.subtitle}
+                text={projectData?.info.subtitle}
                 as="span"
                 className="text-fg-primary text-opacity-75"
                 isLoading={isLoading}
+                loadingClass="max-w-[280px] "
               />
             </div>
           </div>
           {/* right side */}
           <div className="flex items-start gap-2">
-            {projectData.info.projectLinks.map((link, index) => (
-              <ExternalLink.Icon key={index} externalLink={link} />
-            ))}
+            {projectData?.info.projectLinks.map((link, index) => <ExternalLink.Icon key={index} externalLink={link} />)}
           </div>
         </div>
 
@@ -65,18 +70,18 @@ const Project = () => {
           <div className="flex gap-5">
             <div className="flex items-center gap-2 border-r-fg-gray-line pr-5 md:border-r-[1px]">
               <span className="text-fg-primary text-opacity-50">{t("chain")}</span>
-              <Img size="4" src={projectData.info.chain.iconUrl} isRounded />
-              <span>{projectData.info.chain.name}</span>
+              <Img size="4" src={projectData?.info.chain.iconUrl} isRounded />
+              <Text text={projectData?.info.chain.name} isLoading={isLoading} loadingClass="max-w-[100px]" />
             </div>
           </div>
           <div className="flex flex-col gap-3 md:flex-row md:gap-5">
             <div className="flex items-center gap-2 pr-5 md:border-r-[1px] md:border-r-fg-gray-line">
               <span className="text-fg-primary text-opacity-50">{t("origin")}</span>
-              <span>{projectData.info.origin}</span>
+              <Text text={projectData?.info.origin} isLoading={isLoading} />
             </div>
             <div className="flex items-center gap-2">
               <span className="text-fg-primary text-opacity-50">{t("sector")}</span>
-              <span>{projectData.info.sector}</span>
+              <Text text={projectData?.info.sector} isLoading={isLoading} />
             </div>
           </div>
         </div>
@@ -87,14 +92,14 @@ const Project = () => {
           <div className="w-full rounded-lg bg-gradient-to-r from-brand-primary/50 to-brand-secondary/15 p-[1px]">
             <div className="flex h-full w-full flex-col items-start justify-between gap-4 rounded-[7px] bg-gradient-to-br from-brand-dimmed-1 via-brand-dimmed-2 via-50% to-brand-dimmed-2 px-4 py-3 lg:flex-row lg:items-center lg:bg-gradient-to-r">
               <div className="flex items-center gap-4">
-                <Img src={projectData.info.curator.avatarUrl} size="10" isFetchingLink={isLoading} isRounded />
-                <div className="flex flex-col">
-                  <span className="text-base">{projectData.info.curator.fullName}</span>
-                  <span className="text-sm opacity-50">{projectData.info.curator.position}</span>
+                <Img src={projectData?.info.curator.avatarUrl} size="10" isFetchingLink={isLoading} isRounded />
+                <div className="flex min-w-[120px] flex-col">
+                  <Text text={projectData?.info.curator.fullName} isLoading={isLoading} />
+                  <Text text={projectData?.info.curator.position} isLoading={isLoading} />
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                {projectData.info.curator.socials.map((social) => (
+                {projectData?.info.curator.socials.map((social) => (
                   <ExternalLink key={social.iconType} externalLink={social} />
                 ))}
               </div>
@@ -105,7 +110,7 @@ const Project = () => {
 
       <hr className="w-full max-w-[calc(100vw-32px)] border-bd-primary lg:max-w-[760px]"></hr>
 
-      <TokenGenerationSection expandedTimeline={expandedTimeline} />
+      {<TokenGenerationSection expandedTimeline={expandedTimeline} />}
 
       <ScrollRestoration />
 

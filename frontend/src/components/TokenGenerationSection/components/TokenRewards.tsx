@@ -15,15 +15,19 @@ type TokenRewardsProps = {
 const TokenRewards = ({ borgCoinInput, borgPriceInUSD }: TokenRewardsProps) => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
-  const tgeData = projectData.info.tge
-  const tokenTicker = tgeData.projectCoin.ticker
-  const tokenIcon = tgeData.projectCoin.iconUrl
+  const tgeData = projectData?.info.tge
+  const tokenTicker = tgeData?.projectCoin.ticker
+  const tokenIcon = tgeData?.projectCoin.iconUrl
+
+
+  if (!projectData) return <></>
 
   const { lpPosition, rewardDistribution, totalToBeReceived } = calculateTokens({
     projectData,
     borgCoinInput: +borgCoinInput,
     borgPriceInUSD,
   })
+
 
   if (projectData.info.lpPositionToBeBurned) {
     return (
@@ -118,7 +122,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD }: TokenRewardsProps) => {
             <Icon icon="SvgPlus" className="mt-1 text-base text-fg-disabled opacity-50" />
 
             <div className="flex gap-2">
-              <Img src={tokenIcon} size="4" customClass="mt-1" />
+              <Img src={tokenIcon} size="4" customClass="mt-1" isRounded />
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-2">
                   {/* Liquidity pool $[TOKEN] */}
@@ -134,11 +138,11 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD }: TokenRewardsProps) => {
           <div className="flex h-fit w-full items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary">
             <Icon icon="SvgLock" className="mt-[-1px] text-base opacity-50" />
             <span className="opacity-50">{t("tge.liquidity_pool")}</span>
-            <Img src={tokenIcon} size="4" />
-            <a href={tgeData.liquidityPool.url} className="underline">
-              <span className="opacity-50">{tgeData.liquidityPool.name}</span>
+            <Img src={tokenIcon} size="4" isRounded />
+            <a href={tgeData?.liquidityPool.url} className="underline">
+              <span className="opacity-50">{tgeData?.liquidityPool.name}</span>
             </a>
-            <span className="-ml-1.5 opacity-50">, {tgeData.liquidityPool.lockingPeriod}</span>
+            <span className="-ml-1.5 opacity-50">, {tgeData?.liquidityPool.lockingPeriod}</span>
           </div>
 
           {/* Plus icon between top and mid sections */}
