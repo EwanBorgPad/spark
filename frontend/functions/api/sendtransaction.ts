@@ -56,6 +56,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const explorerLink = `https://explorer.solana.com/tx/${txId}?cluster=${cluster}`
         console.log(explorerLink)
 
+        const heliusApiKey = SOLANA_RPC_URL.split('api-key=')[1]    // extract helius api key
+
         // get all values neccessary for db update
         const {
             amountInLamports,
@@ -65,7 +67,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             tokenAddress,
             tokenAmount,
             userWalletAddress
-        } = await getDatabaseValues(txId)
+        } = await extractTransactionData(txId, heliusApiKey, cluster)
 
         const eligibilityStatus = await EligibilityService.getEligibilityStatus({
             db: drizzleDb,
@@ -127,9 +129,10 @@ export const onRequestOptions: PagesFunction<ENV> = async (ctx) => {
     }
 }
 
-async function getDatabaseValues(txId: string) {
+async function extractTransactionData(txId: string, heliusApiKey: string, cluster: string) {
     // api to parse with helius transactions with NFT and SPL token transfers which is ideal for our case https://docs.helius.dev/solana-apis/enhanced-transactions-api/parse-transaction-s#parse-transaction-s
-    const response = await fetch(`https://api-devnet.helius.xyz/v0/transactions?api-key=ced8d459-edae-4906-910b-678907f88302&commitment=confirmed`, {
+    const url = cluster === 'devnet' ? `https://api-devnet.helius.xyz/v0/transactions?api-key=${heliusApiKey}` : `https://api.helius.xyz/v0/transactions?api-key=${heliusApiKey}`   // adjust the url from cluster
+    const response = await fetch(url, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json"
