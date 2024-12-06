@@ -22,7 +22,9 @@ const GET_INVESTMENT_INTENT_SUMMARY_URL = API_BASE_URL + "/investmentintentsumma
 const GET_DEPOSITS_URL = API_BASE_URL + "/deposits"
 export const BACKEND_RPC_URL = API_BASE_URL + "/rpcproxy"
 const CREATE_DEPOSIT_TRANSACTION = API_BASE_URL + "/createdeposittransaction"
-const SEND_TRANSACTION = API_BASE_URL + "/sendtransaction"
+const CREATE_CLAIM_TRANSACTION = API_BASE_URL + "/createclaimtransaction"
+const SEND_DEPOSIT_TRANSACTION = API_BASE_URL + "/senddeposittransaction"
+const SEND_CLAIM_TRANSACTION = API_BASE_URL + "/sendclaimtransaction"
 
 type GetEligibilityStatusArgs = {
   address: string
@@ -260,16 +262,18 @@ export type PostCreateDepositTxArgs = {
   tokenAmount: number,
   projectId: string
 }
+export type PostCreateClaimTxArgs = PostCreateDepositTxArgs
 
-type createDepositTxReturnType = {
+type CreateDepositTxReturnType = {
   transaction: string
 }
+type CreateClaimTxReturnType = CreateDepositTxReturnType
 
 const postCreateDepositTx = async ({
   userWalletAddress,
   tokenAmount,
   projectId
-}: PostCreateDepositTxArgs): Promise<createDepositTxReturnType> => {
+}: PostCreateDepositTxArgs): Promise<CreateDepositTxReturnType> => {
   const url = new URL(CREATE_DEPOSIT_TRANSACTION, window.location.href)
   const requestObject = {
     userWalletAddress,
@@ -289,16 +293,41 @@ const postCreateDepositTx = async ({
   return json
 }
 
-export type PostSendTransaction = {
+const postCreateClaimTx = async ({
+  userWalletAddress,
+  tokenAmount,
+  projectId
+}: PostCreateDepositTxArgs): Promise<CreateClaimTxReturnType> => {
+  const url = new URL(CREATE_CLAIM_TRANSACTION, window.location.href)
+  const requestObject = {
+    userWalletAddress,
+    tokenAmount,
+    projectId
+  }
+  const request = JSON.stringify(requestObject)
+  const response = await fetch(url, {
+    method: 'POST',
+    body: request,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
+export type PostSendDepositTransactionArgs = {
   serializedTx: string,
   projectId: string
 }
+export type postSendClaimTransactionArgs = PostSendDepositTransactionArgs
 
-const postSendTransaction = async ({
+const postSendDepositTransaction = async ({
   serializedTx,
   projectId
-}: PostSendTransaction): Promise<createDepositTxReturnType> => {
-  const url = new URL(SEND_TRANSACTION, window.location.href)
+}: PostSendDepositTransactionArgs): Promise<CreateDepositTxReturnType> => {
+  const url = new URL(SEND_DEPOSIT_TRANSACTION, window.location.href)
   const requestObject = {
     serializedTx,
     projectId
@@ -316,6 +345,30 @@ const postSendTransaction = async ({
   return json
 }
 
+const postSendClaimTransaction = async ({
+  serializedTx,
+  projectId
+}: PostSendDepositTransactionArgs): Promise<CreateClaimTxReturnType> => {
+  const url = new URL(SEND_CLAIM_TRANSACTION, window.location.href)
+  const requestObject = {
+    serializedTx,
+    projectId
+  }
+  const request = JSON.stringify(requestObject)
+  const response = await fetch(url, {
+    method: 'POST',
+    body: request,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
+
+
 export const backendApi = {
   postUserDeposit,
   getProject,
@@ -331,5 +384,7 @@ export const backendApi = {
   getInvestmentIntentSummary,
   getDeposits,
   postCreateDepositTx,
-  postSendTransaction
+  postSendDepositTransaction,
+  postCreateClaimTx,
+  postSendClaimTransaction
 }
