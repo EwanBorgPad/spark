@@ -251,26 +251,6 @@ const uploadFileToBucket = async ({
   })
 }
 
-const postUserDeposit = async ({
-  projectId, transaction
-}: PostUserDepositRequest): Promise<any> => {
-  const url = new URL(USER_DEPOSIT_URL, window.location.href)
-  const requestObject = {
-    projectId,
-    transaction
-  }
-  const request = JSON.stringify(requestObject)
-  const response = await fetch(url, {
-    method: "POST",
-    body: request,
-    headers: {
-      "Content-Type": "application/json",
-    }
-  })
-  const json = await response.json()
-  if (!response.ok) throw new Error(json.message)
-  return json
-}
 
 export type PostCreateDepositTxArgs = {
   userWalletAddress: string,
@@ -385,7 +365,6 @@ const postSendClaimTransaction = async ({
 
 
 export const backendApi = {
-  postUserDeposit,
   getProject,
   getProjects,
   getExchange,

@@ -11,7 +11,7 @@ import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
 import { RefObject } from "react"
 import { toast } from "react-toastify"
-import { BACKEND_RPC_URL, backendApi, PostUserDepositRequest, PostCreateDepositTxArgs, PostSendTransaction } from "@/data/backendApi"
+import { BACKEND_RPC_URL, backendApi, PostCreateDepositTxArgs, PostSendDepositTransactionArgs } from "@/data/backendApi"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
@@ -70,8 +70,8 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     mutateAsync: sendTransaction,
     isPending: isPendingSendTransaction,
   } = useMutation({
-    mutationFn: async (payload: PostSendTransaction) => {
-      return await backendApi.postSendTransaction(payload)
+    mutationFn: async (payload: PostSendDepositTransactionArgs) => {
+      return await backendApi.postSendDepositTransaction(payload)
     },
     onSuccess: async () => {
       toast('Transaction was successful!')
