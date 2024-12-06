@@ -9,11 +9,12 @@ import { TgeWrapper } from "./Wrapper"
 
 import { ContributionAndRewardsType } from "@/data/contributionAndRewardsData"
 import { Button } from "@/components/Button/Button"
-import { formatCurrencyAmount } from "@/utils/format"
+import { formatCurrencyAmount } from "shared/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 import { formatDateForTimer } from "@/utils/date-helpers"
 import { isBefore } from "date-fns/isBefore"
 import Img from "@/components/Image/Img"
+import Text from "@/components/Text"
 
 type RewardsProps = {
   hasDistributionStarted: boolean
@@ -21,27 +22,21 @@ type RewardsProps = {
 }
 
 const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
-  const { projectData } = useProjectDataContext()
-  const { iconUrl, ticker } = projectData.info.tge.projectCoin
+  const { projectData, isLoading } = useProjectDataContext()
+  const iconUrl = projectData?.info.tge.projectCoin.iconUrl || ""
+  const ticker = projectData?.info.tge.projectCoin.ticker || ""
   const { t } = useTranslation()
 
   const currentMoment = new Date()
   const nextScheduledPayment = rewards.payoutSchedule.find(
     (payment) => !payment.isClaimed && isBefore(currentMoment, payment.date),
   )
-  const amountToBeClaimed = rewards.payoutSchedule.reduce(
-    (accumulator, payment) => {
-      if (
-        !payment.isClaimed &&
-        !isBefore(currentMoment, payment.date) &&
-        isBefore(payment.date, currentMoment)
-      ) {
-        return accumulator + payment.amount
-      }
-      return accumulator
-    },
-    0,
-  )
+  const amountToBeClaimed = rewards.payoutSchedule.reduce((accumulator, payment) => {
+    if (!payment.isClaimed && !isBefore(currentMoment, payment.date) && isBefore(payment.date, currentMoment)) {
+      return accumulator + payment.amount
+    }
+    return accumulator
+  }, 0)
 
   const claimRewardsHandler = () => {
     /**
@@ -56,9 +51,7 @@ const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
       <Divider icon="SvgMedal" />
       <div className="mb-7 flex w-full flex-col items-center gap-1">
         <h2 className="text-4xl font-semibold">{t("sale_over.rewards")}</h2>
-        <p className="text-center text-sm opacity-60">
-          {t("sale_over.monthly_payments_need_to")}
-        </p>
+        <p className="text-center text-sm opacity-60">{t("sale_over.monthly_payments_need_to")}</p>
         <span className="cursor-pointer text-center text-sm underline opacity-60">
           {t("sale_over.learn_more_about")}
         </span>
@@ -83,10 +76,7 @@ const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
           </>
         ) : (
           <div className="flex items-center justify-center gap-2 px-4 pb-6 pt-12">
-            <Icon
-              icon="SvgCircledCheckmark"
-              className="text-lg text-brand-primary"
-            />
+            <Icon icon="SvgCircledCheckmark" className="text-lg text-brand-primary" />
             <span>{t("reward_distribution.all_rewards_claimed")}</span>
           </div>
         )}
@@ -95,33 +85,24 @@ const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
             <hr className="w-full max-w-[calc(100%-32px)] border-bd-primary" />
             <div className="flex w-full flex-col gap-2.5 p-4 pb-7">
               <div className="flex w-full items-center justify-between gap-2">
-                <span className="text-sm font-medium">
-                  {t("reward_distribution.claimed")}
-                </span>
+                <span className="text-sm font-medium">{t("reward_distribution.claimed")}</span>
                 <div className="flex items-center gap-2">
-                  <Img src={iconUrl} size="4" />
+                  <Img src={iconUrl} size="4" isFetchingLink={isLoading} />
                   <p>
                     <span className="mr-1">{rewards.claimedTokens}</span>
                     <span className="mr-1">/</span>
                     <span className="mr-1">{rewards.totalTokens}</span>
-                    <span>{projectData.info.tge.projectCoin.ticker}</span>
+                    <Text text={ticker} isLoading={isLoading} />
                   </p>
                 </div>
               </div>
-              <ProgressBar
-                fulfilledAmount={rewards.claimedTokens}
-                totalAmount={rewards.totalTokens}
-              />
+              <ProgressBar fulfilledAmount={rewards.claimedTokens} totalAmount={rewards.totalTokens} />
             </div>
           </>
         )}
       </TgeWrapper>
       {hasDistributionStarted && (
-        <ShowPayoutSchedule
-          ticker={ticker}
-          tokenIconUrl={iconUrl ?? ""}
-          payoutSchedule={rewards.payoutSchedule}
-        />
+        <ShowPayoutSchedule ticker={ticker} tokenIconUrl={iconUrl ?? ""} payoutSchedule={rewards.payoutSchedule} />
       )}
     </>
   )

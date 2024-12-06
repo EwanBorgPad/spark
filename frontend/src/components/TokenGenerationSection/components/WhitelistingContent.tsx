@@ -1,6 +1,6 @@
 import { ConnectButton } from "@/components/Header/ConnectButton"
 import { useWalletContext } from "@/hooks/useWalletContext"
-import { formatCurrencyAmount } from "@/utils/format"
+import { formatCurrencyAmount } from "shared/utils/format"
 import { useTranslation } from "react-i18next"
 import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"
@@ -11,13 +11,15 @@ import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import SimpleLoader from "@/components/Loaders/SimpleLoader"
 import Img from "@/components/Image/Img"
 import { useParams } from "react-router-dom"
+import Text from "@/components/Text"
 
 const WhitelistingContent = () => {
   const { t } = useTranslation()
 
   const { walletState } = useWalletContext()
   const { projectData, isLoading } = useProjectDataContext()
-  const tgeData = projectData.info.tge
+  const tgeData = projectData?.info.tge
+  const raiseTarget = tgeData?.raiseTarget ? formatCurrencyAmount(tgeData.raiseTarget, false, 0) : ""
 
   const baseCurrency = "swissborg"
   const targetCurrency = "usd"
@@ -31,7 +33,7 @@ const WhitelistingContent = () => {
     queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
   const borgPriceInUSD = data?.currentPrice || null
-  const tokenPriceInUSD = projectData.info.tge.fixedTokenPriceInUSD
+  const tokenPriceInUSD = projectData?.info.tge.fixedTokenPriceInUSD || 0
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
   const { projectId } = useParams()
@@ -70,16 +72,15 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.raise_target")}</span>
           <div className="flex gap-2">
-            <span>${formatCurrencyAmount(tgeData.raiseTarget, false, 0)}</span>
-            {/* <span>in BORG</span> */}
+            <Text text={raiseTarget} isLoading={isLoading} />
           </div>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
         <div className="flex w-full items-center justify-between py-2">
           <div className="flex items-center gap-2">
-            <Img src={tgeData.projectCoin.iconUrl} size="6" isFetchingLink={isLoading} isRounded />
-            <span>{tgeData.projectCoin.ticker}</span>
+            <Img src={tgeData?.projectCoin.iconUrl} size="6" isFetchingLink={isLoading} isRounded />
+            <Text text={tgeData?.projectCoin.ticker} isLoading={isLoading} />
             <span>{t("tge.price")}</span>
           </div>
           <div className="flex flex-col items-end">
@@ -116,8 +117,8 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.defi_protocol")}</span>
           <div className="flex items-center gap-2">
-            <Img src={tgeData.liquidityPool.iconUrl} size="5" isFetchingLink={isLoading} isRounded />
-            <span>{tgeData.liquidityPool.name}</span>
+            <Img src={tgeData?.liquidityPool.iconUrl} size="5" isFetchingLink={isLoading} isRounded />
+            <Text text={tgeData?.liquidityPool.name} isLoading={isLoading} />
           </div>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
@@ -135,14 +136,14 @@ const WhitelistingContent = () => {
         {/* LP Type */}
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.lbp_type")}</span>
-          <span>{tgeData.liquidityPool.lbpType}</span>
+          <Text text={tgeData?.liquidityPool.lbpType} isLoading={isLoading} />
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
         {/* Locking Period */}
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.locking_period")}</span>
-          <span>{tgeData.liquidityPool.lockingPeriod}</span>
+          <Text text={tgeData?.liquidityPool.lockingPeriod} isLoading={isLoading} />
         </div>
       </div>
 

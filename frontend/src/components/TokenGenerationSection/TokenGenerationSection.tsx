@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react"
-import { useTranslation } from "react-i18next"
 
 import { ExpandedTimelineEventType } from "../Timeline/Timeline"
 import { getCurrentTgeEvent } from "@/utils/getCurrentTgeEvent"
@@ -9,26 +8,32 @@ import SaleOver from "./TGEStatus/SaleOver"
 import LiveNow from "./TGEStatus/LiveNow"
 import DistributionOver from "./TGEStatus/DistributionOver"
 import Upcoming from "./TGEStatus/Upcoming.tsx"
+import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
+import TgeEventSkeleton from "./TGEStatus/TgeEventSkeleton.tsx"
 
 type Props = {
   expandedTimeline: ExpandedTimelineEventType[]
 }
 
 const TokenGenerationSection = ({ expandedTimeline }: Props) => {
-  const [currentTgeEvent, setCurrentTgeEvent] = useState<ExpandedTimelineEventType>(
+  const { isLoading } = useProjectDataContext()
+  const [currentTgeEvent, setCurrentTgeEvent] = useState<ExpandedTimelineEventType | null>(
     getCurrentTgeEvent(expandedTimeline),
   )
 
   const updateTgeStatus = useCallback(() => {
+    if (isLoading) return
     const newTgeStatus = getCurrentTgeEvent(expandedTimeline)
     setCurrentTgeEvent(newTgeStatus)
-  }, [expandedTimeline])
+  }, [expandedTimeline, isLoading])
 
   useEffect(() => {
+    if (isLoading) return
     updateTgeStatus()
-  }, [expandedTimeline, updateTgeStatus])
+  }, [expandedTimeline, isLoading, updateTgeStatus])
 
-  const renderComponent = (tgeEvent: ExpandedTimelineEventType) => {
+  const renderComponent = (tgeEvent: ExpandedTimelineEventType | null) => {
+    if (!tgeEvent || !currentTgeEvent) return <></>
     switch (tgeEvent.id) {
       case "UPCOMING":
         return <Upcoming timeline={expandedTimeline} />
@@ -46,10 +51,10 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
 
   return (
     <div className="flex w-full flex-col items-center">
-      {currentTgeEvent.nextEventDate && (
+      {currentTgeEvent?.nextEventDate && (
         <CountDownCallback endOfEvent={currentTgeEvent.nextEventDate} callbackWhenTimeExpires={updateTgeStatus} />
       )}
-      {renderComponent(currentTgeEvent)}
+      {isLoading ? <TgeEventSkeleton /> : renderComponent(currentTgeEvent)}
     </div>
   )
 }

@@ -6,7 +6,8 @@ npx wrangler d1 execute borgpad-production-database --remote --command "SELECT
   json -> 'termsOfUse' ->> 'countryOfOrigin' AS terms_of_use_country_of_origin,
   json -> 'termsOfUse' ->> 'acceptedAt' AS terms_of_use_accepted_at,
   json -> 'referral' -> 'solana-id' ->> 'referrerTwitterHandle' AS referrer
-FROM user;" &> "export_solana-id_$(date -u +%Y%m%d_%H%M%S).json"
+FROM user
+WHERE json -> 'investmentIntent' -> 'solana-id' IS NOT NULL;" &> "export_solana-id_$(date -u +%Y%m%d_%H%M%S).json"
 
 # moemate
 npx wrangler d1 execute borgpad-production-database --remote --command "SELECT

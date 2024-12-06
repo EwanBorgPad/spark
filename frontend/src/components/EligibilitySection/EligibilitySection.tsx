@@ -31,6 +31,7 @@ export const EligibilityTiersSection = ({ className }: { className?: string }) =
     },
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
+    staleTime: 1000 * 60 * 5, // 5 minutes
   })
 
   // @TODO - replace checkup below with more reliable source of data
@@ -364,14 +365,12 @@ const TierSkeletonContainer = () => {
     )
   }
 
-  return projectData.info?.tiers.map((tier) => {
+  return projectData?.info?.tiers.map((tier) => {
     return (
       // tier container
       <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
         <span>{tier.label}</span>
-        {tier.description && (
-          <span className="text-xs text-fg-secondary">{tier.description}</span>
-        )}
+        {tier.description && <span className="text-xs text-fg-secondary">{tier.description}</span>}
         <div className="flex flex-col gap-2 rounded-2xl">
           {/* singular tier */}
           {tier.quests.map((_, index) => (

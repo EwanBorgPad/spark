@@ -3,6 +3,7 @@ import React from "react"
 import { useTranslation } from "react-i18next"
 import { Icon } from "@/components/Icon/Icon"
 import { twMerge } from "tailwind-merge"
+import Text from "@/components/Text"
 
 type Props = {
   className?: string
@@ -10,13 +11,12 @@ type Props = {
 
 const DataRoom = ({ className }: Props) => {
   const { t } = useTranslation()
-  const {
-    projectData: { info },
-  } = useProjectDataContext()
+  const { projectData, isLoading } = useProjectDataContext()
+  const info = projectData?.info
 
   return (
     <section className={twMerge("group w-full lg:max-w-[792px]", className)}>
-      <a className="data-room w-full" target="_blank" rel="noreferrer" href={info.dataRoom.url}>
+      <a className="data-room w-full" target="_blank" rel="noreferrer" href={info?.dataRoom.url}>
         {/* @TODO - background image */}
         {/* <Img
         src={info.dataRoom.backgroundImgUrl}
@@ -25,9 +25,7 @@ const DataRoom = ({ className }: Props) => {
         showFallback={false}
       /> */}
         <div className="z-[1] flex flex-col">
-          <span className="font-medium">
-            {info.title} {t("data_room")}
-          </span>
+          <Text text={`${info?.title} ${t("data_room")}`} className="font-medium" isLoading={isLoading} />
           <span className="font-normal opacity-50">{t("timeline.learn_more_about")}</span>
         </div>
         <Icon icon="SvgArrowRight" className="group-hover:scale-140 text-[20px] transition-transform" />

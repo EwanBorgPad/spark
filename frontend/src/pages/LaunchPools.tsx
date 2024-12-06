@@ -21,7 +21,7 @@ const LaunchPools = () => {
   const [projects, setProjects] = useState<ExpandedProject[]>([])
   const { t } = useTranslation()
 
-  const { data } = useQuery<GetProjectsResponse>({
+  const { data, isLoading } = useQuery<GetProjectsResponse>({
     queryFn: () =>
       backendApi.getProjects({
         page: 1,
@@ -29,6 +29,9 @@ const LaunchPools = () => {
       }),
     queryKey: ["getProjects", 1],
   })
+
+  const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
+
 
   useEffect(() => {
     if (!data?.projects) return
@@ -51,7 +54,7 @@ const LaunchPools = () => {
         </p>
         <div className="flex flex-col items-center gap-4 pt-6">
           <span className="text-sm font-normal text-fg-primary opacity-90">{t("launch_pools.successful_lp")}</span>
-          <div className="flex flex-wrap items-center justify-center gap-10 gap-y-3">
+          <div className="flex min-h-[32px] flex-wrap items-center justify-center gap-10 gap-y-3">
             {displayLogos.map((logo) => (
               <Img
                 key={logo}
@@ -64,11 +67,13 @@ const LaunchPools = () => {
           </div>
         </div>
 
-        <div className="mt-[64px] flex max-w-[1080px] flex-col items-center">
-          <ul className="grid grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project) => (
-              <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.info.id} />
-            ))}
+        <div className="mt-[64px] flex w-full max-w-[1080px] flex-col items-center">
+          <ul className="grid w-full grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {!isLoading
+              ? projects.map((project) => (
+                  <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.info.id} />
+                ))
+              : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
           </ul>
         </div>
       </section>

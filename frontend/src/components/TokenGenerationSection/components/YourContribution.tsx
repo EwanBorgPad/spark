@@ -4,38 +4,37 @@ import { ContributionAndRewardsType } from "@/data/contributionAndRewardsData"
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import { formatDateForDisplay } from "@/utils/date-helpers"
-import { formatCurrencyAmount } from "@/utils/format"
+import { formatCurrencyAmount } from "shared/utils/format"
 import ClaimYourPosition from "./ClaimYourPosition"
 import { Icon } from "@/components/Icon/Icon"
 import { PastOrders } from "./PastOrders"
 import { isBefore } from "date-fns/isBefore"
 import Img from "@/components/Image/Img"
+import Text from "@/components/Text"
 
 type YourContributionProps = {
   contributionInfo: ContributionAndRewardsType
   eventData: ExpandedTimelineEventType
 }
-const YourContribution = ({
-  contributionInfo,
-  eventData,
-}: YourContributionProps) => {
+const YourContribution = ({ contributionInfo, eventData }: YourContributionProps) => {
   const { t } = useTranslation()
-  const { projectData } = useProjectDataContext()
+  const { projectData, isLoading } = useProjectDataContext()
   const {
     claimPositions: { mainPosition, rewards },
     suppliedBorg,
   } = contributionInfo
-  const { liquidityPool, projectCoin } = projectData.info.tge
+  const liquidityPool = projectData?.info.tge.liquidityPool
+  const projectCoin = projectData?.info.tge.projectCoin
 
   const hasDistributionStarted =
-    eventData.id === "REWARD_DISTRIBUTION"
-    && liquidityPool.unlockDate
-    && isBefore(liquidityPool.unlockDate, new Date())
+    eventData.id === "REWARD_DISTRIBUTION" &&
+    liquidityPool?.unlockDate &&
+    isBefore(liquidityPool.unlockDate, new Date())
 
-  const alreadyClaimedPercent = +(
-    (mainPosition.borg.claimed / mainPosition.borg.total) *
-    100
-  ).toFixed(2)
+  const alreadyClaimedPercent = +((mainPosition.borg.claimed / mainPosition.borg.total) * 100).toFixed(2)
+
+  const unlockDate = `${t("sale_over.unlocks_on")}
+  ${liquidityPool?.unlockDate ? formatDateForDisplay(liquidityPool.unlockDate) : "TBC"}`
 
   return (
     <>
@@ -57,26 +56,23 @@ const YourContribution = ({
             <span>BORG</span>
             <div className="flex items-center gap-2">
               <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
-              <Img src={projectCoin.iconUrl} size="4" />
+              <Img src={projectCoin?.iconUrl} size="4" isFetchingLink={isLoading} isRounded />
               <span className=" text-base">{mainPosition.projectTokens.total}</span>
-              <span className=" text-base">{projectCoin.ticker}</span>
+              <Text text={projectCoin?.ticker} className="text-base" isLoading={isLoading} />
             </div>
           </div>
           <div className="flex h-fit items-center gap-1 rounded-full text-xs text-fg-primary ">
-            <Img src={liquidityPool.iconUrl} size="4" />
-            <a href={liquidityPool.url} className="underline">
-              <span className="opacity-50">{liquidityPool.name}</span>
+            <Img src={liquidityPool?.iconUrl} size="4" isFetchingLink={isLoading} isRounded />
+            <a href={liquidityPool?.url} className="underline">
+              <span className="opacity-50">{liquidityPool?.name}</span>
               <span className="opacity-50">{t("liquidity_pool")},</span>
             </a>
-            <span className="opacity-50">{liquidityPool.lockingPeriod}</span>
+            <span className="opacity-50">{liquidityPool?.lockingPeriod}</span>
           </div>
           {hasDistributionStarted ? (
             <ClaimYourPosition alreadyClaimedPercent={alreadyClaimedPercent} mainPosition={mainPosition} />
           ) : (
-            <span className="text-xs">
-              {t("sale_over.unlocks_on")}{" "}
-              {liquidityPool.unlockDate ? formatDateForDisplay(liquidityPool.unlockDate) : "TBC"}
-            </span>
+            <Text text={unlockDate} className="text-xs" isLoading={isLoading} />
           )}
 
           <div className="absolute -bottom-[10px] bg-default p-[2px]">
@@ -87,12 +83,12 @@ const YourContribution = ({
         <div className="flex flex-col items-center gap-1 px-3 pb-6 pt-4">
           <span className="mb-1 text-xs">{t("sale_over.your_reward")}</span>
           <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-medium text-fg-primary ">
-            <Img src={projectCoin.iconUrl} size="4" />
+            <Img src={projectCoin?.iconUrl} isFetchingLink={isLoading} isRounded size="4" />
             <span className=" text-base">{rewards.totalTokens}</span>
-            <span className=" text-base">{projectCoin.ticker}</span>
+            <span className=" text-base">{projectCoin?.ticker}</span>
           </div>
           <div className="flex h-fit items-center gap-1.5 rounded-full text-xs text-fg-primary ">
-            <span className="opacity-50">{projectData?.rewards?.description}</span>
+            <Text text={projectData?.rewards?.description} isLoading={isLoading} className="opacity-50" />
           </div>
         </div>
       </div>

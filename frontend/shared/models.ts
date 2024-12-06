@@ -91,6 +91,7 @@ export const infoSchema = z.object({
   ///// project token info /////
   projectOwnerAddress: SolanaAddressSchema,
 
+  // below 3x2 fields are most important, move them into an object 'lp' or something like that
   launchedTokenMintAddress: SolanaAddressSchema,
   launchedTokenLpDistribution: z.number().int(),
   launchedTokenCap: z.number().int(),
@@ -99,15 +100,19 @@ export const infoSchema = z.object({
   raisedTokenMinCap: z.number().int(),
   raisedTokenMaxCap: z.number().int(),
 
+  // remove cliffDuration and vestingDuration -- calculate from timeline, or smth else, either way -- remove redundancy
   cliffDuration: z.number().int(),
   vestingDuration: z.number().int(),
 
+  // make this an enum which describes lpType (might be more than 2 in the future, boolean isn't scalable in this sense)
   lpPositionToBeBurned: z.boolean().optional(),
-  totalTokensForSale: z.number({ coerce: true }).int(), // total tokens for LP positions
-  totalTokensForRewardDistribution: z.number({ coerce: true }).int(),
+
+  // non-negative minimums, max safe integer maximums
+  totalTokensForSale: z.number({ coerce: true }).min(0).max(Number.MAX_SAFE_INTEGER).int(), // total tokens for LP positions
+  totalTokensForRewardDistribution: z.number({ coerce: true }).min(0).max(Number.MAX_SAFE_INTEGER).int(),
 
   tge: z.object({
-    raiseTarget: z.number({ coerce: true }).int(),
+    raiseTarget: z.number({ coerce: true }).max(Number.MAX_SAFE_INTEGER).int(),
     projectCoin: z.object({
       iconUrl: urlSchema(),
       ticker: z.string().min(1),
@@ -123,8 +128,10 @@ export const infoSchema = z.object({
       unlockDate: dateSchema().nullable(),
       url: z.string().min(1),
     }),
+    // move somewhere else
     tweetUrl: z.string(),
   }),
+  // move data room also , not critical data
   dataRoom: z.object({
     backgroundImgUrl: urlSchema(),
     url: z.string().min(1),
@@ -155,6 +162,13 @@ export const userDepositSchema = z.object({
 
 const SolanaClusterSchema = z.enum(['mainnet', 'devnet'])
 
+/**
+ * Refactor this:
+ *  - better structure (first structure wasn't designed at all, it was just built-upon)
+ *  - default cluster (mainnet)
+ * Calculate dynamically everything that can be, don't duplicate data in json:
+ *  - token price
+ */
 export const projectSchema = z.object({
   cluster: SolanaClusterSchema.optional(),
   info: infoSchema,
@@ -185,6 +199,7 @@ export type GetExchangeResponse = {
   currentPrice: number
   marketCap: number
   fullyDilutedValuation: number
+  quotedFrom?: string
   cache?: unknown
 }
 export type GetPresignedUrlResponse = {

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import { Icon } from "@/components/Icon/Icon"
 import Img from "@/components/Image/Img"
-import { formatCurrencyAmount } from "@/utils/format"
+import { calculateTokens } from "../../../../shared/utils/calculateTokens"
 
 type TokenRewardsProps = {
   borgCoinInput: string
@@ -12,104 +12,22 @@ type TokenRewardsProps = {
   tokenPriceInUSD: number | null
 }
 
-const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPriceInUSD }: TokenRewardsProps) => {
+const TokenRewards = ({ borgCoinInput, borgPriceInUSD }: TokenRewardsProps) => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
-  const tgeData = projectData.info.tge
-  const tokenTicker = tgeData.projectCoin.ticker
-  const tokenIcon = tgeData.projectCoin.iconUrl
+  const tgeData = projectData?.info.tge
+  const tokenTicker = tgeData?.projectCoin.ticker
+  const tokenIcon = tgeData?.projectCoin.iconUrl
 
-  const getLiquidityPoolValues = () => {
-    if (!borgCoinInput || !tokenPriceInBORG || !tokenPriceInUSD || !borgPriceInUSD)
-      return {
-        tokenLp: { formatted: "0", unformatted: null },
-        borgLp: { formatted: "0", unformatted: null },
-      }
 
-    // const totalTokensForLpPosition = projectData.info.totalTokensForSale
+  if (!projectData) return <></>
 
-    // // token pool size value in dollars is equivalent to BORG pool size, which is the raise target
-    // const tokenPoolSize = projectData.info.tge.raiseTarget
+  const { lpPosition, rewardDistribution, totalToBeReceived } = calculateTokens({
+    projectData,
+    borgCoinInput: +borgCoinInput,
+    borgPriceInUSD,
+  })
 
-    // // 1 dollar invested gives this much tokens in LP
-    // const oneInvestedDollarGives = totalTokensForLpPosition / tokenPoolSize
-
-    // // 1 BORG invested gives this much reward tokens
-    // const oneInvestedBorgGives = borgPriceInUSD * oneInvestedDollarGives
-
-    // // total invested $BORG gives this much tokens in LP
-    // const totalInvestedBorgGivesThisMuchLPTokens = +borgCoinInput * oneInvestedBorgGives
-
-    // input is divided equally amongst token and borg lp values
-    const tokenLpUnformatted = +borgCoinInput / 2 / tokenPriceInBORG
-    const borgLpUnformatted = +borgCoinInput / 2
-    return {
-      tokenLp: {
-        formatted: formatCurrencyAmount(tokenLpUnformatted, false) || "0",
-        unformatted: tokenLpUnformatted,
-        usd: formatCurrencyAmount(tokenLpUnformatted * tokenPriceInUSD, true),
-      },
-      borgLp: {
-        formatted: formatCurrencyAmount(borgLpUnformatted, false) || "0",
-        unformatted: borgLpUnformatted,
-        usd: formatCurrencyAmount(borgLpUnformatted * borgPriceInUSD, true),
-      },
-    }
-  }
-
-  const getTokenReward = () => {
-    if (!borgCoinInput || !tokenPriceInBORG || !borgPriceInUSD) return { formatted: "0", unformatted: null }
-
-    // new calculation
-    const totalTokensForRewardDistribution = projectData.info.totalTokensForRewardDistribution
-
-    // token pool size value in dollars is equivalent to BORG pool size, which is the raise target
-    const tokenPoolSize = projectData.info.tge.raiseTarget
-
-    // 1 dollar invested gives this much reward tokens
-    const oneInvestedDollarGives = totalTokensForRewardDistribution / tokenPoolSize
-
-    // 1 BORG invested gives this much reward tokens
-    const oneInvestedBorgGives = borgPriceInUSD * oneInvestedDollarGives
-
-    // total invested BORG gives this much reward tokens
-    const totalInvestedBorgGives = +borgCoinInput * oneInvestedBorgGives
-
-    return {
-      unformatted: totalInvestedBorgGives,
-      formatted: formatCurrencyAmount(totalInvestedBorgGives, false) || "0",
-      usd: tokenPriceInUSD ? formatCurrencyAmount(totalInvestedBorgGives * tokenPriceInUSD, true) : "0",
-    }
-  }
-
-  const liquidityPoolValues = getLiquidityPoolValues()
-
-  const getTotalTokensToBeReceived = () => {
-    const totalTokensFromLiquidityPool = liquidityPoolValues.tokenLp?.unformatted || 0
-    const totalTokensReceivedInRewardsDistribution = getTokenReward().unformatted || 0
-    const totalTargetToken = formatCurrencyAmount(
-      totalTokensReceivedInRewardsDistribution + totalTokensFromLiquidityPool,
-      false,
-    )
-    return totalTargetToken
-  }
-
-  const totalLpPosition = {
-    borg: liquidityPoolValues.borgLp.formatted,
-    borgInUSD: liquidityPoolValues.borgLp.usd,
-    token: liquidityPoolValues.tokenLp.formatted,
-    tokenInUSD: liquidityPoolValues.tokenLp.usd,
-  }
-  const rewardDistribution = {
-    token: getTokenReward().formatted,
-    tokenInUSD: getTokenReward().usd,
-  }
-  const totalAssetsToBeReceived = {
-    borg: liquidityPoolValues.borgLp.formatted,
-    token: getTotalTokensToBeReceived(),
-  }
-
-  console.log(typeof totalLpPosition.borg)
 
   if (projectData.info.lpPositionToBeBurned) {
     return (
@@ -152,7 +70,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
                 <Icon icon="SvgBorgCoin" className="mt-1 opacity-50" />
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-2 text-fg-tertiary">
-                    <span className="text-base">{totalLpPosition.borg}</span>
+                    <span className="text-base">{lpPosition.borg}</span>
                     <span>BORG</span>
                   </div>
                 </div>
@@ -165,7 +83,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-2">
                     {/* Liquidity pool $[TOKEN] */}
-                    <span className="text-base">{totalLpPosition.token}</span>
+                    <span className="text-base">{lpPosition.token}</span>
                     <span className="text-base">{tokenTicker}</span>
                   </div>
                 </div>
@@ -194,24 +112,24 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
               <Icon icon="SvgBorgCoin" className="mt-1" />
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-2">
-                  <span className="text-base">{totalLpPosition.borg}</span>
+                  <span className="text-base">{lpPosition.borg}</span>
                   <span>BORG</span>
                 </div>
-                <span className="text-sm font-normal text-fg-tertiary">{totalLpPosition.borgInUSD}</span>
+                <span className="text-sm font-normal text-fg-tertiary">{lpPosition.borgInUSD}</span>
               </div>
             </div>
 
             <Icon icon="SvgPlus" className="mt-1 text-base text-fg-disabled opacity-50" />
 
             <div className="flex gap-2">
-              <Img src={tokenIcon} size="4" customClass="mt-1" />
+              <Img src={tokenIcon} size="4" customClass="mt-1" isRounded />
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-2">
                   {/* Liquidity pool $[TOKEN] */}
-                  <span className="text-base">{totalLpPosition.token}</span>
+                  <span className="text-base">{lpPosition.token}</span>
                   <span className="text-base">{tokenTicker}</span>
                 </div>
-                <span className="text-sm font-normal text-fg-tertiary">{totalLpPosition.tokenInUSD}</span>
+                <span className="text-sm font-normal text-fg-tertiary">{lpPosition.tokenInUSD}</span>
               </div>
             </div>
           </div>
@@ -220,11 +138,11 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
           <div className="flex h-fit w-full items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary">
             <Icon icon="SvgLock" className="mt-[-1px] text-base opacity-50" />
             <span className="opacity-50">{t("tge.liquidity_pool")}</span>
-            <Img src={tokenIcon} size="4" />
-            <a href={tgeData.liquidityPool.url} className="underline">
-              <span className="opacity-50">{tgeData.liquidityPool.name}</span>
+            <Img src={tokenIcon} size="4" isRounded />
+            <a href={tgeData?.liquidityPool.url} className="underline">
+              <span className="opacity-50">{tgeData?.liquidityPool.name}</span>
             </a>
-            <span className="-ml-1.5 opacity-50">, {tgeData.liquidityPool.lockingPeriod}</span>
+            <span className="-ml-1.5 opacity-50">, {tgeData?.liquidityPool.lockingPeriod}</span>
           </div>
 
           {/* Plus icon between top and mid sections */}
@@ -257,10 +175,10 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, tokenPriceInBORG, tokenPr
         <div className="flex flex-col gap-2 p-3 text-sm">
           <span>Total Rewards</span>
           <div className="flex flex-wrap gap-2 font-medium text-fg-secondary">
-            <span>{totalAssetsToBeReceived.borg}</span>
+            <span>{totalToBeReceived.borg}</span>
             <span>{"BORG"}</span>
             <span>{"+"}</span>
-            <span>{totalAssetsToBeReceived.token}</span>
+            <span>{totalToBeReceived.token}</span>
             <span>{tokenTicker}</span>
           </div>
         </div>

@@ -4,11 +4,12 @@ import { twMerge } from "tailwind-merge"
 import { Icon } from "@/components/Icon/Icon"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import { ContributionAndRewardsType } from "@/data/contributionAndRewardsData"
-import { formatCurrencyAmount } from "@/utils/format"
+import { formatCurrencyAmount } from "shared/utils/format"
 import { CustomInputSlider } from "@/components/InputField/CustomInputSlider"
 import { Button } from "@/components/Button/Button"
 import { useTranslation } from "react-i18next"
 import Img from "@/components/Image/Img"
+import Text from "@/components/Text"
 
 type ClaimYourPositionModalProps = {
   onClose: () => void
@@ -17,13 +18,10 @@ type ClaimYourPositionModalProps = {
 
 const claimBtnValues = [25, 50, 75, 100]
 
-const ClaimYourPositionModal = ({
-  onClose,
-  mainPosition,
-}: ClaimYourPositionModalProps) => {
+const ClaimYourPositionModal = ({ onClose, mainPosition }: ClaimYourPositionModalProps) => {
   const [claimPercent, setClaimPercent] = useState<number>(100)
   const numberInputRef = useRef<HTMLInputElement>(null)
-  const { projectData } = useProjectDataContext()
+  const { projectData, isLoading } = useProjectDataContext()
   const { t } = useTranslation()
 
   const claimChosenValueHandler = () => {
@@ -35,10 +33,8 @@ const ClaimYourPositionModal = ({
   useLayoutEffect(() => {
     if (!numberInputRef.current?.clientWidth) return
     if (claimPercent < 10) numberInputRef.current.style.width = 1 + "ch"
-    if (claimPercent >= 10 && claimPercent < 20)
-      numberInputRef.current.style.width = 17 + "px"
-    if (claimPercent >= 20 && claimPercent < 100)
-      numberInputRef.current.style.width = 2 + "ch"
+    if (claimPercent >= 10 && claimPercent < 20) numberInputRef.current.style.width = 17 + "px"
+    if (claimPercent >= 20 && claimPercent < 100) numberInputRef.current.style.width = 2 + "ch"
     if (claimPercent >= 100) numberInputRef.current.style.width = 3 + "ch"
   }, [claimPercent])
 
@@ -58,8 +54,7 @@ const ClaimYourPositionModal = ({
 
   const availableForClaim = {
     borg: mainPosition.borg.total - mainPosition.borg.claimed,
-    projectTokens:
-      mainPosition.projectTokens.total - mainPosition.projectTokens.claimed,
+    projectTokens: mainPosition.projectTokens.total - mainPosition.projectTokens.claimed,
   }
   const toBeClaimed = {
     borg: (availableForClaim.borg * claimPercent) / 100,
@@ -104,10 +99,12 @@ const ClaimYourPositionModal = ({
               <Icon icon="SvgPlus" className="rounded-full text-fg-disabled" />
               <div className="flex flex-1 flex-col items-start justify-start gap-[34px] rounded-lg border border-bd-primary bg-tertiary p-4">
                 <div className="flex items-center justify-center gap-2">
-                  <Img src={projectData.info.tge.projectCoin.iconUrl} size="5" />
-                  <span className="text-base font-medium leading-tight text-neutral-100">
-                    {projectData.info.tge.projectCoin.ticker}
-                  </span>
+                  <Img src={projectData?.info.tge.projectCoin.iconUrl} size="5" isFetchingLink={isLoading} isRounded />
+                  <Text
+                    text={projectData?.info.tge.projectCoin.ticker}
+                    isLoading={isLoading}
+                    className="text-base font-medium leading-tight text-neutral-100"
+                  />
                 </div>
                 <div className="flex flex-col items-start justify-start gap-2 self-stretch">
                   <div className="flex flex-col items-start justify-center self-stretch">

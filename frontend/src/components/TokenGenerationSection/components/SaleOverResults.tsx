@@ -2,16 +2,15 @@ import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
-import { formatCurrencyAmount } from "@/utils/format"
+import { formatCurrencyAmount } from "shared/utils/format"
 import { backendApi } from "@/data/backendApi.ts"
 import Text from "@/components/Text"
 
 const SaleOverResults = () => {
   const { t } = useTranslation()
-  const {
-    projectData: { saleData, info },
-    isLoading,
-  } = useProjectDataContext()
+  const { projectData, isLoading } = useProjectDataContext()
+  const saleData = projectData?.saleData
+  const info = projectData?.info
 
   const baseCurrency = "swissborg"
   const targetCurrency = "usd"
@@ -72,7 +71,7 @@ const SaleOverResults = () => {
 
         {/* @TODO - Check: FDV (fully diluted value) is fixed from the beginning. Check if this is in every project */}
         <Text
-          text={formatCurrencyAmount(info.tge.fdv)}
+          text={formatCurrencyAmount(info?.tge.fdv)}
           isLoading={isLoading}
           className="text-base leading-7 text-fg-primary"
         />
