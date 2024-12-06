@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next"
 
 import { useProjectDataContext } from "@/hooks/useProjectData"
-import { formatCurrencyAmount, getRatioPercentage } from "@/utils/format"
+import { getRatioPercentage } from "@/utils/format"
+import { formatCurrencyAmount } from "shared/utils/format"
 import ProgressBar from "./ProgressBar"
 import Text from "@/components/Text"
 

@@ -31,6 +31,7 @@ export const EligibilityTiersSection = ({ className }: { className?: string }) =
     },
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
+    staleTime: 1000 * 60 * 5, // 5 minutes
   })
 
   // @TODO - replace checkup below with more reliable source of data

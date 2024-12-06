@@ -2,9 +2,9 @@ import { useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 
-import { useProjectDataContext } from "@/hooks/useProjectData"
-import { formatCurrencyAmount } from "@/utils/format"
 import { backendApi } from "@/data/backendApi.ts"
+import { formatCurrencyAmount } from "shared/utils/format"
+import { useProjectDataContext } from "@/hooks/useProjectData"
 import Text from "@/components/Text"
 
 const BasicTokenInfo = () => {
