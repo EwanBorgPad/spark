@@ -92,6 +92,7 @@ export const calculateTokens = ({ projectData, borgCoinInput, borgPriceInUSD }: 
   }
   const rewardDistribution = {
     token: getTokenRewards().formatted,
+    tokenRaw: getTokenRewards().unformatted,
     tokenInUSD: getTokenRewards().usd,
   }
   const totalToBeReceived = {

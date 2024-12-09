@@ -72,10 +72,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: 'TokenData not found!' }, 500)
     }
 
-    const decimals = launchedTokenData.decimals
-
-    const totalUiAmount = deposits.reduce((acc, curr) => acc + Number(curr.json.tokensCalculation.lpPosition.tokenRaw), 0)
-    const totalAmount = totalUiAmount * Math.pow(10, decimals)
+    const rewardsTotalUiAmount = deposits.reduce((acc, curr) => acc + Number(curr.json.tokensCalculation.rewardDistribution.tokenRaw), 0)
+    const rewardsTotalAmount = rewardsTotalUiAmount * Math.pow(10, launchedTokenData.decimals)
 
     // TODO @hardcoded to 6 , the correct value for all current projects (solana-id, moemate, borgy)
     const monthsCount = 6
@@ -86,8 +84,10 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     }
 
     const monthsPassedFromRewardsDistributionStart = monthsPassedFrom(rewardsDistributionStart, currentDate)
-    const claimablePerMonth = totalAmount / monthsCount
+    const claimablePerMonth = rewardsTotalAmount / monthsCount
     const claimedMonths = Math.floor(claimedAmount / claimablePerMonth)
+
+    console.log({ claimablePerMonth, rewardsTotalAmount, monthsCount })
 
     const payoutSchedule = [
       ...Array(monthsCount).keys(),
@@ -96,7 +96,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       const payoutDate = addMonths(new Date(rewardsDistributionStart), index)
       const isClaimed = index < (claimedMonths - 1)
       return {
-        amount: String(claimablePerMonth / Math.pow(10, decimals)),
+        amount: String(claimablePerMonth / Math.pow(10, launchedTokenData.decimals)),
         isClaimed,
         date: payoutDate,
       }
@@ -105,34 +105,62 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const claimableToThisDateAmount = (monthsPassedFromRewardsDistributionStart + 1) * claimablePerMonth
     const claimableAmount = Math.max(claimableToThisDateAmount - claimedAmount, 0)
 
-    console.log({ monthsPassedFromRewardsDistributionStart, claimablePerMonth, claimableToThisDateAmount, claimedAmount })
+    // console.log({ monthsPassedFromRewardsDistributionStart, claimablePerMonth, claimableToThisDateAmount, claimedAmount })
 
-    const hasUserClaimedTotalAmount = claimedAmount >= totalAmount
+    const hasUserClaimedTotalAmount = claimedAmount >= rewardsTotalAmount
     const hasUserClaimedAvailableAmount = claimedAmount >= claimableAmount
 
     const hasRewardsDistributionStarted = rewardsDistributionStart && (currentDate > new Date(rewardsDistributionStart))
 
+    const raisedTokenData = getTokenData({ cluster, tokenAddress: project.json.info.raisedTokenMintAddress })
+
+    if (!raisedTokenData) {
+      return jsonResponse({ message: 'raisedTokenData not found!'}, 500)
+    }
+
+    const lpRaisedTokenTotalUiAmount = deposits.reduce((acc, curr) => acc + Number(curr.json.tokensCalculation.lpPosition.borgRaw), 0)
+    const lpRaisedTokenTotalUnitAmount = lpRaisedTokenTotalUiAmount * Math.pow(10, raisedTokenData.decimals)
+
+    const lpLaunchedTokenTotalUiAmount = deposits.reduce((acc, curr) => acc + Number(curr.json.tokensCalculation.lpPosition.tokenRaw), 0)
+    const lpLaunchedTokenTotalUnitAmount = lpLaunchedTokenTotalUiAmount * Math.pow(10, launchedTokenData.decimals)
+
     const result = {
       hasUserInvested: true,
-      hasUserClaimedTotalAmount,
-      hasUserClaimedAvailableAmount,
-      hasRewardsDistributionStarted,
-      totalAmount: {
-        amount: String(totalAmount),
-        decimals,
-        uiAmount: String(totalAmount / Math.pow(10, decimals)),
+      lpPosition: {
+        // borg
+        raisedTokenAmount: {
+          amount: lpRaisedTokenTotalUnitAmount,
+          decimals: raisedTokenData.decimals,
+          uiAmount: lpRaisedTokenTotalUiAmount,
+        },
+        // borgy/moemate/solana-id
+        launchedTokenAmount: {
+          amount: lpLaunchedTokenTotalUnitAmount,
+          decimals: launchedTokenData.decimals,
+          uiAmount: lpLaunchedTokenTotalUiAmount,
+        }
       },
-      claimedAmount: {
-        amount: String(claimedAmount),
-        decimals,
-        uiAmount: String(claimedAmount / Math.pow(10, decimals)),
-      },
-      claimableAmount: {
-        amount: String(claimableAmount),
-        decimals,
-        uiAmount: String(claimableAmount / Math.pow(10, decimals)),
-      },
-      payoutSchedule,
+      rewards: {
+        hasUserClaimedTotalAmount,
+        hasUserClaimedAvailableAmount,
+        hasRewardsDistributionStarted,
+        totalAmount: {
+          amount: rewardsTotalAmount,
+          decimals: launchedTokenData.decimals,
+          uiAmount: rewardsTotalUiAmount,
+        },
+        claimedAmount: {
+          amount: String(claimedAmount),
+          decimals: launchedTokenData.decimals,
+          uiAmount: String(claimedAmount / Math.pow(10, launchedTokenData.decimals)),
+        },
+        claimableAmount: {
+          amount: String(claimableAmount),
+          decimals: launchedTokenData.decimals,
+          uiAmount: String(claimableAmount / Math.pow(10, launchedTokenData.decimals)),
+        },
+        payoutSchedule,
+      }
     }
 
     return jsonResponse(result, 200)

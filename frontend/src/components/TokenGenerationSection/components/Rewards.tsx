@@ -28,7 +28,7 @@ const Rewards = () => {
   const iconUrl = projectData?.info.tge.projectCoin.iconUrl || ""
   const ticker = projectData?.info.tge.projectCoin.ticker || ""
 
-  const { data: rewards } = useQuery({
+  const { data: myRewardsResponse } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
       return backendApi.getMyRewards({ address, projectId })
@@ -37,12 +37,12 @@ const Rewards = () => {
     enabled: Boolean(address) && Boolean(projectId),
   })
 
-  if (!rewards?.hasUserInvested) {
+  if (!myRewardsResponse?.hasUserInvested) {
     return null
   }
 
   const currentMoment = new Date()
-  const nextScheduledPayment = rewards.payoutSchedule.find(
+  const nextScheduledPayment = myRewardsResponse.rewards.payoutSchedule.find(
     (payment) => !payment.isClaimed && isBefore(currentMoment, payment.date),
   )
 
@@ -74,7 +74,7 @@ const Rewards = () => {
             <div className="w-full px-4 pb-6">
               {nextScheduledPayment && (
                 <Button
-                  btnText={`Claim ${formatCurrencyAmount(rewards.claimableAmount.uiAmount, false)} ${ticker}`}
+                  btnText={`Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount, false)} ${ticker}`}
                   size="lg"
                   className="w-full py-3 font-normal"
                   onClick={claimRewardsHandler}
@@ -88,7 +88,7 @@ const Rewards = () => {
             <span>{t("reward_distribution.all_rewards_claimed")}</span>
           </div>
         )}
-        {rewards.hasRewardsDistributionStarted && (
+        {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
           <>
             <hr className="w-full max-w-[calc(100%-32px)] border-bd-primary" />
             <div className="flex w-full flex-col gap-2.5 p-4 pb-7">
@@ -97,20 +97,20 @@ const Rewards = () => {
                 <div className="flex items-center gap-2">
                   <Img src={iconUrl} size="4" isFetchingLink={isLoading} />
                   <p>
-                    <span className="mr-1">{formatCurrencyAmount(rewards.claimedAmount.uiAmount, false)}</span>
+                    <span className="mr-1">{formatCurrencyAmount(myRewardsResponse.rewards.claimedAmount.uiAmount, false)}</span>
                     <span className="mr-1">/</span>
-                    <span className="mr-1">{formatCurrencyAmount(rewards.totalAmount.uiAmount, false)}</span>
+                    <span className="mr-1">{formatCurrencyAmount(myRewardsResponse.rewards.totalAmount.uiAmount, false)}</span>
                     <Text text={ticker} isLoading={isLoading} />
                   </p>
                 </div>
               </div>
-              <ProgressBar fulfilledAmount={Number(rewards.claimedAmount.uiAmount)} totalAmount={Number(rewards.totalAmount.uiAmount)} />
+              <ProgressBar fulfilledAmount={Number(myRewardsResponse.rewards.claimedAmount.uiAmount)} totalAmount={Number(myRewardsResponse.rewards.totalAmount.uiAmount)} />
             </div>
           </>
         )}
       </TgeWrapper>
-      {rewards.hasRewardsDistributionStarted && (
-        <ShowPayoutSchedule ticker={ticker} tokenIconUrl={iconUrl ?? ""} payoutSchedule={rewards.payoutSchedule} />
+      {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
+        <ShowPayoutSchedule ticker={ticker} tokenIconUrl={iconUrl ?? ""} payoutSchedule={myRewardsResponse.rewards.payoutSchedule} />
       )}
     </>
   )

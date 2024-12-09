@@ -14,7 +14,14 @@ type CreateUserDepositArgs = {
         decimalMultiplier: string
         tokensCalculation: {
             lpPosition: {
-                tokenRaw: number
+                // TODO rename raisedToken launchedToken
+                // TODO align USD/Usd capitalizations
+                borg: string
+                borgRaw: string
+                borgInUSD: string
+                token: string
+                tokenRaw: string
+                tokenInUSD: string
             }
         }
     }

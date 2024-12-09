@@ -280,15 +280,21 @@ export type SaleResultsResponse = {
 
 export type MyRewardsResponse = { hasUserInvested: false } | {
   hasUserInvested: true
-  hasUserClaimedTotalAmount: boolean
-  hasUserClaimedAvailableAmount: boolean
-  hasRewardsDistributionStarted: boolean
-  totalAmount: TokenAmountModel,
-  claimedAmount: TokenAmountModel,
-  claimableAmount: TokenAmountModel,
-  payoutSchedule: {
-    date: string
-    amount: number
-    isClaimed: boolean
-  }[]
+  lpPosition: {
+    raisedTokenAmount: TokenAmountModel
+    launchedTokenAmount: TokenAmountModel
+  }
+  rewards: {
+    hasUserClaimedTotalAmount: boolean
+    hasUserClaimedAvailableAmount: boolean
+    hasRewardsDistributionStarted: boolean
+    totalAmount: TokenAmountModel,
+    claimedAmount: TokenAmountModel,
+    claimableAmount: TokenAmountModel,
+    payoutSchedule: {
+      date: string
+      amount: number
+      isClaimed: boolean
+    }[]
+  }
 }

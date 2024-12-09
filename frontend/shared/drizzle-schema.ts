@@ -41,6 +41,9 @@ type DepositJson = {
     lpPosition: {
       tokenRaw: number
     }
+    rewardDistribution: {
+      tokenRaw: number
+    }
   }
 }
 export const depositTable = sqliteTable('deposit', {
