@@ -65,15 +65,14 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         })
         // get price and token mint
         const tokenMint = project.info.raisedTokenMintAddress
-        const priceInUsd = await getPriceInUsd(db, tokenMint, cluster, tokenAmount)
-        if (typeof priceInUsd !== 'number') return priceInUsd
+        const tokenRes = await getPriceInUsdAndDecimals(db, tokenMint, cluster)
         // initialize validation variables
         const timelineBeginDate = project.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date
         const timelineEndDate = project.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
-        const projectCap = BigInt(project.info.raisedTokenMaxCap)
+        const projectCapInUsd = project.info.raisedTokenMaxCap
         if (!timelineBeginDate || !timelineEndDate) return jsonResponse({ error: 'Timeline phases are not defined!' }, 500)
-
-        const validationError = await validateDeposit(db, projectId, userWalletAddress, rpcUrl, BigInt(tokenAmount), timelineBeginDate, timelineEndDate, projectCap, priceInUsd)
+        // @TODO: clean this up
+        const validationError = await validateDeposit(db, projectId, userWalletAddress, rpcUrl, tokenAmount, timelineBeginDate ?? new Date(), timelineEndDate ?? new Date(), projectCapInUsd, tokenRes.priceInUsd, tokenRes.decimals ?? 1)
         if (validationError) return validationError
 
         // create transfer and mint nft instruction
@@ -86,23 +85,25 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 }
 
-async function getPriceInUsd(db: D1Database, tokenMint: string, cluster: Cluster, tokenAmount: number) {
+async function getPriceInUsdAndDecimals(db: D1Database, tokenMint: string, cluster: Cluster) {
     const tokenData = getTokenData({ cluster, tokenAddress: tokenMint })
     const coinGeckoName = tokenData?.coinGeckoName
-    if (!coinGeckoName) return jsonResponse({ error: 'Coin gecko name not found' }, 500)
-    const exData = await exchangeService.getExchangeData({ db, baseCurrency: coinGeckoName, targetCurrency: 'usd' })
-    return tokenAmount * exData.currentPrice
+    const exData = await exchangeService.getExchangeData({ db, baseCurrency: coinGeckoName ?? '', targetCurrency: 'usd' })
+    return {
+        priceInUsd: exData.currentPrice,
+        decimals: tokenData?.decimals
+    }
 }
 
-async function validateDeposit(db: D1Database, projectId: string, userWalletAddress: string, rpcUrl: string, tokenAmount: number, timelineBeginDate: Date, timelineEndDate: Date, projectCap: bigint, priceInUsd: number) {
+async function validateDeposit(db: D1Database, projectId: string, userWalletAddress: string, rpcUrl: string, tokenAmount: number, timelineBeginDate: Date, timelineEndDate: Date, projectCap: number, priceInUsd: number, decimals: number) {
 
     // @Validation: timeline
     const now = new Date(Date.now())
     if (now < timelineBeginDate) return jsonResponse({ error: 'User is trying to deposit before begin date' }, 404)
     if (now > timelineEndDate) return jsonResponse({ error: 'User is trying to deposit after end date' }, 404)
     // get users and projects caps and deposits
-    const usersDeposit = await DepositService.getUsersDepositedAmount({ db, projectId, walletAddress: userWalletAddress })
-    const sumOfProjectDeposit = await DepositService.getProjectsDepositedAmount({ db, projectId })
+    const usersDepositInLamport = Number(await DepositService.getUsersDepositedAmount({ db, projectId, walletAddress: userWalletAddress }))
+    const sumOfProjectDepositInLamport = Number(await DepositService.getProjectsDepositedAmount({ db, projectId }))
 
     // get eligibility for validations
     const eligibility = await EligibilityService.getEligibilityStatus({ db: drizzle(db), address: userWalletAddress, projectId, rpcUrl })
@@ -112,13 +113,13 @@ async function validateDeposit(db: D1Database, projectId: string, userWalletAddr
     if (!eligibility.eligibilityTier) return jsonResponse({ error: 'Users eligibility tier is not defined!' }, 404)
 
     // @Validation: LBP/Project max cap
-    if (tokenAmount + sumOfProjectDeposit > projectCap) return jsonResponse({ error: 'Can\'t deposit, LBP cap reached' }, 404)
+    if ((tokenAmount * priceInUsd) + sumOfProjectDepositInLamport * Math.pow(0.1, decimals) * priceInUsd > projectCap) return jsonResponse({ error: 'Can\'t deposit, LBP cap reached' }, 404)
     // get users max and min cap for their eligibility tier
-    const userMaxCapInvestment = BigInt(parseInt(eligibility.eligibilityTier.benefits.maxInvestment))
-    const userMinCapInvestment = BigInt(parseInt(eligibility.eligibilityTier.benefits.minInvestment))
+    const userMaxCapInvestmentInUsd = Number(eligibility.eligibilityTier.benefits.maxInvestment)
+    const userMinCapInvestmentInUsd = Number(eligibility.eligibilityTier.benefits.minInvestment)
     // @Validation: User tier cap
-    if (BigInt(tokenAmount) + usersDeposit > userMaxCapInvestment) return jsonResponse({ error: 'Max cap for users investment tier reached' }, 404)
-    if (BigInt(tokenAmount) + usersDeposit < userMinCapInvestment) return jsonResponse({ error: 'Can\'t deposit below min cap for users investment tier' }, 404)
+    if (tokenAmount * priceInUsd + usersDepositInLamport * Math.pow(0.1, decimals) * priceInUsd > userMaxCapInvestmentInUsd) return jsonResponse({ error: 'Max cap for users investment tier reached' }, 404)
+    if (tokenAmount * priceInUsd + usersDepositInLamport * Math.pow(0.1, decimals) * priceInUsd < userMinCapInvestmentInUsd) return jsonResponse({ error: 'Can\'t deposit below min cap for users investment tier' }, 404)
 
     return null
 }
