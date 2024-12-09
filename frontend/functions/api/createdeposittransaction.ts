@@ -11,6 +11,11 @@ import { createUmi } from "@metaplex-foundation/umi-bundle-defaults"
 import { createSignerFromKeypair, percentAmount, publicKey, signerIdentity, transactionBuilder } from "@metaplex-foundation/umi"
 import { toWeb3JsInstruction } from '@metaplex-foundation/umi-web3js-adapters'
 import { PRIORITY_FEE_MICRO_LAMPORTS } from "../../shared/constants"
+import { EligibilityService } from "../services/eligibilityService"
+import { drizzle } from "drizzle-orm/d1"
+import { DepositService } from "../services/depositService"
+import { getTokenData, Cluster } from "../services/constants"
+import { exchangeService } from "../services/exchangeService"
 
 type ENV = {
     DB: D1Database,
@@ -59,9 +64,18 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             commitment: 'confirmed',    // status has to be confirmed because we mint the nft and get the address of it immediately after sending the mint tx
             disableRetryOnRateLimit: true
         })
+        // get price and token mint
         const tokenMint = project.info.raisedTokenMintAddress
+        const priceInUsd = await getPriceInUsd(db, tokenMint, cluster, tokenAmount)
+        if (typeof priceInUsd !== 'number') return priceInUsd
+        // initialize validation variables
+        const timelineBeginDate = project.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date
+        const timelineEndDate = project.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
+        const projectCap = BigInt(project.info.raisedTokenMaxCap)
+        if (!timelineBeginDate || !timelineEndDate) return jsonResponse({ error: 'Timeline phases are not defined!' }, 500)
 
-        // TODO @depositValidations
+        const validationError = await validateDeposit(db, projectId, userWalletAddress, rpcUrl, BigInt(tokenAmount), timelineBeginDate, timelineEndDate, projectCap, priceInUsd)
+        if (validationError) return validationError
 
         // create transfer and mint nft instruction
         const tx = await createUserDepositTransaction(userWalletAddress, receivingAddress, tokenMint, tokenAmount, connection, privateKey)
@@ -71,6 +85,43 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         await reportError(ctx.env.DB, e)
         return jsonResponse({ message: "Something went wrong..." }, 500)
     }
+}
+
+async function getPriceInUsd(db: D1Database, tokenMint: string, cluster: Cluster, tokenAmount: number) {
+    const tokenData = getTokenData({ cluster, tokenAddress: tokenMint })
+    const coinGeckoName = tokenData?.coinGeckoName
+    if (!coinGeckoName) return jsonResponse({ error: 'Coin gecko name not found' }, 500)
+    const exData = await exchangeService.getExchangeData({ db, baseCurrency: coinGeckoName, targetCurrency: 'usd' })
+    return tokenAmount * exData.currentPrice
+}
+
+async function validateDeposit(db: D1Database, projectId: string, userWalletAddress: string, rpcUrl: string, tokenAmount: number, timelineBeginDate: Date, timelineEndDate: Date, projectCap: bigint, priceInUsd: number) {
+
+    // @Validation: timeline
+    const now = new Date(Date.now())
+    if (now < timelineBeginDate) return jsonResponse({ error: 'User is trying to deposit before begin date' }, 404)
+    if (now > timelineEndDate) return jsonResponse({ error: 'User is trying to deposit after end date' }, 404)
+    // get users and projects caps and deposits
+    const usersDeposit = await DepositService.getUsersDepositedAmount({ db, projectId, walletAddress: userWalletAddress })
+    const sumOfProjectDeposit = await DepositService.getProjectsDepositedAmount({ db, projectId })
+
+    // get eligibility for validations
+    const eligibility = await EligibilityService.getEligibilityStatus({ db: drizzle(db), address: userWalletAddress, projectId, rpcUrl })
+
+    // @Validation: user eligibility
+    if (!eligibility.isEligible) return jsonResponse({ error: 'User not eligible to deposit!' }, 404)
+    if (!eligibility.eligibilityTier) return jsonResponse({ error: 'Users eligibility tier is not defined!' }, 404)
+
+    // @Validation: LBP/Project max cap
+    if (tokenAmount + sumOfProjectDeposit > projectCap) return jsonResponse({ error: 'Can\'t deposit, LBP cap reached' }, 404)
+    // get users max and min cap for their eligibility tier
+    const userMaxCapInvestment = BigInt(parseInt(eligibility.eligibilityTier.benefits.maxInvestment))
+    const userMinCapInvestment = BigInt(parseInt(eligibility.eligibilityTier.benefits.minInvestment))
+    // @Validation: User tier cap
+    if (BigInt(tokenAmount) + usersDeposit > userMaxCapInvestment) return jsonResponse({ error: 'Max cap for users investment tier reached' }, 404)
+    if (BigInt(tokenAmount) + usersDeposit < userMinCapInvestment) return jsonResponse({ error: 'Can\'t deposit below min cap for users investment tier' }, 404)
+
+    return null
 }
 
 export async function createUserDepositTransaction(
