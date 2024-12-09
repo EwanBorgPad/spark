@@ -277,3 +277,18 @@ export type SaleResultsResponse = {
   marketCap: string
   fdv: string
 }
+
+export type MyRewardsResponse = { hasUserInvested: false } | {
+  hasUserInvested: true
+  hasUserClaimedTotalAmount: boolean
+  hasUserClaimedAvailableAmount: boolean
+  hasRewardsDistributionStarted: boolean
+  totalAmount: TokenAmountModel,
+  claimedAmount: TokenAmountModel,
+  claimableAmount: TokenAmountModel,
+  payoutSchedule: {
+    date: string
+    amount: number
+    isClaimed: boolean
+  }[]
+}

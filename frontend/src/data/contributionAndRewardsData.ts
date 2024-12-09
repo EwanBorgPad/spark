@@ -1,5 +1,7 @@
 import { addMonths } from "date-fns/addMonths"
 
+// TODO @deprecate this whole file
+
 export type ContributionAndRewardsType = {
   // sections: Your Contribution and Your Rewards
   claimPositions: {
@@ -22,7 +24,7 @@ export type ContributionAndRewardsType = {
 }
 
 export type PayoutScheduleType = {
-  date: Date
+  date: string | Date
   amount: number
   isClaimed: boolean
 }
