@@ -8,28 +8,30 @@ import Text from "@/components/Text"
 
 const SaleOverResults = () => {
   const { t } = useTranslation()
-  const { projectData, isLoading } = useProjectDataContext()
-  const saleData = projectData?.saleData
+  const { projectData, isLoading: isLoadingProject } = useProjectDataContext()
   const info = projectData?.info
+  const projectId = projectData?.info.id
 
-  const baseCurrency = "swissborg"
-  const targetCurrency = "usd"
-  const { data: exchangeData, isLoading: isExchangeLoading } = useQuery({
-    queryFn: () =>
-      backendApi.getExchange({
-        baseCurrency,
-        targetCurrency,
-      }),
-    queryKey: ["getExchange", baseCurrency, targetCurrency],
+  const { data: saleData, isLoading: isLoadingSaleResults } = useQuery({
+    queryFn: async () => {
+      if (!projectId) return null
+      return await backendApi.getSaleResults({
+        projectId,
+      })
+    },
+    queryKey: ["saleResults", projectId],
+    enabled: Boolean(projectId),
   })
+
+  const isLoading = isLoadingProject || isLoadingSaleResults
 
   return (
     <div className="flex w-full max-w-[760px] flex-wrap gap-x-4 gap-y-5 rounded-lg border-[1px] border-bd-primary bg-secondary px-4 py-4 lg:px-5">
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="w-fit text-sm text-fg-tertiary">{t("sale_over.total_amount_raised")}</span>
         <Text
-          text={formatCurrencyAmount(saleData?.totalAmountRaised)}
-          isLoading={isExchangeLoading}
+          text={formatCurrencyAmount(Number(saleData?.totalAmountRaised.amountInUsd))}
+          isLoading={isLoading}
           className="w-fit text-base leading-7 text-fg-primary"
         />
       </div>
@@ -39,31 +41,31 @@ const SaleOverResults = () => {
         <Text
           text={saleData?.sellOutPercentage ? `${saleData.sellOutPercentage}%` : ""}
           className="text-base leading-7 text-fg-primary"
-          isLoading={isExchangeLoading}
+          isLoading={isLoading}
         />
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("sale_over.participants")}</span>
         <Text
-          text={saleData?.participantCount}
-          isLoading={isExchangeLoading}
+          text={saleData?.participantsCount}
+          isLoading={isLoading}
           className="text-base leading-7 text-fg-primary"
         />
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("sale_over.average_invested_amount")}</span>
         <Text
-          text={formatCurrencyAmount(saleData?.averageInvestedAmount)}
+          text={formatCurrencyAmount(Number(saleData?.averageDepositAmount.amountInUsd))}
           className="text-base leading-7 text-fg-primary"
-          isLoading={isExchangeLoading}
+          isLoading={isLoading}
         />
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("market_cap")}</span>
         <Text
-          text={formatCurrencyAmount(exchangeData?.marketCap)}
+          text={formatCurrencyAmount(Number(saleData?.marketCap))}
           className="text-base leading-7 text-fg-primary"
-          isLoading={isExchangeLoading}
+          isLoading={isLoading}
         />
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">

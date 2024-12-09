@@ -11,13 +11,13 @@ import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
 import { RefObject } from "react"
 import { toast } from "react-toastify"
-import { BACKEND_RPC_URL, backendApi, PostUserDepositRequest } from "@/data/backendApi"
+import { BACKEND_RPC_URL, backendApi, PostCreateDepositTxArgs, PostSendDepositTransactionArgs } from "@/data/backendApi"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
 import { useProjectDataContext } from "@/hooks/useProjectData"
-import { PublicKey } from "@solana/web3.js"
 import { getSplTokenBalance } from "../../../../shared/SolanaWeb3.ts"
+import { Transaction } from "@solana/web3.js"
 
 type FormInputs = {
   borgInputValue: string
@@ -43,26 +43,46 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const { projectId } = useParams()
 
   const { projectData } = useProjectDataContext()
-  const { walletState, signTransaction , address, walletProvider } = useWalletContext()
+  const { walletState, signTransaction, address, walletProvider } = useWalletContext()
 
   const cluster = projectData?.cluster ?? "devnet"
   const rpcUrl = BACKEND_RPC_URL + "?cluster=" + cluster
   const tokenMintAddress = projectData?.info.raisedTokenMintAddress
 
-  const { mutate: userDepositFunction, isPending } = useMutation({
-    mutationFn: async (payload: PostUserDepositRequest) => {
-      await backendApi.postUserDeposit(payload)
+  const {
+    mutateAsync: makeDepositTransaction,
+    isPending: isPendingMakeDepositTransaction,
+  } = useMutation({
+    mutationFn: async (payload: PostCreateDepositTxArgs) => {
+      return (await backendApi.postCreateDepositTx(payload)).transaction
     },
     onSuccess: async () => {
-      console.log("Successful user deposit!")
-      toast(`Deposited successfully!`)
+      console.log("Sucess!")
       await queryClient.invalidateQueries({ queryKey: ["getDeposits"] })
       await queryClient.invalidateQueries({ queryKey: ["getBalance"] })
     },
     onError: async () => {
-      console.log("Transaction failed!")
-      toast.error("Deposit was unsuccessful!")
+      toast.error("Fail!")
+    }
+  })
+
+  const {
+    mutateAsync: sendTransaction,
+    isPending: isPendingSendTransaction,
+  } = useMutation({
+    mutationFn: async (payload: PostSendDepositTransactionArgs) => {
+      return await backendApi.postSendDepositTransaction(payload)
     },
+    onSuccess: async () => {
+      toast('Transaction was successful!')
+      console.log("Transaction Sent!")
+      await queryClient.invalidateQueries({ queryKey: ["getDeposits"] })
+      await queryClient.invalidateQueries({ queryKey: ["getBalance"] })
+    },
+    onError: async () => {
+      toast('Transaction failed!')
+      console.log("Transaction failed!")
+    }
   })
 
   const { data: balance } = useQuery({
@@ -114,15 +134,21 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
       if (walletProvider === "") throw new Error("No wallet provider!")
       if (!tokenMintAddress) throw new Error("No Mint Address!")
       if (walletState === "CONNECTED") {
-        const transaction = await signTransaction({
-          rpcUrl,
+        const serializedTransaction = await makeDepositTransaction({
+          userWalletAddress: address,
           tokenAmount,
-          tokenMintAddress: new PublicKey(tokenMintAddress),
-          walletType: walletProvider,
+          projectId: projectId ?? ''
         })
-        userDepositFunction({
-          projectId: projectId ?? "",
-          transaction,
+        // Deserialize the transaction
+        const transaction = Transaction.from(Buffer.from(serializedTransaction, 'base64'))
+        // Sign the transaction
+        const signedTransaction = await signTransaction(transaction, walletProvider)
+        if (!signedTransaction) throw new Error('Error while signing the transaction!')
+        // Send the signed transaction to backend
+        const serializedTx = signedTransaction.serialize().toString('base64')
+        await sendTransaction({
+          projectId: projectId ?? '',
+          serializedTx
         })
       } else {
         toast.error("Wallet error. Please try again or contact our support.")
@@ -230,7 +256,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                 size="lg"
                 btnText="Supply $BORG"
                 disabled={!isUserEligible}
-                isLoading={isPending}
+                isLoading={isPendingSendTransaction || isPendingMakeDepositTransaction}
                 className={"w-full"}
               />
               <a className="w-full" href="https://jup.ag/swap/SOL-BORG" target="_blank" rel="noopener noreferrer">

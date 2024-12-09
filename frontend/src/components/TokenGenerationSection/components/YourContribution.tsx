@@ -11,6 +11,9 @@ import { PastOrders } from "./PastOrders"
 import { isBefore } from "date-fns/isBefore"
 import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
+import { useQuery } from "@tanstack/react-query"
+import { backendApi } from "@/data/backendApi.ts"
+import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 
 type YourContributionProps = {
   contributionInfo: ContributionAndRewardsType
@@ -18,11 +21,23 @@ type YourContributionProps = {
 }
 const YourContribution = ({ contributionInfo, eventData }: YourContributionProps) => {
   const { t } = useTranslation()
+
+  const { address } = useWalletContext()
   const { projectData, isLoading } = useProjectDataContext()
-  const {
-    claimPositions: { mainPosition, rewards },
-    suppliedBorg,
-  } = contributionInfo
+  const projectId = projectData?.info.id ?? ''
+
+  const { data: getDepositsData } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getDeposits({
+        address, projectId,
+      })
+    },
+    queryKey: ["getDeposits", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
+
+  const { claimPositions: { mainPosition, rewards } } = contributionInfo
   const liquidityPool = projectData?.info.tge.liquidityPool
   const projectCoin = projectData?.info.tge.projectCoin
 
@@ -40,7 +55,8 @@ const YourContribution = ({ contributionInfo, eventData }: YourContributionProps
     <>
       <div className="flex items-center gap-2 text-xl font-semibold">
         <Icon icon="SvgBorgCoin" />
-        <span>{formatCurrencyAmount(suppliedBorg.total, false)}</span>
+        {/* TODO skeleton loader */}
+        <span>{formatCurrencyAmount(Number(getDepositsData?.total.uiAmount), false)}</span>
         <span>BORG</span>
       </div>
       <PastOrders label="All Orders" className="w-full" />
@@ -52,7 +68,7 @@ const YourContribution = ({ contributionInfo, eventData }: YourContributionProps
           <span className="mb-1 text-xs">{t("sale_over.your_main_position")}</span>
           <div className="flex h-fit flex-wrap items-center gap-2 rounded-full text-base font-medium">
             <Icon icon="SvgBorgCoin" />
-            <span className=" text-base">{suppliedBorg.total}</span>
+            <span className=" text-base">{getDepositsData?.total.uiAmount}</span>
             <span>BORG</span>
             <div className="flex items-center gap-2">
               <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
