@@ -28,7 +28,7 @@ const YourContribution = () => {
   const borgDeposits = getDepositsData?.deposits || []
   const totalBorgDeposits = borgDeposits.reduce((accumulator, currentValue) => {
     const multiplier = Math.pow(10, +currentValue.decimalMultiplier)
-    const deposit = +currentValue.amountDeposited * multiplier
+    const deposit = +currentValue.amountDeposited / multiplier
     return accumulator + deposit
   }, 0)
 
