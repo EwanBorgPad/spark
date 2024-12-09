@@ -5,6 +5,7 @@ import { z } from "zod"
 import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 import { ProjectService } from "../services/projectService"
 import * as bs58 from "bs58"
+import { PRIORITY_FEE_MICRO_LAMPORTS } from "../../shared/constants"
 
 type ENV = {
     DB: D1Database,
@@ -55,7 +56,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         })
         const tokenMint = project.info.launchedTokenMintAddress
 
-        // TODO: ALL VALIDATIONS
+        // TODO @claimValidations
 
         // create transfer and mint nft instruction
         const tx = await createClaimTransaction(sendingAddress, userWalletAddress, tokenMint, tokenAmount, connection, privateWalletKeypair)
@@ -102,9 +103,9 @@ export async function createClaimTransaction(
             amount * multiplier
         )
 
-        // add priority fee - TODO: check micro lamport value
+        // add priority fee
         const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
-            microLamports: 20000,
+            microLamports: PRIORITY_FEE_MICRO_LAMPORTS,
         })
 
         // create the transaction and all the neccessary instructions to it

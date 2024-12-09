@@ -10,6 +10,7 @@ import { signatureSubscribe } from "../../src/utils/solanaFunctions"
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults"
 import { createSignerFromKeypair, percentAmount, publicKey, signerIdentity, transactionBuilder } from "@metaplex-foundation/umi"
 import { toWeb3JsInstruction } from '@metaplex-foundation/umi-web3js-adapters'
+import { PRIORITY_FEE_MICRO_LAMPORTS } from "../../shared/constants"
 
 type ENV = {
     DB: D1Database,
@@ -60,7 +61,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         })
         const tokenMint = project.info.raisedTokenMintAddress
 
-        // TODO: ALL VALIDATIONS
+        // TODO @depositValidations
 
         // create transfer and mint nft instruction
         const tx = await createUserDepositTransaction(userWalletAddress, receivingAddress, tokenMint, tokenAmount, connection, privateKey)
@@ -110,9 +111,9 @@ export async function createUserDepositTransaction(
         // wallet that will be minting the nft (our private wallet)
         const nftMintingWalletKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(privateKey)))
 
-        // add priority fee - TODO: check micro lamport value
+        // add priority fee
         const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
-            microLamports: 20000,
+            microLamports: PRIORITY_FEE_MICRO_LAMPORTS,
         })
 
         // get instructions from the builder for transfering nft
@@ -180,7 +181,7 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
     umi.use(signerIdentity(signer))
     umi.use(mplTokenMetadata())
 
-    // make tx for minting nft  
+    // make tx for minting nft
     const builder = transactionBuilder().add(createNft(umi, {
         symbol: 'LDRNFT',
         mint: mintSigner,

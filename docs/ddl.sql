@@ -68,5 +68,6 @@ CREATE TABLE claim (
     to_address TEXT NOT NULL,
     token_address TEXT NOT NULL,
     amount TEXT NOT NULL,
-    project_id TEXT NOT NULL
+    project_id TEXT NOT NULL,
+    json JSONB NOT NULL DEFAULT '{}'
 );

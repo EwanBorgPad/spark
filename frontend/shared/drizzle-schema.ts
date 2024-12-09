@@ -59,6 +59,7 @@ export const claimTable = sqliteTable('claim', {
   tokenAddress: text('token_address').notNull(),
   amount: text('amount_deposited').notNull(),
   projectId: text('project_id').notNull(),
+  json: text({ mode: 'json' }).$type<{}>().notNull()
 })
 
 // const db = drizzle()

@@ -41,7 +41,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const cluster = project?.cluster ?? 'devnet'
         const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster))
 
-        // TODO: ALL VALIDATIONS AGAIN
+        // TODO @depositValidations
 
         console.log("Sending transaction...")
         const txId = await connection.sendRawTransaction(Buffer.from(data.serializedTx, 'base64'), {

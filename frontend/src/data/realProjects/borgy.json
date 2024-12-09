@@ -92,7 +92,7 @@
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-12-09T23:00:00Z"
+        "date": "2024-12-10T13:00:00Z"
       },
       {
         "id": "SALE_CLOSES",
@@ -117,7 +117,7 @@
         "description": "Access to sale at 5 PM UTC. Max Investment $250",
         "quests": [],
         "benefits": {
-          "startDate": "2024-12-09T23:00:00Z",
+          "startDate": "2024-12-10T13:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "250"
         }
