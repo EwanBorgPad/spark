@@ -38,8 +38,8 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
     return contributionAndRewardsData
   }
   const contributionInfo = getContributionInfo()
-  // TODO @hardcoded
   const userDidContribute = true
+  
 
   const scrollToRewards = () => {
     if (!contributionsRef.current) return
@@ -110,7 +110,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
             ) : userDidContribute ? (
               <>
                 <section className={sectionClass}>
-                  <YourContribution contributionInfo={contributionInfo} eventData={eventData} />
+                  <YourContribution />
                 </section>
                 <section ref={rewardsRef} className={twMerge(sectionClass, "mt-7 gap-4")}>
                   <Rewards
