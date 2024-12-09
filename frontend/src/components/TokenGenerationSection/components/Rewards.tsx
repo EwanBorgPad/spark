@@ -72,11 +72,11 @@ const Rewards = () => {
               endOfEvent={new Date(nextScheduledPayment.date)}
             />
             <div className="w-full px-4 pb-6">
+              {/* TODO @hardcoded claim phase - hardcoded claim button to be disabled */}
               {nextScheduledPayment && (
                 <Button
                   btnText={`Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount, false)} ${ticker}`}
                   size="lg"
-                  {/* TODO @hardcoded claim phase - hardcoded claim button to be disabled */}
                   disabled={true}
                   className="w-full py-3 font-normal"
                   onClick={claimRewardsHandler}
