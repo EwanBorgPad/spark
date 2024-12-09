@@ -4,21 +4,22 @@ import { useProjectDataContext } from "@/hooks/useProjectData"
 import { Icon } from "@/components/Icon/Icon"
 import Img from "@/components/Image/Img"
 import { calculateTokens } from "../../../../shared/utils/calculateTokens"
+import { twMerge } from "tailwind-merge"
 
 type TokenRewardsProps = {
   borgCoinInput: string
   tokenPriceInBORG: number | null
   borgPriceInUSD: number | null
   tokenPriceInUSD: number | null
+  isYourContribution?: boolean
 }
 
-const TokenRewards = ({ borgCoinInput, borgPriceInUSD }: TokenRewardsProps) => {
+const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: TokenRewardsProps) => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
   const tgeData = projectData?.info.tge
   const tokenTicker = tgeData?.projectCoin.ticker
   const tokenIcon = tgeData?.projectCoin.iconUrl
-
 
   if (!projectData) return <></>
 
@@ -28,11 +29,15 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD }: TokenRewardsProps) => {
     borgPriceInUSD,
   })
 
-
   if (projectData.info.lpPositionToBeBurned) {
     return (
       <div className="w-full bg-transparent">
-        <div className="border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary bg-tertiary ">
+        <div
+          className={twMerge(
+            "border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary bg-tertiary ",
+            isYourContribution && "bg-transparent",
+          )}
+        >
           {/* TOP SECTION - Distributed Rewards */}
           <div className="item-center relative flex flex-col gap-3 border-b-[1px] border-b-bd-primary px-3 py-4">
             {/* TOP section token values */}
@@ -45,8 +50,10 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD }: TokenRewardsProps) => {
                   <span className="text-base">{tokenTicker}</span>
                 </div>
 
-                {/* total reward distr. tokens value in USD */}
-                <span className="text-sm font-normal text-fg-secondary">{rewardDistribution.tokenInUSD}</span>
+                {/* total reward distribution tokens value in USD */}
+                {!isYourContribution && (
+                  <span className="text-sm font-normal text-fg-secondary">{rewardDistribution.tokenInUSD}</span>
+                )}
               </div>
             </div>
             {/* TOP section - footer */}
@@ -56,7 +63,12 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD }: TokenRewardsProps) => {
             </div>
 
             {/* PLUS icon between sections */}
-            <div className="absolute -bottom-[10px] left-[47%] bg-tertiary p-[2px]">
+            <div
+              className={twMerge(
+                "absolute -bottom-[10px] left-[47%] rounded-full bg-tertiary p-[2px]",
+                isYourContribution && "bg-default",
+              )}
+            >
               <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
             </div>
           </div>
@@ -93,16 +105,23 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD }: TokenRewardsProps) => {
         </div>
 
         {/* label below container */}
-        <span className="mt-[9px] block w-full text-center text-xs font-medium text-fg-primary opacity-50">
-          $ values for {tokenTicker} are shown at TGE valuation price
-        </span>
+        {!isYourContribution && (
+          <span className="mt-[9px] block w-full text-center text-xs font-medium text-fg-primary opacity-50">
+            $ values for {tokenTicker} are shown at TGE valuation price
+          </span>
+        )}
       </div>
     )
   }
   // RETURN IF TOKEN IS NOT GETTING BURNED
   return (
     <div className="w-full bg-transparent">
-      <div className="border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary bg-tertiary ">
+      <div
+        className={twMerge(
+          "border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary bg-tertiary ",
+          isYourContribution && "bg-transparent",
+        )}
+      >
         {/* TOP SECTION - Liquidity Pool */}
         <div className="relative flex flex-col items-center gap-3 border-b-[1px] border-b-bd-primary p-3">
           {/* top section */}
@@ -146,7 +165,12 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD }: TokenRewardsProps) => {
           </div>
 
           {/* Plus icon between top and mid sections */}
-          <div className="absolute -bottom-[10px] bg-tertiary p-[2px]">
+          <div
+            className={twMerge(
+              "absolute -bottom-[10px] rounded-full bg-tertiary p-[2px]",
+              isYourContribution && "bg-default",
+            )}
+          >
             <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
           </div>
         </div>
@@ -185,9 +209,11 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD }: TokenRewardsProps) => {
       </div>
 
       {/* label below container */}
-      <span className="mt-[9px] block w-full text-center text-xs font-medium text-fg-primary opacity-50">
-        $ values for {tokenTicker} are shown at TGE valuation price
-      </span>
+      {!isYourContribution && (
+        <span className="mt-[9px] block w-full text-center text-xs font-medium text-fg-primary opacity-50">
+          $ values for {tokenTicker} are shown at TGE valuation price
+        </span>
+      )}
     </div>
   )
 }
