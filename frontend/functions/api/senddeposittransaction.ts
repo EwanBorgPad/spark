@@ -7,6 +7,9 @@ import { ProjectService } from "../services/projectService"
 import { signatureSubscribe } from "../../src/utils/solanaFunctions"
 import { DepositService } from "../services/depositService"
 import { EligibilityService } from "../services/eligibilityService"
+import { calculateTokens } from "../../shared/utils/calculateTokens"
+import { exchangeService } from "../services/exchangeService"
+import { getTokenData } from "../services/constants"
 
 type ENV = {
     DB: D1Database,
@@ -38,7 +41,12 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             db,
             id: data.projectId
         })
-        const cluster = project?.cluster ?? 'devnet'
+
+        if (!project) {
+            return jsonResponse({ message: 'Project not found! '}, 404)
+        }
+
+        const cluster = (project?.cluster as ('mainnet' | 'devnet')) ?? 'devnet'
         const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster))
 
         // TODO @depositValidations
@@ -68,6 +76,24 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             tokenAmount,
             userWalletAddress
         } = await extractTransactionData(txId, heliusApiKey, cluster)
+
+        const raisedTokenData = getTokenData({ cluster, tokenAddress: project.info.raisedTokenMintAddress })
+
+        if (!raisedTokenData) {
+            return jsonResponse({ message: 'Raised token data missing!' }, 500)
+        }
+
+        const exchangeData = await exchangeService.getExchangeData({
+            db: ctx.env.DB,
+            baseCurrency: raisedTokenData.coinGeckoName,
+            targetCurrency: 'usd',
+        })
+
+        const tokensCalculation = calculateTokens({
+            projectData: project,
+            borgCoinInput: tokenAmount,
+            borgPriceInUSD: exchangeData.currentPrice,
+        })
 
         const eligibilityStatus = await EligibilityService.getEligibilityStatus({
             db: drizzleDb,
@@ -102,6 +128,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
                     cluster,
                     uiAmount: tokenAmount,
                     decimalMultiplier: decimals.toString(),
+                    tokensCalculation,
                 },
             })
         }

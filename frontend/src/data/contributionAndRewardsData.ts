@@ -1,7 +1,6 @@
-import { addDays } from "date-fns/addDays"
 import { addMonths } from "date-fns/addMonths"
 
-const currentMoment = new Date()
+// TODO @deprecate this whole file
 
 export type ContributionAndRewardsType = {
   // sections: Your Contribution and Your Rewards
@@ -25,7 +24,7 @@ export type ContributionAndRewardsType = {
 }
 
 export type PayoutScheduleType = {
-  date: Date
+  date: string | Date
   amount: number
   isClaimed: boolean
 }
@@ -33,6 +32,7 @@ export type PayoutScheduleType = {
 export const dummyPayoutScheduleData: PayoutScheduleType[] = [
   ...Array(6).keys(),
 ].map((index) => {
+  // @hardcoded
   const payoutDate = addMonths(new Date('2024-12-20'), index)
   const isClaimed = payoutDate < new Date()
   return {
