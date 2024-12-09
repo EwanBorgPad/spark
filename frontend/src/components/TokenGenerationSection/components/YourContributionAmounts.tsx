@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { backendApi } from "@/data/backendApi"
+import { formatCurrencyAmount } from "../../../../shared/utils/format.ts"
 
 const YourContributionAmounts = () => {
   const { t } = useTranslation()
@@ -43,7 +44,7 @@ const YourContributionAmounts = () => {
               <Img src={tokenIcon} size="4" customClass="mt-1" isRounded />
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-base">{userPositions.rewards.totalAmount.uiAmount}</span>
+                  <span className="text-base">{formatCurrencyAmount(userPositions.rewards.totalAmount.uiAmount, false)}</span>
                   <span className="text-base">{tokenTicker}</span>
                 </div>
               </div>
@@ -69,7 +70,7 @@ const YourContributionAmounts = () => {
                 <Icon icon="SvgBorgCoin" className="mt-1 opacity-50" />
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-2 text-fg-tertiary">
-                    <span className="text-base">{userPositions.lpPosition.raisedTokenAmount.uiAmount}</span>
+                    <span className="text-base">{formatCurrencyAmount(userPositions.lpPosition.raisedTokenAmount.uiAmount, false)}</span>
                     <span>BORG</span>
                   </div>
                 </div>
@@ -82,7 +83,7 @@ const YourContributionAmounts = () => {
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-2">
                     {/* Liquidity pool $[TOKEN] */}
-                    <span className="text-base">{userPositions.lpPosition.launchedTokenAmount.uiAmount}</span>
+                    <span className="text-base">{formatCurrencyAmount(userPositions.lpPosition.launchedTokenAmount.uiAmount, false)}</span>
                     <span className="text-base">{tokenTicker}</span>
                   </div>
                 </div>

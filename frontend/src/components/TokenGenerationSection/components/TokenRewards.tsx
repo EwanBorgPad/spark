@@ -23,6 +23,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
 
   if (!projectData) return <></>
 
+  // TODO return this from the backend (maybe a lot of work to change on frontend, at least create a backend api and prepare)
   const { lpPosition, rewardDistribution, totalToBeReceived } = calculateTokens({
     projectData,
     borgCoinInput: +borgCoinInput,
