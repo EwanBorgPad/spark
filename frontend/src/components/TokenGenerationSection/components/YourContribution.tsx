@@ -7,6 +7,7 @@ import { backendApi } from "@/data/backendApi"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { useParams } from "react-router-dom"
 import { useProjectDataContext } from "@/hooks/useProjectData"
+import { formatCurrencyAmount } from "shared/utils/format"
 
 // input data for "getExchange"
 const baseCurrency = "swissborg"
@@ -63,7 +64,7 @@ const YourContribution = () => {
     <>
       <div className="flex items-center gap-2 text-xl font-semibold">
         <Icon icon="SvgBorgCoin" />
-        {/* <span>{formatCurrencyAmount(suppliedBorg.total, false)}</span> */}
+        <span>{formatCurrencyAmount(totalBorgDeposits, false)}</span>
         <span>BORG</span>
       </div>
       <PastOrders label="All Orders" className="w-full" />

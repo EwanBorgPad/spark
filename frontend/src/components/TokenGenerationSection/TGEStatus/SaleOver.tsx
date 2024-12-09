@@ -34,12 +34,12 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
   ////////////////////////////////////////////////////////
   // TODO @api for getting contribution info ///////
   ////////////////////////////////////////////////////////
-  const getContributionInfo = (): ContributionAndRewardsType | null => {
+  const getContributionInfo = (): ContributionAndRewardsType => {
     return contributionAndRewardsData
   }
   const contributionInfo = getContributionInfo()
-  // @TODO - flag if user deposited
-  const userDidContribute = !!contributionInfo?.suppliedBorg.total
+  const userDidContribute = true
+  
 
   const scrollToRewards = () => {
     if (!contributionsRef.current) return
