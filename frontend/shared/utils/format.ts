@@ -1,5 +1,5 @@
 export const formatCurrencyAmount = (
-  amount: number | undefined | null,
+  amount: string | number | undefined | null,
   withDollarSign: boolean = true,
   customDecimals?: number,
 ) => {
@@ -20,7 +20,7 @@ export const formatCurrencyAmount = (
     currencyDisplay: "narrowSymbol",
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
-  }).format(amount)
+  }).format(Number(amount))
   if (!withDollarSign) return value.substring(1)
   return value
 }

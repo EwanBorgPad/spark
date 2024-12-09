@@ -33,7 +33,7 @@ const Payout = ({
           payout.isClaimed && "line-through opacity-50",
         )}
       >
-        {formatDateForDisplay(payout.date)}
+        {formatDateForDisplay(new Date(payout.date))}
       </div>
       <div
         className={twMerge(

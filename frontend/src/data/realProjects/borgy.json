@@ -114,7 +114,7 @@
       {
         "id": "tier99",
         "label": "Public Sale",
-        "description": "Access to sale at 5 PM UTC. Max Investment $250",
+        "description": "Access to sale at 2 PM UTC. Max Investment $250",
         "quests": [],
         "benefits": {
           "startDate": "2024-12-10T13:00:00Z",
@@ -123,7 +123,7 @@
         }
       }
     ],
-    "finalSnapshotTimestamp": "2024-12-09T23:00:00Z"
+    "finalSnapshotTimestamp": "2024-12-10T13:00:00Z"
   },
   "rewards": {
     "distributionType": "linear",

@@ -63,29 +63,39 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     const exchangeData = await exchangeService.getExchangeData({
       db: d1Db,
-      // TODO @hardcoded currency
-      baseCurrency: 'swissborg', // tokenData.coinGeckoName,
+      baseCurrency: tokenData.coinGeckoName,
       targetCurrency: 'usd',
     })
 
-    const priceUsd = exchangeData.currentPrice
+    const priceInUsd = exchangeData.currentPrice
 
     const decimals = tokenData.decimals
 
+    const raiseTargetInUsd = Number(project.json.info.tge.raiseTarget)
+
+    if (raiseTargetInUsd < 1) {
+      return jsonResponse({ message: 'Something went wrong... ' }, 500)
+    }
+
+    const totalAmountRaisedInUsd = (totalAmount / (10 ** decimals)) * priceInUsd
+    const raiseTargetReached = raiseTargetInUsd <= totalAmountRaisedInUsd
+
     const response = {
+      raiseTargetInUsd: String(raiseTargetInUsd),
+      raiseTargetReached,
       totalAmountRaised: {
         amount: totalAmount,
         decimals,
         uiAmount: String(totalAmount / (10 ** decimals)),
-        amountInUsd: String((totalAmount / (10 ** decimals)) * priceUsd),
-        tokenPriceInUsd: priceUsd,
+        amountInUsd: String(totalAmountRaisedInUsd),
+        tokenPriceInUsd: priceInUsd,
       },
       averageDepositAmount: {
         amount: averageAmount,
         decimals: decimals,
         uiAmount: String(averageAmount / (10 ** decimals)),
-        amountInUsd: String((averageAmount / (10 ** decimals)) * priceUsd),
-        tokenPriceInUsd: priceUsd,
+        amountInUsd: String((averageAmount / (10 ** decimals)) * priceInUsd),
+        tokenPriceInUsd: priceInUsd,
       },
       participantsCount: totalCount,
       // TODO @hardcoded below
