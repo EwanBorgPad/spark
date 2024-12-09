@@ -19,7 +19,7 @@ const WhitelistingContent = () => {
   const { walletState } = useWalletContext()
   const { projectData, isLoading } = useProjectDataContext()
   const tgeData = projectData?.info.tge
-  const raiseTarget = tgeData?.raiseTarget ? formatCurrencyAmount(tgeData.raiseTarget, false, 0) : ""
+  const raiseTarget = tgeData?.raiseTarget ? formatCurrencyAmount(tgeData.raiseTarget, true, 0) : ""
 
   const baseCurrency = "swissborg"
   const targetCurrency = "usd"
