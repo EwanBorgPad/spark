@@ -42,12 +42,11 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
     queryKey: ["getMyRewards", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
   })
-  const userDidContribute = userPositions?.hasUserInvested
-  
+  const hasUserInvested = userPositions?.hasUserInvested
 
   const scrollToRewards = () => {
     if (!contributionsRef.current) return
-    if (userDidContribute) {
+    if (hasUserInvested) {
       if (!rewardsRef.current) return
       window.scrollBy({
         behavior: "smooth",
@@ -100,7 +99,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
             <div
               className={twMerge(
                 "max-w-screen absolute left-0 top-10 -z-[-10] w-full overflow-hidden lg:top-16",
-                !userDidContribute || walletState !== "CONNECTED" ? "h-[247px] lg:top-0" : "",
+                !hasUserInvested || walletState !== "CONNECTED" ? "h-[247px] lg:top-0" : "",
               )}
             >
               <img src={backdropImg} className="lg:h-auto lg:w-screen" />
@@ -111,7 +110,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
                 customBtnText={"Connect Wallet to See Contribution"}
                 btnClassName="py-3 px-4 w-full max-w-[400px] text-base z-10"
               />
-            ) : userDidContribute ? (
+            ) : hasUserInvested ? (
               <>
                 <section className={sectionClass}>
                   <YourContribution />
@@ -134,7 +133,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
           <div
             className={twMerge(
               "max-w-screen absolute left-0 top-10 -z-[-10] w-full overflow-hidden lg:top-16",
-              !userDidContribute || walletState !== "CONNECTED" ? "h-[247px] lg:top-0" : "",
+              !hasUserInvested || walletState !== "CONNECTED" ? "h-[247px] lg:top-0" : "",
             )}
           >
             <img src={backdropImg} className="lg:h-auto lg:w-screen" />
@@ -145,7 +144,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
               customBtnText={"Connect Wallet to See Contribution"}
               btnClassName="py-3 px-4 w-full max-w-[400px] text-base z-10"
             />
-          ) : userDidContribute ? (
+          ) : hasUserInvested ? (
             <>
               <section className={sectionClass}>
                 <YourContribution />

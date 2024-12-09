@@ -278,7 +278,7 @@ export type SaleResultsResponse = {
   fdv: string
 }
 
-export type MyRewardsResponse = { hasUserInvested: false } | {
+type UserInvestedRewardsResponse = {
   hasUserInvested: true
   lpPosition: {
     raisedTokenAmount: TokenAmountModel
@@ -288,9 +288,9 @@ export type MyRewardsResponse = { hasUserInvested: false } | {
     hasUserClaimedTotalAmount: boolean
     hasUserClaimedAvailableAmount: boolean
     hasRewardsDistributionStarted: boolean
-    totalAmount: TokenAmountModel,
-    claimedAmount: TokenAmountModel,
-    claimableAmount: TokenAmountModel,
+    totalAmount: TokenAmountModel
+    claimedAmount: TokenAmountModel
+    claimableAmount: TokenAmountModel
     payoutSchedule: {
       date: string
       amount: number
@@ -298,3 +298,5 @@ export type MyRewardsResponse = { hasUserInvested: false } | {
     }[]
   }
 }
+
+export type MyRewardsResponse = { hasUserInvested: false } | UserInvestedRewardsResponse
