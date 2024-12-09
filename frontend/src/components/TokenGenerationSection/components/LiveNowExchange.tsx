@@ -1,5 +1,4 @@
 import { useForm, SubmitHandler, Controller } from "react-hook-form"
-import CurrencyInput from "react-currency-input-field"
 import { useTranslation } from "react-i18next"
 
 import { ConnectButton } from "@/components/Header/ConnectButton"
@@ -11,13 +10,14 @@ import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
 import { RefObject } from "react"
 import { toast } from "react-toastify"
-import { BACKEND_RPC_URL, backendApi, PostUserDepositRequest } from "@/data/backendApi"
+import { BACKEND_RPC_URL, backendApi, PostCreateDepositTxArgs, PostSendDepositTransactionArgs } from "@/data/backendApi"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
 import { useProjectDataContext } from "@/hooks/useProjectData"
-import { PublicKey } from "@solana/web3.js"
 import { getSplTokenBalance } from "../../../../shared/SolanaWeb3.ts"
+import LiveNowInput from "@/components/InputField/LiveNowInput.tsx"
+import { Transaction } from "@solana/web3.js"
 
 type FormInputs = {
   borgInputValue: string
@@ -43,26 +43,46 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const { projectId } = useParams()
 
   const { projectData } = useProjectDataContext()
-  const { walletState, signTransaction , address, walletProvider } = useWalletContext()
+  const { walletState, signTransaction, address, walletProvider } = useWalletContext()
 
   const cluster = projectData?.cluster ?? "devnet"
   const rpcUrl = BACKEND_RPC_URL + "?cluster=" + cluster
   const tokenMintAddress = projectData?.info.raisedTokenMintAddress
 
-  const { mutate: userDepositFunction, isPending } = useMutation({
-    mutationFn: async (payload: PostUserDepositRequest) => {
-      await backendApi.postUserDeposit(payload)
+  const {
+    mutateAsync: makeDepositTransaction,
+    isPending: isPendingMakeDepositTransaction,
+  } = useMutation({
+    mutationFn: async (payload: PostCreateDepositTxArgs) => {
+      return (await backendApi.postCreateDepositTx(payload)).transaction
     },
     onSuccess: async () => {
-      console.log("Successful user deposit!")
-      toast(`Deposited successfully!`)
+      console.log("Sucess!")
       await queryClient.invalidateQueries({ queryKey: ["getDeposits"] })
       await queryClient.invalidateQueries({ queryKey: ["getBalance"] })
     },
     onError: async () => {
-      console.log("Transaction failed!")
-      toast.error("Deposit was unsuccessful!")
+      toast.error("Fail!")
+    }
+  })
+
+  const {
+    mutateAsync: sendTransaction,
+    isPending: isPendingSendTransaction,
+  } = useMutation({
+    mutationFn: async (payload: PostSendDepositTransactionArgs) => {
+      return await backendApi.postSendDepositTransaction(payload)
     },
+    onSuccess: async () => {
+      toast('Transaction was successful!')
+      console.log("Transaction Sent!")
+      await queryClient.invalidateQueries({ queryKey: ["getDeposits"] })
+      await queryClient.invalidateQueries({ queryKey: ["getBalance"] })
+    },
+    onError: async () => {
+      toast('Transaction failed!')
+      console.log("Transaction failed!")
+    }
   })
 
   const { data: balance } = useQuery({
@@ -87,6 +107,8 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     enabled: Boolean(address) && Boolean(projectId),
   })
   const isUserEligible = data?.isEligible
+  const minInvestment = data?.eligibilityTier?.benefits.minInvestment || ""
+  const maxInvestment = data?.eligibilityTier?.benefits.maxInvestment || ""
 
   const { data: exchangeData } = useQuery({
     queryFn: () =>
@@ -100,29 +122,45 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const tokenPriceInUSD = projectData?.info.tge.fixedTokenPriceInUSD || 0
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
-  const {
-    handleSubmit,
-    control,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<FormInputs>()
+  const minBorgInput = borgPriceInUSD && minInvestment ? +minInvestment / borgPriceInUSD : 0
+  const maxBorgInput = borgPriceInUSD && maxInvestment ? +maxInvestment / borgPriceInUSD : 0
+
+  const { handleSubmit, control, setValue, watch, clearErrors, setError } = useForm<FormInputs>({ mode: "onBlur" })
+
+  const checkIfValueIsValid = (value: string) => {
+    if (+value > maxBorgInput) {
+      setError("borgInputValue", { message: `Max investment value is ${maxBorgInput.toFixed(2)} BORG` })
+      return false
+    } else if (+value < minBorgInput) {
+      setError("borgInputValue", { message: `Min investment value is ${minBorgInput.toFixed(2)} BORG` })
+      return false
+    }
+    return true
+  }
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
       const tokenAmount = parseFloat(data.borgInputValue.replace(",", ""))
       if (walletProvider === "") throw new Error("No wallet provider!")
       if (!tokenMintAddress) throw new Error("No Mint Address!")
+      const isValid = checkIfValueIsValid(data.borgInputValue)
+      if (!isValid) return
       if (walletState === "CONNECTED") {
-        const transaction = await signTransaction({
-          rpcUrl,
+        const serializedTransaction = await makeDepositTransaction({
+          userWalletAddress: address,
           tokenAmount,
-          tokenMintAddress: new PublicKey(tokenMintAddress),
-          walletType: walletProvider,
+          projectId: projectId ?? ''
         })
-        userDepositFunction({
-          projectId: projectId ?? "",
-          transaction,
+        // Deserialize the transaction
+        const transaction = Transaction.from(Buffer.from(serializedTransaction, 'base64'))
+        // Sign the transaction
+        const signedTransaction = await signTransaction(transaction, walletProvider)
+        if (!signedTransaction) throw new Error('Error while signing the transaction!')
+        // Send the signed transaction to backend
+        const serializedTx = signedTransaction.serialize().toString('base64')
+        await sendTransaction({
+          projectId: projectId ?? '',
+          serializedTx
         })
       } else {
         toast.error("Wallet error. Please try again or contact our support.")
@@ -133,8 +171,15 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   }
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
-    if (!balance) return
+    if (!balance || !maxBorgInput) return
     const floatValue = (balancePercentage / 100) * Number(balance.uiAmountString)
+    if (floatValue > maxBorgInput) {
+      setValue("borgInputValue", maxBorgInput.toString(), {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      return
+    }
     setValue("borgInputValue", floatValue.toString(), {
       shouldValidate: true,
       shouldDirty: true,
@@ -167,26 +212,31 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                   control={control}
                   name="borgInputValue"
                   rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <CurrencyInput
+                  render={({ field: { value, onChange }, fieldState: { error } }) => (
+                    <LiveNowInput
+                      minValue={+minInvestment}
+                      maxValue={+maxInvestment}
+                      onChange={onChange}
                       value={value}
-                      allowNegativeValue={false}
-                      placeholder="0"
-                      maxLength={16}
-                      autoFocus
-                      className={"max-w-[242px] bg-transparent text-2xl focus:outline-none"}
-                      decimalsLimit={6}
-                      onValueChange={onChange}
+                      setError={setError}
+                      error={error}
+                      clearError={() => clearErrors("borgInputValue")}
+                      borgPriceInUSD={borgPriceInUSD}
                     />
                   )}
                 />
-                {errors?.borgInputValue && <span className="text-fg-error-primary">{t("tge.please_input_value")}</span>}
               </div>
               <div className="flex h-fit items-center gap-2 rounded-full bg-default p-1 pr-3 text-sm font-medium">
                 <Icon icon="SvgBorgCoin" className="text-2xl" />
                 <span>BORG</span>
               </div>
             </div>
+            {minBorgInput && maxBorgInput && (
+              <p className="flex gap-3 text-xs text-fg-tertiary/60">
+                <span>min: {formatCurrencyAmount(+minBorgInput, false, 1)}</span>
+                <span>max: {formatCurrencyAmount(+maxBorgInput, false, 1)}</span>
+              </p>
+            )}
             {balance !== null && (
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -230,7 +280,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                 size="lg"
                 btnText="Supply $BORG"
                 disabled={!isUserEligible}
-                isLoading={isPending}
+                isLoading={isPendingSendTransaction || isPendingMakeDepositTransaction}
                 className={"w-full"}
               />
               <a className="w-full" href="https://jup.ag/swap/SOL-BORG" target="_blank" rel="noopener noreferrer">

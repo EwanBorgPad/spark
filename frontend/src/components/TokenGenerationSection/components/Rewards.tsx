@@ -7,7 +7,6 @@ import Divider from "@/components/Divider"
 import ProgressBar from "./ProgressBar"
 import { TgeWrapper } from "./Wrapper"
 
-import { ContributionAndRewardsType } from "@/data/contributionAndRewardsData"
 import { Button } from "@/components/Button/Button"
 import { formatCurrencyAmount } from "shared/utils/format"
 import { Icon } from "@/components/Icon/Icon"
@@ -15,28 +14,37 @@ import { formatDateForTimer } from "@/utils/date-helpers"
 import { isBefore } from "date-fns/isBefore"
 import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
+import { useQuery } from "@tanstack/react-query"
+import { backendApi } from "@/data/backendApi.ts"
+import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 
-type RewardsProps = {
-  hasDistributionStarted: boolean
-  rewards: ContributionAndRewardsType["claimPositions"]["rewards"]
-}
 
-const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
+const Rewards = () => {
+  const { t } = useTranslation()
   const { projectData, isLoading } = useProjectDataContext()
+  const { address } = useWalletContext()
+  const projectId = projectData?.info.id || ''
+
   const iconUrl = projectData?.info.tge.projectCoin.iconUrl || ""
   const ticker = projectData?.info.tge.projectCoin.ticker || ""
-  const { t } = useTranslation()
+
+  const { data: myRewardsResponse } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getMyRewards({ address, projectId })
+    },
+    queryKey: ["getMyRewards", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
+
+  if (!myRewardsResponse?.hasUserInvested) {
+    return null
+  }
 
   const currentMoment = new Date()
-  const nextScheduledPayment = rewards.payoutSchedule.find(
+  const nextScheduledPayment = myRewardsResponse.rewards.payoutSchedule.find(
     (payment) => !payment.isClaimed && isBefore(currentMoment, payment.date),
   )
-  const amountToBeClaimed = rewards.payoutSchedule.reduce((accumulator, payment) => {
-    if (!payment.isClaimed && !isBefore(currentMoment, payment.date) && isBefore(payment.date, currentMoment)) {
-      return accumulator + payment.amount
-    }
-    return accumulator
-  }, 0)
 
   const claimRewardsHandler = () => {
     /**
@@ -60,13 +68,13 @@ const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
         {nextScheduledPayment ? (
           <>
             <CountDownTimer
-              labelAboveTimer={`Next Payment: ${formatDateForTimer(nextScheduledPayment.date)}`}
-              endOfEvent={nextScheduledPayment.date}
+              labelAboveTimer={`Next Payment: ${formatDateForTimer(new Date(nextScheduledPayment.date))}`}
+              endOfEvent={new Date(nextScheduledPayment.date)}
             />
             <div className="w-full px-4 pb-6">
               {nextScheduledPayment && (
                 <Button
-                  btnText={`Claim ${formatCurrencyAmount(amountToBeClaimed, false)} ${ticker}`}
+                  btnText={`Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount, false)} ${ticker}`}
                   size="lg"
                   className="w-full py-3 font-normal"
                   onClick={claimRewardsHandler}
@@ -80,7 +88,7 @@ const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
             <span>{t("reward_distribution.all_rewards_claimed")}</span>
           </div>
         )}
-        {hasDistributionStarted && (
+        {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
           <>
             <hr className="w-full max-w-[calc(100%-32px)] border-bd-primary" />
             <div className="flex w-full flex-col gap-2.5 p-4 pb-7">
@@ -89,20 +97,20 @@ const Rewards = ({ hasDistributionStarted, rewards }: RewardsProps) => {
                 <div className="flex items-center gap-2">
                   <Img src={iconUrl} size="4" isFetchingLink={isLoading} />
                   <p>
-                    <span className="mr-1">{rewards.claimedTokens}</span>
+                    <span className="mr-1">{formatCurrencyAmount(myRewardsResponse.rewards.claimedAmount.uiAmount, false)}</span>
                     <span className="mr-1">/</span>
-                    <span className="mr-1">{rewards.totalTokens}</span>
+                    <span className="mr-1">{formatCurrencyAmount(myRewardsResponse.rewards.totalAmount.uiAmount, false)}</span>
                     <Text text={ticker} isLoading={isLoading} />
                   </p>
                 </div>
               </div>
-              <ProgressBar fulfilledAmount={rewards.claimedTokens} totalAmount={rewards.totalTokens} />
+              <ProgressBar fulfilledAmount={Number(myRewardsResponse.rewards.claimedAmount.uiAmount)} totalAmount={Number(myRewardsResponse.rewards.totalAmount.uiAmount)} />
             </div>
           </>
         )}
       </TgeWrapper>
-      {hasDistributionStarted && (
-        <ShowPayoutSchedule ticker={ticker} tokenIconUrl={iconUrl ?? ""} payoutSchedule={rewards.payoutSchedule} />
+      {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
+        <ShowPayoutSchedule ticker={ticker} tokenIconUrl={iconUrl ?? ""} payoutSchedule={myRewardsResponse.rewards.payoutSchedule} />
       )}
     </>
   )

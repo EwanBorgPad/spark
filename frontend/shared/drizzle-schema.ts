@@ -37,6 +37,14 @@ export const nftIndexTable = sqliteTable('nft_index', {
 type DepositJson = {
   cluster: string
   decimals: number
+  tokensCalculation: {
+    lpPosition: {
+      tokenRaw: number
+    }
+    rewardDistribution: {
+      tokenRaw: number
+    }
+  }
 }
 export const depositTable = sqliteTable('deposit', {
   transactionId: text('transaction_id').primaryKey(),
@@ -49,6 +57,17 @@ export const depositTable = sqliteTable('deposit', {
   tierId: text('tier_id').notNull(),
   nftAddress: text('nft_address').notNull(),
   json: text({ mode: 'json' }).$type<DepositJson>().notNull()
+})
+
+export const claimTable = sqliteTable('claim', {
+  transactionId: text('transaction_id').primaryKey(),
+  createdAt: text('created_at').notNull().default(() => new Date().toISOString()),
+  fromAddress: text('from_address').notNull(),
+  toAddress: text('to_address').notNull(),
+  tokenAddress: text('token_address').notNull(),
+  amount: text('amount_deposited').notNull(),
+  projectId: text('project_id').notNull(),
+  json: text({ mode: 'json' }).$type<{}>().notNull()
 })
 
 // const db = drizzle()

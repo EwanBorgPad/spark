@@ -14,6 +14,11 @@ import { Commitment } from "./SolanaWeb3.ts"
  */
 export const COMMITMENT_LEVEL = "finalized" satisfies Commitment
 /**
+ * Priority fee
+ * TODO @priorityFee value
+ */
+export const PRIORITY_FEE_MICRO_LAMPORTS = 20_000
+/**
  * Token Program on Solana https://spl.solana.com/token
  */
 export const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
