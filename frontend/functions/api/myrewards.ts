@@ -1,6 +1,6 @@
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { drizzle } from "drizzle-orm/d1"
-import { claimTable, projectTable } from "../../shared/drizzle-schema"
+import { claimTable, depositTable, projectTable } from "../../shared/drizzle-schema"
 import { and, desc, eq } from "drizzle-orm"
 import { getTokenData } from "../services/constants"
 
@@ -18,6 +18,37 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     if (!address) return jsonResponse({ message: 'address is missing!' }, 400)
     if (!projectId) return jsonResponse({ message: 'projectId is missing!' }, 400)
 
+    // load project
+    const project = await db
+      .select()
+      .from(projectTable)
+      .where(eq(projectTable.id, projectId))
+      .get()
+
+    if (!project) return jsonResponse({ error: 'Error: project not found!' }, 500)
+    const cluster = project.json.cluster ?? 'devnet'
+    const launchedTokenMintAddress = project.json.info.launchedTokenMintAddress
+
+    if (!project) {
+      return jsonResponse({ message: 'Project not found!' }, 404)
+    }
+
+    // load deposits and claims
+    const deposits = await db
+      .select()
+      .from(depositTable)
+      .where(
+        and(
+          eq(depositTable.fromAddress, address),
+          eq(depositTable.projectId, projectId),
+        )
+      )
+      .all()
+
+    if (!deposits.length) {
+      return jsonResponse({ hasUserInvested: false }, 200)
+    }
+
     const claims = await db
       .select()
       .from(claimTable)
@@ -30,35 +61,25 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       .orderBy(desc(claimTable.createdAt))
       .all()
 
-    const project = await db
-      .select()
-      .from(projectTable)
-      .where(eq(projectTable.id, projectId))
-      .get()
-
-    if (!project) return jsonResponse({ error: 'Error: project not found!' }, 500)
-    const cluster = project.json.cluster ?? 'devnet'
-    const tokenAddress = project.json.info.launchedTokenMintAddress
-
-    if (!project) {
-      return jsonResponse({ message: 'Project not found!' }, 404)
-    }
-
     const claimedAmount = claims.reduce((acc, curr) => acc + Number(curr.amount), 0)
-    const tokenData = getTokenData({ cluster, tokenAddress })
+    const launchedTokenData = getTokenData({ cluster, tokenAddress: launchedTokenMintAddress })
 
-    if (!tokenData) {
+    if (!launchedTokenData) {
       return jsonResponse({ message: 'TokenData not found!' }, 500)
     }
 
-    const decimals = tokenData.decimals
+    const decimals = launchedTokenData.decimals
 
-    // TODO @hardcoded
-    const totalAmount = 3_600_000_000
-    const availableToClaimAmount = totalAmount - claimedAmount
+    const totalAmount = deposits.reduce((acc, curr) => acc + Number(curr.json.tokensCalculation.tokenRaw), 0) * Math.pow(10, decimals)
+    const claimableAmount = totalAmount - claimedAmount
+
+    const hasUserClaimedTotalAmount = claimedAmount >= totalAmount
+    const hasUserClaimedAvailableAmount = claimedAmount >= claimableAmount
 
     const result = {
-      isAllClaimed: false,
+      hasUserInvested: true,
+      hasUserClaimedTotalAmount,
+      hasUserClaimedAvailableAmount,
       totalAmount: {
         amount: String(totalAmount),
         decimals,
@@ -69,10 +90,10 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
         decimals,
         uiAmount: String(claimedAmount / Math.pow(10, decimals)),
       },
-      availableToClaimAmount: {
-        amount: String(availableToClaimAmount),
+      claimableAmount: {
+        amount: String(claimableAmount),
         decimals,
-        uiAmount: String(availableToClaimAmount / Math.pow(10, decimals)),
+        uiAmount: String(claimableAmount / Math.pow(10, decimals)),
       }
     }
 

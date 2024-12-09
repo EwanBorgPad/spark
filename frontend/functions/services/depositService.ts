@@ -12,6 +12,11 @@ type CreateUserDepositArgs = {
         cluster: string
         uiAmount: string
         decimalMultiplier: string
+        tokensCalculation: {
+            lpPosition: {
+                tokenRaw: number
+            }
+        }
     }
 }
 

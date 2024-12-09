@@ -37,6 +37,11 @@ export const nftIndexTable = sqliteTable('nft_index', {
 type DepositJson = {
   cluster: string
   decimals: number
+  tokensCalculation: {
+    lpPosition: {
+      tokenRaw: number
+    }
+  }
 }
 export const depositTable = sqliteTable('deposit', {
   transactionId: text('transaction_id').primaryKey(),

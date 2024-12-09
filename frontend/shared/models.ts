@@ -89,7 +89,7 @@ export const infoSchema = z.object({
   projectLinks: z.array(externalUrlSchema()),
 
   ///// project token info /////
-  // deprecate this
+  // TODO deprecate this
   projectOwnerAddress: SolanaAddressSchema.nullable(),
 
   // below 3x2 fields are most important, move them into an object 'lp' or something like that

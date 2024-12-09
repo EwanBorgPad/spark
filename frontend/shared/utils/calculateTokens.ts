@@ -3,8 +3,16 @@ import { formatCurrencyAmount } from "./format"
 
 type Props = { projectData: ProjectModel; borgCoinInput: number | null; borgPriceInUSD: number | null }
 
+/**
+ * Very important function, needs a better name...
+ * TODO type the response
+ * TODO add raw amounts, ui amounts, display amounts, exchange data, all stuff (hard to explain, ask Milan)
+ * @param projectData
+ * @param borgCoinInput
+ * @param borgPriceInUSD
+ */
 export const calculateTokens = ({ projectData, borgCoinInput, borgPriceInUSD }: Props) => {
-  
+
   const {
     tge: { raiseTarget, fixedTokenPriceInUSD },
     lpPositionToBeBurned,
@@ -12,6 +20,7 @@ export const calculateTokens = ({ projectData, borgCoinInput, borgPriceInUSD }: 
   } = projectData.info
 
   const tokenPriceInUSD = fixedTokenPriceInUSD //
+  // TODO @vanja why this line?
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
   // if LBP position is burned, lp size is twice as larger than raise target
@@ -75,8 +84,10 @@ export const calculateTokens = ({ projectData, borgCoinInput, borgPriceInUSD }: 
 
   const lpPosition = {
     borg: liquidityPoolValues.borgLp.formatted,
+    borgRaw: liquidityPoolValues.borgLp.unformatted,
     borgInUSD: liquidityPoolValues.borgLp.usd,
     token: liquidityPoolValues.tokenLp.formatted,
+    tokenRaw: liquidityPoolValues.tokenLp.unformatted,
     tokenInUSD: liquidityPoolValues.tokenLp.usd,
   }
   const rewardDistribution = {
