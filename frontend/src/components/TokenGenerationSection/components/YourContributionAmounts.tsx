@@ -8,6 +8,10 @@ import { useWalletContext } from "@/hooks/useWalletContext"
 import { backendApi } from "@/data/backendApi"
 import { formatCurrencyAmount } from "../../../../shared/utils/format.ts"
 
+/**
+ * TODO @duplicateCode
+ * @constructor
+ */
 const YourContributionAmounts = () => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
