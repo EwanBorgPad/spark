@@ -55,7 +55,7 @@
     "raisedTokenMinCap": 0,
     "raisedTokenMaxCap": 10000,
 
-    "lbpWalletAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
+    "lbpWalletAddress": null,
 
     "cliffDuration": 0,
     "vestingDuration": 0,
