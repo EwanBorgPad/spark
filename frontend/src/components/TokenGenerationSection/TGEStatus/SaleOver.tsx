@@ -65,7 +65,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
   const hasDistributionStarted = eventData.id === "REWARD_DISTRIBUTION"
 
   return (
-    <div className="flex w-full flex-col items-center justify-center px-4">
+    <div key="sale-over" className="flex w-full flex-col items-center justify-center px-4">
       <div className="flex w-full max-w-[760px] flex-col items-center">
         <Timeline timelineEvents={timeline} />
 
