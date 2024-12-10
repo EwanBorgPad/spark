@@ -42,7 +42,7 @@ type GetEligibilityStatusArgs = {
  * @param projectId
  * @param rpcUrl
  */
-const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligibilityStatusArgs): EligibilityStatus => {
+const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligibilityStatusArgs): Promise<EligibilityStatus> => {
   let user = await db
     .select()
     .from(userTable)
