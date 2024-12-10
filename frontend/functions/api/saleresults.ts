@@ -68,7 +68,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     })
 
     // TODO @hardcoded
-    if (project.json.id === 'borgy') {
+    if (project.id === 'borgy') {
       exchangeData.currentPrice = 0.341783
     }
 
