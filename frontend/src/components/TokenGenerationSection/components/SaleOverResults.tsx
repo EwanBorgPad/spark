@@ -46,11 +46,11 @@ const SaleOverResults = () => {
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("sale_over.participants")}</span>
-        <Text
+        {/* <Text
           text={saleData?.participantsCount}
           isLoading={isLoading}
           className="text-base leading-7 text-fg-primary"
-        />
+        /> */}
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("sale_over.average_invested_amount")}</span>
