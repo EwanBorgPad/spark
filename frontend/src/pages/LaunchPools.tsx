@@ -35,7 +35,7 @@ const LaunchPools = () => {
 
   useEffect(() => {
     if (!data?.projects) return
-    const sortedProjects = sortProjectsPerStatus(data.projects)
+    const sortedProjects = sortProjectsPerStatus(data.projects).reverse()
     setProjects(sortedProjects)
   }, [data?.projects])
 

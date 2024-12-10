@@ -1,42 +1,43 @@
-import { useTranslation } from "react-i18next"
-
-import { useProjectDataContext } from "@/hooks/useProjectData"
 import { Icon } from "@/components/Icon/Icon"
 import Img from "@/components/Image/Img"
-import { calculateTokens } from "../../../../shared/utils/calculateTokens"
+import { useProjectDataContext } from "@/hooks/useProjectData"
 import { twMerge } from "tailwind-merge"
+import { useTranslation } from "react-i18next"
+import { useQuery } from "@tanstack/react-query"
+import { useWalletContext } from "@/hooks/useWalletContext"
+import { backendApi } from "@/data/backendApi"
+import { formatCurrencyAmount } from "../../../../shared/utils/format.ts"
 
-type TokenRewardsProps = {
-  borgCoinInput: string
-  tokenPriceInBORG: number | null
-  borgPriceInUSD: number | null
-  tokenPriceInUSD: number | null
-  isYourContribution?: boolean
-}
-
-const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: TokenRewardsProps) => {
+/**
+ * TODO @duplicateCode
+ * @constructor
+ */
+const YourContributionAmounts = () => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
   const tgeData = projectData?.info.tge
+  const { address } = useWalletContext()
+  const projectId = projectData?.info.id || ""
   const tokenTicker = tgeData?.projectCoin.ticker
   const tokenIcon = tgeData?.projectCoin.iconUrl
 
-  if (!projectData) return <></>
-
-  // TODO return this from the backend (maybe a lot of work to change on frontend, at least create a backend api and prepare)
-  const { lpPosition, rewardDistribution, totalToBeReceived } = calculateTokens({
-    projectData,
-    borgCoinInput: +borgCoinInput,
-    borgPriceInUSD,
+  const { data: userPositions } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getMyRewards({ address, projectId })
+    },
+    queryKey: ["getMyRewards", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
   })
+
+  if (!projectData || !userPositions?.hasUserInvested) return <></>
 
   if (projectData.info.lpPositionToBeBurned) {
     return (
       <div className="w-full bg-transparent">
         <div
           className={twMerge(
-            "border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary bg-tertiary ",
-            isYourContribution && "bg-transparent",
+            "border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary bg-tertiary bg-transparent",
           )}
         >
           {/* TOP SECTION - Distributed Rewards */}
@@ -47,14 +48,9 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
               <Img src={tokenIcon} size="4" customClass="mt-1" isRounded />
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-base">{rewardDistribution.token}</span>
+                  <span className="text-base">{formatCurrencyAmount(userPositions.rewards.totalAmount.uiAmount, false)}</span>
                   <span className="text-base">{tokenTicker}</span>
                 </div>
-
-                {/* total reward distribution tokens value in USD */}
-                {!isYourContribution && (
-                  <span className="text-sm font-normal text-fg-secondary">{rewardDistribution.tokenInUSD}</span>
-                )}
               </div>
             </div>
             {/* TOP section - footer */}
@@ -64,12 +60,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
             </div>
 
             {/* PLUS icon between sections */}
-            <div
-              className={twMerge(
-                "absolute -bottom-[10px] left-[47%] rounded-full bg-tertiary p-[2px]",
-                isYourContribution && "bg-default",
-              )}
-            >
+            <div className={twMerge("absolute -bottom-[10px] left-[47%] rounded-full bg-default p-[2px]")}>
               <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
             </div>
           </div>
@@ -83,7 +74,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
                 <Icon icon="SvgBorgCoin" className="mt-1 opacity-50" />
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-2 text-fg-tertiary">
-                    <span className="text-base">{lpPosition.borg}</span>
+                    <span className="text-base">{formatCurrencyAmount(userPositions.lpPosition.raisedTokenAmount.uiAmount, false)}</span>
                     <span>BORG</span>
                   </div>
                 </div>
@@ -96,7 +87,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-2">
                     {/* Liquidity pool $[TOKEN] */}
-                    <span className="text-base">{lpPosition.token}</span>
+                    <span className="text-base">{formatCurrencyAmount(userPositions.lpPosition.launchedTokenAmount.uiAmount, false)}</span>
                     <span className="text-base">{tokenTicker}</span>
                   </div>
                 </div>
@@ -104,13 +95,6 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
             </div>
           </div>
         </div>
-
-        {/* label below container */}
-        {!isYourContribution && (
-          <span className="mt-[9px] block w-full text-center text-xs font-medium text-fg-primary opacity-50">
-            $ values for {tokenTicker} are shown at TGE valuation price
-          </span>
-        )}
       </div>
     )
   }
@@ -119,8 +103,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
     <div className="w-full bg-transparent">
       <div
         className={twMerge(
-          "border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary bg-tertiary ",
-          isYourContribution && "bg-transparent",
+          "border-t-none relative w-full max-w-[400px] items-center gap-2.5 rounded-lg border border-bd-primary bg-transparent",
         )}
       >
         {/* TOP SECTION - Liquidity Pool */}
@@ -132,10 +115,12 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
               <Icon icon="SvgBorgCoin" className="mt-1" />
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-2">
-                  <span className="text-base">{lpPosition.borg}</span>
+                  <span className="text-base">{userPositions.lpPosition.raisedTokenAmount.uiAmount}</span>
                   <span>BORG</span>
                 </div>
-                <span className="text-sm font-normal text-fg-tertiary">{lpPosition.borgInUSD}</span>
+                <span className="text-sm font-normal text-fg-tertiary">
+                  {userPositions.lpPosition.raisedTokenAmount.amountInUsd}
+                </span>
               </div>
             </div>
 
@@ -146,10 +131,12 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-2">
                   {/* Liquidity pool $[TOKEN] */}
-                  <span className="text-base">{lpPosition.token}</span>
+                  <span className="text-base">{userPositions.lpPosition.launchedTokenAmount.uiAmount}</span>
                   <span className="text-base">{tokenTicker}</span>
                 </div>
-                <span className="text-sm font-normal text-fg-tertiary">{lpPosition.tokenInUSD}</span>
+                <span className="text-sm font-normal text-fg-tertiary">
+                  {userPositions.lpPosition.launchedTokenAmount.amountInUsd}
+                </span>
               </div>
             </div>
           </div>
@@ -166,12 +153,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
           </div>
 
           {/* Plus icon between top and mid sections */}
-          <div
-            className={twMerge(
-              "absolute -bottom-[10px] rounded-full bg-tertiary p-[2px]",
-              isYourContribution && "bg-default",
-            )}
-          >
+          <div className={twMerge("absolute -bottom-[10px] rounded-full bg-default p-[2px]")}>
             <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
           </div>
         </div>
@@ -183,10 +165,12 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
             <Img src={tokenIcon} size="4" customClass="mt-1" />
             <div className="flex flex-col items-start">
               <div className="flex items-center gap-1.5">
-                <span className="text-base">{rewardDistribution.token}</span>
+                <span className="text-base">{userPositions.rewards.totalAmount.uiAmount}</span>
                 <span className="text-base">{tokenTicker}</span>
               </div>
-              <span className="text-sm font-normal text-fg-tertiary">{rewardDistribution.tokenInUSD}</span>
+              <span className="text-sm font-normal text-fg-tertiary">
+                {userPositions.rewards.totalAmount.amountInUsd}
+              </span>
             </div>
           </div>
           {/* mid section - footer */}
@@ -197,26 +181,19 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
         </div>
 
         {/* BOTTOM SECTION - TOTAL TO BE RECEIVED */}
-        <div className="flex flex-col gap-2 p-3 text-sm">
+        {/* <div className="flex flex-col gap-2 p-3 text-sm">
           <span>Total Rewards</span>
           <div className="flex flex-wrap gap-2 font-medium text-fg-secondary">
-            <span>{totalToBeReceived.borg}</span>
+            <span>{}</span>
             <span>{"BORG"}</span>
             <span>{"+"}</span>
-            <span>{totalToBeReceived.token}</span>
+            <span>{}</span>
             <span>{tokenTicker}</span>
           </div>
-        </div>
+        </div> */}
       </div>
-
-      {/* label below container */}
-      {!isYourContribution && (
-        <span className="mt-[9px] block w-full text-center text-xs font-medium text-fg-primary opacity-50">
-          $ values for {tokenTicker} are shown at TGE valuation price
-        </span>
-      )}
     </div>
   )
 }
 
-export default TokenRewards
+export default YourContributionAmounts

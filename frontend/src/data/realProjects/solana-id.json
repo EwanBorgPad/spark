@@ -55,6 +55,8 @@
     "raisedTokenMinCap": 0,
     "raisedTokenMaxCap": 10000,
 
+    "lbpWalletAddress": null,
+
     "cliffDuration": 0,
     "vestingDuration": 0,
 

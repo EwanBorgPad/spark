@@ -5,17 +5,28 @@ import { getRatioPercentage } from "@/utils/format"
 import { formatCurrencyAmount } from "shared/utils/format"
 import ProgressBar from "./ProgressBar"
 import Text from "@/components/Text"
+import { useQuery } from "@tanstack/react-query"
+import { backendApi } from "@/data/backendApi"
 
 const SaleProgress = () => {
   const { t } = useTranslation()
-  const { projectData, isLoading } = useProjectDataContext()
-  const saleData = projectData?.saleData
-  const info = projectData?.info
+  const { projectData, isLoading: isLoadingProject } = useProjectDataContext()
+  const projectId = projectData?.info.id || ""
 
-  const availableTokensFormatted = formatCurrencyAmount(saleData?.availableTokens ?? 0, false)
-  const totalTokensFormatted = formatCurrencyAmount(info?.totalTokensForSale, false, 0)
-  const fulfilledPercentage =
-    saleData?.availableTokens && info && `${getRatioPercentage(saleData.availableTokens, info?.totalTokensForSale)}%`
+  const { data: saleData, isLoading: isLoadingSaleResults } = useQuery({
+    queryFn: async () => {
+      if (!projectId) return null
+      return await backendApi.getSaleResults({
+        projectId,
+      })
+    },
+    queryKey: ["saleResults", projectId],
+    enabled: Boolean(projectId),
+  })
+
+  const isLoading = isLoadingProject || isLoadingSaleResults
+  const amountRaisedInUsd = formatCurrencyAmount(saleData?.totalAmountRaised.amountInUsd, true, 2)
+  const raiseTargetInUsd = formatCurrencyAmount(saleData?.raiseTargetInUsd, true)
 
   return (
     <div className="flex w-full max-w-[432px] flex-col">
@@ -23,12 +34,15 @@ const SaleProgress = () => {
         <div className="flex w-full items-center justify-between gap-4">
           <span className="text-base">{t("lp_sale_progress")}</span>
           <div className="flex flex-col items-end">
-            <Text text={fulfilledPercentage} className="text-sm text-fg-tertiary" isLoading={isLoading} />
-            <Text text={`${availableTokensFormatted}/${totalTokensFormatted}`} isLoading={isLoading} />
+            <Text text={saleData?.sellOutPercentage + "%"} className="text-sm text-fg-tertiary" isLoading={isLoading} />
+            <Text text={`${amountRaisedInUsd}/${raiseTargetInUsd}`} isLoading={isLoading} />
           </div>
         </div>
-        {saleData?.availableTokens && info && (
-          <ProgressBar fulfilledAmount={saleData?.availableTokens} totalAmount={info.totalTokensForSale} />
+        {saleData && (
+          <ProgressBar
+            fulfilledAmount={+saleData.totalAmountRaised.amountInUsd}
+            totalAmount={+saleData.raiseTargetInUsd}
+          />
         )}
       </div>
     </div>
