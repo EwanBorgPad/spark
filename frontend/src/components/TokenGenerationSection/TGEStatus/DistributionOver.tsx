@@ -6,6 +6,7 @@ import Divider from "@/components/Divider"
 import { TgeWrapper } from "../components/Wrapper"
 import { formatDateForDisplay } from "@/utils/date-helpers"
 import Timeline, { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
+import { useProjectDataContext } from "@/hooks/useProjectData"
 
 type DistributionOverProps = {
   eventData: ExpandedTimelineEventType
@@ -14,6 +15,10 @@ type DistributionOverProps = {
 
 const DistributionOver = ({ eventData, timeline }: DistributionOverProps) => {
   const { t } = useTranslation()
+  const { projectData } = useProjectDataContext()
+
+  const rewardDistributionDate =
+    projectData?.info.timeline.find((item) => item.id === "REWARD_DISTRIBUTION")?.date || null
 
   return (
     <div className="flex w-full justify-center px-4">
@@ -30,7 +35,9 @@ const DistributionOver = ({ eventData, timeline }: DistributionOverProps) => {
             <Divider icon="SvgMedal" />
             <div className="mb-7 flex w-full flex-col items-center gap-1">
               <h2 className="text-4xl font-semibold">{t("sale_over.rewards")}</h2>
-              <p className="text-center text-sm opacity-60">{t("sale_over.monthly_payments_need_to")}</p>
+              {rewardDistributionDate && (
+                <p className="text-center text-sm opacity-60">{`Monthly payments need to be Claimed manually. Liquidity pool will become accessible on ${formatDateForDisplay(rewardDistributionDate)}.`}</p>
+              )}
             </div>
             <div className=" flex w-full opacity-10">
               <TgeWrapper label={"Your Monthly Payment"}>

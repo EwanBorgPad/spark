@@ -55,7 +55,7 @@ const SaleOverResults = () => {
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("sale_over.average_invested_amount")}</span>
         <Text
-          text={formatCurrencyAmount(Number(saleData?.averageDepositAmount.amountInUsd))}
+          text={formatCurrencyAmount(Number(saleData?.averageDepositAmount.amountInUsd), true, 2)}
           className="text-base leading-7 text-fg-primary"
           isLoading={isLoading}
         />
@@ -63,7 +63,7 @@ const SaleOverResults = () => {
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("market_cap")}</span>
         <Text
-          text={formatCurrencyAmount(Number(saleData?.marketCap))}
+          text={formatCurrencyAmount(Number(saleData?.marketCap), true, 0)}
           className="text-base leading-7 text-fg-primary"
           isLoading={isLoading}
         />
@@ -73,7 +73,7 @@ const SaleOverResults = () => {
 
         {/* @TODO - Check: FDV (fully diluted value) is fixed from the beginning. Check if this is in every project */}
         <Text
-          text={formatCurrencyAmount(info?.tge.fdv)}
+          text={formatCurrencyAmount(info?.tge.fdv, true, 0)}
           isLoading={isLoading}
           className="text-base leading-7 text-fg-primary"
         />
