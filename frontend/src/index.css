@@ -28,6 +28,7 @@
 
 html {
   background-color: #0C111D;
+  font-synthesis-weight: none
 }
 body {
   margin: 0;
@@ -36,6 +37,7 @@ body {
   line-height: 24px;
   overflow-x: hidden;
   overflow-y: scroll;
+  font-synthesis-weight: none
 }
 :root {
   --toastify-color-dark: #161B26;
