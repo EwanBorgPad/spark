@@ -137,7 +137,7 @@ export async function createUserDepositTransaction(
         transaction.lastValidBlockHeight = lastValidBlockHeight
         transaction.feePayer = fromPublicKey // User signs to pay fees
         // sign with our minting wallet and nftMint keypair
-        transaction.partialSign(nftMintingWalletKeypair)
+        transaction.partialSign(nftMintingWalletKeypair, nftMintSigner)
         // serialize transaction for frontend
         const serializedTransaction = transaction.serialize({
             requireAllSignatures: false,
@@ -202,17 +202,6 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
         authority: signer,
         tokenOwner: userPublicKey,
     }))
-
-    addPluginV1(umi, {
-        asset: mintKeypair.publicKey,
-        plugin: createPlugin({
-            type: 'FreezeDelegate',
-            data: {
-                frozen: true
-            }
-        }),
-        initAuthority: pluginAuthority(),
-    })
 
     // send minting nft tx
     const listOfInstructions = builder.getInstructions()
