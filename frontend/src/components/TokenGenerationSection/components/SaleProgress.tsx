@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import { useProjectDataContext } from "@/hooks/useProjectData"
+
 import { formatCurrencyAmount } from "shared/utils/format"
 import ProgressBar from "./ProgressBar"
 import Text from "@/components/Text"
@@ -37,7 +38,12 @@ const SaleProgress = () => {
             <Text text={`${amountRaisedInUsd}/${raiseTargetInUsd}`} isLoading={isLoading} />
           </div>
         </div>
-        {saleData && <ProgressBar fulfilledAmount={+saleData.totalAmountRaised.amountInUsd} totalAmount={+2000} />}
+        {saleData && (
+          <ProgressBar
+            fulfilledAmount={+saleData.totalAmountRaised.amountInUsd}
+            totalAmount={+saleData.raiseTargetInUsd}
+          />
+        )}
       </div>
     </div>
   )
