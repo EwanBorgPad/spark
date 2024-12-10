@@ -36,7 +36,7 @@ const DistributionOver = ({ eventData, timeline }: DistributionOverProps) => {
             <div className="mb-7 flex w-full flex-col items-center gap-1">
               <h2 className="text-4xl font-semibold">{t("sale_over.rewards")}</h2>
               {rewardDistributionDate && (
-                <p className="text-center text-sm opacity-60">{`Monthly payments need to be Claimed manually. Liquidity pool will become accessible on ${rewardDistributionDate}.`}</p>
+                <p className="text-center text-sm opacity-60">{`Monthly payments need to be Claimed manually. Liquidity pool will become accessible on ${formatDateForDisplay(rewardDistributionDate)}.`}</p>
               )}
             </div>
             <div className=" flex w-full opacity-10">
