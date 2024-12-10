@@ -56,6 +56,8 @@
     "raisedTokenMinCap": 0,
     "raisedTokenMaxCap": 0,
 
+    "lbpWalletAddress": "",
+
     "cliffDuration": 0,
     "vestingDuration": 0,
 
@@ -114,7 +116,7 @@
       {
         "id": "tier99",
         "label": "Public Sale",
-        "description": "Access to sale at 2 PM UTC. Max Investment $250",
+        "description": "Access to sale at 2 PM CET. Max Investment $250",
         "quests": [],
         "benefits": {
           "startDate": "2024-12-10T13:00:00Z",
