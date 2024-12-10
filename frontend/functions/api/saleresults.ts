@@ -98,8 +98,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
         tokenPriceInUsd: priceInUsd,
       },
       participantsCount: totalCount,
+      sellOutPercentage: (Number(totalAmountRaisedInUsd) / Number(raiseTargetInUsd)) * 100,
       // TODO @hardcoded below
-      sellOutPercentage: 77,
       marketCap: exchangeData.marketCap,
       fdv: exchangeData.fullyDilutedValuation,
     }

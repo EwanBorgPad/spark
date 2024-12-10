@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import { useProjectDataContext } from "@/hooks/useProjectData"
-import { getRatioPercentage } from "@/utils/format"
+
 import { formatCurrencyAmount } from "shared/utils/format"
 import ProgressBar from "./ProgressBar"
 import Text from "@/components/Text"
@@ -25,8 +25,8 @@ const SaleProgress = () => {
   })
 
   const isLoading = isLoadingProject || isLoadingSaleResults
-  const amountRaisedInUsd = formatCurrencyAmount(saleData?.totalAmountRaised.amountInUsd, true, 2)
-  const raiseTargetInUsd = formatCurrencyAmount(saleData?.raiseTargetInUsd, true)
+  const amountRaisedInUsd = formatCurrencyAmount(saleData?.totalAmountRaised.amountInUsd, true, 1)
+  const raiseTargetInUsd = formatCurrencyAmount(saleData?.raiseTargetInUsd, true, 0)
 
   return (
     <div className="flex w-full max-w-[432px] flex-col">
