@@ -46,7 +46,7 @@
       }
     ],
 
-    "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
+    "projectOwnerAddress": "4SmMETL98BAR6W5DyZm661NbTpY3RUJNeeJMAHxvXia4",
 
     "launchedTokenMintAddress": "BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX",
     "launchedTokenLpDistribution": 0,
@@ -99,7 +99,7 @@
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-12-10T23:00:00Z"
+        "date": "2024-12-10T13:10:00Z"
       },
       {
         "id": "REWARD_DISTRIBUTION",
