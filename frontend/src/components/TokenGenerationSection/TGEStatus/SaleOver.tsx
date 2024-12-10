@@ -74,16 +74,12 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
             <h2 className="text-4xl font-semibold leading-11">
               {hasDistributionStarted ? t("reward_distribution") : t("sale_over")}
             </h2>
-            {projectData?.saleData?.saleSucceeded ? (
-              <>
-                <span className="text-sm opacity-60">{t("sale_over.thank_you")}</span>
-                <Button color="plain" className="cursor-pointer py-0 text-sm underline" onClick={scrollToRewards}>
-                  {t("sale_over.check_your_rewards")}
-                </Button>
-              </>
-            ) : (
-              <SaleUnsuccessful />
-            )}
+            <>
+              <span className="text-sm opacity-60">{t("sale_over.thank_you")}</span>
+              <Button color="plain" className="cursor-pointer py-0 text-sm underline" onClick={scrollToRewards}>
+                {t("sale_over.check_your_rewards")}
+              </Button>
+            </>
           </div>
 
           <SaleOverResults />
