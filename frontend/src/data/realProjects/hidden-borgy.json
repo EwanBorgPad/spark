@@ -56,6 +56,8 @@
     "raisedTokenMinCap": 0,
     "raisedTokenMaxCap": 0,
 
+    "lbpWalletAddress": "Dkj2wARcBhwQYnTUTPoppcBj7eRKnu6pQAd8uVgmQF1R",
+
     "cliffDuration": 0,
     "vestingDuration": 0,
 
@@ -87,17 +89,17 @@
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": "2024-12-04T23:00:00Z"
+        "date": "2024-12-09T09:30:00Z"
       },
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-12-10T13:00:00Z"
+        "date": "2024-12-10T10:40:00Z"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-12-10T23:00:00Z"
+        "date": "2024-12-10T14:10:00Z"
       },
       {
         "id": "REWARD_DISTRIBUTION",
@@ -118,7 +120,7 @@
         "quests": [],
         "benefits": {
           "startDate": "2024-12-10T13:00:00Z",
-          "minInvestment": "10",
+          "minInvestment": "1",
           "maxInvestment": "250"
         }
       }
