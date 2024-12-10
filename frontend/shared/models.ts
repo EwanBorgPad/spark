@@ -92,6 +92,8 @@ export const infoSchema = z.object({
   // TODO deprecate this
   projectOwnerAddress: SolanaAddressSchema.nullable(),
 
+  lbpWalletAddress: SolanaAddressSchema.default(''),
+
   // below 3x2 fields are most important, move them into an object 'lp' or something like that
   launchedTokenMintAddress: SolanaAddressSchema,
   launchedTokenLpDistribution: z.number().int(),

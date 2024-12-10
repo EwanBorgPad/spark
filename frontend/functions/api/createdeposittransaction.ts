@@ -15,7 +15,6 @@ import { PRIORITY_FEE_MICRO_LAMPORTS } from "../../shared/constants"
 type ENV = {
     DB: D1Database,
     SOLANA_RPC_URL: string,
-    LBP_WALLET_ADDRESS: string
     NFT_MINT_WALLET_PRIVATE_KEY: string
 }
 const requestSchema = z.object({
@@ -26,11 +25,10 @@ const requestSchema = z.object({
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const db = ctx.env.DB
     const SOLANA_RPC_URL = ctx.env.SOLANA_RPC_URL
-    const LBP_WALLET_ADDRESS = ctx.env.LBP_WALLET_ADDRESS
     const privateKey = ctx.env.NFT_MINT_WALLET_PRIVATE_KEY
     try {
         // validate env
-        if (!LBP_WALLET_ADDRESS || !SOLANA_RPC_URL || !privateKey) {
+        if (!SOLANA_RPC_URL || !privateKey) {
             throw new Error('Misconfigured env!')
         }
         // request validation
@@ -39,17 +37,23 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         if (!data?.userWalletAddress) return jsonResponse({ error: 'User wallet address is missing in request body' }, 404)
         if (!data?.tokenAmount) return jsonResponse({ error: 'Token amount is missing in request body' }, 404)
         if (!data?.projectId) return jsonResponse({ error: 'Project ID is missing in request body' }, 404)
-
-        // data initialization
-        const userWalletAddress = data.userWalletAddress
-        const receivingAddress = LBP_WALLET_ADDRESS
-        const tokenAmount = data.tokenAmount
         const projectId = data.projectId
 
         const project = await ProjectService.findProjectById({ db, id: projectId })
         if (!project) {
             return jsonResponse({ message: "Project not found!" }, 404)
         }
+
+        const lbpWalletAddress = project.info.lbpWalletAddress
+
+        if (!lbpWalletAddress) {
+            return jsonResponse({ message: "LBPWA not configured!" }, 500)
+        }
+
+        // data initialization
+        const userWalletAddress = data.userWalletAddress
+        const receivingAddress = lbpWalletAddress
+        const tokenAmount = data.tokenAmount
 
         // getting connection to the RPC
         const cluster = project?.cluster ?? 'devnet'
