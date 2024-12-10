@@ -35,7 +35,9 @@ const DistributionOver = ({ eventData, timeline }: DistributionOverProps) => {
             <Divider icon="SvgMedal" />
             <div className="mb-7 flex w-full flex-col items-center gap-1">
               <h2 className="text-4xl font-semibold">{t("sale_over.rewards")}</h2>
-              <p className="text-center text-sm opacity-60">{`Monthly payments need to be Claimed manually. Liquidity pool will become accessible on ${rewardDistributionDate}.`}</p>
+              {rewardDistributionDate && (
+                <p className="text-center text-sm opacity-60">{`Monthly payments need to be Claimed manually. Liquidity pool will become accessible on ${rewardDistributionDate}.`}</p>
+              )}
             </div>
             <div className=" flex w-full opacity-10">
               <TgeWrapper label={"Your Monthly Payment"}>
