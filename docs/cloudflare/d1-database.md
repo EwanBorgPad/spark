@@ -38,4 +38,7 @@ Your worker has access to the following bindings:
 - Query local database: `wrangler d1 execute DB_NAME --local --command "SELECT 1;"`
 - List all tables: `wrangler d1 execute DB_NAME --remote --command "SELECT name FROM sqlite_master WHERE type='table';"`
 - List all columns: `wrangler d1 execute DB_NAME --remote --command "PRAGMA table_info(TABLE_NAME);"`
+- 
+- 
 - Set cache value: `wrangler d1 execute borgpad-production-database --remote --command "UPDATE cache_store SET expires_at = '2024-12-10T09:19:00.00Z' WHERE cache_key = 'exchange-api/swissborg-usd';"`
+- Surplus check: `wrangler d1 execute borgpad-production-database --remote --command "SELECT from_address, COUNT(*) as number_of_deposits, (SUM(amount_deposited) / 1000000000) as borg_deposited FROM deposit WHERE project_id = 'borgy' GROUP BY from_address ORDER BY SUM(amount_deposited)" &> "surplus.json"`

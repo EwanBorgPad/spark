@@ -34,6 +34,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         if (!data?.tokenAmount) return jsonResponse({ error: 'Token amount is missing in request body' }, 404)
         if (!data?.projectId) return jsonResponse({ error: 'Project ID is missing in request body' }, 404)
 
+        // TODO pull amount from service instead of frontend, always claim full amount
+
         // data initialization
         const privateWalletKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(privateKey)))
         const sendingAddress = privateWalletKeypair.publicKey.toBase58()
