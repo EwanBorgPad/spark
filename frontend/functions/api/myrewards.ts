@@ -11,8 +11,8 @@ type ENV = {
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
   // mock date for testing
-  const currentDate = new Date('2024-12-25')
-  // const currentDate = new Date()
+  // const currentDate = new Date('2024-12-25')
+  const currentDate = new Date()
   try {
     // parse/validate request
     const { searchParams } = new URL(ctx.request.url)
