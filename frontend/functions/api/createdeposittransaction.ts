@@ -36,6 +36,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         if (!SOLANA_RPC_URL || !privateKey) {
             throw new Error('Misconfigured env!')
         }
+
+        // TODO @hardcoded
+        return jsonResponse({ message: 'Target has been reached!' }, 409)
+
         // request validation
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
         if (error) return jsonResponse({ error: 'Invalid request' }, 400)
