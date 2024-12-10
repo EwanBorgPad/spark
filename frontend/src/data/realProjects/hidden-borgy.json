@@ -62,7 +62,7 @@
     "vestingDuration": 0,
 
     "tge": {
-      "raiseTarget": 50000,
+      "raiseTarget": 3000,
       "projectCoin": {
         "iconUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihaidrwzbEcGQMgeo9DfYDdEmMMoYxbFzUTU54GI09ctwslVrFQkrxt4YxhHc9MMSe4PizOG9qzUzuRL2_BgKJ3mcVUOZ917ufQ=s2560",
         "ticker": "BORGY"
@@ -99,7 +99,7 @@
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-12-10T14:10:00Z"
+        "date": "2024-12-10T12:50:00Z"
       },
       {
         "id": "REWARD_DISTRIBUTION",
