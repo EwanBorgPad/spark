@@ -17,7 +17,7 @@ export const COMMITMENT_LEVEL = "finalized" satisfies Commitment
  * Priority fee
  * TODO @priorityFee value
  */
-export const PRIORITY_FEE_MICRO_LAMPORTS = 20_000
+export const PRIORITY_FEE_MICRO_LAMPORTS = 100_000
 /**
  * Token Program on Solana https://spl.solana.com/token
  */
