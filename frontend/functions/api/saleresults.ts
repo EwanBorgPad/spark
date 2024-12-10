@@ -67,6 +67,11 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       targetCurrency: 'usd',
     })
 
+    // TODO @hardcoded
+    if (project.json.id === 'borgy') {
+      exchangeData.currentPrice = 0.341783
+    }
+
     const priceInUsd = exchangeData.currentPrice
 
     const decimals = tokenData.decimals
