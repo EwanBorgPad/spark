@@ -1,5 +1,5 @@
 
-type Cluster = 'devnet' | 'mainnet'
+export type Cluster = 'devnet' | 'mainnet'
 
 type TokenData = {
   decimals: number
