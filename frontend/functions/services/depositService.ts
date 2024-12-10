@@ -12,6 +12,18 @@ type CreateUserDepositArgs = {
         cluster: string
         uiAmount: string
         decimalMultiplier: string
+        tokensCalculation: {
+            lpPosition: {
+                // TODO rename raisedToken launchedToken
+                // TODO align USD/Usd capitalizations
+                borg: string
+                borgRaw: string
+                borgInUSD: string
+                token: string
+                tokenRaw: string
+                tokenInUSD: string
+            }
+        }
     }
 }
 

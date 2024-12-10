@@ -3,9 +3,9 @@ import {
   GetExchangeResponse,
   GetPresignedUrlResponse,
   GetProjectsResponse,
-  InvestmentIntentRequest, InvestmentIntentSummary,
+  InvestmentIntentRequest, InvestmentIntentSummary, MyRewardsResponse,
   ProjectModel,
-  projectSchema,
+  projectSchema, SaleResultsResponse, TokenAmountModel,
 } from "../../shared/models.ts"
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
 
@@ -18,10 +18,15 @@ const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
 const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
-const USER_DEPOSIT_URL = API_BASE_URL + "/userdeposit"
 const GET_INVESTMENT_INTENT_SUMMARY_URL = API_BASE_URL + "/investmentintentsummary"
 const GET_DEPOSITS_URL = API_BASE_URL + "/deposits"
+const GET_SALE_RESULTS_URL = API_BASE_URL + "/saleresults"
+const GET_MY_REWARDS_URL = API_BASE_URL + "/myrewards"
 export const BACKEND_RPC_URL = API_BASE_URL + "/rpcproxy"
+const CREATE_DEPOSIT_TRANSACTION = API_BASE_URL + "/createdeposittransaction"
+const CREATE_CLAIM_TRANSACTION = API_BASE_URL + "/createclaimtransaction"
+const SEND_DEPOSIT_TRANSACTION = API_BASE_URL + "/senddeposittransaction"
+const SEND_CLAIM_TRANSACTION = API_BASE_URL + "/sendclaimtransaction"
 
 type GetEligibilityStatusArgs = {
   address: string
@@ -51,7 +56,20 @@ type GetDepositsResponse = {
     decimalMultiplier: string
     transactionUrl: string
   }[]
+  total: TokenAmountModel,
 }
+
+const getMyRewards = async ({ address, projectId, }: GetDepositsRequest): Promise<MyRewardsResponse> => {
+  const url = new URL(GET_MY_REWARDS_URL, window.location.href)
+  url.searchParams.set("address", address)
+  url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json
+}
+
 const getDeposits = async ({ address, projectId, }: GetDepositsRequest): Promise<GetDepositsResponse> => {
   const url = new URL(GET_DEPOSITS_URL, window.location.href)
   url.searchParams.set("address", address)
@@ -62,6 +80,19 @@ const getDeposits = async ({ address, projectId, }: GetDepositsRequest): Promise
 
   return json
 }
+
+
+const getSaleResults = async ({ projectId }: { projectId: string }): Promise<SaleResultsResponse> => {
+  const url = new URL(GET_SALE_RESULTS_URL, window.location.href)
+  url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json
+}
+
+
 type GetInvestmentIntentSummary = {
   projectId: string
 }
@@ -233,17 +264,33 @@ const uploadFileToBucket = async ({
   })
 }
 
-const postUserDeposit = async ({
-  projectId, transaction
-}: PostUserDepositRequest): Promise<any> => {
-  const url = new URL(USER_DEPOSIT_URL, window.location.href)
+
+export type PostCreateDepositTxArgs = {
+  userWalletAddress: string,
+  tokenAmount: number,
+  projectId: string
+}
+export type PostCreateClaimTxArgs = PostCreateDepositTxArgs
+
+type CreateDepositTxReturnType = {
+  transaction: string
+}
+type CreateClaimTxReturnType = CreateDepositTxReturnType
+
+const postCreateDepositTx = async ({
+  userWalletAddress,
+  tokenAmount,
+  projectId
+}: PostCreateDepositTxArgs): Promise<CreateDepositTxReturnType> => {
+  const url = new URL(CREATE_DEPOSIT_TRANSACTION, window.location.href)
   const requestObject = {
-    projectId,
-    transaction
+    userWalletAddress,
+    tokenAmount,
+    projectId
   }
   const request = JSON.stringify(requestObject)
   const response = await fetch(url, {
-    method: "POST",
+    method: 'POST',
     body: request,
     headers: {
       "Content-Type": "application/json",
@@ -254,8 +301,83 @@ const postUserDeposit = async ({
   return json
 }
 
+const postCreateClaimTx = async ({
+  userWalletAddress,
+  tokenAmount,
+  projectId
+}: PostCreateDepositTxArgs): Promise<CreateClaimTxReturnType> => {
+  const url = new URL(CREATE_CLAIM_TRANSACTION, window.location.href)
+  const requestObject = {
+    userWalletAddress,
+    tokenAmount,
+    projectId
+  }
+  const request = JSON.stringify(requestObject)
+  const response = await fetch(url, {
+    method: 'POST',
+    body: request,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
+export type PostSendDepositTransactionArgs = {
+  serializedTx: string,
+  projectId: string
+}
+export type postSendClaimTransactionArgs = PostSendDepositTransactionArgs
+
+const postSendDepositTransaction = async ({
+  serializedTx,
+  projectId
+}: PostSendDepositTransactionArgs): Promise<CreateDepositTxReturnType> => {
+  const url = new URL(SEND_DEPOSIT_TRANSACTION, window.location.href)
+  const requestObject = {
+    serializedTx,
+    projectId
+  }
+  const request = JSON.stringify(requestObject)
+  const response = await fetch(url, {
+    method: 'POST',
+    body: request,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
+const postSendClaimTransaction = async ({
+  serializedTx,
+  projectId
+}: PostSendDepositTransactionArgs): Promise<CreateClaimTxReturnType> => {
+  const url = new URL(SEND_CLAIM_TRANSACTION, window.location.href)
+  const requestObject = {
+    serializedTx,
+    projectId
+  }
+  const request = JSON.stringify(requestObject)
+  const response = await fetch(url, {
+    method: 'POST',
+    body: request,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
+
+
 export const backendApi = {
-  postUserDeposit,
   getProject,
   getProjects,
   getExchange,
@@ -268,4 +390,10 @@ export const backendApi = {
   getEligibilityStatus,
   getInvestmentIntentSummary,
   getDeposits,
+  getMyRewards,
+  getSaleResults,
+  postCreateDepositTx,
+  postSendDepositTransaction,
+  postCreateClaimTx,
+  postSendClaimTransaction
 }

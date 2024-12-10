@@ -9,7 +9,6 @@ import { usePersistedState } from "@/hooks/usePersistedState.ts"
 import { isMobile } from "@/utils/isMobile.ts"
 import { useSearchParams } from "react-router-dom"
 import { PublicKey, Transaction } from "@solana/web3.js"
-import { getTransactionToSend } from "@/utils/solanaFunctions"
 import { toast } from "react-toastify"
 
 const AUTO_CONNECT_PARAM_KEY = "autoConnect"
@@ -34,7 +33,7 @@ type Context = {
   signOut: () => void
   truncatedAddress: string
   signMessage: (message: string) => Promise<Uint8Array>
-  signTransaction: (payload: signTransactionArgs) => Promise<string>
+  signTransaction: (transaction: Transaction, walletType: SupportedWallet) => Promise<Transaction | null>
 }
 
 const WalletContext = createContext<Context | undefined>(undefined)
@@ -174,7 +173,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         return address
       },
     })
-}
+  }
 
   async function signInWith({ wallet, getProvider, signIn }: SignInWithArgs) {
     const provider = getProvider()
@@ -224,8 +223,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }
     }
   }
-
-  async function signTransaction({ walletType, tokenAmount, rpcUrl, tokenMintAddress }: signTransactionArgs) {
+  async function signTransaction(transaction: Transaction, walletType: SupportedWallet): Promise<Transaction | null> {
     let provider
     try {
       if (walletType === 'BACKPACK') {
@@ -251,12 +249,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         }
       }
       if (!provider) throw new Error('Provider not found!')
-      const txToSend = await getTransactionToSend(tokenAmount, provider, rpcUrl, tokenMintAddress)
+      const signedTx = await provider.signTransaction(transaction)
 
-      return txToSend
+      return signedTx
     } catch (error) {
       console.error(error)
-      return "noTransaction"
+      return null
     }
   }
 

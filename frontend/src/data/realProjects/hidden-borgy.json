@@ -1,0 +1,133 @@
+{
+  "cluster": "mainnet",
+  "info": {
+    "id": "hidden-borgy-8jfwe98jfewhfhfa98hf8as8fjasfadkasds",
+    "title": "BORGY Tutorial",
+    "subtitle": "The Community Pet of SwissBorg",
+    "logoUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihaGgq0wNNNYd_yD7SPcJwSKNPtqwASXYJA2JZSKKYgc0hoWGgktuDdxNyfuottIdPC4rhcaVi1aXC1DQGK6SWgs7R5of0PnrdE=s2560",
+    "thumbnailUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihZJ7UTfw1LQpPBYqweSPRXkuSjI1GVrU7d9WkWhmfddJvuxoKKLpp7kWDFlETh-d3pQGsRHjGPys8blr1iN5d9-3y1ldaFR6g=s2560",
+    "origin": "The Alps 🏔️",
+    "sector": "Meme",
+    "chain": {
+      "name": "Solana",
+      "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
+    },
+    "lpPositionToBeBurned": true,
+    "totalTokensForSale": 3888888889,
+    "totalTokensForRewardDistribution": 3888888889,
+    "curator": {
+      "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
+      "fullName": "SwissBorg",
+      "position": "Community Initiative",
+      "socials": [
+        {
+          "url": "swissborg.com",
+          "iconType": "WEB",
+          "label": "Web"
+        },
+        {
+          "url": "https://x.com/swissborg",
+          "iconType": "X_TWITTER",
+          "label": "X (ex-Twitter)"
+        }
+      ]
+    },
+    "projectLinks": [
+      {
+        "url": "https://borgy.ch",
+        "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
+        "iconType": "WEB",
+        "label": ""
+      },
+      {
+        "url": "https://x.com/borgysol",
+        "iconType": "X_TWITTER",
+        "label": ""
+      }
+    ],
+
+    "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
+
+    "launchedTokenMintAddress": "BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX",
+    "launchedTokenLpDistribution": 0,
+    "launchedTokenCap": 0,
+
+    "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
+    "raisedTokenMinCap": 0,
+    "raisedTokenMaxCap": 0,
+
+    "cliffDuration": 0,
+    "vestingDuration": 0,
+
+    "tge": {
+      "raiseTarget": 50000,
+      "projectCoin": {
+        "iconUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihaidrwzbEcGQMgeo9DfYDdEmMMoYxbFzUTU54GI09ctwslVrFQkrxt4YxhHc9MMSe4PizOG9qzUzuRL2_BgKJ3mcVUOZ917ufQ=s2560",
+        "ticker": "BORGY"
+      },
+      "fixedTokenPriceInUSD": 0.00001286,
+      "tokenGenerationEventDate": "10th December, 2024",
+      "fdv": 1000000,
+      "liquidityPool": {
+        "name": "Raydium",
+        "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
+        "lbpType": "Concentrated Liquidity",
+        "lockingPeriod": "∞",
+        "unlockDate": null,
+        "url": "#"
+      },
+      "tweetUrl": "#"
+    },
+    "__comment": "secondary image is the one behind: 'Borgy Data Room Learn more about the project.'",
+    "dataRoom": {
+      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
+      "url": "https://drive.google.com/file/d/1ELtP99cdMST5MyT17qnCCkvfbA09v2Tr/view"
+    },
+    "timeline": [
+      {
+        "id": "REGISTRATION_OPENS",
+        "label": "Registration Opens",
+        "date": "2024-12-04T23:00:00Z"
+      },
+      {
+        "id": "SALE_OPENS",
+        "label": "Sale Opens",
+        "date": "2024-12-10T13:00:00Z"
+      },
+      {
+        "id": "SALE_CLOSES",
+        "label": "Sale Closes",
+        "date": "2024-12-10T23:00:00Z"
+      },
+      {
+        "id": "REWARD_DISTRIBUTION",
+        "label": "Reward Distribution",
+        "date": "2024-12-10T23:00:00Z"
+      },
+      {
+        "id": "DISTRIBUTION_OVER",
+        "label": "Distribution Over",
+        "date": "2025-05-12T23:00:00Z"
+      }
+    ],
+    "tiers": [
+      {
+        "id": "tier99",
+        "label": "Public Sale",
+        "description": "Access to sale at 2 PM UTC. Max Investment $250",
+        "quests": [],
+        "benefits": {
+          "startDate": "2024-12-10T13:00:00Z",
+          "minInvestment": "10",
+          "maxInvestment": "250"
+        }
+      }
+    ],
+    "finalSnapshotTimestamp": "2024-12-10T13:00:00Z"
+  },
+  "rewards": {
+    "distributionType": "linear",
+    "description": "linearly paid-out over 6 months",
+    "payoutInterval": "monthly"
+  }
+}
