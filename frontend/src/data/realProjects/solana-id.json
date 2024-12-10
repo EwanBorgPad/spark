@@ -44,22 +44,16 @@
         "label": ""
       }
     ],
-
     "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
-
     "launchedTokenMintAddress": "SoLiDMWBct5TurG1LNcocemBK7QmTn4P33GSrRrcd2n",
     "launchedTokenLpDistribution": 0,
     "launchedTokenCap": 10000,
-
     "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
     "raisedTokenMinCap": 0,
     "raisedTokenMaxCap": 10000,
-
     "lbpWalletAddress": null,
-
     "cliffDuration": 0,
     "vestingDuration": 0,
-
     "tge": {
       "raiseTarget": 250000,
       "projectCoin": {
@@ -88,27 +82,27 @@
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": "2024-11-04Z23:00:00"
+        "date": "2024-11-05T13:00:00Z"
       },
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": null
+        "date": "2024-12-19T11:00:00Z"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": null
+        "date": "2024-12-20T11:00:00Z"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": null
+        "date": "2024-12-20T11:00:00Z"
       },
       {
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
-        "date": null
+        "date": "2025-05-20T11:00:00Z"
       }
     ],
     "tiers": [
@@ -237,14 +231,6 @@
       }
     ],
     "finalSnapshotTimestamp": null
-  },
-  "saleData": {
-    "availableTokens": 12403,
-    "saleSucceeded": true,
-    "totalAmountRaised": 800402.5661,
-    "sellOutPercentage": 78,
-    "participantCount": 578,
-    "averageInvestedAmount": 1200.34
   },
   "rewards": {
     "distributionType": "linear",
