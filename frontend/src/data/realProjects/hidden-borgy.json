@@ -56,7 +56,7 @@
     "raisedTokenMinCap": 0,
     "raisedTokenMaxCap": 0,
 
-    "lbpWalletAddress": "Dkj2wARcBhwQYnTUTPoppcBj7eRKnu6pQAd8uVgmQF1R",
+    "lbpWalletAddress": "8e4D91WsbeQcCZo2AtYiaQnAsJzYUKwUCeWJ6aj9uVni",
 
     "cliffDuration": 0,
     "vestingDuration": 0,
@@ -94,17 +94,17 @@
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-12-10T10:40:00Z"
+        "date": "2024-12-10T11:38:00Z"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-12-10T12:50:00Z"
+        "date": "2024-12-10T18:41:00Z"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2024-12-10T23:00:00Z"
+        "date": "2024-12-10T20:42:00Z"
       },
       {
         "id": "DISTRIBUTION_OVER",

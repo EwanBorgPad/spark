@@ -32,7 +32,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       .get()
 
     if (!project)
-      return jsonResponse({ message: `Project not found (id=${projectId})!`}, 404)
+      return jsonResponse({ message: `Project not found (id=${projectId})!` }, 404)
 
     const cluster = project.json.cluster ?? 'devnet'
     const tokenAddress = project.json.info.raisedTokenMintAddress
@@ -56,7 +56,6 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     }))
 
     const tokenData = getTokenData({ cluster, tokenAddress })
-
     if (!tokenData) {
       return jsonResponse({ message: 'Unknown token!' }, 500)
     }

@@ -5,12 +5,17 @@ import { z } from "zod"
 import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 import { ProjectService } from "../services/projectService"
 import * as bs58 from "bs58"
-import { createNft, fetchDigitalAsset, mplTokenMetadata, TokenStandard, transferV1 } from "@metaplex-foundation/mpl-token-metadata"
-import { signatureSubscribe } from "../../src/utils/solanaFunctions"
+import { createProgrammableNft, mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata"
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults"
-import { createSignerFromKeypair, percentAmount, publicKey, signerIdentity, transactionBuilder } from "@metaplex-foundation/umi"
-import { toWeb3JsInstruction } from '@metaplex-foundation/umi-web3js-adapters'
+import { createNoopSigner, createSignerFromKeypair, percentAmount, publicKey, signerIdentity, transactionBuilder } from "@metaplex-foundation/umi"
+import { toWeb3JsInstruction, toWeb3JsKeypair } from '@metaplex-foundation/umi-web3js-adapters'
 import { PRIORITY_FEE_MICRO_LAMPORTS } from "../../shared/constants"
+import { EligibilityService } from "../services/eligibilityService"
+import { drizzle } from "drizzle-orm/d1"
+import { DepositService } from "../services/depositService"
+import { getTokenData, Cluster } from "../services/constants"
+import { exchangeService } from "../services/exchangeService"
+import { addPlugin, addPluginV1, create, createPlugin, createPluginV2, pluginAuthority } from '@metaplex-foundation/mpl-core'
 
 type ENV = {
     DB: D1Database,
@@ -63,9 +68,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             commitment: 'confirmed',    // status has to be confirmed because we mint the nft and get the address of it immediately after sending the mint tx
             disableRetryOnRateLimit: true
         })
+        // get price and token mint
         const tokenMint = project.info.raisedTokenMintAddress
-
-        // TODO @depositValidations
 
         // create transfer and mint nft instruction
         const tx = await createUserDepositTransaction(userWalletAddress, receivingAddress, tokenMint, tokenAmount, connection, privateKey)
@@ -121,7 +125,7 @@ export async function createUserDepositTransaction(
         })
 
         // get instructions from the builder for transfering nft
-        const listOfInstructions = await mintNftAndCreateTransferNftInstructions(connection, privateKey, fromPublicKey.toBase58())
+        const { instructions: listOfInstructions, nftMintSigner } = await mintNftAndCreateTransferNftInstructions(connection, privateKey, fromPublicKey.toBase58())
 
         // create the transaction and all the neccessary instructions to it
         const transaction = new Transaction().add(transferInstruction).add(addPriorityFee)
@@ -132,8 +136,8 @@ export async function createUserDepositTransaction(
         transaction.recentBlockhash = blockhash
         transaction.lastValidBlockHeight = lastValidBlockHeight
         transaction.feePayer = fromPublicKey // User signs to pay fees
-        // sign with our minting wallet
-        transaction.partialSign(nftMintingWalletKeypair)
+        // sign with our minting wallet and nftMint keypair
+        transaction.partialSign(nftMintingWalletKeypair, nftMintSigner)
         // serialize transaction for frontend
         const serializedTransaction = transaction.serialize({
             requireAllSignatures: false,
@@ -172,6 +176,7 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
     // create umi client for mpl token package
     const umi = createUmi(connection)
     const userPublicKey = publicKey(usersWalletAddress)
+    const userSigner = createNoopSigner(userPublicKey)
     const privateKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(privateKey)))
     // convert to Umi compatible keypair
     const mintingWalletKeypair = umi.eddsa.createKeypairFromSecretKey(privateKeypair.secretKey)
@@ -186,37 +191,29 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
     umi.use(mplTokenMetadata())
 
     // make tx for minting nft
-    const builder = transactionBuilder().add(createNft(umi, {
+    const builder = transactionBuilder().add(createProgrammableNft(umi, {
         symbol: 'bpBORGY',
         mint: mintSigner,
         name: "BORGY Liquidity Provider",
         uri: "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/nftmeta/nft-metadata.json",
-        updateAuthority: umi.identity.publicKey,
+        updateAuthority: signer,
         sellerFeeBasisPoints: percentAmount(0),
+        payer: userSigner,
+        authority: signer,
+        tokenOwner: userPublicKey,
     }))
+
     // send minting nft tx
-    const response = await builder.send(umi)
-
-    const signature = bs58.default.encode(response)
-
-    console.log('Starting signature subscribe..')
-    await signatureSubscribe(connection, signature)
-    console.log('Finishing signature subscribe..')
-
-    const nft = await fetchDigitalAsset(umi, mintKeypair.publicKey)
-    console.log(nft.publicKey.toString())
-
-    const txBuilder = transferV1(umi, {
-        mint: mintKeypair.publicKey,
-        tokenStandard: TokenStandard.NonFungible,
-        destinationOwner: userPublicKey,
-    })
-
-    const listOfInstructions = txBuilder.getInstructions()
+    const listOfInstructions = builder.getInstructions()
     // convert metaplex Instruction to Solana web 3 js Instruction https://developers.metaplex.com/umi/web3js-differences-and-adapters
     const instructions = listOfInstructions.map(ix => {
         return toWeb3JsInstruction(ix)
     })
+    const nftMintSigner = toWeb3JsKeypair(mintKeypair)
 
-    return instructions
+
+    return {
+        instructions,
+        nftMintSigner
+    }
 }
