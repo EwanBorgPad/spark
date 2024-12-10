@@ -10,7 +10,7 @@ import { TgeWrapper } from "./Wrapper"
 import { Button } from "@/components/Button/Button"
 import { formatCurrencyAmount } from "shared/utils/format"
 import { Icon } from "@/components/Icon/Icon"
-import { formatDateForTimer } from "@/utils/date-helpers"
+import { formatDateForDisplay, formatDateForTimer } from "@/utils/date-helpers"
 import { isBefore } from "date-fns/isBefore"
 import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
@@ -18,12 +18,11 @@ import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 
-
 const Rewards = () => {
   const { t } = useTranslation()
   const { projectData, isLoading } = useProjectDataContext()
   const { address } = useWalletContext()
-  const projectId = projectData?.info.id || ''
+  const projectId = projectData?.info.id || ""
 
   const iconUrl = projectData?.info.tge.projectCoin.iconUrl || ""
   const ticker = projectData?.info.tge.projectCoin.ticker || ""
@@ -62,7 +61,7 @@ const Rewards = () => {
       <div className="mb-7 flex w-full flex-col items-center gap-1">
         <h2 className="text-4xl font-semibold">{t("sale_over.rewards")}</h2>
         {rewardDistributionDate && (
-          <p className="text-center text-sm opacity-60">{`Monthly payments need to be Claimed manually. Liquidity pool will become accessible on ${rewardDistributionDate}.`}</p>
+          <p className="text-center text-sm opacity-60">{`Monthly payments need to be Claimed manually. Liquidity pool will become accessible on ${formatDateForDisplay(rewardDistributionDate)}.`}</p>
         )}
         <span className="cursor-pointer text-center text-sm underline opacity-60">
           {t("sale_over.learn_more_about")}
