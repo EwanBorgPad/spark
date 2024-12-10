@@ -64,7 +64,7 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
           </TgeWrapper>
           {isUserEligible && (
             <>
-              <TopContributor />
+              {/*<TopContributor />*/}
               <PastOrders />
             </>
           )}

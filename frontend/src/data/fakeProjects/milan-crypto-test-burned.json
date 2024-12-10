@@ -1,7 +1,7 @@
 {
   "info": {
-    "id": "milan-crypto-test-02",
-    "title": "Milan Crypto",
+    "id": "milan-crypto-test-02-burned",
+    "title": "Milan Crypto - Burned",
     "subtitle": "Anti-Slashing Liquid Staking Crypto Manic Market Making",
     "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar.png",
     "thumbnailUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/westeros-validator-group/project-thumbnail-824297648",
@@ -70,8 +70,6 @@
     "raisedTokenMinCap": 1000,
     "raisedTokenMaxCap": 1000000,
 
-    "lbpWalletAddress": "Dkj2wARcBhwQYnTUTPoppcBj7eRKnu6pQAd8uVgmQF1R",
-
     "cliffDuration": 0,
     "vestingDuration": 0,
 
@@ -81,7 +79,7 @@
         "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/project-coin-icon.svg",
         "ticker": "LRC"
       },
-      "fixedTokenPriceInUSD": 0.02,
+      "fixedTokenPriceInUSD": 0.00179,
       "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
       "fdv": 4401444,
       "liquidityPool": {

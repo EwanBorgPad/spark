@@ -1,8 +1,8 @@
 {
   "cluster": "mainnet",
   "info": {
-    "id": "borgy",
-    "title": "BORGY",
+    "id": "hidden-borgy-8jfwe98jfewhfhfa98hf8as8fjasfadkasds",
+    "title": "BORGY Tutorial",
     "subtitle": "The Community Pet of SwissBorg",
     "logoUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihaGgq0wNNNYd_yD7SPcJwSKNPtqwASXYJA2JZSKKYgc0hoWGgktuDdxNyfuottIdPC4rhcaVi1aXC1DQGK6SWgs7R5of0PnrdE=s2560",
     "thumbnailUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihZJ7UTfw1LQpPBYqweSPRXkuSjI1GVrU7d9WkWhmfddJvuxoKKLpp7kWDFlETh-d3pQGsRHjGPys8blr1iN5d9-3y1ldaFR6g=s2560",
@@ -55,8 +55,6 @@
     "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
     "raisedTokenMinCap": 0,
     "raisedTokenMaxCap": 0,
-
-    "lbpWalletAddress": null,
 
     "cliffDuration": 0,
     "vestingDuration": 0,
@@ -116,7 +114,7 @@
       {
         "id": "tier99",
         "label": "Public Sale",
-        "description": "Access to sale at 2 PM CET. Max Investment $250",
+        "description": "Access to sale at 2 PM UTC. Max Investment $250",
         "quests": [],
         "benefits": {
           "startDate": "2024-12-10T13:00:00Z",
