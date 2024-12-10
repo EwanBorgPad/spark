@@ -270,6 +270,8 @@ export type TokenAmountModel = {
 
 
 export type SaleResultsResponse = {
+  raiseTargetInUsd: string
+  raiseTargetReached: boolean
   totalAmountRaised: TokenAmountModel
   averageDepositAmount: TokenAmountModel
   sellOutPercentage: string
