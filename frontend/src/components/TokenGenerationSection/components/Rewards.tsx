@@ -53,13 +53,17 @@ const Rewards = () => {
      */
     console.log("CLAIM REWARDS")
   }
+  const rewardDistributionDate =
+    projectData?.info.timeline.find((item) => item.id === "REWARD_DISTRIBUTION")?.date || null
 
   return (
     <>
       <Divider icon="SvgMedal" />
       <div className="mb-7 flex w-full flex-col items-center gap-1">
         <h2 className="text-4xl font-semibold">{t("sale_over.rewards")}</h2>
-        <p className="text-center text-sm opacity-60">{t("sale_over.monthly_payments_need_to")}</p>
+        {rewardDistributionDate && (
+          <p className="text-center text-sm opacity-60">{`Monthly payments need to be Claimed manually. Liquidity pool will become accessible on ${rewardDistributionDate}.`}</p>
+        )}
         <span className="cursor-pointer text-center text-sm underline opacity-60">
           {t("sale_over.learn_more_about")}
         </span>
@@ -99,20 +103,31 @@ const Rewards = () => {
                 <div className="flex items-center gap-2">
                   <Img src={iconUrl} size="4" isFetchingLink={isLoading} />
                   <p>
-                    <span className="mr-1">{formatCurrencyAmount(myRewardsResponse.rewards.claimedAmount.uiAmount, false)}</span>
+                    <span className="mr-1">
+                      {formatCurrencyAmount(myRewardsResponse.rewards.claimedAmount.uiAmount, false)}
+                    </span>
                     <span className="mr-1">/</span>
-                    <span className="mr-1">{formatCurrencyAmount(myRewardsResponse.rewards.totalAmount.uiAmount, false)}</span>
+                    <span className="mr-1">
+                      {formatCurrencyAmount(myRewardsResponse.rewards.totalAmount.uiAmount, false)}
+                    </span>
                     <Text text={ticker} isLoading={isLoading} />
                   </p>
                 </div>
               </div>
-              <ProgressBar fulfilledAmount={Number(myRewardsResponse.rewards.claimedAmount.uiAmount)} totalAmount={Number(myRewardsResponse.rewards.totalAmount.uiAmount)} />
+              <ProgressBar
+                fulfilledAmount={Number(myRewardsResponse.rewards.claimedAmount.uiAmount)}
+                totalAmount={Number(myRewardsResponse.rewards.totalAmount.uiAmount)}
+              />
             </div>
           </>
         )}
       </TgeWrapper>
       {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
-        <ShowPayoutSchedule ticker={ticker} tokenIconUrl={iconUrl ?? ""} payoutSchedule={myRewardsResponse.rewards.payoutSchedule} />
+        <ShowPayoutSchedule
+          ticker={ticker}
+          tokenIconUrl={iconUrl ?? ""}
+          payoutSchedule={myRewardsResponse.rewards.payoutSchedule}
+        />
       )}
     </>
   )
