@@ -67,6 +67,11 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       targetCurrency: 'usd',
     })
 
+    // TODO @hardcoded
+    if (project.id === 'borgy') {
+      exchangeData.currentPrice = 0.341783
+    }
+
     const priceInUsd = exchangeData.currentPrice
 
     const decimals = tokenData.decimals
@@ -100,8 +105,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       participantsCount: totalCount,
       sellOutPercentage: (Number(totalAmountRaisedInUsd) / Number(raiseTargetInUsd)) * 100,
       // TODO @hardcoded below
-      marketCap: exchangeData.marketCap,
-      fdv: exchangeData.fullyDilutedValuation,
+      marketCap: 50_000,
+      fdv: 1_000_000,
     }
 
     return jsonResponse(response, 200)
