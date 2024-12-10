@@ -39,7 +39,7 @@ const SaleOverResults = () => {
         <span className="text-sm text-fg-tertiary">{t("sale_over.sell_out_percentage")}</span>
         <span className="text-base leading-7 text-fg-primary"></span>
         <Text
-          text={saleData?.sellOutPercentage ? `${saleData.sellOutPercentage}%` : ""}
+          text={saleData?.sellOutPercentage ? `${Number(saleData.sellOutPercentage).toFixed(1)}%` : ""}
           className="text-base leading-7 text-fg-primary"
           isLoading={isLoading}
         />
