@@ -140,6 +140,7 @@ export async function createUserDepositTransaction(
         transaction.recentBlockhash = blockhash
         transaction.lastValidBlockHeight = lastValidBlockHeight
         transaction.feePayer = fromPublicKey // User signs to pay fees
+        // TODO check if admin authority signature is present in the final deposit transaction
         // sign with our minting wallet and nftMint keypair
         transaction.partialSign(nftMintingWalletKeypair, nftMintSigner)
         // serialize transaction for frontend
