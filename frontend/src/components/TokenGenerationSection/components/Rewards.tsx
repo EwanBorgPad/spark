@@ -68,7 +68,7 @@ const Rewards = () => {
         </span>
       </div>
       <TgeWrapper label={t("sale_over.monthly_payout")}>
-        {nextScheduledPayment ? (
+        {nextScheduledPayment && (
           <>
             <CountDownTimer
               labelAboveTimer={`Next Payment: ${formatDateForTimer(new Date(nextScheduledPayment.date))}`}
@@ -78,7 +78,8 @@ const Rewards = () => {
               {/* TODO @hardcoded claim phase - hardcoded claim button to be disabled */}
               {nextScheduledPayment && (
                 <Button
-                  btnText={`Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount, false)} ${ticker}`}
+                  // btnText={`Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount, false)} ${ticker}`}
+                  btnText={`Claim ${ticker}`}
                   size="lg"
                   disabled={true}
                   className="w-full py-3 font-normal"
@@ -87,13 +88,9 @@ const Rewards = () => {
               )}
             </div>
           </>
-        ) : (
-          <div className="flex items-center justify-center gap-2 px-4 pb-6 pt-12">
-            <Icon icon="SvgCircledCheckmark" className="text-lg text-brand-primary" />
-            <span>{t("reward_distribution.all_rewards_claimed")}</span>
-          </div>
         )}
-        {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
+
+        {/* {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
           <>
             <hr className="w-full max-w-[calc(100%-32px)] border-bd-primary" />
             <div className="flex w-full flex-col gap-2.5 p-4 pb-7">
@@ -119,7 +116,7 @@ const Rewards = () => {
               />
             </div>
           </>
-        )}
+        )} */}
       </TgeWrapper>
       {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
         <ShowPayoutSchedule
