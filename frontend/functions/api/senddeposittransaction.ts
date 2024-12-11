@@ -57,6 +57,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         console.log("Sending transaction...")
         const txId = await connection.sendRawTransaction(Buffer.from(data.serializedTx, 'base64'), {
+             // TODO check this skipPreflight
             skipPreflight: true     // this needs to be enabled because of latestHashBlock expiring
         })
         console.log("Finished sending the transaction...")
@@ -103,7 +104,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             db: drizzleDb,
             address: userWalletAddress,
             projectId: data.projectId,
-            rpcUrl: getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
+            rpcUrl: getRpcUrlForCluster(SOLANA_RPC_URL, cluster),
         })
 
         const eligibilityTier = eligibilityStatus.eligibilityTier

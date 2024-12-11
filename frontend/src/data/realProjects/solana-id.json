@@ -61,7 +61,7 @@
         "ticker": "SOLID"
       },
       "fixedTokenPriceInUSD": 0.02,
-      "tokenGenerationEventDate": "Dec 2024",
+      "tokenGenerationEventDate": "19th December, 2024",
       "fdv": 20000000,
       "liquidityPool": {
         "name": "Raydium",
@@ -76,7 +76,7 @@
     "__comment": "secondary image is the one behind: 'Solana ID Data Room Learn more about the project.'",
     "dataRoom": {
       "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
-      "url": "http://solid.solana.id"
+      "url": "https://solid.solana.id"
     },
     "timeline": [
       {
