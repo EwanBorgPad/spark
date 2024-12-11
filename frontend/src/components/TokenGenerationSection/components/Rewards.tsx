@@ -77,9 +77,14 @@ const Rewards = () => {
             <div className="w-full px-4 pb-6">
               {/* TODO @hardcoded claim phase - hardcoded claim button to be disabled */}
               {nextScheduledPayment && (
-                <a href='https://app.streamflow.finance/airdrops/solana/mainnet/8sUnkiByzrtE7MMNKp5dUwgwxj8fn2kcgbQxS7ZQqg33' target='_blank' rel="noopener noreferrer">
+                <a
+                  href="https://app.streamflow.finance/airdrops/solana/mainnet/8sUnkiByzrtE7MMNKp5dUwgwxj8fn2kcgbQxS7ZQqg33"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Button
-                    btnText={`Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount, false)} ${ticker}`}
+                    btnText={`Claim ${ticker}`}
+                    // btnText={`Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount, false)} ${ticker}`}
                     size="lg"
                     disabled={false}
                     className="w-full py-3 font-normal"
