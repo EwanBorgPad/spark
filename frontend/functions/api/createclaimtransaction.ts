@@ -119,6 +119,7 @@ export async function createClaimTransaction(
         transaction.lastValidBlockHeight = lastValidBlockHeight
         transaction.feePayer = toPublicKey // User signs to pay fees
         // private wallet needs to sign to transfer
+        // TODO THIS SIGN MUST NOT BE HERE, USER CAN JUST SUBMIT TRANS
         transaction.partialSign(privateWalletKeypair)
         // serialize transaction for frontend
         const serializedTransaction = transaction.serialize({
