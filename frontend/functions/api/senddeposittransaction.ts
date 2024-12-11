@@ -1,7 +1,7 @@
 import { any, z } from "zod"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { drizzle } from "drizzle-orm/d1"
-import { Connection, Transaction } from "@solana/web3.js"
+import { Connection, Keypair, Transaction } from "@solana/web3.js"
 import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 import { ProjectService } from "../services/projectService"
 import { signatureSubscribe } from "../../src/utils/solanaFunctions"
@@ -10,10 +10,13 @@ import { EligibilityService } from "../services/eligibilityService"
 import { calculateTokens } from "../../shared/utils/calculateTokens"
 import { exchangeService } from "../services/exchangeService"
 import { getTokenData } from "../services/constants"
+import { Buffer } from "buffer"
+import * as bs58 from "bs58"
 
 type ENV = {
     DB: D1Database,
-    SOLANA_RPC_URL: string
+    SOLANA_RPC_URL: string,
+    NFT_MINT_WALLET_PRIVATE_KEY: string
 }
 const requestSchema = z.object({
     serializedTx: z.string(),
@@ -24,6 +27,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const db = ctx.env.DB
     const drizzleDb = drizzle(db)
     const SOLANA_RPC_URL = ctx.env.SOLANA_RPC_URL
+    const privateKey = ctx.env.NFT_MINT_WALLET_PRIVATE_KEY
     try {
         // validate env
         if (!SOLANA_RPC_URL) {
@@ -47,16 +51,19 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         })
 
         if (!project) {
-            return jsonResponse({ message: 'Project not found! '}, 404)
+            return jsonResponse({ message: 'Project not found! ' }, 404)
         }
-
         const cluster = (project?.cluster as ('mainnet' | 'devnet')) ?? 'devnet'
         const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster))
 
+        // sign with our private key wallet
+        const privateKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(privateKey)))
+        const tx = Transaction.from(Buffer.from(data.serializedTx, 'base64'))
+        tx.partialSign(privateKeypair)
         // TODO @depositValidations
 
         console.log("Sending transaction...")
-        const txId = await connection.sendRawTransaction(Buffer.from(data.serializedTx, 'base64'), {
+        const txId = await connection.sendRawTransaction(tx.serialize(), {
             skipPreflight: true     // this needs to be enabled because of latestHashBlock expiring
         })
         console.log("Finished sending the transaction...")
