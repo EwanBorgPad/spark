@@ -117,12 +117,11 @@ const YourContributionAmounts = () => {
               <Icon icon="SvgBorgCoin" className="mt-1" />
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-2">
-                  <span className="text-base">{userPositions.lpPosition.raisedTokenAmount.uiAmount}</span>
+                  <span className="text-base">
+                    {formatCurrencyAmount(userPositions.lpPosition.raisedTokenAmount.uiAmount, false)}
+                  </span>
                   <span>BORG</span>
                 </div>
-                <span className="text-sm font-normal text-fg-tertiary">
-                  {userPositions.lpPosition.raisedTokenAmount.amountInUsd}
-                </span>
               </div>
             </div>
 
@@ -133,12 +132,11 @@ const YourContributionAmounts = () => {
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-2">
                   {/* Liquidity pool $[TOKEN] */}
-                  <span className="text-base">{userPositions.lpPosition.launchedTokenAmount.uiAmount}</span>
+                  <span className="text-base">
+                    {formatCurrencyAmount(userPositions.lpPosition.launchedTokenAmount.uiAmount, false)}
+                  </span>
                   <span className="text-base">{tokenTicker}</span>
                 </div>
-                <span className="text-sm font-normal text-fg-tertiary">
-                  {userPositions.lpPosition.launchedTokenAmount.amountInUsd}
-                </span>
               </div>
             </div>
           </div>
@@ -167,12 +165,11 @@ const YourContributionAmounts = () => {
             <Img src={tokenIcon} size="4" customClass="mt-1" />
             <div className="flex flex-col items-start">
               <div className="flex items-center gap-1.5">
-                <span className="text-base">{userPositions.rewards.totalAmount.uiAmount}</span>
+                <span className="text-base">
+                  {formatCurrencyAmount(userPositions.rewards.totalAmount.uiAmount, false)}
+                </span>
                 <span className="text-base">{tokenTicker}</span>
               </div>
-              <span className="text-sm font-normal text-fg-tertiary">
-                {userPositions.rewards.totalAmount.amountInUsd}
-              </span>
             </div>
           </div>
           {/* mid section - footer */}

@@ -15,7 +15,6 @@ import Divider from "@/components/Divider"
 
 import SaleOverResults from "../components/SaleOverResults"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
-import SaleUnsuccessful from "../components/SaleUnsuccessful"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi"
 
@@ -31,8 +30,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
   const { t } = useTranslation()
   const { walletState } = useWalletContext()
   const { address } = useWalletContext()
-  const projectId = projectData?.info.id || ''
-
+  const projectId = projectData?.info.id || ""
 
   const { data: userPositions } = useQuery({
     queryFn: () => {
@@ -61,7 +59,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
   }
 
   const tweetId = projectData?.info.tge.tweetUrl ? getTweetIdFromURL(projectData.info.tge.tweetUrl) : ""
-  const sectionClass = "flex w-full max-w-[432px] flex-col items-center gap-6 px-4 z-[1]"
+  const sectionClass = "flex w-full max-w-[400px] flex-col items-center gap-6 z-[1]"
   const hasDistributionStarted = eventData.id === "REWARD_DISTRIBUTION"
 
   return (
@@ -69,9 +67,9 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
       <div className="flex w-full max-w-[760px] flex-col items-center">
         <Timeline timelineEvents={timeline} />
 
-        <div className="mt-[52px] flex w-full flex-col items-center gap-9 px-4">
+        <div className="mt-[52px] flex w-full flex-col items-center gap-9">
           <div className="flex w-full flex-col items-center gap-1">
-            <h2 className="text-4xl font-semibold leading-11">
+            <h2 className="text-center text-4xl font-semibold leading-11">
               {hasDistributionStarted ? t("reward_distribution") : t("sale_over")}
             </h2>
             <>
@@ -90,10 +88,10 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
         </div>
       </div>
 
-      <div ref={contributionsRef} className="relative flex w-full flex-col items-center gap-9 px-4 pt-[80px]">
+      <div ref={contributionsRef} className="relative flex w-full flex-col items-center gap-9 pt-[80px]">
         <div
           className={twMerge(
-            "absolute top-10 z-[-100] w-screen max-w-[100vw] overflow-hidden lg:top-16",
+            "absolute top-10 z-[-100] w-screen max-w-[100vw] overflow-hidden opacity-40 md:opacity-100 lg:top-16",
             !hasUserInvested || walletState !== "CONNECTED" ? "h-[247px] lg:top-0" : "",
           )}
         >
