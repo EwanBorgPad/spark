@@ -282,7 +282,7 @@ export type SaleResultsResponse = {
   fdv: string
 }
 
-type UserInvestedRewardsResponse = {
+export type UserInvestedRewardsResponse = {
   hasUserInvested: true
   lpPosition: {
     raisedTokenAmount: TokenAmountModel

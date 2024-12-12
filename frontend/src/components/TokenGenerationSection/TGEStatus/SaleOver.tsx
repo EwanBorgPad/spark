@@ -93,7 +93,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
       <div ref={contributionsRef} className="relative flex w-full flex-col items-center gap-9 px-4 pt-[80px]">
         <div
           className={twMerge(
-            "max-w-screen absolute left-[-16px] top-10 z-[-100] w-full overflow-hidden lg:top-16",
+            "absolute top-10 z-[-100] w-screen max-w-[100vw] overflow-hidden lg:top-16",
             !hasUserInvested || walletState !== "CONNECTED" ? "h-[247px] lg:top-0" : "",
           )}
         >

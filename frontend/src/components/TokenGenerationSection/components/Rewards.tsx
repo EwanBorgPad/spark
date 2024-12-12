@@ -50,8 +50,8 @@ const Rewards = () => {
      * TODO @api for claiming rewards
      * - refetch rewards
      */
-    console.log("CLAIM REWARDS")
   }
+
   const rewardDistributionDate =
     projectData?.info.timeline.find((item) => item.id === "REWARD_DISTRIBUTION")?.date || null
 
@@ -65,9 +65,9 @@ const Rewards = () => {
         {rewardDistributionDate && (
           <p className="text-center text-sm opacity-60">{`Monthly payments need to be Claimed manually. Liquidity pool will become accessible on ${formatDateForDisplay(rewardDistributionDate)}.`}</p>
         )}
-        <span className="cursor-pointer text-center text-sm underline opacity-60">
+        {/* <span className="cursor-pointer text-center text-sm underline opacity-60">
           {t("sale_over.learn_more_about")}
-        </span>
+        </span> */}
       </div>
       <TgeWrapper label={t("sale_over.monthly_payout")}>
         {nextScheduledPayment ? (
