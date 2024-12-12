@@ -55,6 +55,8 @@ const Rewards = () => {
   const rewardDistributionDate =
     projectData?.info.timeline.find((item) => item.id === "REWARD_DISTRIBUTION")?.date || null
 
+  const btnText = `Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount, false)} ${ticker}`
+
   return (
     <>
       <Divider icon="SvgMedal" />
@@ -68,7 +70,7 @@ const Rewards = () => {
         </span>
       </div>
       <TgeWrapper label={t("sale_over.monthly_payout")}>
-        {nextScheduledPayment && (
+        {nextScheduledPayment ? (
           <>
             <CountDownTimer
               labelAboveTimer={`Next Payment: ${formatDateForTimer(new Date(nextScheduledPayment.date))}`}
@@ -82,20 +84,19 @@ const Rewards = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Button
-                    btnText={`Claim ${ticker}`}
-                    // btnText={`Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount, false)} ${ticker}`}
-                    size="lg"
-                    disabled={false}
-                    className="w-full py-3 font-normal"
-                  />
+                  <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
                 </a>
               )}
             </div>
           </>
+        ) : (
+          <div className="flex items-center justify-center gap-2 px-4 pb-6 pt-12">
+            <Icon icon="SvgCircledCheckmark" className="text-lg text-brand-primary" />
+            <span>{t("reward_distribution.all_rewards_claimed")}</span>
+          </div>
         )}
 
-        {/* {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
+        {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
           <>
             <hr className="w-full max-w-[calc(100%-32px)] border-bd-primary" />
             <div className="flex w-full flex-col gap-2.5 p-4 pb-7">
@@ -115,13 +116,14 @@ const Rewards = () => {
                   </p>
                 </div>
               </div>
-              <ProgressBar
+              {/* @TODO - uncomment when onchain claimed data is ready */}
+              {/* <ProgressBar
                 fulfilledAmount={Number(myRewardsResponse.rewards.claimedAmount.uiAmount)}
                 totalAmount={Number(myRewardsResponse.rewards.totalAmount.uiAmount)}
-              />
+              /> */}
             </div>
           </>
-        )} */}
+        )}
       </TgeWrapper>
       {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
         <ShowPayoutSchedule
