@@ -29,7 +29,7 @@ const SaleProgress = () => {
   const raiseTargetInUsd = formatCurrencyAmount(saleData?.raiseTargetInUsd, true, 0)
 
   return (
-    <div className="flex w-full max-w-[432px] flex-col">
+    <div className="flex w-full max-w-[400px] flex-col">
       <div className="flex w-full flex-col gap-3 rounded-xl bg-secondary px-4 py-3">
         <div className="flex w-full items-center justify-between gap-4">
           <span className="text-base">{t("lp_sale_progress")}</span>
