@@ -68,7 +68,7 @@
         "ticker": "MATES"
       },
       "fixedTokenPriceInUSD": 0.00179,
-      "tokenGenerationEventDate": "Dec 2024",
+      "tokenGenerationEventDate": "TBD",
       "fdv": 35000000,
       "liquidityPool": {
         "name": "Raydium",
@@ -94,22 +94,22 @@
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-12-17T23:00:00Z"
+        "date": null
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-12-17T23:00:00Z"
+        "date": null
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2024-12-18T23:00:00Z"
+        "date": null
       },
       {
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
-        "date": "2025-05-18T23:00:00Z"
+        "date": null
       }
     ],
     "tiers": [
@@ -161,7 +161,7 @@
         }
       }
     ],
-    "finalSnapshotTimestamp": "2024-12-10T16:30:00Z"
+    "finalSnapshotTimestamp": null
   },
   "saleData": {
     "availableTokens": 12403,
