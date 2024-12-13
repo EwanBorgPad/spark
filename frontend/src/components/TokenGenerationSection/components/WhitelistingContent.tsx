@@ -8,7 +8,6 @@ import TokenRewards from "./TokenRewards"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
-import SimpleLoader from "@/components/Loaders/SimpleLoader"
 import Img from "@/components/Image/Img"
 import { useParams } from "react-router-dom"
 import Text from "@/components/Text"
@@ -88,7 +87,10 @@ const WhitelistingContent = () => {
           <div className="flex flex-col items-end">
             <span>${tokenPriceInUSD}</span>
             <div className="flex gap-2">
-              <Text text={formatCurrencyAmount(tokenPriceInBORG, { minDecimals: 3 })} isLoading={isLoading} />
+              <Text
+                text={formatCurrencyAmount(tokenPriceInBORG, { minDecimals: 2, maxDecimals: 4 })}
+                isLoading={isLoading}
+              />
               <span>BORG</span>
             </div>
           </div>
