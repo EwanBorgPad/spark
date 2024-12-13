@@ -12,7 +12,7 @@ import { toWeb3JsInstruction, toWeb3JsKeypair } from '@metaplex-foundation/umi-w
 import { PRIORITY_FEE_MICRO_LAMPORTS } from "../../shared/constants"
 import { EligibilityService } from "../services/eligibilityService"
 import { drizzle } from "drizzle-orm/d1"
-import { DepositService } from "../services/depositService"
+import { DepositService, DepositStatus } from "../services/depositService"
 import { getTokenData, Cluster } from "../services/constants"
 import { exchangeService } from "../services/exchangeService"
 import { addPlugin, addPluginV1, create, createPlugin, createPluginV2, pluginAuthority } from '@metaplex-foundation/mpl-core'
@@ -38,7 +38,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         }
 
         // TODO @hardcoded
-        return jsonResponse({ message: 'Target has been reached!' }, 409)
+        // return jsonResponse({ message: 'Target has been reached!' }, 409)
 
         // request validation
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
@@ -75,6 +75,31 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         // get price and token mint
         const tokenMint = project.info.raisedTokenMintAddress
 
+        const depositStatus = await DepositService.getDepositStatus({
+            db,
+            projectId,
+            rpcUrl,
+            walletAddress: userWalletAddress
+        })
+        if (typeof depositStatus === 'string') return jsonResponse(depositStatus, 500)
+
+        const projectCapInUsd = project.info.tge.raiseTarget
+        const accumulatedProjectSum = await DepositService.getProjectsDepositedAmount({
+            db,
+            projectId
+        })
+        const { isEligible } = await EligibilityService.getEligibilityStatus({
+            address: userWalletAddress,
+            db: drizzle(db, { logger: true }),
+            projectId,
+            rpcUrl
+        })
+        const endDate = project.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
+        if (!endDate) return jsonResponse({ message: 'End date is not defined in project json!' }, 500)
+
+        const validationError = await validateTx(isEligible, depositStatus, tokenAmount, projectCapInUsd, accumulatedProjectSum, endDate)
+        if (validationError) return validationError
+
         // create transfer and mint nft instruction
         const tx = await createUserDepositTransaction(userWalletAddress, receivingAddress, tokenMint, tokenAmount, connection, privateKey)
 
@@ -83,6 +108,32 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         await reportError(ctx.env.DB, e)
         return jsonResponse({ message: "Something went wrong..." }, 500)
     }
+}
+
+async function validateTx(userEligible: boolean, depositStatus: DepositStatus, tokenAmount: number, projectCapInUsd: number, accumulatedProjectSum: number, endDate: Date) {
+    // extract relevant information from the deposit status and initialize data
+    const { maxAmountAllowed, minAmountAllowed, amountDeposited } = depositStatus
+    const tokenPriceInUsd = Number(amountDeposited.tokenPriceInUsd)
+    const projectCapTokenAmount = projectCapInUsd / tokenPriceInUsd
+    const projectCapAmount = projectCapTokenAmount * Math.pow(10, amountDeposited.decimals)
+    const now = new Date()
+
+    // initialize deposit in necessary forms
+    const userDepositAmount = tokenAmount * Math.pow(10, amountDeposited.decimals)
+    // @VALIDATION: eligibility
+    if (!userEligible) return jsonResponse({ message: 'User is not eligible to make this deposit!' }, 409)
+    // @VALIDATION: user min and user max cap
+    if (userDepositAmount > Number(maxAmountAllowed.amount)) return jsonResponse({ message: 'Cannot deposit over tier max cap!' }, 409)
+    if (userDepositAmount < Number(minAmountAllowed.amount)) return jsonResponse({ message: 'Cannot deposit under tier min cap!' }, 409)
+    // @VALIDATION: project cap
+    if (accumulatedProjectSum + userDepositAmount >= projectCapAmount) return jsonResponse({ message: 'Target has been reached!' }, 409)
+    // @VALIDATION: timeline
+    if (now < depositStatus.startTime) return jsonResponse({ message: 'Sale not opened yet!' }, 409)
+    if (now > endDate) return jsonResponse({ message: 'Sale is closed!' }, 409)
+
+    // All validations passed so we return null (no errors)
+    return null
+
 }
 
 export async function createUserDepositTransaction(

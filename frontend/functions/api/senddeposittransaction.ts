@@ -31,7 +31,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         }
 
         // TODO @hardcoded
-        return jsonResponse({ message: 'Target has been reached!' }, 409)
+        // return jsonResponse({ message: 'Target has been reached!' }, 409)
 
         // validate request
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
@@ -47,7 +47,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         })
 
         if (!project) {
-            return jsonResponse({ message: 'Project not found! '}, 404)
+            return jsonResponse({ message: 'Project not found! ' }, 404)
         }
 
         const cluster = (project?.cluster as ('mainnet' | 'devnet')) ?? 'devnet'
@@ -57,7 +57,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         console.log("Sending transaction...")
         const txId = await connection.sendRawTransaction(Buffer.from(data.serializedTx, 'base64'), {
-             // TODO check this skipPreflight
+            // TODO check this skipPreflight
             skipPreflight: true     // this needs to be enabled because of latestHashBlock expiring
         })
         console.log("Finished sending the transaction...")
