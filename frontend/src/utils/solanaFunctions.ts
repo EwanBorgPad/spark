@@ -4,7 +4,7 @@ import { Commitment } from "shared/SolanaWeb3"
 
 export async function signatureSubscribe(connection: Connection, txId: string): Promise<Commitment> {
   const delayTime = 3_000
-  const delayLimit = 45_000
+  const delayLimit = 60_000
 
   let status = null
   let delayCounter = 0

@@ -50,10 +50,12 @@ const Rewards = () => {
      * TODO @api for claiming rewards
      * - refetch rewards
      */
-    console.log("CLAIM REWARDS")
   }
+
   const rewardDistributionDate =
     projectData?.info.timeline.find((item) => item.id === "REWARD_DISTRIBUTION")?.date || null
+
+  const btnText = `Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount, false)} ${ticker}`
 
   return (
     <>
@@ -63,9 +65,9 @@ const Rewards = () => {
         {rewardDistributionDate && (
           <p className="text-center text-sm opacity-60">{`Monthly payments need to be Claimed manually. Liquidity pool will become accessible on ${formatDateForDisplay(rewardDistributionDate)}.`}</p>
         )}
-        <span className="cursor-pointer text-center text-sm underline opacity-60">
+        {/* <span className="cursor-pointer text-center text-sm underline opacity-60">
           {t("sale_over.learn_more_about")}
-        </span>
+        </span> */}
       </div>
       <TgeWrapper label={t("sale_over.monthly_payout")}>
         {nextScheduledPayment ? (
@@ -77,13 +79,13 @@ const Rewards = () => {
             <div className="w-full px-4 pb-6">
               {/* TODO @hardcoded claim phase - hardcoded claim button to be disabled */}
               {nextScheduledPayment && (
-                <Button
-                  btnText={`Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount, false)} ${ticker}`}
-                  size="lg"
-                  disabled={true}
-                  className="w-full py-3 font-normal"
-                  onClick={claimRewardsHandler}
-                />
+                <a
+                  href="https://app.streamflow.finance/airdrops/solana/mainnet/8sUnkiByzrtE7MMNKp5dUwgwxj8fn2kcgbQxS7ZQqg33"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
+                </a>
               )}
             </div>
           </>
@@ -93,6 +95,7 @@ const Rewards = () => {
             <span>{t("reward_distribution.all_rewards_claimed")}</span>
           </div>
         )}
+
         {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
           <>
             <hr className="w-full max-w-[calc(100%-32px)] border-bd-primary" />
@@ -113,10 +116,11 @@ const Rewards = () => {
                   </p>
                 </div>
               </div>
-              <ProgressBar
+              {/* @TODO - uncomment when onchain claimed data is ready */}
+              {/* <ProgressBar
                 fulfilledAmount={Number(myRewardsResponse.rewards.claimedAmount.uiAmount)}
                 totalAmount={Number(myRewardsResponse.rewards.totalAmount.uiAmount)}
-              />
+              /> */}
             </div>
           </>
         )}

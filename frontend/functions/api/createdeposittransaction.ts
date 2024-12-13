@@ -31,9 +31,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             throw new Error('Misconfigured env!')
         }
 
-        // TODO @hardcoded
-        return jsonResponse({ message: 'Target has been reached!' }, 409)
-
         // request validation
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
         if (error) return jsonResponse({ error: 'Invalid request' }, 400)
@@ -45,6 +42,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const project = await ProjectService.findProjectById({ db, id: projectId })
         if (!project) {
             return jsonResponse({ message: "Project not found!" }, 404)
+        }
+
+        // TODO @hardcoded
+        if (project.info.id === 'borgy') {
+            return jsonResponse({ message: 'Target has been reached!' }, 409)
         }
 
         const lbpWalletAddress = project.info.lbpWalletAddress

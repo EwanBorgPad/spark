@@ -34,9 +34,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             throw new Error('Misconfigured env!')
         }
 
-        // TODO @hardcoded
-        return jsonResponse({ message: 'Target has been reached!' }, 409)
-
         // validate request
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
 
@@ -53,6 +50,12 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         if (!project) {
             return jsonResponse({ message: 'Project not found! ' }, 404)
         }
+
+        // TODO @hardcoded
+        if (project.info.id === 'borgy') {
+            return jsonResponse({ message: 'Target has been reached!' }, 409)
+        }
+
         const cluster = (project?.cluster as ('mainnet' | 'devnet')) ?? 'devnet'
         const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster))
 
@@ -110,7 +113,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             db: drizzleDb,
             address: userWalletAddress,
             projectId: data.projectId,
-            rpcUrl: getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
+            rpcUrl: getRpcUrlForCluster(SOLANA_RPC_URL, cluster),
         })
 
         const eligibilityTier = eligibilityStatus.eligibilityTier
