@@ -8,10 +8,6 @@ import { useWalletContext } from "@/hooks/useWalletContext"
 import { backendApi } from "@/data/backendApi"
 import { formatCurrencyAmount } from "../../../../shared/utils/format.ts"
 
-/**
- * TODO @duplicateCode
- * @constructor
- */
 const YourContributionAmounts = () => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
@@ -48,7 +44,7 @@ const YourContributionAmounts = () => {
               <Img src={tokenIcon} size="4" customClass="mt-1" isRounded />
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-base">{formatCurrencyAmount(userPositions.rewards.totalAmount.uiAmount, false)}</span>
+                  <span className="text-base">{formatCurrencyAmount(userPositions.rewards.totalAmount.uiAmount)}</span>
                   <span className="text-base">{tokenTicker}</span>
                 </div>
               </div>
@@ -74,7 +70,9 @@ const YourContributionAmounts = () => {
                 <Icon icon="SvgBorgCoin" className="mt-1 opacity-50" />
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-2 text-fg-tertiary">
-                    <span className="text-base">{formatCurrencyAmount(userPositions.lpPosition.raisedTokenAmount.uiAmount, false)}</span>
+                    <span className="text-base">
+                      {formatCurrencyAmount(userPositions.lpPosition.raisedTokenAmount.uiAmount, { customDecimals: 2 })}
+                    </span>
                     <span>BORG</span>
                   </div>
                 </div>
@@ -87,7 +85,9 @@ const YourContributionAmounts = () => {
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-2">
                     {/* Liquidity pool $[TOKEN] */}
-                    <span className="text-base">{formatCurrencyAmount(userPositions.lpPosition.launchedTokenAmount.uiAmount, false)}</span>
+                    <span className="text-base">
+                      {formatCurrencyAmount(userPositions.lpPosition.launchedTokenAmount.uiAmount)}
+                    </span>
                     <span className="text-base">{tokenTicker}</span>
                   </div>
                 </div>
@@ -115,12 +115,11 @@ const YourContributionAmounts = () => {
               <Icon icon="SvgBorgCoin" className="mt-1" />
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-2">
-                  <span className="text-base">{userPositions.lpPosition.raisedTokenAmount.uiAmount}</span>
+                  <span className="text-base">
+                    {formatCurrencyAmount(userPositions.lpPosition.raisedTokenAmount.uiAmount, { customDecimals: 2 })}
+                  </span>
                   <span>BORG</span>
                 </div>
-                <span className="text-sm font-normal text-fg-tertiary">
-                  {userPositions.lpPosition.raisedTokenAmount.amountInUsd}
-                </span>
               </div>
             </div>
 
@@ -131,12 +130,11 @@ const YourContributionAmounts = () => {
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-2">
                   {/* Liquidity pool $[TOKEN] */}
-                  <span className="text-base">{userPositions.lpPosition.launchedTokenAmount.uiAmount}</span>
+                  <span className="text-base">
+                    {formatCurrencyAmount(userPositions.lpPosition.launchedTokenAmount.uiAmount)}
+                  </span>
                   <span className="text-base">{tokenTicker}</span>
                 </div>
-                <span className="text-sm font-normal text-fg-tertiary">
-                  {userPositions.lpPosition.launchedTokenAmount.amountInUsd}
-                </span>
               </div>
             </div>
           </div>
@@ -159,18 +157,15 @@ const YourContributionAmounts = () => {
         </div>
 
         {/* MID SECTION - Distributed Rewards */}
-        <div className="item-start flex flex-col gap-3 border-b-[1px] border-b-bd-primary p-3">
+        <div className="item-start flex flex-col gap-3 border-b-bd-primary p-3">
           {/* mid section token values */}
           <div className="flex h-fit items-start gap-2 rounded-full text-xs font-medium text-fg-primary ">
             <Img src={tokenIcon} size="4" customClass="mt-1" />
             <div className="flex flex-col items-start">
               <div className="flex items-center gap-1.5">
-                <span className="text-base">{userPositions.rewards.totalAmount.uiAmount}</span>
+                <span className="text-base">{formatCurrencyAmount(userPositions.rewards.totalAmount.uiAmount)}</span>
                 <span className="text-base">{tokenTicker}</span>
               </div>
-              <span className="text-sm font-normal text-fg-tertiary">
-                {userPositions.rewards.totalAmount.amountInUsd}
-              </span>
             </div>
           </div>
           {/* mid section - footer */}
@@ -182,12 +177,12 @@ const YourContributionAmounts = () => {
 
         {/* BOTTOM SECTION - TOTAL TO BE RECEIVED */}
         {/* <div className="flex flex-col gap-2 p-3 text-sm">
-          <span>Total Rewards</span>
+          <span>Total</span>
           <div className="flex flex-wrap gap-2 font-medium text-fg-secondary">
-            <span>{}</span>
+            <span>{totalToBeReceived.raisedTokenAmount}</span>
             <span>{"BORG"}</span>
             <span>{"+"}</span>
-            <span>{}</span>
+            <span>{totalToBeReceived.launchedTokenAmount}</span>
             <span>{tokenTicker}</span>
           </div>
         </div> */}

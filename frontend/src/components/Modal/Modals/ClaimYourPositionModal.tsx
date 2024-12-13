@@ -77,10 +77,10 @@ const ClaimYourPositionModal = ({ onClose, mainPosition }: ClaimYourPositionModa
                 <div className="flex flex-col items-start justify-start gap-2 self-stretch">
                   <div className="flex flex-col items-start justify-center self-stretch">
                     <div className="text-lg font-medium leading-snug text-neutral-100">
-                      {formatCurrencyAmount(toBeClaimed.borg, false)}
+                      {formatCurrencyAmount(toBeClaimed.borg)}
                     </div>
                     <div className="text-base font-medium leading-snug text-neutral-400">
-                      /{formatCurrencyAmount(availableForClaim.borg, false)}
+                      /{formatCurrencyAmount(availableForClaim.borg)}
                     </div>
                   </div>
                   {!!mainPosition.borg.claimed && (
@@ -89,8 +89,8 @@ const ClaimYourPositionModal = ({ onClose, mainPosition }: ClaimYourPositionModa
                         {t("reward_distribution.already_claimed")}:
                       </span>
                       <span className="text-sm text-fg-tertiary">
-                        {formatCurrencyAmount(mainPosition.borg.claimed, false)}/
-                        {formatCurrencyAmount(mainPosition.borg.total, false)}
+                        {formatCurrencyAmount(mainPosition.borg.claimed)}/
+                        {formatCurrencyAmount(mainPosition.borg.total)}
                       </span>
                     </div>
                   )}
@@ -109,10 +109,10 @@ const ClaimYourPositionModal = ({ onClose, mainPosition }: ClaimYourPositionModa
                 <div className="flex flex-col items-start justify-start gap-2 self-stretch">
                   <div className="flex flex-col items-start justify-center self-stretch">
                     <div className="text-lg font-medium leading-snug text-neutral-100">
-                      {formatCurrencyAmount(toBeClaimed.projectTokens, false)}
+                      {formatCurrencyAmount(toBeClaimed.projectTokens)}
                     </div>
                     <div className="text-base font-medium leading-snug text-neutral-400">
-                      /{formatCurrencyAmount(availableForClaim.projectTokens, false)}
+                      /{formatCurrencyAmount(availableForClaim.projectTokens)}
                     </div>
                   </div>
                   {!!mainPosition.borg.claimed && (
@@ -121,8 +121,8 @@ const ClaimYourPositionModal = ({ onClose, mainPosition }: ClaimYourPositionModa
                         {t("reward_distribution.already_claimed")}:
                       </span>
                       <span className="text-sm text-fg-tertiary">
-                        {formatCurrencyAmount(mainPosition.projectTokens.claimed, false)}/
-                        {formatCurrencyAmount(mainPosition.projectTokens.total, false)}
+                        {formatCurrencyAmount(mainPosition.projectTokens.claimed)}/
+                        {formatCurrencyAmount(mainPosition.projectTokens.total)}
                       </span>
                     </div>
                   )}

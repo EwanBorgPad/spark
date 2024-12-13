@@ -233,8 +233,8 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
             </div>
             {minBorgInput && maxBorgInput && (
               <p className="flex gap-3 text-xs text-fg-tertiary/60">
-                <span>min: {formatCurrencyAmount(+minBorgInput, false, 1)}</span>
-                <span>max: {formatCurrencyAmount(+maxBorgInput, false, 1)}</span>
+                <span>min: {formatCurrencyAmount(+minBorgInput, { customDecimals: 1 })}</span>
+                <span>max: {formatCurrencyAmount(+maxBorgInput, { customDecimals: 1 })}</span>
               </p>
             )}
             {balance !== null && (
@@ -253,7 +253,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                   ))}
                 </div>
                 <p className="text-left text-xs opacity-50">
-                  {t("tge.balance")}: <span>{formatCurrencyAmount(Number(balance?.uiAmountString), false)}</span>
+                  {t("tge.balance")}: <span>{formatCurrencyAmount(Number(balance?.uiAmountString))}</span>
                 </p>
               </div>
             )}

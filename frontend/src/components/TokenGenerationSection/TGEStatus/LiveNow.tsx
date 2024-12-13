@@ -8,7 +8,6 @@ import { formatDateForTimer } from "@/utils/date-helpers"
 import CountDownTimer from "@/components/CountDownTimer"
 import { PastOrders } from "../components/PastOrders"
 import { TgeWrapper } from "../components/Wrapper"
-import TopContributor from "../components/TopContributor"
 import { useRef } from "react"
 import {
   EligibilityCompliancesSection,
@@ -51,6 +50,7 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
         <Timeline timelineEvents={timeline} />
 
         <SaleProgress />
+
         {!isUserEligible && <EligibilityCompliancesSection className="w-full max-w-[432px]" />}
         <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
           <TgeWrapper label={t("tge.live_now")}>

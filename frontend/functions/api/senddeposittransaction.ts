@@ -30,9 +30,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             throw new Error('Misconfigured env!')
         }
 
-        // TODO @hardcoded
-        return jsonResponse({ message: 'Target has been reached!' }, 409)
-
         // validate request
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
 
@@ -48,6 +45,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         if (!project) {
             return jsonResponse({ message: 'Project not found! '}, 404)
+        }
+
+        // TODO @hardcoded
+        if (project.info.id === 'borgy') {
+            return jsonResponse({ message: 'Target has been reached!' }, 409)
         }
 
         const cluster = (project?.cluster as ('mainnet' | 'devnet')) ?? 'devnet'
