@@ -86,7 +86,7 @@ const WhitelistingContent = () => {
             <span>{t("tge.price")}</span>
           </div>
           <div className="flex flex-col items-end">
-            <span>{formatCurrencyAmount(tokenPriceInUSD, { withDollarSign: true })}</span>
+            <span>${tokenPriceInUSD}</span>
             <div className="flex gap-2">
               <span>
                 {tokenPriceInBORG ? (
