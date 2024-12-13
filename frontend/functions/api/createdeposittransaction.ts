@@ -83,7 +83,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             rpcUrl,
             walletAddress: userWalletAddress
         })
-        if (typeof depositStatus === 'string') return jsonResponse(depositStatus, 500)
+        if (depositStatus.status === 'error') return jsonResponse(depositStatus.message, 500)
 
         const projectCapInUsd = project.info.tge.raiseTarget
         const accumulatedProjectSum = await DepositService.getProjectsDepositedAmount({

@@ -83,13 +83,17 @@ const getProjectsDepositedAmount = async ({ db, projectId }: GetProjectsDeposite
 }
 
 export type DepositStatus = {
+    status: 'ok'
     amountDeposited: TokenAmountModel,
     minAmountAllowed: TokenAmountModel,
     maxAmountAllowed: TokenAmountModel,
     startTime: Date
+} | {
+    status: 'error'
+    message: string
 }
 
-const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDepositStatus): Promise<DepositStatus | string> => {
+const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDepositStatus): Promise<DepositStatus> => {
     // get sum of users investment
     const usersAccumulatedDeposit = await getUsersDepositedAmount({ db, projectId, walletAddress })
     // get eligibility for the user
@@ -97,8 +101,14 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
     // initialize users min and max cap in USD and check if they exist
     const userMaxCap = eligibility.eligibilityTier?.benefits.maxInvestment
     const userMinCap = eligibility.eligibilityTier?.benefits.minInvestment
-    if (!userMaxCap) return 'User max cap is not defined!'
-    if (!userMinCap) return 'User min cap is not defined!'
+    if (!userMaxCap) return {
+        status: 'error',
+        message: 'User max cap is not defined!'
+    }
+    if (!userMinCap) return {
+        status: 'error',
+        message: 'User min cap is not defined!'
+    }
     const userMaxCapInUsd = Number(userMaxCap)
     const userMinCapInUsd = Number(userMinCap)
     // get project
@@ -110,13 +120,17 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
     const tokenAddress = project.info.raisedTokenMintAddress
     const tokenPriceInUsd = project.info.tge.fixedTokenPriceInUSD
     const decimals = getTokenData({ cluster: project.cluster, tokenAddress })?.decimals
-    if (!decimals) return 'Cannot find decimals for the token address provided in the project'
+    if (!decimals) return {
+        status: 'error',
+        message: 'Cannot find decimals for the token address provided in the project'
+    }
     // Math logic below
+    // TODO: remove this later
     /**
      * Math notes:
         AMOUNT_IN_LAMPORT = AMOUNT_IN_TOKEN * POW(10, DECIMALS)
         AMOUNT_IN_USD = AMOUNT_IN_TOKEN * PRICE_IN_USD
-        AMOUNT_IN_TOKEN = AMOUNT_IN_LAMPORT * (0.1, DECIMALS)
+        AMOUNT_IN_TOKEN = AMOUNT_IN_LAMPORT * POW(0.1, DECIMALS)
         AMOUNT_IN_TOKEN = AMOUNT_IN_USD / PRICE_IN_USD
         UI_AMOUNT = AMOUNT_IN_TOKEN
      */
@@ -156,9 +170,13 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
     }
     // get start time
     const startTime = eligibility.eligibilityTier?.benefits.startDate ?? project.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date
-    if (!startTime) return 'Start date not found in eligibility tier or project json!'
+    if (!startTime) return {
+        status: 'error',
+        message: 'Start date not found in eligibility tier or project json!'
+    }
 
     return {
+        status: 'ok',
         amountDeposited,
         minAmountAllowed,
         maxAmountAllowed,
