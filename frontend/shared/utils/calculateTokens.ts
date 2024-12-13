@@ -36,14 +36,14 @@ export const calculateTokens = ({ projectData, borgCoinInput, borgPriceInUSD }: 
     const borgLpUnformatted = +borgCoinInput / lpSizeFactor
     return {
       tokenLp: {
-        formatted: formatCurrencyAmount(tokenLpUnformatted, false) || "0",
+        formatted: formatCurrencyAmount(tokenLpUnformatted) || "0",
         unformatted: tokenLpUnformatted,
-        usd: formatCurrencyAmount(tokenLpUnformatted * tokenPriceInUSD, true),
+        usd: formatCurrencyAmount(tokenLpUnformatted * tokenPriceInUSD, { withDollarSign: true }),
       },
       borgLp: {
-        formatted: formatCurrencyAmount(borgLpUnformatted, false) || "0",
+        formatted: formatCurrencyAmount(borgLpUnformatted) || "0",
         unformatted: borgLpUnformatted,
-        usd: formatCurrencyAmount(borgLpUnformatted * borgPriceInUSD, true),
+        usd: formatCurrencyAmount(borgLpUnformatted * borgPriceInUSD, { withDollarSign: true }),
       },
     }
   }
@@ -65,8 +65,10 @@ export const calculateTokens = ({ projectData, borgCoinInput, borgPriceInUSD }: 
 
     return {
       unformatted: totalInvestedBorgGives,
-      formatted: formatCurrencyAmount(totalInvestedBorgGives, false) || "0",
-      usd: tokenPriceInUSD ? formatCurrencyAmount(totalInvestedBorgGives * tokenPriceInUSD, true) : "0",
+      formatted: formatCurrencyAmount(totalInvestedBorgGives) || "0",
+      usd: tokenPriceInUSD
+        ? formatCurrencyAmount(totalInvestedBorgGives * tokenPriceInUSD, { withDollarSign: true })
+        : "0",
     }
   }
 
@@ -77,7 +79,6 @@ export const calculateTokens = ({ projectData, borgCoinInput, borgPriceInUSD }: 
     const totalTokensReceivedInRewardsDistribution = getTokenRewards().unformatted || 0
     const totalTargetToken = formatCurrencyAmount(
       totalTokensReceivedInRewardsDistribution + totalTokensFromLiquidityPool,
-      false,
     )
     return totalTargetToken
   }

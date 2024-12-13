@@ -25,8 +25,11 @@ const SaleProgress = () => {
   })
 
   const isLoading = isLoadingProject || isLoadingSaleResults
-  const amountRaisedInUsd = formatCurrencyAmount(saleData?.totalAmountRaised.amountInUsd, true, 1)
-  const raiseTargetInUsd = formatCurrencyAmount(saleData?.raiseTargetInUsd, true, 0)
+  const amountRaisedInUsd = formatCurrencyAmount(saleData?.totalAmountRaised.amountInUsd, {
+    withDollarSign: true,
+    customDecimals: 0,
+  })
+  const raiseTargetInUsd = formatCurrencyAmount(saleData?.raiseTargetInUsd, { withDollarSign: true, customDecimals: 0 })
 
   return (
     <div className="flex w-full max-w-[400px] flex-col">
