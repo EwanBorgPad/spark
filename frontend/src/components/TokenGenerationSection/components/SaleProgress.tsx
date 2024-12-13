@@ -25,8 +25,12 @@ const SaleProgress = () => {
   })
 
   const isLoading = isLoadingProject || isLoadingSaleResults
-  const amountRaisedInUsd = formatCurrencyAmount(saleData?.totalAmountRaised.amountInUsd, true, 1)
-  const raiseTargetInUsd = formatCurrencyAmount(saleData?.raiseTargetInUsd, true, 0)
+  const amountRaisedInUsd = formatCurrencyAmount(saleData?.totalAmountRaised.amountInUsd, {
+    withDollarSign: true,
+    customDecimals: 0,
+  })
+  const raiseTargetInUsd = formatCurrencyAmount(saleData?.raiseTargetInUsd, { withDollarSign: true, customDecimals: 0 })
+  const selloutPercentage = saleData?.sellOutPercentage ? `${Number(saleData.sellOutPercentage).toFixed(1)}%` : ""
 
   return (
     <div className="flex w-full max-w-[400px] flex-col">
@@ -34,7 +38,7 @@ const SaleProgress = () => {
         <div className="flex w-full items-center justify-between gap-4">
           <span className="text-base">{t("lp_sale_progress")}</span>
           <div className="flex flex-col items-end">
-            <Text text={saleData?.sellOutPercentage + "%"} className="text-sm text-fg-tertiary" isLoading={isLoading} />
+            <Text text={selloutPercentage} className="text-sm text-fg-tertiary" isLoading={isLoading} />
             <Text text={`${amountRaisedInUsd}/${raiseTargetInUsd}`} isLoading={isLoading} />
           </div>
         </div>

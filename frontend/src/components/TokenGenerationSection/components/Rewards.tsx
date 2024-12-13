@@ -55,7 +55,7 @@ const Rewards = () => {
   const rewardDistributionDate =
     projectData?.info.timeline.find((item) => item.id === "REWARD_DISTRIBUTION")?.date || null
 
-  const btnText = `Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount, false)} ${ticker}`
+  const btnText = `Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount)} ${ticker}`
 
   return (
     <>
@@ -106,12 +106,10 @@ const Rewards = () => {
                   <Img src={iconUrl} size="4" isFetchingLink={isLoading} />
                   <p>
                     <span className="mr-1">
-                      {formatCurrencyAmount(myRewardsResponse.rewards.claimedAmount.uiAmount, false)}
+                      {formatCurrencyAmount(myRewardsResponse.rewards.claimedAmount.uiAmount)}
                     </span>
                     <span className="mr-1">/</span>
-                    <span className="mr-1">
-                      {formatCurrencyAmount(myRewardsResponse.rewards.totalAmount.uiAmount, false)}
-                    </span>
+                    <span className="mr-1">{formatCurrencyAmount(myRewardsResponse.rewards.totalAmount.uiAmount)}</span>
                     <Text text={ticker} isLoading={isLoading} />
                   </p>
                 </div>

@@ -27,23 +27,12 @@ const Payout = ({
         index + 1 === numberOfPastClaims && "border-none",
       )}
     >
-      <div
-        className={twMerge(
-          "flex items-center gap-1 text-sm",
-          payout.isClaimed && "line-through opacity-50",
-        )}
-      >
+      <div className={twMerge("flex items-center gap-1 text-sm", payout.isClaimed && "line-through opacity-50")}>
         {formatDateForDisplay(new Date(payout.date))}
       </div>
-      <div
-        className={twMerge(
-          "flex items-center gap-1 text-sm",
-          payout.isClaimed && "opacity-50",
-        )}
-      >
+      <div className={twMerge("flex items-center gap-1 text-sm", payout.isClaimed && "opacity-50")}>
         <p className={twMerge(payout.isClaimed && "line-through")}>
-          <span>{formatCurrencyAmount(payout.amount, false)}</span>{" "}
-          <span>{ticker}</span>
+          <span>{formatCurrencyAmount(payout.amount)}</span> <span>{ticker}</span>
         </p>
         <Img src={tokenIconUrl} size="4" />
       </div>
