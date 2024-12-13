@@ -88,14 +88,7 @@ const WhitelistingContent = () => {
           <div className="flex flex-col items-end">
             <span>${tokenPriceInUSD}</span>
             <div className="flex gap-2">
-              <span>
-                {tokenPriceInBORG ? (
-                  formatCurrencyAmount(tokenPriceInBORG)
-                ) : (
-                  // @TODO - add skeleton instead of loader
-                  <SimpleLoader />
-                )}
-              </span>
+              <Text text={formatCurrencyAmount(tokenPriceInBORG, { minDecimals: 3 })} isLoading={isLoading} />
               <span>BORG</span>
             </div>
           </div>
