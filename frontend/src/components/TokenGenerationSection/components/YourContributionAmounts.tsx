@@ -71,7 +71,7 @@ const YourContributionAmounts = () => {
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-2 text-fg-tertiary">
                     <span className="text-base">
-                      {formatCurrencyAmount(userPositions.lpPosition.raisedTokenAmount.uiAmount, 2)}
+                      {formatCurrencyAmount(userPositions.lpPosition.raisedTokenAmount.uiAmount, { customDecimals: 2 })}
                     </span>
                     <span>BORG</span>
                   </div>
@@ -116,7 +116,7 @@ const YourContributionAmounts = () => {
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-2">
                   <span className="text-base">
-                    {formatCurrencyAmount(userPositions.lpPosition.raisedTokenAmount.uiAmount)}
+                    {formatCurrencyAmount(userPositions.lpPosition.raisedTokenAmount.uiAmount, { customDecimals: 2 })}
                   </span>
                   <span>BORG</span>
                 </div>
