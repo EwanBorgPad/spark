@@ -36,7 +36,7 @@ const YourContribution = () => {
     <>
       <div className="flex items-center gap-2 text-xl font-semibold">
         <Icon icon="SvgBorgCoin" />
-        <span>{formatCurrencyAmount(totalBorgDeposits)}</span>
+        <span>{formatCurrencyAmount(totalBorgDeposits, { customDecimals: 1 })}</span>
         <span>BORG</span>
       </div>
       <PastOrders label="All Orders" className="w-full" />
