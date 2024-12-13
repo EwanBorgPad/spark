@@ -6,7 +6,10 @@ export const formatCurrencyAmount = (amount: string | number | undefined | null,
   let minimumFractionDigits = 0
   let maximumFractionDigits = 2
 
-  if (minDecimals) minimumFractionDigits = minDecimals
+  if (minDecimals) {
+    minimumFractionDigits = minDecimals
+    maximumFractionDigits = Math.max(minDecimals, maximumFractionDigits)
+  }
   if (customDecimals) {
     maximumFractionDigits = customDecimals
     if (!minDecimals) minimumFractionDigits = customDecimals
