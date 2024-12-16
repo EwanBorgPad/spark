@@ -13,6 +13,8 @@ import { PRIORITY_FEE_MICRO_LAMPORTS } from "../../shared/constants"
 import { EligibilityService } from "../services/eligibilityService"
 import { drizzle } from "drizzle-orm/d1"
 import { DepositService, DepositStatus } from "../services/depositService"
+import { SaleResultsService } from "../services/saleResultsService"
+import { SaleResults } from "../../shared/models"
 
 type ENV = {
     DB: D1Database,
@@ -95,7 +97,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const endDate = project.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
         if (!endDate) return jsonResponse({ message: 'End date is not defined in project json!' }, 500)
 
-        const validationError = await validateTx(isEligible, depositStatus, tokenAmount, projectCapInUsd, accumulatedProjectSum, endDate)
+        const saleResults = await SaleResultsService.getSaleResults({ db: drizzle(db, { logger: true }), projectId })
+
+        const validationError = await validateTx(isEligible, depositStatus, tokenAmount, projectCapInUsd, endDate, saleResults)
         if (validationError) return validationError
 
         // create transfer and mint nft instruction
@@ -108,12 +112,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 }
 
-async function validateTx(userEligible: boolean, depositStatus: DepositStatus, tokenAmount: number, projectCapInUsd: number, accumulatedProjectSum: number, endDate: Date) {
+async function validateTx(userEligible: boolean, depositStatus: DepositStatus, tokenAmount: number, projectCapInUsd: number, endDate: Date, saleResults: SaleResults) {
     // extract relevant information from the deposit status and initialize data
     const { maxAmountAllowed, minAmountAllowed, amountDeposited } = depositStatus
-    const tokenPriceInUsd = Number(amountDeposited.tokenPriceInUsd)
-    const projectCapTokenAmount = projectCapInUsd / tokenPriceInUsd
-    const projectCapAmount = projectCapTokenAmount * Math.pow(10, amountDeposited.decimals)
     const now = new Date()
 
     // initialize deposit in necessary forms
@@ -124,7 +125,7 @@ async function validateTx(userEligible: boolean, depositStatus: DepositStatus, t
     if (userDepositAmount > Number(maxAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MAX_INVESTMENT_EXCEEDED' }, 409)
     if (userDepositAmount < Number(minAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MIN_INVESTMENT_EXCEDEED' }, 409)
     // @VALIDATION: project cap
-    if (accumulatedProjectSum + userDepositAmount >= projectCapAmount) return jsonResponse({ errorCode: 'PROJECT_RAISE_TARGET_REACHED' }, 409)
+    if (saleResults.raiseTargetReached) return jsonResponse({ errorCode: 'PROJECT_RAISE_TARGET_REACHED' }, 409)
     // @VALIDATION: timeline
     if (now < depositStatus.startTime) return jsonResponse({ errorCode: 'INVESTMENT_TIMELINE_DIDNT_START' }, 409)
     if (now > endDate) return jsonResponse({ errorCode: 'INVESTMENT_TIMELINE_ENDED' }, 409)

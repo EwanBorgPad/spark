@@ -19,7 +19,7 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
     .get()
 
   if (!project)
-    return jsonResponse({ message: `Project not found (id=${projectId})!`}, 404)
+    return jsonResponse({ message: `Project not found (id=${projectId})!` }, 404)
 
   const cluster = project.json.cluster ?? 'devnet'
   const tokenAddress = project.json.info.raisedTokenMintAddress
@@ -82,18 +82,18 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
     raiseTargetInUsd: String(raiseTargetInUsd),
     raiseTargetReached,
     totalAmountRaised: {
-      amount: totalAmount,
+      amount: String(totalAmount),
       decimals,
       uiAmount: String(totalAmount / (10 ** decimals)),
       amountInUsd: String(totalAmountRaisedInUsd),
-      tokenPriceInUsd: priceInUsd,
+      tokenPriceInUsd: String(priceInUsd),
     },
     averageDepositAmount: {
-      amount: averageAmount,
+      amount: String(averageAmount),
       decimals: decimals,
       uiAmount: String(averageAmount / (10 ** decimals)),
       amountInUsd: String((averageAmount / (10 ** decimals)) * priceInUsd),
-      tokenPriceInUsd: priceInUsd,
+      tokenPriceInUsd: String(priceInUsd),
     },
     participantsCount: totalCount,
     sellOutPercentage: (Number(totalAmountRaisedInUsd) / Number(raiseTargetInUsd)) * 100,

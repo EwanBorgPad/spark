@@ -71,17 +71,6 @@ const getUsersDepositedAmount = async ({ db, projectId, walletAddress }: GetUser
     return userDepositSum
 }
 
-const getProjectsDepositedAmount = async ({ db, projectId }: GetProjectsDepositedAmountArgs): Promise<number> => {
-    const data = await db
-        .prepare("SELECT amount_deposited FROM deposit WHERE project_id = ?1;")
-        .bind(projectId)
-        .all<any>()
-    if (!data.results.length) return 0
-    const amountsDeposited = data.results.map(obj => parseInt(obj.amount_deposited))
-    const projectDepositedSum = amountsDeposited.reduce((accumulator, current) => accumulator + current)
-    return projectDepositedSum
-}
-
 export type DepositStatus = {
     amountDeposited: TokenAmountModel,
     minAmountAllowed: TokenAmountModel,
