@@ -116,9 +116,6 @@ export async function createUserDepositTransaction(
             amount * multiplier
         )
 
-        // wallet that will be minting the nft (our private wallet)
-        const nftMintingWalletKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(privateKey)))
-
         // add priority fee
         const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
             microLamports: PRIORITY_FEE_MICRO_LAMPORTS,
