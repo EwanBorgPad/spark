@@ -76,7 +76,7 @@
     "__comment": "secondary image is the one behind: 'Solana ID Data Room Learn more about the project.'",
     "dataRoom": {
       "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
-      "url": "https://solid.solana.id"
+      "url": "https://solana-id.notion.site/It-is-time-to-get-SOLID-c93e1ec428fe4272b2ce1c5c224a5560"
     },
     "timeline": [
       {
@@ -87,7 +87,7 @@
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-12-19T11:00:00Z"
+        "date": "2024-12-19T16:00:00Z"
       },
       {
         "id": "SALE_CLOSES",
@@ -109,7 +109,7 @@
       {
         "id": "tier10",
         "label": "Priority Pass Holders",
-        "description": "First to access sale at 5 PM UTC. Max Investment $2K",
+        "description": "First to access sale at 5 PM CET. Max Investment $2K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -119,7 +119,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2024-12-19T16:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "2000"
         }
@@ -127,7 +127,7 @@
       {
         "id": "tier20",
         "label": "Borgers Club",
-        "description": "Hold $BORG & qualify to invest at 6 PM UTC. Max Investment $2K",
+        "description": "Hold $BORG & qualify to invest at 6 PM CET. Max Investment $2K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -137,7 +137,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2024-12-19T17:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "2000"
         }
@@ -145,7 +145,7 @@
       {
         "id": "tier30",
         "label": "Solidian Origins: Drip Collectors",
-        "description": "Access to sale at 7 PM UTC. Max Investment $1.5K",
+        "description": "Access to sale at 7 PM CET. Max Investment $1.5K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -155,7 +155,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2024-12-19T18:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "1500"
         }
@@ -163,7 +163,7 @@
       {
         "id": "tier40",
         "label": "SOLID Community Partners",
-        "description": "Access to sale at 7 PM UTC. Max Investment $1.5K",
+        "description": "Access to sale at 7 PM CET. Max Investment $1.5K",
         "questsOperator": "OR",
         "quests": [
           {
@@ -198,7 +198,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2024-12-19T18:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "1500"
         }
@@ -206,14 +206,14 @@
       {
         "id": "tier45",
         "label": "Solana SuperTeams Member",
-        "description": "Access to sale at 7 PM UTC. Max Investment $1.5K",
+        "description": "Access to sale at 7 PM CET. Max Investment $1.5K",
         "quests": [
           {
             "type": "WHITELIST"
           }
         ],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2024-12-19T18:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "1500"
         }
@@ -221,10 +221,10 @@
       {
         "id": "tier99",
         "label": "Public Sale",
-        "description": "Access to sale at 8 PM UTC. Max Investment $1K",
+        "description": "Access to sale at 8 PM CET. Max Investment $1K",
         "quests": [],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2024-12-19T19:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "1000"
         }
