@@ -96,7 +96,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         }
 
         const exchangeData = await exchangeService.getExchangeData({
-            db: ctx.env.DB,
+            db: drizzleDb,
             baseCurrency: raisedTokenData.coinGeckoName,
             targetCurrency: 'usd',
         })
