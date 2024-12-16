@@ -90,7 +90,7 @@ export const PastOrder = ({
   uiAmount,
   raisedTokenPriceInUsd,
 }: PastOrderProps) => {
-  const borgValueInUsd = formatCurrencyAmount(raisedTokenPriceInUsd * Number(uiAmount))
+  const borgValueInUsd = formatCurrencyAmount(raisedTokenPriceInUsd * Number(uiAmount), { withDollarSign: true })
 
   return (
     <div
@@ -101,7 +101,7 @@ export const PastOrder = ({
     >
       <div className="flex w-full items-center justify-between gap-1">
         <div className="flex items-center gap-1">
-          <span className="text-base font-medium">{uiAmount}</span>
+          <span className="text-base font-medium">{formatCurrencyAmount(uiAmount)}</span>
           <span>BORG</span>
           <Icon icon="SvgBorgCoin" className="text-xl" />
         </div>
