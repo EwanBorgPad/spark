@@ -159,6 +159,5 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
 export const DepositService = {
     createUserDeposit,
     getUsersDepositedAmount,
-    getProjectsDepositedAmount,
     getDepositStatus
 }
