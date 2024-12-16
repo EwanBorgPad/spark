@@ -84,6 +84,8 @@ export default {
         header: "0px 10px 10px -2px rgba(172,255,115,0.05);",
         "header-transparent": "0px 5px 6px -2px rgba(172,255,115,0.0);",
         around: "0 0 10px 4px rgba(172, 255, 115, 0.2);",
+        "around-1": "0 10px 10px 4px rgba(172, 255, 115, 0.05);",
+        "around-2": "0 10px 20px 8px rgba(172, 255, 115, 0.15);",
       },
       gridTemplateColumns: {
         "borg-input": "minmax(180px, 1fr) 88px",

@@ -97,7 +97,7 @@ const Header = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  useHeaderShadow({ headerRef, intersectionReferenceElement })
+  // useHeaderShadow({ headerRef, intersectionReferenceElement })
 
   const closeMenu = () => {
     setIsMenuClosed(true)
@@ -121,7 +121,7 @@ const Header = () => {
     <>
       <header
         ref={headerRef}
-        className="fixed left-0 top-0 z-[12] flex h-12 w-full flex-row justify-center gap-3 border-b-[1px] border-tertiary bg-default px-4 py-2 pr-2 transition-shadow duration-500 md:h-[72px] md:pr-4"
+        className="fixed left-0 top-0 z-[12] flex h-12 w-full flex-row justify-center gap-3 border-b-[1px] border-secondary bg-accent/50 px-4 py-2 pr-2 backdrop-blur-lg transition-shadow duration-500 md:h-[72px] md:pr-4"
       >
         <div className={"flex w-full max-w-[1180px] flex-row items-center justify-between"}>
           <Button color="plain" className="flex items-center gap-1 py-2" onClick={() => navigate("/")}>
