@@ -58,8 +58,8 @@ const DiscoverSection = () => {
         )}
       >
         {content.map((item, index) => (
-          <div key={index} className="flex max-w-[405px] flex-col gap-3">
-            <Img src={item.imgUrl} />
+          <div key={index} className="flex max-w-[405px] flex-col items-center gap-3">
+            <Img src={item.imgUrl} customClass="max-w-[240px]" />
             <div className="flex w-full flex-col gap-4">
               {item.path ? (
                 <Link to={item.path} className="w-full">
