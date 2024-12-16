@@ -116,9 +116,6 @@ export async function createUserDepositTransaction(
             amount * multiplier
         )
 
-        // wallet that will be minting the nft (our private wallet)
-        const nftMintingWalletKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(privateKey)))
-
         // add priority fee
         const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
             microLamports: PRIORITY_FEE_MICRO_LAMPORTS,
@@ -136,9 +133,8 @@ export async function createUserDepositTransaction(
         transaction.recentBlockhash = blockhash
         transaction.lastValidBlockHeight = lastValidBlockHeight
         transaction.feePayer = fromPublicKey // User signs to pay fees
-        // TODO check if admin authority signature is present in the final deposit transaction
-        // sign with our minting wallet and nftMint keypair
-        transaction.partialSign(nftMintingWalletKeypair, nftMintSigner)
+        // sign with our nftMint keypair
+        transaction.partialSign(nftMintSigner)
         // serialize transaction for frontend
         const serializedTransaction = transaction.serialize({
             requireAllSignatures: false,
