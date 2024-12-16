@@ -40,11 +40,9 @@ const LiveNowInput = ({
     clearError()
   }
 
-  const equivalentUsdValue = formatCurrencyAmount(
-    borgPriceInUSD && props.value ? +props.value * borgPriceInUSD : 0,
-    true,
-    2,
-  )
+  const equivalentUsdValue = formatCurrencyAmount(borgPriceInUSD && props.value ? +props.value * borgPriceInUSD : 0, {
+    withDollarSign: true,
+  })
 
   return (
     <div className="flex flex-col items-start">
