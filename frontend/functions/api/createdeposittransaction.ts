@@ -83,11 +83,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             walletAddress: userWalletAddress
         })
 
-        const projectCapInUsd = project.info.tge.raiseTarget
-        const accumulatedProjectSum = await DepositService.getProjectsDepositedAmount({
-            db,
-            projectId
-        })
         const { isEligible } = await EligibilityService.getEligibilityStatus({
             address: userWalletAddress,
             db: drizzle(db, { logger: true }),
@@ -99,7 +94,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         const saleResults = await SaleResultsService.getSaleResults({ db: drizzle(db, { logger: true }), projectId })
 
-        const validationError = await validateTx(isEligible, depositStatus, tokenAmount, projectCapInUsd, endDate, saleResults)
+        const validationError = await validateTx(isEligible, depositStatus, tokenAmount, endDate, saleResults)
         if (validationError) return validationError
 
         // create transfer and mint nft instruction
@@ -112,7 +107,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 }
 
-async function validateTx(userEligible: boolean, depositStatus: DepositStatus, tokenAmount: number, projectCapInUsd: number, endDate: Date, saleResults: SaleResults) {
+async function validateTx(userEligible: boolean, depositStatus: DepositStatus, tokenAmount: number, endDate: Date, saleResults: SaleResults) {
     // extract relevant information from the deposit status and initialize data
     const { maxAmountAllowed, minAmountAllowed, amountDeposited } = depositStatus
     const now = new Date()
@@ -123,7 +118,7 @@ async function validateTx(userEligible: boolean, depositStatus: DepositStatus, t
     if (!userEligible) return jsonResponse({ errorCode: 'USER_NOT_ELIGIBLE' }, 401)
     // @VALIDATION: user min and user max cap
     if (userDepositAmount > Number(maxAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MAX_INVESTMENT_EXCEEDED' }, 409)
-    if (userDepositAmount < Number(minAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MIN_INVESTMENT_EXCEDEED' }, 409)
+    if (userDepositAmount < Number(minAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MIN_INVESTMENT_INSUFFICIENT' }, 409)
     // @VALIDATION: project cap
     if (saleResults.raiseTargetReached) return jsonResponse({ errorCode: 'PROJECT_RAISE_TARGET_REACHED' }, 409)
     // @VALIDATION: timeline
