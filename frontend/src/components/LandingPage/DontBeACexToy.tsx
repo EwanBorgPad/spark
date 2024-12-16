@@ -102,8 +102,8 @@ const DontBeACexToy = () => {
           <Button
             btnText="Dive into Our Vision"
             size="xl"
-            className="mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal"
-            textClassName="text-base font-medium"
+            className="mt-[2px] w-full px-7 py-4 font-medium leading-normal"
+            textClassName="text-sm font-medium"
           />
         </a>
         <a href={FOUNDERS_APPLY_URL} target={"_blank"} rel="noreferrer" className="w-full">
@@ -111,8 +111,8 @@ const DontBeACexToy = () => {
             btnText="Committed Founder? Apply Here"
             size="xl"
             color="tertiary"
-            className="mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal"
-            textClassName="text-base font-medium px-0"
+            className="mt-[2px] w-full px-7 py-4 font-medium leading-normal"
+            textClassName="text-sm font-medium px-0"
           />
         </a>
       </div>
