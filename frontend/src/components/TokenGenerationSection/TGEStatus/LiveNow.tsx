@@ -50,6 +50,7 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
     },
     queryKey: ["saleResults", projectId],
     enabled: Boolean(projectId),
+    refetchInterval: 20 * 1000, // 20 seconds
   })
 
   return (
