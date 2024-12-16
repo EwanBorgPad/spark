@@ -8,7 +8,6 @@ import TokenRewards from "./TokenRewards"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
-import SimpleLoader from "@/components/Loaders/SimpleLoader"
 import Img from "@/components/Image/Img"
 import { useParams } from "react-router-dom"
 import Text from "@/components/Text"
@@ -19,7 +18,9 @@ const WhitelistingContent = () => {
   const { walletState } = useWalletContext()
   const { projectData, isLoading } = useProjectDataContext()
   const tgeData = projectData?.info.tge
-  const raiseTarget = tgeData?.raiseTarget ? formatCurrencyAmount(tgeData.raiseTarget, true, 0) : ""
+  const raiseTarget = tgeData?.raiseTarget
+    ? formatCurrencyAmount(tgeData.raiseTarget, { withDollarSign: true, customDecimals: 0 })
+    : ""
 
   const baseCurrency = "swissborg"
   const targetCurrency = "usd"
@@ -56,7 +57,7 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-center gap-2 text-base">
           <Icon icon="SvgBorgCoin" />
           <p className="flex gap-1">
-            <span>{`1 BORG (${formatCurrencyAmount(borgPriceInUSD, true, 2)})`}</span>
+            <span>{`1 BORG (${formatCurrencyAmount(borgPriceInUSD, { withDollarSign: true, customDecimals: 2 })})`}</span>
           </p>
           <span className="text-fg-tertiary">Gives you:</span>
         </div>
@@ -84,16 +85,12 @@ const WhitelistingContent = () => {
             <span>{t("tge.price")}</span>
           </div>
           <div className="flex flex-col items-end">
-            <span>{formatCurrencyAmount(tokenPriceInUSD, true)}</span>
+            <span>${tokenPriceInUSD}</span>
             <div className="flex gap-2">
-              <span>
-                {tokenPriceInBORG ? (
-                  formatCurrencyAmount(tokenPriceInBORG, false)
-                ) : (
-                  // @TODO - add skeleton instead of loader
-                  <SimpleLoader />
-                )}
-              </span>
+              <Text
+                text={formatCurrencyAmount(tokenPriceInBORG, { minDecimals: 2, maxDecimals: 4 })}
+                isLoading={isLoading}
+              />
               <span>BORG</span>
             </div>
           </div>
@@ -102,7 +99,9 @@ const WhitelistingContent = () => {
 
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.whitelist_participants")}</span>
-          <span>{investmentSummaryData?.count && formatCurrencyAmount(investmentSummaryData?.count, false, 0)}</span>
+          <span>
+            {investmentSummaryData?.count && formatCurrencyAmount(investmentSummaryData?.count, { customDecimals: 0 })}
+          </span>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
       </div>
