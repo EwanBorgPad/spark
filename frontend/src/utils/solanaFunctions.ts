@@ -23,7 +23,7 @@ export async function signatureSubscribe(connection: Connection, txId: string): 
     await delay(delayTime)
     delayCounter += 3000
     if (delayCounter > delayLimit) {
-      throw new Error('getSignatureStatuses polling timed out!')
+      throw new Error(`getSignatureStatuses polling timed out! txId=${txId}`)
     }
   }
 
