@@ -18,6 +18,7 @@ import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import DataRoom from "@/components/LaunchPool/DataRoom"
+import LiveSaleIsOver from "../components/LiveSaleIsOver"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType
@@ -40,6 +41,17 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
   })
   const isUserEligible = data?.isEligible
 
+  const { data: saleData } = useQuery({
+    queryFn: async () => {
+      if (!projectId) return null
+      return await backendApi.getSaleResults({
+        projectId,
+      })
+    },
+    queryKey: ["saleResults", projectId],
+    enabled: Boolean(projectId),
+  })
+
   return (
     <div className="flex w-full flex-col items-center px-4">
       <div className="flex w-full max-w-[764px] flex-col items-center gap-[52px]">
@@ -53,15 +65,19 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
 
         {!isUserEligible && <EligibilityCompliancesSection className="w-full max-w-[432px]" />}
         <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
-          <TgeWrapper label={t("tge.live_now")}>
-            {eventData?.nextEventDate && (
-              <CountDownTimer
-                endOfEvent={eventData.nextEventDate}
-                labelAboveTimer={`Ends on ${formatDateForTimer(eventData.nextEventDate)}`}
-              />
-            )}
-            <LiveNowExchange eligibilitySectionRef={eligibilitySectionRef} />
-          </TgeWrapper>
+          {!saleData?.raiseTargetReached ? (
+            <TgeWrapper label={t("tge.live_now")}>
+              {eventData?.nextEventDate && (
+                <CountDownTimer
+                  endOfEvent={eventData.nextEventDate}
+                  labelAboveTimer={`Ends on ${formatDateForTimer(eventData.nextEventDate)}`}
+                />
+              )}
+              <LiveNowExchange eligibilitySectionRef={eligibilitySectionRef} />
+            </TgeWrapper>
+          ) : (
+            <LiveSaleIsOver />
+          )}
           {isUserEligible && (
             <>
               {/*<TopContributor />*/}
