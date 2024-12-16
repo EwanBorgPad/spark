@@ -49,10 +49,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const rpcUrl = BACKEND_RPC_URL + "?cluster=" + cluster
   const tokenMintAddress = projectData?.info.raisedTokenMintAddress
 
-  const {
-    mutateAsync: makeDepositTransaction,
-    isPending: isPendingMakeDepositTransaction,
-  } = useMutation({
+  const { mutateAsync: makeDepositTransaction, isPending: isPendingMakeDepositTransaction } = useMutation({
     mutationFn: async (payload: PostCreateDepositTxArgs) => {
       return (await backendApi.postCreateDepositTx(payload)).transaction
     },
@@ -63,26 +60,23 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     },
     onError: async () => {
       toast.error("Fail!")
-    }
+    },
   })
 
-  const {
-    mutateAsync: sendTransaction,
-    isPending: isPendingSendTransaction,
-  } = useMutation({
+  const { mutateAsync: sendTransaction, isPending: isPendingSendTransaction } = useMutation({
     mutationFn: async (payload: PostSendDepositTransactionArgs) => {
       return await backendApi.postSendDepositTransaction(payload)
     },
     onSuccess: async () => {
-      toast('Transaction was successful!')
+      toast("Transaction was successful!")
       console.log("Transaction Sent!")
       await queryClient.invalidateQueries({ queryKey: ["getDeposits"] })
       await queryClient.invalidateQueries({ queryKey: ["getBalance"] })
     },
     onError: async () => {
-      toast('Transaction failed!')
+      toast("Transaction failed!")
       console.log("Transaction failed!")
-    }
+    },
   })
 
   const { data: balance } = useQuery({
@@ -123,7 +117,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
   const minBorgInput = borgPriceInUSD && minInvestment ? +minInvestment / borgPriceInUSD : 0
-  const maxBorgInput = borgPriceInUSD && maxInvestment ? +maxInvestment / borgPriceInUSD : 0
+  const maxBorgInput = borgPriceInUSD && maxInvestment ? Number((+maxInvestment / borgPriceInUSD).toFixed(2)) : 0
 
   const { handleSubmit, control, setValue, watch, clearErrors, setError } = useForm<FormInputs>({ mode: "onBlur" })
 
@@ -149,18 +143,18 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
         const serializedTransaction = await makeDepositTransaction({
           userWalletAddress: address,
           tokenAmount,
-          projectId: projectId ?? ''
+          projectId: projectId ?? "",
         })
         // Deserialize the transaction
-        const transaction = Transaction.from(Buffer.from(serializedTransaction, 'base64'))
+        const transaction = Transaction.from(Buffer.from(serializedTransaction, "base64"))
         // Sign the transaction
         const signedTransaction = await signTransaction(transaction, walletProvider)
-        if (!signedTransaction) throw new Error('Error while signing the transaction!')
+        if (!signedTransaction) throw new Error("Error while signing the transaction!")
         // Send the signed transaction to backend
-        const serializedTx = signedTransaction.serialize().toString('base64')
+        const serializedTx = signedTransaction.serialize().toString("base64")
         await sendTransaction({
-          projectId: projectId ?? '',
-          serializedTx
+          projectId: projectId ?? "",
+          serializedTx,
         })
       } else {
         toast.error("Wallet error. Please try again or contact our support.")
@@ -172,7 +166,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
     if (!balance || !maxBorgInput) return
-    const floatValue = (balancePercentage / 100) * Number(balance.uiAmountString)
+    const floatValue = Number(((balancePercentage / 100) * Number(balance.uiAmountString)).toFixed(6))
     if (floatValue > maxBorgInput) {
       setValue("borgInputValue", maxBorgInput.toString(), {
         shouldValidate: true,
