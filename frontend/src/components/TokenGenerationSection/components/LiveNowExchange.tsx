@@ -201,7 +201,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
         <span className="w-full pb-2.5 text-center text-base font-semibold">{t("tge.provide_liquidity")}</span>
         <div className="re relative flex w-full max-w-[400px] flex-col items-center gap-2.5 rounded-t-2xl border border-bd-primary bg-secondary px-3 py-4">
           <span className="w-full text-left text-xs opacity-50">{t("tge.youre_paying")}</span>
-          <div className="flex w-full flex-col justify-between gap-2">
+          <div className="flex w-full flex-col justify-between gap-2.5">
             <div className="grid w-full grid-cols-borg-input gap-x-2">
               <div className="flex flex-col">
                 <Controller
@@ -227,32 +227,46 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                 <span>BORG</span>
               </div>
             </div>
-            {minBorgInput && maxBorgInput && (
-              <p className="flex gap-3 text-xs text-fg-tertiary/60">
-                <span>min: {formatCurrencyAmount(+minBorgInput, { customDecimals: 1 })}</span>
-                <span>max: {formatCurrencyAmount(+maxBorgInput, { customDecimals: 1 })}</span>
-              </p>
-            )}
-            {balance !== null && (
-              <div className="flex w-full items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {inputButtons.map((btn) => (
-                    <Button
-                      key={btn.percentage}
-                      size="xs"
-                      color="secondary"
-                      btnText={btn.label}
-                      className="h-[24px] px-1"
-                      textClassName="text-[12px] leading-none text-fg-tertiary font-normal"
-                      onClick={() => clickProvideLiquidityBtn(btn.percentage)}
-                    />
-                  ))}
+            <div className="flex w-full flex-row-reverse justify-between">
+              {minBorgInput && maxBorgInput && (
+                <div className="grid-cols-min-max grid max-h-[36px] gap-x-1.5 gap-y-0 text-xs leading-tight text-fg-tertiary/60">
+                  <span className="text-nowrap">Min:</span>{" "}
+                  <div className="flex justify-end">
+                    <span className="text-nowrap ">
+                      {formatCurrencyAmount(+minBorgInput, { customDecimals: 2 })} BORG
+                    </span>
+                  </div>
+                  <span className="text-nowrap">Max: </span>{" "}
+                  <div className="flex justify-end">
+                    <span className="text-nowrap ">
+                      {formatCurrencyAmount(+maxBorgInput, { customDecimals: 2 })} BORG
+                    </span>
+                  </div>
                 </div>
-                <p className="text-left text-xs opacity-50">
-                  {t("tge.balance")}: <span>{formatCurrencyAmount(Number(balance?.uiAmountString))}</span>
-                </p>
-              </div>
-            )}
+              )}
+              {balance !== null && (
+                <div className="flex w-full flex-col items-start justify-between gap-1">
+                  <p className="flex gap-1 text-left text-xs opacity-50">
+                    <span className="pr-1">{t("tge.balance")}:</span>
+                    <span className="">{formatCurrencyAmount(Number(balance?.uiAmountString))}</span>
+                    <span>{" BORG"}</span>
+                  </p>
+                  <div className="flex items-center gap-2">
+                    {inputButtons.map((btn) => (
+                      <Button
+                        key={btn.percentage}
+                        size="xs"
+                        color="secondary"
+                        btnText={btn.label}
+                        className="h-[24px] px-1"
+                        textClassName="text-[12px] leading-none text-fg-tertiary font-normal"
+                        onClick={() => clickProvideLiquidityBtn(btn.percentage)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
           <div className="absolute -bottom-3.5 left-0 right-0 z-10 ml-auto mr-auto h-7 w-7 rounded-full border border-bd-primary bg-secondary p-[5px] text-brand-primary">
             <Icon icon="SvgArrowDown" className="text-base" />

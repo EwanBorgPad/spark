@@ -30,7 +30,7 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
 
   const { address } = useWalletContext()
   const { projectId } = useParams()
-  const { data } = useQuery({
+  const { data: eligibilityStatusData } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
       return backendApi.getEligibilityStatus({ address, projectId })
@@ -38,7 +38,7 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
   })
-  const isUserEligible = data?.isEligible
+  const isUserEligible = eligibilityStatusData?.isEligible
 
   return (
     <div className="flex w-full flex-col items-center px-4">
@@ -52,7 +52,7 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
         <SaleProgress />
 
         <EligibilityCompliancesSection className="w-full max-w-[432px]" />
-        <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
+        <div className="flex w-full max-w-[432px] flex-col gap-5">
           <TgeWrapper label={t("tge.live_now")}>
             {eventData?.nextEventDate && (
               <CountDownTimer
