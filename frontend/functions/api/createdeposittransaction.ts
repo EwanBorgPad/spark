@@ -10,12 +10,6 @@ import { createUmi } from "@metaplex-foundation/umi-bundle-defaults"
 import { createNoopSigner, createSignerFromKeypair, percentAmount, publicKey, signerIdentity, transactionBuilder } from "@metaplex-foundation/umi"
 import { toWeb3JsInstruction, toWeb3JsKeypair } from '@metaplex-foundation/umi-web3js-adapters'
 import { PRIORITY_FEE_MICRO_LAMPORTS } from "../../shared/constants"
-import { EligibilityService } from "../services/eligibilityService"
-import { drizzle } from "drizzle-orm/d1"
-import { DepositService } from "../services/depositService"
-import { getTokenData, Cluster } from "../services/constants"
-import { exchangeService } from "../services/exchangeService"
-import { addPlugin, addPluginV1, create, createPlugin, createPluginV2, pluginAuthority } from '@metaplex-foundation/mpl-core'
 
 type ENV = {
     DB: D1Database,
@@ -122,9 +116,6 @@ export async function createUserDepositTransaction(
             amount * multiplier
         )
 
-        // wallet that will be minting the nft (our private wallet)
-        const nftMintingWalletKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(privateKey)))
-
         // add priority fee
         const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
             microLamports: PRIORITY_FEE_MICRO_LAMPORTS,
@@ -142,9 +133,8 @@ export async function createUserDepositTransaction(
         transaction.recentBlockhash = blockhash
         transaction.lastValidBlockHeight = lastValidBlockHeight
         transaction.feePayer = fromPublicKey // User signs to pay fees
-        // TODO check if admin authority signature is present in the final deposit transaction
-        // sign with our minting wallet and nftMint keypair
-        transaction.partialSign(nftMintingWalletKeypair, nftMintSigner)
+        // sign with our nftMint keypair
+        transaction.partialSign(nftMintSigner)
         // serialize transaction for frontend
         const serializedTransaction = transaction.serialize({
             requireAllSignatures: false,

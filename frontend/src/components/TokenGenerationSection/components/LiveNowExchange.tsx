@@ -151,7 +151,9 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
         const signedTransaction = await signTransaction(transaction, walletProvider)
         if (!signedTransaction) throw new Error("Error while signing the transaction!")
         // Send the signed transaction to backend
-        const serializedTx = signedTransaction.serialize().toString("base64")
+        const serializedTx = signedTransaction.serialize({
+          requireAllSignatures: false
+        }).toString('base64')
         await sendTransaction({
           projectId: projectId ?? "",
           serializedTx,
