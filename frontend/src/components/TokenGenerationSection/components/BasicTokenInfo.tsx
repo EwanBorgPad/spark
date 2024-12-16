@@ -22,7 +22,7 @@ const BasicTokenInfo = () => {
     enabled: Boolean(projectId),
   })
 
-  const fdv = tge?.fdv ? formatCurrencyAmount(tge.fdv, true, 0) : ""
+  const fdv = tge?.fdv ? formatCurrencyAmount(tge.fdv, { withDollarSign: true, customDecimals: 0 }) : ""
   const tgeDate = tge?.tokenGenerationEventDate || ""
 
   return (
@@ -34,7 +34,7 @@ const BasicTokenInfo = () => {
             as="span"
             className="text-base text-fg-primary"
             isLoading={isLoadingSummary}
-            text={formatCurrencyAmount(investmentSummaryData?.sum, true, 0)}
+            text={formatCurrencyAmount(investmentSummaryData?.sum, { withDollarSign: true, customDecimals: 0 })}
           />
         </div>
         <div className="flex flex-1 flex-col gap-2">
