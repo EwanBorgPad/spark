@@ -13,9 +13,6 @@ import { PRIORITY_FEE_MICRO_LAMPORTS } from "../../shared/constants"
 import { EligibilityService } from "../services/eligibilityService"
 import { drizzle } from "drizzle-orm/d1"
 import { DepositService, DepositStatus } from "../services/depositService"
-import { getTokenData, Cluster } from "../services/constants"
-import { exchangeService } from "../services/exchangeService"
-import { addPlugin, addPluginV1, create, createPlugin, createPluginV2, pluginAuthority } from '@metaplex-foundation/mpl-core'
 
 type ENV = {
     DB: D1Database,
@@ -83,7 +80,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             rpcUrl,
             walletAddress: userWalletAddress
         })
-        if (depositStatus.status === 'error') return jsonResponse(depositStatus.message, 500)
 
         const projectCapInUsd = project.info.tge.raiseTarget
         const accumulatedProjectSum = await DepositService.getProjectsDepositedAmount({
@@ -123,15 +119,15 @@ async function validateTx(userEligible: boolean, depositStatus: DepositStatus, t
     // initialize deposit in necessary forms
     const userDepositAmount = tokenAmount * Math.pow(10, amountDeposited.decimals)
     // @VALIDATION: eligibility
-    if (!userEligible) return jsonResponse({ message: 'User is not eligible to make this deposit!' }, 409)
+    if (!userEligible) return jsonResponse({ errorCode: 'USER_NOT_ELIGIBLE' }, 401)
     // @VALIDATION: user min and user max cap
-    if (userDepositAmount > Number(maxAmountAllowed.amount)) return jsonResponse({ message: 'Cannot deposit over tier max cap!' }, 409)
-    if (userDepositAmount < Number(minAmountAllowed.amount)) return jsonResponse({ message: 'Cannot deposit under tier min cap!' }, 409)
+    if (userDepositAmount > Number(maxAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MAX_INVESTMENT_EXCEEDED' }, 409)
+    if (userDepositAmount < Number(minAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MIN_INVESTMENT_EXCEDEED' }, 409)
     // @VALIDATION: project cap
-    if (accumulatedProjectSum + userDepositAmount >= projectCapAmount) return jsonResponse({ message: 'Target has been reached!' }, 409)
+    if (accumulatedProjectSum + userDepositAmount >= projectCapAmount) return jsonResponse({ errorCode: 'PROJECT_RAISE_TARGET_REACHED' }, 409)
     // @VALIDATION: timeline
-    if (now < depositStatus.startTime) return jsonResponse({ message: 'Sale not opened yet!' }, 409)
-    if (now > endDate) return jsonResponse({ message: 'Sale is closed!' }, 409)
+    if (now < depositStatus.startTime) return jsonResponse({ errorCode: 'INVESTMENT_TIMELINE_DIDNT_START' }, 409)
+    if (now > endDate) return jsonResponse({ errorCode: 'INVESTMENT_TIMELINE_ENDED' }, 409)
 
     // All validations passed so we return null (no errors)
     return null

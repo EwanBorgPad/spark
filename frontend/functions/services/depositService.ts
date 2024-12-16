@@ -83,32 +83,22 @@ const getProjectsDepositedAmount = async ({ db, projectId }: GetProjectsDeposite
 }
 
 export type DepositStatus = {
-    status: 'ok'
     amountDeposited: TokenAmountModel,
     minAmountAllowed: TokenAmountModel,
     maxAmountAllowed: TokenAmountModel,
     startTime: Date
-} | {
-    status: 'error'
-    message: string
 }
 
 const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDepositStatus): Promise<DepositStatus> => {
     // get sum of users investment
     const usersAccumulatedDeposit = await getUsersDepositedAmount({ db, projectId, walletAddress })
     // get eligibility for the user
-    const eligibility = await EligibilityService.getEligibilityStatus({ db: drizzle(db), address: walletAddress, projectId, rpcUrl })
+    const eligibility = await EligibilityService.getEligibilityStatus({ db: drizzle(db, { logger: true }), address: walletAddress, projectId, rpcUrl })
     // initialize users min and max cap in USD and check if they exist
     const userMaxCap = eligibility.eligibilityTier?.benefits.maxInvestment
     const userMinCap = eligibility.eligibilityTier?.benefits.minInvestment
-    if (!userMaxCap) return {
-        status: 'error',
-        message: 'User max cap is not defined!'
-    }
-    if (!userMinCap) return {
-        status: 'error',
-        message: 'User min cap is not defined!'
-    }
+    if (!userMaxCap) throw new Error(`Misconfigured project (${projectId}), (userMaxCap) field is missing`)
+    if (!userMinCap) throw new Error(`Misconfigured project (${projectId}), (userMinCap) field is missing`)
     const userMaxCapInUsd = Number(userMaxCap)
     const userMinCapInUsd = Number(userMinCap)
     // get project
@@ -120,10 +110,7 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
     const tokenAddress = project.info.raisedTokenMintAddress
     const tokenPriceInUsd = project.info.tge.fixedTokenPriceInUSD
     const decimals = getTokenData({ cluster: project.cluster, tokenAddress })?.decimals
-    if (!decimals) return {
-        status: 'error',
-        message: 'Cannot find decimals for the token address provided in the project'
-    }
+    if (!decimals) throw new Error('Number of decimals is not defined!')
     // Math logic below
     // TODO: remove this later
     /**
@@ -170,13 +157,9 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
     }
     // get start time
     const startTime = eligibility.eligibilityTier?.benefits.startDate ?? project.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date
-    if (!startTime) return {
-        status: 'error',
-        message: 'Start date not found in eligibility tier or project json!'
-    }
+    if (!startTime) throw new Error(`Misconfigured project (${projectId}), (startDate) field is missing`)
 
     return {
-        status: 'ok',
         amountDeposited,
         minAmountAllowed,
         maxAmountAllowed,
