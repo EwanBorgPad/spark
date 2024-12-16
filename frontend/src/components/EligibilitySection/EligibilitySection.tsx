@@ -82,7 +82,7 @@ export const EligibilityCompliancesSection = ({ className }: { className?: strin
   const { address, walletState } = useWalletContext()
   const { projectId } = useParams()
 
-  const { data: eligibilityStatus, isFetching } = useQuery({
+  const { data: eligibilityStatus, isLoading } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
       return backendApi.getEligibilityStatus({ address, projectId })
@@ -103,7 +103,7 @@ export const EligibilityCompliancesSection = ({ className }: { className?: strin
         <span>{t("tge.join_launch_pool")}</span>
       </div>
       <div id="compliancesContainer" className="flex flex-col gap-2 rounded-lg">
-        {!isFetching
+        {!isLoading
           ? complianceQuests?.map((quest) => <QuestComponent key={quest.type} quest={quest} />)
           : skeletonCompliances.map((quest) => <Skeleton.Compliance key={quest} />)}
       </div>
