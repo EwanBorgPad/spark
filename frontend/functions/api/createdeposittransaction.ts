@@ -10,12 +10,6 @@ import { createUmi } from "@metaplex-foundation/umi-bundle-defaults"
 import { createNoopSigner, createSignerFromKeypair, percentAmount, publicKey, signerIdentity, transactionBuilder } from "@metaplex-foundation/umi"
 import { toWeb3JsInstruction, toWeb3JsKeypair } from '@metaplex-foundation/umi-web3js-adapters'
 import { PRIORITY_FEE_MICRO_LAMPORTS } from "../../shared/constants"
-import { EligibilityService } from "../services/eligibilityService"
-import { drizzle } from "drizzle-orm/d1"
-import { DepositService } from "../services/depositService"
-import { getTokenData, Cluster } from "../services/constants"
-import { exchangeService } from "../services/exchangeService"
-import { addPlugin, addPluginV1, create, createPlugin, createPluginV2, pluginAuthority } from '@metaplex-foundation/mpl-core'
 
 type ENV = {
     DB: D1Database,

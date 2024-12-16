@@ -304,3 +304,14 @@ export type UserInvestedRewardsResponse = {
 }
 
 export type MyRewardsResponse = { hasUserInvested: false } | UserInvestedRewardsResponse
+
+export type SaleResults = {
+  raiseTargetInUsd: string
+  raiseTargetReached: boolean
+  totalAmountRaised: TokenAmountModel
+  averageDepositAmount: TokenAmountModel
+  participantsCount: number
+  sellOutPercentage: number
+  marketCap: number
+  fdv: number
+}
