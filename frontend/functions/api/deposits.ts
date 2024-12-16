@@ -34,7 +34,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     if (!project)
       return jsonResponse({ message: `Project not found (id=${projectId})!` }, 404)
 
-    const cluster = project.json.cluster ?? 'devnet'
+    const cluster = project.json.cluster
     const tokenAddress = project.json.info.raisedTokenMintAddress
 
     const depositsResult = await db

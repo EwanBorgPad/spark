@@ -34,7 +34,12 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             db,
             id: data.projectId
         })
-        const cluster = project?.cluster ?? 'devnet'
+
+        if (!project) {
+            return jsonResponse({ message: 'Project not found!' }, 404)
+        }
+
+        const cluster = project.cluster
         const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster))
 
         // TODO @claimValidations
@@ -51,7 +56,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         const explorerLink = `https://explorer.solana.com/tx/${txId}?cluster=${cluster}`
         console.log(explorerLink)
-
 
         return jsonResponse({ txId }, 200)
     } catch (e) {
