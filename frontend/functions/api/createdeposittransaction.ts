@@ -191,8 +191,9 @@ export async function createUserDepositTransaction(
 
         return serializedTransaction.toString('base64') // Send serialized tx back
     } catch (error) {
-        console.error('Error creating transfer transaction:', error)
-        throw new Error('Failed to create transaction')
+        const errorMessage = `Failed to create transaction! error={${error.message}`
+        console.error(errorMessage)
+        throw new Error(errorMessage)
     }
 }
 
