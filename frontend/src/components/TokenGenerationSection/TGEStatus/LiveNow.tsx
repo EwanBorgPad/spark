@@ -41,17 +41,6 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
   })
   const isUserEligible = data?.isEligible
 
-  const { data: saleData } = useQuery({
-    queryFn: async () => {
-      if (!projectId) return null
-      return await backendApi.getSaleResults({
-        projectId,
-      })
-    },
-    queryKey: ["saleResults", projectId],
-    enabled: Boolean(projectId),
-  })
-
   return (
     <div className="flex w-full flex-col items-center px-4">
       <div className="flex w-full max-w-[764px] flex-col items-center gap-[52px]">
@@ -64,20 +53,16 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
         <SaleProgress />
 
         {!isUserEligible && <EligibilityCompliancesSection className="w-full max-w-[432px]" />}
-        <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
-          {!saleData?.raiseTargetReached ? (
-            <TgeWrapper label={t("tge.live_now")}>
-              {eventData?.nextEventDate && (
-                <CountDownTimer
-                  endOfEvent={eventData.nextEventDate}
-                  labelAboveTimer={`Ends on ${formatDateForTimer(eventData.nextEventDate)}`}
-                />
-              )}
-              <LiveNowExchange eligibilitySectionRef={eligibilitySectionRef} />
-            </TgeWrapper>
-          ) : (
-            <LiveSaleIsOver />
-          )}
+        <div className="flex w-full max-w-[432px] flex-col gap-5">
+          <TgeWrapper label={t("tge.live_now")}>
+            {eventData?.nextEventDate && (
+              <CountDownTimer
+                endOfEvent={eventData.nextEventDate}
+                labelAboveTimer={`Ends on ${formatDateForTimer(eventData.nextEventDate)}`}
+              />
+            )}
+            <LiveNowExchange eligibilitySectionRef={eligibilitySectionRef} />
+          </TgeWrapper>
           {isUserEligible && (
             <>
               {/*<TopContributor />*/}
@@ -85,7 +70,7 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
             </>
           )}
         </div>
-        {!isUserEligible && <EligibilityTiersSection className="w-full max-w-[432px]" />}
+        <EligibilityTiersSection className="w-full max-w-[432px]" />
       </div>
     </div>
   )

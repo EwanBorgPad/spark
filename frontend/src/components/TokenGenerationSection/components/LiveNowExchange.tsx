@@ -59,6 +59,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
       await queryClient.invalidateQueries({ queryKey: ["getBalance"] })
     },
     onError: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["saleResults", projectId] })
       toast.error("Fail!")
     },
   })
@@ -72,8 +73,10 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
       console.log("Transaction Sent!")
       await queryClient.invalidateQueries({ queryKey: ["getDeposits"] })
       await queryClient.invalidateQueries({ queryKey: ["getBalance"] })
+      await queryClient.invalidateQueries({ queryKey: ["saleResults", projectId] })
     },
     onError: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["saleResults", projectId] })
       toast("Transaction failed!")
       console.log("Transaction failed!")
     },
