@@ -18,7 +18,7 @@ import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import DataRoom from "@/components/LaunchPool/DataRoom"
-import LiveSaleIsOver from "../components/LiveSaleIsOver"
+import { twMerge } from "tailwind-merge"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType
@@ -28,6 +28,7 @@ type LiveNowProps = {
 const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
   const { t } = useTranslation()
   const eligibilitySectionRef = useRef<HTMLDivElement>(null)
+  const tiersRef = useRef<HTMLDivElement>(null)
 
   const { address } = useWalletContext()
   const { projectId } = useParams()
@@ -40,6 +41,17 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
     enabled: Boolean(address) && Boolean(projectId),
   })
   const isUserEligible = eligibilityStatusData?.isEligible
+  console.log(eligibilityStatusData)
+
+  const tierBenefits = eligibilityStatusData?.eligibilityTier?.benefits
+
+  const scrollToTiers = () => {
+    const top = tiersRef.current?.getBoundingClientRect().top ?? 0
+    window.scrollBy({
+      behavior: "smooth",
+      top: top - 100,
+    })
+  }
 
   return (
     <div className="flex w-full flex-col items-center px-4">
@@ -59,9 +71,10 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
               <CountDownTimer
                 endOfEvent={eventData.nextEventDate}
                 labelAboveTimer={`Ends on ${formatDateForTimer(eventData.nextEventDate)}`}
+                className={twMerge(tierBenefits && "h-fit pb-3")}
               />
             )}
-            <LiveNowExchange eligibilitySectionRef={eligibilitySectionRef} />
+            <LiveNowExchange scrollToTiers={scrollToTiers} eligibilitySectionRef={eligibilitySectionRef} />
           </TgeWrapper>
           {isUserEligible && (
             <>
@@ -70,7 +83,9 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
             </>
           )}
         </div>
-        <EligibilityTiersSection className="w-full max-w-[432px]" />
+        <div ref={tiersRef} className="flex w-full flex-col items-center">
+          <EligibilityTiersSection className="w-full max-w-[432px]" />
+        </div>
       </div>
     </div>
   )

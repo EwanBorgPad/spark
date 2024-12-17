@@ -18,6 +18,9 @@ import { useProjectDataContext } from "@/hooks/useProjectData"
 import { getSplTokenBalance } from "../../../../shared/SolanaWeb3.ts"
 import LiveNowInput from "@/components/InputField/LiveNowInput.tsx"
 import { Transaction } from "@solana/web3.js"
+import { isBefore } from "date-fns/isBefore"
+import { formatDateForTimer } from "@/utils/date-helpers.ts"
+import { twMerge } from "tailwind-merge"
 
 type FormInputs = {
   borgInputValue: string
@@ -31,13 +34,14 @@ const inputButtons = [
 
 type Props = {
   eligibilitySectionRef: RefObject<HTMLDivElement>
+  scrollToTiers: () => void
 }
 
 // input data for "getExchange"
 const baseCurrency = "swissborg"
 const targetCurrency = "usd"
 
-const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
+const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const { projectId } = useParams()
@@ -104,8 +108,10 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
     enabled: Boolean(address) && Boolean(projectId),
   })
   const isUserEligible = data?.isEligible
-  const minInvestment = data?.eligibilityTier?.benefits.minInvestment || ""
-  const maxInvestment = data?.eligibilityTier?.benefits.maxInvestment || ""
+  const tierBenefits = data?.eligibilityTier?.benefits
+  const minInvestment = tierBenefits?.minInvestment || ""
+  const maxInvestment = tierBenefits?.maxInvestment || ""
+  const isEligibleTierActive = tierBenefits ? isBefore(tierBenefits.startDate, new Date()) : false
 
   const { data: exchangeData } = useQuery({
     queryFn: () =>
@@ -154,9 +160,11 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
         const signedTransaction = await signTransaction(transaction, walletProvider)
         if (!signedTransaction) throw new Error("Error while signing the transaction!")
         // Send the signed transaction to backend
-        const serializedTx = signedTransaction.serialize({
-          requireAllSignatures: false
-        }).toString('base64')
+        const serializedTx = signedTransaction
+          .serialize({
+            requireAllSignatures: false,
+          })
+          .toString("base64")
         await sendTransaction({
           projectId: projectId ?? "",
           serializedTx,
@@ -186,6 +194,8 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
   }
 
   const borgCoinInput = watch("borgInputValue")
+
+  const isInputMaxAmout = +borgCoinInput === maxBorgInput
 
   const scrollToWhitelistRequriements = () => {
     const top = eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
@@ -239,9 +249,9 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                       {formatCurrencyAmount(+minBorgInput, { customDecimals: 2 })} BORG
                     </span>
                   </div>
-                  <span className="text-nowrap">Max: </span>{" "}
+                  <span className={twMerge("text-nowrap", isInputMaxAmout ? "font-bold text-white" : "")}>Max: </span>{" "}
                   <div className="flex justify-end">
-                    <span className="text-nowrap ">
+                    <span className={twMerge("text-nowrap", isInputMaxAmout ? "font-bold text-white" : "")}>
                       {formatCurrencyAmount(+maxBorgInput, { customDecimals: 2 })} BORG
                     </span>
                   </div>
@@ -292,7 +302,7 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
                 type="submit"
                 size="lg"
                 btnText="Supply $BORG"
-                disabled={!isUserEligible}
+                disabled={!isUserEligible || !isEligibleTierActive}
                 isLoading={isPendingSendTransaction || isPendingMakeDepositTransaction}
                 className={"w-full"}
               />
@@ -319,6 +329,21 @@ const LiveNowExchange = ({ eligibilitySectionRef }: Props) => {
               btnText="See Whitelist Requirements"
               className="text-sm font-normal"
             ></Button>
+          </div>
+        </div>
+      )}
+
+      {/* If user's tier is not active yet, blur component and leave message */}
+      {!isEligibleTierActive && (
+        <div className="absolute bottom-0 left-0 right-0 top-0 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
+          <div className="mt-[-40px] flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
+            <div className="py-2 text-sm font-normal text-fg-primary">
+              <span onClick={scrollToTiers} className="cursor-pointer underline">
+                Your Tier
+              </span>
+              {" Opens on "}
+              <span>{tierBenefits && formatDateForTimer(tierBenefits.startDate)}</span>
+            </div>
           </div>
         </div>
       )}

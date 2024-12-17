@@ -1,4 +1,4 @@
-import { ScrollRestoration } from "react-router-dom"
+import { Link, ScrollRestoration } from "react-router-dom"
 
 import solanaImg from "@/assets/angelStaking/solana.png"
 import swissborgLogo from "@/assets/landingPage/swissborg-logo.png"
@@ -83,14 +83,14 @@ const LandingPage = () => {
             </div>
           </h1>
           <div className="flex flex-col items-center gap-6">
-            <div className="group relative h-fit">
+            <Link to={"/launch-pools"} className="group relative h-fit">
               <Button
                 btnText="Explore Launch Pools"
                 textClassName="text-sm px-3"
                 className="explore-lp px-6 py-4 hover:opacity-100 "
               />
-              <div className="group-hover:shadow-around-2 shadow-around-1 absolute inset-0 z-[-1] h-full w-full rounded-xl transition-shadow duration-500"></div>
-            </div>
+              <div className="absolute inset-0 z-[-1] h-full w-full rounded-xl shadow-around-1 transition-shadow duration-500 group-hover:shadow-around-2"></div>
+            </Link>
             <ActiveLaunchPoolBtn />
           </div>
         </div>
