@@ -18,6 +18,7 @@ import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import DataRoom from "@/components/LaunchPool/DataRoom"
+import LiveSaleIsOver from "../components/LiveSaleIsOver"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType
@@ -51,7 +52,7 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
 
         <SaleProgress />
 
-        <EligibilityCompliancesSection className="w-full max-w-[432px]" />
+        {!isUserEligible && <EligibilityCompliancesSection className="w-full max-w-[432px]" />}
         <div className="flex w-full max-w-[432px] flex-col gap-5">
           <TgeWrapper label={t("tge.live_now")}>
             {eventData?.nextEventDate && (
