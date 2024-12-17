@@ -107,10 +107,19 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
   })
+  const { data: depositStatus } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getDepositStatus({ address, projectId })
+    },
+    queryKey: ["getEligibilityStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
+
   const isUserEligible = data?.isEligible
   const tierBenefits = data?.eligibilityTier?.benefits
   const minInvestment = tierBenefits?.minInvestment || ""
-  const maxInvestment = tierBenefits?.maxInvestment || ""
+  const maxInvestment = depositStatus?.maxAmountAllowed.amountInUsd || ""
   const isEligibleTierActive = tierBenefits ? isBefore(tierBenefits.startDate, new Date()) : false
 
   const { data: exchangeData } = useQuery({

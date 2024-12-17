@@ -81,6 +81,24 @@ const getDeposits = async ({ address, projectId, }: GetDepositsRequest): Promise
   return json
 }
 
+// @TODO move to shared folder
+type DepositStatus = {
+  amountDeposited: TokenAmountModel,
+  minAmountAllowed: TokenAmountModel,
+  maxAmountAllowed: TokenAmountModel,
+  startTime: Date
+}
+const getDepositStatus = async ({ address, projectId, }: GetDepositsRequest): Promise<DepositStatus> => {
+  const url = new URL(GET_DEPOSITS_URL, window.location.href)
+  url.searchParams.set("address", address)
+  url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json
+}
+
 
 const getSaleResults = async ({ projectId }: { projectId: string }): Promise<SaleResultsResponse> => {
   const url = new URL(GET_SALE_RESULTS_URL, window.location.href)
@@ -376,7 +394,6 @@ const postSendClaimTransaction = async ({
 }
 
 
-
 export const backendApi = {
   getProject,
   getProjects,
@@ -390,10 +407,11 @@ export const backendApi = {
   getEligibilityStatus,
   getInvestmentIntentSummary,
   getDeposits,
+  getDepositStatus,
   getMyRewards,
   getSaleResults,
   postCreateDepositTx,
   postSendDepositTransaction,
   postCreateClaimTx,
-  postSendClaimTransaction
+  postSendClaimTransaction,
 }
