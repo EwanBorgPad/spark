@@ -1,4 +1,5 @@
 {
+  "cluster": "devnet",
   "info": {
     "id": "milan-crypto-test-02",
     "title": "Milan Crypto",

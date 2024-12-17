@@ -12,8 +12,9 @@
       "name": "Solana",
       "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
     },
+    "lpPositionToBeBurned": true,
     "totalTokensForSale": 12500000,
-    "totalTokensForRewardDistribution": 9375000,
+    "totalTokensForRewardDistribution": 12500000,
     "curator": {
       "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
       "fullName": "SwissBorg",

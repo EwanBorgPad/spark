@@ -174,7 +174,7 @@ const SolanaClusterSchema = z.enum(['mainnet', 'devnet'])
  *  - token price
  */
 export const projectSchema = z.object({
-  cluster: SolanaClusterSchema.optional().default('devnet'),
+  cluster: SolanaClusterSchema,
   info: infoSchema,
   // TODO deprecate this???
   saleData: z

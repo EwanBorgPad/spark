@@ -30,7 +30,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       .get()
 
     if (!project) return jsonResponse({ error: 'Error: project not found!' }, 500)
-    const cluster = project.json.cluster ?? 'devnet'
+    const cluster = project.json.cluster
     const launchedTokenMintAddress = project.json.info.launchedTokenMintAddress
 
     if (!project) {
