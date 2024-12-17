@@ -3,6 +3,7 @@ import { EligibilityService } from "./eligibilityService"
 import { getTokenData } from "./constants"
 import { ProjectService } from "./projectService"
 import { TokenAmountModel } from "../../shared/models"
+import { exchangeService } from "./exchangeService"
 
 type CreateUserDepositArgs = {
     db: D1Database
@@ -97,8 +98,21 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
     })
     // get relevant data from project and decimals
     const tokenAddress = project.info.raisedTokenMintAddress
-    const tokenPriceInUsd = project.info.tge.fixedTokenPriceInUSD
-    const decimals = getTokenData({ cluster: project.cluster, tokenAddress })?.decimals
+
+    const tokenData = getTokenData({ cluster: project.cluster, tokenAddress })
+    if (!tokenData) {
+        throw new Error(`Token data not defined for ${project.cluster} ${tokenAddress}!`)
+    }
+
+    const { decimals, coinGeckoName } = tokenData
+
+    const exchangeData = await exchangeService.getExchangeData({
+        db: drizzle(db, { logger: true }),
+        baseCurrency: coinGeckoName,
+        targetCurrency: 'usd',
+    })
+    const tokenPriceInUsd = exchangeData.currentPrice
+
     if (!decimals) throw new Error('Number of decimals is not defined!')
     // Math logic below
     // TODO: remove this later
