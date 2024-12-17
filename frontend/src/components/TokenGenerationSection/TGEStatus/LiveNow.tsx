@@ -41,7 +41,6 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
     enabled: Boolean(address) && Boolean(projectId),
   })
   const isUserEligible = eligibilityStatusData?.isEligible
-  console.log(eligibilityStatusData)
 
   const tierBenefits = eligibilityStatusData?.eligibilityTier?.benefits
 
