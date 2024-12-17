@@ -78,6 +78,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
       await queryClient.invalidateQueries({ queryKey: ["getDeposits"] })
       await queryClient.invalidateQueries({ queryKey: ["getBalance"] })
       await queryClient.invalidateQueries({ queryKey: ["saleResults", projectId] })
+      await queryClient.invalidateQueries({ queryKey: ["getDepositStatus", address, projectId] })
     },
     onError: async () => {
       await queryClient.invalidateQueries({ queryKey: ["saleResults", projectId] })
@@ -107,11 +108,22 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
   })
+  const { data: depositStatus } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getDepositStatus({ address, projectId })
+    },
+    queryKey: ["getDepositStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
+
   const isUserEligible = data?.isEligible
   const tierBenefits = data?.eligibilityTier?.benefits
   const minInvestment = tierBenefits?.minInvestment || ""
-  const maxInvestment = tierBenefits?.maxInvestment || ""
+  const maxInvestment = depositStatus?.maxAmountAllowed?.amountInUsd || ""
   const isEligibleTierActive = tierBenefits ? isBefore(tierBenefits.startDate, new Date()) : false
+
+  const userInvestedMaxAmount = maxInvestment && Number(maxInvestment) < 0.1
 
   const { data: exchangeData } = useQuery({
     queryFn: () =>
@@ -126,7 +138,8 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
   const minBorgInput = borgPriceInUSD && minInvestment ? +minInvestment / borgPriceInUSD : 0
-  const maxBorgInput = borgPriceInUSD && maxInvestment ? Number((+maxInvestment / borgPriceInUSD).toFixed(2)) : 0
+  // @TODO - resolve fix below
+  const maxBorgInput = depositStatus ? Number((Number(depositStatus.maxAmountAllowed.uiAmount) * 0.9999).toFixed(2)) : 0
 
   const { handleSubmit, control, setValue, watch, clearErrors, setError } = useForm<FormInputs>({ mode: "onBlur" })
 
@@ -343,6 +356,16 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
               </span>
               {" Opens on "}
               <span>{tierBenefits && formatDateForTimer(tierBenefits.startDate)}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {userInvestedMaxAmount && (
+        <div className="absolute bottom-0 left-0 right-0 top-0 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
+          <div className="mt-[-40px] flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
+            <div className="py-2 text-sm font-normal text-fg-primary">
+              <span>You have invested max amount</span>
             </div>
           </div>
         </div>
