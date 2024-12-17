@@ -54,14 +54,14 @@ const WhitelistingContent = () => {
         "relative flex w-full flex-col items-center gap-2 rounded-3xl border border-bd-secondary bg-secondary bg-texture bg-cover p-4 pt-[26px] text-sm text-fg-primary"
       }
     >
-      <a
+      {/* <a
         className="mb-2 flex w-full justify-center"
         href="https://jup.ag/swap/SOL-BORG"
         target="_blank"
         rel="noopener noreferrer"
       >
         <Button size="md" color="secondary" btnText="Buy $BORG" className="w-fit py-2" />
-      </a>
+      </a> */}
       <div className="flex w-full flex-col gap-2">
         <div className="flex w-full items-center justify-center gap-2 text-base">
           <Icon icon="SvgBorgCoin" />
