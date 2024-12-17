@@ -138,7 +138,8 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
   const minBorgInput = borgPriceInUSD && minInvestment ? +minInvestment / borgPriceInUSD : 0
-  const maxBorgInput = depositStatus ? Number(Number(depositStatus.maxAmountAllowed.uiAmount).toFixed(2)) : 0
+  // @TODO - resolve fix below
+  const maxBorgInput = depositStatus ? Number((Number(depositStatus.maxAmountAllowed.uiAmount) * 0.9999).toFixed(2)) : 0
 
   const { handleSubmit, control, setValue, watch, clearErrors, setError } = useForm<FormInputs>({ mode: "onBlur" })
 
