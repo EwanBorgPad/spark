@@ -92,6 +92,7 @@ export default {
         "modal-header": "24px minmax(24px, 1fr)",
         "curator-socials": "128px, 24px, 328px, 32px",
         "bo-timeline": "160px minmax(320px, 1fr)",
+        "min-max": "30px 1fr",
       },
       lineHeight: {
         11: "44px",
