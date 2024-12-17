@@ -78,6 +78,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
       await queryClient.invalidateQueries({ queryKey: ["getDeposits"] })
       await queryClient.invalidateQueries({ queryKey: ["getBalance"] })
       await queryClient.invalidateQueries({ queryKey: ["saleResults", projectId] })
+      await queryClient.invalidateQueries({ queryKey: ["getDepositStatus", address, projectId] })
     },
     onError: async () => {
       await queryClient.invalidateQueries({ queryKey: ["saleResults", projectId] })
@@ -112,15 +113,17 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
       if (!address || !projectId) return
       return backendApi.getDepositStatus({ address, projectId })
     },
-    queryKey: ["getEligibilityStatus", address, projectId],
+    queryKey: ["getDepositStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
   })
 
   const isUserEligible = data?.isEligible
   const tierBenefits = data?.eligibilityTier?.benefits
   const minInvestment = tierBenefits?.minInvestment || ""
-  const maxInvestment = depositStatus?.maxAmountAllowed.amountInUsd || ""
+  const maxInvestment = depositStatus?.maxAmountAllowed?.amountInUsd || ""
   const isEligibleTierActive = tierBenefits ? isBefore(tierBenefits.startDate, new Date()) : false
+
+  const userInvestedMaxAmount = maxInvestment && Number(maxInvestment) < 0.1
 
   const { data: exchangeData } = useQuery({
     queryFn: () =>
@@ -352,6 +355,16 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
               </span>
               {" Opens on "}
               <span>{tierBenefits && formatDateForTimer(tierBenefits.startDate)}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {userInvestedMaxAmount && (
+        <div className="absolute bottom-0 left-0 right-0 top-0 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
+          <div className="mt-[-40px] flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
+            <div className="py-2 text-sm font-normal text-fg-primary">
+              <span>You have invested max amount</span>
             </div>
           </div>
         </div>

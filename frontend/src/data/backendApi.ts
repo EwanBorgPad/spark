@@ -20,6 +20,7 @@ const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
 const GET_PRESIGNED_URL = API_BASE_URL + "/presignedurl"
 const GET_INVESTMENT_INTENT_SUMMARY_URL = API_BASE_URL + "/investmentintentsummary"
 const GET_DEPOSITS_URL = API_BASE_URL + "/deposits"
+const GET_DEPOSIT_STATUS_URL = API_BASE_URL + "/depositstatus"
 const GET_SALE_RESULTS_URL = API_BASE_URL + "/saleresults"
 const GET_MY_REWARDS_URL = API_BASE_URL + "/myrewards"
 export const BACKEND_RPC_URL = API_BASE_URL + "/rpcproxy"
@@ -32,7 +33,7 @@ type GetEligibilityStatusArgs = {
   address: string
   projectId: string
 }
-const getEligibilityStatus = async ({ address, projectId, }: GetEligibilityStatusArgs): Promise<EligibilityStatus> => {
+const getEligibilityStatus = async ({ address, projectId }: GetEligibilityStatusArgs): Promise<EligibilityStatus> => {
   const url = new URL(GET_ELIGIBILITY_STATUS_API, window.location.href)
   url.searchParams.set("address", address)
   url.searchParams.set("projectId", projectId)
@@ -56,10 +57,10 @@ type GetDepositsResponse = {
     decimalMultiplier: string
     transactionUrl: string
   }[]
-  total: TokenAmountModel,
+  total: TokenAmountModel
 }
 
-const getMyRewards = async ({ address, projectId, }: GetDepositsRequest): Promise<MyRewardsResponse> => {
+const getMyRewards = async ({ address, projectId }: GetDepositsRequest): Promise<MyRewardsResponse> => {
   const url = new URL(GET_MY_REWARDS_URL, window.location.href)
   url.searchParams.set("address", address)
   url.searchParams.set("projectId", projectId)
@@ -70,7 +71,7 @@ const getMyRewards = async ({ address, projectId, }: GetDepositsRequest): Promis
   return json
 }
 
-const getDeposits = async ({ address, projectId, }: GetDepositsRequest): Promise<GetDepositsResponse> => {
+const getDeposits = async ({ address, projectId }: GetDepositsRequest): Promise<GetDepositsResponse> => {
   const url = new URL(GET_DEPOSITS_URL, window.location.href)
   url.searchParams.set("address", address)
   url.searchParams.set("projectId", projectId)
@@ -83,13 +84,13 @@ const getDeposits = async ({ address, projectId, }: GetDepositsRequest): Promise
 
 // @TODO move to shared folder
 type DepositStatus = {
-  amountDeposited: TokenAmountModel,
-  minAmountAllowed: TokenAmountModel,
-  maxAmountAllowed: TokenAmountModel,
+  amountDeposited: TokenAmountModel
+  minAmountAllowed: TokenAmountModel
+  maxAmountAllowed: TokenAmountModel
   startTime: Date
 }
-const getDepositStatus = async ({ address, projectId, }: GetDepositsRequest): Promise<DepositStatus> => {
-  const url = new URL(GET_DEPOSITS_URL, window.location.href)
+const getDepositStatus = async ({ address, projectId }: GetDepositsRequest): Promise<DepositStatus> => {
+  const url = new URL(GET_DEPOSIT_STATUS_URL, window.location.href)
   url.searchParams.set("address", address)
   url.searchParams.set("projectId", projectId)
 
