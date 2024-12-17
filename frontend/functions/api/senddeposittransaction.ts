@@ -61,7 +61,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             return jsonResponse({ message: 'Target has been reached!' }, 409)
         }
 
-        const cluster = (project?.cluster as ('mainnet' | 'devnet')) ?? 'devnet'
+        const cluster = project.cluster as ('mainnet'|'devnet')
         const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster))
 
         // sign with our private key wallet
