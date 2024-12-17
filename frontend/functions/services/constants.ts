@@ -32,7 +32,7 @@ const TOKEN_DATA_MAP: TokenDataMap = {
 }
 
 type GetTokenDataArgs = {
-  cluster: Cluster
+  cluster: string // Cluster actually
   tokenAddress: string
 }
 export const getTokenData = ({ cluster, tokenAddress }: GetTokenDataArgs): null | TokenData => {
