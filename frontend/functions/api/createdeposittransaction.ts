@@ -242,7 +242,7 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
         symbol: 'bpSOLID',
         mint: mintSigner,
         name: "SOLID Liquidity Provider",
-        uri: "https://files.borgpad.com/solana-id/nft-metadata/image.png",
+        uri: "https://files.borgpad.com/solana-id/nft-metadata/metadata.json",
         updateAuthority: signer,
         sellerFeeBasisPoints: percentAmount(0),
         payer: userSigner,
