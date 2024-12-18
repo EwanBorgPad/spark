@@ -126,7 +126,7 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
         UI_AMOUNT = AMOUNT_IN_TOKEN
      */
     // first we calculate deposited amount
-    const uiAmountDepositedAmount = usersAccumulatedDeposit * Math.pow(0.1, decimals)
+    const uiAmountDepositedAmount = (usersAccumulatedDeposit * Math.pow(0.1, decimals)).toFixed(decimals)
     const amountDepositedInUsd = uiAmountDepositedAmount * tokenPriceInUsd
     const amountDeposited: TokenAmountModel = {
         amount: usersAccumulatedDeposit.toString(),
