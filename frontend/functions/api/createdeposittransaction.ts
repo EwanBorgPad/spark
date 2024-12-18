@@ -239,10 +239,10 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
 
     // make tx for minting nft
     const builder = transactionBuilder().add(createProgrammableNft(umi, {
-        symbol: 'bpBORGY',
+        symbol: 'bpSOLID',
         mint: mintSigner,
-        name: "BORGY Liquidity Provider",
-        uri: "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/nftmeta/nft-metadata.json",
+        name: "SOLID Liquidity Provider",
+        uri: "https://files.borgpad.com/solana-id/nft-metadata/image.png",
         updateAuthority: signer,
         sellerFeeBasisPoints: percentAmount(0),
         payer: userSigner,
