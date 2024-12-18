@@ -130,6 +130,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const tierId = eligibilityTier.id
 
         // TODO @eligibilityChecks
+        // TODO important to add checks here in order to not over-invest
 
         // update db
         if (status === 'confirmed') {

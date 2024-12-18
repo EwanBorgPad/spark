@@ -85,6 +85,7 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
     // get eligibility for the user
     const eligibility = await EligibilityService.getEligibilityStatus({ db: drizzle(db, { logger: true }), address: walletAddress, projectId, rpcUrl })
     // initialize users min and max cap in USD and check if they exist
+    // TODO this fails if user is not eligible which is ok , whole function doesn't make sense if user is not eligible , but we need to handle it better
     const userMaxCap = eligibility.eligibilityTier?.benefits.maxInvestment
     const userMinCap = eligibility.eligibilityTier?.benefits.minInvestment
     if (!userMaxCap) throw new Error(`Misconfigured project (${projectId}), (userMaxCap) field is missing`)

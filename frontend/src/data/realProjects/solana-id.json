@@ -45,16 +45,22 @@
         "label": ""
       }
     ],
+
     "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
+
     "launchedTokenMintAddress": "SoLiDMWBct5TurG1LNcocemBK7QmTn4P33GSrRrcd2n",
     "launchedTokenLpDistribution": 0,
     "launchedTokenCap": 10000,
+
     "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
     "raisedTokenMinCap": 0,
     "raisedTokenMaxCap": 10000,
-    "lbpWalletAddress": null,
+
+    "lbpWalletAddress": "EzVMRab2dvm7mVHEwQ5riQKMHR1PaNvB9tCm1x2nK2Rn",
+
     "cliffDuration": 0,
     "vestingDuration": 0,
+
     "tge": {
       "raiseTarget": 250000,
       "projectCoin": {
@@ -88,7 +94,7 @@
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-12-19T16:00:00Z"
+        "date": "2024-12-19T17:00:00Z"
       },
       {
         "id": "SALE_CLOSES",
@@ -110,7 +116,7 @@
       {
         "id": "tier10",
         "label": "Priority Pass Holders",
-        "description": "First to access sale at 5 PM CET. Max Investment $2K",
+        "description": "First to access sale at 5 PM UTC. Max Investment $2K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -120,7 +126,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2024-12-19T16:00:00Z",
+          "startDate": "2024-12-19T17:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "2000"
         }
@@ -128,7 +134,7 @@
       {
         "id": "tier20",
         "label": "Borgers Club",
-        "description": "Hold $BORG & qualify to invest at 6 PM CET. Max Investment $2K",
+        "description": "Hold $BORG & qualify to invest at 6 PM UTC. Max Investment $2K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -138,7 +144,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2024-12-19T17:00:00Z",
+          "startDate": "2024-12-19T18:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "2000"
         }
@@ -146,7 +152,7 @@
       {
         "id": "tier30",
         "label": "Solidian Origins: Drip Collectors",
-        "description": "Access to sale at 7 PM CET. Max Investment $1.5K",
+        "description": "Access to sale at 7 PM UTC. Max Investment $1.5K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -156,7 +162,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2024-12-19T18:00:00Z",
+          "startDate": "2024-12-19T19:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "1500"
         }
@@ -164,7 +170,7 @@
       {
         "id": "tier40",
         "label": "SOLID Community Partners",
-        "description": "Access to sale at 7 PM CET. Max Investment $1.5K",
+        "description": "Access to sale at 7 PM UTC. Max Investment $1.5K",
         "questsOperator": "OR",
         "quests": [
           {
@@ -199,7 +205,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2024-12-19T18:00:00Z",
+          "startDate": "2024-12-19T19:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "1500"
         }
@@ -207,14 +213,14 @@
       {
         "id": "tier45",
         "label": "Solana SuperTeams Member",
-        "description": "Access to sale at 7 PM CET. Max Investment $1.5K",
+        "description": "Access to sale at 7 PM UTC. Max Investment $1.5K",
         "quests": [
           {
             "type": "WHITELIST"
           }
         ],
         "benefits": {
-          "startDate": "2024-12-19T18:00:00Z",
+          "startDate": "2024-12-19T19:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "1500"
         }
@@ -222,10 +228,10 @@
       {
         "id": "tier99",
         "label": "Public Sale",
-        "description": "Access to sale at 8 PM CET. Max Investment $1K",
+        "description": "Access to sale at 8 PM UTC. Max Investment $1K",
         "quests": [],
         "benefits": {
-          "startDate": "2024-12-19T19:00:00Z",
+          "startDate": "2024-12-19T20:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "1000"
         }

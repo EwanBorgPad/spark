@@ -26,8 +26,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
         if (!project)
             return jsonResponse({ message: `Project not found (id=${projectId})!` }, 404)
 
-        // TODO @clusterSeparation(dev/test/main)
-        const cluster = project.cluster ?? 'devnet'
+        const cluster = project.cluster
 
         const rpcUrl = getRpcUrlForCluster(ctx.env.SOLANA_RPC_URL, cluster)
 
