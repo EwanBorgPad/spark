@@ -150,7 +150,7 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
     const maxAmount = uiMaxAmount * Math.pow(10, decimals)
     // calculate users allowed maximum cap with sum of previous deposits
     const allowedMaxAmount = maxAmount - usersAccumulatedDeposit
-    const allowedMaxUiAmount = allowedMaxAmount * Math.pow(0.1, decimals)
+    const allowedMaxUiAmount = (allowedMaxAmount * Math.pow(0.1, decimals)).toFixed(decimals)
     const allowedMaxAmountInUsd = allowedMaxUiAmount * tokenPriceInUsd
     const maxAmountAllowed: TokenAmountModel = {
         amount: allowedMaxAmount.toString(),
