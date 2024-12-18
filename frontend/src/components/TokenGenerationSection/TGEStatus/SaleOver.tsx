@@ -61,7 +61,6 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
   const tweetId = projectData?.info.tge.tweetUrl ? getTweetIdFromURL(projectData.info.tge.tweetUrl) : ""
   const sectionClass = "flex w-full max-w-[400px] flex-col items-center gap-6 z-[1]"
   const hasDistributionStarted = eventData.id === "REWARD_DISTRIBUTION"
-  console.log(eventData.id)
 
   return (
     <div key="sale-over" className="flex w-full flex-col items-center justify-center px-4">

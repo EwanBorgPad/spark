@@ -87,8 +87,7 @@ export const sortProjectsPerStatus = (
     const expandedTimeline = expandTimelineDataInfo(project.info.timeline)
     const currentEvent = getCurrentTgeEvent(expandedTimeline)
 
-    const { endMessage, badgeClassName, badgeLabel } =
-      generateAdditionalEventData(currentEvent)
+    const { endMessage, badgeClassName, badgeLabel } = generateAdditionalEventData(currentEvent)
     const additionalData = {
       currentEvent,
       endMessage,
@@ -98,10 +97,40 @@ export const sortProjectsPerStatus = (
 
     return { additionalData, ...project }
   })
-  const sortedProjects = expandedProjects.sort(
-    (a, b) =>
-      timelineEventIdRanks[a.additionalData.currentEvent.id] -
-      timelineEventIdRanks[b.additionalData.currentEvent.id],
+
+  // @TODO - make better sorting function
+  const upcomingProjects = expandedProjects.filter((project) => project.additionalData.currentEvent.id === "UPCOMING")
+  const whitelistedProjects = expandedProjects.filter(
+    (project) => project.additionalData.currentEvent.id === "REGISTRATION_OPENS",
   )
+  const targetIndex = whitelistedProjects.findIndex((project) => project.info.id === "solana-id")
+
+  if (targetIndex !== -1) {
+    // Remove the element from its current position
+    const [targetEvent] = whitelistedProjects.splice(targetIndex, 1)
+
+    // Add the element to the beginning of the array
+    whitelistedProjects.unshift(targetEvent)
+  }
+  const saleOpenedProjects = expandedProjects.filter(
+    (project) => project.additionalData.currentEvent.id === "SALE_OPENS",
+  )
+  const saleClosedProjects = expandedProjects.filter(
+    (project) => project.additionalData.currentEvent.id === "SALE_CLOSES",
+  )
+  const rewardDistributionProjects = expandedProjects.filter(
+    (project) => project.additionalData.currentEvent.id === "REWARD_DISTRIBUTION",
+  )
+  const distributionOverProjects = expandedProjects.filter(
+    (project) => project.additionalData.currentEvent.id === "DISTRIBUTION_OVER",
+  )
+  const sortedProjects = [
+    ...whitelistedProjects,
+    ...saleOpenedProjects,
+    ...saleClosedProjects,
+    ...rewardDistributionProjects,
+    ...upcomingProjects,
+    ...distributionOverProjects,
+  ]
   return sortedProjects
 }
