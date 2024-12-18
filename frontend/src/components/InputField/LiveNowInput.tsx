@@ -7,8 +7,8 @@ type FormInputs = {
 }
 
 type Props = {
-  minValue: number // USD value
-  maxValue: number // USD value
+  minBorgInput: number
+  maxBorgInput: number
   onChange: (event: unknown) => void
   setError: UseFormSetError<FormInputs>
   error?: FieldError
@@ -19,8 +19,8 @@ type Props = {
 // type OnChangeParameters = {value: string | undefined, name?: string, values?: CurrencyInputOnChangeValues}
 
 const LiveNowInput = ({
-  minValue,
-  maxValue,
+  minBorgInput,
+  maxBorgInput,
   onChange,
   setError,
   clearError,
@@ -28,8 +28,6 @@ const LiveNowInput = ({
   borgPriceInUSD,
   ...props
 }: Props) => {
-  const maxBorgInput = borgPriceInUSD ? maxValue / borgPriceInUSD : 0
-
   const onChangeHandler = (newValue: string | undefined) => {
     onChange(newValue)
     if (!newValue) return
