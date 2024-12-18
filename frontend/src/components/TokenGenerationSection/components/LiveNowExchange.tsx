@@ -108,11 +108,11 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   })
   const { data: depositStatus, isLoading: isDepositStatusLoading } = useQuery({
     queryFn: () => {
-      if (!address || !projectId) return
+      if (!address || !projectId || !eligibilityStatus?.isEligible) return
       return backendApi.getDepositStatus({ address, projectId })
     },
     queryKey: ["getDepositStatus", address, projectId],
-    enabled: Boolean(address) && Boolean(projectId),
+    enabled: Boolean(address) && Boolean(projectId) && Boolean(eligibilityStatus?.isEligible),
   })
 
   const isUserEligible = eligibilityStatus?.isEligible
@@ -364,7 +364,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
       )}
 
       {/* Blur component if user's tier is not active yet, blur component and leave message */}
-      {!isEligibleTierActive && !isEligibilityLoading && (
+      {!isEligibleTierActive && !isEligibilityLoading && eligibilityStatus?.isEligible && (
         <DisabledBlurContainer>
           <div className="flex flex-col items-center py-2 text-sm font-normal text-fg-primary">
             <p>
@@ -379,7 +379,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
       )}
 
       {/* Blur component if user already invested max amount  */}
-      {userInvestedMaxAmount && !isEligibilityLoading && (
+      {userInvestedMaxAmount && !isEligibilityLoading && eligibilityStatus?.isEligible && (
         <DisabledBlurContainer>
           <div className="py-2 text-sm font-normal text-fg-primary">
             <span>You have invested max amount</span>
