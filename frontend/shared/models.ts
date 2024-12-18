@@ -115,6 +115,9 @@ export const infoSchema = z.object({
   totalTokensForSale: z.number({ coerce: true }).min(0).max(Number.MAX_SAFE_INTEGER).int(), // total tokens for LP positions
   totalTokensForRewardDistribution: z.number({ coerce: true }).min(0).max(Number.MAX_SAFE_INTEGER).int(),
 
+  // link for claiming rewards (currently doing airdrops with streamflow, but could be anything)
+  claimUrl: z.string().optional().nullable(),
+
   tge: z.object({
     raiseTarget: z.number({ coerce: true }).max(Number.MAX_SAFE_INTEGER).int(),
     projectCoin: z.object({
