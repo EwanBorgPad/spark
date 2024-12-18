@@ -19,8 +19,9 @@ import { getSplTokenBalance } from "../../../../shared/SolanaWeb3.ts"
 import LiveNowInput from "@/components/InputField/LiveNowInput.tsx"
 import { Transaction } from "@solana/web3.js"
 import { isBefore } from "date-fns/isBefore"
-import { formatDateForTimer } from "@/utils/date-helpers.ts"
+import { formatDateForTimerWithTimezone } from "@/utils/date-helpers.ts"
 import { twMerge } from "tailwind-merge"
+import DisabledBlurContainer from "./DisabledBlurContainer.tsx"
 
 type FormInputs = {
   borgInputValue: string
@@ -221,7 +222,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const isInputMaxAmount = +borgCoinInput === maxBorgInput
   const maxAmountString = `Use Max Allowed: ${formatCurrencyAmount(+maxBorgInput, { customDecimals: 2 })}`
 
-  const scrollToWhitelistRequriements = () => {
+  const scrollToWhitelistRequirements = () => {
     const top = eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
     window.scrollBy({
       behavior: "smooth",
@@ -345,46 +346,45 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
         </div>
       </form>
 
+      {/* @TODO - make this better, less repetitive */}
       {/* Blur component if user is not eligible (not whitelisted) */}
       {!isUserEligible && !isEligibilityLoading && (
-        <div className="absolute bottom-0 left-0 right-0 top-10 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
+        <DisabledBlurContainer>
           <div className="flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
             <span className="text-fg-error-primary">Your Wallet was not whitelisted for this deal</span>
             <Button
-              onClick={scrollToWhitelistRequriements}
+              onClick={scrollToWhitelistRequirements}
               size="md"
               color="plain"
               btnText="See Whitelist Requirements"
               className="text-sm font-normal"
             ></Button>
           </div>
-        </div>
+        </DisabledBlurContainer>
       )}
 
       {/* Blur component if user's tier is not active yet, blur component and leave message */}
       {!isEligibleTierActive && !isEligibilityLoading && (
-        <div className="absolute bottom-0 left-0 right-0 top-0 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
-          <div className="mt-[-40px] flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
-            <div className="py-2 text-sm font-normal text-fg-primary">
+        <DisabledBlurContainer>
+          <div className="flex flex-col items-center py-2 text-sm font-normal text-fg-primary">
+            <p>
               <span onClick={scrollToTiers} className="cursor-pointer underline">
                 Your Tier
               </span>
-              {" Opens on "}
-              <span>{tierBenefits && formatDateForTimer(tierBenefits.startDate)}</span>
-            </div>
+              <span>{" opens on: "}</span>
+            </p>
+            <span>{tierBenefits && formatDateForTimerWithTimezone(tierBenefits.startDate)}</span>
           </div>
-        </div>
+        </DisabledBlurContainer>
       )}
 
       {/* Blur component if user already invested max amount  */}
       {userInvestedMaxAmount && !isEligibilityLoading && (
-        <div className="absolute bottom-0 left-0 right-0 top-0 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
-          <div className="mt-[-40px] flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
-            <div className="py-2 text-sm font-normal text-fg-primary">
-              <span>You have invested max amount</span>
-            </div>
+        <DisabledBlurContainer>
+          <div className="py-2 text-sm font-normal text-fg-primary">
+            <span>You have invested max amount</span>
           </div>
-        </div>
+        </DisabledBlurContainer>
       )}
     </TgeWrapper.Inner>
   )
