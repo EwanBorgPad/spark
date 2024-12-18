@@ -49,7 +49,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         }
 
         // getting connection to the RPC
-        const cluster = project?.cluster ?? 'devnet'
+        const cluster = project.cluster
         const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
         const connection = new Connection(rpcUrl, {
             confirmTransactionInitialTimeout: 10000,
@@ -118,9 +118,6 @@ export async function createClaimTransaction(
         transaction.recentBlockhash = blockhash
         transaction.lastValidBlockHeight = lastValidBlockHeight
         transaction.feePayer = toPublicKey // User signs to pay fees
-        // private wallet needs to sign to transfer
-        // TODO THIS SIGN MUST NOT BE HERE, USER CAN JUST SUBMIT TRANS
-        transaction.partialSign(privateWalletKeypair)
         // serialize transaction for frontend
         const serializedTransaction = transaction.serialize({
             requireAllSignatures: false,

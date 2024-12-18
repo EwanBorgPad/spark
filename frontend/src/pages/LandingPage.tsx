@@ -1,4 +1,4 @@
-import { ScrollRestoration } from "react-router-dom"
+import { Link, ScrollRestoration } from "react-router-dom"
 
 import solanaImg from "@/assets/angelStaking/solana.png"
 import swissborgLogo from "@/assets/landingPage/swissborg-logo.png"
@@ -15,6 +15,8 @@ import DontBeACexToy from "@/components/LandingPage/DontBeACexToy"
 import DiscoverSection from "@/components/LandingPage/DiscoverSection"
 import JoinCommunityBtn from "@/components/Button/JoinTheCommunityBtn"
 import RotatingSubtitle from "@/components/LandingPage/RotatingSubtitle"
+import { Button } from "@/components/Button/Button"
+import ActiveLaunchPoolBtn from "@/components/Button/ActiveLaunchPoolBtn"
 
 // Arbitrary launch date for Countdown timer. Currently disabled
 // const LAUNCH_DATE = addDays(new Date(), 5.1411)
@@ -80,13 +82,17 @@ const LandingPage = () => {
               </span>
             </div>
           </h1>
-          {/* <CountDownTimer
-            endOfEvent={LAUNCH_DATE}
-            labelAboveTimer={`Launching on ${formatDateForTimer(LAUNCH_DATE)}`}
-            className="bg-none pt-0"
-            timerClass="gap-6 pt-5"
-            labelClass="text-sm font-medium leading-tight opacity-50 text-fg-primary"
-          /> */}
+          <div className="flex flex-col items-center gap-6">
+            <Link to={"/launch-pools"} className="group relative h-fit">
+              <Button
+                btnText="Explore Launch Pools"
+                textClassName="text-sm px-3"
+                className="explore-lp px-6 py-4 hover:opacity-100 "
+              />
+              <div className="absolute inset-0 z-[-1] h-full w-full rounded-xl shadow-around-1 transition-shadow duration-500 group-hover:shadow-around-2"></div>
+            </Link>
+            <ActiveLaunchPoolBtn />
+          </div>
         </div>
       </section>
 
@@ -119,17 +125,17 @@ const LandingPage = () => {
 
       <DiscoverSection />
 
-      <section className="relative z-[1] w-full gap-5 overflow-hidden px-5 py-16 md:px-16 md:py-28">
+      <section className="relative z-[1] w-full gap-5 overflow-hidden px-5 py-16 md:max-h-[432px] md:px-16 md:py-28">
         <div className="absolute top-0 z-[-1] flex max-w-[100vw] justify-center overflow-hidden lg:bottom-0">
           <img src={angelStakingTexture1Mob} role="presentation" className="h-[476px] md:hidden" />
           <img src={angelStakingBottom} role="presentation" className="hidden w-full md:flex" />
         </div>
 
         <div className="flex w-full flex-col items-center md:gap-6">
-          <h2 className="max-w-[520px] pb-5 text-center text-4xl font-semibold leading-[44px] md:max-w-[768px] md:text-5xl">
+          <h2 className="max-w-[520px] pb-5 text-center text-4xl font-semibold leading-[44px] md:max-w-[768px] md:pb-0 md:text-[40px] md:leading-[48px]">
             Let&#39;s Heal Web3, Together.
           </h2>
-          <h3 className="max-w-[500px] pb-10 text-center text-lg font-normal leading-relaxed md:max-w-[768px]">
+          <h3 className="max-w-[500px] pb-10 text-center text-lg font-normal leading-relaxed md:max-w-[768px] md:pb-[16px]">
             Web3 was built by the degens, for the community. Today, VCs, Market Makers, & CEXs groom young projects as
             cash cows & exploit communities as exit liquidity.
           </h3>

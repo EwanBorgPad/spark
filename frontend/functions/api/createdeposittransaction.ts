@@ -12,10 +12,9 @@ import { toWeb3JsInstruction, toWeb3JsKeypair } from '@metaplex-foundation/umi-w
 import { PRIORITY_FEE_MICRO_LAMPORTS } from "../../shared/constants"
 import { EligibilityService } from "../services/eligibilityService"
 import { drizzle } from "drizzle-orm/d1"
-import { DepositService } from "../services/depositService"
-import { getTokenData, Cluster } from "../services/constants"
-import { exchangeService } from "../services/exchangeService"
-import { addPlugin, addPluginV1, create, createPlugin, createPluginV2, pluginAuthority } from '@metaplex-foundation/mpl-core'
+import { DepositService, DepositStatus } from "../services/depositService"
+import { SaleResultsService } from "../services/saleResultsService"
+import { SaleResults } from "../../shared/models"
 
 type ENV = {
     DB: D1Database,
@@ -67,7 +66,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const tokenAmount = data.tokenAmount
 
         // getting connection to the RPC
-        const cluster = project?.cluster ?? 'devnet'
+        const cluster = project.cluster
         const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
         const connection = new Connection(rpcUrl, {
             confirmTransactionInitialTimeout: 10000,
@@ -77,6 +76,27 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         // get price and token mint
         const tokenMint = project.info.raisedTokenMintAddress
 
+        const depositStatus = await DepositService.getDepositStatus({
+            db,
+            projectId,
+            rpcUrl,
+            walletAddress: userWalletAddress
+        })
+
+        const { isEligible } = await EligibilityService.getEligibilityStatus({
+            address: userWalletAddress,
+            db: drizzle(db, { logger: true }),
+            projectId,
+            rpcUrl
+        })
+        const endDate = project.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
+        if (!endDate) return jsonResponse({ message: 'End date is not defined in project json!' }, 500)
+
+        const saleResults = await SaleResultsService.getSaleResults({ db: drizzle(db, { logger: true }), projectId })
+
+        const validationError = await validateTx(isEligible, depositStatus, tokenAmount, endDate, saleResults)
+        if (validationError) return validationError
+
         // create transfer and mint nft instruction
         const tx = await createUserDepositTransaction(userWalletAddress, receivingAddress, tokenMint, tokenAmount, connection, privateKey)
 
@@ -85,6 +105,29 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         await reportError(ctx.env.DB, e)
         return jsonResponse({ message: "Something went wrong..." }, 500)
     }
+}
+
+async function validateTx(userEligible: boolean, depositStatus: DepositStatus, tokenAmount: number, endDate: Date, saleResults: SaleResults) {
+    // extract relevant information from the deposit status and initialize data
+    const { maxAmountAllowed, minAmountAllowed, amountDeposited } = depositStatus
+    const now = new Date()
+
+    // initialize deposit in necessary forms
+    const userDepositAmount = tokenAmount * Math.pow(10, amountDeposited.decimals)
+    // @VALIDATION: eligibility
+    if (!userEligible) return jsonResponse({ errorCode: 'USER_NOT_ELIGIBLE' }, 401)
+    // @VALIDATION: user min and user max cap
+    if (userDepositAmount > Number(maxAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MAX_INVESTMENT_EXCEEDED' }, 409)
+    if (userDepositAmount < Number(minAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MIN_INVESTMENT_INSUFFICIENT' }, 409)
+    // @VALIDATION: project cap
+    if (saleResults.raiseTargetReached) return jsonResponse({ errorCode: 'PROJECT_RAISE_TARGET_REACHED' }, 409)
+    // @VALIDATION: timeline
+    if (now < depositStatus.startTime) return jsonResponse({ errorCode: 'INVESTMENT_TIMELINE_DIDNT_START' }, 409)
+    if (now > endDate) return jsonResponse({ errorCode: 'INVESTMENT_TIMELINE_ENDED' }, 409)
+
+    // All validations passed so we return null (no errors)
+    return null
+
 }
 
 export async function createUserDepositTransaction(
@@ -122,9 +165,6 @@ export async function createUserDepositTransaction(
             amount * multiplier
         )
 
-        // wallet that will be minting the nft (our private wallet)
-        const nftMintingWalletKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(privateKey)))
-
         // add priority fee
         const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
             microLamports: PRIORITY_FEE_MICRO_LAMPORTS,
@@ -142,9 +182,8 @@ export async function createUserDepositTransaction(
         transaction.recentBlockhash = blockhash
         transaction.lastValidBlockHeight = lastValidBlockHeight
         transaction.feePayer = fromPublicKey // User signs to pay fees
-        // TODO check if admin authority signature is present in the final deposit transaction
-        // sign with our minting wallet and nftMint keypair
-        transaction.partialSign(nftMintingWalletKeypair, nftMintSigner)
+        // sign with our nftMint keypair
+        transaction.partialSign(nftMintSigner)
         // serialize transaction for frontend
         const serializedTransaction = transaction.serialize({
             requireAllSignatures: false,
@@ -152,8 +191,9 @@ export async function createUserDepositTransaction(
 
         return serializedTransaction.toString('base64') // Send serialized tx back
     } catch (error) {
-        console.error('Error creating transfer transaction:', error)
-        throw new Error('Failed to create transaction')
+        const errorMessage = `Failed to create transaction! error={${error.message}`
+        console.error(errorMessage)
+        throw new Error(errorMessage)
     }
 }
 

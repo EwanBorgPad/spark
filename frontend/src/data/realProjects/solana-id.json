@@ -12,8 +12,9 @@
       "name": "Solana",
       "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
     },
+    "lpPositionToBeBurned": true,
     "totalTokensForSale": 12500000,
-    "totalTokensForRewardDistribution": 9375000,
+    "totalTokensForRewardDistribution": 12500000,
     "curator": {
       "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
       "fullName": "SwissBorg",
@@ -44,16 +45,22 @@
         "label": ""
       }
     ],
+
     "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
+
     "launchedTokenMintAddress": "SoLiDMWBct5TurG1LNcocemBK7QmTn4P33GSrRrcd2n",
     "launchedTokenLpDistribution": 0,
     "launchedTokenCap": 10000,
+
     "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
     "raisedTokenMinCap": 0,
     "raisedTokenMaxCap": 10000,
-    "lbpWalletAddress": null,
+
+    "lbpWalletAddress": "EzVMRab2dvm7mVHEwQ5riQKMHR1PaNvB9tCm1x2nK2Rn",
+
     "cliffDuration": 0,
     "vestingDuration": 0,
+
     "tge": {
       "raiseTarget": 250000,
       "projectCoin": {
@@ -76,7 +83,7 @@
     "__comment": "secondary image is the one behind: 'Solana ID Data Room Learn more about the project.'",
     "dataRoom": {
       "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
-      "url": "https://solid.solana.id"
+      "url": "https://www.solana.id/solid"
     },
     "timeline": [
       {
@@ -87,7 +94,7 @@
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-12-19T11:00:00Z"
+        "date": "2024-12-19T17:00:00Z"
       },
       {
         "id": "SALE_CLOSES",
@@ -119,7 +126,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2024-12-19T17:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "2000"
         }
@@ -137,7 +144,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2024-12-19T18:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "2000"
         }
@@ -155,7 +162,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2024-12-19T19:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "1500"
         }
@@ -198,7 +205,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2024-12-19T19:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "1500"
         }
@@ -213,7 +220,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2024-12-19T19:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "1500"
         }
@@ -224,7 +231,7 @@
         "description": "Access to sale at 8 PM UTC. Max Investment $1K",
         "quests": [],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2024-12-19T20:00:00Z",
           "minInvestment": "10",
           "maxInvestment": "1000"
         }

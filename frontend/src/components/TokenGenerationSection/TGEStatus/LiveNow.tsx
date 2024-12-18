@@ -18,6 +18,7 @@ import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import DataRoom from "@/components/LaunchPool/DataRoom"
+import { twMerge } from "tailwind-merge"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType
@@ -27,10 +28,11 @@ type LiveNowProps = {
 const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
   const { t } = useTranslation()
   const eligibilitySectionRef = useRef<HTMLDivElement>(null)
+  const tiersRef = useRef<HTMLDivElement>(null)
 
   const { address } = useWalletContext()
   const { projectId } = useParams()
-  const { data } = useQuery({
+  const { data: eligibilityStatusData } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
       return backendApi.getEligibilityStatus({ address, projectId })
@@ -38,7 +40,17 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
   })
-  const isUserEligible = data?.isEligible
+  const isUserEligible = eligibilityStatusData?.isEligible
+
+  const tierBenefits = eligibilityStatusData?.eligibilityTier?.benefits
+
+  const scrollToTiers = () => {
+    const top = tiersRef.current?.getBoundingClientRect().top ?? 0
+    window.scrollBy({
+      behavior: "smooth",
+      top: top - 100,
+    })
+  }
 
   return (
     <div className="flex w-full flex-col items-center px-4">
@@ -52,15 +64,16 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
         <SaleProgress />
 
         {!isUserEligible && <EligibilityCompliancesSection className="w-full max-w-[432px]" />}
-        <div className="flex w-full max-w-[432px] flex-col gap-5 px-4">
+        <div className="flex w-full max-w-[432px] flex-col gap-5">
           <TgeWrapper label={t("tge.live_now")}>
             {eventData?.nextEventDate && (
               <CountDownTimer
                 endOfEvent={eventData.nextEventDate}
                 labelAboveTimer={`Ends on ${formatDateForTimer(eventData.nextEventDate)}`}
+                className={twMerge(tierBenefits && "h-fit pb-3")}
               />
             )}
-            <LiveNowExchange eligibilitySectionRef={eligibilitySectionRef} />
+            <LiveNowExchange scrollToTiers={scrollToTiers} eligibilitySectionRef={eligibilitySectionRef} />
           </TgeWrapper>
           {isUserEligible && (
             <>
@@ -69,7 +82,9 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
             </>
           )}
         </div>
-        {!isUserEligible && <EligibilityTiersSection className="w-full max-w-[432px]" />}
+        <div ref={tiersRef} className="flex w-full flex-col items-center">
+          <EligibilityTiersSection className="w-full max-w-[432px]" />
+        </div>
       </div>
     </div>
   )

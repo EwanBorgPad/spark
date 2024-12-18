@@ -1,5 +1,7 @@
-import { CacheStoreModel, GetExchangeResponse } from "../../shared/models"
+import { GetExchangeResponse } from "../../shared/models"
 import { addSeconds } from "date-fns/addSeconds"
+import { DrizzleD1Database } from "drizzle-orm/d1/driver"
+import { sql } from "drizzle-orm"
 
 /**
  * GET /exchange
@@ -33,7 +35,7 @@ const SUPPORTED_CURRENCY_PAIRS: [string, string][] = [
 ]
 
 type GetExchangeDataArgs = {
-  db: D1Database
+  db: DrizzleD1Database
   baseCurrency: string
   targetCurrency: string
 }
@@ -51,10 +53,9 @@ const getExchangeData = async ({
   const cacheKey = `exchange-api/${baseCurrency}-${targetCurrency}`
 
   // pull existing cache
-  const cache = await db
-    .prepare("SELECT * FROM cache_store WHERE cache_key = ?1")
-    .bind(cacheKey)
-    .first<CacheStoreModel>()
+  const cacheDbResult = await db.run(sql`SELECT * FROM cache_store WHERE cache_key = ${cacheKey}`)
+
+  const cache = cacheDbResult.results[0]
 
   const isExpired = cache ? (new Date() > new Date(cache.expires_at)) : true
 
@@ -76,12 +77,10 @@ const getExchangeData = async ({
     expiresAt = addSeconds(new Date(createdAt), CACHE_TTL_SECONDS).toISOString()
 
     await db
-      .prepare(
-        'REPLACE INTO cache_store (cache_key, created_at, expires_at, cache_data)' +
-        'VALUES (?1, ?2, ?3, ?4);'
+      .run(
+        sql`REPLACE INTO cache_store (cache_key, created_at, expires_at, cache_data)
+        VALUES (${cacheKey}, ${createdAt}, ${expiresAt}, ${JSON.stringify(coinMarketData)});`
       )
-      .bind(cacheKey, createdAt, expiresAt, JSON.stringify(coinMarketData))
-      .run()
   }
 
   const result: GetExchangeResponse = {

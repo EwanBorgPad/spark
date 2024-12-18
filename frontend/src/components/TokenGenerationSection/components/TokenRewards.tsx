@@ -42,7 +42,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
           {/* TOP SECTION - Distributed Rewards */}
           <div className="item-center relative flex flex-col gap-3 border-b-[1px] border-b-bd-primary px-3 py-4">
             {/* TOP section token values */}
-            <span className="w-full text-center text-sm font-normal">Liquidity Provision Rewards</span>
+            {/* <span className="w-full text-center text-sm font-normal">Liquidity Provision Rewards</span> */}
             <div className="flex h-fit items-start justify-center gap-2 rounded-full text-xs font-medium text-fg-primary">
               <Img src={tokenIcon} size="4" customClass="mt-1" isRounded />
               <div className="flex flex-col items-start">
@@ -64,43 +64,21 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
             </div>
 
             {/* PLUS icon between sections */}
-            <div
+            {/* <div
               className={twMerge(
                 "absolute -bottom-[10px] left-[47%] rounded-full bg-tertiary p-[2px]",
                 isYourContribution && "bg-default",
               )}
             >
               <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
-            </div>
+            </div> */}
           </div>
 
           {/* BOTTOM SECTION - Liquidity Pool */}
           <div className="flex flex-col items-center gap-3 px-3 py-4">
-            <span className="text-sm font-normal text-fg-tertiary">LP Position - 100% Burned 🔥 </span>
-            <div className="flex h-fit w-full flex-wrap items-start justify-center gap-4 rounded-full pb-1 text-base font-medium">
-              {/* Liquidity pool $BORG */}
-              <div className="flex gap-2">
-                <Icon icon="SvgBorgCoin" className="mt-1 opacity-50" />
-                <div className="flex flex-col items-start">
-                  <div className="flex items-center gap-2 text-fg-tertiary">
-                    <span className="text-base">{lpPosition.borg}</span>
-                    <span>BORG</span>
-                  </div>
-                </div>
-              </div>
-
-              <Icon icon="SvgPlus" className="mt-1 text-base text-fg-tertiary opacity-50" />
-
-              <div className="flex gap-2 text-fg-tertiary">
-                <Img src={tokenIcon} size="4" customClass="mt-1 opacity-50" isRounded />
-                <div className="flex flex-col items-start">
-                  <div className="flex items-center gap-2">
-                    {/* Liquidity pool $[TOKEN] */}
-                    <span className="text-base">{lpPosition.token}</span>
-                    <span className="text-base">{tokenTicker}</span>
-                  </div>
-                </div>
-              </div>
+            <div className="items-star flex flex-col gap-1.5">
+              <span className="text-sm font-normal text-fg-tertiary">LP position permanently locked 🔒</span>
+              <span className="text-sm font-normal text-fg-tertiary">All LP fees burned 🔥</span>
             </div>
           </div>
         </div>

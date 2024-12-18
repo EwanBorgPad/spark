@@ -12,4 +12,4 @@
 isEligible = isCompliant AND (hasTiered OR isWhitelisted)
 ```
 
-- quests - the quest/task/action that the user completes in order to become eligible. Quests are in the same format for compliances and tiers. Compliance quests are hardcoded globally for all users, while tiers are dynamic/customizable to each project.
+- quests - the quest/task/action that the user completes in order to become eligible. Quests are in the same format for compliances and tiers. Compliance quests are the same globally for all users, while tiers are dynamic/customizable to each project.

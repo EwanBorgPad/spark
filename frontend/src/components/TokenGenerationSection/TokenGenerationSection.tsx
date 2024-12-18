@@ -10,6 +10,9 @@ import DistributionOver from "./TGEStatus/DistributionOver"
 import Upcoming from "./TGEStatus/Upcoming.tsx"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import TgeEventSkeleton from "./TGEStatus/TgeEventSkeleton.tsx"
+import { useQuery } from "@tanstack/react-query"
+import { useParams } from "react-router-dom"
+import { backendApi } from "@/data/backendApi.ts"
 
 type Props = {
   expandedTimeline: ExpandedTimelineEventType[]
@@ -17,20 +20,40 @@ type Props = {
 
 const TokenGenerationSection = ({ expandedTimeline }: Props) => {
   const { isLoading } = useProjectDataContext()
+  const { projectId } = useParams()
   const [currentTgeEvent, setCurrentTgeEvent] = useState<ExpandedTimelineEventType | null>(
     getCurrentTgeEvent(expandedTimeline),
   )
 
+  const { data: saleData, isLoading: isLoadingSaleData } = useQuery({
+    queryFn: async () => {
+      if (!projectId) return null
+      return await backendApi.getSaleResults({
+        projectId,
+      })
+    },
+    queryKey: ["saleResults", projectId],
+    enabled: Boolean(projectId) && !!currentTgeEvent && currentTgeEvent.id === "SALE_OPENS",
+    refetchInterval: 20 * 1000, // 20 seconds
+  })
+
   const updateTgeStatus = useCallback(() => {
     if (isLoading) return
+    // if sale is live, saleData will be truthy. In that case if raise target has been reached.
+    if (saleData && saleData.raiseTargetReached) {
+      const saleOverEvent = expandedTimeline.find((event) => event.id === "SALE_CLOSES")
+      if (!saleOverEvent) return
+      setCurrentTgeEvent(saleOverEvent)
+      return
+    }
     const newTgeStatus = getCurrentTgeEvent(expandedTimeline)
     setCurrentTgeEvent(newTgeStatus)
-  }, [expandedTimeline, isLoading])
+  }, [expandedTimeline, isLoading, saleData])
 
   useEffect(() => {
     if (isLoading) return
     updateTgeStatus()
-  }, [expandedTimeline, isLoading, updateTgeStatus])
+  }, [expandedTimeline, isLoading, updateTgeStatus, saleData])
 
   const renderComponent = (tgeEvent: ExpandedTimelineEventType | null) => {
     if (!tgeEvent || !currentTgeEvent) return <></>
@@ -54,7 +77,7 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
       {currentTgeEvent?.nextEventDate && (
         <CountDownCallback endOfEvent={currentTgeEvent.nextEventDate} callbackWhenTimeExpires={updateTgeStatus} />
       )}
-      {isLoading ? <TgeEventSkeleton /> : renderComponent(currentTgeEvent)}
+      {isLoading || isLoadingSaleData ? <TgeEventSkeleton /> : renderComponent(currentTgeEvent)}
     </div>
   )
 }
