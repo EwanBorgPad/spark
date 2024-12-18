@@ -126,7 +126,7 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
         UI_AMOUNT = AMOUNT_IN_TOKEN
      */
     // first we calculate deposited amount
-    const uiAmountDepositedAmount = (usersAccumulatedDeposit * Math.pow(0.1, decimals)).toFixed(decimals)
+    const uiAmountDepositedAmount = limitDecimals(usersAccumulatedDeposit * Math.pow(0.1, decimals), decimals)
     const amountDepositedInUsd = uiAmountDepositedAmount * tokenPriceInUsd
     const amountDeposited: TokenAmountModel = {
         amount: usersAccumulatedDeposit.toString(),
@@ -136,7 +136,7 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
         uiAmount: uiAmountDepositedAmount.toString()
     }
     // calculate minimum cap amount (this always stays the same because users deposit do not affect the minimum amount from the project json)
-    const uiMinAmount = (userMinCapInUsd / tokenPriceInUsd).toFixed(decimals)
+    const uiMinAmount = limitDecimals(userMinCapInUsd / tokenPriceInUsd, decimals)
     const minAmount = uiMinAmount * Math.pow(10, decimals)
     const minAmountAllowed: TokenAmountModel = {
         amount: minAmount.toString(),
@@ -146,11 +146,11 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
         uiAmount: uiMinAmount.toString()
     }
     // calculate maximum cap amount from project json
-    const uiMaxAmount = (userMaxCapInUsd / tokenPriceInUsd).toFixed(decimals)
+    const uiMaxAmount = limitDecimals(userMaxCapInUsd / tokenPriceInUsd, decimals)
     const maxAmount = uiMaxAmount * Math.pow(10, decimals)
     // calculate users allowed maximum cap with sum of previous deposits
     const allowedMaxAmount = maxAmount - usersAccumulatedDeposit
-    const allowedMaxUiAmount = (allowedMaxAmount * Math.pow(0.1, decimals)).toFixed(decimals)
+    const allowedMaxUiAmount = limitDecimals(allowedMaxAmount * Math.pow(0.1, decimals), decimals)
     const allowedMaxAmountInUsd = allowedMaxUiAmount * tokenPriceInUsd
     const maxAmountAllowed: TokenAmountModel = {
         amount: allowedMaxAmount.toString(),
@@ -169,6 +169,10 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
         maxAmountAllowed,
         startTime
     }
+}
+
+const limitDecimals = (num: number, decimals: number): number => {
+    return Number(num.toFixed(decimals))
 }
 
 export const DepositService = {
