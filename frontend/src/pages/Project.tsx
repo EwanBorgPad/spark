@@ -16,7 +16,7 @@ const Project = () => {
   const { projectData, isLoading } = useProjectDataContext()
   const { t } = useTranslation()
 
-  const isDevnet = projectData?.cluster !== "mainnet"
+  const isDevnet = projectData?.cluster === "devnet"
 
   const expandedTimeline = expandTimelineDataInfo(projectData?.info.timeline ?? [])
 
