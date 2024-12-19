@@ -96,7 +96,7 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
       tokenPriceInUsd: String(priceInUsd),
     },
     participantsCount: totalCount,
-    sellOutPercentage: (Number(totalAmountRaisedInUsd) / Number(raiseTargetInUsd)) * 100,
+    sellOutPercentage: Math.min(100, (Number(totalAmountRaisedInUsd) / Number(raiseTargetInUsd)) * 100),
     // TODO @hardcoded below
     marketCap: 50_000,
     fdv: 1_000_000,
