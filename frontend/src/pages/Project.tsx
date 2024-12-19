@@ -73,16 +73,36 @@ const Project = () => {
               <Img size="4" src={projectData?.info.chain.iconUrl} isRounded />
               <Text text={projectData?.info.chain.name} isLoading={isLoading} loadingClass="max-w-[100px]" />
             </div>
-          </div>
-          <div className="flex flex-col gap-3 md:flex-row md:gap-5">
-            <div className="flex items-center gap-2 pr-5 md:border-r-[1px] md:border-r-fg-gray-line">
-              <span className="text-fg-primary text-opacity-50">{t("origin")}</span>
-              <Text text={projectData?.info.origin} isLoading={isLoading} />
-            </div>
             <div className="flex items-center gap-2">
               <span className="text-fg-primary text-opacity-50">{t("sector")}</span>
               <Text text={projectData?.info.sector} isLoading={isLoading} />
             </div>
+          </div>
+          <div className="flex flex-col md:flex-row">
+            {projectData?.info.tokenContractAddress && (
+              <a
+                href={projectData.info.tokenContractAddress}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-2 border-r-[1px] px-5 md:border-l-[1px] md:border-x-fg-gray-line"
+              >
+                <Img size="4" src={projectData?.info.logoUrl} isRounded />
+                <Text text={`$${projectData.info.tge.projectCoin.ticker}`} isLoading={isLoading} />
+                <Icon icon="SvgExternalLink" className="opacity-50 transition-opacity group-hover:opacity-100" />
+              </a>
+            )}
+            {projectData?.info.poolContractAddress && (
+              <a
+                href={projectData.info.poolContractAddress}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-2 px-5  md:border-r-fg-gray-line"
+              >
+                <Img size="4" src={projectData?.info.logoUrl} isRounded />
+                <Text text={`$${projectData.info.tge.projectCoin.ticker}/BORG`} isLoading={isLoading} />
+                <Icon icon="SvgExternalLink" className="opacity-50 transition-opacity group-hover:opacity-100" />
+              </a>
+            )}
           </div>
         </div>
 
