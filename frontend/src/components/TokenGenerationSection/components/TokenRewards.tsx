@@ -39,10 +39,7 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
             isYourContribution && "bg-transparent",
           )}
         >
-          {/* TOP SECTION - Distributed Rewards */}
-          <div className="item-center relative flex flex-col gap-3 border-b-[1px] border-b-bd-primary px-3 py-4">
-            {/* TOP section token values */}
-            {/* <span className="w-full text-center text-sm font-normal">Liquidity Provision Rewards</span> */}
+          <div className="item-center relative flex flex-col gap-3 px-3 py-4">
             <div className="flex h-fit items-start justify-center gap-2 rounded-full text-xs font-medium text-fg-primary">
               <Img src={tokenIcon} size="4" customClass="mt-1" isRounded />
               <div className="flex flex-col items-start">
@@ -50,35 +47,19 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
                   <span className="text-base">{rewardDistribution.token}</span>
                   <span className="text-base">{tokenTicker}</span>
                 </div>
-
-                {/* total reward distribution tokens value in USD */}
                 {!isYourContribution && (
                   <span className="text-sm font-normal text-fg-secondary">{rewardDistribution.tokenInUSD}</span>
                 )}
               </div>
             </div>
-            {/* TOP section - footer */}
-            <div className="flex h-fit items-center justify-center gap-1.5 rounded-full text-xs font-normal text-fg-primary ">
-              <Icon icon="SvgChartLine" className="text-base opacity-50" />
-              <span className="opacity-50">{t("tge.linearly_paid_out")}</span>
-            </div>
 
-            {/* PLUS icon between sections */}
-            {/* <div
-              className={twMerge(
-                "absolute -bottom-[10px] left-[47%] rounded-full bg-tertiary p-[2px]",
-                isYourContribution && "bg-default",
-              )}
-            >
-              <Icon icon="SvgPlus" className="text-base text-fg-disabled opacity-50" />
-            </div> */}
-          </div>
-
-          {/* BOTTOM SECTION - Liquidity Pool */}
-          <div className="flex flex-col items-center gap-3 px-3 py-4">
-            <div className="items-star flex flex-col gap-1.5">
-              <span className="text-sm font-normal text-fg-tertiary">LP position permanently locked 🔒</span>
-              <span className="text-sm font-normal text-fg-tertiary">All LP fees burned 🔥</span>
+            <div className="flex flex-col items-center gap-1.5">
+              <div className="flex h-fit items-center justify-center gap-1.5 rounded-full text-xs font-medium text-fg-tertiary ">
+                <Icon icon="SvgChartLine" className="text-base" />
+                <span>{t("tge.linearly_paid_out")}</span>
+              </div>
+              <span className="text-xs font-medium text-fg-tertiary">🔒 LP position permanently locked </span>
+              <span className="text-xs font-medium text-fg-tertiary">🔥 All LP fees burned</span>
             </div>
           </div>
         </div>
