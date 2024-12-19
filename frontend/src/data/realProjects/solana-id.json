@@ -237,7 +237,7 @@
         }
       }
     ],
-    "finalSnapshotTimestamp": null
+    "finalSnapshotTimestamp": "2024-12-19T17:00:00Z"
   },
   "rewards": {
     "distributionType": "linear",
