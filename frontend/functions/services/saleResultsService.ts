@@ -6,11 +6,19 @@ import { getTokenData } from "./constants"
 import { exchangeService } from "./exchangeService"
 import { SaleResults } from "../../shared/models"
 
+/**
+ * raiseTarget is multiplied by this value to get corrected raise target (account for overflows)
+ * 0.99 means 1 percent LESS than the raiseTarget
+ * 1 means the same as raiseTarget
+ * 1.01 means 1 percent MORE than the raiseTarget
+ */
+const RAISE_TARGET_FACTOR = 1.01
+
 type GetSaleResultsArgs = {
   db: DrizzleD1Database
   projectId: string
 }
-const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<SaleResults | Response> => {
+const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<SaleResults> => {
   // load project
   const project = await db
     .select()
@@ -19,39 +27,31 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
     .get()
 
   if (!project)
-    return jsonResponse({ message: `Project not found (id=${projectId})!` }, 404)
+    throw new Error(`Project not found (id=${projectId})!`)
 
   const cluster = project.json.cluster
   const tokenAddress = project.json.info.raisedTokenMintAddress
 
   // load sale results
-  const resultSum = await db
+  const queryResult: { fromAddress: string, totalAmountPerUser: string }[] = await db
     .select({
-      totalAmount: sql`SUM(${depositTable.amountDeposited})`.as('totalAmount'),
-    })
-    .from(depositTable)
-    .where(eq(depositTable.projectId, projectId))
-    .get()
-
-  const resultGroupBy = await db
-    .select({
-      averageAmount: sql`AVG(${depositTable.amountDeposited})`.as('averageAmount'),
-      totalCount: sql`COUNT(${depositTable.fromAddress})`.as('totalCount'),
+      fromAddress: depositTable.fromAddress,
+      totalAmountPerUser: sql`SUM(${depositTable.amountDeposited})`.as('totalAmountPerUser'),
     })
     .from(depositTable)
     .groupBy(depositTable.fromAddress)
     .where(eq(depositTable.projectId, projectId))
-    .get()
+    .all()
 
-  const totalAmount = Number(resultSum?.totalAmount ?? 0)
-  const averageAmount = Number(resultGroupBy?.averageAmount ?? 0)
-  const totalCount = Number(resultGroupBy?.totalCount ?? 0)
+  const participantsCount = queryResult?.length ?? 0
+  const totalAmount = queryResult?.reduce((acc, curr) => acc + Number(curr.totalAmountPerUser), 0) ?? 0
+  const averageAmount = (totalAmount / participantsCount) ?? 0
 
   // prepare response
   const tokenData = getTokenData({ cluster, tokenAddress })
 
   if (!tokenData) {
-    return jsonResponse({ message: 'Unknown token!' }, 500)
+    throw new Error(`Token data not found! cluster=(${cluster}), tokenAddress=(${tokenAddress})`)
   }
 
   const exchangeData = await exchangeService.getExchangeData({
@@ -72,13 +72,13 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
   const raiseTargetInUsd = Number(project.json.info.tge.raiseTarget)
 
   if (raiseTargetInUsd < 1) {
-    return jsonResponse({ message: 'Something went wrong... ' }, 500)
+    throw new Error(`raiseTargetInUsd must be over 1!`)
   }
 
   const totalAmountRaisedInUsd = (totalAmount / (10 ** decimals)) * priceInUsd
-  const raiseTargetReached = raiseTargetInUsd <= totalAmountRaisedInUsd
+  const raiseTargetReached = (raiseTargetInUsd * RAISE_TARGET_FACTOR) <= totalAmountRaisedInUsd
 
-  const response = {
+  return {
     raiseTargetInUsd: String(raiseTargetInUsd),
     raiseTargetReached,
     totalAmountRaised: {
@@ -90,19 +90,17 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
     },
     averageDepositAmount: {
       amount: String(averageAmount),
-      decimals: decimals,
+      decimals,
       uiAmount: String(averageAmount / (10 ** decimals)),
       amountInUsd: String((averageAmount / (10 ** decimals)) * priceInUsd),
       tokenPriceInUsd: String(priceInUsd),
     },
-    participantsCount: totalCount,
-    sellOutPercentage: (Number(totalAmountRaisedInUsd) / Number(raiseTargetInUsd)) * 100,
+    sellOutPercentage: Math.min(100, (Number(totalAmountRaisedInUsd) / Number(raiseTargetInUsd)) * 100),
+    participantsCount,
     // TODO @hardcoded below
     marketCap: 50_000,
-    fdv: 1_000_000,
+    fdv: project.json.info.tge.fdv,
   }
-
-  return response
 }
 
 

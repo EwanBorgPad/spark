@@ -8,7 +8,7 @@ import { Button } from "@/components/Button/Button"
 import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"
 import { TgeWrapper } from "./Wrapper"
-import { RefObject } from "react"
+import { RefObject, useCallback } from "react"
 import { toast } from "react-toastify"
 import { BACKEND_RPC_URL, backendApi, PostCreateDepositTxArgs, PostSendDepositTransactionArgs } from "@/data/backendApi"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -19,18 +19,13 @@ import { getSplTokenBalance } from "../../../../shared/SolanaWeb3.ts"
 import LiveNowInput from "@/components/InputField/LiveNowInput.tsx"
 import { Transaction } from "@solana/web3.js"
 import { isBefore } from "date-fns/isBefore"
-import { formatDateForTimer } from "@/utils/date-helpers.ts"
+import { formatDateForTimerWithTimezone } from "@/utils/date-helpers.ts"
 import { twMerge } from "tailwind-merge"
+import DisabledBlurContainer from "./DisabledBlurContainer.tsx"
 
 type FormInputs = {
   borgInputValue: string
 }
-
-const inputButtons = [
-  { label: "25%", percentage: 25 },
-  { label: "50%", percentage: 50 },
-  { label: "100%", percentage: 100 },
-]
 
 type Props = {
   eligibilitySectionRef: RefObject<HTMLDivElement>
@@ -58,7 +53,8 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
       return (await backendApi.postCreateDepositTx(payload)).transaction
     },
     onSuccess: async () => {
-      console.log("Sucess!")
+      // eslint-disable-next-line no-console
+      console.log("Success!")
       await queryClient.invalidateQueries({ queryKey: ["getDeposits"] })
       await queryClient.invalidateQueries({ queryKey: ["getBalance"] })
     },
@@ -74,6 +70,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     },
     onSuccess: async () => {
       toast("Transaction was successful!")
+      // eslint-disable-next-line no-console
       console.log("Transaction Sent!")
       await queryClient.invalidateQueries({ queryKey: ["getDeposits"] })
       await queryClient.invalidateQueries({ queryKey: ["getBalance"] })
@@ -83,6 +80,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     onError: async () => {
       await queryClient.invalidateQueries({ queryKey: ["saleResults", projectId] })
       toast("Transaction failed!")
+      // eslint-disable-next-line no-console
       console.log("Transaction failed!")
     },
   })
@@ -100,7 +98,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     enabled: Boolean(address) && Boolean(tokenMintAddress) && Boolean(tokenMintAddress),
   })
 
-  const { data } = useQuery({
+  const { data: eligibilityStatus, isLoading: isEligibilityLoading } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
       return backendApi.getEligibilityStatus({ address, projectId })
@@ -108,22 +106,18 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
   })
-  const { data: depositStatus } = useQuery({
+  const { data: depositStatus, isLoading: isDepositStatusLoading } = useQuery({
     queryFn: () => {
-      if (!address || !projectId) return
+      if (!address || !projectId || !eligibilityStatus?.isEligible) return
       return backendApi.getDepositStatus({ address, projectId })
     },
     queryKey: ["getDepositStatus", address, projectId],
-    enabled: Boolean(address) && Boolean(projectId),
+    enabled: Boolean(address) && Boolean(projectId) && Boolean(eligibilityStatus?.isEligible),
   })
 
-  const isUserEligible = data?.isEligible
-  const tierBenefits = data?.eligibilityTier?.benefits
-  const minInvestment = tierBenefits?.minInvestment || ""
-  const maxInvestment = depositStatus?.maxAmountAllowed?.amountInUsd || ""
+  const isUserEligible = eligibilityStatus?.isEligible
+  const tierBenefits = eligibilityStatus?.eligibilityTier?.benefits
   const isEligibleTierActive = tierBenefits ? isBefore(tierBenefits.startDate, new Date()) : false
-
-  const userInvestedMaxAmount = maxInvestment && Number(maxInvestment) < 0.1
 
   const { data: exchangeData } = useQuery({
     queryFn: () =>
@@ -137,15 +131,30 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const tokenPriceInUSD = projectData?.info.tge.fixedTokenPriceInUSD || 0
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
-  const minBorgInput = borgPriceInUSD && minInvestment ? +minInvestment / borgPriceInUSD : 0
   // @TODO - resolve fix below
-  const maxBorgInput = depositStatus ? Number((Number(depositStatus.maxAmountAllowed.uiAmount) * 0.9999).toFixed(2)) : 0
+  const minBorgInput = depositStatus ? Number(Number(depositStatus.minAmountAllowed.uiAmount).toFixed(2)) : 0
+  const maxBorgInput = depositStatus ? Number(Number(depositStatus.maxAmountAllowed.uiAmount).toFixed(2)) : 0
+
+  const checkIfUserInvestedMaxAmount = useCallback(() => {
+    if (typeof maxBorgInput !== "number" || typeof maxBorgInput !== "number") {
+      return false
+    }
+    if (maxBorgInput < 0.1) return true
+    // edge case if there is a small amount left to be invested
+    if (maxBorgInput < minBorgInput) return true
+    return false
+  }, [maxBorgInput, minBorgInput])
+  const userInvestedMaxAmount = checkIfUserInvestedMaxAmount()
 
   const { handleSubmit, control, setValue, watch, clearErrors, setError } = useForm<FormInputs>({ mode: "onBlur" })
 
   const checkIfValueIsValid = (value: string) => {
+    if (!balance?.uiAmountString) return
     if (+value > maxBorgInput) {
       setError("borgInputValue", { message: `Max investment value is ${maxBorgInput.toFixed(2)} BORG` })
+      return false
+    } else if (Number(value) > Number(balance.uiAmountString)) {
+      setError("borgInputValue", { message: `Insufficient BORG Balance.` })
       return false
     } else if (+value < minBorgInput) {
       setError("borgInputValue", { message: `Min investment value is ${minBorgInput.toFixed(2)} BORG` })
@@ -182,17 +191,19 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
           projectId: projectId ?? "",
           serializedTx,
         })
+        setValue("borgInputValue", "0")
       } else {
         toast.error("Wallet error. Please try again or contact our support.")
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error)
     }
   }
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
     if (!balance || !maxBorgInput) return
-    const floatValue = Number(((balancePercentage / 100) * Number(balance.uiAmountString)).toFixed(6))
+    const floatValue = Number(((balancePercentage / 100) * Number(maxBorgInput)).toFixed(6))
     if (floatValue > maxBorgInput) {
       setValue("borgInputValue", maxBorgInput.toString(), {
         shouldValidate: true,
@@ -208,9 +219,10 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
 
   const borgCoinInput = watch("borgInputValue")
 
-  const isInputMaxAmout = +borgCoinInput === maxBorgInput
+  const isInputMaxAmount = +borgCoinInput === maxBorgInput
+  const maxAmountString = `Use Max Allowed: ${formatCurrencyAmount(+maxBorgInput, { customDecimals: 2 })}`
 
-  const scrollToWhitelistRequriements = () => {
+  const scrollToWhitelistRequirements = () => {
     const top = eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
     window.scrollBy({
       behavior: "smooth",
@@ -236,8 +248,9 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
                   rules={{ required: true }}
                   render={({ field: { value, onChange }, fieldState: { error } }) => (
                     <LiveNowInput
-                      minValue={+minInvestment}
-                      maxValue={+maxInvestment}
+                      minBorgInput={minBorgInput}
+                      maxBorgInput={maxBorgInput}
+                      disabled={userInvestedMaxAmount}
                       onChange={onChange}
                       value={value}
                       setError={setError}
@@ -253,43 +266,44 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
                 <span>BORG</span>
               </div>
             </div>
-            <div className="flex w-full flex-row-reverse justify-between">
-              {minBorgInput && maxBorgInput && (
-                <div className="grid-cols-min-max grid max-h-[36px] gap-x-1.5 gap-y-0 text-xs leading-tight text-fg-tertiary/60">
-                  <span className="text-nowrap">Min:</span>{" "}
-                  <div className="flex justify-end">
+            <div className="flex w-full flex-row justify-between">
+              {!userInvestedMaxAmount && !isDepositStatusLoading && (
+                <div className="flex items-center gap-2 text-xs leading-tight text-fg-tertiary/60">
+                  {/* <span className={twMerge("text-nowrap", isInputMaxAmount ? "font-bold text-white" : "")}>Max: </span>{" "} */}
+                  <Button
+                    key={100}
+                    size="xs"
+                    color="secondary"
+                    btnText={maxAmountString}
+                    className={twMerge("h-[24px] px-2", isInputMaxAmount ? "border-white" : "")}
+                    textClassName={twMerge(
+                      "text-[12px] leading-none text-fg-tertiary font-normal",
+                      isInputMaxAmount ? "text-white" : "",
+                    )}
+                    onClick={() => clickProvideLiquidityBtn(100)}
+                  />
+                  {/* Max test */}
+                  {/* <div className="flex items-center justify-end">
+                    <span className={"text-nowrap"}>
+                      {formatCurrencyAmount(+maxBorgInput, { customDecimals: 2 })} BORG
+                    </span>
+                  </div> */}
+                  {/* <span className="text-nowrap">Min:</span>{" "}
+                  <div className="flex items-center justify-end">
                     <span className="text-nowrap ">
                       {formatCurrencyAmount(+minBorgInput, { customDecimals: 2 })} BORG
                     </span>
-                  </div>
-                  <span className={twMerge("text-nowrap", isInputMaxAmout ? "font-bold text-white" : "")}>Max: </span>{" "}
-                  <div className="flex justify-end">
-                    <span className={twMerge("text-nowrap", isInputMaxAmout ? "font-bold text-white" : "")}>
-                      {formatCurrencyAmount(+maxBorgInput, { customDecimals: 2 })} BORG
-                    </span>
-                  </div>
+                  </div> */}
                 </div>
               )}
               {balance !== null && (
-                <div className="flex w-full flex-col items-start justify-between gap-1">
+                <div className="flex w-full flex-[1] flex-col items-end justify-end gap-1">
                   <p className="flex gap-1 text-left text-xs opacity-50">
                     <span className="pr-1">{t("tge.balance")}:</span>
                     <span className="">{formatCurrencyAmount(Number(balance?.uiAmountString))}</span>
                     <span>{" BORG"}</span>
                   </p>
-                  <div className="flex items-center gap-2">
-                    {inputButtons.map((btn) => (
-                      <Button
-                        key={btn.percentage}
-                        size="xs"
-                        color="secondary"
-                        btnText={btn.label}
-                        className="h-[24px] px-1"
-                        textClassName="text-[12px] leading-none text-fg-tertiary font-normal"
-                        onClick={() => clickProvideLiquidityBtn(btn.percentage)}
-                      />
-                    ))}
-                  </div>
+                  <div className="flex items-center gap-2"></div>
                 </div>
               )}
             </div>
@@ -331,44 +345,46 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
           )}
         </div>
       </form>
-      {!isUserEligible && (
-        <div className="absolute bottom-0 left-0 right-0 top-10 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
+
+      {/* @TODO - make this better, less repetitive */}
+      {/* Blur component if user is not eligible (not whitelisted) */}
+      {!isUserEligible && !isEligibilityLoading && (
+        <DisabledBlurContainer>
           <div className="flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
             <span className="text-fg-error-primary">Your Wallet was not whitelisted for this deal</span>
             <Button
-              onClick={scrollToWhitelistRequriements}
+              onClick={scrollToWhitelistRequirements}
               size="md"
               color="plain"
               btnText="See Whitelist Requirements"
               className="text-sm font-normal"
             ></Button>
           </div>
-        </div>
+        </DisabledBlurContainer>
       )}
 
-      {/* If user's tier is not active yet, blur component and leave message */}
-      {!isEligibleTierActive && (
-        <div className="absolute bottom-0 left-0 right-0 top-0 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
-          <div className="mt-[-40px] flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
-            <div className="py-2 text-sm font-normal text-fg-primary">
+      {/* Blur component if user's tier is not active yet, blur component and leave message */}
+      {!isEligibleTierActive && !isEligibilityLoading && eligibilityStatus?.isEligible && (
+        <DisabledBlurContainer>
+          <div className="flex flex-col items-center py-2 text-sm font-normal text-fg-primary">
+            <p>
               <span onClick={scrollToTiers} className="cursor-pointer underline">
                 Your Tier
               </span>
-              {" Opens on "}
-              <span>{tierBenefits && formatDateForTimer(tierBenefits.startDate)}</span>
-            </div>
+              <span>{" opens on: "}</span>
+            </p>
+            <span>{tierBenefits && formatDateForTimerWithTimezone(tierBenefits.startDate)}</span>
           </div>
-        </div>
+        </DisabledBlurContainer>
       )}
 
-      {userInvestedMaxAmount && (
-        <div className="absolute bottom-0 left-0 right-0 top-0 z-10 flex w-full flex-col items-center justify-center rounded-3xl bg-default/20 backdrop-blur-sm">
-          <div className="mt-[-40px] flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
-            <div className="py-2 text-sm font-normal text-fg-primary">
-              <span>You have invested max amount</span>
-            </div>
+      {/* Blur component if user already invested max amount  */}
+      {userInvestedMaxAmount && !isEligibilityLoading && eligibilityStatus?.isEligible && (
+        <DisabledBlurContainer>
+          <div className="py-2 text-sm font-normal text-fg-primary">
+            <span>You have invested max amount</span>
           </div>
-        </div>
+        </DisabledBlurContainer>
       )}
     </TgeWrapper.Inner>
   )

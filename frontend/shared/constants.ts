@@ -15,10 +15,10 @@ import { Commitment } from "./SolanaWeb3.ts"
 export const COMMITMENT_LEVEL = "finalized" satisfies Commitment
 /**
  * Priority fee for all transactions.
- * ATM hardcoded to 100k micro lamports.
+ * ATM hardcoded to 200k micro lamports.
  * In the future, refactor to use Helius getPriorityFeeEstimate API https://docs.helius.dev/solana-apis/priority-fee-api
  */
-export const PRIORITY_FEE_MICRO_LAMPORTS = 100_000
+export const PRIORITY_FEE_MICRO_LAMPORTS = 200_000
 /**
  * Token Program on Solana https://spl.solana.com/token
  */

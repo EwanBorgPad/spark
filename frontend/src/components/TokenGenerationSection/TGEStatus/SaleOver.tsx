@@ -82,9 +82,12 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
 
           <SaleOverResults />
 
-          <div className="w-full max-w-[400px]" data-theme="dark">
-            {tweetId ? <Tweet id={tweetId} /> : <TweetNotFound />}
-          </div>
+          {tweetId && (
+            <div className="w-full max-w-[400px]" data-theme="dark">
+              <Tweet id={tweetId} />
+              {/* {tweetId ? <Tweet id={tweetId} /> : <TweetNotFound />} */}
+            </div>
+          )}
         </div>
       </div>
 
@@ -110,9 +113,11 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
               <section className={sectionClass}>
                 <YourContribution />
               </section>
-              <section ref={rewardsRef} className={twMerge(sectionClass, "mt-7 gap-4")}>
-                <Rewards />
-              </section>
+              {hasDistributionStarted && (
+                <section ref={rewardsRef} className={twMerge(sectionClass, "mt-7 gap-4")}>
+                  <Rewards />
+                </section>
+              )}
             </>
           ) : (
             <div className="z-[1] w-full max-w-[400px] rounded-lg border border-bd-primary bg-secondary px-4 py-3 text-sm opacity-60">

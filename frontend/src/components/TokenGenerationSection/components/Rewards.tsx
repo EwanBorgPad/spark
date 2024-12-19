@@ -41,7 +41,7 @@ const Rewards = () => {
   }
 
   const currentMoment = new Date()
-  const nextScheduledPayment = myRewardsResponse.rewards.payoutSchedule.find(
+  const nextScheduledPayment = myRewardsResponse?.rewards.payoutSchedule.find(
     (payment) => !payment.isClaimed && isBefore(currentMoment, payment.date),
   )
 
@@ -57,13 +57,15 @@ const Rewards = () => {
 
   const btnText = `Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount)} ${ticker}`
 
+  const claimUrl = projectData?.info.claimUrl
+
   return (
     <>
       <Divider icon="SvgMedal" />
       <div className="mb-7 flex w-full flex-col items-center gap-1">
         <h2 className="text-4xl font-semibold">{t("sale_over.rewards")}</h2>
         {rewardDistributionDate && (
-          <p className="text-center text-sm opacity-60">{`Monthly payments need to be Claimed manually. Liquidity pool will become accessible on ${formatDateForDisplay(rewardDistributionDate)}.`}</p>
+          <p className="text-center text-sm opacity-60">{`Monthly payments need to be Claimed manually. Distribution of rewards will start from ${formatDateForDisplay(rewardDistributionDate)}.`}</p>
         )}
         {/* <span className="cursor-pointer text-center text-sm underline opacity-60">
           {t("sale_over.learn_more_about")}
@@ -77,15 +79,16 @@ const Rewards = () => {
               endOfEvent={new Date(nextScheduledPayment.date)}
             />
             <div className="w-full px-4 pb-6">
-              {/* TODO @hardcoded claim phase - hardcoded claim button to be disabled */}
               {nextScheduledPayment && (
-                <a
-                  href="https://app.streamflow.finance/airdrops/solana/mainnet/8sUnkiByzrtE7MMNKp5dUwgwxj8fn2kcgbQxS7ZQqg33"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
-                </a>
+                claimUrl
+                  ? <a
+                    href={claimUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
+                  </a>
+                  : <Button btnText={btnText} size="lg" disabled={true} className="w-full py-3 font-normal" />
               )}
             </div>
           </>
@@ -96,7 +99,7 @@ const Rewards = () => {
           </div>
         )}
 
-        {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
+        {myRewardsResponse?.rewards.hasRewardsDistributionStarted && (
           <>
             <hr className="w-full max-w-[calc(100%-32px)] border-bd-primary" />
             <div className="flex w-full flex-col gap-2.5 p-4 pb-7">
@@ -123,7 +126,7 @@ const Rewards = () => {
           </>
         )}
       </TgeWrapper>
-      {myRewardsResponse.rewards.hasRewardsDistributionStarted && (
+      {myRewardsResponse?.rewards.hasRewardsDistributionStarted && (
         <ShowPayoutSchedule
           ticker={ticker}
           tokenIconUrl={iconUrl ?? ""}

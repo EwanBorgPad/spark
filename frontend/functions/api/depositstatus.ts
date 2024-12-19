@@ -1,7 +1,7 @@
 import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 import { DepositService } from "../services/depositService"
 import { ProjectService } from "../services/projectService"
-import { jsonResponse } from "./cfPagesFunctionsUtils"
+import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 
 type ENV = {
     DB: D1Database
@@ -36,7 +36,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
         return jsonResponse(depositStatus, 200)
     } catch (e) {
-        await reportError(ctx.env.DB)
+        await reportError(ctx.env.DB, e)
         return jsonResponse({ message: "Something went wrong..." }, 500)
     }
 }

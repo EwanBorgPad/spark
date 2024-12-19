@@ -131,14 +131,24 @@ const Header = () => {
 
           {<NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />}
 
-          {!showHamburgerMenu &&
-            isWalletShown &&
-            (walletState === "CONNECTED" ? (
-              <WalletDropdown className="animate-fade-in" />
-            ) : (
-              <ConnectButton btnClassName="animate-fade-in" />
-            ))}
-          {!isWalletShown && <div className="hidden w-[138px] md:block" />}
+          <div className="flex items-center gap-4">
+            <a
+              className="hidden justify-center md:flex"
+              href="https://jup.ag/swap/SOL-BORG"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button size="xs" color="secondary" btnText="Buy $BORG" className="w-fit py-1.5" />
+            </a>
+            {!showHamburgerMenu &&
+              isWalletShown &&
+              (walletState === "CONNECTED" ? (
+                <WalletDropdown className="animate-fade-in" />
+              ) : (
+                <ConnectButton btnClassName="animate-fade-in" />
+              ))}
+            {!isWalletShown && <div className="hidden w-[138px] md:block" />}
+          </div>
         </div>
         <Button.Icon
           icon={showHamburgerMenu ? "SvgX" : "SvgHamburger"}
@@ -156,7 +166,14 @@ const Header = () => {
         >
           <NavigationBar itemClickedCallback={closeMenu} />
           <img src={hamburgerMenuBg} className="absolute bottom-0 left-0 right-0 z-[-1]" />
-
+          <a
+            className="flex w-full justify-start pl-5"
+            href="https://jup.ag/swap/SOL-BORG"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button size="xs" color="secondary" btnText="Buy $BORG" className="w-fit py-1.5" />
+          </a>
           {isWalletShown && (
             <div className="z-[1] px-5 pt-4">
               {walletState === "CONNECTED" ? <WalletDropdown /> : <ConnectButton btnClassName="w-full" size="md" />}
