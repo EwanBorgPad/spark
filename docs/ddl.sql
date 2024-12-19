@@ -71,3 +71,12 @@ CREATE TABLE claim (
     project_id TEXT NOT NULL,
     json JSONB NOT NULL DEFAULT '{}'
 );
+
+-- migration: eligibility status snapshot
+CREATE TABLE eligibility_status_snapshot (
+    address TEXT NOT NULL,
+    project_id TEXT NOT NULL,
+    created_at DATE NOT NULL,
+    eligibility_status JSONB NOT NULL,
+    PRIMARY KEY (address, project_id)
+)
