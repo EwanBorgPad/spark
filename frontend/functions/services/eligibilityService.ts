@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm"
 import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } from "../../shared/eligibilityModel"
 import { followerTable, projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
 import { getTokenHoldingsMap, isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
+import { SnapshotService } from "./snapshotService"
 
 /**
  * List of mandatory compliances.
@@ -44,6 +45,9 @@ type GetEligibilityStatusArgs = {
  * @param rpcUrl
  */
 const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligibilityStatusArgs): Promise<EligibilityStatus> => {
+  const snapshot = await SnapshotService.getSnapshot({ db, address, projectId })
+  if (snapshot) return snapshot
+
   let user = await db
     .select()
     .from(userTable)

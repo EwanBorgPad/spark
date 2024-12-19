@@ -19,9 +19,8 @@ import { getSplTokenBalance } from "../../../../shared/SolanaWeb3.ts"
 import LiveNowInput from "@/components/InputField/LiveNowInput.tsx"
 import { Transaction } from "@solana/web3.js"
 import { isBefore } from "date-fns/isBefore"
-import { formatDateForTimerWithTimezone } from "@/utils/date-helpers.ts"
 import { twMerge } from "tailwind-merge"
-import DisabledBlurContainer from "./DisabledBlurContainer.tsx"
+import DisabledContainer from "./DisabledContainer.tsx"
 
 type FormInputs = {
   borgInputValue: string
@@ -30,6 +29,10 @@ type FormInputs = {
 type Props = {
   eligibilitySectionRef: RefObject<HTMLDivElement>
   scrollToTiers: () => void
+}
+
+const truncateToSecondDecimal = (number: number) => {
+  return Math.trunc(number * 100) / 100
 }
 
 // input data for "getExchange"
@@ -69,7 +72,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
       return await backendApi.postSendDepositTransaction(payload)
     },
     onSuccess: async () => {
-      toast("Transaction was successful!")
+      toast.success("Transaction was successful!")
       // eslint-disable-next-line no-console
       console.log("Transaction Sent!")
       await queryClient.invalidateQueries({ queryKey: ["getDeposits"] })
@@ -79,7 +82,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     },
     onError: async () => {
       await queryClient.invalidateQueries({ queryKey: ["saleResults", projectId] })
-      toast("Transaction failed!")
+      toast.error("Transaction failed!")
       // eslint-disable-next-line no-console
       console.log("Transaction failed!")
     },
@@ -133,7 +136,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
 
   // @TODO - resolve fix below
   const minBorgInput = depositStatus ? Number(Number(depositStatus.minAmountAllowed.uiAmount).toFixed(2)) : 0
-  const maxBorgInput = depositStatus ? Number(Number(depositStatus.maxAmountAllowed.uiAmount).toFixed(2)) : 0
+  const maxBorgInput = depositStatus ? truncateToSecondDecimal(Number(depositStatus.maxAmountAllowed.uiAmount)) : 0
 
   const checkIfUserInvestedMaxAmount = useCallback(() => {
     if (typeof maxBorgInput !== "number" || typeof maxBorgInput !== "number") {
@@ -346,46 +349,15 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
         </div>
       </form>
 
-      {/* @TODO - make this better, less repetitive */}
-      {/* Blur component if user is not eligible (not whitelisted) */}
-      {!isUserEligible && !isEligibilityLoading && (
-        <DisabledBlurContainer>
-          <div className="flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
-            <span className="text-fg-error-primary">Your Wallet was not whitelisted for this deal</span>
-            <Button
-              onClick={scrollToWhitelistRequirements}
-              size="md"
-              color="plain"
-              btnText="See Whitelist Requirements"
-              className="text-sm font-normal"
-            ></Button>
-          </div>
-        </DisabledBlurContainer>
-      )}
-
-      {/* Blur component if user's tier is not active yet, blur component and leave message */}
-      {!isEligibleTierActive && !isEligibilityLoading && eligibilityStatus?.isEligible && (
-        <DisabledBlurContainer>
-          <div className="flex flex-col items-center py-2 text-sm font-normal text-fg-primary">
-            <p>
-              <span onClick={scrollToTiers} className="cursor-pointer underline">
-                Your Tier
-              </span>
-              <span>{" opens on: "}</span>
-            </p>
-            <span>{tierBenefits && formatDateForTimerWithTimezone(tierBenefits.startDate)}</span>
-          </div>
-        </DisabledBlurContainer>
-      )}
-
-      {/* Blur component if user already invested max amount  */}
-      {userInvestedMaxAmount && !isEligibilityLoading && eligibilityStatus?.isEligible && (
-        <DisabledBlurContainer>
-          <div className="py-2 text-sm font-normal text-fg-primary">
-            <span>You have invested max amount</span>
-          </div>
-        </DisabledBlurContainer>
-      )}
+      <DisabledContainer
+        isEligibilityLoading={isEligibilityLoading}
+        isEligibleTierActive={isEligibleTierActive}
+        isUserEligible={isUserEligible}
+        scrollToTiers={scrollToTiers}
+        scrollToWhitelistRequirements={scrollToWhitelistRequirements}
+        tierBenefits={tierBenefits}
+        userInvestedMaxAmount={userInvestedMaxAmount}
+      />
     </TgeWrapper.Inner>
   )
 }
