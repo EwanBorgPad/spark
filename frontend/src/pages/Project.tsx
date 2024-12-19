@@ -79,9 +79,9 @@ const Project = () => {
             </div>
           </div>
           <div className="flex flex-col md:flex-row">
-            {projectData?.info.tokenContractAddress && (
+            {projectData?.info.tokenContractUrl && (
               <a
-                href={projectData.info.tokenContractAddress}
+                href={projectData.info.tokenContractUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-2 border-r-[1px] px-5 md:border-l-[1px] md:border-x-fg-gray-line"
@@ -91,9 +91,9 @@ const Project = () => {
                 <Icon icon="SvgExternalLink" className="opacity-50 transition-opacity group-hover:opacity-100" />
               </a>
             )}
-            {projectData?.info.poolContractAddress && (
+            {projectData?.info.poolContractUrl && (
               <a
-                href={projectData.info.poolContractAddress}
+                href={projectData.info.poolContractUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-2 px-5  md:border-r-fg-gray-line"

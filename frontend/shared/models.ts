@@ -87,8 +87,8 @@ export const infoSchema = z.object({
     socials: z.array(externalUrlSchema()),
   }),
   projectLinks: z.array(externalUrlSchema()),
-  tokenContractAddress: z.string().optional(),
-  poolContractAddress: z.string().optional(),
+  tokenContractUrl: z.string().optional(),
+  poolContractUrl: z.string().optional(),
 
   ///// project token info /////
   // TODO deprecate this
