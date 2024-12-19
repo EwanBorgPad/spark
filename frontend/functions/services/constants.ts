@@ -27,6 +27,11 @@ const TOKEN_DATA_MAP: TokenDataMap = {
     'BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX': {
       decimals: 5,
       coinGeckoName: '',
+    },
+    // solid https://explorer.solana.com/address/SoLiDMWBct5TurG1LNcocemBK7QmTn4P33GSrRrcd2n
+    'SoLiDMWBct5TurG1LNcocemBK7QmTn4P33GSrRrcd2n': {
+      decimals: 9,
+      coinGeckoName: '',
     }
   }
 }
