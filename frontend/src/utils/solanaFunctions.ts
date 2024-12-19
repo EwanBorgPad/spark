@@ -24,9 +24,9 @@ type SignatureSubscribeResult = {
  * @param txId
  */
 export async function signatureSubscribe(connection: Connection, txId: string): Promise<SignatureSubscribeResult> {
-  const delayTime = 3_000
-  // TODO test delays this high
-  const delayLimit = 90_000
+  const delayTime = 3_000    //   3 seconds
+  // after 3 minutes we dismiss the transaction and return error
+  const delayLimit = 180_000 // 180 seconds = 3 minutes
 
   let delayCounter = 0
 
