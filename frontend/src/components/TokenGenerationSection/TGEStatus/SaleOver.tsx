@@ -132,7 +132,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
           {/* @TODO - find better solution for this */}
           {/* CTA FOR MOEMATE */}
           <section className="mt-10 flex w-full max-w-[400px] flex-col items-center gap-6">
-            <h3 className="z-[1] px-4 text-[32px] font-semibold  leading-tight">Upcoming LBP</h3>
+            <h3 className="z-[1] px-4 text-center text-3xl font-semibold  leading-tight">Upcoming Launch Pool</h3>
             <Link to={`https://borgpad.com/launch-pools/moemate`} className="w-full">
               <div className="w-full rounded-[13px] bg-[#abff73]/25 p-[1px]">
                 <div className="flex h-[40px] items-center justify-between gap-2 rounded-xl bg-[#16231e] p-3">
