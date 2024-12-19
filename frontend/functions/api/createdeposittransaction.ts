@@ -15,6 +15,7 @@ import { drizzle } from "drizzle-orm/d1"
 import { DepositService, DepositStatus } from "../services/depositService"
 import { SaleResultsService } from "../services/saleResultsService"
 import { SaleResults } from "../../shared/models"
+import { SnapshotService } from "../services/snapshotService"
 
 type ENV = {
     DB: D1Database,
@@ -83,7 +84,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             walletAddress: userWalletAddress
         })
 
-        const { isEligible } = await EligibilityService.getEligibilityStatus({
+        const eligibilityStatus = await EligibilityService.getEligibilityStatus({
             address: userWalletAddress,
             db: drizzle(db, { logger: true }),
             projectId,
@@ -94,11 +95,13 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         const saleResults = await SaleResultsService.getSaleResults({ db: drizzle(db, { logger: true }), projectId })
 
-        const validationError = await validateTx(isEligible, depositStatus, tokenAmount, endDate, saleResults)
+        const validationError = await validateTx(eligibilityStatus.isEligible, depositStatus, tokenAmount, endDate, saleResults)
         if (validationError) return validationError
 
         // create transfer and mint nft instruction
         const tx = await createUserDepositTransaction(userWalletAddress, receivingAddress, tokenMint, tokenAmount, connection, privateKey)
+
+        await SnapshotService.createSnapshot({ db, address: userWalletAddress, projectId, eligibilityStatus })
 
         return jsonResponse({ transaction: tx }, 200)
     } catch (e) {

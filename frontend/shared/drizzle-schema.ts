@@ -70,6 +70,16 @@ export const claimTable = sqliteTable('claim', {
   json: text({ mode: 'json' }).$type<{}>().notNull()
 })
 
+export const eligibilityStatusSnapshotTable = sqliteTable('eligibility_status_snapshot', {
+  address: text().notNull(),
+  projectId: text('project_id').notNull(),
+  createdAt: text('created_at').notNull(),
+  eligibilityStatus: text('eligibility_status', { mode: 'json' }).notNull(),
+}, (table) => {
+  return {
+    pk: primaryKey({ columns: [table.address, table.projectId] }),
+  };
+})
 // const db = drizzle()
 // db
 //   .select()
