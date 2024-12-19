@@ -134,7 +134,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
 
   // @TODO - resolve fix below
   const minBorgInput = depositStatus ? Number(Number(depositStatus.minAmountAllowed.uiAmount).toFixed(2)) : 0
-  const maxBorgInput = depositStatus ? Number(Number(depositStatus.maxAmountAllowed.uiAmount).toFixed(2)) : 0
+  const maxBorgInput = depositStatus ? Number((Number(depositStatus.maxAmountAllowed.uiAmount) * 0.999).toFixed(2)) : 0
 
   const checkIfUserInvestedMaxAmount = useCallback(() => {
     if (typeof maxBorgInput !== "number" || typeof maxBorgInput !== "number") {
