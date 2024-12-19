@@ -1,4 +1,4 @@
-import { any, z } from "zod"
+import { z } from "zod"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { drizzle } from "drizzle-orm/d1"
 import { Connection, Keypair, Transaction } from "@solana/web3.js"
@@ -12,6 +12,7 @@ import { exchangeService } from "../services/exchangeService"
 import { getTokenData } from "../services/constants"
 import { Buffer } from "buffer"
 import * as bs58 from "bs58"
+import { SaleResultsService } from "../services/saleResultsService"
 
 type ENV = {
     DB: D1Database,
@@ -51,14 +52,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             return jsonResponse({ message: 'Project not found!' }, 404)
         }
 
-        // TODO @hardcoded
-        if (project.info.id === 'borgy') {
-            return jsonResponse({ message: 'Target has been reached!' }, 409)
-        }
-
-        // TODO @hardcoded
-        if (project.info.id === 'borgy') {
-            return jsonResponse({ message: 'Target has been reached!' }, 409)
+        // validate raise target
+        const saleResults = await SaleResultsService.getSaleResults({ db: drizzleDb, projectId: data.projectId })
+        if (saleResults.raiseTargetReached) {
+            return jsonResponse({ message: 'Raise target has been reached!' }, 409)
         }
 
         const cluster = project.cluster as ('mainnet'|'devnet')
@@ -77,11 +74,20 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         console.log("Finished sending the transaction...")
 
         console.log('Signature status subscribing...')
-        const status = await signatureSubscribe(connection, txId)
-        console.log(`Signature status finished: ${status}.`)
+        const transactionStatus = await signatureSubscribe(connection, txId)
+        console.log(`Signature status finished: ${transactionStatus}.`)
 
-        const explorerLink = `https://explorer.solana.com/tx/${txId}?cluster=${cluster}`
-        console.log(explorerLink)
+        // handle timeout from signature status fetch
+        if (transactionStatus.status === 'error' ) {
+            const message = `Transaction error! code=(${transactionStatus.errorCode}), txId=(${transactionStatus.txId})`
+            throw new Error(message)
+        }
+
+        // handle errors from chain
+        if (transactionStatus.err) {
+            const message = JSON.stringify(transactionStatus.err)
+            throw new Error(`Transaction error! err=(${message}), txId=(${transactionStatus.txId})`)
+        }
 
         const heliusApiKey = SOLANA_RPC_URL.split('api-key=')[1]    // extract helius api key
 
@@ -120,20 +126,19 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             projectId: data.projectId,
             rpcUrl: getRpcUrlForCluster(SOLANA_RPC_URL, cluster),
         })
-
         const eligibilityTier = eligibilityStatus.eligibilityTier
+        const tierId = eligibilityTier ? eligibilityTier.id : 'unknown'
 
-        if (!eligibilityTier) {
-            return jsonResponse({ message: 'Not eligible!' }, 403)
-        }
-
-        const tierId = eligibilityTier.id
-
-        // TODO @eligibilityChecks
-        // TODO important to add checks here in order to not over-invest
+        //// TODO @eligibilitySnapshot - users might fall out of eligibility tier after they invest (they have less borg now)
+        // if (!eligibilityTier) {
+        //     return jsonResponse({ message: 'Not eligible!' }, 403)
+        // }
 
         // update db
-        if (status === 'confirmed') {
+        if (
+          transactionStatus.confirmationStatus &&
+          ['confirmed', 'finalized'].includes(transactionStatus.confirmationStatus)
+        ) {
             await DepositService.createUserDeposit({
                 db,
                 amount: amountInLamports.toString(),
@@ -149,6 +154,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
                     uiAmount: tokenAmount,
                     decimalMultiplier: decimals.toString(),
                     tokensCalculation,
+                    transactionStatus,
                 },
             })
         }
@@ -193,7 +199,6 @@ async function extractTransactionData(txId: string, heliusApiKey: string, cluste
     const res = await response.json() as any
     const dataObject = res[0]
     // user is always the fee payer for the transaction
-    console.log(dataObject)
     const userWalletAddress = dataObject.feePayer
     const tokenTransfers = dataObject.tokenTransfers
     // @ts-expect-error typing
