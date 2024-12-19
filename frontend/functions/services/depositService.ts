@@ -24,13 +24,14 @@ type CreateUserDepositArgs = {
                 // TODO rename raisedToken launchedToken
                 // TODO align USD/Usd capitalizations
                 borg: string
-                borgRaw: string
+                borgRaw: number | null
                 borgInUSD: string
                 token: string
-                tokenRaw: string
+                tokenRaw: number | null
                 tokenInUSD: string
             }
         }
+        transactionStatus: unknown
     }
 }
 

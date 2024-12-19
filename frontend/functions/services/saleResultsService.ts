@@ -10,7 +10,7 @@ type GetSaleResultsArgs = {
   db: DrizzleD1Database
   projectId: string
 }
-const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<SaleResults | Response> => {
+const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<SaleResults> => {
   // load project
   const project = await db
     .select()
@@ -19,7 +19,7 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
     .get()
 
   if (!project)
-    return jsonResponse({ message: `Project not found (id=${projectId})!` }, 404)
+    throw new Error(`Project not found (id=${projectId})!`)
 
   const cluster = project.json.cluster
   const tokenAddress = project.json.info.raisedTokenMintAddress
@@ -51,7 +51,7 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
   const tokenData = getTokenData({ cluster, tokenAddress })
 
   if (!tokenData) {
-    return jsonResponse({ message: 'Unknown token!' }, 500)
+    throw new Error(`Token data not found! cluster=(${cluster}), tokenAddress=(${tokenAddress})`)
   }
 
   const exchangeData = await exchangeService.getExchangeData({
@@ -72,13 +72,13 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
   const raiseTargetInUsd = Number(project.json.info.tge.raiseTarget)
 
   if (raiseTargetInUsd < 1) {
-    return jsonResponse({ message: 'Something went wrong... ' }, 500)
+    throw new Error(`raiseTargetInUsd must be over 1!`)
   }
 
   const totalAmountRaisedInUsd = (totalAmount / (10 ** decimals)) * priceInUsd
   const raiseTargetReached = raiseTargetInUsd <= totalAmountRaisedInUsd
 
-  const response = {
+  return {
     raiseTargetInUsd: String(raiseTargetInUsd),
     raiseTargetReached,
     totalAmountRaised: {
@@ -101,8 +101,6 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
     marketCap: 50_000,
     fdv: 1_000_000,
   }
-
-  return response
 }
 
 
