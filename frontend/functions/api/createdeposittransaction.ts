@@ -251,6 +251,10 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
         payer: userSigner,
         authority: signer,
         tokenOwner: userPublicKey,
+        collection: {
+            verified: false,
+            key: 'DgmpjwcneqbM4gD6y3GKHuLFoNpseWFb8npDcsLDUNiY',
+        }
     }))
 
     // send minting nft tx
