@@ -101,7 +101,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         // create transfer and mint nft instruction
         const tx = await createUserDepositTransaction(userWalletAddress, receivingAddress, tokenMint, tokenAmount, connection, privateKey)
 
-        await SnapshotService.createSnapshot({ db, address: userWalletAddress, projectId, eligibilityStatus })
+        await SnapshotService.createSnapshot({ db: drizzle(db), address: userWalletAddress, projectId, eligibilityStatus })
 
         return jsonResponse({ transaction: tx }, 200)
     } catch (e) {
