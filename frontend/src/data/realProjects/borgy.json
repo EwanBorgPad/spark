@@ -62,6 +62,8 @@
     "cliffDuration": 0,
     "vestingDuration": 0,
 
+    "claimUrl": "https://app.streamflow.finance/airdrops/solana/mainnet/8sUnkiByzrtE7MMNKp5dUwgwxj8fn2kcgbQxS7ZQqg33",
+
     "tge": {
       "raiseTarget": 50000,
       "projectCoin": {

@@ -57,6 +57,8 @@ const Rewards = () => {
 
   const btnText = `Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount)} ${ticker}`
 
+  const claimUrl = projectData?.info.claimUrl
+
   return (
     <>
       <Divider icon="SvgMedal" />
@@ -77,15 +79,16 @@ const Rewards = () => {
               endOfEvent={new Date(nextScheduledPayment.date)}
             />
             <div className="w-full px-4 pb-6">
-              {/* TODO @hardcoded claim phase - hardcoded claim button to be disabled */}
               {nextScheduledPayment && (
-                <a
-                  href="https://app.streamflow.finance/airdrops/solana/mainnet/8sUnkiByzrtE7MMNKp5dUwgwxj8fn2kcgbQxS7ZQqg33"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
-                </a>
+                claimUrl
+                  ? <a
+                    href={claimUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
+                  </a>
+                  : <Button btnText={btnText} size="lg" disabled={true} className="w-full py-3 font-normal" />
               )}
             </div>
           </>
