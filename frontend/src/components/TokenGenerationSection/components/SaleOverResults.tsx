@@ -43,13 +43,12 @@ const SaleOverResults = () => {
         <Text text={selloutPercentage} className="text-base leading-7 text-fg-primary" isLoading={isLoading} />
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
-        {/* @TODO - add participants Count */}
-        {/* <span className="text-sm text-fg-tertiary">{t("sale_over.participants")}</span>
+        <span className="text-sm text-fg-tertiary">{t("sale_over.participants")}</span>
         <Text
           text={saleData?.participantsCount}
           isLoading={isLoading}
           className="text-base leading-7 text-fg-primary"
-        /> */}
+        />
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("sale_over.average_invested_amount")}</span>
