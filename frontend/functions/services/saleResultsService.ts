@@ -63,6 +63,8 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
   // TODO @hardcoded
   if (project.id === 'borgy') {
     exchangeData.currentPrice = 0.341783
+  } else if (project.id === 'solana-id') {
+    exchangeData.currentPrice = 0.362331
   }
 
   const priceInUsd = exchangeData.currentPrice
