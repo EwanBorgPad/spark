@@ -19,9 +19,7 @@ import { getSplTokenBalance } from "../../../../shared/SolanaWeb3.ts"
 import LiveNowInput from "@/components/InputField/LiveNowInput.tsx"
 import { Transaction } from "@solana/web3.js"
 import { isBefore } from "date-fns/isBefore"
-import { formatDateForTimerWithTimezone } from "@/utils/date-helpers.ts"
 import { twMerge } from "tailwind-merge"
-import DisabledBlurContainer from "./DisabledBlurContainer.tsx"
 import DisabledContainer from "./DisabledContainer.tsx"
 
 type FormInputs = {
@@ -31,6 +29,10 @@ type FormInputs = {
 type Props = {
   eligibilitySectionRef: RefObject<HTMLDivElement>
   scrollToTiers: () => void
+}
+
+const truncateToSecondDecimal = (number: number) => {
+  return Math.trunc(number * 100) / 100
 }
 
 // input data for "getExchange"
@@ -134,7 +136,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
 
   // @TODO - resolve fix below
   const minBorgInput = depositStatus ? Number(Number(depositStatus.minAmountAllowed.uiAmount).toFixed(2)) : 0
-  const maxBorgInput = depositStatus ? Number((Number(depositStatus.maxAmountAllowed.uiAmount) * 0.999).toFixed(2)) : 0
+  const maxBorgInput = depositStatus ? truncateToSecondDecimal(Number(depositStatus.maxAmountAllowed.uiAmount)) : 0
 
   const checkIfUserInvestedMaxAmount = useCallback(() => {
     if (typeof maxBorgInput !== "number" || typeof maxBorgInput !== "number") {
