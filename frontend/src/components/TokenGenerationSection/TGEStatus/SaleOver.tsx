@@ -17,6 +17,10 @@ import SaleOverResults from "../components/SaleOverResults"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi"
+import { Link } from "react-router-dom"
+import Img from "@/components/Image/Img"
+import { Icon } from "@/components/Icon/Icon"
+import Text from "@/components/Text"
 
 type LiveProps = {
   eventData: ExpandedTimelineEventType
@@ -124,6 +128,34 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
               {t("sale_over.wallet_didnt_contribute")}
             </div>
           )}
+
+          {/* @TODO - find better solution for this */}
+          {/* CTA FOR MOEMATE */}
+          <section className="mt-10 flex w-full max-w-[400px] flex-col items-center gap-6">
+            <h3 className="z-[1] px-4 text-[32px] font-semibold  leading-tight">Upcoming LBP</h3>
+            <Link to={`https://borgpad.com/launch-pools/moemate`} className="w-full">
+              <div className="w-full rounded-[13px] bg-[#abff73]/25 p-[1px]">
+                <div className="flex h-[40px] items-center justify-between gap-2 rounded-xl bg-[#16231e] p-3">
+                  <div className="flex items-center gap-3">
+                    <Img
+                      src={
+                        "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O"
+                      }
+                      size="6"
+                      isRounded
+                    />
+                    <Text text={"Moemate"} isLoading={false} className="text-nowrap text-sm" />
+                  </div>
+                  <div className="flex animate-pulse items-center gap-2">
+                    <span className="text-sm font-normal">Get Whitelisted</span>
+                    <div className="w-[20px]">
+                      <Icon icon="SvgArrowRight" className="w-[20px] text-xl opacity-50" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </section>
         </div>
       </div>
     </div>
