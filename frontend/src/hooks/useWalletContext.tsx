@@ -301,9 +301,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [walletProvider],
   )
 
-  useEffect(() => {
-    checkIfUserIsDisconnectedFromWallet(() => setWalletState("NOT_CONNECTED"))
-  }, [checkIfUserIsDisconnectedFromWallet])
+  // useEffect(() => {
+  //   checkIfUserIsDisconnectedFromWallet(() => setWalletState("NOT_CONNECTED"))
+  // }, [checkIfUserIsDisconnectedFromWallet])
 
   return (
     <WalletContext.Provider
