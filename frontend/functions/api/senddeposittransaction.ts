@@ -86,7 +86,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         // handle errors from chain
         if (transactionStatus.err) {
             const message = JSON.stringify(transactionStatus.err)
-            throw new Error(`Transaction error! err=(${message})`)
+            throw new Error(`Transaction error! err=(${message}), txId=(${transactionStatus.txId})`)
         }
 
         const heliusApiKey = SOLANA_RPC_URL.split('api-key=')[1]    // extract helius api key
