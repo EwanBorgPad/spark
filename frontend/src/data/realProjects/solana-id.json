@@ -18,7 +18,7 @@
     "curator": {
       "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
       "fullName": "SwissBorg",
-      "position": "Sold-Out Alpha Deal",
+      "position": "Alpha Deal",
       "socials": [
         {
           "url": "https://swissborg.com/alpha/solana-id",
@@ -46,6 +46,9 @@
       }
     ],
 
+    "tokenContractUrl": "https://jup.ag/swap/SOL-SoLiDMWBct5TurG1LNcocemBK7QmTn4P33GSrRrcd2n",
+    "poolContractUrl": "https://raydium.io/liquidity/increase/?mode=add&pool_id=4VLWQsgWF5WcC7pG9huCT3domqzhYVonY5GvcbHduCWv",
+
     "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
 
     "launchedTokenMintAddress": "SoLiDMWBct5TurG1LNcocemBK7QmTn4P33GSrRrcd2n",
@@ -57,6 +60,8 @@
     "raisedTokenMaxCap": 10000,
 
     "lbpWalletAddress": "EzVMRab2dvm7mVHEwQ5riQKMHR1PaNvB9tCm1x2nK2Rn",
+
+    "claimUrl": "https://app.streamflow.finance/airdrops/solana/mainnet/DXqASQ6PHimtqcyegoL85Uy7FwJLCa5X91HK22aJydXQ",
 
     "cliffDuration": 0,
     "vestingDuration": 0,
@@ -104,7 +109,7 @@
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2024-12-20T11:00:00Z"
+        "date": "2024-12-19T19:25:00Z"
       },
       {
         "id": "DISTRIBUTION_OVER",
