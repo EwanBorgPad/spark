@@ -18,7 +18,7 @@
     "curator": {
       "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
       "fullName": "SwissBorg",
-      "position": "Sold-Out Alpha Deal",
+      "position": "Alpha Deal",
       "socials": [
         {
           "url": "https://swissborg.com/alpha/moemate",
@@ -52,7 +52,7 @@
     "launchedTokenLpDistribution": 0,
     "launchedTokenCap": 0,
 
-    "raisedTokenMintAddress": "BNi33DZbWNj8N86eQj7jFKtUZzMSUCCSEV8oeEkuAgzL",
+    "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
     "raisedTokenMinCap": 0,
     "raisedTokenMaxCap": 0,
 
@@ -162,14 +162,6 @@
       }
     ],
     "finalSnapshotTimestamp": null
-  },
-  "saleData": {
-    "availableTokens": 12403,
-    "saleSucceeded": true,
-    "totalAmountRaised": 800402.5661,
-    "sellOutPercentage": 78,
-    "participantCount": 578,
-    "averageInvestedAmount": 1200.34
   },
   "rewards": {
     "distributionType": "linear",

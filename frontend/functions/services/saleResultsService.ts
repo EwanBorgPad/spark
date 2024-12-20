@@ -63,6 +63,8 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
   // TODO @hardcoded
   if (project.id === 'borgy') {
     exchangeData.currentPrice = 0.341783
+  } else if (project.id === 'solana-id') {
+    exchangeData.currentPrice = 0.362331
   }
 
   const priceInUsd = exchangeData.currentPrice
@@ -98,7 +100,7 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
     sellOutPercentage: Math.min(100, (Number(totalAmountRaisedInUsd) / Number(raiseTargetInUsd)) * 100),
     participantsCount,
     // TODO @hardcoded below
-    marketCap: 50_000,
+    marketCap: project.id === 'borgy' ? 50_000 : 2_000_000,
     fdv: project.json.info.tge.fdv,
   }
 }

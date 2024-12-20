@@ -47,6 +47,9 @@
       }
     ],
 
+    "tokenContractUrl": "https://jup.ag/swap/SOL-BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX",
+    "poolContractUrl": "https://raydium.io/liquidity/increase/?mode=add&pool_id=BLNidhiuiovET21aeQtnj7wQNdXdvPSeLo3ZjUCqKMzK",
+
     "projectOwnerAddress": "4SmMETL98BAR6W5DyZm661NbTpY3RUJNeeJMAHxvXia4",
 
     "launchedTokenMintAddress": "BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX",
