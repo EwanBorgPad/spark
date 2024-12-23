@@ -6,7 +6,7 @@ import { backendApi } from "@/data/backendApi"
 import Text from "@/components/Text"
 import { Link } from "react-router-dom"
 
-const projectId = "solana-id"
+const projectId = "moemate"
 
 const ActiveLaunchPoolBtn = () => {
   const { data: projectData, isLoading } = useQuery({
@@ -24,8 +24,9 @@ const ActiveLaunchPoolBtn = () => {
 
   return (
     <Link to={`/launch-pools/${projectId}`}>
-      <div className="rounded-[13px] bg-[#abff73]/25 p-[1px]">
-        <div className="flex h-[40px] items-center gap-2 rounded-xl bg-[#16231e] p-3">
+      <div className="relative overflow-hidden rounded-[13px] bg-[#abff73]/25 p-[2px]">
+        <div className="animated-conic-gradient animate-rotate-border absolute z-[-1]" />
+        <div className="z-[10] flex h-[40px] items-center gap-2 rounded-xl bg-[#16231e] p-3">
           <Img src={projectData?.info.tge?.projectCoin.iconUrl} size="6" isFetchingLink={isLoading} isRounded />
           <Text text={projectData?.info.title} isLoading={isLoading} className="text-nowrap text-sm" />
           <span className="font-thin opacity-40">|</span>
