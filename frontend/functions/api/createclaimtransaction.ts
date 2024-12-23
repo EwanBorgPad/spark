@@ -51,11 +51,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         // getting connection to the RPC
         const cluster = project.cluster
         const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
-        const connection = new Connection(rpcUrl, {
-            confirmTransactionInitialTimeout: 10000,
-            commitment: 'confirmed',
-            disableRetryOnRateLimit: true
-        })
+        const connection = new Connection(rpcUrl)
         const tokenMint = project.info.launchedTokenMintAddress
 
         // TODO @claimValidations

@@ -37,7 +37,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             throw new Error('Misconfigured env!')
         }
 
-        return jsonResponse({ message: 'Sale ended!' }, 409)
+        // return jsonResponse({ message: 'Sale ended!' }, 409)
 
         // request validation
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
@@ -71,11 +71,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         // getting connection to the RPC
         const cluster = project.cluster
         const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
-        const connection = new Connection(rpcUrl, {
-            confirmTransactionInitialTimeout: 10000,
-            commitment: 'confirmed',    // status has to be confirmed because we mint the nft and get the address of it immediately after sending the mint tx
-            disableRetryOnRateLimit: true
-        })
+        const connection = new Connection(rpcUrl)
         // get price and token mint
         const tokenMint = project.info.raisedTokenMintAddress
 
@@ -255,7 +251,7 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
         tokenOwner: userPublicKey,
         collection: {
             verified: false,
-            key: 'DgmpjwcneqbM4gD6y3GKHuLFoNpseWFb8npDcsLDUNiY',
+            key: publicKey('DgmpjwcneqbM4gD6y3GKHuLFoNpseWFb8npDcsLDUNiY'),
         }
     }))
 

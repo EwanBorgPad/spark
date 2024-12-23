@@ -53,9 +53,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         // TODO @claimValidations
 
         console.log("Sending transaction...")
-        const txId = await connection.sendRawTransaction(tx.serialize(), {
-            skipPreflight: true
-        })
+        const txId = await connection.sendRawTransaction(tx.serialize())
         console.log("Finished sending the transaction...")
 
         console.log('Signature status subscribing...')
