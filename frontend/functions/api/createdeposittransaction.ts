@@ -37,7 +37,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             throw new Error('Misconfigured env!')
         }
 
-        // return jsonResponse({ message: 'Sale ended!' }, 409)
+        return jsonResponse({ message: 'Sale ended!' }, 409)
 
         // request validation
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
@@ -251,7 +251,7 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
         tokenOwner: userPublicKey,
         collection: {
             verified: false,
-            key: publicKey('DgmpjwcneqbM4gD6y3GKHuLFoNpseWFb8npDcsLDUNiY'),
+            key: 'DgmpjwcneqbM4gD6y3GKHuLFoNpseWFb8npDcsLDUNiY',
         }
     }))
 
