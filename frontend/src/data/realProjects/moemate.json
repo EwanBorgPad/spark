@@ -5,7 +5,7 @@
     "title": "Moemate",
     "subtitle": "Solana's Battle-tested AI Agent Platform",
     "logoUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
-    "thumbnailUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihZkFa9w5ceE3EYBSxzEwk8VHBWVhocj1FiAC_e_D__4H3FXFRITc00kcNDJn5GOauffbdkGQi9O4DozXhJ2XhY-81EwFQEY1ZQ=s1600-rw-v1",
+    "thumbnailUrl": "https://files.borgpad.com/images/moemate/moemate-cover.png",
     "origin": "The Timeline",
     "sector": "AI Agents",
     "chain": {
@@ -68,7 +68,7 @@
         "ticker": "MATES"
       },
       "fixedTokenPriceInUSD": 0.00179,
-      "tokenGenerationEventDate": "TBD",
+      "tokenGenerationEventDate": "14th January, 2025",
       "fdv": 35000000,
       "liquidityPool": {
         "name": "Raydium",
@@ -94,29 +94,29 @@
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": null
+        "date": "2025-01-14T16:00:00Z"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": null
+        "date": "2025-01-15T16:00:00Z"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": null
+        "date": "2025-01-15T16:00:00Z"
       },
       {
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
-        "date": null
+        "date": "2025-06-15T16:00:00Z"
       }
     ],
     "tiers": [
       {
         "id": "tier10",
         "label": "$MOE's 5 Digit Club.",
-        "description": "Hold $MOE tokens—the official currency for Moemate’s flagship AI agent, Nebula—to gain first access to the sale at 5 PM UTC. Maximum Investment: $5K",
+        "description": "Access to sale at 5 PM CET. Maximum Investment: $5K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -126,7 +126,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2025-01-14T16:00:00Z",
           "minInvestment": "100",
           "maxInvestment": "5000"
         }
@@ -134,7 +134,7 @@
       {
         "id": "tier30",
         "label": "BORGers Club",
-        "description": "Prove your BORGer loyalty and qualify to invest at 6 PM UTC. Max Investment $3K",
+        "description": "Access to sale at 5:30 PM CET. Max Investment $3.5K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -144,24 +144,24 @@
           }
         ],
         "benefits": {
-          "startDate": "2030-10-10",
+          "startDate": "2025-01-14T16:30:00Z",
           "minInvestment": "100",
-          "maxInvestment": "3000"
+          "maxInvestment": "3500"
         }
       },
       {
         "id": "tier99",
         "label": "Public Sale",
-        "description": "Access to sale at 7 PM UTC. Max Investment $1.5K",
+        "description": "Access to sale at 6 PM CET. Max Investment $2K",
         "quests": [],
         "benefits": {
-          "startDate": "2024-12-10",
+          "startDate": "2025-01-14T17:00:00Z",
           "minInvestment": "10",
-          "maxInvestment": "1500"
+          "maxInvestment": "2000"
         }
       }
     ],
-    "finalSnapshotTimestamp": null
+    "finalSnapshotTimestamp": "2025-01-14T15:55:00Z"
   },
   "rewards": {
     "distributionType": "linear",
