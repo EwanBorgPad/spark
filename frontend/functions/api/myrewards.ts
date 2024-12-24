@@ -2,7 +2,6 @@ import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { drizzle } from "drizzle-orm/d1"
 import { claimTable, depositTable, projectTable } from "../../shared/drizzle-schema"
 import { and, desc, eq } from "drizzle-orm"
-import { getTokenData } from "../services/constants"
 import { addMonths } from "date-fns/addMonths"
 
 type ENV = {
@@ -28,15 +27,11 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       .from(projectTable)
       .where(eq(projectTable.id, projectId))
       .get()
+    if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 
-    if (!project) return jsonResponse({ error: 'Error: project not found!' }, 500)
-    const cluster = project.json.cluster
+    const cluster = project.json.config.cluster
+    const launchedTokenMintAddress = project.json.config.launchedTokenData.mintAddress
 
-    if (!project) {
-      return jsonResponse({ message: 'Project not found!' }, 404)
-    }
-
-    const launchedTokenMintAddress = project.json.info.launchedTokenMintAddress
     if (!launchedTokenMintAddress) {
       throw new Error(`launchedTokenMintAddress not found! projectId=(${projectId})`)
     }
@@ -70,17 +65,13 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       .all()
 
     const claimedAmount = claims.reduce((acc, curr) => acc + Number(curr.amount), 0)
-    const launchedTokenData = getTokenData({ cluster, tokenAddress: launchedTokenMintAddress })
 
-    if (!launchedTokenData) {
-      return jsonResponse({ message: 'TokenData not found!' }, 500)
-    }
-
+    const launchedTokenDecimals = project.json.config.launchedTokenData.decimals
+    if (!launchedTokenDecimals) throw new Error(`launchedTokenDataDecimals missing for project (${projectId})!`)
     const rewardsTotalUiAmount = deposits.reduce((acc, curr) => acc + Number(curr.json.tokensCalculation.rewardDistribution.tokenRaw), 0)
-    const rewardsTotalAmount = rewardsTotalUiAmount * Math.pow(10, launchedTokenData.decimals)
+    const rewardsTotalAmount = rewardsTotalUiAmount * Math.pow(10, launchedTokenDecimals)
 
-    // TODO @hardcoded to 6 , the correct value for all current projects (solana-id, moemate, borgy)
-    const monthsCount = 6
+    const monthsCount = project.json.config.rewardsDistributionTimeInMonths
     const rewardsDistributionStart = project.json.info.timeline.find(timeline => timeline.id === 'REWARD_DISTRIBUTION')?.date
 
     if (!rewardsDistributionStart) {
@@ -100,7 +91,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       // TODO @claimsStreamFlowIntegration
       const isClaimed = index < (claimedMonths - 1)
       return {
-        amount: String(claimablePerMonth / Math.pow(10, launchedTokenData.decimals)),
+        amount: String(claimablePerMonth / Math.pow(10, launchedTokenDecimals)),
         isClaimed,
         date: payoutDate,
       }
@@ -116,17 +107,13 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     const hasRewardsDistributionStarted = rewardsDistributionStart && (currentDate > new Date(rewardsDistributionStart))
 
-    const raisedTokenData = getTokenData({ cluster, tokenAddress: project.json.info.raisedTokenMintAddress })
 
-    if (!raisedTokenData) {
-      return jsonResponse({ message: 'raisedTokenData not found!'}, 500)
-    }
-
+    const raisedTokenDecimals = project.json.config.raisedTokenData.decimals
     const lpRaisedTokenTotalUiAmount = deposits.reduce((acc, curr) => acc + Number(curr.json.tokensCalculation.lpPosition.borgRaw), 0)
-    const lpRaisedTokenTotalUnitAmount = lpRaisedTokenTotalUiAmount * Math.pow(10, raisedTokenData.decimals)
+    const lpRaisedTokenTotalUnitAmount = lpRaisedTokenTotalUiAmount * Math.pow(10, raisedTokenDecimals)
 
     const lpLaunchedTokenTotalUiAmount = deposits.reduce((acc, curr) => acc + Number(curr.json.tokensCalculation.lpPosition.tokenRaw), 0)
-    const lpLaunchedTokenTotalUnitAmount = lpLaunchedTokenTotalUiAmount * Math.pow(10, launchedTokenData.decimals)
+    const lpLaunchedTokenTotalUnitAmount = lpLaunchedTokenTotalUiAmount * Math.pow(10, launchedTokenDecimals)
 
     const result = {
       hasUserInvested: true,
@@ -134,13 +121,13 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
         // borg
         raisedTokenAmount: {
           amount: lpRaisedTokenTotalUnitAmount,
-          decimals: raisedTokenData.decimals,
+          decimals: raisedTokenDecimals,
           uiAmount: lpRaisedTokenTotalUiAmount,
         },
         // borgy/moemate/solana-id
         launchedTokenAmount: {
           amount: lpLaunchedTokenTotalUnitAmount,
-          decimals: launchedTokenData.decimals,
+          decimals: launchedTokenDecimals,
           uiAmount: lpLaunchedTokenTotalUiAmount,
         }
       },
@@ -150,18 +137,18 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
         hasRewardsDistributionStarted,
         totalAmount: {
           amount: rewardsTotalAmount,
-          decimals: launchedTokenData.decimals,
+          decimals: launchedTokenDecimals,
           uiAmount: rewardsTotalUiAmount,
         },
         claimedAmount: {
           amount: String(claimedAmount),
-          decimals: launchedTokenData.decimals,
-          uiAmount: String(claimedAmount / Math.pow(10, launchedTokenData.decimals)),
+          decimals: launchedTokenDecimals,
+          uiAmount: String(claimedAmount / Math.pow(10, launchedTokenDecimals)),
         },
         claimableAmount: {
           amount: String(claimableAmount),
-          decimals: launchedTokenData.decimals,
-          uiAmount: String(claimableAmount / Math.pow(10, launchedTokenData.decimals)),
+          decimals: launchedTokenDecimals,
+          uiAmount: String(claimableAmount / Math.pow(10, launchedTokenDecimals)),
         },
         payoutSchedule,
       }

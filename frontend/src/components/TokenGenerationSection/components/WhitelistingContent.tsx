@@ -18,9 +18,8 @@ const WhitelistingContent = () => {
 
   const { walletState } = useWalletContext()
   const { projectData, isLoading } = useProjectDataContext()
-  const tgeData = projectData?.info.tge
-  const raiseTarget = tgeData?.raiseTarget
-    ? formatCurrencyAmount(tgeData.raiseTarget, { withDollarSign: true, customDecimals: 0 })
+  const raiseTarget = projectData?.config.raiseTargetInUsd
+    ? formatCurrencyAmount(projectData?.config.raiseTargetInUsd, { withDollarSign: true, customDecimals: 0 })
     : ""
 
   const baseCurrency = "swissborg"
@@ -35,7 +34,7 @@ const WhitelistingContent = () => {
     queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
   const borgPriceInUSD = data?.currentPrice || null
-  const tokenPriceInUSD = projectData?.info.tge.fixedTokenPriceInUSD || 0
+  const tokenPriceInUSD = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
   const { projectId } = useParams()
@@ -89,8 +88,8 @@ const WhitelistingContent = () => {
 
         <div className="flex w-full items-center justify-between py-2">
           <div className="flex items-center gap-2">
-            <Img src={tgeData?.projectCoin.iconUrl} size="6" isFetchingLink={isLoading} isRounded />
-            <Text text={tgeData?.projectCoin.ticker} isLoading={isLoading} />
+            <Img src={projectData?.config.launchedTokenData.iconUrl} size="6" isFetchingLink={isLoading} isRounded />
+            <Text text={projectData?.config.launchedTokenData.ticker} isLoading={isLoading} />
             <span>{t("tge.price")}</span>
           </div>
           <div className="flex flex-col items-end">
@@ -125,8 +124,8 @@ const WhitelistingContent = () => {
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.defi_protocol")}</span>
           <div className="flex items-center gap-2">
-            <Img src={tgeData?.liquidityPool.iconUrl} size="5" isFetchingLink={isLoading} isRounded />
-            <Text text={tgeData?.liquidityPool.name} isLoading={isLoading} />
+            <Img src={projectData?.info.liquidityPool.iconUrl} size="5" isFetchingLink={isLoading} isRounded />
+            <Text text={projectData?.info.liquidityPool.name} isLoading={isLoading} />
           </div>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
@@ -144,14 +143,14 @@ const WhitelistingContent = () => {
         {/* LP Type */}
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.lbp_type")}</span>
-          <Text text={tgeData?.liquidityPool.lbpType} isLoading={isLoading} />
+          <Text text={projectData?.info.liquidityPool.lbpType} isLoading={isLoading} />
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
         {/* Locking Period */}
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.locking_period")}</span>
-          <Text text={tgeData?.liquidityPool.lockingPeriod} isLoading={isLoading} />
+          <Text text={projectData?.info.liquidityPool.lockingPeriod} isLoading={isLoading} />
         </div>
       </div>
 

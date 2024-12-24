@@ -22,10 +22,10 @@ const Rewards = () => {
   const { t } = useTranslation()
   const { projectData, isLoading } = useProjectDataContext()
   const { address } = useWalletContext()
-  const projectId = projectData?.info.id || ""
+  const projectId = projectData?.id || ""
 
-  const iconUrl = projectData?.info.tge.projectCoin.iconUrl || ""
-  const ticker = projectData?.info.tge.projectCoin.ticker || ""
+  const iconUrl = projectData?.config.launchedTokenData.iconUrl || ""
+  const ticker = projectData?.config.launchedTokenData.ticker || ""
 
   const { data: myRewardsResponse } = useQuery({
     queryFn: () => {

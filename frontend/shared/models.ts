@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z, ZodTypeAny } from "zod"
 import { TierSchema } from "./eligibilityModel.ts"
 /**
  * @deprecated deprecate , use drizzle
@@ -41,7 +41,7 @@ export type UserModelJson = {
  * Represents url type
  * Not sure what we wanna validate there ATM, so leave it as string for now.
  */
-const urlSchema = () => z.string().optional() // @TODO - remove optionality when file upload is finished
+const urlSchema = () => z.string()
 const iconTypeSchema = () =>
   z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM", "OUTER_LINK"])
 const externalUrlSchema = () =>
@@ -60,118 +60,93 @@ const timelineEventsSchema = () =>
     "DISTRIBUTION_OVER",
   ])
 
+const optional = (type: ZodTypeAny) => type.optional().nullable();
+
+const integerSchema = () => z.number().min(0).max(Number.MAX_SAFE_INTEGER).int();
 const idSchema = () =>
   z
     .string()
     .min(1)
     .regex(new RegExp(/^[A-Za-z0-9-]+$/), "Only letters, numbers, and dashes are allowed")
 export const SolanaAddressSchema = z.string().regex(/[1-9A-HJ-NP-Za-km-z]{32,44}/)
-/**
- * Schemas for project, type should be inferred from this.
- */
-export const infoSchema = z.object({
+const SolanaClusterSchema = z.enum(['mainnet', 'devnet'])
+
+const TokenDataSchema = z.object({
+  iconUrl: urlSchema(),
+  ticker: z.string(),
+
+  mintAddress: SolanaAddressSchema.nullable(),
+  decimals: integerSchema(),
+
+  fixedTokenPriceInUsd: optional(z.number()),
+  coinGeckoName: optional(z.string()),
+})
+
+export const projectSchema = z.object({
   id: idSchema(),
+  config: z.object({
+    cluster: SolanaClusterSchema,
 
-  ///// project metadata info /////
-  title: z.string().min(1),
-  subtitle: z.string().min(1),
-  logoUrl: urlSchema(),
-  thumbnailUrl: urlSchema().optional(),
-  chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
-  origin: z.string().min(1),
-  sector: z.string().min(1),
-  curator: z.object({
-    avatarUrl: urlSchema(),
-    fullName: z.string().min(1),
-    position: z.string().min(1),
-    socials: z.array(externalUrlSchema()),
+    lpPositionToBeBurned: optional(z.boolean()),
+
+    raiseTargetInUsd: integerSchema(),
+    fdv: optional(integerSchema()),
+    marketCap: optional(integerSchema()),
+
+    totalTokensForLiquidityPool: integerSchema(),
+    totalTokensForRewardDistribution: integerSchema(),
+
+    rewardsDistributionTimeInMonths: integerSchema(),
+
+    finalSnapshotTimestamp: optional(dateSchema()),
+
+    lbpWalletAddress: SolanaAddressSchema.nullable(),
+
+    raisedTokenData: TokenDataSchema,
+    launchedTokenData: TokenDataSchema
   }),
-  projectLinks: z.array(externalUrlSchema()),
+  info: z.object({
+    /// following 4 fields are typically added AFTER the sale
+    // link for claiming rewards (currently doing airdrops with streamflow, but could be anything)
+    claimUrl: optional(z.string()),
 
-  tokenContractUrl: z.string().optional(),
-  poolContractUrl: z.string().optional(),
+    tweetUrl: optional(z.string()),
+    tokenContractUrl: optional(z.string()),
+    poolContractUrl: optional(z.string()),
 
-  ///// project token info /////
+    ///// project metadata info /////
+    title: z.string().min(1),
+    subtitle: z.string().min(1),
+    logoUrl: urlSchema(),
+    thumbnailUrl: optional(urlSchema()),
+    origin: z.string().min(1),
+    sector: z.string().min(1),
+    tokenGenerationEventDate: optional(z.string()),
 
-  // below 3 fields are most important, move them into an object 'lp' or something like that
-  launchedTokenMintAddress: SolanaAddressSchema.nullable(),
-  raisedTokenMintAddress: SolanaAddressSchema,
-  lbpWalletAddress: SolanaAddressSchema.nullable(),
-
-  // make this an enum which describes lpType (might be more than 2 in the future, boolean isn't scalable in this sense)
-  lpPositionToBeBurned: z.boolean().optional(),
-
-  // non-negative minimums, max safe integer maximums
-  totalTokensForSale: z.number({ coerce: true }).min(0).max(Number.MAX_SAFE_INTEGER).int(), // total tokens for LP positions
-  totalTokensForRewardDistribution: z.number({ coerce: true }).min(0).max(Number.MAX_SAFE_INTEGER).int(),
-
-  // link for claiming rewards (currently doing airdrops with streamflow, but could be anything)
-  claimUrl: z.string().optional().nullable(),
-
-  marketCap: z.number().max(Number.MAX_SAFE_INTEGER).int().optional().nullable(),
-
-  tge: z.object({
-    raiseTarget: z.number({ coerce: true }).max(Number.MAX_SAFE_INTEGER).int(),
-    projectCoin: z.object({
-      iconUrl: urlSchema(),
-      ticker: z.string().min(1),
-    }),
-    fixedTokenPriceInUSD: z.number({ coerce: true }),
-    tokenGenerationEventDate: z.string().optional(),
-    fdv: z.number().int().optional(),
+    chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
+    dataRoom: z.object({ backgroundImgUrl: urlSchema(), url: urlSchema() }),
     liquidityPool: z.object({
       name: z.string().min(1),
       iconUrl: urlSchema(),
       lbpType: z.string().min(1),
       lockingPeriod: z.string().min(1),
-      unlockDate: dateSchema().nullable(),
-      url: z.string().min(1),
     }),
-    // move somewhere else
-    tweetUrl: z.string(),
-  }),
-  // move data room also , not critical data
-  dataRoom: z.object({
-    backgroundImgUrl: urlSchema(),
-    url: z.string().min(1),
-  }),
-  timeline: z.array(
-    z.object({
-      id: timelineEventsSchema(),
-      date: dateSchema().nullable(),
-      label: z.string().min(1),
+    curator: z.object({
+      avatarUrl: urlSchema(),
+      fullName: z.string().min(1),
+      position: z.string().min(1),
+      socials: z.array(externalUrlSchema()),
     }),
-  ),
-  tiers: z.array(TierSchema).min(1),
-  // TODO @prodRush @finalSnapshotTimestamp make this mandatory to avoid null checks
-  finalSnapshotTimestamp: dateSchema().optional(),
-})
-
-// "distributionType" and "payoutInterval" enum alternative values to be discussed. They will require further logic on backend and programs.
-export const rewardsSchema = z.object({
-  distributionType: z.enum(["linear"]), // possible alternative - exponential
-  description: z.string(),
-  payoutInterval: z.enum(["monthly"]),
-})
-
-export const userDepositSchema = z.object({
-  transaction: z.string(),
-  projectId: z.string()
-})
-
-const SolanaClusterSchema = z.enum(['mainnet', 'devnet'])
-
-/**
- * Refactor this:
- *  - better structure (first structure wasn't designed at all, it was just built-upon)
- *  - default cluster (mainnet)
- * Calculate dynamically everything that can be, don't duplicate data in json:
- *  - token price
- */
-export const projectSchema = z.object({
-  cluster: SolanaClusterSchema,
-  info: infoSchema,
-  rewards: rewardsSchema.optional(),
+    projectLinks: z.array(externalUrlSchema()),
+    timeline: z.array(
+      z.object({
+        id: timelineEventsSchema(),
+        date: dateSchema().nullable(),
+        label: z.string().min(1),
+      }),
+    ),
+    tiers: z.array(TierSchema).min(1),
+  }),
 })
 export type ProjectModel = z.infer<typeof projectSchema>
 

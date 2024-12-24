@@ -1,4 +1,4 @@
-import { Tweet, TweetNotFound } from "react-tweet"
+import { Tweet } from "react-tweet"
 import { useTranslation } from "react-i18next"
 import { twMerge } from "tailwind-merge"
 import { useRef } from "react"
@@ -34,7 +34,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
   const { t } = useTranslation()
   const { walletState } = useWalletContext()
   const { address } = useWalletContext()
-  const projectId = projectData?.info.id || ""
+  const projectId = projectData?.id || ""
 
   const { data: userPositions } = useQuery({
     queryFn: () => {
@@ -62,7 +62,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
     })
   }
 
-  const tweetId = projectData?.info.tge.tweetUrl ? getTweetIdFromURL(projectData.info.tge.tweetUrl) : ""
+  const tweetId = projectData?.info.tweetUrl ? getTweetIdFromURL(projectData.info.tweetUrl) : ""
   const sectionClass = "flex w-full max-w-[400px] flex-col items-center gap-6 z-[1]"
   const hasDistributionStarted = eventData.id === "REWARD_DISTRIBUTION"
 

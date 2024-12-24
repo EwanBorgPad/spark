@@ -12,14 +12,12 @@ type Props = { projectData: ProjectModel; borgCoinInput: number | null; borgPric
  * @param borgPriceInUSD
  */
 export const calculateTokens = ({ projectData, borgCoinInput, borgPriceInUSD }: Props) => {
+  const raiseTargetInUsd = projectData.config.raiseTargetInUsd
+  const fixedTokenPriceInUsd = projectData.config.launchedTokenData.fixedTokenPriceInUsd
+  const lpPositionToBeBurned = projectData.config.lpPositionToBeBurned
+  const totalTokensForRewardDistribution = projectData.config.totalTokensForRewardDistribution
 
-  const {
-    tge: { raiseTarget, fixedTokenPriceInUSD },
-    lpPositionToBeBurned,
-    totalTokensForRewardDistribution,
-  } = projectData.info
-
-  const tokenPriceInUSD = fixedTokenPriceInUSD //
+  const tokenPriceInUSD = fixedTokenPriceInUsd //
   // TODO @vanja why this line?
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
@@ -52,7 +50,7 @@ export const calculateTokens = ({ projectData, borgCoinInput, borgPriceInUSD }: 
     if (!borgCoinInput || !tokenPriceInBORG || !borgPriceInUSD) return { formatted: "0", unformatted: null }
 
     // token pool size value in dollars is equivalent to BORG pool size, which is the raise target
-    const tokenPoolSize = raiseTarget
+    const tokenPoolSize = raiseTargetInUsd
 
     // 1 dollar invested gives this much reward tokens
     const oneInvestedDollarGives = totalTokensForRewardDistribution / tokenPoolSize

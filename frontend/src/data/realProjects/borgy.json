@@ -1,21 +1,68 @@
 {
-  "__fixedBorgPriceInUsd": 0.341783,
-  "cluster": "mainnet",
+  "id": "borgy",
+  "config": {
+    "cluster": "mainnet",
+
+    "lpPositionToBeBurned": true,
+
+    "raiseTargetInUsd": 50000,
+    "fdv": 1000000,
+    "marketCap": 50000,
+
+    "totalTokensForLiquidityPool": 3888888889,
+    "totalTokensForRewardDistribution": 3888888889,
+
+    "rewardsDistributionTimeInMonths": 6,
+
+    "finalSnapshotTimestamp": "2024-12-10T13:00:00Z",
+
+    "lbpWalletAddress": "4SmMETL98BAR6W5DyZm661NbTpY3RUJNeeJMAHxvXia4",
+    "raisedTokenData": {
+      "iconUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
+      "ticker": "BORG",
+
+      "mintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
+      "decimals": 9,
+      "fixedTokenPriceInUsd": 0.341783,
+      "coinGeckoName": "swissborg"
+    },
+    "launchedTokenData": {
+      "iconUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihaidrwzbEcGQMgeo9DfYDdEmMMoYxbFzUTU54GI09ctwslVrFQkrxt4YxhHc9MMSe4PizOG9qzUzuRL2_BgKJ3mcVUOZ917ufQ=s2560",
+      "ticker": "BORGY",
+
+      "mintAddress": "BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX",
+      "decimals": 5,
+      "fixedTokenPriceInUsd": 0.00001286
+    }
+  },
   "info": {
-    "id": "borgy",
+    "claimUrl": "https://app.streamflow.finance/airdrops/solana/mainnet/8sUnkiByzrtE7MMNKp5dUwgwxj8fn2kcgbQxS7ZQqg33",
+
+    "tweetUrl": "https://x.com/BorgPadHQ/status/1866470792734572572",
+    "tokenContractUrl": "https://jup.ag/swap/SOL-BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX",
+    "poolContractUrl": "https://raydium.io/liquidity/increase/?mode=add&pool_id=BLNidhiuiovET21aeQtnj7wQNdXdvPSeLo3ZjUCqKMzK",
+
     "title": "BORGY",
     "subtitle": "The Community Pet of SwissBorg",
     "logoUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihaGgq0wNNNYd_yD7SPcJwSKNPtqwASXYJA2JZSKKYgc0hoWGgktuDdxNyfuottIdPC4rhcaVi1aXC1DQGK6SWgs7R5of0PnrdE=s2560",
     "thumbnailUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihZJ7UTfw1LQpPBYqweSPRXkuSjI1GVrU7d9WkWhmfddJvuxoKKLpp7kWDFlETh-d3pQGsRHjGPys8blr1iN5d9-3y1ldaFR6g=s2560",
     "origin": "The Alps 🏔️",
     "sector": "Meme",
+    "tokenGenerationEventDate": "10th December, 2024",
     "chain": {
       "name": "Solana",
       "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
     },
-    "lpPositionToBeBurned": true,
-    "totalTokensForSale": 3888888889,
-    "totalTokensForRewardDistribution": 3888888889,
+    "dataRoom": {
+      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
+      "url": "https://drive.google.com/file/d/1ELtP99cdMST5MyT17qnCCkvfbA09v2Tr/view"
+    },
+    "liquidityPool": {
+      "name": "Raydium",
+      "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
+      "lbpType": "Concentrated Liquidity",
+      "lockingPeriod": "∞"
+    },
     "curator": {
       "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
       "fullName": "SwissBorg",
@@ -46,41 +93,6 @@
         "label": ""
       }
     ],
-
-    "tokenContractUrl": "https://jup.ag/swap/SOL-BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX",
-    "poolContractUrl": "https://raydium.io/liquidity/increase/?mode=add&pool_id=BLNidhiuiovET21aeQtnj7wQNdXdvPSeLo3ZjUCqKMzK",
-
-    "launchedTokenMintAddress": "BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX",
-    "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
-    "lbpWalletAddress": "4SmMETL98BAR6W5DyZm661NbTpY3RUJNeeJMAHxvXia4",
-
-    "claimUrl": "https://app.streamflow.finance/airdrops/solana/mainnet/8sUnkiByzrtE7MMNKp5dUwgwxj8fn2kcgbQxS7ZQqg33",
-
-    "marketCap": 50000,
-
-    "tge": {
-      "raiseTarget": 50000,
-      "projectCoin": {
-        "iconUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihaidrwzbEcGQMgeo9DfYDdEmMMoYxbFzUTU54GI09ctwslVrFQkrxt4YxhHc9MMSe4PizOG9qzUzuRL2_BgKJ3mcVUOZ917ufQ=s2560",
-        "ticker": "BORGY"
-      },
-      "fixedTokenPriceInUSD": 0.00001286,
-      "tokenGenerationEventDate": "10th December, 2024",
-      "fdv": 1000000,
-      "liquidityPool": {
-        "name": "Raydium",
-        "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
-        "lbpType": "Concentrated Liquidity",
-        "lockingPeriod": "∞",
-        "unlockDate": null,
-        "url": "#"
-      },
-      "tweetUrl": "https://x.com/BorgPadHQ/status/1866470792734572572"
-    },
-    "dataRoom": {
-      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
-      "url": "https://drive.google.com/file/d/1ELtP99cdMST5MyT17qnCCkvfbA09v2Tr/view"
-    },
     "timeline": [
       {
         "id": "REGISTRATION_OPENS",
@@ -120,12 +132,6 @@
           "maxInvestment": "250"
         }
       }
-    ],
-    "finalSnapshotTimestamp": "2024-12-10T13:00:00Z"
-  },
-  "rewards": {
-    "distributionType": "linear",
-    "description": "linearly paid-out over 6 months",
-    "payoutInterval": "monthly"
+    ]
   }
 }

@@ -3,7 +3,9 @@ import {
   jsonResponse,
   reportError,
 } from "../cfPagesFunctionsUtils"
-import { ProjectService } from "../../services/projectService"
+import { projectTable } from "../../../shared/drizzle-schema"
+import { eq } from "drizzle-orm"
+import { drizzle } from "drizzle-orm/d1"
 
 type ENV = {
   DB: D1Database
@@ -13,23 +15,24 @@ type ENV = {
  * @param ctx
  */
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
-  const db = ctx.env.DB
+  const db = drizzle(ctx.env.DB, { logger: true })
   try {
     const url = ctx.request.url
-    const id = extractProjectId(url)
+    const projectId = extractProjectId(url)
 
     // validate request
-    if (!id) {
+    if (!projectId) {
       return jsonResponse({ message: "Please provide id query param" }, 400)
     }
 
-    const project = await ProjectService.findProjectById({ db, id })
+    const project = await db
+      .select()
+      .from(projectTable)
+      .where(eq(projectTable.id, projectId))
+      .get()
+    if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 
-    if (project) {
-      return jsonResponse(project, 200)
-    } else {
-      return jsonResponse({ message: "Not found!" }, 404)
-    }
+    return jsonResponse(project.json, 200)
   } catch (e) {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)

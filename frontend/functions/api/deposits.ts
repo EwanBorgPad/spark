@@ -2,7 +2,6 @@ import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { drizzle } from "drizzle-orm/d1"
 import { depositTable, projectTable } from "../../shared/drizzle-schema"
 import { and, desc, eq } from "drizzle-orm"
-import { getTokenData } from "../services/constants"
 
 type ENV = {
   DB: D1Database
@@ -34,8 +33,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     if (!project)
       return jsonResponse({ message: `Project not found (id=${projectId})!` }, 404)
 
-    const cluster = project.json.cluster
-    const tokenAddress = project.json.info.raisedTokenMintAddress
+    const raisedTokenDecimals = project.json.config.raisedTokenData.decimals
 
     const depositsResult = await db
       .select()
@@ -55,14 +53,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       transactionUrl: `https://explorer.solana.com/tx/${deposit.transactionId}?cluster=${deposit.json.cluster}`
     }))
 
-    const tokenData = getTokenData({ cluster, tokenAddress })
-    if (!tokenData) {
-      return jsonResponse({ message: 'Unknown token!' }, 500)
-    }
-
     const amount = deposits.reduce((acc, curr) => acc + Number(curr.amountDeposited), 0)
-    const decimals = tokenData.decimals
 
+    const decimals = raisedTokenDecimals
     const response = {
       deposits,
       total: {

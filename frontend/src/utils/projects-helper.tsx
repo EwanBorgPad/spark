@@ -103,7 +103,7 @@ export const sortProjectsPerStatus = (
   const whitelistedProjects = expandedProjects.filter(
     (project) => project.additionalData.currentEvent.id === "REGISTRATION_OPENS",
   )
-  const targetIndex = whitelistedProjects.findIndex((project) => project.info.id === "solana-id")
+  const targetIndex = whitelistedProjects.findIndex((project) => project.id === "solana-id")
 
   if (targetIndex !== -1) {
     // Remove the element from its current position

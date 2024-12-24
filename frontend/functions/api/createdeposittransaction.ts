@@ -3,7 +3,6 @@ import { ComputeBudgetProgram, Connection, Keypair, ParsedAccountData, PublicKey
 import { createTransferInstruction } from "@solana/spl-token"
 import { z } from "zod"
 import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
-import { ProjectService } from "../services/projectService"
 import * as bs58 from "bs58"
 import { createProgrammableNft, mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata"
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults"
@@ -16,6 +15,8 @@ import { DepositService, DepositStatus } from "../services/depositService"
 import { SaleResultsService } from "../services/saleResultsService"
 import { SaleResults } from "../../shared/models"
 import { SnapshotService } from "../services/snapshotService"
+import { projectTable } from "../../shared/drizzle-schema"
+import { eq } from "drizzle-orm"
 
 type ENV = {
     DB: D1Database,
@@ -29,6 +30,7 @@ const requestSchema = z.object({
 })
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const db = ctx.env.DB
+    const drizzleDb = drizzle(db, { logger: true })
     const SOLANA_RPC_URL = ctx.env.SOLANA_RPC_URL
     const privateKey = ctx.env.NFT_MINT_WALLET_PRIVATE_KEY
     try {
@@ -47,12 +49,14 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         if (!data?.projectId) return jsonResponse({ error: 'Project ID is missing in request body' }, 404)
         const projectId = data.projectId
 
-        const project = await ProjectService.findProjectById({ db, id: projectId })
-        if (!project) {
-            return jsonResponse({ message: "Project not found!" }, 404)
-        }
+        const project = await drizzleDb
+          .select()
+          .from(projectTable)
+          .where(eq(projectTable.id, projectId))
+          .get()
+        if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 
-        const lbpWalletAddress = project.info.lbpWalletAddress
+        const lbpWalletAddress = project.json.config.lbpWalletAddress
 
         if (!lbpWalletAddress) {
             return jsonResponse({ message: "LBPWA not configured!" }, 500)
@@ -64,7 +68,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const tokenAmount = data.tokenAmount
 
         // getting connection to the RPC
-        const cluster = project.cluster
+        const cluster = project.json.config.cluster
         const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
         const connection = new Connection(rpcUrl, {
             confirmTransactionInitialTimeout: 10000,
@@ -72,7 +76,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             disableRetryOnRateLimit: true
         })
         // get price and token mint
-        const tokenMint = project.info.raisedTokenMintAddress
+        const tokenMint = project.json.config.raisedTokenData.mintAddress
 
         const depositStatus = await DepositService.getDepositStatus({
             db,
@@ -87,7 +91,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             projectId,
             rpcUrl
         })
-        const endDate = project.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
+        const endDate = project.json.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
         if (!endDate) return jsonResponse({ message: 'End date is not defined in project json!' }, 500)
 
         const saleResults = await SaleResultsService.getSaleResults({ db: drizzle(db, { logger: true }), projectId })
@@ -98,7 +102,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         // create transfer and mint nft instruction
         const tx = await createUserDepositTransaction(userWalletAddress, receivingAddress, tokenMint, tokenAmount, connection, privateKey)
 
-        await SnapshotService.createSnapshot({ db: drizzle(db), address: userWalletAddress, projectId, eligibilityStatus })
+        await SnapshotService.createSnapshot({ db: drizzle(db, { logger: true }), address: userWalletAddress, projectId, eligibilityStatus })
 
         return jsonResponse({ transaction: tx }, 200)
     } catch (e) {
