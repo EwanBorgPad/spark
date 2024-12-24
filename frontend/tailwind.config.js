@@ -187,6 +187,13 @@ export default {
           "0%": { opacity: 0 },
           "100%": { opacity: 1 },
         },
+        "rotate-border": {
+          "0%": { transform: "translate(-50%, -50%) scale(1.4) rotate(45deg)" },
+          "25%": { transform: "translate(-25%, -50%) scale(1.4) rotate(135deg)" },
+          "50%": { transform: "translate(-50%, -50%) scale(1.4) rotate(225deg)" },
+          "75%": { transform: "translate(-75%, -50%) scale(1.4) rotate(315deg)" },
+          "100%": { transform: "translate(-50%, -50%) scale(1.4) rotate(405deg)" },
+        },
       },
       animation: {
         "top-down": "top-down 0.1s ease-out forwards",
@@ -201,6 +208,7 @@ export default {
         underline: "underline 0.31s ease-in-out",
         "activate-circle": "activate-circle 0.5s 1 ease-in-out ",
         "slide-in-from-left": "slide-in-from-left 0.5s 1 ease-in-out ",
+        "rotate-border": "rotate-border 3s linear infinite",
       },
     },
   },

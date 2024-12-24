@@ -134,8 +134,9 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
           <section className="mt-10 flex w-full max-w-[400px] flex-col items-center gap-6">
             <h3 className="z-[1] px-4 text-center text-3xl font-semibold  leading-tight">Upcoming Launch Pool</h3>
             <Link to={`https://borgpad.com/launch-pools/moemate`} className="w-full">
-              <div className="w-full rounded-[13px] bg-[#abff73]/25 p-[1px]">
-                <div className="flex h-[40px] items-center justify-between gap-2 rounded-xl bg-[#16231e] p-3">
+              <div className="relative w-full overflow-hidden rounded-[13px] bg-[#abff73]/25 p-[1px]">
+                <div className="animated-conic-gradient animate-rotate-border absolute z-[-1]" />
+                <div className="z-[10] flex h-[40px] items-center justify-between gap-2 rounded-xl bg-[#16231e] p-3">
                   <div className="flex items-center gap-3">
                     <Img
                       src={
@@ -146,7 +147,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
                     />
                     <Text text={"Moemate"} isLoading={false} className="text-nowrap text-sm" />
                   </div>
-                  <div className="flex animate-pulse items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <span className="text-sm font-normal">Get Whitelisted</span>
                     <div className="w-[20px]">
                       <Icon icon="SvgArrowRight" className="w-[20px] text-xl opacity-50" />
