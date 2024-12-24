@@ -31,10 +31,14 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     if (!project) return jsonResponse({ error: 'Error: project not found!' }, 500)
     const cluster = project.json.cluster
-    const launchedTokenMintAddress = project.json.info.launchedTokenMintAddress
 
     if (!project) {
       return jsonResponse({ message: 'Project not found!' }, 404)
+    }
+
+    const launchedTokenMintAddress = project.json.info.launchedTokenMintAddress
+    if (!launchedTokenMintAddress) {
+      throw new Error(`launchedTokenMintAddress not found! projectId=(${projectId})`)
     }
 
     // load deposits and claims

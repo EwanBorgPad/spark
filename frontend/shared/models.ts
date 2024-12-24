@@ -94,9 +94,9 @@ export const infoSchema = z.object({
   ///// project token info /////
 
   // below 3 fields are most important, move them into an object 'lp' or something like that
-  launchedTokenMintAddress: SolanaAddressSchema,
+  launchedTokenMintAddress: SolanaAddressSchema.nullable(),
   raisedTokenMintAddress: SolanaAddressSchema,
-  lbpWalletAddress: SolanaAddressSchema.optional().nullable(),
+  lbpWalletAddress: SolanaAddressSchema.nullable(),
 
   // make this an enum which describes lpType (might be more than 2 in the future, boolean isn't scalable in this sense)
   lpPositionToBeBurned: z.boolean().optional(),
