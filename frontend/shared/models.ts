@@ -87,28 +87,16 @@ export const infoSchema = z.object({
     socials: z.array(externalUrlSchema()),
   }),
   projectLinks: z.array(externalUrlSchema()),
+
   tokenContractUrl: z.string().optional(),
   poolContractUrl: z.string().optional(),
 
   ///// project token info /////
-  // TODO deprecate this
-  projectOwnerAddress: SolanaAddressSchema.nullable(),
 
-  lbpWalletAddress: SolanaAddressSchema.optional().nullable(),
-
-  // below 3x2 fields are most important, move them into an object 'lp' or something like that
-  launchedTokenMintAddress: SolanaAddressSchema,
-  launchedTokenLpDistribution: z.number().int(),
-  launchedTokenCap: z.number().int(),
-
+  // below 3 fields are most important, move them into an object 'lp' or something like that
+  launchedTokenMintAddress: SolanaAddressSchema.nullable(),
   raisedTokenMintAddress: SolanaAddressSchema,
-  raisedTokenMinCap: z.number().int(),
-  raisedTokenMaxCap: z.number().int(),
-
-  // remove cliffDuration and vestingDuration -- calculate from timeline, or smth else, either way -- remove redundancy
-  // do not calculate for timeline, make timeline UI online, and have hard data in the backend
-  cliffDuration: z.number().int(),
-  vestingDuration: z.number().int(),
+  lbpWalletAddress: SolanaAddressSchema.nullable(),
 
   // make this an enum which describes lpType (might be more than 2 in the future, boolean isn't scalable in this sense)
   lpPositionToBeBurned: z.boolean().optional(),
@@ -181,17 +169,6 @@ const SolanaClusterSchema = z.enum(['mainnet', 'devnet'])
 export const projectSchema = z.object({
   cluster: SolanaClusterSchema,
   info: infoSchema,
-  // TODO deprecate this???
-  saleData: z
-    .object({
-      availableTokens: z.number({ coerce: true }).optional(),
-      saleSucceeded: z.boolean().optional(),
-      totalAmountRaised: z.number({ coerce: true }).optional(),
-      sellOutPercentage: z.number({ coerce: true }).optional(),
-      participantCount: z.number({ coerce: true }).optional(),
-      averageInvestedAmount: z.number({ coerce: true }).optional(),
-    })
-    .optional(),
   rewards: rewardsSchema.optional(),
 })
 export type ProjectModel = z.infer<typeof projectSchema>

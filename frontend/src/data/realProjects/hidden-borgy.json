@@ -46,20 +46,9 @@
       }
     ],
 
-    "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
-
     "launchedTokenMintAddress": "BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX",
-    "launchedTokenLpDistribution": 0,
-    "launchedTokenCap": 0,
-
     "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
-    "raisedTokenMinCap": 0,
-    "raisedTokenMaxCap": 0,
-
     "lbpWalletAddress": "8e4D91WsbeQcCZo2AtYiaQnAsJzYUKwUCeWJ6aj9uVni",
-
-    "cliffDuration": 0,
-    "vestingDuration": 0,
 
     "tge": {
       "raiseTarget": 3000,
@@ -80,7 +69,6 @@
       },
       "tweetUrl": "#"
     },
-    "__comment": "secondary image is the one behind: 'Borgy Data Room Learn more about the project.'",
     "dataRoom": {
       "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
       "url": "https://drive.google.com/file/d/1ELtP99cdMST5MyT17qnCCkvfbA09v2Tr/view"
