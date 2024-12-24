@@ -46,20 +46,9 @@
       }
     ],
 
-    "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
-
     "launchedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-    "launchedTokenLpDistribution": 0,
-    "launchedTokenCap": 0,
-
     "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
-    "raisedTokenMinCap": 0,
-    "raisedTokenMaxCap": 0,
-
     "lbpWalletAddress": null,
-
-    "cliffDuration": 0,
-    "vestingDuration": 0,
 
     "tge": {
       "raiseTarget": 375000,

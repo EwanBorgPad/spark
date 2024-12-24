@@ -106,35 +106,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       }
     }
 
-    // if (!ctx.env.ADMIN_AUTHORITY_SECRET_KEY) throw new Error('ADMIN_AUTHORITY_SECRET_KEY missing!')
-    // if (!ctx.env.SOLANA_RPC_URL) throw new Error('SOLANA_RPC_URL missing!')
-
-    // const adminSecretKey = ctx.env.ADMIN_AUTHORITY_SECRET_KEY.split(',').map(Number)
-    // const rpcUrl = ctx.env.SOLANA_RPC_URL
-
-    // const uid = hashStringToU64(data.info.id)
-
-    // await initializeLpb({
-    //   args: {
-    //     uid,
-
-    //     projectOwnerAddress: data.info.projectOwnerAddress,
-
-    //     launchedTokenMintAddress: data.info.launchedTokenMintAddress,
-    //     launchedTokenLpDistribution: data.info.launchedTokenLpDistribution,
-    //     launchedTokenCap: data.info.launchedTokenCap,
-
-    //     raisedTokenMintAddress: data.info.raisedTokenMintAddress,
-    //     raisedTokenMinCap: data.info.raisedTokenMinCap,
-    //     raisedTokenMaxCap: data.info.raisedTokenMaxCap,
-
-    //     cliffDuration: data.info.cliffDuration,
-    //     vestingDuration: data.info.vestingDuration,
-    //   },
-    //   adminSecretKey,
-    //   rpcUrl,
-    // })
-
     // persist in db
     if (overwrite) {
       await db

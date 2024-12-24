@@ -50,20 +50,9 @@
     "tokenContractUrl": "https://jup.ag/swap/SOL-BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX",
     "poolContractUrl": "https://raydium.io/liquidity/increase/?mode=add&pool_id=BLNidhiuiovET21aeQtnj7wQNdXdvPSeLo3ZjUCqKMzK",
 
-    "projectOwnerAddress": "4SmMETL98BAR6W5DyZm661NbTpY3RUJNeeJMAHxvXia4",
-
     "launchedTokenMintAddress": "BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX",
-    "launchedTokenLpDistribution": 0,
-    "launchedTokenCap": 0,
-
     "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
-    "raisedTokenMinCap": 0,
-    "raisedTokenMaxCap": 0,
-
     "lbpWalletAddress": "4SmMETL98BAR6W5DyZm661NbTpY3RUJNeeJMAHxvXia4",
-
-    "cliffDuration": 0,
-    "vestingDuration": 0,
 
     "claimUrl": "https://app.streamflow.finance/airdrops/solana/mainnet/8sUnkiByzrtE7MMNKp5dUwgwxj8fn2kcgbQxS7ZQqg33",
 
@@ -86,7 +75,6 @@
       },
       "tweetUrl": "https://x.com/BorgPadHQ/status/1866470792734572572"
     },
-    "__comment": "secondary image is the one behind: 'Borgy Data Room Learn more about the project.'",
     "dataRoom": {
       "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
       "url": "https://drive.google.com/file/d/1ELtP99cdMST5MyT17qnCCkvfbA09v2Tr/view"
