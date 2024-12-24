@@ -138,7 +138,6 @@ const getCoinMarketData = async ({ baseCurrency, targetCurrency }: GetCoinMarket
     baseCurrency,
     targetCurrency,
     currentPrice: data.current_price,
-    marketCap: data.market_cap,
     fullyDilutedValuation: data.fully_diluted_valuation,
     quotedFrom: GET_COIN_MARKET_DATA_API_URL,
   }

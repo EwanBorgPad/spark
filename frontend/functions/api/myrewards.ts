@@ -96,8 +96,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const payoutSchedule = [
       ...Array(monthsCount).keys(),
     ].map((index) => {
-      // @hardcoded
       const payoutDate = addMonths(new Date(rewardsDistributionStart), index)
+      // TODO @claimsStreamFlowIntegration
       const isClaimed = index < (claimedMonths - 1)
       return {
         amount: String(claimablePerMonth / Math.pow(10, launchedTokenData.decimals)),

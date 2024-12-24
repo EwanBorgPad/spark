@@ -52,11 +52,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             return jsonResponse({ message: "Project not found!" }, 404)
         }
 
-        // TODO @hardcoded
-        if (project.info.id === 'borgy') {
-            return jsonResponse({ message: 'Target has been reached!' }, 409)
-        }
-
         const lbpWalletAddress = project.info.lbpWalletAddress
 
         if (!lbpWalletAddress) {

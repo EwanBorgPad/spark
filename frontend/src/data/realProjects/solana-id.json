@@ -55,6 +55,8 @@
 
     "claimUrl": "https://app.streamflow.finance/airdrops/solana/mainnet/DXqASQ6PHimtqcyegoL85Uy7FwJLCa5X91HK22aJydXQ",
 
+    "marketCap": 2000000,
+
     "tge": {
       "raiseTarget": 250000,
       "projectCoin": {

@@ -99,8 +99,7 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
     },
     sellOutPercentage: Math.min(100, (Number(totalAmountRaisedInUsd) / Number(raiseTargetInUsd)) * 100),
     participantsCount,
-    // TODO @hardcoded below
-    marketCap: project.id === 'borgy' ? 50_000 : 2_000_000,
+    marketCap: project.json.info.marketCap ?? null,
     fdv: project.json.info.tge.fdv,
   }
 }

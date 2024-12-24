@@ -108,6 +108,8 @@ export const infoSchema = z.object({
   // link for claiming rewards (currently doing airdrops with streamflow, but could be anything)
   claimUrl: z.string().optional().nullable(),
 
+  marketCap: z.number().max(Number.MAX_SAFE_INTEGER).int().optional().nullable(),
+
   tge: z.object({
     raiseTarget: z.number({ coerce: true }).max(Number.MAX_SAFE_INTEGER).int(),
     projectCoin: z.object({
@@ -184,7 +186,6 @@ export type GetExchangeResponse = {
   baseCurrency: string
   targetCurrency: string
   currentPrice: number
-  marketCap: number
   fullyDilutedValuation: number
   quotedFrom?: string
   cache?: unknown
