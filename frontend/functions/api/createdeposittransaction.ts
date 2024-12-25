@@ -77,7 +77,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const tokenMint = project.json.config.raisedTokenData.mintAddress
 
         const depositStatus = await DepositService.getDepositStatus({
-            db,
+            db: drizzleDb,
             projectId,
             rpcUrl,
             walletAddress: userWalletAddress
@@ -85,14 +85,14 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         const eligibilityStatus = await EligibilityService.getEligibilityStatus({
             address: userWalletAddress,
-            db: drizzle(db, { logger: true }),
+            db: drizzleDb,
             projectId,
             rpcUrl
         })
         const endDate = project.json.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
         if (!endDate) return jsonResponse({ message: 'End date is not defined in project json!' }, 500)
 
-        const saleResults = await SaleResultsService.getSaleResults({ db: drizzle(db, { logger: true }), projectId })
+        const saleResults = await SaleResultsService.getSaleResults({ db: drizzleDb, projectId })
 
         const validationError = await validateTx(eligibilityStatus.isEligible, depositStatus, tokenAmount, endDate, saleResults)
         if (validationError) return validationError
@@ -100,7 +100,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         // create transfer and mint nft instruction
         const tx = await createUserDepositTransaction(userWalletAddress, receivingAddress, tokenMint, tokenAmount, connection, privateKey)
 
-        await SnapshotService.createSnapshot({ db: drizzle(db, { logger: true }), address: userWalletAddress, projectId, eligibilityStatus })
+        await SnapshotService.createSnapshot({ db: drizzleDb, address: userWalletAddress, projectId, eligibilityStatus })
 
         return jsonResponse({ transaction: tx }, 200)
     } catch (e) {
