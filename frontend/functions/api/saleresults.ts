@@ -19,7 +19,12 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     })
 
     return jsonResponse(saleResults, {
-      headers: { "Cache-Control": "public, max-age=15, stale-while-revalidate=30" }
+      headers: {
+        "Cache-Control": "public, max-age=15, stale-while-revalidate=30",
+        "Access-Control-Allow-Origin": undefined,
+        "Access-Control-Allow-Methods": undefined,
+        "Vary": undefined,
+      }
     })
   } catch (e) {
     await reportError(ctx.env.DB, e)

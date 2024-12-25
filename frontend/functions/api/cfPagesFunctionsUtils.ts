@@ -4,7 +4,7 @@ import { sql } from "drizzle-orm"
 
 type ResponseOptions = {
   statusCode?: number
-  headers?: Record<string, string>
+  headers?: Record<string, string | undefined>
 }
 /**
  * Easier way to return response
