@@ -11,8 +11,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   try {
     // parse/validate request
     const { searchParams } = new URL(ctx.request.url)
-    const projectId = searchParams.get("projectId")
-    if (!projectId) return jsonResponse({ message: 'projectId is missing!' }, 400)
+    const projectId = searchParams.get("projectId") ?? 'aurelia'
+    // if (!projectId) return jsonResponse({ message: 'projectId is missing!' }, 400)
 
     const saleResults = await SaleResultsService.getSaleResults({
       db, projectId,
