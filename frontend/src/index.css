@@ -137,6 +137,37 @@ input[type="checkbox"] {
   }
 }
 
+.cyberpunk-container {
+  width: 120px;
+  height: 100px;
+  background: linear-gradient(135deg, #e6ff08, #f0ff7b);
+  color: white;
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+ clip-path: polygon(0% 0%, 55% 0%, 55% 24%, 60% 24%, 60% 0%, 66% 0, 66% 24%, 71% 24%, 71% 0, 77% 0, 77% 24%, 82% 24%, 82% 0, 88% 0, 88% 28%, 0% 28%, 0 22%, 0 14%);
+
+  /* box-shadow: 10px 0 15px #413b19, 0 0 25px #0033ff; */
+  border: 2px solid #000000;
+  border-left: none;
+}
+
+.cyberpunk-container:before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  clip-path: polygon(0 0, 70% 0, 100% 20%, 100% 80%, 70% 100%, 0 100%);
+  border: 2px dashed #e6ff08;
+  pointer-events: none;
+  z-index: 1;
+}
+
+
 
 
 /* Tailwind classes */
