@@ -18,8 +18,9 @@ import { useTranslation } from "react-i18next"
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
 const LaunchPools = () => {
-  const [projects, setProjects] = useState<ExpandedProject[]>([])
+  const [phases, setPhases] = useState<ExpandedProject[][]>([])
   const { t } = useTranslation()
+  console.log(phases)
 
   const { data, isLoading } = useQuery<GetProjectsResponse>({
     queryFn: () =>
@@ -32,11 +33,11 @@ const LaunchPools = () => {
 
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
 
-
   useEffect(() => {
     if (!data?.projects) return
+    console.log(data.projects)
     const sortedProjects = sortProjectsPerStatus(data.projects)
-    setProjects(sortedProjects)
+    setPhases(sortedProjects)
   }, [data?.projects])
 
   return (
@@ -70,9 +71,11 @@ const LaunchPools = () => {
         <div className="mt-[64px] flex w-full max-w-[1080px] flex-col items-center">
           <ul className="grid w-full grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {!isLoading
-              ? projects.map((project) => (
-                  <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />
-                ))
+              ? phases?.map((phase) =>
+                  phase?.map((project) => (
+                    <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />
+                  )),
+                )
               : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
           </ul>
         </div>

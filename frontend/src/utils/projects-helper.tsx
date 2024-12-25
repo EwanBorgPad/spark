@@ -80,9 +80,59 @@ export const generateAdditionalEventData = (
   }
 }
 
-export const sortProjectsPerStatus = (
-  projects: ProjectModel[],
-): ExpandedProject[] => {
+const sortPhaseByNextEventDate = (projects: ExpandedProject[]) => {
+  if (!projects?.[0]) return []
+  const currentEventId = projects[0].additionalData.currentEvent.id
+  const isRewardDistribution = currentEventId === "REGISTRATION_OPENS"
+  return [...projects].sort((a, b) => {
+    const dateA = isRewardDistribution
+      ? a.additionalData.currentEvent.nextEventDate
+      : a.additionalData.currentEvent.date
+    const dateB = isRewardDistribution
+      ? b.additionalData.currentEvent.nextEventDate
+      : b.additionalData.currentEvent.date
+
+    // Handle `null` or `undefined` dates
+    if (!dateA) return 1 // `a` goes to the end
+    if (!dateB) return -1 // `b` goes to the end
+
+    // Compare valid dates
+    const timeA = new Date(dateA).getTime()
+    const timeB = new Date(dateB).getTime()
+
+    return timeA - timeB
+  })
+}
+
+const divideProjectsByPhase = (expandedProjects: ExpandedProject[]) => {
+  // @TODO - make better sorting function
+  const upcomingProjects = expandedProjects.filter((project) => project.additionalData.currentEvent.id === "UPCOMING")
+  const whitelistedProjects = expandedProjects.filter(
+    (project) => project.additionalData.currentEvent.id === "REGISTRATION_OPENS",
+  )
+  const saleOpenedProjects = expandedProjects.filter(
+    (project) => project.additionalData.currentEvent.id === "SALE_OPENS",
+  )
+  const saleClosedProjects = expandedProjects.filter(
+    (project) => project.additionalData.currentEvent.id === "SALE_CLOSES",
+  )
+  const rewardDistributionProjects = expandedProjects.filter(
+    (project) => project.additionalData.currentEvent.id === "REWARD_DISTRIBUTION",
+  )
+  const distributionOverProjects = expandedProjects.filter(
+    (project) => project.additionalData.currentEvent.id === "DISTRIBUTION_OVER",
+  )
+  return [
+    whitelistedProjects,
+    saleOpenedProjects,
+    saleClosedProjects,
+    rewardDistributionProjects,
+    upcomingProjects,
+    distributionOverProjects,
+  ]
+}
+
+export const sortProjectsPerStatus = (projects: ProjectModel[]): ExpandedProject[][] => {
   const expandedProjects = projects.map((project) => {
     const expandedTimeline = expandTimelineDataInfo(project.info.timeline)
     const currentEvent = getCurrentTgeEvent(expandedTimeline)
@@ -98,7 +148,7 @@ export const sortProjectsPerStatus = (
     return { additionalData, ...project }
   })
 
-  // @wTODO - make better sorting function
+  // @TODO - make better sorting function
   const upcomingProjects = expandedProjects.filter((project) => project.additionalData.currentEvent.id === "UPCOMING")
   const whitelistedProjects = expandedProjects.filter(
     (project) => project.additionalData.currentEvent.id === "REGISTRATION_OPENS",
@@ -124,13 +174,9 @@ export const sortProjectsPerStatus = (
   const distributionOverProjects = expandedProjects.filter(
     (project) => project.additionalData.currentEvent.id === "DISTRIBUTION_OVER",
   )
-  const sortedProjects = [
-    ...whitelistedProjects,
-    ...saleOpenedProjects,
-    ...saleClosedProjects,
-    ...rewardDistributionProjects,
-    ...upcomingProjects,
-    ...distributionOverProjects,
-  ]
+  const expandedProjectsDividedByPhase = divideProjectsByPhase(expandedProjects)
+  const sortedProjects = expandedProjectsDividedByPhase.map((phase) => {
+    return sortPhaseByNextEventDate(phase)
+  })
   return sortedProjects
 }

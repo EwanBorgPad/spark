@@ -47,7 +47,7 @@ const Project = () => {
                   isLoading={isLoading}
                   loadingClass="max-w-[120px]"
                 />
-                {isDevnet && <DevnetFlag />}
+                {isDevnet && !isLoading && <DevnetFlag />}
               </div>
 
               <Text
