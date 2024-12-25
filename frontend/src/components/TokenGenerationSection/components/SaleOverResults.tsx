@@ -9,8 +9,7 @@ import Text from "@/components/Text"
 const SaleOverResults = () => {
   const { t } = useTranslation()
   const { projectData, isLoading: isLoadingProject } = useProjectDataContext()
-  const info = projectData?.info
-  const projectId = projectData?.info.id
+  const projectId = projectData?.id
 
   const { data: saleData, isLoading: isLoadingSaleResults } = useQuery({
     queryFn: async () => {
@@ -74,7 +73,7 @@ const SaleOverResults = () => {
 
         {/* @TODO - Check: FDV (fully diluted value) is fixed from the beginning. Check if this is in every project */}
         <Text
-          text={formatCurrencyAmount(info?.tge.fdv, { withDollarSign: true, customDecimals: 0 })}
+          text={formatCurrencyAmount(projectData?.config.fdv, { withDollarSign: true, customDecimals: 0 })}
           isLoading={isLoading}
           className="text-base leading-7 text-fg-primary"
         />

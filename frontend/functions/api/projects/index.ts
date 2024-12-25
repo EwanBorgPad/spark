@@ -4,7 +4,9 @@ import {
   jsonResponse,
   reportError,
 } from "../cfPagesFunctionsUtils"
-import { ProjectService } from "../../services/projectService"
+import { projectTable } from "../../../shared/drizzle-schema"
+import { eq, sql } from "drizzle-orm"
+import { drizzle } from "drizzle-orm/d1"
 
 type ENV = {
   DB: D1Database
@@ -79,7 +81,7 @@ const getProjectsFromDB = async (
  * @param ctx
  */
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
-  const db = ctx.env.DB
+  const db = drizzle(ctx.env.DB, { logger: true })
   try {
     // authorize request
     if (!hasAdminAccess(ctx)) {
@@ -100,23 +102,21 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     // check if exists
     if (!overwrite) {
-      const existingProject = await ProjectService.findProjectById({ db, id: data.info.id })
-      if (existingProject) {
-        return jsonResponse({ message: "Project with provided id already exists!", }, 409)
-      }
+      const project = await db
+        .select()
+        .from(projectTable)
+        .where(eq(projectTable.id, data.id))
+        .get()
+      if (project) return jsonResponse({ message: "Project with provided id already exists!", }, 409)
     }
 
+    const id = data.id
+    const json = JSON.stringify(data)
     // persist in db
     if (overwrite) {
-      await db
-        .prepare("REPLACE INTO project (id, json) VALUES (?1, ?2)")
-        .bind(data.info.id, JSON.stringify(data))
-        .run()
+      await db.run(sql`REPLACE INTO project (id, json) VALUES (${id}, ${json})`)
     } else {
-      await db
-        .prepare("INSERT INTO project (id, json) VALUES (?1, ?2)")
-        .bind(data.info.id, JSON.stringify(data))
-        .run()
+      await db.run(sql`INSERT INTO project (id, json) VALUES (${id}, ${json})`)
     }
 
     const retval = {
@@ -128,18 +128,4 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
   }
-}
-
-const hashStringToU64 = (input: string): number => {
-  const FNV_PRIME: number = 1099511628211;
-  const OFFSET_BASIS: number = 14695981039346656037;
-
-  let hash: number = OFFSET_BASIS;
-
-  for (let i = 0; i < input.length; i++) {
-    hash ^= input.charCodeAt(i);
-    hash = (hash * FNV_PRIME) % 2 ** 53; // Ensure the hash stays within the safe integer range
-  }
-
-  return hash;
 }

@@ -11,7 +11,7 @@ type Props = {
 export const FinalSnapshotTaken = ({ className }: Props) => {
   const { t } = useTranslation()
   const { projectData, isLoading } = useProjectDataContext()
-  const timestamp = projectData?.info.finalSnapshotTimestamp
+  const timestamp = projectData?.config.finalSnapshotTimestamp
 
   const formattedDate = timestamp && timestamp.getTime() ? formatDateForSnapshot(timestamp) : "TBD"
 

@@ -71,7 +71,7 @@ const LaunchPools = () => {
           <ul className="grid w-full grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {!isLoading
               ? projects.map((project) => (
-                  <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.info.id} />
+                  <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />
                 ))
               : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
           </ul>

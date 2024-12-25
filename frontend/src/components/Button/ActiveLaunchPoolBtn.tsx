@@ -27,7 +27,7 @@ const ActiveLaunchPoolBtn = () => {
       <div className="relative overflow-hidden rounded-[13px] bg-[#abff73]/25 p-[2px]">
         <div className="animated-conic-gradient animate-rotate-border absolute z-[-1]" />
         <div className="z-[10] flex h-[40px] items-center gap-2 rounded-xl bg-[#16231e] p-3">
-          <Img src={projectData?.info.tge?.projectCoin.iconUrl} size="6" isFetchingLink={isLoading} isRounded />
+          <Img src={projectData?.config.launchedTokenData.iconUrl} size="6" isFetchingLink={isLoading} isRounded />
           <Text text={projectData?.info.title} isLoading={isLoading} className="text-nowrap text-sm" />
           <span className="font-thin opacity-40">|</span>
           <SmallCountDownTimer countdownEventDate={saleOpensDate} labelDuringCountdown="Sale Starts in" />

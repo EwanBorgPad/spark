@@ -98,12 +98,12 @@ export const sortProjectsPerStatus = (
     return { additionalData, ...project }
   })
 
-  // @TODO - make better sorting function
+  // @wTODO - make better sorting function
   const upcomingProjects = expandedProjects.filter((project) => project.additionalData.currentEvent.id === "UPCOMING")
   const whitelistedProjects = expandedProjects.filter(
     (project) => project.additionalData.currentEvent.id === "REGISTRATION_OPENS",
   )
-  const targetIndex = whitelistedProjects.findIndex((project) => project.info.id === "solana-id")
+  const targetIndex = whitelistedProjects.findIndex((project) => project.id === "solana-id")
 
   if (targetIndex !== -1) {
     // Remove the element from its current position

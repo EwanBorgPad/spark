@@ -1,11 +1,14 @@
 
 /**
  * Converts any RPC url to provided cluster.
- * TODO @clusterSeparation(dev/test/main)
  * @param rpcUrl
  * @param cluster
  */
-export function getRpcUrlForCluster(rpcUrl: string, cluster: 'mainnet' | 'devnet'): string {
+export function getRpcUrlForCluster(rpcUrl: string, cluster: string): string {
+  if (!['mainnet', 'devnet'].includes(cluster)) {
+    throw new Error(`getRpcUrlForCluster error, unknown cluster (${cluster})!`)
+  }
+
   if (cluster === 'mainnet') {
     return rpcUrl
       .replace('devnet', 'mainnet')

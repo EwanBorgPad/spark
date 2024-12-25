@@ -63,9 +63,7 @@
         "name": "Raydium",
         "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
         "lbpType": "Concentrated Liquidity",
-        "lockingPeriod": "6 months",
-        "unlockDate": null,
-        "url": "#"
+        "lockingPeriod": "6 months"
       },
       "tweetUrl": "#"
     },

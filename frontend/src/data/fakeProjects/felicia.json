@@ -1,18 +1,68 @@
 {
+  "id": "felicia-ai",
+  "config": {
+    "cluster": "devnet",
+
+    "lpPositionToBeBurned": true,
+
+    "raiseTargetInUsd": 39332,
+    "fdv": 3319401313,
+    "marketCap": 3319401313,
+
+    "totalTokensForLiquidityPool": 900000,
+    "totalTokensForRewardDistribution": 18020,
+
+    "rewardsDistributionTimeInMonths": 6,
+
+    "finalSnapshotTimestamp": "2024-10-10T00:00:00Z",
+
+    "lbpWalletAddress": "Dkj2wARcBhwQYnTUTPoppcBj7eRKnu6pQAd8uVgmQF1R",
+    "raisedTokenData": {
+      "iconUrl": "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=040",
+      "ticker": "USDC",
+
+      "mintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+      "decimals": 6,
+      "fixedTokenPriceInUsd": 0.9,
+      "coinGeckoName": "usd"
+    },
+    "launchedTokenData": {
+      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/project-coin-icon.svg",
+      "ticker": "LRC",
+
+      "mintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+      "decimals": 6,
+      "fixedTokenPriceInUsd": 0.9
+    }
+  },
   "info": {
-    "id": "felicia-ai",
+    "claimUrl": null,
+
+    "tweetUrl": null,
+    "tokenContractUrl": null,
+    "poolContractUrl": null,
+
     "title": "Felicia AI",
     "subtitle": "Decentralized GPUs for AI Inference API",
     "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/felicia-ai/project-logo-369908242",
     "thumbnailUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/felicia-ai/project-logo-369908242",
     "origin": "🇪🇺 Europe",
     "sector": "Healthcare",
+    "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
     "chain": {
       "name": "Zoraa",
       "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/felicia-ai/chain-icon-388759332"
     },
-    "totalTokensForSale": 900000,
-    "totalTokensForRewardDistribution": 18020,
+    "dataRoom": {
+      "backgroundImgUrl": "",
+      "url": "#"
+    },
+    "liquidityPool": {
+      "name": "Raydium",
+      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/liquidity-pool-icon-738904576",
+      "lbpType": "Full Range",
+      "lockingPeriod": "12-month lockup"
+    },
     "curator": {
       "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/felicia-ai/curator-avatar-12692976",
       "fullName": "Molly Millions",
@@ -58,34 +108,6 @@
         "label": ""
       }
     ],
-
-    "launchedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-    "raisedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-
-    "tge": {
-      "raiseTarget": 39332,
-      "projectCoin": {
-        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/felicia-ai/project-coin-icon-363631647",
-        "ticker": "LRC"
-      },
-      "fixedTokenPriceInUSD": 0.05111,
-      "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
-      "fdv": 3319401313,
-      "liquidityPool": {
-        "name": "Raydium",
-        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/madagascar-ski-resort/liquidity-pool-icon-738904576",
-        "lbpType": "Full Range",
-        "lockingPeriod": "12-month lockup",
-        "unlockDate": "2025-07-12T12:39:16Z",
-        "url": "#"
-      },
-      "tweetUrl": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
-    },
-    "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
-    "dataRoom": {
-      "backgroundImgUrl": "",
-      "url": "#"
-    },
     "timeline": [
       {
         "id": "REGISTRATION_OPENS",
@@ -171,18 +193,5 @@
         }
       }
     ]
-  },
-  "saleData": {
-    "availableTokens": 12403,
-    "saleSucceeded": true,
-    "totalAmountRaised": 800402.5661,
-    "sellOutPercentage": 78,
-    "participantCount": 578,
-    "averageInvestedAmount": 1200.34
-  },
-  "rewards": {
-    "distributionType": "linear",
-    "description": "linearly paid-out through 12 months",
-    "payoutInterval": "monthly"
   }
 }

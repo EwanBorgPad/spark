@@ -99,9 +99,9 @@ const ClaimYourPositionModal = ({ onClose, mainPosition }: ClaimYourPositionModa
               <Icon icon="SvgPlus" className="rounded-full text-fg-disabled" />
               <div className="flex flex-1 flex-col items-start justify-start gap-[34px] rounded-lg border border-bd-primary bg-tertiary p-4">
                 <div className="flex items-center justify-center gap-2">
-                  <Img src={projectData?.info.tge.projectCoin.iconUrl} size="5" isFetchingLink={isLoading} isRounded />
+                  <Img src={projectData?.config.launchedTokenData.iconUrl} size="5" isFetchingLink={isLoading} isRounded />
                   <Text
-                    text={projectData?.info.tge.projectCoin.ticker}
+                    text={projectData?.config.launchedTokenData.ticker}
                     isLoading={isLoading}
                     className="text-base font-medium leading-tight text-neutral-100"
                   />
