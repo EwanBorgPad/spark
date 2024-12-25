@@ -1,20 +1,68 @@
 {
-  "cluster": "mainnet",
+  "id": "moemate",
+  "config": {
+    "cluster": "mainnet",
+
+    "lpPositionToBeBurned": true,
+
+    "raiseTargetInUsd": 375000,
+    "fdv": 35000000,
+    "marketCap": null,
+
+    "totalTokensForLiquidityPool": 208928571,
+    "totalTokensForRewardDistribution": 390000000,
+
+    "rewardsDistributionTimeInMonths": 6,
+
+    "finalSnapshotTimestamp": "2025-01-14T15:55:00Z",
+
+    "lbpWalletAddress": null,
+    "raisedTokenData": {
+      "iconUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
+      "ticker": "BORG",
+
+      "mintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
+      "decimals": 9,
+      "fixedTokenPriceInUsd": null,
+      "coinGeckoName": "swissborg"
+    },
+    "launchedTokenData": {
+      "iconUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
+      "ticker": "MATES",
+
+      "mintAddress": null,
+      "decimals": null,
+      "fixedTokenPriceInUsd": 0.00179
+    }
+  },
   "info": {
-    "id": "moemate",
+    "claimUrl": null,
+
+    "tweetUrl": null,
+    "tokenContractUrl": null,
+    "poolContractUrl": null,
+
     "title": "Moemate",
     "subtitle": "Solana's Battle-tested AI Agent Platform",
     "logoUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
     "thumbnailUrl": "https://files.borgpad.com/images/moemate/moemate-cover.png",
     "origin": "The Timeline",
     "sector": "AI Agents",
+    "tokenGenerationEventDate": "14th January, 2025",
     "chain": {
       "name": "Solana",
       "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
     },
-    "lpPositionToBeBurned": true,
-    "totalTokensForSale": 208928571,
-    "totalTokensForRewardDistribution": 390000000,
+    "dataRoom": {
+      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
+      "url": "https://cdn.moemate.io/cdn/Litepaper.pdf"
+    },
+    "liquidityPool": {
+      "name": "Raydium",
+      "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
+      "lbpType": "Concentrated Liquidity",
+      "lockingPeriod": "∞"
+    },
     "curator": {
       "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
       "fullName": "SwissBorg",
@@ -45,33 +93,6 @@
         "label": ""
       }
     ],
-
-    "launchedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-    "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
-    "lbpWalletAddress": null,
-
-    "tge": {
-      "raiseTarget": 375000,
-      "projectCoin": {
-        "iconUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
-        "ticker": "MATES"
-      },
-      "fixedTokenPriceInUSD": 0.00179,
-      "tokenGenerationEventDate": "14th January, 2025",
-      "fdv": 35000000,
-      "liquidityPool": {
-        "name": "Raydium",
-        "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
-        "lbpType": "Concentrated Liquidity",
-        "lockingPeriod": "∞"
-      },
-      "tweetUrl": "#"
-    },
-    "__comment": "secondary image is the one behind: 'Moemate Data Room Learn more about the project.'",
-    "dataRoom": {
-      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
-      "url": "https://cdn.moemate.io/cdn/Litepaper.pdf"
-    },
     "timeline": [
       {
         "id": "REGISTRATION_OPENS",
@@ -147,12 +168,6 @@
           "maxInvestment": "2000"
         }
       }
-    ],
-    "finalSnapshotTimestamp": "2025-01-14T15:55:00Z"
-  },
-  "rewards": {
-    "distributionType": "linear",
-    "description": "linearly paid-out over 6 months",
-    "payoutInterval": "monthly"
+    ]
   }
 }

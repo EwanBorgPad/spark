@@ -1,19 +1,68 @@
 {
+  "id": "puffer-finance",
+  "config": {
+    "cluster": "devnet",
+
+    "lpPositionToBeBurned": true,
+
+    "raiseTargetInUsd": 2000000,
+    "fdv": 2301444,
+    "marketCap": 2301444,
+
+    "totalTokensForLiquidityPool": 25000,
+    "totalTokensForRewardDistribution": 1800,
+
+    "rewardsDistributionTimeInMonths": 6,
+
+    "finalSnapshotTimestamp": "2024-10-10T00:00:00Z",
+
+    "lbpWalletAddress": "Dkj2wARcBhwQYnTUTPoppcBj7eRKnu6pQAd8uVgmQF1R",
+    "raisedTokenData": {
+      "iconUrl": "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=040",
+      "ticker": "USDC",
+
+      "mintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+      "decimals": 6,
+      "fixedTokenPriceInUsd": 0.9,
+      "coinGeckoName": "usd"
+    },
+    "launchedTokenData": {
+      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/project-coin-icon.svg",
+      "ticker": "LRC",
+
+      "mintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+      "decimals": 6,
+      "fixedTokenPriceInUsd": 0.9
+    }
+  },
   "info": {
-    "id": "puffer-finance",
+    "claimUrl": null,
+
+    "tweetUrl": null,
+    "tokenContractUrl": null,
+    "poolContractUrl": null,
+
     "title": "Puffer Finance",
     "subtitle": "Anti-Slashing Liquid Staking",
     "logoUrl": "/images/puffer-finance/avatar.png",
     "thumbnailUrl": "",
     "origin": "🇮🇹 Italy",
     "sector": "Healthcare",
+    "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
     "chain": {
       "name": "Zora",
       "iconUrl": "/images/puffer-finance/chain-icon.png"
     },
-    "totalTokensForSale": 25000,
-    "totalTokensForRewardDistribution": 1800,
-
+    "dataRoom": {
+      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
+      "url": "#"
+    },
+    "liquidityPool": {
+      "name": "Raydium",
+      "iconUrl": "/images/puffer-finance/liquidity-pool-icon.png",
+      "lbpType": "Full Range",
+      "lockingPeriod": "12-month lockup"
+    },
     "curator": {
       "avatarUrl": "/images/puffer-finance/curator-avatar.png",
       "fullName": "John Doe",
@@ -59,32 +108,6 @@
         "label": ""
       }
     ],
-
-    "launchedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-    "raisedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-
-    "tge": {
-      "raiseTarget": 2000000,
-      "projectCoin": {
-        "iconUrl": "/images/puffer-finance/project-coin-icon.svg",
-        "ticker": "LRC"
-      },
-      "fixedTokenPriceInUSD": 1,
-      "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
-      "fdv": 2301444,
-      "liquidityPool": {
-        "name": "Raydium",
-        "iconUrl": "/images/puffer-finance/liquidity-pool-icon.png",
-        "lbpType": "Full Range",
-        "lockingPeriod": "12-month lockup"
-      },
-      "tweetUrl": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
-    },
-    "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
-    "dataRoom": {
-      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
-      "url": "#"
-    },
     "timeline": [
       {
         "id": "REGISTRATION_OPENS",
@@ -169,20 +192,6 @@
           "maxInvestment": "999999"
         }
       }
-    ],
-    "finalSnapshotTimestamp": "2024-10-10T00:00:00Z"
-  },
-  "saleData": {
-    "availableTokens": 12403,
-    "saleSucceeded": true,
-    "totalAmountRaised": 800402.5661,
-    "sellOutPercentage": 78,
-    "participantCount": 578,
-    "averageInvestedAmount": 1200.34
-  },
-  "rewards": {
-    "distributionType": "linear",
-    "description": "linearly paid-out through 12 months",
-    "payoutInterval": "monthly"
+    ]
   }
 }

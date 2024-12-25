@@ -1,20 +1,68 @@
 {
-  "cluster": "mainnet",
+  "id": "solana-id",
+  "config": {
+    "cluster": "mainnet",
+
+    "lpPositionToBeBurned": true,
+
+    "raiseTargetInUsd": 250000,
+    "fdv": 20000000,
+    "marketCap": 2000000,
+
+    "totalTokensForLiquidityPool": 12500000,
+    "totalTokensForRewardDistribution": 12500000,
+
+    "rewardsDistributionTimeInMonths": 6,
+
+    "finalSnapshotTimestamp": "2024-12-19T17:00:00Z",
+
+    "lbpWalletAddress": "EzVMRab2dvm7mVHEwQ5riQKMHR1PaNvB9tCm1x2nK2Rn",
+    "raisedTokenData": {
+      "iconUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
+      "ticker": "BORG",
+
+      "mintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
+      "decimals": 9,
+      "fixedTokenPriceInUsd": 0.362331,
+      "coinGeckoName": "swissborg"
+    },
+    "launchedTokenData": {
+      "iconUrl": "https://pbs.twimg.com/profile_images/1790569613694222336/ohYGOED1_400x400.jpg",
+      "ticker": "SOLID",
+
+      "mintAddress": "SoLiDMWBct5TurG1LNcocemBK7QmTn4P33GSrRrcd2n",
+      "decimals": 9,
+      "fixedTokenPriceInUsd": 0.02
+    }
+  },
   "info": {
-    "id": "solana-id",
+    "claimUrl": "https://app.streamflow.finance/airdrops/solana/mainnet/DXqASQ6PHimtqcyegoL85Uy7FwJLCa5X91HK22aJydXQ",
+
+    "tweetUrl": "https://x.com/borgpadhq/status/1869813497384874467?s=46",
+    "tokenContractUrl": "https://jup.ag/swap/SOL-SoLiDMWBct5TurG1LNcocemBK7QmTn4P33GSrRrcd2n",
+    "poolContractUrl": "https://raydium.io/liquidity/increase/?mode=add&pool_id=4VLWQsgWF5WcC7pG9huCT3domqzhYVonY5GvcbHduCWv",
+
     "title": "Solana ID",
     "subtitle": "Solana's Digital Identity Layer",
     "logoUrl": "https://imgcdn.stablediffusionweb.com/2024/4/19/5acb9020-70dd-42c5-afca-3fe165e87d2c.jpg",
     "thumbnailUrl": "https://pub-4b018f06ec944a0693e0f9679cab6f5a.r2.dev/images/solana-id/solanaIdThumbnail-min.png",
     "origin": "The Trenches 🪖",
     "sector": "Digital Identity",
+    "tokenGenerationEventDate": "19th December, 2024",
     "chain": {
       "name": "Solana",
       "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
     },
-    "lpPositionToBeBurned": true,
-    "totalTokensForSale": 12500000,
-    "totalTokensForRewardDistribution": 12500000,
+    "dataRoom": {
+      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
+      "url": "https://www.solana.id/solid"
+    },
+    "liquidityPool": {
+      "name": "Raydium",
+      "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
+      "lbpType": "Concentrated Liquidity",
+      "lockingPeriod": "6 months"
+    },
     "curator": {
       "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
       "fullName": "SwissBorg",
@@ -45,40 +93,6 @@
         "label": ""
       }
     ],
-
-    "tokenContractUrl": "https://jup.ag/swap/SOL-SoLiDMWBct5TurG1LNcocemBK7QmTn4P33GSrRrcd2n",
-    "poolContractUrl": "https://raydium.io/liquidity/increase/?mode=add&pool_id=4VLWQsgWF5WcC7pG9huCT3domqzhYVonY5GvcbHduCWv",
-
-    "launchedTokenMintAddress": "SoLiDMWBct5TurG1LNcocemBK7QmTn4P33GSrRrcd2n",
-    "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
-    "lbpWalletAddress": "EzVMRab2dvm7mVHEwQ5riQKMHR1PaNvB9tCm1x2nK2Rn",
-
-    "claimUrl": "https://app.streamflow.finance/airdrops/solana/mainnet/DXqASQ6PHimtqcyegoL85Uy7FwJLCa5X91HK22aJydXQ",
-
-    "marketCap": 2000000,
-
-    "tge": {
-      "raiseTarget": 250000,
-      "projectCoin": {
-        "iconUrl": "https://pbs.twimg.com/profile_images/1790569613694222336/ohYGOED1_400x400.jpg",
-        "ticker": "SOLID"
-      },
-      "fixedTokenPriceInUSD": 0.02,
-      "tokenGenerationEventDate": "19th December, 2024",
-      "fdv": 20000000,
-      "liquidityPool": {
-        "name": "Raydium",
-        "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
-        "lbpType": "Concentrated Liquidity",
-        "lockingPeriod": "6 months"
-      },
-      "tweetUrl": "https://x.com/borgpadhq/status/1869813497384874467?s=46"
-    },
-    "__comment": "secondary image is the one behind: 'Solana ID Data Room Learn more about the project.'",
-    "dataRoom": {
-      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
-      "url": "https://www.solana.id/solid"
-    },
     "timeline": [
       {
         "id": "REGISTRATION_OPENS",
@@ -230,12 +244,6 @@
           "maxInvestment": "1000"
         }
       }
-    ],
-    "finalSnapshotTimestamp": "2024-12-19T17:00:00Z"
-  },
-  "rewards": {
-    "distributionType": "linear",
-    "description": "linearly paid-out over 6 months",
-    "payoutInterval": "monthly"
+    ]
   }
 }

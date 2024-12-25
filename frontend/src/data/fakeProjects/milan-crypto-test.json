@@ -1,20 +1,68 @@
 {
-  "cluster": "devnet",
+  "id": "milan-crypto-test",
+  "config": {
+    "cluster": "devnet",
+
+    "lpPositionToBeBurned": true,
+
+    "raiseTargetInUsd": 20,
+    "fdv": 4401444,
+    "marketCap": 4401444,
+
+    "totalTokensForLiquidityPool": 12500000,
+    "totalTokensForRewardDistribution": 12500000,
+
+    "rewardsDistributionTimeInMonths": 6,
+
+    "finalSnapshotTimestamp": "2024-10-10T00:00:00Z",
+
+    "lbpWalletAddress": "Dkj2wARcBhwQYnTUTPoppcBj7eRKnu6pQAd8uVgmQF1R",
+    "raisedTokenData": {
+      "iconUrl": "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=040",
+      "ticker": "USDC",
+
+      "mintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+      "decimals": 6,
+      "fixedTokenPriceInUsd": 0.9,
+      "coinGeckoName": "usd"
+    },
+    "launchedTokenData": {
+      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/project-coin-icon.svg",
+      "ticker": "LRC",
+
+      "mintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+      "decimals": 6,
+      "fixedTokenPriceInUsd": 0.9
+    }
+  },
   "info": {
-    "id": "milan-crypto-test-reward-dist",
+    "claimUrl": null,
+
+    "tweetUrl": null,
+    "tokenContractUrl": null,
+    "poolContractUrl": null,
+
     "title": "Milan Crypto 03 Reward Dist",
     "subtitle": "Anti-Slashing Liquid Staking Crypto Manic Market Making",
     "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar.png",
     "thumbnailUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/westeros-validator-group/project-thumbnail-824297648",
     "origin": "\uD83C\uDDF7\uD83C\uDDF8 Serbia",
     "sector": "Healthcare",
+    "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
     "chain": {
       "name": "Zora",
       "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/chain-icon.png"
     },
-    "lpPositionToBeBurned": true,
-    "totalTokensForSale": 12500000,
-    "totalTokensForRewardDistribution": 12500000,
+    "dataRoom": {
+      "backgroundImgUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar2.png",
+      "url": "#"
+    },
+    "liquidityPool": {
+      "name": "Raydium",
+      "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/liquidity-pool-icon.png",
+      "lbpType": "Full Range",
+      "lockingPeriod": "6-month lockup"
+    },
     "curator": {
       "avatarUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/curator-avatar.jpg",
       "fullName": "Milan Miljus",
@@ -60,33 +108,6 @@
         "label": ""
       }
     ],
-
-    "launchedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-    "raisedTokenMintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-    "lbpWalletAddress": "Dkj2wARcBhwQYnTUTPoppcBj7eRKnu6pQAd8uVgmQF1R",
-
-    "tge": {
-      "raiseTarget": 20,
-      "projectCoin": {
-        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/project-coin-icon.svg",
-        "ticker": "LRC"
-      },
-      "fixedTokenPriceInUSD": 0.02,
-      "tokenGenerationEventDate": "2024-07-12T12:39:16Z",
-      "fdv": 4401444,
-      "liquidityPool": {
-        "name": "Raydium",
-        "iconUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/liquidity-pool-icon.png",
-        "lbpType": "Full Range",
-        "lockingPeriod": "6-month lockup"
-      },
-      "tweetUrl": "https://x.com/swissborg/status/1801629344848089180?s=23431?t=134134"
-    },
-    "__comment": "secondary image is the one behind: 'Puffer Finance Data Room Learn more about the project and...'",
-    "dataRoom": {
-      "backgroundImgUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar2.png",
-      "url": "#"
-    },
     "timeline": [
       {
         "id": "REGISTRATION_OPENS",
@@ -187,20 +208,6 @@
           "maxInvestment": "4"
         }
       }
-    ],
-    "finalSnapshotTimestamp": "2024-10-10T00:00:00Z"
-  },
-  "saleData": {
-    "availableTokens": 14300,
-    "saleSucceeded": true,
-    "totalAmountRaised": 800402.5661,
-    "sellOutPercentage": 78,
-    "participantCount": 578,
-    "averageInvestedAmount": 1200.34
-  },
-  "rewards": {
-    "distributionType": "linear",
-    "description": "linearly paid-out through 12 months",
-    "payoutInterval": "monthly"
+    ]
   }
 }
