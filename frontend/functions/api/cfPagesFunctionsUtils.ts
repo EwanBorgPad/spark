@@ -25,12 +25,12 @@ export const jsonResponse = (
     ? JSON.stringify(retval)
     : retval as string
   const status = options?.statusCode ?? 200
-  const headers = {
+  const headers = removeUndefinedValues({
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "http://localhost:5173",
     "Access-Control-Allow-Methods": "OPTIONS, GET, PUT, POST, DELETE, HEAD",
     ...(options?.headers ? options.headers : {}),
-  }
+  })
 
   return new Response(body, { status, headers })
 }
@@ -96,4 +96,11 @@ export const extractProjectId = (url: string) => {
 
   return id
 }
+
+function removeUndefinedValues(obj: Record<string, any>): Record<string, any> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, value]) => value !== undefined)
+  );
+}
+
 
