@@ -136,7 +136,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
           ['confirmed', 'finalized'].includes(transactionStatus.confirmationStatus)
         ) {
             await DepositService.createUserDeposit({
-                db,
+                db: drizzleDb,
                 amount: amountInLamports.toString(),
                 projectId: data.projectId,
                 walletAddress: userWalletAddress,
@@ -157,7 +157,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         return jsonResponse({ message: "Ok!" }, 200)
     } catch (e) {
-        await reportError(ctx.env.DB, e)
+        await reportError(db, e)
         return jsonResponse({ message: "Something went wrong..." }, 500)
     }
 }
