@@ -1,29 +1,38 @@
 import { createHash } from "node:crypto"
-import { ProjectModel } from "../../shared/models"
 import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 import { sql } from "drizzle-orm"
 
+type ResponseOptions = {
+  statusCode?: number
+  headers?: Record<string, string>
+}
 /**
  * Easier way to return response
  * @param retval
- * @param statusCode
+ * @param options
  */
 export const jsonResponse = (
   retval?: string | Record<string, unknown> | null,
-  statusCode?: number,
+  options?: number | ResponseOptions,
 ): Response => {
+  if (typeof options === 'number') {
+    options = {
+      statusCode: options,
+    }
+  }
+
   const body = (retval !== null && typeof retval === 'object')
     ? JSON.stringify(retval)
     : retval as string
-  const status = statusCode ?? 200
-  return new Response(body, {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "http://localhost:5173",
-      "Access-Control-Allow-Methods": "OPTIONS, GET, PUT, POST, DELETE, HEAD",
-    },
-  })
+  const status = options?.statusCode ?? 200
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "http://localhost:5173",
+    "Access-Control-Allow-Methods": "OPTIONS, GET, PUT, POST, DELETE, HEAD",
+    ...(options?.headers ? options.headers : {}),
+  }
+
+  return new Response(body, { status, headers })
 }
 /**
  * Reports an error.
