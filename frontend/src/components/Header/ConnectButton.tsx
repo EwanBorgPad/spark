@@ -24,14 +24,8 @@ export const ConnectButton = ({
   color,
   isLoading = false,
 }: ConnectButtonProps) => {
-  const {
-    walletState,
-    truncatedAddress,
-    signInWithPhantom,
-    signInWithBackpack,
-    signInWithSolflare,
-    signOut,
-  } = useWalletContext()
+  const { walletState, truncatedAddress, signInWithPhantom, signInWithBackpack, signInWithSolflare, signOut } =
+    useWalletContext()
 
   const [showModal, setShowModal] = useState(false)
   const [showNoWallet, setShowNoWallet] = useState(false)
@@ -72,8 +66,8 @@ export const ConnectButton = ({
       {showModal && (
         <SimpleModal
           className="md:w-1/2"
-          showCloseBtn={!showNoWallet}
-          title="Connect a Solana Wallet"
+          showCloseBtn={true}
+          title={!showNoWallet ? "Connect a Solana Wallet" : "No wallet?"}
           onClose={() => {
             setShowModal(false)
             setShowNoWallet(false)
@@ -112,40 +106,25 @@ export const ConnectButton = ({
   )
 }
 function NoWalletModalContent({ close }: { close: () => void }) {
-  const iconCss = twMerge(
-    "text-2xl hover:bg-tertiary rounded-full",
-    "select-none cursor-pointer",
-  )
   return (
-    <>
-      {/* Heading */}
-      <div className="flex w-full items-center p-[17px] text-center">
-        <Icon icon={"SvgArrowLeft"} onClick={close} className={iconCss} />
-        <h1 className="grow text-body-xl-semibold text-white">No wallet?</h1>
-        <div className="w-6"></div>
-      </div>
-      {/* Body */}
-      <div
-        className={twMerge(
-          "flex w-full grow flex-col items-center justify-start lg:justify-center",
-          "gap-5 px-10 pb-8 pt-14 lg:pt-3",
-        )}
-      >
-        <p className="text-body-l-regular text-fg-tertiary">
-          New to DeFI? Create a wallet now:
-        </p>
-        <WalletProvider
-          icon={"SvgPhantom"}
-          label={"Create a Phantom Wallet"}
-          onClick={() => window.open("https://phantom.app", "_blank")}
-        />
-        <p className="text-center text-fg-secondary">
-          Phantom is a robust, multi-chain wallet
-          <br />
-          trusted by over 3 million users.
-        </p>
-      </div>
-    </>
+    <div
+      className={twMerge(
+        "flex w-full grow flex-col items-center justify-start lg:justify-center",
+        "gap-5 px-10 pb-8 pt-14 lg:pt-3",
+      )}
+    >
+      <p className="text-body-l-regular text-fg-tertiary">New to DeFI? Create a wallet now:</p>
+      <WalletProvider
+        icon={"SvgPhantom"}
+        label={"Create a Phantom Wallet"}
+        onClick={() => window.open("https://phantom.app", "_blank")}
+      />
+      <p className="text-center text-fg-secondary">
+        Phantom is a robust, multi-chain wallet
+        <br />
+        trusted by over 3 million users.
+      </p>
+    </div>
   )
 }
 
