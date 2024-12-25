@@ -33,8 +33,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     ////////////////////////////////////////
-    //// TODO Improvement: Validations /////
-    //// Check if projects/tiers exist /////
+    /////// Improvement: Validations ///////
+    ///// Check if projects/tiers exist ////
     ////////////////////////////////////////
 
     // batchSize 35 fails because of Error: D1_ERROR: too many SQL variables at offset 637: SQLITE_ERROR

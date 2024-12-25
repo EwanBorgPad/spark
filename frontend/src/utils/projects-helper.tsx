@@ -98,7 +98,7 @@ export const sortProjectsPerStatus = (
     return { additionalData, ...project }
   })
 
-  // @TODO - make better sorting function
+  // @wTODO - make better sorting function
   const upcomingProjects = expandedProjects.filter((project) => project.additionalData.currentEvent.id === "UPCOMING")
   const whitelistedProjects = expandedProjects.filter(
     (project) => project.additionalData.currentEvent.id === "REGISTRATION_OPENS",

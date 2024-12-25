@@ -7,9 +7,6 @@ import { toast } from "react-toastify"
 
 const AUTO_CONNECT_PARAM_KEY = "autoConnect"
 const PAGE_URL = window.location.origin
-/**
- * I've just hardcoded this to current host, hope it doesn't backfire
- */
 const PAGE_DOMAIN = window.location.host
 
 export type WalletState = "NOT_CONNECTED" | "CONNECTING" | "CONNECTED"

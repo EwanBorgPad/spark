@@ -6,14 +6,9 @@ import { sql } from "drizzle-orm"
 /**
  * GET /exchange
  * Serves exchange data from a 3rd party exchange, and caches the response in the D1 db in order to avoid being rate limited.
- * TODO @exchange this works ok for one currencyPair, let's think about what happens when we have a lot of different queries
- * TODO @exchange think about how this service notifies us that rate limit has been hit, seems very important
- * TODO @security should we whitelist currencies? (this way anyone can post any string there)
- *
- * TODO handle rate limit correctly
- * TODO check if calling this from frontend should be removed
- * TODO migrate to drizzleorm
- * TODO whitelist currencies to prevent api abuse
+ * TODO @exchange this works ok for one currencyPair, let's think about what happens when we have a lot of different queries - rate limit breach
+ * TODO @exchange consider how this service notifies us that rate limit has been hit, seems very important
+ * TODO @exchange consider removing all calls to this from the frontend
  */
 /**
  * Caching statuses terminology borrowed from CloudFlare https://developers.cloudflare.com/cache/concepts/cache-responses/
@@ -25,7 +20,6 @@ type CacheStatus =
   | 'MISS'
 /**
  * Time in seconds after which the cache is invalidated
- * TODO document the api's actual rate limits (check http headers for that data)
  */
 const CACHE_TTL_SECONDS = 30
 

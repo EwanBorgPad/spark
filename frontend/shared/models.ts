@@ -196,8 +196,6 @@ export const InvestmentIntentRequestSchema = z.object({
 })
 export type InvestmentIntentRequest = z.infer<typeof InvestmentIntentRequestSchema>
 
-// TODO search all 'whitelist' in project and check if the naming is ok (isCompliant, isEligible, isWhitelisted)
-
 export const InvestmentIntentSummarySchema = z.object({
   sum: z.number(),
   avg: z.number(),

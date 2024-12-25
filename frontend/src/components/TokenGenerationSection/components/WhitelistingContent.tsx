@@ -24,7 +24,7 @@ const WhitelistingContent = () => {
 
   const baseCurrency = "swissborg"
   const targetCurrency = "usd"
-  // TODO @hardcoded swissborg coin, replace with project's token later
+  // TODO @hardcoded exchangeBorgUsd
   const { data } = useQuery({
     queryFn: () =>
       backendApi.getExchange({
