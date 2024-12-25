@@ -39,8 +39,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             throw new Error('Misconfigured env!')
         }
 
-        return jsonResponse({ message: 'Sale ended!' }, 409)
-
         // request validation
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
         if (error) return jsonResponse({ error: 'Invalid request' }, 400)

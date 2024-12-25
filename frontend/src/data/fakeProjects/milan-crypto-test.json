@@ -42,7 +42,7 @@
     "tokenContractUrl": null,
     "poolContractUrl": null,
 
-    "title": "Milan Crypto 03 Reward Dist",
+    "title": "Milan Crypto",
     "subtitle": "Anti-Slashing Liquid Staking Crypto Manic Market Making",
     "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar.png",
     "thumbnailUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/westeros-validator-group/project-thumbnail-824297648",
@@ -122,12 +122,12 @@
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-12-17"
+        "date": "2024-12-26"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2024-12-17"
+        "date": "2024-12-26"
       },
       {
         "id": "DISTRIBUTION_OVER",
