@@ -28,9 +28,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx): Promise<Response> =
     // return result
     return jsonResponse(response)
   } catch (e) {
-    await reportError(ctx.env.DB, e)
-    return jsonResponse({
-      message: "Something went wrong...",
-    }, 500)
+    await reportError(db, e)
+    return jsonResponse({ message: "Something went wrong..." }, 500)
   }
 }

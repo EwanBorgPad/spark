@@ -1,5 +1,7 @@
 import { createHash } from "node:crypto"
 import { ProjectModel } from "../../shared/models"
+import { DrizzleD1Database } from "drizzle-orm/d1/driver"
+import { sql } from "drizzle-orm"
 
 /**
  * Easier way to return response
@@ -30,7 +32,7 @@ export const jsonResponse = (
  * @param db
  * @param e
  */
-export const reportError = async (db: D1Database, error: unknown) => {
+export const reportError = async (db: D1Database | DrizzleD1Database, error: unknown) => {
   const e = error instanceof Error ? error : new Error(String(error))
 
   console.error(e)
@@ -43,10 +45,15 @@ export const reportError = async (db: D1Database, error: unknown) => {
     name: e.name,
     cause: e.cause,
   })
-  await db
-    .prepare('INSERT INTO error (id, message, created_at, json) VALUES (?1, ?2, ?3, ?4);')
-    .bind(id, message, createdAt, json)
-    .run()
+
+  if (db instanceof DrizzleD1Database) {
+    await db.run(sql`INSERT INTO error (id, message, created_at, json) VALUES (${id}, ${message}, ${createdAt}, ${json});`)
+  } else {
+    await db
+      .prepare('INSERT INTO error (id, message, created_at, json) VALUES (?1, ?2, ?3, ?4);')
+      .bind(id, message, createdAt, json)
+      .run()
+  }
 }
 /**
  * Call this function to check if the user has admin privileges in provided context.

@@ -16,7 +16,7 @@ const Project = () => {
   const { projectData, isLoading } = useProjectDataContext()
   const { t } = useTranslation()
 
-  const isDevnet = projectData?.cluster === "devnet"
+  const isDevnet = projectData?.config.cluster === "devnet"
 
   const expandedTimeline = expandTimelineDataInfo(projectData?.info.timeline ?? [])
 
@@ -47,7 +47,7 @@ const Project = () => {
                   isLoading={isLoading}
                   loadingClass="max-w-[120px]"
                 />
-                {isDevnet && <DevnetFlag />}
+                {isDevnet && !isLoading && <DevnetFlag />}
               </div>
 
               <Text
@@ -87,7 +87,7 @@ const Project = () => {
                 className="group flex items-center gap-2 border-r-[1px] px-5 md:border-l-[1px] md:border-x-fg-gray-line"
               >
                 <Img size="4" src={projectData?.info.logoUrl} isRounded />
-                <Text text={`$${projectData.info.tge.projectCoin.ticker}`} isLoading={isLoading} />
+                <Text text={`$${projectData.config.launchedTokenData.ticker}`} isLoading={isLoading} />
                 <Icon icon="SvgExternalLink" className="opacity-50 transition-opacity group-hover:opacity-100" />
               </a>
             )}
@@ -99,7 +99,7 @@ const Project = () => {
                 className="group flex items-center gap-2 px-5  md:border-r-fg-gray-line"
               >
                 <Img size="4" src={projectData?.info.logoUrl} isRounded />
-                <Text text={`$${projectData.info.tge.projectCoin.ticker}/BORG`} isLoading={isLoading} />
+                <Text text={`$${projectData.config.launchedTokenData.ticker}/BORG`} isLoading={isLoading} />
                 <Icon icon="SvgExternalLink" className="opacity-50 transition-opacity group-hover:opacity-100" />
               </a>
             )}

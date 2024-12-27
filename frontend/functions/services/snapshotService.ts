@@ -37,6 +37,7 @@ type CreateSnapshotArgs = GetSnapshotArgs & {
  * @param eligibilityStatus
  */
 const createSnapshot = async ({ db, address, projectId, eligibilityStatus }: CreateSnapshotArgs): Promise<void> => {
+  // we take snapshot one time only
   const existingSnapshot = await getSnapshot({ db, address, projectId })
   if (existingSnapshot) return
 

@@ -47,9 +47,9 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const { projectData } = useProjectDataContext()
   const { walletState, signTransaction, address, walletProvider } = useWalletContext()
 
-  const cluster = projectData?.cluster ?? "devnet"
+  const cluster = projectData?.config.cluster
   const rpcUrl = BACKEND_RPC_URL + "?cluster=" + cluster
-  const tokenMintAddress = projectData?.info.raisedTokenMintAddress
+  const tokenMintAddress = projectData?.config.raisedTokenData.mintAddress
 
   const { mutateAsync: makeDepositTransaction, isPending: isPendingMakeDepositTransaction } = useMutation({
     mutationFn: async (payload: PostCreateDepositTxArgs) => {
@@ -131,7 +131,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     queryKey: ["getExchange", baseCurrency, targetCurrency],
   })
   const borgPriceInUSD = exchangeData?.currentPrice || null
-  const tokenPriceInUSD = projectData?.info.tge.fixedTokenPriceInUSD || 0
+  const tokenPriceInUSD = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
   // @TODO - resolve fix below

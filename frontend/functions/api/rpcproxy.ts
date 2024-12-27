@@ -25,8 +25,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
 
   try {
-    const clusterParam = new URL(ctx.request.url).searchParams.get("cluster")
-    const cluster = clusterParam === 'devnet' ? 'devnet' : 'mainnet'
+    const cluster = new URL(ctx.request.url).searchParams.get("cluster")
+    if (!['devnet', 'mainnet'].includes(cluster)) {
+      return jsonResponse({ message: `Unsupported cluster (${cluster})!`}, 409)
+    }
+
     const solanaRpcUrl = getRpcUrlForCluster(ctx.env.SOLANA_RPC_URL, cluster)
 
     //// validate request

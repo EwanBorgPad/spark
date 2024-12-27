@@ -85,8 +85,6 @@ export const getDefaultValues = () => {
           iconUrl: "",
           lbpType: "",
           lockingPeriod: "",
-          unlockDate: undefined,
-          url: "#",
         },
         tweetUrl: "",
       },

@@ -26,12 +26,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       .from(projectTable)
       .where(eq(projectTable.id, projectId))
       .get()
+    if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 
-    if (!project)
-      return jsonResponse({ message: `Project not found (id=${projectId})!`}, 404)
-
-    const cluster = project.json.cluster
-
+    const cluster = project.json.config.cluster
     const rpcUrl = getRpcUrlForCluster(ctx.env.SOLANA_RPC_URL, cluster)
 
     const eligibilityStatus = await EligibilityService.getEligibilityStatus({
