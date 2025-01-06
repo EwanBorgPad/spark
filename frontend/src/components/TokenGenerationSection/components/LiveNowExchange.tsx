@@ -135,11 +135,11 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
 
   // @TODO - resolve fix below
-  const minBorgInput = depositStatus ? Number(Number(depositStatus.minAmountAllowed.uiAmount).toFixed(2)) : 0
-  const maxBorgInput = depositStatus ? truncateToSecondDecimal(Number(depositStatus.maxAmountAllowed.uiAmount)) : 0
+  const minBorgInput = depositStatus ? Number(Number(depositStatus.minAmountAllowed.uiAmount).toFixed(2)) : null
+  const maxBorgInput = depositStatus ? truncateToSecondDecimal(Number(depositStatus.maxAmountAllowed.uiAmount)) : null
 
   const checkIfUserInvestedMaxAmount = useCallback(() => {
-    if (typeof maxBorgInput !== "number" || typeof maxBorgInput !== "number") {
+    if (typeof minBorgInput !== "number" || typeof maxBorgInput !== "number") {
       return false
     }
     if (maxBorgInput < 0.1) return true
@@ -152,7 +152,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const { handleSubmit, control, setValue, watch, clearErrors, setError } = useForm<FormInputs>({ mode: "onBlur" })
 
   const checkIfValueIsValid = (value: string) => {
-    if (!balance?.uiAmountString) return
+    if (!balance?.uiAmountString || !maxBorgInput || !minBorgInput) return
     if (+value > maxBorgInput) {
       setError("borgInputValue", { message: `Max investment value is ${maxBorgInput.toFixed(2)} BORG` })
       return false
@@ -223,7 +223,9 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const borgCoinInput = watch("borgInputValue")
 
   const isInputMaxAmount = +borgCoinInput === maxBorgInput
-  const maxAmountString = `Use Max Allowed: ${formatCurrencyAmount(+maxBorgInput, { customDecimals: 2 })}`
+  const maxAmountString = maxBorgInput
+    ? `Use Max Allowed: ${formatCurrencyAmount(+maxBorgInput, { customDecimals: 2 })}`
+    : ""
 
   const scrollToWhitelistRequirements = () => {
     const top = eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
@@ -251,8 +253,8 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
                   rules={{ required: true }}
                   render={({ field: { value, onChange }, fieldState: { error } }) => (
                     <LiveNowInput
-                      minBorgInput={minBorgInput}
-                      maxBorgInput={maxBorgInput}
+                      minBorgInput={minBorgInput || 0}
+                      maxBorgInput={maxBorgInput || 0}
                       disabled={userInvestedMaxAmount}
                       onChange={onChange}
                       value={value}
