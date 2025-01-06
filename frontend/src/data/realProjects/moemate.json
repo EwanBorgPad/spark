@@ -31,7 +31,7 @@
       "ticker": "MATES",
 
       "mintAddress": null,
-      "decimals": null,
+      "decimals": 0,
       "fixedTokenPriceInUsd": 0.00179
     }
   },
@@ -171,3 +171,4 @@
     ]
   }
 }
+
