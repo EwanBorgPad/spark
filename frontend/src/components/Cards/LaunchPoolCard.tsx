@@ -10,6 +10,9 @@ import { ExpandedProject } from "@/utils/projects-helper"
 
 type Props = { project: ExpandedProject | null; isLoading?: boolean }
 
+// @TODO - @UPDATE_PROJECT_DATA - remove temp fix below
+const borgyThumbnailUrl = "https://files.borgpad.com/images/borgy/borgy-thumbnail.png"
+
 const LaunchPoolCard = ({ project, isLoading }: Props) => {
   const { t } = useTranslation()
 
@@ -18,7 +21,8 @@ const LaunchPoolCard = ({ project, isLoading }: Props) => {
   return (
     <li className="relative flex w-full max-w-[344px] flex-col overflow-hidden rounded-lg border-bd-primary bg-secondary">
       <Img
-        src={project?.info?.thumbnailUrl || project?.info?.logoUrl}
+        // @TODO - @UPDATE_PROJECT_DATA - remove temp fix below
+        src={project?.id === "borgy" ? borgyThumbnailUrl : project?.info?.thumbnailUrl || project?.info?.logoUrl}
         customClass="h-[189px] rounded-none"
         showFallback
         isFetchingLink={isLoading}
