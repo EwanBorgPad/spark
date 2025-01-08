@@ -22,8 +22,7 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
   const { address } = useWalletContext()
   const { projectId } = useParams()
 
-  // TODO @hardcoded
-  // borg price
+  // TODO @hardcoded exchangeBorgUsd
   const baseCurrency = "swissborg"
   const targetCurrency = "usd"
   const { data } = useQuery({

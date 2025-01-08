@@ -11,7 +11,7 @@ import { backendApi } from "@/data/backendApi"
 const SaleProgress = () => {
   const { t } = useTranslation()
   const { projectData, isLoading: isLoadingProject } = useProjectDataContext()
-  const projectId = projectData?.info.id || ""
+  const projectId = projectData?.id || ""
 
   const { data: saleData, isLoading: isLoadingSaleResults } = useQuery({
     queryFn: async () => {

@@ -3,16 +3,16 @@ import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { drizzle } from "drizzle-orm/d1"
 import { Connection, Keypair, Transaction } from "@solana/web3.js"
 import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
-import { ProjectService } from "../services/projectService"
 import { signatureSubscribe } from "../../src/utils/solanaFunctions"
 import { DepositService } from "../services/depositService"
 import { EligibilityService } from "../services/eligibilityService"
 import { calculateTokens } from "../../shared/utils/calculateTokens"
 import { exchangeService } from "../services/exchangeService"
-import { getTokenData } from "../services/constants"
 import { Buffer } from "buffer"
 import * as bs58 from "bs58"
 import { SaleResultsService } from "../services/saleResultsService"
+import { projectTable } from "../../shared/drizzle-schema"
+import { eq } from "drizzle-orm"
 
 type ENV = {
     DB: D1Database,
@@ -26,7 +26,7 @@ const requestSchema = z.object({
 
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const db = ctx.env.DB
-    const drizzleDb = drizzle(db)
+    const drizzleDb = drizzle(db, { logger: true })
     const SOLANA_RPC_URL = ctx.env.SOLANA_RPC_URL
     const privateKey = ctx.env.NFT_MINT_WALLET_PRIVATE_KEY
     try {
@@ -35,24 +35,21 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             throw new Error('Misconfigured env!')
         }
 
-        return jsonResponse({ message: 'Sale ended!' }, 409)
-
         // validate request
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
 
+        const projectId = data?.projectId
         if (!data?.serializedTx) return jsonResponse({ error: 'Request error. Missing serializedTx' }, 404)
-        if (!data?.projectId) return jsonResponse({ error: 'Request error. ProjectId serializedTx' }, 404)
+        if (!projectId) return jsonResponse({ error: 'Request error. ProjectId serializedTx' }, 404)
         if (error) return jsonResponse({ error: 'Request error!' }, 404)
 
         // get project, cluster and connection
-        const project = await ProjectService.findProjectById({
-            db,
-            id: data.projectId
-        })
-
-        if (!project) {
-            return jsonResponse({ message: 'Project not found!' }, 404)
-        }
+        const project = await drizzleDb
+            .select()
+            .from(projectTable)
+            .where(eq(projectTable.id, projectId))
+            .get()
+        if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 
         // validate raise target
         const saleResults = await SaleResultsService.getSaleResults({ db: drizzleDb, projectId: data.projectId })
@@ -60,7 +57,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             return jsonResponse({ message: 'Raise target has been reached!' }, 409)
         }
 
-        const cluster = project.cluster as ('mainnet' | 'devnet')
+        const cluster = project.json.config.cluster as ('mainnet' | 'devnet')
         const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster))
 
         // sign with our private key wallet
@@ -102,20 +99,17 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             userWalletAddress
         } = await extractTransactionData(txId, heliusApiKey, cluster)
 
-        const raisedTokenData = getTokenData({ cluster, tokenAddress: project.info.raisedTokenMintAddress })
-
-        if (!raisedTokenData) {
-            return jsonResponse({ message: 'Raised token data missing!' }, 500)
-        }
+        const raisedTokenCoinGeckoName = project.json.config.raisedTokenData.coinGeckoName
+        if (!raisedTokenCoinGeckoName) throw new Error(`raisedTokenCoinGeckoName missing for project (${projectId})!`)
 
         const exchangeData = await exchangeService.getExchangeData({
             db: drizzleDb,
-            baseCurrency: raisedTokenData.coinGeckoName,
+            baseCurrency: raisedTokenCoinGeckoName,
             targetCurrency: 'usd',
         })
 
         const tokensCalculation = calculateTokens({
-            projectData: project,
+            projectData: project.json,
             borgCoinInput: tokenAmount,
             borgPriceInUSD: exchangeData.currentPrice,
         })
@@ -140,7 +134,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             ['confirmed', 'finalized'].includes(transactionStatus.confirmationStatus)
         ) {
             await DepositService.createUserDeposit({
-                db,
+                db: drizzleDb,
                 amount: amountInLamports.toString(),
                 projectId: data.projectId,
                 walletAddress: userWalletAddress,
@@ -161,7 +155,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         return jsonResponse({ message: "Ok!" }, 200)
     } catch (e) {
-        await reportError(ctx.env.DB, e)
+        await reportError(db, e)
         return jsonResponse({ message: "Something went wrong..." }, 500)
     }
 }

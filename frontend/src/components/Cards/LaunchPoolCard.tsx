@@ -10,6 +10,9 @@ import { ExpandedProject } from "@/utils/projects-helper"
 
 type Props = { project: ExpandedProject | null; isLoading?: boolean }
 
+// @TODO - @UPDATE_PROJECT_DATA - remove temp fix below
+const borgyThumbnailUrl = "https://files.borgpad.com/images/borgy/borgy-thumbnail.png"
+
 const LaunchPoolCard = ({ project, isLoading }: Props) => {
   const { t } = useTranslation()
 
@@ -18,7 +21,8 @@ const LaunchPoolCard = ({ project, isLoading }: Props) => {
   return (
     <li className="relative flex w-full max-w-[344px] flex-col overflow-hidden rounded-lg border-bd-primary bg-secondary">
       <Img
-        src={project?.info?.thumbnailUrl || project?.info?.logoUrl}
+        // @TODO - @UPDATE_PROJECT_DATA - remove temp fix below
+        src={project?.id === "borgy" ? borgyThumbnailUrl : project?.info?.thumbnailUrl || project?.info?.logoUrl}
         customClass="h-[189px] rounded-none"
         showFallback
         isFetchingLink={isLoading}
@@ -53,7 +57,7 @@ const LaunchPoolCard = ({ project, isLoading }: Props) => {
 
         <div className="flex w-full flex-col rounded-xl bg-default">
           <span className="px-4 py-2 text-sm leading-5 text-fg-tertiary">{endMessage}</span>
-          <Link to={`/launch-pools/${project?.info.id}`}>
+          <Link to={`/launch-pools/${project?.id}`}>
             <Button btnText="Learn More" className="w-full p-3" />
           </Link>
         </div>

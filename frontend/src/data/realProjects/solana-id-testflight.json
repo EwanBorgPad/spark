@@ -46,20 +46,9 @@
       }
     ],
 
-    "projectOwnerAddress": "5oY4RHVH4PBS3YDCuQ86gnaM27KvdC9232TpB71wLi1W",
-
     "launchedTokenMintAddress": "SoLiDMWBct5TurG1LNcocemBK7QmTn4P33GSrRrcd2n",
-    "launchedTokenLpDistribution": 0,
-    "launchedTokenCap": 10000,
-
     "raisedTokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
-    "raisedTokenMinCap": 0,
-    "raisedTokenMaxCap": 10000,
-
     "lbpWalletAddress": "EzVMRab2dvm7mVHEwQ5riQKMHR1PaNvB9tCm1x2nK2Rn",
-
-    "cliffDuration": 0,
-    "vestingDuration": 0,
 
     "tge": {
       "raiseTarget": 250000,
@@ -74,9 +63,7 @@
         "name": "Raydium",
         "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
         "lbpType": "Concentrated Liquidity",
-        "lockingPeriod": "6 months",
-        "unlockDate": null,
-        "url": "#"
+        "lockingPeriod": "6 months"
       },
       "tweetUrl": "#"
     },

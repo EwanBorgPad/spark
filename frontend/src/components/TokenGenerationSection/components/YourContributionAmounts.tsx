@@ -11,11 +11,11 @@ import { formatCurrencyAmount } from "../../../../shared/utils/format.ts"
 const YourContributionAmounts = () => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
-  const tgeData = projectData?.info.tge
   const { address } = useWalletContext()
-  const projectId = projectData?.info.id || ""
-  const tokenTicker = tgeData?.projectCoin.ticker
-  const tokenIcon = tgeData?.projectCoin.iconUrl
+  const projectId = projectData?.id || ""
+
+  const tokenTicker = projectData?.config.launchedTokenData.ticker
+  const tokenIcon = projectData?.config.launchedTokenData.iconUrl
 
   const { data: userPositions } = useQuery({
     queryFn: () => {
@@ -28,7 +28,7 @@ const YourContributionAmounts = () => {
 
   if (!projectData || !userPositions?.hasUserInvested) return <></>
 
-  if (projectData.info.lpPositionToBeBurned) {
+  if (projectData.config.lpPositionToBeBurned) {
     return (
       <div className="w-full bg-transparent">
         <div
@@ -52,7 +52,7 @@ const YourContributionAmounts = () => {
             <div className="flex flex-col items-center gap-1.5">
               <div className="flex h-fit items-center justify-center gap-1.5 rounded-full text-xs font-medium text-fg-tertiary ">
                 <Icon icon="SvgChartLine" className="text-base text-white" />
-                <span>{t("tge.linearly_paid_out")}</span>
+                <span>{t("tge.linearly_paid_out", { numberOfMonths: projectData.config.rewardsDistributionTimeInMonths })}</span>
               </div>
               <span className="text-xs font-medium text-fg-tertiary">🔒 LP position permanently locked </span>
               <span className="text-xs font-medium text-fg-tertiary">🔥 All LP fees burned</span>
@@ -62,6 +62,7 @@ const YourContributionAmounts = () => {
       </div>
     )
   }
+  // TODO @burnDealsOnly
   // RETURN IF TOKEN IS NOT GETTING BURNED
   return (
     <div className="w-full bg-transparent">
@@ -108,10 +109,10 @@ const YourContributionAmounts = () => {
             <Icon icon="SvgLock" className="mt-[-1px] text-base opacity-50" />
             <span className="opacity-50">{t("tge.liquidity_pool")}</span>
             <Img src={tokenIcon} size="4" isRounded />
-            <a href={tgeData?.liquidityPool.url} className="underline">
-              <span className="opacity-50">{tgeData?.liquidityPool.name}</span>
+            <a href={''} className="underline">
+              <span className="opacity-50">{projectData?.info.liquidityPool.name}</span>
             </a>
-            <span className="-ml-1.5 opacity-50">, {tgeData?.liquidityPool.lockingPeriod}</span>
+            <span className="-ml-1.5 opacity-50">, {projectData?.info.liquidityPool.lockingPeriod}</span>
           </div>
 
           {/* Plus icon between top and mid sections */}
@@ -135,7 +136,7 @@ const YourContributionAmounts = () => {
           {/* mid section - footer */}
           <div className="flex h-fit items-center gap-1.5 rounded-full text-xs font-normal text-fg-primary ">
             <Icon icon="SvgChartLine" className="text-base opacity-50" />
-            <span className="opacity-50">{t("tge.linearly_paid_out")}</span>
+            <span className="opacity-50">{t("tge.linearly_paid_out", { numberOfMonths: projectData.config.rewardsDistributionTimeInMonths })}</span>
           </div>
         </div>
 

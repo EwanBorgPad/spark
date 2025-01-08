@@ -38,7 +38,7 @@
   "tge.liquidity_pool": "Liquidity Pool",
   "tge.to_receive": "To receive",
   "tge.month_lockup": "month lockup",
-  "tge.linearly_paid_out": "Linearly paid-out through 6 months",
+  "tge.linearly_paid_out": "Linearly paid-out through {{ numberOfMonths }} months",
   "tge.participation_status": "Participation Status",
   "tge.whitelisted": "Whitelisted",
   "tge.distribution_starts_in": "Distribution starts in",

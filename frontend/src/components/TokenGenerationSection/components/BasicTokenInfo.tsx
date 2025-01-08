@@ -10,7 +10,6 @@ import Text from "@/components/Text"
 const BasicTokenInfo = () => {
   const { t } = useTranslation()
   const { projectData, isLoading } = useProjectDataContext()
-  const tge = projectData?.info.tge
   const { projectId } = useParams()
 
   const { data: investmentSummaryData, isLoading: isLoadingSummary } = useQuery({
@@ -22,8 +21,8 @@ const BasicTokenInfo = () => {
     enabled: Boolean(projectId),
   })
 
-  const fdv = tge?.fdv ? formatCurrencyAmount(tge.fdv, { withDollarSign: true, customDecimals: 0 }) : ""
-  const tgeDate = tge?.tokenGenerationEventDate || ""
+  const fdv = projectData?.config.fdv ? formatCurrencyAmount(projectData?.config.fdv, { withDollarSign: true, customDecimals: 0 }) : ""
+  const tgeDate = projectData?.info.tokenGenerationEventDate || ""
 
   return (
     <section className="max-w-screen flex w-full flex-col gap-[25px] px-4 lg:max-w-[792px]">

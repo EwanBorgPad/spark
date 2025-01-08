@@ -1,12 +1,12 @@
-import { drizzle } from "drizzle-orm/d1"
 import { EligibilityService } from "./eligibilityService"
-import { getTokenData } from "./constants"
-import { ProjectService } from "./projectService"
 import { TokenAmountModel } from "../../shared/models"
 import { exchangeService } from "./exchangeService"
+import { projectTable } from "../../shared/drizzle-schema"
+import { eq, sql } from "drizzle-orm"
+import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 
 type CreateUserDepositArgs = {
-    db: D1Database
+    db: DrizzleD1Database
     amount: string
     walletAddress: string
     projectId: string
@@ -36,37 +36,27 @@ type CreateUserDepositArgs = {
 }
 
 type GetUsersDepositedAmountArgs = {
-    db: D1Database,
+    db: DrizzleD1Database,
     walletAddress: string,
     projectId: string,
 }
 
 type GetDepositStatus = {
-    db: D1Database,
+    db: DrizzleD1Database,
     walletAddress: string,
     projectId: string,
     rpcUrl: string,
 }
 
-type GetProjectsDepositedAmountArgs = {
-    db: D1Database,
-    projectId: string
-}
-
 const createUserDeposit = async ({ db, amount, projectId, walletAddress, lbpAddress, tokenAddress, txId, tierId, nftAddress, json }: CreateUserDepositArgs) => {
     const now = new Date(Date.now()).getTime()
     const jsonString = JSON.stringify(json)
-    await db
-        .prepare("INSERT INTO deposit (from_address, to_address, amount_deposited, project_id, token_address, transaction_id, tier_id, nft_address, created_at, json) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10);")
-        .bind(walletAddress, lbpAddress, amount, projectId, tokenAddress, txId, tierId, nftAddress, now, jsonString)
-        .run()
+    await db.run(sql`INSERT INTO deposit (from_address, to_address, amount_deposited, project_id, token_address, transaction_id, tier_id, nft_address, created_at, json) 
+                    VALUES (${walletAddress}, ${lbpAddress}, ${amount}, ${projectId}, ${tokenAddress}, ${txId}, ${tierId}, ${nftAddress}, ${now}, ${jsonString});`)
 }
 
 const getUsersDepositedAmount = async ({ db, projectId, walletAddress }: GetUsersDepositedAmountArgs): Promise<number> => {
-    const data = await db
-        .prepare("SELECT amount_deposited FROM deposit WHERE from_address = ?1 AND project_id = ?2;")
-        .bind(walletAddress, projectId)
-        .all<any>()
+    const data = await db.run(sql`SELECT amount_deposited FROM deposit WHERE from_address = ${walletAddress} AND project_id = ${projectId};`)
     if (!data.results.length) return 0
     const amountsDeposited = data.results.map(obj => parseInt(obj.amount_deposited))
     const userDepositSum = amountsDeposited.reduce((accumulator, current) => accumulator + current)
@@ -84,7 +74,7 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
     // get sum of users investment
     const usersAccumulatedDeposit = await getUsersDepositedAmount({ db, projectId, walletAddress })
     // get eligibility for the user
-    const eligibility = await EligibilityService.getEligibilityStatus({ db: drizzle(db, { logger: true }), address: walletAddress, projectId, rpcUrl })
+    const eligibility = await EligibilityService.getEligibilityStatus({ db, address: walletAddress, projectId, rpcUrl })
     // initialize users min and max cap in USD and check if they exist
     // TODO this fails if user is not eligible which is ok , whole function doesn't make sense if user is not eligible , but we need to handle it better
     const userMaxCap = eligibility.eligibilityTier?.benefits.maxInvestment
@@ -94,23 +84,20 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
     const userMaxCapInUsd = Number(userMaxCap)
     const userMinCapInUsd = Number(userMinCap)
     // get project
-    const project = await ProjectService.findProjectByIdOrFail({
-        db,
-        id: projectId
-    })
+    const project = await db
+      .select()
+      .from(projectTable)
+      .where(eq(projectTable.id, projectId))
+      .get()
+    if (!project) throw new Error(`Project (${projectId}) not found!`)
+
     // get relevant data from project and decimals
-    const tokenAddress = project.info.raisedTokenMintAddress
-
-    const tokenData = getTokenData({ cluster: project.cluster, tokenAddress })
-    if (!tokenData) {
-        throw new Error(`Token data not defined for ${project.cluster} ${tokenAddress}!`)
-    }
-
-    const { decimals, coinGeckoName } = tokenData
+    const raisedTokenCoinGeckoName = project.json.config.raisedTokenData.coinGeckoName
+    const decimals = project.json.config.raisedTokenData.decimals
 
     const exchangeData = await exchangeService.getExchangeData({
-        db: drizzle(db, { logger: true }),
-        baseCurrency: coinGeckoName,
+        db,
+        baseCurrency: raisedTokenCoinGeckoName,
         targetCurrency: 'usd',
     })
     const tokenPriceInUsd = exchangeData.currentPrice
@@ -161,7 +148,7 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
         uiAmount: allowedMaxUiAmount.toString()
     }
     // get start time
-    const startTime = eligibility.eligibilityTier?.benefits.startDate ?? project.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date
+    const startTime = eligibility.eligibilityTier?.benefits.startDate ?? project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date
     if (!startTime) throw new Error(`Misconfigured project (${projectId}), (startDate) field is missing`)
 
     return {

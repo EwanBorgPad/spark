@@ -1,9 +1,6 @@
 import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 import { depositTable, projectTable } from "../../shared/drizzle-schema"
 import { eq, sql } from "drizzle-orm"
-import { jsonResponse } from "../api/cfPagesFunctionsUtils"
-import { getTokenData } from "./constants"
-import { exchangeService } from "./exchangeService"
 import { SaleResults } from "../../shared/models"
 
 /**
@@ -25,12 +22,7 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
     .from(projectTable)
     .where(eq(projectTable.id, projectId))
     .get()
-
-  if (!project)
-    throw new Error(`Project not found (id=${projectId})!`)
-
-  const cluster = project.json.cluster
-  const tokenAddress = project.json.info.raisedTokenMintAddress
+  if (!project) throw new Error(`Project not found (id=${projectId})!`)
 
   // load sale results
   const queryResult: { fromAddress: string, totalAmountPerUser: string }[] = await db
@@ -47,31 +39,15 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
   const totalAmount = queryResult?.reduce((acc, curr) => acc + Number(curr.totalAmountPerUser), 0) ?? 0
   const averageAmount = (totalAmount / participantsCount) ?? 0
 
-  // prepare response
-  const tokenData = getTokenData({ cluster, tokenAddress })
+  const decimals = project.json.config.raisedTokenData.decimals
 
-  if (!tokenData) {
-    throw new Error(`Token data not found! cluster=(${cluster}), tokenAddress=(${tokenAddress})`)
+  const raisedTokenPriceInUsd = project.json.config.raisedTokenData.fixedTokenPriceInUsd
+  if (!raisedTokenPriceInUsd) {
+    throw new Error(`Project (${projectId}) is missing raisedTokenData.fixedTokenPriceInUsd!`)
   }
 
-  const exchangeData = await exchangeService.getExchangeData({
-    db,
-    baseCurrency: tokenData.coinGeckoName,
-    targetCurrency: 'usd',
-  })
-
-  // TODO @hardcoded
-  if (project.id === 'borgy') {
-    exchangeData.currentPrice = 0.341783
-  } else if (project.id === 'solana-id') {
-    exchangeData.currentPrice = 0.362331
-  }
-
-  const priceInUsd = exchangeData.currentPrice
-
-  const decimals = tokenData.decimals
-
-  const raiseTargetInUsd = Number(project.json.info.tge.raiseTarget)
+  const priceInUsd = raisedTokenPriceInUsd
+  const raiseTargetInUsd = project.json.config.raiseTargetInUsd
 
   if (raiseTargetInUsd < 1) {
     throw new Error(`raiseTargetInUsd must be over 1!`)
@@ -99,9 +75,8 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
     },
     sellOutPercentage: Math.min(100, (Number(totalAmountRaisedInUsd) / Number(raiseTargetInUsd)) * 100),
     participantsCount,
-    // TODO @hardcoded below
-    marketCap: project.id === 'borgy' ? 50_000 : 2_000_000,
-    fdv: project.json.info.tge.fdv,
+    marketCap: project.json.config.marketCap ?? null,
+    fdv: project.json.config.fdv ?? null,
   }
 }
 
