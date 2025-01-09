@@ -48,10 +48,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const projectId = data.projectId
 
         const project = await drizzleDb
-          .select()
-          .from(projectTable)
-          .where(eq(projectTable.id, projectId))
-          .get()
+            .select()
+            .from(projectTable)
+            .where(eq(projectTable.id, projectId))
+            .get()
         if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 
         const lbpWalletAddress = project.json.config.lbpWalletAddress
@@ -124,8 +124,8 @@ async function validateTx(userEligible: boolean, depositStatus: DepositStatus, t
     // @VALIDATION: project cap
     if (saleResults.raiseTargetReached) return jsonResponse({ errorCode: 'PROJECT_RAISE_TARGET_REACHED' }, 409)
     // @VALIDATION: timeline
-    if (now < depositStatus.startTime) return jsonResponse({ errorCode: 'INVESTMENT_TIMELINE_DIDNT_START' }, 409)
-    if (now > endDate) return jsonResponse({ errorCode: 'INVESTMENT_TIMELINE_ENDED' }, 409)
+    if (now.getTime() < new Date(depositStatus.startTime).getTime()) return jsonResponse({ errorCode: 'INVESTMENT_TIMELINE_DIDNT_START' }, 409)
+    if (now.getTime() > endDate.getTime()) return jsonResponse({ errorCode: 'INVESTMENT_TIMELINE_ENDED' }, 409)
 
     // All validations passed so we return null (no errors)
     return null

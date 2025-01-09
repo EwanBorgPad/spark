@@ -85,10 +85,10 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
     const userMinCapInUsd = Number(userMinCap)
     // get project
     const project = await db
-      .select()
-      .from(projectTable)
-      .where(eq(projectTable.id, projectId))
-      .get()
+        .select()
+        .from(projectTable)
+        .where(eq(projectTable.id, projectId))
+        .get()
     if (!project) throw new Error(`Project (${projectId}) not found!`)
 
     // get relevant data from project and decimals
