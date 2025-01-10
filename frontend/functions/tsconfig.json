@@ -8,6 +8,7 @@
     "types": [
       "@cloudflare/workers-types"
     ],
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     /* Linting */
     "strict": true

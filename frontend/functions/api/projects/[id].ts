@@ -24,6 +24,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     if (!projectId) {
       return jsonResponse({ message: "Please provide id query param" }, 400)
     }
+    throw new Error('Testing Sentry out!')
 
     const project = await db
       .select()
