@@ -39,6 +39,7 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
     },
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
+    staleTime: 1000 * 60 * 60,
   })
   const isUserEligible = eligibilityStatusData?.isEligible
 

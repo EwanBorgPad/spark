@@ -51,6 +51,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const rpcUrl = BACKEND_RPC_URL + "?cluster=" + cluster
   const tokenMintAddress = projectData?.config.raisedTokenData.mintAddress
 
+  // Create Deposit Transaction
   const { mutateAsync: makeDepositTransaction, isPending: isPendingMakeDepositTransaction } = useMutation({
     mutationFn: async (payload: PostCreateDepositTxArgs) => {
       return (await backendApi.postCreateDepositTx(payload)).transaction
@@ -67,6 +68,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     },
   })
 
+  // Send Transaction
   const { mutateAsync: sendTransaction, isPending: isPendingSendTransaction } = useMutation({
     mutationFn: async (payload: PostSendDepositTransactionArgs) => {
       return await backendApi.postSendDepositTransaction(payload)
@@ -88,6 +90,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     },
   })
 
+  // Get Spl token balance
   const { data: balance } = useQuery({
     queryFn: () => {
       if (!address || !projectId || !tokenMintAddress) return
@@ -101,6 +104,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     enabled: Boolean(address) && Boolean(tokenMintAddress) && Boolean(tokenMintAddress),
   })
 
+  // Get Eligibility Status
   const { data: eligibilityStatus, isLoading: isEligibilityLoading } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
@@ -108,7 +112,10 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     },
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
+    staleTime: 1000 * 60 * 60,
   })
+
+  // Get deposit status
   const { data: depositStatus, isLoading: isDepositStatusLoading } = useQuery({
     queryFn: () => {
       if (!address || !projectId || !eligibilityStatus?.isEligible) return
@@ -122,6 +129,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const tierBenefits = eligibilityStatus?.eligibilityTier?.benefits
   const isEligibleTierActive = tierBenefits ? isBefore(tierBenefits.startDate, new Date()) : false
 
+  // Get $BORG token
   const { data: exchangeData } = useQuery({
     queryFn: () =>
       backendApi.getExchange({
