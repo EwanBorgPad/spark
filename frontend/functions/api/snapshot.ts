@@ -51,9 +51,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const paginatedAddresses = addresses.slice(0, limit)
 
     for (const address of paginatedAddresses) {
-      const existingSnapshot = await SnapshotService.getSnapshot({ db, address, projectId })
-      if (existingSnapshot) continue
-
       const eligibilityStatus = await EligibilityService.getEligibilityStatus({ db, address, projectId, rpcUrl })
       await SnapshotService.createSnapshot({ db, address, projectId, eligibilityStatus })
     }
