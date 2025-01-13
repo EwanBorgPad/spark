@@ -19,6 +19,7 @@ const BasicTokenInfo = () => {
       }),
     queryKey: ["getInvestmentIntentSummary", projectId],
     enabled: Boolean(projectId),
+    staleTime: 30 * 60 * 1000,
   })
 
   const fdv = projectData?.config.fdv ? formatCurrencyAmount(projectData?.config.fdv, { withDollarSign: true, customDecimals: 0 }) : ""

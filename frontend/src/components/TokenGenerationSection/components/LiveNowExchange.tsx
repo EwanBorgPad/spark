@@ -39,6 +39,8 @@ const truncateToSecondDecimal = (number: number) => {
 const baseCurrency = "swissborg"
 const targetCurrency = "usd"
 
+const ONE_HOUR = 60 * 60 * 1000
+
 const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -51,6 +53,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const rpcUrl = BACKEND_RPC_URL + "?cluster=" + cluster
   const tokenMintAddress = projectData?.config.raisedTokenData.mintAddress
 
+  // Create Deposit Transaction
   const { mutateAsync: makeDepositTransaction, isPending: isPendingMakeDepositTransaction } = useMutation({
     mutationFn: async (payload: PostCreateDepositTxArgs) => {
       return (await backendApi.postCreateDepositTx(payload)).transaction
@@ -67,6 +70,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     },
   })
 
+  // Send Transaction
   const { mutateAsync: sendTransaction, isPending: isPendingSendTransaction } = useMutation({
     mutationFn: async (payload: PostSendDepositTransactionArgs) => {
       return await backendApi.postSendDepositTransaction(payload)
@@ -88,6 +92,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     },
   })
 
+  // Get Spl token balance
   const { data: balance } = useQuery({
     queryFn: () => {
       if (!address || !projectId || !tokenMintAddress) return
@@ -101,6 +106,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     enabled: Boolean(address) && Boolean(tokenMintAddress) && Boolean(tokenMintAddress),
   })
 
+  // Get Eligibility Status
   const { data: eligibilityStatus, isLoading: isEligibilityLoading } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
@@ -108,20 +114,24 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     },
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
-  })
-  const { data: depositStatus, isLoading: isDepositStatusLoading } = useQuery({
-    queryFn: () => {
-      if (!address || !projectId || !eligibilityStatus?.isEligible) return
-      return backendApi.getDepositStatus({ address, projectId })
-    },
-    queryKey: ["getDepositStatus", address, projectId],
-    enabled: Boolean(address) && Boolean(projectId) && Boolean(eligibilityStatus?.isEligible),
+    staleTime: ONE_HOUR,
   })
 
   const isUserEligible = eligibilityStatus?.isEligible
   const tierBenefits = eligibilityStatus?.eligibilityTier?.benefits
   const isEligibleTierActive = tierBenefits ? isBefore(tierBenefits.startDate, new Date()) : false
 
+  // Get deposit status
+  const { data: depositStatus, isLoading: isDepositStatusLoading } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId || !isUserEligible) return
+      return backendApi.getDepositStatus({ address, projectId })
+    },
+    queryKey: ["getDepositStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId) && Boolean(isUserEligible),
+  })
+
+  // Get $BORG token
   const { data: exchangeData } = useQuery({
     queryFn: () =>
       backendApi.getExchange({
@@ -129,6 +139,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
         targetCurrency,
       }),
     queryKey: ["getExchange", baseCurrency, targetCurrency],
+    staleTime: ONE_HOUR,
   })
   const borgPriceInUSD = exchangeData?.currentPrice || null
   const tokenPriceInUSD = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0

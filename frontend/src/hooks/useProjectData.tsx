@@ -30,6 +30,7 @@ export function ProjectDataProvider({ children }: { children: ReactNode }) {
     queryFn: () => backendApi.getProject({ projectId }),
     queryKey: ["backendApi", "getProject", projectId],
     enabled: Boolean(projectId),
+    refetchOnWindowFocus: false,
   })
 
   const queryClient = useQueryClient()

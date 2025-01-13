@@ -2,25 +2,18 @@
   "id": "moemate",
   "config": {
     "cluster": "mainnet",
-
     "lpPositionToBeBurned": true,
-
     "raiseTargetInUsd": 375000,
     "fdv": 35000000,
     "marketCap": null,
-
     "totalTokensForLiquidityPool": 208928571,
     "totalTokensForRewardDistribution": 390000000,
-
     "rewardsDistributionTimeInMonths": 6,
-
     "finalSnapshotTimestamp": "2025-01-14T15:55:00Z",
-
     "lbpWalletAddress": null,
     "raisedTokenData": {
       "iconUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
       "ticker": "BORG",
-
       "mintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
       "decimals": 9,
       "fixedTokenPriceInUsd": null,
@@ -29,19 +22,16 @@
     "launchedTokenData": {
       "iconUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
       "ticker": "MATES",
-
       "mintAddress": null,
-      "decimals": null,
+      "decimals": 0,
       "fixedTokenPriceInUsd": 0.00179
     }
   },
   "info": {
     "claimUrl": null,
-
     "tweetUrl": null,
     "tokenContractUrl": null,
     "poolContractUrl": null,
-
     "title": "Moemate",
     "subtitle": "Solana's Battle-tested AI Agent Platform",
     "logoUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
@@ -55,12 +45,12 @@
     },
     "dataRoom": {
       "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
-      "url": "https://cdn.moemate.io/cdn/Litepaper.pdf"
+      "url": "https://borgpad-moemate.notion.site/"
     },
     "liquidityPool": {
       "name": "Raydium",
       "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
-      "lbpType": "Concentrated Liquidity",
+      "lbpType": "Mixte",
       "lockingPeriod": "∞"
     },
     "curator": {
