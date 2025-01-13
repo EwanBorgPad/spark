@@ -23,7 +23,7 @@
 
       "mintAddress": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
       "decimals": 6,
-      "fixedTokenPriceInUsd": 0.9,
+      "fixedTokenPriceInUsd": 1,
       "coinGeckoName": "usd"
     },
     "launchedTokenData": {
@@ -117,17 +117,17 @@
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2024-12-02"
+        "date": "2025-01-10"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2024-12-26"
+        "date": "2025-01-14"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2024-12-26"
+        "date": "2025-01-14"
       },
       {
         "id": "DISTRIBUTION_OVER",
