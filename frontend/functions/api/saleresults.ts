@@ -18,7 +18,11 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       db, projectId,
     })
 
-    return jsonResponse(saleResults, 200)
+    return jsonResponse(saleResults, {
+      headers: {
+        "Cache-Control": "public, max-age=15",
+      }
+    })
   } catch (e) {
     await reportError(ctx.env.DB, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
