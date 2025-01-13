@@ -20,7 +20,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     return jsonResponse(saleResults, {
       headers: {
-        "Cache-Control": "public, max-age=15, stale-while-revalidate=30",
+        "Cache-Control": "public, max-age=15",
       }
     })
   } catch (e) {
