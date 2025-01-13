@@ -51,7 +51,7 @@ const DisabledContainer = ({
     )
   }
 
-  if (!isUserEligible && !isEligibilityLoading)
+  if (!isUserEligible)
     return (
       <DisabledBlurContainer>
         <div className="flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
@@ -67,7 +67,7 @@ const DisabledContainer = ({
       </DisabledBlurContainer>
     )
 
-  if (!isEligibleTierActive && !isEligibilityLoading)
+  if (!isEligibleTierActive)
     return (
       <DisabledBlurContainer>
         <div className="flex flex-col items-center py-2 text-sm font-normal text-fg-primary">
@@ -82,7 +82,7 @@ const DisabledContainer = ({
       </DisabledBlurContainer>
     )
 
-  if (userInvestedMaxAmount && !isEligibilityLoading)
+  if (userInvestedMaxAmount)
     return (
       <DisabledBlurContainer>
         <div className="py-2 text-sm font-normal text-fg-primary">
