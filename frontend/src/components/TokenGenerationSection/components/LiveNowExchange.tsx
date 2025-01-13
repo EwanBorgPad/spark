@@ -351,6 +351,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
 
       <DisabledContainer
         isEligibilityLoading={isEligibilityLoading}
+        isDepositStatusLoading={isDepositStatusLoading}
         isEligibleTierActive={isEligibleTierActive}
         isUserEligible={isUserEligible}
         scrollToTiers={scrollToTiers}

@@ -2,6 +2,7 @@ import { Button } from "@/components/Button/Button"
 import React from "react"
 import DisabledBlurContainer from "./DisabledBlurContainer"
 import { formatDateForTimerWithTimezone } from "@/utils/date-helpers"
+import SimpleLoader from "@/components/Loaders/SimpleLoader"
 
 type TierBenefitsType =
   | {
@@ -14,6 +15,7 @@ type TierBenefitsType =
 type Props = {
   isUserEligible: boolean | undefined
   isEligibilityLoading: boolean
+  isDepositStatusLoading: boolean
   isEligibleTierActive: boolean
   userInvestedMaxAmount: boolean
   scrollToWhitelistRequirements: () => void
@@ -26,10 +28,29 @@ const DisabledContainer = ({
   isEligibilityLoading,
   isEligibleTierActive,
   userInvestedMaxAmount,
+  isDepositStatusLoading,
   scrollToWhitelistRequirements,
   scrollToTiers,
   tierBenefits,
 }: Props) => {
+  if (isDepositStatusLoading || isEligibilityLoading) {
+    return (
+      <DisabledBlurContainer>
+        <div className="flex w-full max-w-[340px] flex-col items-center gap-2 rounded-lg bg-default p-4 shadow-white/5">
+          <SimpleLoader className="text-2xl" />
+          <div className="flex animate-pulse flex-col items-start">
+            {isDepositStatusLoading && (
+              <span className="text-center text-fg-tertiary">{`Loading Deposit Status...`}</span>
+            )}
+            {isEligibilityLoading && (
+              <span className="text-center text-fg-tertiary">{`Loading Eligibility Status...`}</span>
+            )}
+          </div>
+        </div>
+      </DisabledBlurContainer>
+    )
+  }
+
   if (!isUserEligible && !isEligibilityLoading)
     return (
       <DisabledBlurContainer>
