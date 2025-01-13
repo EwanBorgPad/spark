@@ -25,48 +25,26 @@ export const options = {
 
 export function scenario_1() {
   const projectId = "borgy"
+  const baseUrl = "https://borgpad.com/api"
+  const address = "4GvgisWbCKJCFfksnU44qyRAVwd8YjxuhhsDCDSRjMnL" // test address
 
   // GET Requests
-  const req1 = {
-    method: "GET",
-    url: `https://borgpad.com/launch-pools/${projectId}`,
-  }
-  const req2 = {
-    method: "GET",
-    url: `https://borgpad.com/api/investmentintentsummary?projectId=${projectId}`,
-  }
-  const req3 = {
-    method: "GET",
-    url: `https://borgpad.com/api/exchange?baseCurrency=swissborg&targetCurrency=usd`,
-  }
-  const req4 = {
-    method: "GET",
-    url: `https://borgpad.com/api/saleresults?projectId=${projectId}`,
-  }
-  const req5 = {
-    method: "GET",
-    url: `https://borgpad.com/api/deposits?address=4GvgisWbCKJCFfksnU44qyRAVwd8YjxuhhsDCDSRjMnL&projectId=${projectId}`,
-  }
-  const req6 = {
-    method: "GET",
-    url: `https://borgpad.com/api/depositstatus?address=4GvgisWbCKJCFfksnU44qyRAVwd8YjxuhhsDCDSRjMnL&projectId=${projectId}`,
-  }
-  const req7 = {
-    method: "GET",
-    url: `https://borgpad.com/api/eligibilitystatus?address=4GvgisWbCKJCFfksnU44qyRAVwd8YjxuhhsDCDSRjMnL&projectId=${projectId}`,
-  }
-
-  http.batch([req1, req2, req3, req4, req5, req6, req7])
-
-  // POST requests
-  // const body1 = {
-  //   userWalletAddress: "Ee5sD8JhRqLoL8rJxZG6Yf1ehHGUks91wek9nCoWUX43",
-  //   projectId,
-  //   tokenAmount: 50,
-  // }
-  // http.post("https://borgpad.com/api/createdeposittransaction", JSON.stringify(body1), {
-  //   headers: { "Content-Type": "application/json" },
-  // })
-
-  sleep(1)
+  http.batch([
+    `${baseUrl}/investmentintentsummary?projectId=${projectId}`,
+    `${baseUrl}/exchange?baseCurrency=swissborg&targetCurrency=usd`,
+    `${baseUrl}/saleresults?projectId=${projectId}`,
+    `${baseUrl}/deposits?address=${address}&projectId=${projectId}`,
+    `${baseUrl}/depositstatus?address=${address}&projectId=${projectId}`,
+    `${baseUrl}/eligibilitystatus?address=${address}&projectId=${projectId}`,
+  ])
 }
+
+// POST requests
+// const body1 = {
+//   userWalletAddress: "Ee5sD8JhRqLoL8rJxZG6Yf1ehHGUks91wek9nCoWUX43",
+//   projectId,
+//   tokenAmount: 50,
+// }
+// http.post("https://borgpad.com/api/createdeposittransaction", JSON.stringify(body1), {
+//   headers: { "Content-Type": "application/json" },
+// })
