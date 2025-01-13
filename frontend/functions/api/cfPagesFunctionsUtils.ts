@@ -32,7 +32,11 @@ export const jsonResponse = (
     ...(options?.headers ? options.headers : {}),
   })
 
-  return new Response(body, { status, headers })
+  return new Response(body, {
+    status, headers, cf: {
+      cacheTtl: 30,
+    }
+  })
 }
 /**
  * Reports an error.
