@@ -34,7 +34,7 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
     },
     queryKey: ["saleResults", projectId],
     enabled: Boolean(projectId) && !!currentTgeEvent && currentTgeEvent.id === "SALE_OPENS",
-    refetchInterval: 20 * 1000, // 20 seconds
+    refetchInterval: 2 * 1000, // 2 seconds
   })
 
   const updateTgeStatus = useCallback(() => {
