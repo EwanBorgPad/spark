@@ -33,9 +33,7 @@ export const jsonResponse = (
   })
 
   return new Response(body, {
-    status, headers, cf: {
-      cacheTtl: 30,
-    }
+    status, headers
   })
 }
 /**
