@@ -39,6 +39,8 @@ const truncateToSecondDecimal = (number: number) => {
 const baseCurrency = "swissborg"
 const targetCurrency = "usd"
 
+const ONE_HOUR = 60 * 60 * 1000
+
 const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -112,22 +114,22 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     },
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
-    staleTime: 1000 * 60 * 60,
-  })
-
-  // Get deposit status
-  const { data: depositStatus, isLoading: isDepositStatusLoading } = useQuery({
-    queryFn: () => {
-      if (!address || !projectId || !eligibilityStatus?.isEligible) return
-      return backendApi.getDepositStatus({ address, projectId })
-    },
-    queryKey: ["getDepositStatus", address, projectId],
-    enabled: Boolean(address) && Boolean(projectId) && Boolean(eligibilityStatus?.isEligible),
+    staleTime: ONE_HOUR,
   })
 
   const isUserEligible = eligibilityStatus?.isEligible
   const tierBenefits = eligibilityStatus?.eligibilityTier?.benefits
   const isEligibleTierActive = tierBenefits ? isBefore(tierBenefits.startDate, new Date()) : false
+
+  // Get deposit status
+  const { data: depositStatus, isLoading: isDepositStatusLoading } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId || !isUserEligible) return
+      return backendApi.getDepositStatus({ address, projectId })
+    },
+    queryKey: ["getDepositStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId) && Boolean(isUserEligible),
+  })
 
   // Get $BORG token
   const { data: exchangeData } = useQuery({
@@ -137,6 +139,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
         targetCurrency,
       }),
     queryKey: ["getExchange", baseCurrency, targetCurrency],
+    staleTime: ONE_HOUR,
   })
   const borgPriceInUSD = exchangeData?.currentPrice || null
   const tokenPriceInUSD = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0

@@ -32,6 +32,8 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
 
   const { address } = useWalletContext()
   const { projectId } = useParams()
+
+  // GET eligibility status
   const { data: eligibilityStatusData } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
@@ -41,8 +43,8 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
     enabled: Boolean(address) && Boolean(projectId),
     staleTime: 1000 * 60 * 60,
   })
-  const isUserEligible = eligibilityStatusData?.isEligible
 
+  const isUserEligible = eligibilityStatusData?.isEligible
   const tierBenefits = eligibilityStatusData?.eligibilityTier?.benefits
 
   const scrollToTiers = () => {
