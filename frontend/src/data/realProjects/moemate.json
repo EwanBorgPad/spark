@@ -1,5 +1,5 @@
 {
-  "id": "hidden-moemate-123-stage",
+  "id": "moemate",
   "config": {
     "cluster": "mainnet",
     "lpPositionToBeBurned": true,
