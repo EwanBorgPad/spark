@@ -9,7 +9,8 @@ import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 
 const requestSchema = z.object({
   projectId: z.string().min(2),
-  limit: z.number().int().min(1).max(999),
+  limit: z.number().int().min(0).max(999),
+  offset: z.number().int().min(0).max(9999).default(0)
 })
 
 type ENV = {
@@ -34,7 +35,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: "Invalid request!", error }, 400)
     }
 
-    const { projectId, limit } = data
+    const { projectId, limit, offset } = data
 
     const project = await db
       .select()
@@ -48,7 +49,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const addresses = (await db.run(sql`SELECT address FROM user WHERE address NOT IN (SELECT address FROM eligibility_status_snapshot WHERE project_id = ${projectId})`))
       .results as string[]
 
-    const paginatedAddresses = addresses.slice(0, limit)
+    const paginatedAddresses = addresses.slice(offset, limit)
 
     for (const address of paginatedAddresses) {
       const eligibilityStatus = await EligibilityService.getEligibilityStatus({ db, address, projectId, rpcUrl })
@@ -57,8 +58,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     return jsonResponse({
       message: "Ok",
-      doneCount: limit,
-      todoCount: addresses.length - limit,
+      doneCount: paginatedAddresses.length,
+      todoCount: addresses.length - paginatedAddresses.length,
     }, 200)
   } catch (e) {
     const db = ctx.env.DB
