@@ -1,11 +1,11 @@
 {
-  "id": "moemate",
+  "id": "hidden-moemate-test-21391k2903k10239k3193",
   "config": {
     "cluster": "mainnet",
     "lpPositionToBeBurned": true,
     "raiseTargetInUsd": 375000,
     "fdv": 35000000,
-    "marketCap": null,
+    "marketCap": 2925015.64,
     "totalTokensForLiquidityPool": 208928571,
     "totalTokensForRewardDistribution": 390000000,
     "rewardsDistributionTimeInMonths": 6,
@@ -32,7 +32,7 @@
     "tweetUrl": null,
     "tokenContractUrl": null,
     "poolContractUrl": null,
-    "title": "Moemate",
+    "title": "TEST Moemate TEST",
     "subtitle": "Solana's Battle-tested AI Agent Platform",
     "logoUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
     "thumbnailUrl": "https://files.borgpad.com/images/moemate/moemate-cover.png",
@@ -92,7 +92,7 @@
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2025-01-14T16:00:00Z"
+        "date": "2025-01-14T11:00:00Z"
       },
       {
         "id": "SALE_CLOSES",
@@ -153,8 +153,8 @@
         "description": "Access to sale at 6 PM CET. Max Investment $2K",
         "quests": [],
         "benefits": {
-          "startDate": "2025-01-14T17:00:00Z",
-          "minInvestment": "10",
+          "startDate": "2025-01-14T11:00:00Z",
+          "minInvestment": "1",
           "maxInvestment": "2000"
         }
       }

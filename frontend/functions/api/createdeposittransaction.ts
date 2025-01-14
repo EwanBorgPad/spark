@@ -69,7 +69,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const cluster = project.json.config.cluster
         const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
         const connection = new Connection(rpcUrl, {
-            commitment: 'confirmed'
+            confirmTransactionInitialTimeout: 10000,
+            commitment: 'confirmed',    // status has to be confirmed because we mint the nft and get the address of it immediately after sending the mint tx
+            disableRetryOnRateLimit: true
         })
         // get price and token mint
         const tokenMint = project.json.config.raisedTokenData.mintAddress

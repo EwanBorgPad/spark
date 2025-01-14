@@ -67,7 +67,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         // TODO @depositValidations
 
         console.log("Sending transaction...")
-        const txId = await connection.sendRawTransaction(tx.serialize())
+        const txId = await connection.sendRawTransaction(tx.serialize(), {
+            skipPreflight: true     // this needs to be enabled because of latestHashBlock expiring
+        })
         console.log("Finished sending the transaction...")
 
         console.log('Signature status subscribing...')
