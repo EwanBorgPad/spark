@@ -5,7 +5,7 @@
     "lpPositionToBeBurned": true,
     "raiseTargetInUsd": 375000,
     "fdv": 35000000,
-    "marketCap": 2925015.64,
+    "marketCap": 2925015,
     "totalTokensForLiquidityPool": 208928571,
     "totalTokensForRewardDistribution": 390000000,
     "rewardsDistributionTimeInMonths": 6,
@@ -124,8 +124,8 @@
           }
         ],
         "benefits": {
-          "startDate": "2025-01-14T16:00:00Z",
-          "minInvestment": "100",
+          "startDate": "2025-01-14T11:00:00Z",
+          "minInvestment": "1",
           "maxInvestment": "5000"
         }
       },

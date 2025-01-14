@@ -32,15 +32,22 @@ const LiveNowInput = ({
     onChange(newValue)
     if (!newValue) return
     if (+newValue > maxBorgInput) {
-      onChange(maxBorgInput.toFixed(2).toString())
+      {
+        /* @MOEMATE - removed this for Moemate launch since sale is in USDC */
+      }
+      // onChange(maxBorgInput.toFixed(2).toString())
+      onChange(maxBorgInput.toString())
       return
     }
     clearError()
   }
 
-  const equivalentUsdValue = formatCurrencyAmount(borgPriceInUSD && props.value ? +props.value * borgPriceInUSD : 0, {
-    withDollarSign: true,
-  })
+  {
+    /* @MOEMATE - remove this for Moemate launch since sale is in USDC */
+  }
+  // const equivalentUsdValue = formatCurrencyAmount(borgPriceInUSD && props.value ? +props.value * borgPriceInUSD : 0, {
+  //   withDollarSign: true,
+  // })
 
   return (
     <div className="flex flex-col items-start">
@@ -49,13 +56,16 @@ const LiveNowInput = ({
         allowNegativeValue={false}
         placeholder="0"
         maxLength={16}
+        // @MOEMATE - added this for Moemate launch since sale is in USDC
+        allowDecimals={false}
         autoFocus
         className={"max-w-[242px] bg-transparent text-2xl focus:outline-none"}
-        decimalsLimit={6}
+        decimalsLimit={0}
         onValueChange={onChangeHandler}
         {...props}
       />
-      <span className="text-fg-tertiary">{equivalentUsdValue}</span>
+      {/* @MOEMATE - removed this for Moemate launch since sale is in USDC */}
+      {/* <span className="text-fg-tertiary">{equivalentUsdValue}</span> */}
       {error && <span className="text-fg-error-primary">{error.message}</span>}
     </div>
   )
