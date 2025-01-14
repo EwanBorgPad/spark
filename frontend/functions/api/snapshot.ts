@@ -47,7 +47,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     // load addresses
     const addresses = (await db.run(sql`SELECT address FROM user WHERE address NOT IN (SELECT address FROM eligibility_status_snapshot WHERE project_id = ${projectId})`))
-      .results as string[]
+      .results.map(obj => obj.address) as string[]
 
     const paginatedAddresses = addresses.slice(offset, limit)
 
