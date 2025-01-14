@@ -45,6 +45,7 @@ const WhitelistingContent = () => {
       }),
     queryKey: ["getInvestmentIntentSummary", projectId],
     enabled: Boolean(projectId),
+    staleTime: 30 * 60 * 1000,
   })
 
   return (
