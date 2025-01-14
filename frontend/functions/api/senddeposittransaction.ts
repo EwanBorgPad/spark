@@ -58,7 +58,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         }
 
         const cluster = project.json.config.cluster as ('mainnet' | 'devnet')
-        const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster))
+        const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster), {
+            commitment: 'confirmed'
+        })
 
         // sign with our private key wallet
         const privateKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(privateKey)))
