@@ -64,6 +64,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const privateKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(privateKey)))
         const tx = Transaction.from(Buffer.from(data.serializedTx, 'base64'))
         tx.partialSign(privateKeypair)
+
         // TODO @depositValidations
 
         console.log("Sending transaction...")
