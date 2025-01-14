@@ -239,10 +239,10 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
 
     // make tx for minting nft
     const builder = transactionBuilder().add(createProgrammableNft(umi, {
-        symbol: 'bpSOLID',
+        symbol: 'bpMATES',
         mint: mintSigner,
-        name: "SOLID Liquidity Provider",
-        uri: "https://files.borgpad.com/solana-id/nft-metadata/metadata.json",
+        name: "MATES Liquidity Provider",
+        uri: "https://files.borgpad.com/moemate/nft-metadata/metadata.json",
         updateAuthority: signer,
         sellerFeeBasisPoints: percentAmount(0),
         payer: userSigner,
@@ -250,7 +250,7 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
         tokenOwner: userPublicKey,
         collection: {
             verified: false,
-            key: 'DgmpjwcneqbM4gD6y3GKHuLFoNpseWFb8npDcsLDUNiY',
+            key: 'H6bkHw2eWxNUatXGyYXcWdFnQXG4nJkdtKWfgY5swG8S', // https://solscan.io/token/H6bkHw2eWxNUatXGyYXcWdFnQXG4nJkdtKWfgY5swG8S
         }
     }))
 
