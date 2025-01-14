@@ -45,10 +45,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         // get project, cluster and connection
         const project = await drizzleDb
-          .select()
-          .from(projectTable)
-          .where(eq(projectTable.id, projectId))
-          .get()
+            .select()
+            .from(projectTable)
+            .where(eq(projectTable.id, projectId))
+            .get()
         if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 
         // validate raise target
@@ -57,7 +57,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             return jsonResponse({ message: 'Raise target has been reached!' }, 409)
         }
 
-        const cluster = project.json.config.cluster as ('mainnet'|'devnet')
+        const cluster = project.json.config.cluster as ('mainnet' | 'devnet')
         const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster))
 
         // sign with our private key wallet
@@ -67,9 +67,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         // TODO @depositValidations
 
         console.log("Sending transaction...")
-        const txId = await connection.sendRawTransaction(tx.serialize(), {
-            skipPreflight: true     // this needs to be enabled because of latestHashBlock expiring
-        })
+        const txId = await connection.sendRawTransaction(tx.serialize())
         console.log("Finished sending the transaction...")
 
         console.log('Signature status subscribing...')
@@ -77,7 +75,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         console.log(`Signature status finished: ${transactionStatus}.`)
 
         // handle timeout from signature status fetch
-        if (transactionStatus.status === 'error' ) {
+        if (transactionStatus.status === 'error') {
             const message = `Transaction error! code=(${transactionStatus.errorCode}), txId=(${transactionStatus.txId})`
             throw new Error(message)
         }
@@ -132,8 +130,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         // update db
         if (
-          transactionStatus.confirmationStatus &&
-          ['confirmed', 'finalized'].includes(transactionStatus.confirmationStatus)
+            transactionStatus.confirmationStatus &&
+            ['confirmed', 'finalized'].includes(transactionStatus.confirmationStatus)
         ) {
             await DepositService.createUserDeposit({
                 db: drizzleDb,
