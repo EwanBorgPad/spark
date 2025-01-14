@@ -48,10 +48,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const projectId = data.projectId
 
         const project = await drizzleDb
-          .select()
-          .from(projectTable)
-          .where(eq(projectTable.id, projectId))
-          .get()
+            .select()
+            .from(projectTable)
+            .where(eq(projectTable.id, projectId))
+            .get()
         if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 
         const lbpWalletAddress = project.json.config.lbpWalletAddress
@@ -68,7 +68,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         // getting connection to the RPC
         const cluster = project.json.config.cluster
         const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
-        const connection = new Connection(rpcUrl)
+        const connection = new Connection(rpcUrl, {
+            commitment: 'confirmed'
+        })
         // get price and token mint
         const tokenMint = project.json.config.raisedTokenData.mintAddress
 
