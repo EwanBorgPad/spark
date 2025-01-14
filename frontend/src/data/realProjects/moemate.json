@@ -114,7 +114,7 @@
       {
         "id": "tier10",
         "label": "$MOE's 5 Digit Club.",
-        "description": "Access to sale at 5 PM CET. Maximum Investment: $5K",
+        "description": "Access to sale at 5 PM CET. Maximum Investment: $1.5K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -126,13 +126,13 @@
         "benefits": {
           "startDate": "2025-01-14T16:00:00Z",
           "minInvestment": "100",
-          "maxInvestment": "5000"
+          "maxInvestment": "1500"
         }
       },
       {
         "id": "tier30",
         "label": "BORGers Club",
-        "description": "Access to sale at 5:30 PM CET. Max Investment $3.5K",
+        "description": "Access to sale at 5:30 PM CET. Max Investment $1.5K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -144,18 +144,18 @@
         "benefits": {
           "startDate": "2025-01-14T16:30:00Z",
           "minInvestment": "100",
-          "maxInvestment": "3500"
+          "maxInvestment": "1500"
         }
       },
       {
         "id": "tier99",
         "label": "Public Sale",
-        "description": "Access to sale at 6 PM CET. Max Investment $2K",
+        "description": "Access to sale at 6 PM CET. Max Investment $250",
         "quests": [],
         "benefits": {
           "startDate": "2025-01-14T17:00:00Z",
           "minInvestment": "10",
-          "maxInvestment": "2000"
+          "maxInvestment": "250"
         }
       }
     ]
