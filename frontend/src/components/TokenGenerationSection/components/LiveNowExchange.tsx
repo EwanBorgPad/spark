@@ -147,7 +147,9 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
 
   // @TODO - resolve fix below
   const minBorgInput = depositStatus ? Number(Number(depositStatus.minAmountAllowed.uiAmount).toFixed(2)) : 0
-  const maxBorgInput = depositStatus ? truncateToSecondDecimal(Number(depositStatus.maxAmountAllowed.uiAmount)) : 0
+  // @MOEMATE - changed this for Moemate launch (no decimals)
+  // const maxBorgInput = depositStatus ? truncateToSecondDecimal(Number(depositStatus.maxAmountAllowed.uiAmount)) : 0
+  const maxBorgInput = depositStatus ? Math.trunc(Number(depositStatus.maxAmountAllowed.uiAmount)) : 0
 
   const checkIfUserInvestedMaxAmount = useCallback(() => {
     if (typeof maxBorgInput !== "number" || typeof maxBorgInput !== "number") {
@@ -235,7 +237,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const borgCoinInput = watch("borgInputValue")
 
   const isInputMaxAmount = +borgCoinInput === maxBorgInput
-  const maxAmountString = `Use Max Allowed: ${formatCurrencyAmount(+maxBorgInput, { customDecimals: 2 })}`
+  const maxAmountString = `Use Max Allowed: ${formatCurrencyAmount(+maxBorgInput, { customDecimals: 0 })} ${projectData?.config.raisedTokenData.ticker}`
 
   const scrollToWhitelistRequirements = () => {
     const top = eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
@@ -348,10 +350,19 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
                 isLoading={isPendingSendTransaction || isPendingMakeDepositTransaction}
                 className={"w-full"}
               />
-              <a className="w-full" href={`https://jup.ag/swap/SOL-${projectData?.config.raisedTokenData.ticker}`} target="_blank" rel="noopener noreferrer">
-                <Button size="md" color="secondary" className="w-full py-2"
+              <a
+                className="w-full"
+                href={`https://jup.ag/swap/SOL-${projectData?.config.raisedTokenData.ticker}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button
+                  size="md"
+                  color="secondary"
+                  className="w-full py-2"
                   disabled={!projectData?.config.raisedTokenData.ticker}
-                  btnText={`Buy $${projectData?.config.raisedTokenData.ticker}`} />
+                  btnText={`Buy $${projectData?.config.raisedTokenData.ticker}`}
+                />
               </a>
             </>
           ) : (
