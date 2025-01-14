@@ -58,9 +58,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         }
 
         const cluster = project.json.config.cluster as ('mainnet' | 'devnet')
-        const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster), {
-            commitment: 'confirmed'
-        })
+        const connection = new Connection(getRpcUrlForCluster(SOLANA_RPC_URL, cluster))
 
         // sign with our private key wallet
         const privateKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(privateKey)))
@@ -69,7 +67,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         // TODO @depositValidations
 
         console.log("Sending transaction...")
-        const txId = await connection.sendRawTransaction(tx.serialize())
+        const txId = await connection.sendRawTransaction(tx.serialize(), {
+            skipPreflight: true     // this needs to be enabled because of latestHashBlock expiring
+        })
         console.log("Finished sending the transaction...")
 
         console.log('Signature status subscribing...')
