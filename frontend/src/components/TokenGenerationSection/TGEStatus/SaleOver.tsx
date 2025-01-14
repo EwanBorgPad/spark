@@ -125,17 +125,17 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
             </>
           ) : (
             <div className="z-[1] w-full max-w-[400px] rounded-lg border border-bd-primary bg-secondary px-4 py-3 text-sm opacity-60">
-              {t("sale_over.wallet_didnt_contribute")}
+              If your contribution was successful, you`ll find a Contribution NFT in your wallet as confirmation. 🎉
             </div>
           )}
 
           {/* @TODO - find better solution for this */}
           {/* CTA FOR MOEMATE */}
-          <section className="mt-10 flex w-full max-w-[400px] flex-col items-center gap-6">
+          {/* <section className="mt-10 flex w-full max-w-[400px] flex-col items-center gap-6">
             <h3 className="z-[1] px-4 text-center text-3xl font-semibold  leading-tight">Upcoming Launch Pool</h3>
             <Link to={`https://borgpad.com/launch-pools/moemate`} className="w-full">
               <div className="relative w-full overflow-hidden rounded-[13px] bg-[#abff73]/25 p-[1px]">
-                <div className="animated-conic-gradient animate-rotate-border absolute z-[-1]" />
+                <div className="animated-conic-gradient absolute z-[-1] animate-rotate-border" />
                 <div className="z-[10] flex h-[40px] items-center justify-between gap-2 rounded-xl bg-[#16231e] p-3">
                   <div className="flex items-center gap-3">
                     <Img
@@ -156,7 +156,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
                 </div>
               </div>
             </Link>
-          </section>
+          </section> */}
         </div>
       </div>
     </div>
