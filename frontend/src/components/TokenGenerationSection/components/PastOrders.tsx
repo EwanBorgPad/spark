@@ -4,11 +4,12 @@ import { ExternalLink } from "@/components/Button/ExternalLink"
 import { formatDateForDisplay } from "@/utils/date-helpers"
 import Accordion from "@/components/Accordion/Accordion"
 import { formatCurrencyAmount } from "shared/utils/format"
-import { Icon } from "@/components/Icon/Icon"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { useParams } from "react-router-dom"
+import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
+import Img from "@/components/Image/Img.tsx"
 
 
 const MAX_ACCORDION_CONTAINER_HEIGHT = 317
@@ -21,9 +22,9 @@ type PastOrdersProps = {
 export const PastOrders = ({ label, className }: PastOrdersProps) => {
   const { address } = useWalletContext()
   const { projectId } = useParams()
+  const { projectData } = useProjectDataContext()
 
-  // TODO @hardcoded exchangeBorgUsd
-  const baseCurrency = "swissborg"
+  const baseCurrency = projectData?.config.raisedTokenData.coinGeckoName
   const targetCurrency = "usd"
   const { data } = useQuery({
     queryFn: () =>
@@ -32,6 +33,7 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
         targetCurrency,
       }),
     queryKey: ["getExchange", baseCurrency, targetCurrency],
+    enabled: Boolean(baseCurrency),
   })
   const raisedTokenPriceInUsd = data?.currentPrice || 0
 
@@ -90,6 +92,7 @@ export const PastOrder = ({
   raisedTokenPriceInUsd,
 }: PastOrderProps) => {
   const borgValueInUsd = formatCurrencyAmount(raisedTokenPriceInUsd * Number(uiAmount), { withDollarSign: true })
+  const { projectData } = useProjectDataContext()
 
   return (
     <div
@@ -101,8 +104,8 @@ export const PastOrder = ({
       <div className="flex w-full items-center justify-between gap-1">
         <div className="flex items-center gap-1">
           <span className="text-base font-medium">{formatCurrencyAmount(uiAmount)}</span>
-          <span>BORG</span>
-          <Icon icon="SvgBorgCoin" className="text-xl" />
+          <span>{projectData?.config.raisedTokenData.ticker}</span>
+          <Img size={'4'} src={projectData?.config.raisedTokenData.iconUrl} />
         </div>
         <div className="relative h-6 w-6">
           <ExternalLink.Icon

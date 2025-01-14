@@ -105,7 +105,7 @@ const Project = () => {
               >
                 {/* @TODO - @UPDATE_PROJECT_DATA - remove temp fix below */}
                 <Img size="4" src={projectData?.id === "borgy" ? borgyLogoUrl : projectData?.info.logoUrl} isRounded />
-                <Text text={`$${projectData.config.launchedTokenData.ticker}/BORG`} isLoading={isLoading} />
+                <Text text={`$${projectData.config.launchedTokenData.ticker}/${projectData.config.raisedTokenData.ticker}`} isLoading={isLoading} />
                 <Icon icon="SvgExternalLink" className="opacity-50 transition-opacity group-hover:opacity-100" />
               </a>
             )}
