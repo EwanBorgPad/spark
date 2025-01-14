@@ -1,5 +1,5 @@
 {
-  "id": "hidden-moemate-123-stage",
+  "id": "hidden-moemate-old-config",
   "config": {
     "cluster": "mainnet",
     "lpPositionToBeBurned": true,
@@ -12,12 +12,12 @@
     "finalSnapshotTimestamp": "2025-01-14T15:55:00Z",
     "lbpWalletAddress": null,
     "raisedTokenData": {
-      "iconUrl": "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040",
-      "ticker": "USDC",
-      "mintAddress": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      "decimals": 6,
-      "fixedTokenPriceInUsd": 1,
-      "coinGeckoName": "usd"
+      "iconUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
+      "ticker": "BORG",
+      "mintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
+      "decimals": 9,
+      "fixedTokenPriceInUsd": null,
+      "coinGeckoName": "swissborg"
     },
     "launchedTokenData": {
       "iconUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
@@ -28,12 +28,14 @@
     }
   },
   "info": {
+    "title": "Moemate OLD CONFIG",
+    "subtitle": "Solana's Battle-tested AI Agent Platform",
+
     "claimUrl": null,
     "tweetUrl": null,
     "tokenContractUrl": null,
     "poolContractUrl": null,
-    "title": "Moemate",
-    "subtitle": "Solana's Battle-tested AI Agent Platform",
+
     "logoUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
     "thumbnailUrl": "https://files.borgpad.com/images/moemate/moemate-cover.png",
     "origin": "The Timeline",

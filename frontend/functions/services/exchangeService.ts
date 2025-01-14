@@ -43,6 +43,16 @@ const getExchangeData = async ({
     throw new Error(`Unsupported currency pair (${baseCurrency}-${targetCurrency})!`)
   }
 
+  if (baseCurrency === 'usd' && targetCurrency === 'usd') {
+    return {
+      baseCurrency,
+      targetCurrency,
+      currentPrice: 1,
+      fullyDilutedValuation: 0,
+      quotedFrom: 'usdc-peg',
+    }
+  }
+
   // build cache key
   const cacheKey = `exchange-api/${baseCurrency}-${targetCurrency}`
 
