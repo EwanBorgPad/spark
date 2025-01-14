@@ -1,7 +1,11 @@
 const bs58 = require('bs58');
 
-function privateKeyArrayToBase58(privateKeyArray) {
-  const uint8Array = new Uint8Array(privateKeyArray);
-  console.log(bs58)
-  return bs58.default.encode(uint8Array);
+const inputArray = []
+
+function main() {
+  const uint8Array = new Uint8Array(inputArray);
+  const result = bs58.default.encode(uint8Array);
+  console.log(result)
 }
+
+main()

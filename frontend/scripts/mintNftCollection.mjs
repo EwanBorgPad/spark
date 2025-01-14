@@ -12,7 +12,7 @@ const privateKeyUint8Array = bs58.decode(privateKeyString);
 const wallet = Keypair.fromSecretKey(privateKeyUint8Array);
 
 // Connect to the Solana devnet
-const connection = new Connection(clusterApiUrl("devnet"));
+const connection = new Connection(clusterApiUrl("mainnet-beta"));
 
 // Initialize Metaplex with your wallet
 const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
@@ -27,11 +27,11 @@ const collectionMetadata = {
 
 // Define metadata for individual NFTs
 const nftMetadataList = [
-  { name: "NFT 1", uri: "https://example.com/nft11-metadata.json" },
-  { name: "NFT 2", uri: "https://example.com/nft21-metadata.json" },
-  { name: "NFT 3", uri: "https://example.com/nft31-metadata.json" },
-  { name: "NFT 4", uri: "https://example.com/nft41-metadata.json" },
-  { name: "NFT 5", uri: "https://example.com/nft5-metadata.json" },
+  // { name: "NFT 1", uri: "https://example.com/nft11-metadata.json" },
+  // { name: "NFT 2", uri: "https://example.com/nft21-metadata.json" },
+  // { name: "NFT 3", uri: "https://example.com/nft31-metadata.json" },
+  // { name: "NFT 4", uri: "https://example.com/nft41-metadata.json" },
+  // { name: "NFT 5", uri: "https://example.com/nft5-metadata.json" },
 ];
 
 // Function to mint the NFT collection and link child NFTs
