@@ -12,8 +12,6 @@ import ProjectTester2 from "@/components/QA/ProjectTester2.tsx"
 import { Icon } from "@/components/Icon/Icon.tsx"
 import { twMerge } from "tailwind-merge"
 
-// @TODO - remove temp fix below
-const borgyLogoUrl = "https://files.borgpad.com/images/borgy/borgy-logo.webp"
 
 const Project = () => {
   const { projectData, isLoading } = useProjectDataContext()
@@ -36,7 +34,7 @@ const Project = () => {
           <div className="flex flex-col gap-6 lg:flex-row">
             {/* @TODO - @UPDATE_PROJECT_DATA - remove temp fix below */}
             <Img
-              src={projectData?.id === "borgy" ? borgyLogoUrl : projectData?.info.logoUrl}
+              src={projectData?.info.logoUrl}
               isFetchingLink={isLoading}
               imgClassName="scale-[102%]"
               isRounded={true}
@@ -91,7 +89,7 @@ const Project = () => {
                 className="group flex items-center gap-2 border-r-[1px] px-5 md:border-l-[1px] md:border-x-fg-gray-line"
               >
                 {/* @TODO - @UPDATE_PROJECT_DATA - remove temp fix below */}
-                <Img size="4" src={projectData?.id === "borgy" ? borgyLogoUrl : projectData?.info.logoUrl} isRounded />
+                <Img size="4" src={projectData?.info.logoUrl} isRounded />
                 <Text text={`$${projectData.config.launchedTokenData.ticker}`} isLoading={isLoading} />
                 <Icon icon="SvgExternalLink" className="opacity-50 transition-opacity group-hover:opacity-100" />
               </a>
@@ -104,7 +102,7 @@ const Project = () => {
                 className="group flex items-center gap-2 px-5  md:border-r-fg-gray-line"
               >
                 {/* @TODO - @UPDATE_PROJECT_DATA - remove temp fix below */}
-                <Img size="4" src={projectData?.id === "borgy" ? borgyLogoUrl : projectData?.info.logoUrl} isRounded />
+                <Img size="4" src={projectData?.info.logoUrl} isRounded />
                 <Text text={`$${projectData.config.launchedTokenData.ticker}/BORG`} isLoading={isLoading} />
                 <Icon icon="SvgExternalLink" className="opacity-50 transition-opacity group-hover:opacity-100" />
               </a>
