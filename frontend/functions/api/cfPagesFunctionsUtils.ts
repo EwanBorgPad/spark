@@ -46,6 +46,7 @@ export const jsonResponse = (
 export const reportError = async (db: D1Database | DrizzleD1Database, error: unknown) => {
   const e = error instanceof Error ? error : new Error(String(error))
 
+  console.error(e)
 
   const id = uuidv4()
   const message = e.message
