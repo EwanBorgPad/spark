@@ -23,15 +23,16 @@
       "iconUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
       "ticker": "MATES",
       "mintAddress": "MAtesZXcU38mgPuteRFo9ApCauYRRuwn3xf1cs5y7ZX",
-      "decimals": 0,
+      "decimals": 6,
       "fixedTokenPriceInUsd": 0.00179
     }
   },
   "info": {
-    "claimUrl": null,
-    "tweetUrl": null,
-    "tokenContractUrl": null,
-    "poolContractUrl": null,
+    "claimUrl": "https://app.streamflow.finance/airdrops/solana/mainnet/3XTJwQUoaSt15jxKALeyVH7aKuFp3vFBbh6KcjzNX9qv",
+    "tweetUrl": "https://x.com/BorgPadHQ/status/1879197635216601331",
+    "tokenContractUrl": "https://jup.ag/swap/SOL-MAtesZXcU38mgPuteRFo9ApCauYRRuwn3xf1cs5y7ZX",
+    "poolContractUrl": "https://raydium.io/liquidity/increase/?mode=add&pool_id=53zeGszwfgY2d6ExMywwdBHMckqTzbLeztKWD1GbAEKV",
+
     "title": "Moemate",
     "subtitle": "Solana's Battle-tested AI Agent Platform",
     "logoUrl": "https://play-lh.googleusercontent.com/GRio1Gpgu9_j0iDoLvIapmRvBCeDMTL6f2LFFcuSoqpfGfo5MZvVtPyxSI1epUOlbT1O",
@@ -97,12 +98,12 @@
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2025-01-15T16:00:00Z"
+        "date": "2025-01-14T16:10:00Z"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2025-01-15T16:00:00Z"
+        "date": "2025-01-14T18:10:00Z"
       },
       {
         "id": "DISTRIBUTION_OVER",
@@ -114,7 +115,7 @@
       {
         "id": "tier10",
         "label": "$MOE's 5 Digit Club.",
-        "description": "Access to sale at 5 PM CET. Maximum Investment: $5K",
+        "description": "Access to sale at 5 PM CET. Maximum Investment: $1.5K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -126,13 +127,13 @@
         "benefits": {
           "startDate": "2025-01-14T16:00:00Z",
           "minInvestment": "100",
-          "maxInvestment": "5000"
+          "maxInvestment": "1500"
         }
       },
       {
         "id": "tier30",
         "label": "BORGers Club",
-        "description": "Access to sale at 5:30 PM CET. Max Investment $3.5K",
+        "description": "Access to sale at 5:30 PM CET. Max Investment $1.5K",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -144,18 +145,18 @@
         "benefits": {
           "startDate": "2025-01-14T16:30:00Z",
           "minInvestment": "100",
-          "maxInvestment": "3500"
+          "maxInvestment": "1500"
         }
       },
       {
         "id": "tier99",
         "label": "Public Sale",
-        "description": "Access to sale at 6 PM CET. Max Investment $2K",
+        "description": "Access to sale at 6 PM CET. Max Investment $250",
         "quests": [],
         "benefits": {
           "startDate": "2025-01-14T17:00:00Z",
           "minInvestment": "10",
-          "maxInvestment": "2000"
+          "maxInvestment": "250"
         }
       }
     ]

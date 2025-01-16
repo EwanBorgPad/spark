@@ -33,7 +33,11 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
             db, walletAddress: address, projectId, rpcUrl,
         })
 
-        return jsonResponse(depositStatus, 200)
+        return jsonResponse(depositStatus, {
+            headers: {
+                "Cache-Control": "no-cache",
+            }
+        })
     } catch (e) {
         await reportError(ctx.env.DB, e)
         return jsonResponse({ message: "Something went wrong..." }, 500)
