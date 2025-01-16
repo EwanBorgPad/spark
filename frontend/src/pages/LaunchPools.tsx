@@ -10,7 +10,7 @@ import orcaLogo from "@/assets/launchPools/orca-logo.png"
 import raydiumLogo from "@/assets/launchPools/raydium-logo.png"
 
 import { GetProjectsResponse } from "shared/models"
-import LaunchPoolCard from "@/components/Cards/LaunchPoolCard"
+import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
 import Img from "@/components/Image/Img"
 import { useTranslation } from "react-i18next"
@@ -20,7 +20,6 @@ const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 const LaunchPools = () => {
   const [phases, setPhases] = useState<ExpandedProject[][]>([])
   const { t } = useTranslation()
-  console.log(phases)
 
   const { data, isLoading } = useQuery<GetProjectsResponse>({
     queryFn: () =>
@@ -35,7 +34,6 @@ const LaunchPools = () => {
 
   useEffect(() => {
     if (!data?.projects) return
-    console.log(data.projects)
     const sortedProjects = sortProjectsPerStatus(data.projects)
     setPhases(sortedProjects)
   }, [data?.projects])
@@ -72,9 +70,7 @@ const LaunchPools = () => {
           <ul className="grid w-full grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {!isLoading
               ? phases?.map((phase) =>
-                  phase?.map((project) => (
-                    <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />
-                  )),
+                  phase?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />),
                 )
               : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
           </ul>

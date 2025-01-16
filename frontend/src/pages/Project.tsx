@@ -12,8 +12,6 @@ import ProjectTester2 from "@/components/QA/ProjectTester2.tsx"
 import { Icon } from "@/components/Icon/Icon.tsx"
 import { twMerge } from "tailwind-merge"
 
-// @TODO - remove temp fix below
-const borgyLogoUrl = "https://files.borgpad.com/images/borgy/borgy-logo.webp"
 
 const Project = () => {
   const { projectData, isLoading } = useProjectDataContext()
@@ -36,7 +34,7 @@ const Project = () => {
           <div className="flex flex-col gap-6 lg:flex-row">
             {/* @TODO - @UPDATE_PROJECT_DATA - remove temp fix below */}
             <Img
-              src={projectData?.id === "borgy" ? borgyLogoUrl : projectData?.info.logoUrl}
+              src={projectData?.info.logoUrl}
               isFetchingLink={isLoading}
               imgClassName="scale-[102%]"
               isRounded={true}
@@ -105,7 +103,10 @@ const Project = () => {
               >
                 {/* @TODO - @UPDATE_PROJECT_DATA - remove temp fix below */}
                 <Img size="4" src={projectData?.id === "borgy" ? borgyLogoUrl : projectData?.info.logoUrl} isRounded />
-                <Text text={`$${projectData.config.launchedTokenData.ticker}/${projectData.config.raisedTokenData.ticker}`} isLoading={isLoading} />
+                <Text
+                  text={`$${projectData.config.launchedTokenData.ticker}/${projectData.config.raisedTokenData.ticker}`}
+                  isLoading={isLoading}
+                />
                 <Icon icon="SvgExternalLink" className="opacity-50 transition-opacity group-hover:opacity-100" />
               </a>
             )}
