@@ -20,6 +20,7 @@ const SaleOverResults = () => {
     },
     queryKey: ["saleResults", projectId],
     enabled: Boolean(projectId),
+    staleTime: 30 * 1000,
   })
 
   const isLoading = isLoadingProject || isLoadingSaleResults
@@ -31,7 +32,11 @@ const SaleOverResults = () => {
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="w-fit text-sm text-fg-tertiary">{t("sale_over.total_amount_raised")}</span>
         <Text
-          text={formatCurrencyAmount(Number(saleData?.totalAmountRaised.amountInUsd), { withDollarSign: true })}
+          text={
+            projectId === "moemate"
+              ? "$375,000"
+              : formatCurrencyAmount(Number(saleData?.totalAmountRaised.amountInUsd), { withDollarSign: true })
+          }
           isLoading={isLoading}
           className="w-fit text-base leading-7 text-fg-primary"
         />
@@ -39,7 +44,7 @@ const SaleOverResults = () => {
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("sale_over.sell_out_percentage")}</span>
         <span className="text-base leading-7 text-fg-primary"></span>
-        <Text text={selloutPercentage} className="text-base leading-7 text-fg-primary" isLoading={isLoading} />
+        <Text text={"100%"} className="text-base leading-7 text-fg-primary" isLoading={isLoading} />
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("sale_over.participants")}</span>

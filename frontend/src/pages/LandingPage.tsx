@@ -91,7 +91,7 @@ const LandingPage = () => {
               />
               <div className="absolute inset-0 z-[-1] h-full w-full rounded-xl shadow-around-1 transition-shadow duration-500 group-hover:shadow-around-2"></div>
             </Link>
-            <ActiveLaunchPoolBtn />
+            {/* <ActiveLaunchPoolBtn /> */}
           </div>
         </div>
       </section>

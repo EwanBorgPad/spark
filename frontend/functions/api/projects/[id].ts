@@ -33,7 +33,11 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       .get()
     if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 
-    return jsonResponse(project.json, 200)
+    return jsonResponse(project.json, {
+      headers: {
+        "Cache-Control": "public, max-age=15",
+      }
+    })
   } catch (e) {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)

@@ -22,6 +22,7 @@ const SaleProgress = () => {
     },
     queryKey: ["saleResults", projectId],
     enabled: Boolean(projectId),
+    staleTime: 30 * 1000,
   })
 
   const isLoading = isLoadingProject || isLoadingSaleResults

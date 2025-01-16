@@ -21,6 +21,8 @@ import { Transaction } from "@solana/web3.js"
 import { isBefore } from "date-fns/isBefore"
 import { twMerge } from "tailwind-merge"
 import DisabledContainer from "./DisabledContainer.tsx"
+import Img from "@/components/Image/Img.tsx"
+import Text from "@/components/Text.tsx"
 
 type FormInputs = {
   borgInputValue: string
@@ -35,22 +37,21 @@ const truncateToSecondDecimal = (number: number) => {
   return Math.trunc(number * 100) / 100
 }
 
-// input data for "getExchange"
-const baseCurrency = "swissborg"
-const targetCurrency = "usd"
+const ONE_HOUR = 60 * 60 * 1000
 
 const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const { projectId } = useParams()
 
-  const { projectData } = useProjectDataContext()
+  const { projectData, isLoading } = useProjectDataContext()
   const { walletState, signTransaction, address, walletProvider } = useWalletContext()
 
   const cluster = projectData?.config.cluster
   const rpcUrl = BACKEND_RPC_URL + "?cluster=" + cluster
   const tokenMintAddress = projectData?.config.raisedTokenData.mintAddress
 
+  // Create Deposit Transaction
   const { mutateAsync: makeDepositTransaction, isPending: isPendingMakeDepositTransaction } = useMutation({
     mutationFn: async (payload: PostCreateDepositTxArgs) => {
       return (await backendApi.postCreateDepositTx(payload)).transaction
@@ -67,6 +68,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     },
   })
 
+  // Send Transaction
   const { mutateAsync: sendTransaction, isPending: isPendingSendTransaction } = useMutation({
     mutationFn: async (payload: PostSendDepositTransactionArgs) => {
       return await backendApi.postSendDepositTransaction(payload)
@@ -88,6 +90,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     },
   })
 
+  // Get Spl token balance
   const { data: balance } = useQuery({
     queryFn: () => {
       if (!address || !projectId || !tokenMintAddress) return
@@ -101,6 +104,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     enabled: Boolean(address) && Boolean(tokenMintAddress) && Boolean(tokenMintAddress),
   })
 
+  // Get Eligibility Status
   const { data: eligibilityStatus, isLoading: isEligibilityLoading } = useQuery({
     queryFn: () => {
       if (!address || !projectId) return
@@ -108,20 +112,25 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     },
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
-  })
-  const { data: depositStatus, isLoading: isDepositStatusLoading } = useQuery({
-    queryFn: () => {
-      if (!address || !projectId || !eligibilityStatus?.isEligible) return
-      return backendApi.getDepositStatus({ address, projectId })
-    },
-    queryKey: ["getDepositStatus", address, projectId],
-    enabled: Boolean(address) && Boolean(projectId) && Boolean(eligibilityStatus?.isEligible),
+    staleTime: ONE_HOUR,
   })
 
   const isUserEligible = eligibilityStatus?.isEligible
   const tierBenefits = eligibilityStatus?.eligibilityTier?.benefits
   const isEligibleTierActive = tierBenefits ? isBefore(tierBenefits.startDate, new Date()) : false
 
+  // Get deposit status
+  const { data: depositStatus, isLoading: isDepositStatusLoading } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId || !isUserEligible) return
+      return backendApi.getDepositStatus({ address, projectId })
+    },
+    queryKey: ["getDepositStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId) && Boolean(isUserEligible),
+  })
+
+  const baseCurrency = projectData?.config.raisedTokenData.coinGeckoName
+  const targetCurrency = "usd"
   const { data: exchangeData } = useQuery({
     queryFn: () =>
       backendApi.getExchange({
@@ -129,6 +138,8 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
         targetCurrency,
       }),
     queryKey: ["getExchange", baseCurrency, targetCurrency],
+    staleTime: ONE_HOUR,
+    enabled: Boolean(baseCurrency),
   })
   const borgPriceInUSD = exchangeData?.currentPrice || null
   const tokenPriceInUSD = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0
@@ -136,7 +147,9 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
 
   // @TODO - resolve fix below
   const minBorgInput = depositStatus ? Number(Number(depositStatus.minAmountAllowed.uiAmount).toFixed(2)) : 0
-  const maxBorgInput = depositStatus ? truncateToSecondDecimal(Number(depositStatus.maxAmountAllowed.uiAmount)) : 0
+  // @MOEMATE - changed this for Moemate launch (no decimals)
+  // const maxBorgInput = depositStatus ? truncateToSecondDecimal(Number(depositStatus.maxAmountAllowed.uiAmount)) : 0
+  const maxBorgInput = depositStatus ? Math.trunc(Number(depositStatus.maxAmountAllowed.uiAmount)) : 0
 
   const checkIfUserInvestedMaxAmount = useCallback(() => {
     if (typeof maxBorgInput !== "number" || typeof maxBorgInput !== "number") {
@@ -152,15 +165,16 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const { handleSubmit, control, setValue, watch, clearErrors, setError } = useForm<FormInputs>({ mode: "onBlur" })
 
   const checkIfValueIsValid = (value: string) => {
+    const ticker = projectData?.config.raisedTokenData.ticker
     if (!balance?.uiAmountString) return
     if (+value > maxBorgInput) {
-      setError("borgInputValue", { message: `Max investment value is ${maxBorgInput.toFixed(2)} BORG` })
+      setError("borgInputValue", { message: `Max investment value is ${maxBorgInput.toFixed(2)} ${ticker}` })
       return false
     } else if (Number(value) > Number(balance.uiAmountString)) {
-      setError("borgInputValue", { message: `Insufficient BORG Balance.` })
+      setError("borgInputValue", { message: `Insufficient ${ticker} Balance.` })
       return false
     } else if (+value < minBorgInput) {
-      setError("borgInputValue", { message: `Min investment value is ${minBorgInput.toFixed(2)} BORG` })
+      setError("borgInputValue", { message: `Min investment value is ${minBorgInput.toFixed(2)} ${ticker}` })
       return false
     }
     return true
@@ -223,7 +237,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const borgCoinInput = watch("borgInputValue")
 
   const isInputMaxAmount = +borgCoinInput === maxBorgInput
-  const maxAmountString = `Use Max Allowed: ${formatCurrencyAmount(+maxBorgInput, { customDecimals: 2 })}`
+  const maxAmountString = `Use Max Allowed: ${formatCurrencyAmount(+maxBorgInput, { customDecimals: 0 })} ${projectData?.config.raisedTokenData.ticker}`
 
   const scrollToWhitelistRequirements = () => {
     const top = eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
@@ -265,8 +279,8 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
                 />
               </div>
               <div className="flex h-fit items-center gap-2 rounded-full bg-default p-1 pr-3 text-sm font-medium">
-                <Icon icon="SvgBorgCoin" className="text-2xl" />
-                <span>BORG</span>
+                <Img src={projectData?.config.raisedTokenData.iconUrl} size="6" isFetchingLink={isLoading} isRounded />
+                <Text text={projectData?.config.raisedTokenData.ticker} isLoading={isLoading} />
               </div>
             </div>
             <div className="flex w-full flex-row justify-between">
@@ -304,7 +318,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
                   <p className="flex gap-1 text-left text-xs opacity-50">
                     <span className="pr-1">{t("tge.balance")}:</span>
                     <span className="">{formatCurrencyAmount(Number(balance?.uiAmountString))}</span>
-                    <span>{" BORG"}</span>
+                    <span>{` ${projectData?.config.raisedTokenData.ticker}`}</span>
                   </p>
                   <div className="flex items-center gap-2"></div>
                 </div>
@@ -331,13 +345,24 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
               <Button
                 type="submit"
                 size="lg"
-                btnText="Supply $BORG"
-                disabled={!isUserEligible || !isEligibleTierActive}
+                btnText={`Supply $${projectData?.config.raisedTokenData.ticker}`}
+                disabled={!isUserEligible || !isEligibleTierActive || !projectData?.config.raisedTokenData.ticker}
                 isLoading={isPendingSendTransaction || isPendingMakeDepositTransaction}
                 className={"w-full"}
               />
-              <a className="w-full" href="https://jup.ag/swap/SOL-BORG" target="_blank" rel="noopener noreferrer">
-                <Button size="md" color="secondary" btnText="Buy $BORG" className="w-full py-2" />
+              <a
+                className="w-full"
+                href={`https://jup.ag/swap/SOL-${projectData?.config.raisedTokenData.ticker}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button
+                  size="md"
+                  color="secondary"
+                  className="w-full py-2"
+                  disabled={!projectData?.config.raisedTokenData.ticker}
+                  btnText={`Buy $${projectData?.config.raisedTokenData.ticker}`}
+                />
               </a>
             </>
           ) : (
@@ -351,6 +376,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
 
       <DisabledContainer
         isEligibilityLoading={isEligibilityLoading}
+        isDepositStatusLoading={isDepositStatusLoading}
         isEligibleTierActive={isEligibleTierActive}
         isUserEligible={isUserEligible}
         scrollToTiers={scrollToTiers}

@@ -31,7 +31,7 @@ export const EligibilityTiersSection = ({ className }: { className?: string }) =
     },
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 60,
   })
 
   // @TODO - replace checkup below with more reliable source of data
@@ -89,6 +89,7 @@ export const EligibilityCompliancesSection = ({ className }: { className?: strin
     },
     queryKey: ["getEligibilityStatus", address, projectId],
     enabled: Boolean(address) && Boolean(projectId),
+    staleTime: 1000 * 60 * 60,
   })
 
   // @TODO - replace checkup below with more reliable source of data

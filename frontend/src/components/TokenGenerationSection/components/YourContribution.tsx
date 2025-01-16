@@ -7,11 +7,14 @@ import { useWalletContext } from "@/hooks/useWalletContext"
 import { useParams } from "react-router-dom"
 import { formatCurrencyAmount } from "shared/utils/format"
 import YourContributionAmounts from "./YourContributionAmounts"
+import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
+import Img from "@/components/Image/Img.tsx"
 
 const YourContribution = () => {
   const { t } = useTranslation()
   const { address } = useWalletContext()
   const { projectId } = useParams()
+  const { projectData } = useProjectDataContext()
 
   const { data: getDepositsData } = useQuery({
     queryFn: () => {
@@ -35,9 +38,9 @@ const YourContribution = () => {
   return (
     <>
       <div className="flex items-center gap-2 text-xl font-semibold">
-        <Icon icon="SvgBorgCoin" />
+        <Img size={'4'} src={projectData?.config.raisedTokenData.iconUrl} />
         <span>{formatCurrencyAmount(totalBorgDeposits, { customDecimals: 2 })}</span>
-        <span>BORG</span>
+        <span>${projectData?.config.raisedTokenData.ticker}</span>
       </div>
       <PastOrders label="All Orders" className="w-full" />
       <hr className="mt-4 w-full max-w-[227px] border-bd-primary" />

@@ -22,9 +22,8 @@ const WhitelistingContent = () => {
     ? formatCurrencyAmount(projectData?.config.raiseTargetInUsd, { withDollarSign: true, customDecimals: 0 })
     : ""
 
-  const baseCurrency = "swissborg"
+  const baseCurrency = projectData?.config.raisedTokenData.coinGeckoName
   const targetCurrency = "usd"
-  // TODO @hardcoded exchangeBorgUsd
   const { data } = useQuery({
     queryFn: () =>
       backendApi.getExchange({
@@ -32,10 +31,11 @@ const WhitelistingContent = () => {
         targetCurrency,
       }),
     queryKey: ["getExchange", baseCurrency, targetCurrency],
+    enabled: Boolean(baseCurrency),
   })
-  const borgPriceInUSD = data?.currentPrice || null
-  const tokenPriceInUSD = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0
-  const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
+  const raisedTokenPriceInUsd = data?.currentPrice || null
+  const launchedTokenPriceInUsd = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0
+  const launchedTokenPriceInRaisedToken = !raisedTokenPriceInUsd ? null : launchedTokenPriceInUsd / raisedTokenPriceInUsd
 
   const { projectId } = useParams()
   const { data: investmentSummaryData } = useQuery({
@@ -45,6 +45,7 @@ const WhitelistingContent = () => {
       }),
     queryKey: ["getInvestmentIntentSummary", projectId],
     enabled: Boolean(projectId),
+    staleTime: 30 * 60 * 1000,
   })
 
   return (
@@ -53,27 +54,19 @@ const WhitelistingContent = () => {
         "relative flex w-full flex-col items-center gap-2 rounded-3xl border border-bd-secondary bg-secondary bg-texture bg-cover p-4 pt-[26px] text-sm text-fg-primary"
       }
     >
-      {/* <a
-        className="mb-2 flex w-full justify-center"
-        href="https://jup.ag/swap/SOL-BORG"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <Button size="md" color="secondary" btnText="Buy $BORG" className="w-fit py-2" />
-      </a> */}
       <div className="flex w-full flex-col gap-2">
         <div className="flex w-full items-center justify-center gap-2 text-base">
-          <Icon icon="SvgBorgCoin" />
+          <Img size={'4'} src={projectData?.config.raisedTokenData.iconUrl} />
           <p className="flex gap-1">
-            <span>{`1 BORG (${formatCurrencyAmount(borgPriceInUSD, { withDollarSign: true, customDecimals: 2 })})`}</span>
+            <span>{`1 ${projectData?.config.raisedTokenData.ticker} (${formatCurrencyAmount(raisedTokenPriceInUsd, { withDollarSign: true, customDecimals: 2 })})`}</span>
           </p>
           <span className="text-fg-tertiary">Gives you:</span>
         </div>
         <TokenRewards
           borgCoinInput={"1"}
-          tokenPriceInBORG={tokenPriceInBORG}
-          borgPriceInUSD={borgPriceInUSD}
-          tokenPriceInUSD={tokenPriceInUSD}
+          tokenPriceInBORG={launchedTokenPriceInRaisedToken}
+          borgPriceInUSD={raisedTokenPriceInUsd}
+          tokenPriceInUSD={launchedTokenPriceInUsd}
         />
       </div>
 
@@ -93,13 +86,13 @@ const WhitelistingContent = () => {
             <span>{t("tge.price")}</span>
           </div>
           <div className="flex flex-col items-end">
-            <span>${tokenPriceInUSD}</span>
+            <span>${launchedTokenPriceInUsd}</span>
             <div className="flex gap-2">
               <Text
-                text={formatCurrencyAmount(tokenPriceInBORG, { minDecimals: 2, maxDecimals: 4 })}
+                text={formatCurrencyAmount(launchedTokenPriceInRaisedToken, { minDecimals: 2, maxDecimals: 4 })}
                 isLoading={isLoading}
               />
-              <span>BORG</span>
+              <span>{projectData?.config.raisedTokenData.ticker}</span>
             </div>
           </div>
         </div>

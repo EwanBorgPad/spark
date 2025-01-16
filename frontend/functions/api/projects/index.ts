@@ -62,7 +62,7 @@ const getProjectsFromDB = async (
   const projects = selectProjects.results.map((project) =>
     JSON.parse(project.json as string),
   )
-    .filter(project => !(project.info.id || '').startsWith('hidden'))
+    .filter(project => !(project.id || '').startsWith('hidden'))
 
   const response = {
     projects: projects,

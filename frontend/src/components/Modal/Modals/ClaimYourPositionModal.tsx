@@ -71,8 +71,8 @@ const ClaimYourPositionModal = ({ onClose, mainPosition }: ClaimYourPositionModa
             <div className="flex items-center gap-2">
               <div className="flex flex-1 flex-col items-start justify-start gap-[34px] rounded-lg border border-bd-primary bg-tertiary p-4">
                 <div className="flex items-center justify-center gap-2">
-                  <Icon icon="SvgBorgCoin" className="text-xl" />
-                  <div className="text-base font-medium leading-tight text-neutral-100">BORG</div>
+                  <Img size={'4'} src={projectData?.config.raisedTokenData.iconUrl} />
+                  <div className="text-base font-medium leading-tight text-neutral-100">${projectData?.config.raisedTokenData.ticker}</div>
                 </div>
                 <div className="flex flex-col items-start justify-start gap-2 self-stretch">
                   <div className="flex flex-col items-start justify-center self-stretch">
