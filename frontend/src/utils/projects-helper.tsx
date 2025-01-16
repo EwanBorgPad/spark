@@ -82,15 +82,11 @@ export const generateAdditionalEventData = (
 
 const sortPhaseByNextEventDate = (projects: ExpandedProject[]) => {
   if (!projects?.[0]) return []
+  const reverseFollowingPhases = ["REWARD_DISTRIBUTION"]
   const currentEventId = projects[0].additionalData.currentEvent.id
-  const isRewardDistribution = currentEventId === "REGISTRATION_OPENS"
-  return [...projects].sort((a, b) => {
-    const dateA = isRewardDistribution
-      ? a.additionalData.currentEvent.nextEventDate
-      : a.additionalData.currentEvent.date
-    const dateB = isRewardDistribution
-      ? b.additionalData.currentEvent.nextEventDate
-      : b.additionalData.currentEvent.date
+  const sortedProjects = [...projects].sort((a, b) => {
+    const dateA = a.additionalData.currentEvent.nextEventDate
+    const dateB = b.additionalData.currentEvent.nextEventDate
 
     // Handle `null` or `undefined` dates
     if (!dateA) return 1 // `a` goes to the end
@@ -102,6 +98,9 @@ const sortPhaseByNextEventDate = (projects: ExpandedProject[]) => {
 
     return timeA - timeB
   })
+  if (reverseFollowingPhases.includes(currentEventId)) {
+    return [...sortedProjects].reverse()
+  } else return sortedProjects
 }
 
 const divideProjectsByPhase = (expandedProjects: ExpandedProject[]) => {
@@ -123,13 +122,13 @@ const divideProjectsByPhase = (expandedProjects: ExpandedProject[]) => {
     (project) => project.additionalData.currentEvent.id === "SALE_OPENS",
   )
 
-  const saleClosedProjects = expandedProjects
-    .filter((project) => project.additionalData.currentEvent.id === "SALE_CLOSES")
-    .reverse()
+  const saleClosedProjects = expandedProjects.filter(
+    (project) => project.additionalData.currentEvent.id === "SALE_CLOSES",
+  )
 
-  const rewardDistributionProjects = expandedProjects
-    .filter((project) => project.additionalData.currentEvent.id === "REWARD_DISTRIBUTION")
-    .reverse()
+  const rewardDistributionProjects = expandedProjects.filter(
+    (project) => project.additionalData.currentEvent.id === "REWARD_DISTRIBUTION",
+  )
 
   const distributionOverProjects = expandedProjects.filter(
     (project) => project.additionalData.currentEvent.id === "DISTRIBUTION_OVER",
