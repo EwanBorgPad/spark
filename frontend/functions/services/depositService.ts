@@ -56,9 +56,10 @@ const createUserDeposit = async ({ db, amount, projectId, walletAddress, lbpAddr
 }
 
 const getUsersDepositedAmount = async ({ db, projectId, walletAddress }: GetUsersDepositedAmountArgs): Promise<number> => {
-    const data = await db.run(sql`SELECT amount_deposited FROM deposit WHERE from_address = ${walletAddress} AND project_id = ${projectId};`)
-    if (!data.results.length) return 0
-    const amountsDeposited = data.results.map(obj => parseInt(obj.amount_deposited))
+    const results = (await db
+      .run(sql`SELECT amount_deposited FROM deposit WHERE from_address = ${walletAddress} AND project_id = ${projectId};`)
+    ).results as { amount_deposited: number }[]
+    const amountsDeposited = results.map(obj => Number(obj.amount_deposited))
     const userDepositSum = amountsDeposited.reduce((accumulator, current) => accumulator + current)
     return userDepositSum
 }

@@ -1,3 +1,4 @@
+// @ts-expect-error TS2307: Cannot find module 'crypto' or its corresponding type declarations.
 import { createHash } from "node:crypto"
 import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 import { sql } from "drizzle-orm"

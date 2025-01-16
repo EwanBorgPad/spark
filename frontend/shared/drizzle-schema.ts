@@ -1,5 +1,6 @@
 import { primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core"
 import { ProjectModel, UserModelJson } from "./models"
+import { sql } from "drizzle-orm"
 
 export const whitelistTable = sqliteTable('whitelist', {
   address: text().notNull(),
@@ -40,6 +41,7 @@ type DepositJson = {
   tokensCalculation: {
     lpPosition: {
       tokenRaw: number
+      borgRaw: number
     }
     rewardDistribution: {
       tokenRaw: number
@@ -48,7 +50,7 @@ type DepositJson = {
 }
 export const depositTable = sqliteTable('deposit', {
   transactionId: text('transaction_id').primaryKey(),
-  createdAt: text('created_at').notNull().default(() => new Date().toISOString()),
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
   fromAddress: text('from_address').notNull(),
   toAddress: text('to_address').notNull(),
   tokenAddress: text('token_address').notNull(),
@@ -61,7 +63,7 @@ export const depositTable = sqliteTable('deposit', {
 
 export const claimTable = sqliteTable('claim', {
   transactionId: text('transaction_id').primaryKey(),
-  createdAt: text('created_at').notNull().default(() => new Date().toISOString()),
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
   fromAddress: text('from_address').notNull(),
   toAddress: text('to_address').notNull(),
   tokenAddress: text('token_address').notNull(),

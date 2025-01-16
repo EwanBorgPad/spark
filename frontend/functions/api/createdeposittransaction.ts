@@ -254,6 +254,7 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
         tokenOwner: userPublicKey,
         collection: {
             verified: false,
+            // @ts-expect-error TS2322: Type 'string' is not assignable to type 'PublicKey'.
             key: 'H6bkHw2eWxNUatXGyYXcWdFnQXG4nJkdtKWfgY5swG8S', // https://solscan.io/token/H6bkHw2eWxNUatXGyYXcWdFnQXG4nJkdtKWfgY5swG8S
         }
     }))

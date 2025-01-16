@@ -7,6 +7,7 @@
     "dev": "vite",
     "dev-host": "vite --host",
     "build": "tsc && vite build",
+    "backend-typecheck": "cd functions && tsc",
     "lint": "eslint ./src --fix",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "preview": "vite preview",

@@ -1,5 +1,5 @@
 import { Connection } from "@solana/web3.js"
-import { Commitment } from "shared/SolanaWeb3"
+import { Commitment } from "../../shared/SolanaWeb3"
 
 type SignatureSubscribeResult = {
   status: 'ok'
@@ -56,6 +56,6 @@ export async function signatureSubscribe(connection: Connection, txId: string): 
   }
 }
 
-export function delay(ms: number): Promise<void> {
+function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }

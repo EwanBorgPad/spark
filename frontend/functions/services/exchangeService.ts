@@ -57,9 +57,9 @@ const getExchangeData = async ({
   const cacheKey = `exchange-api/${baseCurrency}-${targetCurrency}`
 
   // pull existing cache
-  const cacheDbResult = await db.run(sql`SELECT * FROM cache_store WHERE cache_key = ${cacheKey}`)
-
-  const cache = cacheDbResult.results[0]
+  const cache = (await db
+    .run(sql`SELECT * FROM cache_store WHERE cache_key = ${cacheKey}`)
+  ).results[0] as { expires_at: string, created_at: string, cache_data: string }
 
   const isExpired = cache ? (new Date() > new Date(cache.expires_at)) : true
 
