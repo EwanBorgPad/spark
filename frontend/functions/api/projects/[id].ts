@@ -24,6 +24,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     if (!projectId) {
       return jsonResponse({ message: "Please provide id query param" }, 400)
     }
+
     const project = await db
       .select()
       .from(projectTable)

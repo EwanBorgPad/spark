@@ -7,6 +7,6 @@ export const onRequest = [
         // Learn more at
         // https://docs.sentry.io/platforms/javascript/configuration/options/#traces-sample-rate
         tracesSampleRate: 1.0,
-        environment: context.env.ENVIRONMENT
+        environment: context.env.VITE_ENVIRONMENT_TYPE
     }))
 ]

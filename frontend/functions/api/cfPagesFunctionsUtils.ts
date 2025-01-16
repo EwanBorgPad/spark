@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto"
 import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 import { sql } from "drizzle-orm"
+import * as Sentry from "@sentry/cloudflare"
 
 type ResponseOptions = {
   statusCode?: number
@@ -47,6 +48,8 @@ export const reportError = async (db: D1Database | DrizzleD1Database, error: unk
   const e = error instanceof Error ? error : new Error(String(error))
 
   console.error(e)
+
+  Sentry.captureException(e)
 
   const id = uuidv4()
   const message = e.message

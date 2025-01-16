@@ -12,8 +12,7 @@
     "preview": "vite preview",
     "prepare": "husky",
     "precommit": "npm run lint && npm run format",
-    "clean-deployments": "node --env-file=.env scripts/cleanupDeployments.js",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org codetribe --project borgpad-backend ./ && sentry-cli sourcemaps upload --org codetribe --project borgpad-backend ./"
+    "clean-deployments": "node --env-file=.env scripts/cleanupDeployments.js"
   },
   "dependencies": {
     "@cloudflare/pages-plugin-sentry": "^1.1.4",
@@ -25,10 +24,7 @@
     "@metaplex-foundation/umi-bundle-defaults": "^0.9.2",
     "@metaplex-foundation/umi-web3js-adapters": "^0.9.2",
     "@rive-app/react-canvas-lite": "^4.13.8",
-    "@sentry/browser": "^8.48.0",
-    "@sentry/cli": "^2.40.0",
     "@sentry/cloudflare": "^8.48.0",
-    "@sentry/node": "^8.48.0",
     "@sentry/react": "^8.50.0",
     "@sentry/vite-plugin": "^3.0.0",
     "@solana/spl-token": "^0.4.9",
