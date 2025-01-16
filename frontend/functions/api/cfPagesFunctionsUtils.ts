@@ -47,23 +47,23 @@ export const reportError = async (db: D1Database | DrizzleD1Database, error: unk
   const e = error instanceof Error ? error : new Error(String(error))
 
 
-  // const id = uuidv4()
-  // const message = e.message
-  // const createdAt = new Date().toISOString()
-  // const json = JSON.stringify({
-  //   stack: e.stack,
-  //   name: e.name,
-  //   cause: e.cause,
-  // })
+  const id = uuidv4()
+  const message = e.message
+  const createdAt = new Date().toISOString()
+  const json = JSON.stringify({
+    stack: e.stack,
+    name: e.name,
+    cause: e.cause,
+  })
 
-  // if (db instanceof DrizzleD1Database) {
-  //   await db.run(sql`INSERT INTO error (id, message, created_at, json) VALUES (${id}, ${message}, ${createdAt}, ${json});`)
-  // } else {
-  //   await db
-  //     .prepare('INSERT INTO error (id, message, created_at, json) VALUES (?1, ?2, ?3, ?4);')
-  //     .bind(id, message, createdAt, json)
-  //     .run()
-  // }
+  if (db instanceof DrizzleD1Database) {
+    await db.run(sql`INSERT INTO error (id, message, created_at, json) VALUES (${id}, ${message}, ${createdAt}, ${json});`)
+  } else {
+    await db
+      .prepare('INSERT INTO error (id, message, created_at, json) VALUES (?1, ?2, ?3, ?4);')
+      .bind(id, message, createdAt, json)
+      .run()
+  }
 }
 /**
  * Call this function to check if the user has admin privileges in provided context.
