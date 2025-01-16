@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/d1"
 
 type ENV = {
-  DB: D1Database
+  DB: D1Database,
 }
 /**
  * Get request handler - returns a project by id
@@ -24,8 +24,6 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     if (!projectId) {
       return jsonResponse({ message: "Please provide id query param" }, 400)
     }
-    throw new Error('Testing Sentry out!')
-
     const project = await db
       .select()
       .from(projectTable)
