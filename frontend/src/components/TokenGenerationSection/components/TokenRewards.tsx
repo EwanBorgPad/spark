@@ -7,14 +7,13 @@ import { calculateTokens } from "../../../../shared/utils/calculateTokens"
 import { twMerge } from "tailwind-merge"
 
 type TokenRewardsProps = {
-  borgCoinInput: string
-  tokenPriceInBORG: number | null
-  borgPriceInUSD: number | null
+  raisedTokenInput: string
+  raisedTokenPriceInUSD: number | null
   tokenPriceInUSD: number | null
   isYourContribution?: boolean
 }
 
-const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: TokenRewardsProps) => {
+const TokenRewards = ({ raisedTokenInput, raisedTokenPriceInUSD, isYourContribution }: TokenRewardsProps) => {
   const { t } = useTranslation()
   const { projectData } = useProjectDataContext()
   const tokenTicker = projectData?.config.launchedTokenData.ticker
@@ -25,8 +24,8 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
   // TODO return this from the backend (maybe a lot of work to change on frontend, at least create a backend api and prepare)
   const { rewardDistribution } = calculateTokens({
     projectData,
-    borgCoinInput: +borgCoinInput,
-    borgPriceInUSD,
+    borgCoinInput: +raisedTokenInput,
+    borgPriceInUSD: raisedTokenPriceInUSD,
   })
 
   return (
@@ -52,10 +51,11 @@ const TokenRewards = ({ borgCoinInput, borgPriceInUSD, isYourContribution }: Tok
           </div>
 
           <div className="flex flex-col items-center gap-1.5">
-            <div
-              className="flex h-fit items-center justify-center gap-1.5 rounded-full text-xs font-medium text-fg-tertiary ">
+            <div className="flex h-fit items-center justify-center gap-1.5 rounded-full text-xs font-medium text-fg-tertiary ">
               <Icon icon="SvgChartLine" className="text-base" />
-              <span>{t("tge.linearly_paid_out", { numberOfMonths: projectData.config.rewardsDistributionTimeInMonths })}</span>
+              <span>
+                {t("tge.linearly_paid_out", { numberOfMonths: projectData.config.rewardsDistributionTimeInMonths })}
+              </span>
             </div>
             <span className="text-xs font-medium text-fg-tertiary">🔒 LP position permanently locked </span>
             <span className="text-xs font-medium text-fg-tertiary">🔥 All LP fees burned</span>

@@ -148,7 +148,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const tokenPriceInRaisedToken = !raisedTokenPriceInUSD ? null : tokenPriceInUSD / raisedTokenPriceInUSD
 
   const minRaisedTokenInput = depositStatus
-    ? truncateDecimals(Number(depositStatus.maxAmountAllowed.uiAmount), NUM_OF_DECIMALS)
+    ? truncateDecimals(Number(depositStatus.minAmountAllowed.uiAmount), NUM_OF_DECIMALS)
     : 0
   const maxRaisedTokenInput = depositStatus
     ? truncateDecimals(Number(depositStatus.maxAmountAllowed.uiAmount), NUM_OF_DECIMALS)
@@ -336,9 +336,8 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
           <span className="w-full pl-1 text-left text-xs opacity-50">{t("tge.to_receive")}</span>
 
           <TokenRewards
-            borgCoinInput={borgCoinInput}
-            tokenPriceInBORG={tokenPriceInRaisedToken}
-            borgPriceInUSD={raisedTokenPriceInUSD}
+            raisedTokenInput={borgCoinInput}
+            raisedTokenPriceInUSD={raisedTokenPriceInUSD}
             tokenPriceInUSD={tokenPriceInUSD}
           />
         </div>
