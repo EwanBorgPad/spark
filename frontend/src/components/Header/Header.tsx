@@ -115,7 +115,7 @@ const Header = () => {
     closeMenu()
   }
 
-  const isWalletShown = location.pathname !== "/"
+  const isLandingPage = location.pathname === "/"
 
   return (
     <>
@@ -133,23 +133,34 @@ const Header = () => {
 
           {<NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />}
 
-          <div className="flex items-center gap-4">
-            <a
-              className="hidden justify-center md:flex"
-              href="https://jup.ag/swap/SOL-BORG"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button size="xs" color="secondary" btnText="Buy $BORG" className="w-fit py-1.5" />
-            </a>
+          <div className="flex min-w-[286px] items-center justify-end gap-4">
+            {isLandingPage ? (
+              <a
+                className="hidden justify-center md:flex"
+                href="https://borgpad.formo.so/founders"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button size="xs" color="secondary" btnText="Founders Apply Here" className="w-fit py-1.5" />
+              </a>
+            ) : (
+              <a
+                className="hidden justify-center md:flex"
+                href="https://jup.ag/swap/SOL-BORG"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button size="xs" color="secondary" btnText="Buy $BORG" className="w-fit py-1.5" />
+              </a>
+            )}
             {!showHamburgerMenu &&
-              isWalletShown &&
+              !isLandingPage &&
               (walletState === "CONNECTED" ? (
                 <WalletDropdown className="animate-fade-in" />
               ) : (
                 <ConnectButton btnClassName="animate-fade-in" />
               ))}
-            {!isWalletShown && <div className="hidden w-[138px] md:block" />}
+            {/* {isLandingPage && <div className="hidden w-[138px] md:block" />} */}
           </div>
         </div>
         <Button.Icon
@@ -176,7 +187,7 @@ const Header = () => {
           >
             <Button size="xs" color="secondary" btnText="Buy $BORG" className="w-fit py-1.5" />
           </a>
-          {isWalletShown && (
+          {!isLandingPage && (
             <div className="z-[1] px-5 pt-4">
               {walletState === "CONNECTED" ? <WalletDropdown /> : <ConnectButton btnClassName="w-full" size="md" />}
             </div>
