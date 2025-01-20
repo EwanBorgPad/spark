@@ -1029,7 +1029,7 @@
 //           projectId={createdProjectId}
 //         />
 //       )}
-//       {/* @TODO - remove this component when feature is finished */}
+//       {/* remove this component when feature is finished */}
 //       {/* <div className="fixed right-4 top-[75vh] flex flex-col  gap-4 rounded-3xl bg-pink-100/10 p-4 ring-brand-primary">
 //         <Button
 //           isLoading={isPending}

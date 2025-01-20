@@ -9,8 +9,6 @@ type Props = {
   className?: string
 }
 
-const moemateUrl = "http://borgpad-moemate.notion.site/"
-
 const DataRoom = ({ className }: Props) => {
   const { t } = useTranslation()
   const { projectData, isLoading } = useProjectDataContext()
@@ -18,20 +16,7 @@ const DataRoom = ({ className }: Props) => {
 
   return (
     <section className={twMerge("group w-full lg:max-w-[792px]", className)}>
-      <a
-        className="data-room w-full"
-        target="_blank"
-        rel="noreferrer"
-        // @TODO - @UPDATE_PROJECT_DATA - remove temp fix below
-        href={projectData?.id === "moemate" ? moemateUrl : info?.dataRoom.url}
-      >
-        {/* @TODO - background image */}
-        {/* <Img
-        src={info.dataRoom.backgroundImgUrl}
-        size={"custom"}
-        customClass="!h-[72px] !w-[100px] absolute left-0 opacity-10 rounded-none"
-        showFallback={false}
-      /> */}
+      <a className="data-room w-full" target="_blank" rel="noreferrer" href={info?.dataRoom.url}>
         <div className="z-[1] flex flex-col">
           <Text text={`${info?.title} ${t("data_room")}`} className="font-medium" isLoading={isLoading} />
           <span className="font-normal opacity-50">{t("timeline.learn_more_about")}</span>

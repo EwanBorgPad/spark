@@ -32,7 +32,6 @@ const Project = () => {
         <div className="flex w-full flex-col justify-between gap-6 lg:max-w-[760px] lg:flex-row">
           {/* left side */}
           <div className="flex flex-col gap-6 lg:flex-row">
-            {/* @TODO - @UPDATE_PROJECT_DATA - remove temp fix below */}
             <Img
               src={projectData?.info.logoUrl}
               isFetchingLink={isLoading}
@@ -88,7 +87,6 @@ const Project = () => {
                 rel="noopener noreferrer"
                 className="group flex items-center gap-2 border-r-[1px] px-5 md:border-l-[1px] md:border-x-fg-gray-line"
               >
-                {/* @TODO - @UPDATE_PROJECT_DATA - remove temp fix below */}
                 <Img size="4" src={projectData?.info.logoUrl} isRounded />
                 <Text text={`$${projectData.config.launchedTokenData.ticker}`} isLoading={isLoading} />
                 <Icon icon="SvgExternalLink" className="opacity-50 transition-opacity group-hover:opacity-100" />
@@ -101,7 +99,6 @@ const Project = () => {
                 rel="noopener noreferrer"
                 className="group flex items-center gap-2 px-5  md:border-r-fg-gray-line"
               >
-                {/* @TODO - @UPDATE_PROJECT_DATA - remove temp fix below */}
                 <Img size="4" src={projectData?.info.logoUrl} isRounded />
                 <Text text={`$${projectData.config.launchedTokenData.ticker}/BORG`} isLoading={isLoading} />
                 <Icon icon="SvgExternalLink" className="opacity-50 transition-opacity group-hover:opacity-100" />

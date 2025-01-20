@@ -1,7 +1,4 @@
-import {
-  ExpandedTimelineEventType,
-  timelineEventIdRanks,
-} from "@/components/Timeline/Timeline"
+import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { formatDateMonthDateHours } from "./date-helpers"
 import { expandTimelineDataInfo } from "./timeline"
 import { getCurrentTgeEvent } from "./getCurrentTgeEvent"
@@ -17,9 +14,9 @@ export type ExpandedProject = ProjectModel & {
   }
 }
 
-export const generateAdditionalEventData = (
-  tgeEvent: ExpandedTimelineEventType,
-) => {
+export type EventTypeId = ExpandedTimelineEventType["id"]
+
+export const generateAdditionalEventData = (tgeEvent: ExpandedTimelineEventType) => {
   const fallbackText = i18n.t("launch_pools.at_tbd")
   const getEventDateString = (date: Date | null) => {
     return date ? formatDateMonthDateHours(date) : fallbackText
@@ -37,8 +34,7 @@ export const generateAdditionalEventData = (
     case "REGISTRATION_OPENS": {
       const text = getEventDateString(tgeEvent.nextEventDate)
       return {
-        badgeClassName:
-          "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
+        badgeClassName: "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
         endMessage: i18n.t("launch_pools.whitelist_closes", { text }),
         badgeLabel: "Whitelisting",
       }
@@ -46,8 +42,7 @@ export const generateAdditionalEventData = (
     case "SALE_OPENS": {
       const text = getEventDateString(tgeEvent.nextEventDate)
       return {
-        badgeClassName:
-          "text-fg-alt-default border-bd-secondary bg-brand-primary",
+        badgeClassName: "text-fg-alt-default border-bd-secondary bg-brand-primary",
         endMessage: i18n.t("launch_pools.sale_closes", { text }),
         badgeLabel: "Live Now",
       }
@@ -63,8 +58,7 @@ export const generateAdditionalEventData = (
     case "REWARD_DISTRIBUTION": {
       const text = getEventDateString(tgeEvent.nextEventDate)
       return {
-        badgeClassName:
-          "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
+        badgeClassName: "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
         endMessage: i18n.t("launch_pools.reward_distribution_ends", { text }),
         badgeLabel: "Reward Distribution",
       }
@@ -80,10 +74,8 @@ export const generateAdditionalEventData = (
   }
 }
 
-const sortPhaseByNextEventDate = (projects: ExpandedProject[]) => {
-  if (!projects?.[0]) return []
-  const reverseFollowingPhases = ["REWARD_DISTRIBUTION"]
-  const currentEventId = projects[0].additionalData.currentEvent.id
+const sortByReferencedDate = (projects: ExpandedProject[], config: SortPhaseConfigType) => {
+  if (!projects.length) return []
   const sortedProjects = [...projects].sort((a, b) => {
     const dateA = a.additionalData.currentEvent.nextEventDate
     const dateB = b.additionalData.currentEvent.nextEventDate
@@ -98,49 +90,48 @@ const sortPhaseByNextEventDate = (projects: ExpandedProject[]) => {
 
     return timeA - timeB
   })
-  if (reverseFollowingPhases.includes(currentEventId)) {
+  if (config.order === "descending") {
     return [...sortedProjects].reverse()
   } else return sortedProjects
 }
 
-const divideProjectsByPhase = (expandedProjects: ExpandedProject[]) => {
-  // @TODO - make better sorting function
-  const unsortedUpcomingProjects = expandedProjects.filter(
-    (project) => project.additionalData.currentEvent.id === "UPCOMING",
-  )
-  const upcomingProjects = ["ambient-network", "intercellar", "fitchin"]
-    .map((orderId) => {
-      return unsortedUpcomingProjects.find((item) => item.id === orderId)
-    })
-    .filter((item) => !!item)
+type SortPhaseConfigType = {
+  referencedDate: "nextEventDate" | "date"
+  order: "ascending" | "descending"
+  customSort?: string[]
+}
 
-  const whitelistedProjects = expandedProjects.filter(
-    (project) => project.additionalData.currentEvent.id === "REGISTRATION_OPENS",
-  )
+const sortConfig: Record<EventTypeId, SortPhaseConfigType> = {
+  UPCOMING: {
+    referencedDate: "nextEventDate",
+    order: "ascending",
+    customSort: ["ambient-network", "intercellar", "fitchin"],
+  },
+  REGISTRATION_OPENS: { referencedDate: "nextEventDate", order: "ascending" },
+  SALE_OPENS: { referencedDate: "nextEventDate", order: "ascending" },
+  SALE_CLOSES: { referencedDate: "nextEventDate", order: "ascending" },
+  REWARD_DISTRIBUTION: { referencedDate: "nextEventDate", order: "descending" },
+  DISTRIBUTION_OVER: { referencedDate: "nextEventDate", order: "ascending" },
+}
 
-  const saleOpenedProjects = expandedProjects.filter(
-    (project) => project.additionalData.currentEvent.id === "SALE_OPENS",
-  )
+const sortProjectsByPhases = (expandedProjects: ExpandedProject[]) => {
+  const entriesArray = Object.entries(sortConfig) as [EventTypeId, SortPhaseConfigType][]
+  return entriesArray.map((event) => {
+    const eventId = event[0]
+    const eventConfig = event[1]
+    const projectsInPhase = expandedProjects.filter((project) => project.additionalData.currentEvent.id === eventId)
+    if (eventConfig.customSort) {
+      const customSorted = [...eventConfig.customSort]
+        .map((orderId) => {
+          return projectsInPhase.find((item) => item.id === orderId)
+        })
+        .filter((project) => !!project)
 
-  const saleClosedProjects = expandedProjects.filter(
-    (project) => project.additionalData.currentEvent.id === "SALE_CLOSES",
-  )
-
-  const rewardDistributionProjects = expandedProjects.filter(
-    (project) => project.additionalData.currentEvent.id === "REWARD_DISTRIBUTION",
-  )
-
-  const distributionOverProjects = expandedProjects.filter(
-    (project) => project.additionalData.currentEvent.id === "DISTRIBUTION_OVER",
-  )
-  return [
-    upcomingProjects,
-    whitelistedProjects,
-    saleOpenedProjects,
-    saleClosedProjects,
-    rewardDistributionProjects,
-    distributionOverProjects,
-  ]
+      return sortByReferencedDate(customSorted, eventConfig)
+    } else {
+      return sortByReferencedDate(projectsInPhase, eventConfig)
+    }
+  })
 }
 
 export const sortProjectsPerStatus = (projects: ProjectModel[]): ExpandedProject[][] => {
@@ -159,9 +150,6 @@ export const sortProjectsPerStatus = (projects: ProjectModel[]): ExpandedProject
     return { additionalData, ...project }
   })
 
-  const expandedProjectsDividedByPhase = divideProjectsByPhase(expandedProjects)
-  const sortedProjects = expandedProjectsDividedByPhase.map((phase) => {
-    return sortPhaseByNextEventDate(phase)
-  })
+  const sortedProjects = sortProjectsByPhases(expandedProjects)
   return sortedProjects
 }

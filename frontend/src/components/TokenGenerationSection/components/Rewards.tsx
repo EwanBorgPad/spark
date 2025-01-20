@@ -79,17 +79,14 @@ const Rewards = () => {
               endOfEvent={new Date(nextScheduledPayment.date)}
             />
             <div className="w-full px-4 pb-6">
-              {nextScheduledPayment && (
-                claimUrl
-                  ? <a
-                    href={claimUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+              {nextScheduledPayment &&
+                (claimUrl ? (
+                  <a href={claimUrl} target="_blank" rel="noopener noreferrer">
                     <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
                   </a>
-                  : <Button btnText={btnText} size="lg" disabled={true} className="w-full py-3 font-normal" />
-              )}
+                ) : (
+                  <Button btnText={btnText} size="lg" disabled={true} className="w-full py-3 font-normal" />
+                ))}
             </div>
           </>
         ) : (
@@ -99,7 +96,8 @@ const Rewards = () => {
           </div>
         )}
 
-        {myRewardsResponse?.rewards.hasRewardsDistributionStarted && (
+        {/* Uncomment when claimed data per user is ready */}
+        {/* {myRewardsResponse?.rewards.hasRewardsDistributionStarted && (
           <>
             <hr className="w-full max-w-[calc(100%-32px)] border-bd-primary" />
             <div className="flex w-full flex-col gap-2.5 p-4 pb-7">
@@ -117,14 +115,14 @@ const Rewards = () => {
                   </p>
                 </div>
               </div>
-              {/* @TODO - uncomment when onchain claimed data is ready */}
-              {/* <ProgressBar
+              
+              <ProgressBar
                 fulfilledAmount={Number(myRewardsResponse.rewards.claimedAmount.uiAmount)}
                 totalAmount={Number(myRewardsResponse.rewards.totalAmount.uiAmount)}
-              /> */}
+              /> 
             </div>
           </>
-        )}
+        )} */}
       </TgeWrapper>
       {myRewardsResponse?.rewards.hasRewardsDistributionStarted && (
         <ShowPayoutSchedule
