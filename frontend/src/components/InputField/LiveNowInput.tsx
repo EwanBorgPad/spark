@@ -14,6 +14,7 @@ type Props = {
   error?: FieldError
   clearError: () => void
   raisedTokenPriceInUSD: number | null
+  numberOfDecimals: number
 } & CurrencyInputProps
 
 const LiveNowInput = ({
@@ -24,6 +25,7 @@ const LiveNowInput = ({
   clearError,
   error,
   raisedTokenPriceInUSD,
+  numberOfDecimals,
   ...props
 }: Props) => {
   const onChangeHandler = (newValue: string | undefined) => {
@@ -50,10 +52,10 @@ const LiveNowInput = ({
         allowNegativeValue={false}
         placeholder="0"
         maxLength={16}
-        allowDecimals={true}
+        allowDecimals={numberOfDecimals > 0}
         autoFocus
         className={"max-w-[242px] bg-transparent text-2xl focus:outline-none"}
-        decimalsLimit={0}
+        decimalsLimit={numberOfDecimals}
         onValueChange={onChangeHandler}
         {...props}
       />

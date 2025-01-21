@@ -38,8 +38,9 @@ const truncateDecimals = (value: number, numOfDecimals: number) => {
   return Math.trunc(value * multiplier) / multiplier
 }
 
-const ONE_HOUR = 60 * 60 * 1000
+// CONFIG
 const NUM_OF_DECIMALS = 2
+const ONE_HOUR = 60 * 60 * 1000
 
 const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const { t } = useTranslation()
@@ -270,13 +271,14 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
                     <LiveNowInput
                       minRaisedTokenInput={minRaisedTokenInput}
                       maxRaisedTokenInput={maxRaisedTokenInput}
-                      disabled={userInvestedMaxAmount}
-                      onChange={onChange}
-                      value={value}
-                      setError={setError}
-                      error={error}
-                      clearError={() => clearErrors("raisedTokenInputValue")}
                       raisedTokenPriceInUSD={raisedTokenPriceInUSD}
+                      value={value}
+                      onChange={onChange}
+                      numberOfDecimals={NUM_OF_DECIMALS}
+                      error={error}
+                      setError={setError}
+                      clearError={() => clearErrors("raisedTokenInputValue")}
+                      disabled={userInvestedMaxAmount}
                     />
                   )}
                 />
