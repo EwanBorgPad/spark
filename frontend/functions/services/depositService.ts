@@ -4,6 +4,7 @@ import { exchangeService } from "./exchangeService"
 import { projectTable } from "../../shared/drizzle-schema"
 import { eq, sql } from "drizzle-orm"
 import { DrizzleD1Database } from "drizzle-orm/d1/driver"
+import { EligibilityStatus } from "../../shared/eligibilityModel"
 
 type CreateUserDepositArgs = {
     db: DrizzleD1Database
@@ -65,26 +66,29 @@ const getUsersDepositedAmount = async ({ db, projectId, walletAddress }: GetUser
     return userDepositSum
 }
 
+
 export type DepositStatus = {
-    amountDeposited: TokenAmountModel,
-    minAmountAllowed: TokenAmountModel,
-    maxAmountAllowed: TokenAmountModel,
+    amountDeposited: TokenAmountModel
+    minAmountAllowed: TokenAmountModel
+    maxAmountAllowed: TokenAmountModel
     startTime: Date
 }
-
-const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDepositStatus): Promise<DepositStatus> => {
+type GetDepositStatusResult = {
+    eligibilityStatus: EligibilityStatus
+    depositStatus: DepositStatus
+}
+const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDepositStatus): Promise<GetDepositStatusResult> => {
     // get sum of users investment
     const usersAccumulatedDeposit = await getUsersDepositedAmount({ db, projectId, walletAddress })
     // get eligibility for the user
     const eligibility = await EligibilityService.getEligibilityStatus({ db, address: walletAddress, projectId, rpcUrl })
-    // initialize users min and max cap in USD and check if they exist
-    // TODO this fails if user is not eligible which is ok , whole function doesn't make sense if user is not eligible , but we need to handle it better
-    const userMaxCap = eligibility.eligibilityTier?.benefits.maxInvestment
-    const userMinCap = eligibility.eligibilityTier?.benefits.minInvestment
-    if (!userMaxCap) throw new Error(`Misconfigured project (${projectId}), (userMaxCap) field is missing`)
-    if (!userMinCap) throw new Error(`Misconfigured project (${projectId}), (userMinCap) field is missing`)
-    const userMaxCapInUsd = Number(userMaxCap)
-    const userMinCapInUsd = Number(userMinCap)
+
+    if (!eligibility.isEligible || !eligibility.eligibilityTier) {
+        throw new Error(`getDepositStatus: User (${walletAddress}) not eligible for project (${projectId})!`)
+    }
+
+    const userMaxCapInUsd = Number(eligibility.eligibilityTier.benefits.maxInvestment)
+    const userMinCapInUsd = Number(eligibility.eligibilityTier.benefits.minInvestment)
     // get project
     const project = await db
         .select()
@@ -149,20 +153,33 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
         tokenPriceInUsd: tokenPriceInUsd.toString(),
         uiAmount: allowedMaxUiAmount.toString()
     }
-    // get start time
-    const startTime = eligibility.eligibilityTier?.benefits.startDate ?? project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date
+
+    // also take into account project sale opens date, just in case
+    const startTime = maxDate(
+      new Date(eligibility.eligibilityTier?.benefits.startDate),
+      new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date),
+    )
     if (!startTime) throw new Error(`Misconfigured project (${projectId}), (startDate) field is missing`)
 
-    return {
+    const depositStatus = {
         amountDeposited,
         minAmountAllowed,
         maxAmountAllowed,
-        startTime
-    }
+        startTime,
+    } satisfies DepositStatus
+
+    return { eligibilityStatus: eligibility, depositStatus }
 }
 
 const limitDecimals = (num: number, decimals: number): number => {
     return Number(num.toFixed(decimals))
+}
+
+const maxDate = (date1: Date, date2: Date): Date => {
+    if (!(date1 instanceof Date) || !(date2 instanceof Date)) {
+        throw new Error("Both arguments must be Date objects")
+    }
+    return date1 > date2 ? date1 : date2
 }
 
 export const DepositService = {

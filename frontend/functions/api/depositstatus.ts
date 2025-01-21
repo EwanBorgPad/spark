@@ -29,7 +29,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
         const rpcUrl = getRpcUrlForCluster(ctx.env.SOLANA_RPC_URL, project.json.config.cluster)
 
-        const depositStatus = await DepositService.getDepositStatus({
+        const { depositStatus } = await DepositService.getDepositStatus({
             db, walletAddress: address, projectId, rpcUrl,
         })
 

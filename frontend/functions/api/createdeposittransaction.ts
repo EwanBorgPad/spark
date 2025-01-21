@@ -1,55 +1,56 @@
-import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
-import { ComputeBudgetProgram, Connection, Keypair, ParsedAccountData, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js"
-import { createTransferInstruction } from "@solana/spl-token"
-import { z } from "zod"
-import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
-import * as bs58 from "bs58"
-import { createProgrammableNft, mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata"
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults"
-import { createNoopSigner, createSignerFromKeypair, percentAmount, publicKey, signerIdentity, transactionBuilder } from "@metaplex-foundation/umi"
+import { z } from 'zod'
+import * as bs58 from 'bs58'
+import { drizzle } from 'drizzle-orm/d1'
+import { eq } from 'drizzle-orm'
+
+import { ComputeBudgetProgram, Connection, Keypair, ParsedAccountData, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js'
+import { createTransferInstruction } from '@solana/spl-token'
+import { createProgrammableNft, mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata'
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
+import { createNoopSigner, createSignerFromKeypair, percentAmount, publicKey, signerIdentity, transactionBuilder } from '@metaplex-foundation/umi'
 import { toWeb3JsInstruction, toWeb3JsKeypair } from '@metaplex-foundation/umi-web3js-adapters'
-import { PRIORITY_FEE_MICRO_LAMPORTS } from "../../shared/constants"
-import { EligibilityService } from "../services/eligibilityService"
-import { drizzle } from "drizzle-orm/d1"
-import { DepositService, DepositStatus } from "../services/depositService"
-import { SaleResultsService } from "../services/saleResultsService"
-import { SaleResults } from "../../shared/models"
-import { SnapshotService } from "../services/snapshotService"
-import { projectTable } from "../../shared/drizzle-schema"
-import { eq } from "drizzle-orm"
+
+import { jsonResponse, reportError } from './cfPagesFunctionsUtils'
+
+import { projectTable } from '../../shared/drizzle-schema'
+import { getRpcUrlForCluster } from '../../shared/solana/rpcUtils'
+import { PRIORITY_FEE_MICRO_LAMPORTS } from '../../shared/constants'
+
+import { DepositService } from '../services/depositService'
+import { SaleResultsService } from '../services/saleResultsService'
+import { SnapshotService } from '../services/snapshotService'
+
 
 type ENV = {
-    DB: D1Database,
-    SOLANA_RPC_URL: string,
+    DB: D1Database
+    SOLANA_RPC_URL: string
     NFT_MINT_WALLET_PRIVATE_KEY: string
 }
 const requestSchema = z.object({
     userWalletAddress: z.string(),
     tokenAmount: z.number(),
-    projectId: z.string()
+    projectId: z.string(),
 })
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
-    const db = ctx.env.DB
-    const drizzleDb = drizzle(db, { logger: true })
-    const SOLANA_RPC_URL = ctx.env.SOLANA_RPC_URL
-    const privateKey = ctx.env.NFT_MINT_WALLET_PRIVATE_KEY
+    const db = drizzle(ctx.env.DB, { logger: true })
     try {
-        // validate env
-        if (!SOLANA_RPC_URL || !privateKey) {
-            throw new Error('Misconfigured env!')
-        }
+        const SOLANA_RPC_URL = ctx.env.SOLANA_RPC_URL
+        const privateKey = ctx.env.NFT_MINT_WALLET_PRIVATE_KEY
+        if (!SOLANA_RPC_URL || !privateKey) throw new Error('Misconfigured env!')
 
+        // TODO @saleClosed comment
         return jsonResponse({ message: 'Sale is not open!' }, 409)
 
-        // request validation
-        const { data, error } = requestSchema.safeParse(await ctx.request.json())
-        if (error) return jsonResponse({ error: 'Invalid request' }, 400)
-        if (!data?.userWalletAddress) return jsonResponse({ error: 'User wallet address is missing in request body' }, 404)
-        if (!data?.tokenAmount) return jsonResponse({ error: 'Token amount is missing in request body' }, 404)
-        if (!data?.projectId) return jsonResponse({ error: 'Project ID is missing in request body' }, 404)
-        const projectId = data.projectId
+        /////////////////////////////////////////
+        //// REQUEST PARSING AND VALIDATION /////
+        /////////////////////////////////////////
 
-        const project = await drizzleDb
+        const { data, error } = requestSchema.safeParse(await ctx.request.json())
+        if (error || !data) return jsonResponse({ message: 'Bad request!', error }, 400)
+
+        const { projectId, tokenAmount, userWalletAddress } = data
+
+        const project = await db
             .select()
             .from(projectTable)
             .where(eq(projectTable.id, projectId))
@@ -57,81 +58,89 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 
         const lbpWalletAddress = project.json.config.lbpWalletAddress
+        if (!lbpWalletAddress) return jsonResponse({ message: "LBPWA not configured!" }, 500)
 
-        if (!lbpWalletAddress) {
-            return jsonResponse({ message: "LBPWA not configured!" }, 500)
-        }
+        const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, project.json.config.cluster)
 
-        // data initialization
-        const userWalletAddress = data.userWalletAddress
-        const receivingAddress = lbpWalletAddress
-        const tokenAmount = data.tokenAmount
+        /////////////////////////////////////////
+        ////// PROJECT TIMELINE VALIDATION //////
+        /////////////////////////////////////////
 
-        // getting connection to the RPC
-        const cluster = project.json.config.cluster
-        const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, cluster)
+        const now = new Date()
+
+        const saleOpensDate = project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date
+          ? new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date)
+          : null
+
+        const saleClosesDate = project.json.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
+          ? new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date)
+          : null
+
+        if (!saleOpensDate) return jsonResponse({ message: `SALE_OPENS not found for (${projectId})!` }, 500)
+        if (!saleClosesDate) return jsonResponse({ message: `SALE_CLOSES not found for (${projectId})!` }, 500)
+
+        // @VALIDATION: project sale opens and closes dates
+        if (now < saleOpensDate) return jsonResponse({ errorCode: 'SALE_NOT_OPEN_FOR_PROJECT' }, 409)
+        if (now > saleClosesDate) return jsonResponse({ errorCode: 'SALE_CLOSED_FOR_PROJECT' }, 409)
+
+        /////////////////////////////////////////
+        /////// DEPOSIT STATUS VALIDATION ///////
+        /////////////////////////////////////////
+
+        const { depositStatus, eligibilityStatus } = await DepositService.getDepositStatus({
+            db,
+            projectId,
+            rpcUrl,
+            walletAddress: userWalletAddress,
+        })
+
+        const {
+            maxAmountAllowed,
+            minAmountAllowed,
+            amountDeposited,
+            startTime: startTimeByEligibilityTier,
+        } = depositStatus
+
+        // @VALIDATION: user min and user max cap
+        const userDepositAmount = tokenAmount * Math.pow(10, amountDeposited.decimals)
+        if (userDepositAmount > Number(maxAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MAX_INVESTMENT_EXCEEDED' }, 409)
+        if (userDepositAmount < Number(minAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MIN_INVESTMENT_INSUFFICIENT' }, 409)
+
+        // @VALIDATION: eligibility tier start time
+        if (now < startTimeByEligibilityTier) return jsonResponse({ errorCode: 'SALE_NOT_OPEN_FOR_ELIGIBILITY_TIER' }, 409)
+
+        /////////////////////////////////////////
+        //////// SALE RESULTS VALIDATION ////////
+        /////////////////////////////////////////
+
+        const saleResults = await SaleResultsService.getSaleResults({ db, projectId })
+
+        // @VALIDATION: project cap
+        if (saleResults.raiseTargetReached) return jsonResponse({ errorCode: 'PROJECT_RAISE_TARGET_REACHED' }, 409)
+
+        /////////////////////////////////////////
+        ////////////// HAPPY FLOW ///////////////
+        /////////////////////////////////////////
+
         const connection = new Connection(rpcUrl, {
             confirmTransactionInitialTimeout: 10000,
             commitment: 'confirmed',    // status has to be confirmed because we mint the nft and get the address of it immediately after sending the mint tx
-            disableRetryOnRateLimit: true
+            disableRetryOnRateLimit: true,
         })
-        // get price and token mint
+
         const tokenMint = project.json.config.raisedTokenData.mintAddress
 
-        const depositStatus = await DepositService.getDepositStatus({
-            db: drizzleDb,
-            projectId,
-            rpcUrl,
-            walletAddress: userWalletAddress
+        const tx = await createUserDepositTransaction(userWalletAddress, lbpWalletAddress, tokenMint, tokenAmount, connection, privateKey)
+
+        await SnapshotService.createSnapshot({
+            db, address: userWalletAddress, projectId, eligibilityStatus,
         })
-
-        const eligibilityStatus = await EligibilityService.getEligibilityStatus({
-            address: userWalletAddress,
-            db: drizzleDb,
-            projectId,
-            rpcUrl
-        })
-        const endDate = project.json.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
-        if (!endDate) return jsonResponse({ message: 'End date is not defined in project json!' }, 500)
-
-        const saleResults = await SaleResultsService.getSaleResults({ db: drizzleDb, projectId })
-
-        const validationError = await validateTx(eligibilityStatus.isEligible, depositStatus, tokenAmount, endDate, saleResults)
-        if (validationError) return validationError
-
-        // create transfer and mint nft instruction
-        const tx = await createUserDepositTransaction(userWalletAddress, receivingAddress, tokenMint, tokenAmount, connection, privateKey)
-
-        await SnapshotService.createSnapshot({ db: drizzleDb, address: userWalletAddress, projectId, eligibilityStatus })
 
         return jsonResponse({ transaction: tx }, 200)
     } catch (e) {
         await reportError(ctx.env.DB, e)
         return jsonResponse({ message: "Something went wrong..." }, 500)
     }
-}
-
-async function validateTx(userEligible: boolean, depositStatus: DepositStatus, tokenAmount: number, endDate: Date, saleResults: SaleResults) {
-    // extract relevant information from the deposit status and initialize data
-    const { maxAmountAllowed, minAmountAllowed, amountDeposited } = depositStatus
-    const now = new Date()
-
-    // initialize deposit in necessary forms
-    const userDepositAmount = tokenAmount * Math.pow(10, amountDeposited.decimals)
-    // @VALIDATION: eligibility
-    if (!userEligible) return jsonResponse({ errorCode: 'USER_NOT_ELIGIBLE' }, 401)
-    // @VALIDATION: user min and user max cap
-    if (userDepositAmount > Number(maxAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MAX_INVESTMENT_EXCEEDED' }, 409)
-    if (userDepositAmount < Number(minAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MIN_INVESTMENT_INSUFFICIENT' }, 409)
-    // @VALIDATION: project cap
-    if (saleResults.raiseTargetReached) return jsonResponse({ errorCode: 'PROJECT_RAISE_TARGET_REACHED' }, 409)
-    // @VALIDATION: timeline
-    if (now < depositStatus.startTime) return jsonResponse({ errorCode: 'INVESTMENT_TIMELINE_DIDNT_START' }, 409)
-    if (now > endDate) return jsonResponse({ errorCode: 'INVESTMENT_TIMELINE_ENDED' }, 409)
-
-    // All validations passed so we return null (no errors)
-    return null
-
 }
 
 export async function createUserDepositTransaction(
@@ -201,28 +210,6 @@ export async function createUserDepositTransaction(
     }
 }
 
-
-async function getNumberDecimals(mintAddress: string, connection: Connection): Promise<number> {
-    const info = await connection.getParsedAccountInfo(new PublicKey(mintAddress))
-    const result = (info.value?.data as ParsedAccountData).parsed.info.decimals as number
-    return result
-}
-
-export const onRequestOptions: PagesFunction<ENV> = async (ctx) => {
-    try {
-        return new Response(null, {
-            status: 204,
-            headers: {
-                'Access-Control-Allow-Origin': 'http://localhost:5173', // Adjust this to frontends origin
-                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            },
-        })
-    } catch (error) {
-        return jsonResponse({ message: error }, 500)
-    }
-}
-
 async function mintNftAndCreateTransferNftInstructions(connection: Connection, privateKey: string, usersWalletAddress: string) {
     // create umi client for mpl token package
     const umi = createUmi(connection)
@@ -273,3 +260,25 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
         nftMintSigner
     }
 }
+
+async function getNumberDecimals(mintAddress: string, connection: Connection): Promise<number> {
+    const info = await connection.getParsedAccountInfo(new PublicKey(mintAddress))
+    const result = (info.value?.data as ParsedAccountData).parsed.info.decimals as number
+    return result
+}
+
+export const onRequestOptions: PagesFunction<ENV> = async (ctx) => {
+    try {
+        return new Response(null, {
+            status: 204,
+            headers: {
+                'Access-Control-Allow-Origin': 'http://localhost:5173', // Adjust this to frontends origin
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            },
+        })
+    } catch (error) {
+        return jsonResponse({ message: error }, 500)
+    }
+}
+
