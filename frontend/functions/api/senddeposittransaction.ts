@@ -3,7 +3,7 @@ import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { drizzle } from "drizzle-orm/d1"
 import { Connection, Keypair, Transaction } from "@solana/web3.js"
 import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
-import { signatureSubscribe } from "../../src/utils/solanaFunctions"
+import { signatureSubscribe } from "../services/signatureSubscribeService"
 import { DepositService } from "../services/depositService"
 import { EligibilityService } from "../services/eligibilityService"
 import { calculateTokens } from "../../shared/utils/calculateTokens"
@@ -25,11 +25,12 @@ const requestSchema = z.object({
 })
 
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
-    const db = ctx.env.DB
-    const drizzleDb = drizzle(db, { logger: true })
-    const SOLANA_RPC_URL = ctx.env.SOLANA_RPC_URL
-    const privateKey = ctx.env.NFT_MINT_WALLET_PRIVATE_KEY
+    const db = drizzle(ctx.env.DB, { logger: true })
+
     try {
+        const SOLANA_RPC_URL = ctx.env.SOLANA_RPC_URL
+        const privateKey = ctx.env.NFT_MINT_WALLET_PRIVATE_KEY
+
         // validate env
         if (!SOLANA_RPC_URL) {
             throw new Error('Misconfigured env!')
@@ -46,7 +47,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         if (error) return jsonResponse({ error: 'Request error!' }, 404)
 
         // get project, cluster and connection
-        const project = await drizzleDb
+        const project = await db
             .select()
             .from(projectTable)
             .where(eq(projectTable.id, projectId))
@@ -54,7 +55,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 
         // validate raise target
-        const saleResults = await SaleResultsService.getSaleResults({ db: drizzleDb, projectId: data.projectId })
+        const saleResults = await SaleResultsService.getSaleResults({ db, projectId: data.projectId })
         if (saleResults.raiseTargetReached) {
             return jsonResponse({ message: 'Raise target has been reached!' }, 409)
         }
@@ -86,7 +87,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         }
 
         // handle errors from chain
-        if (transactionStatus.err) {
+        if ('err' in transactionStatus) {
             const message = JSON.stringify(transactionStatus.err)
             throw new Error(`Transaction error! err=(${message}), txId=(${transactionStatus.txId})`)
         }
@@ -108,7 +109,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         if (!raisedTokenCoinGeckoName) throw new Error(`raisedTokenCoinGeckoName missing for project (${projectId})!`)
 
         const exchangeData = await exchangeService.getExchangeData({
-            db: drizzleDb,
+            db,
             baseCurrency: raisedTokenCoinGeckoName,
             targetCurrency: 'usd',
         })
@@ -120,7 +121,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         })
 
         const eligibilityStatus = await EligibilityService.getEligibilityStatus({
-            db: drizzleDb,
+            db,
             address: userWalletAddress,
             projectId: data.projectId,
             rpcUrl: getRpcUrlForCluster(SOLANA_RPC_URL, cluster),
@@ -139,7 +140,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             ['confirmed', 'finalized'].includes(transactionStatus.confirmationStatus)
         ) {
             await DepositService.createUserDeposit({
-                db: drizzleDb,
+                db,
                 amount: amountInLamports.toString(),
                 projectId: data.projectId,
                 walletAddress: userWalletAddress,
@@ -200,9 +201,7 @@ async function extractTransactionData(txId: string, heliusApiKey: string, cluste
     // user is always the fee payer for the transaction
     const userWalletAddress = dataObject.feePayer
     const tokenTransfers = dataObject.tokenTransfers
-    // @ts-expect-error typing
     const splTokenTransfer = tokenTransfers.find(transfer => transfer.tokenStandard === 'Fungible')
-    // @ts-expect-error typing
     const nftTransfer = tokenTransfers.find(transfer => transfer.tokenStandard === 'NonFungible')
     // the following parsing logic can be found in helius api link above
     const tokenAddress = splTokenTransfer.mint
@@ -211,7 +210,6 @@ async function extractTransactionData(txId: string, heliusApiKey: string, cluste
     const lbpAddress = nftTransfer.fromUserAccount
 
     let decimals = 0
-    // @ts-expect-error typing
     dataObject.accountData.forEach(data => {
         if (data.tokenBalanceChanges.length)
             if (data.tokenBalanceChanges[0].mint === tokenAddress)

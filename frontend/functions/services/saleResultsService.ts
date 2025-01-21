@@ -25,7 +25,7 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
   if (!project) throw new Error(`Project not found (id=${projectId})!`)
 
   // load sale results
-  const queryResult: { fromAddress: string, totalAmountPerUser: string }[] = await db
+  const queryResult = await db
     .select({
       fromAddress: depositTable.fromAddress,
       totalAmountPerUser: sql`SUM(${depositTable.amountDeposited})`.as('totalAmountPerUser'),
@@ -33,11 +33,11 @@ const getSaleResults = async ({ db, projectId }: GetSaleResultsArgs): Promise<Sa
     .from(depositTable)
     .groupBy(depositTable.fromAddress)
     .where(eq(depositTable.projectId, projectId))
-    .all()
+    .all() as { fromAddress: string, totalAmountPerUser: string }[]
 
   const participantsCount = queryResult?.length ?? 0
   const totalAmount = queryResult?.reduce((acc, curr) => acc + Number(curr.totalAmountPerUser), 0) ?? 0
-  const averageAmount = (totalAmount / participantsCount) ?? 0
+  const averageAmount = (totalAmount / participantsCount) || 0
 
   const decimals = project.json.config.raisedTokenData.decimals
 

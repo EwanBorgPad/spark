@@ -1,5 +1,5 @@
 import { z, ZodTypeAny } from "zod"
-import { TierSchema } from "./eligibilityModel.ts"
+import { TierSchema } from "./eligibilityModel"
 /**
  * @deprecated deprecate , use drizzle
  * UserModel, user table in the database.

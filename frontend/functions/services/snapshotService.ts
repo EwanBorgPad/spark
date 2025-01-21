@@ -22,7 +22,7 @@ const getSnapshot = async ({ db, address, projectId }: GetSnapshotArgs): Promise
 
   if (!snapshot) return null
 
-  return { snapshotTakenAt: snapshot.createdAt, ...snapshot.eligibilityStatus }
+  return { snapshotTakenAt: snapshot.createdAt, ...snapshot.eligibilityStatus as EligibilityStatus }
 }
 
 type CreateSnapshotArgs = GetSnapshotArgs & {
