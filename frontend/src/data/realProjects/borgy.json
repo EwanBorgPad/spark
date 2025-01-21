@@ -18,7 +18,7 @@
 
     "lbpWalletAddress": "4SmMETL98BAR6W5DyZm661NbTpY3RUJNeeJMAHxvXia4",
     "raisedTokenData": {
-      "iconUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
+      "iconUrl": "https://files.borgpad.com/images/borgy/borgy-logo.webp",
       "ticker": "BORG",
 
       "mintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
@@ -27,7 +27,7 @@
       "coinGeckoName": "swissborg"
     },
     "launchedTokenData": {
-      "iconUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihaidrwzbEcGQMgeo9DfYDdEmMMoYxbFzUTU54GI09ctwslVrFQkrxt4YxhHc9MMSe4PizOG9qzUzuRL2_BgKJ3mcVUOZ917ufQ=s2560",
+      "iconUrl": "https://files.borgpad.com/images/borgy/borgy-logo.webp",
       "ticker": "BORGY",
 
       "mintAddress": "BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX",
@@ -44,8 +44,8 @@
 
     "title": "BORGY",
     "subtitle": "The Community Pet of SwissBorg",
-    "logoUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihaGgq0wNNNYd_yD7SPcJwSKNPtqwASXYJA2JZSKKYgc0hoWGgktuDdxNyfuottIdPC4rhcaVi1aXC1DQGK6SWgs7R5of0PnrdE=s2560",
-    "thumbnailUrl": "https://drive.google.com/u/0/drive-viewer/AKGpihZJ7UTfw1LQpPBYqweSPRXkuSjI1GVrU7d9WkWhmfddJvuxoKKLpp7kWDFlETh-d3pQGsRHjGPys8blr1iN5d9-3y1ldaFR6g=s2560",
+    "logoUrl": "https://files.borgpad.com/images/borgy/borgy-logo.webp",
+    "thumbnailUrl": "https://files.borgpad.com/images/borgy/borgy-thumbnail.png",
     "origin": "The Alps 🏔️",
     "sector": "Meme",
     "tokenGenerationEventDate": "10th December, 2024",
@@ -54,7 +54,7 @@
       "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
     },
     "dataRoom": {
-      "backgroundImgUrl": "/images/puffer-finance/avatar2.png",
+      "backgroundImgUrl": "",
       "url": "https://drive.google.com/file/d/1ELtP99cdMST5MyT17qnCCkvfbA09v2Tr/view"
     },
     "liquidityPool": {

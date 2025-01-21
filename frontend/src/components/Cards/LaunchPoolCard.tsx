@@ -7,22 +7,21 @@ import Text from "@/components/Text"
 import { Badge } from "../Badge/Badge"
 import { Button } from "../Button/Button"
 import { ExpandedProject } from "@/utils/projects-helper"
+import { ExternalLink } from "../Button/ExternalLink"
 
 type Props = { project: ExpandedProject | null; isLoading?: boolean }
 
-// @TODO - @UPDATE_PROJECT_DATA - remove temp fix below
-const borgyThumbnailUrl = "https://files.borgpad.com/images/borgy/borgy-thumbnail.png"
-
-const LaunchPoolCard = ({ project, isLoading }: Props) => {
+export const LaunchPoolCard = ({ project, isLoading }: Props) => {
   const { t } = useTranslation()
 
   const { additionalData: { badgeClassName, endMessage, badgeLabel } = {} } = project ?? {}
 
+  const isUpcoming = project?.additionalData.currentEvent.id === "UPCOMING"
+
   return (
     <li className="relative flex w-full max-w-[344px] flex-col overflow-hidden rounded-lg border-bd-primary bg-secondary">
       <Img
-        // @TODO - @UPDATE_PROJECT_DATA - remove temp fix below
-        src={project?.id === "borgy" ? borgyThumbnailUrl : project?.info?.thumbnailUrl || project?.info?.logoUrl}
+        src={project?.info?.thumbnailUrl || project?.info?.logoUrl}
         customClass="h-[189px] rounded-none"
         showFallback
         isFetchingLink={isLoading}
@@ -55,15 +54,38 @@ const LaunchPoolCard = ({ project, isLoading }: Props) => {
           </div>
         </div>
 
-        <div className="flex w-full flex-col rounded-xl bg-default">
-          <span className="px-4 py-2 text-sm leading-5 text-fg-tertiary">{endMessage}</span>
-          <Link to={`/launch-pools/${project?.id}`}>
-            <Button btnText="Learn More" className="w-full p-3" />
-          </Link>
-        </div>
+        {isUpcoming ? (
+          <FollowOnXBtn />
+        ) : (
+          <div className="flex w-full flex-col rounded-xl bg-default">
+            <span className="px-4 py-2 text-sm leading-5 text-fg-tertiary">{endMessage}</span>
+            <Link to={`/launch-pools/${project?.id}`}>
+              <Button btnText="Learn More" className="w-full p-3" />
+            </Link>
+          </div>
+        )}
       </div>
     </li>
   )
 }
 
-export default LaunchPoolCard
+const BORGPAD_X_URL = "https://x.com/BorgPadHQ"
+
+const FollowOnXBtn = () => {
+  return (
+    <div className="flex w-full flex-col rounded-xl bg-default">
+      <span className="w-full px-4 py-2 text-center text-sm leading-5 text-fg-tertiary">
+        {"Be among the first to find out"}
+      </span>
+      <ExternalLink
+        externalLink={{
+          label: "Follow Announcements on",
+          url: BORGPAD_X_URL,
+          iconType: "X_TWITTER",
+        }}
+        className="flex-row-reverse justify-center gap-1 rounded-xl px-3 py-3.5"
+        iconClassName="opacity-50"
+      />
+    </div>
+  )
+}
