@@ -74,21 +74,30 @@ export type DepositStatus = {
     startTime: Date
 }
 type GetDepositStatusResult = {
+    isEligible: true
     eligibilityStatus: EligibilityStatus
     depositStatus: DepositStatus
+} | {
+    isEligible: false
+    eligibilityStatus: EligibilityStatus
+    depositStatus: null
 }
 const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDepositStatus): Promise<GetDepositStatusResult> => {
     // get sum of users investment
     const usersAccumulatedDeposit = await getUsersDepositedAmount({ db, projectId, walletAddress })
     // get eligibility for the user
-    const eligibility = await EligibilityService.getEligibilityStatus({ db, address: walletAddress, projectId, rpcUrl })
+    const eligibilityStatus = await EligibilityService.getEligibilityStatus({ db, address: walletAddress, projectId, rpcUrl })
 
-    if (!eligibility.isEligible || !eligibility.eligibilityTier) {
-        throw new Error(`getDepositStatus: User (${walletAddress}) not eligible for project (${projectId})!`)
+    if (!eligibilityStatus.isEligible || !eligibilityStatus.eligibilityTier) {
+        return {
+            isEligible: false,
+            eligibilityStatus,
+            depositStatus: null,
+        }
     }
 
-    const userMaxCapInUsd = Number(eligibility.eligibilityTier.benefits.maxInvestment)
-    const userMinCapInUsd = Number(eligibility.eligibilityTier.benefits.minInvestment)
+    const userMaxCapInUsd = Number(eligibilityStatus.eligibilityTier.benefits.maxInvestment)
+    const userMinCapInUsd = Number(eligibilityStatus.eligibilityTier.benefits.minInvestment)
     // get project
     const project = await db
         .select()
@@ -156,19 +165,21 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
 
     // also take into account project sale opens date, just in case
     const startTime = maxDate(
-      new Date(eligibility.eligibilityTier?.benefits.startDate),
+      new Date(eligibilityStatus.eligibilityTier.benefits.startDate),
       new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date),
     )
     if (!startTime) throw new Error(`Misconfigured project (${projectId}), (startDate) field is missing`)
 
-    const depositStatus = {
-        amountDeposited,
-        minAmountAllowed,
-        maxAmountAllowed,
-        startTime,
-    } satisfies DepositStatus
-
-    return { eligibilityStatus: eligibility, depositStatus }
+    return { 
+        isEligible: true,
+        eligibilityStatus, 
+        depositStatus: {
+            amountDeposited,
+            minAmountAllowed,
+            maxAmountAllowed,
+            startTime,
+        } satisfies DepositStatus,
+     }
 }
 
 const limitDecimals = (num: number, decimals: number): number => {

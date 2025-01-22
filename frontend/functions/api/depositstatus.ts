@@ -29,9 +29,13 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
         const rpcUrl = getRpcUrlForCluster(ctx.env.SOLANA_RPC_URL, project.json.config.cluster)
 
-        const { depositStatus } = await DepositService.getDepositStatus({
+        const { isEligible, depositStatus } = await DepositService.getDepositStatus({
             db, walletAddress: address, projectId, rpcUrl,
         })
+
+        if (!isEligible) {
+            return jsonResponse({ message: `User (${address}) not eligible for project (${projectId})!` }, 409)
+        }
 
         return jsonResponse(depositStatus, {
             headers: {

@@ -19,6 +19,7 @@ import { PRIORITY_FEE_MICRO_LAMPORTS } from '../../shared/constants'
 import { DepositService } from '../services/depositService'
 import { SaleResultsService } from '../services/saleResultsService'
 import { SnapshotService } from '../services/snapshotService'
+import { SolanaAddressSchema } from '../../shared/models'
 
 
 type ENV = {
@@ -27,19 +28,29 @@ type ENV = {
     NFT_MINT_WALLET_PRIVATE_KEY: string
 }
 const requestSchema = z.object({
-    userWalletAddress: z.string(),
-    tokenAmount: z.number(),
-    projectId: z.string(),
+    userWalletAddress: SolanaAddressSchema,
+    tokenAmount: z.number().positive(),
+    projectId: z.string().min(1),
 })
+/**
+ * Creates the deposit transaction for a user, one of the main project functionalities.
+ * Validates that all the conditions are met:
+ *  - projectSaleOpen - Project sale is open.
+ *  - raiseTargetNotReached - Sale target has not been reached.
+ *  - userIsEligible - User is eligible.
+ *  - userCaps - User is not over their max, nor below their min investment amount.
+ *  - eligibilityTierStartTime - User's eligibilityTier has started.
+ * Improvements:
+ *  - For better UX, also check if user has enough raisedToken and SOL for this transaction.
+ * @param ctx 
+ * @returns 
+ */
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const db = drizzle(ctx.env.DB, { logger: true })
     try {
         const SOLANA_RPC_URL = ctx.env.SOLANA_RPC_URL
-        const privateKey = ctx.env.NFT_MINT_WALLET_PRIVATE_KEY
-        if (!SOLANA_RPC_URL || !privateKey) throw new Error('Misconfigured env!')
-
-        // TODO @saleClosed comment
-        return jsonResponse({ message: 'Sale is not open!' }, 409)
+        const nftMintAuthorityPrivateKey = ctx.env.NFT_MINT_WALLET_PRIVATE_KEY
+        if (!SOLANA_RPC_URL || !nftMintAuthorityPrivateKey) throw new Error('Misconfigured env!')
 
         /////////////////////////////////////////
         //// REQUEST PARSING AND VALIDATION /////
@@ -62,6 +73,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, project.json.config.cluster)
 
+        console.log('Request parsed successfully!')
+
         /////////////////////////////////////////
         ////// PROJECT TIMELINE VALIDATION //////
         /////////////////////////////////////////
@@ -76,23 +89,41 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
           ? new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date)
           : null
 
-        if (!saleOpensDate) return jsonResponse({ message: `SALE_OPENS not found for (${projectId})!` }, 500)
-        if (!saleClosesDate) return jsonResponse({ message: `SALE_CLOSES not found for (${projectId})!` }, 500)
+        if (!saleOpensDate) throw new Error(`SALE_OPENS not found for (${projectId})!`)
+        if (!saleClosesDate) throw new Error(`SALE_CLOSES not found for (${projectId})!`)
 
-        // @VALIDATION: project sale opens and closes dates
+        // @VALIDATION: projectSaleOpen
         if (now < saleOpensDate) return jsonResponse({ errorCode: 'SALE_NOT_OPEN_FOR_PROJECT' }, 409)
         if (now > saleClosesDate) return jsonResponse({ errorCode: 'SALE_CLOSED_FOR_PROJECT' }, 409)
+
+        console.log('projectSaleOpen confirmed.')
+
+        /////////////////////////////////////////
+        //////// SALE RESULTS VALIDATION ////////
+        /////////////////////////////////////////
+
+        const saleResults = await SaleResultsService.getSaleResults({ db, projectId })
+
+        // @VALIDATION: raiseTargetReached
+        if (saleResults.raiseTargetReached) return jsonResponse({ errorCode: 'PROJECT_RAISE_TARGET_REACHED' }, 409)
+
+        console.log('raiseTargetNotReached confirmed.')
 
         /////////////////////////////////////////
         /////// DEPOSIT STATUS VALIDATION ///////
         /////////////////////////////////////////
 
-        const { depositStatus, eligibilityStatus } = await DepositService.getDepositStatus({
+        const { isEligible, eligibilityStatus, depositStatus } = await DepositService.getDepositStatus({
             db,
             projectId,
             rpcUrl,
             walletAddress: userWalletAddress,
         })
+
+        // @VALIDATION: userIsEligible
+        if (!isEligible) return jsonResponse({ errorCode: 'USER_NOT_ELIGIBLE' }, 409)
+
+        console.log('userIsEligible confirmed.')
 
         const {
             maxAmountAllowed,
@@ -101,22 +132,20 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             startTime: startTimeByEligibilityTier,
         } = depositStatus
 
-        // @VALIDATION: user min and user max cap
+        // @VALIDATION: userCaps
         const userDepositAmount = tokenAmount * Math.pow(10, amountDeposited.decimals)
+        
+        console.log(`userDepositAmount: (${userDepositAmount}); minAmountAllowed: (${minAmountAllowed.amount}); maxAmountAllowed: (${maxAmountAllowed.amount})`)
+        
         if (userDepositAmount > Number(maxAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MAX_INVESTMENT_EXCEEDED' }, 409)
         if (userDepositAmount < Number(minAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MIN_INVESTMENT_INSUFFICIENT' }, 409)
 
-        // @VALIDATION: eligibility tier start time
+        console.log('userCaps confirmed.')
+
+        // @VALIDATION: eligibilityTierStartTime
         if (now < startTimeByEligibilityTier) return jsonResponse({ errorCode: 'SALE_NOT_OPEN_FOR_ELIGIBILITY_TIER' }, 409)
 
-        /////////////////////////////////////////
-        //////// SALE RESULTS VALIDATION ////////
-        /////////////////////////////////////////
-
-        const saleResults = await SaleResultsService.getSaleResults({ db, projectId })
-
-        // @VALIDATION: project cap
-        if (saleResults.raiseTargetReached) return jsonResponse({ errorCode: 'PROJECT_RAISE_TARGET_REACHED' }, 409)
+        console.log('eligibilityTierStartTime confirmed.')
 
         /////////////////////////////////////////
         ////////////// HAPPY FLOW ///////////////
@@ -130,11 +159,17 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         const tokenMint = project.json.config.raisedTokenData.mintAddress
 
-        const tx = await createUserDepositTransaction(userWalletAddress, lbpWalletAddress, tokenMint, tokenAmount, connection, privateKey)
+        console.log('Creating transaction...')
+
+        const tx = await createUserDepositTransaction(userWalletAddress, lbpWalletAddress, tokenMint, tokenAmount, connection, nftMintAuthorityPrivateKey)
+
+        console.log('Creating snapshot...')
 
         await SnapshotService.createSnapshot({
             db, address: userWalletAddress, projectId, eligibilityStatus,
         })
+
+        console.log('Returning response...')
 
         return jsonResponse({ transaction: tx }, 200)
     } catch (e) {
