@@ -160,10 +160,12 @@ export type CacheStoreModel = {
 export type GetExchangeResponse = {
   baseCurrency: string
   targetCurrency: string
-  currentPrice: number
-  fullyDilutedValuation: number
+  
+  currentPrice: string
+  
   quotedFrom?: string
-  cache?: unknown
+  quotedAt?: string
+  rawExchangeResponse?: unknown
 }
 export type GetPresignedUrlResponse = {
   signedUrl: string

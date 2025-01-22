@@ -1,27 +1,50 @@
 import { GetExchangeResponse } from "../../shared/models"
-import { addSeconds } from "date-fns/addSeconds"
 import { DrizzleD1Database } from "drizzle-orm/d1/driver"
-import { sql } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
+import { exchangeTable } from '../../shared/drizzle-schema'
 
-/**
- * GET /exchange
- * Serves exchange data from a 3rd party exchange, and caches the response in the D1 db in order to avoid being rate limited.
- * TODO @exchange this works ok for one currencyPair, let's think about what happens when we have a lot of different queries - rate limit breach
- * TODO @exchange consider how this service notifies us that rate limit has been hit, seems very important
- * TODO @exchange consider removing all calls to this from the frontend
- */
-/**
- * Caching statuses terminology borrowed from CloudFlare https://developers.cloudflare.com/cache/concepts/cache-responses/
- */
-type CacheStatus =
-/** Resource was found in cache. */
-  | 'HIT'
-  /** The resource was not found in Cloudflare’s cache and was served from the origin web server. */
-  | 'MISS'
-/**
- * Time in seconds after which the cache is invalidated
- */
-const CACHE_TTL_SECONDS = 30
+type RefreshExchangeData = {
+  db: DrizzleD1Database
+}
+const refreshExchangeData = async ({ db }: RefreshExchangeData): Promise<void> => {
+
+  const exchangeRows = (await db
+    .select()
+    .from(exchangeTable)
+    .all()
+  )
+    .filter(row => !row.isPinned)
+
+  // the processing time should create enough delay to avoid hitting the rate limit, so I haven't included any sleeps/waits in the loop
+  for (const exchangeRow of exchangeRows) {
+    const { baseCurrency, targetCurrency } = exchangeRow
+    const coinMarketData = await getCoinMarketData({ baseCurrency, targetCurrency })
+  
+    console.log(`Updating (${baseCurrency}-${targetCurrency}), currentPrice=${coinMarketData.currentPrice}`)
+    
+    await db.update(exchangeTable)
+      .set({ 
+        currentPrice: coinMarketData.currentPrice,
+        quotedFrom: coinMarketData.quotedFrom,
+        quotedAt: coinMarketData.quotedAt,
+        rawExchangeResponse: coinMarketData.rawExchangeResponse,
+       })
+      .where(
+        and(
+          eq(exchangeTable.baseCurrency, baseCurrency),
+          eq(exchangeTable.targetCurrency, targetCurrency),
+        )
+      )
+  }
+}
+
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+///////////////////// GET EXCHANGE DATA //////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+
 
 const SUPPORTED_CURRENCY_PAIRS: [string, string][] = [
   ['swissborg', 'usd'],
@@ -37,69 +60,47 @@ const getExchangeData = async ({
   db,
   baseCurrency,
   targetCurrency,
-} :GetExchangeDataArgs) => {
-  const isSupportedCurrencyPair = SUPPORTED_CURRENCY_PAIRS.some(pair => pair[0] === baseCurrency && pair[1] === targetCurrency)
+} :GetExchangeDataArgs): Promise<GetExchangeResponse> => {
+  const isSupportedCurrencyPair = SUPPORTED_CURRENCY_PAIRS
+    .some(pair => pair[0] === baseCurrency && pair[1] === targetCurrency)
   if (!isSupportedCurrencyPair) {
     throw new Error(`Unsupported currency pair (${baseCurrency}-${targetCurrency})!`)
   }
 
+  // special case for usd
   if (baseCurrency === 'usd' && targetCurrency === 'usd') {
     return {
       baseCurrency,
       targetCurrency,
-      currentPrice: 1,
-      fullyDilutedValuation: 0,
+      currentPrice: '1',
       quotedFrom: 'usdc-peg',
     }
   }
 
-  // build cache key
-  const cacheKey = `exchange-api/${baseCurrency}-${targetCurrency}`
-
-  // pull existing cache
-  const cache = (await db
-    .run(sql`SELECT * FROM cache_store WHERE cache_key = ${cacheKey}`)
-  ).results[0] as { expires_at: string, created_at: string, cache_data: string }
-
-  const isExpired = cache ? (new Date() > new Date(cache.expires_at)) : true
-
-  let coinMarketData
-  let cacheStatus: CacheStatus
-  let createdAt: string
-  let expiresAt: string
-
-  if (cache && !isExpired) {
-    cacheStatus = 'HIT'
-    coinMarketData = JSON.parse(cache.cache_data)
-    createdAt = cache.created_at
-    expiresAt = cache.expires_at
-  } else {
-    // refetch from origin and save to db
-    cacheStatus = 'MISS'
-    coinMarketData = await getCoinMarketData({ baseCurrency, targetCurrency })
-    createdAt = new Date().toISOString()
-    expiresAt = addSeconds(new Date(createdAt), CACHE_TTL_SECONDS).toISOString()
-
-    await db
-      .run(
-        sql`REPLACE INTO cache_store (cache_key, created_at, expires_at, cache_data)
-        VALUES (${cacheKey}, ${createdAt}, ${expiresAt}, ${JSON.stringify(coinMarketData)});`
+  const exchangeData = await db
+    .select()
+    .from(exchangeTable)
+    .where(
+      and(
+        eq(exchangeTable.baseCurrency, baseCurrency),
+        eq(exchangeTable.targetCurrency, targetCurrency),
       )
+    )
+    .get()
+  
+  if (!exchangeData) {
+    throw new Error(`Exchange data not found for pair (${baseCurrency}/${targetCurrency})!`)
   }
 
-  const result: GetExchangeResponse = {
-    baseCurrency,
-    targetCurrency,
-    ...coinMarketData,
-    cache: {
-      cacheStatus,
-      createdAt,
-      expiresAt,
-    }
-  }
-
-  return result
+  return exchangeData
 }
+
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+/////////////////// COINGECKO INTEGRATION ////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 
 /**
  * For the exchange we're currently using coingecko.
@@ -120,8 +121,6 @@ type GetCoinMarketDataArgs = {
  */
 type GetCoinMarketDataApiResponse = {
   current_price: number
-  market_cap: number
-  fully_diluted_valuation: number
 }[]
 const getCoinMarketData = async ({ baseCurrency, targetCurrency }: GetCoinMarketDataArgs): Promise<GetExchangeResponse> => {
   const url = new URL(GET_COIN_MARKET_DATA_API_URL)
@@ -141,9 +140,11 @@ const getCoinMarketData = async ({ baseCurrency, targetCurrency }: GetCoinMarket
   return {
     baseCurrency,
     targetCurrency,
-    currentPrice: data.current_price,
-    fullyDilutedValuation: data.fully_diluted_valuation,
+    
+    currentPrice: String(data.current_price),
     quotedFrom: GET_COIN_MARKET_DATA_API_URL,
+    quotedAt: new Date().toISOString(),
+    rawExchangeResponse: responseJson,
   }
 }
 
