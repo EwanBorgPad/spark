@@ -130,7 +130,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
           )}
 
           {/* CTA FOR THE UPCOMING PROJECT */}
-          {/* <UpcomingLpCta logoUrl={""} projectName={""} projectUrl={""} /> */}
+          {/* <UpcomingLbpCta logoUrl={""} projectName={""} projectUrl={""} /> */}
         </div>
       </div>
     </div>
