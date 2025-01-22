@@ -32,7 +32,7 @@ const LiveNowInput = ({
     onChange(newValue)
     if (!newValue) return
     if (+newValue > maxRaisedTokenInput) {
-      onChange(maxRaisedTokenInput)
+      onChange(maxRaisedTokenInput.toString())
       return
     }
     clearError()

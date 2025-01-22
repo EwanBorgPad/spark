@@ -28,8 +28,8 @@ const YourContribution = () => {
     enabled: Boolean(address) && Boolean(projectId),
   })
 
-  const borgDeposits = getDepositsData?.deposits || []
-  const totalBorgDeposits = borgDeposits.reduce((accumulator, currentValue) => {
+  const raisedTokenDeposits = getDepositsData?.deposits || []
+  const totalRaisedTokenDeposits = raisedTokenDeposits.reduce((accumulator, currentValue) => {
     const multiplier = Math.pow(10, +currentValue.decimalMultiplier)
     const deposit = +currentValue.amountDeposited / multiplier
     return accumulator + deposit
@@ -38,8 +38,8 @@ const YourContribution = () => {
   return (
     <>
       <div className="flex items-center gap-2 text-xl font-semibold">
-        <Img size={'4'} src={projectData?.config.raisedTokenData.iconUrl} />
-        <span>{formatCurrencyAmount(totalBorgDeposits, { customDecimals: 2 })}</span>
+        <Img size={"4"} src={projectData?.config.raisedTokenData.iconUrl} />
+        <span>{formatCurrencyAmount(totalRaisedTokenDeposits, { customDecimals: 2 })}</span>
         <span>${projectData?.config.raisedTokenData.ticker}</span>
       </div>
       <PastOrders label="All Orders" className="w-full" />

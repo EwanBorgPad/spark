@@ -238,9 +238,9 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     })
   }
 
-  const borgCoinInput = watch("raisedTokenInputValue")
+  const raisedTokenInputValue = watch("raisedTokenInputValue")
 
-  const isInputMaxAmount = +borgCoinInput === maxRaisedTokenInput
+  const isInputMaxAmount = +raisedTokenInputValue === maxRaisedTokenInput
   const maxAmountString = `Use Max Allowed: ${formatCurrencyAmount(+maxRaisedTokenInput, { customDecimals: 0 })} ${projectData?.config.raisedTokenData.ticker}`
 
   const scrollToWhitelistRequirements = () => {
@@ -304,18 +304,6 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
                     )}
                     onClick={() => clickProvideLiquidityBtn(100)}
                   />
-                  {/* Max test */}
-                  {/* <div className="flex items-center justify-end">
-                    <span className={"text-nowrap"}>
-                      {formatCurrencyAmount(+maxRaisedTokenInput, { customDecimals: 2 })} BORG
-                    </span>
-                  </div> */}
-                  {/* <span className="text-nowrap">Min:</span>{" "}
-                  <div className="flex items-center justify-end">
-                    <span className="text-nowrap ">
-                      {formatCurrencyAmount(+minRaisedTokenInput, { customDecimals: 2 })} BORG
-                    </span>
-                  </div> */}
                 </div>
               )}
               {balance !== null && (
@@ -338,7 +326,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
           <span className="w-full pl-1 text-left text-xs opacity-50">{t("tge.to_receive")}</span>
 
           <TokenRewards
-            raisedTokenInput={borgCoinInput}
+            raisedTokenInput={raisedTokenInputValue}
             raisedTokenPriceInUSD={raisedTokenPriceInUSD}
             tokenPriceInUSD={tokenPriceInUSD}
           />
