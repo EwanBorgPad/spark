@@ -30,18 +30,14 @@ const navigationItems: NavigationItem[] = [
     label: "Launch Pools",
   },
   {
+    path: "/blitz-pools",
+    label: "Blitz Pools",
+  },
+  {
     url: "https://docs.borgpad.com",
     label: "Docs",
     path: "",
   },
-  // {
-  //   path: "blog",
-  //   label: "Blog",
-  // },
-  // {
-  //   path: "faq",
-  //   label: "FAQ",
-  // },
 ]
 
 const NavigationBar = ({ className = "", itemClickedCallback }: NavigationBarProps) => {
@@ -131,7 +127,7 @@ const Header = () => {
             </Button>
           </div>
 
-          {<NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />}
+          <NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />
 
           <div className="flex min-w-[286px] items-center justify-end gap-4">
             {isLandingPage ? (
@@ -160,7 +156,6 @@ const Header = () => {
               ) : (
                 <ConnectButton btnClassName="animate-fade-in" />
               ))}
-            {/* {isLandingPage && <div className="hidden w-[138px] md:block" />} */}
           </div>
         </div>
         <Button.Icon
