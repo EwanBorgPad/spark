@@ -25,7 +25,7 @@ import Img from "@/components/Image/Img.tsx"
 import Text from "@/components/Text.tsx"
 
 type FormInputs = {
-  borgInputValue: string
+  raisedTokenInputValue: string
 }
 
 type Props = {
@@ -33,10 +33,13 @@ type Props = {
   scrollToTiers: () => void
 }
 
-const truncateToSecondDecimal = (number: number) => {
-  return Math.trunc(number * 100) / 100
+const truncateDecimals = (value: number, numOfDecimals: number) => {
+  const multiplier = Math.pow(10, numOfDecimals)
+  return Math.trunc(value * multiplier) / multiplier
 }
 
+// CONFIG
+const NUM_OF_DECIMALS = 2
 const ONE_HOUR = 60 * 60 * 1000
 
 const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
@@ -141,25 +144,26 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     staleTime: ONE_HOUR,
     enabled: Boolean(baseCurrency),
   })
-  const borgPriceInUSD = exchangeData?.currentPrice || null
+  const raisedTokenPriceInUSD = exchangeData?.currentPrice || null
   const tokenPriceInUSD = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0
-  const tokenPriceInBORG = !borgPriceInUSD ? null : tokenPriceInUSD / borgPriceInUSD
+  const tokenPriceInRaisedToken = !raisedTokenPriceInUSD ? null : tokenPriceInUSD / raisedTokenPriceInUSD
 
-  // @TODO - resolve fix below
-  const minBorgInput = depositStatus ? Number(Number(depositStatus.minAmountAllowed.uiAmount).toFixed(2)) : 0
-  // @MOEMATE - changed this for Moemate launch (no decimals)
-  // const maxBorgInput = depositStatus ? truncateToSecondDecimal(Number(depositStatus.maxAmountAllowed.uiAmount)) : 0
-  const maxBorgInput = depositStatus ? Math.trunc(Number(depositStatus.maxAmountAllowed.uiAmount)) : 0
+  const minRaisedTokenInput = depositStatus
+    ? truncateDecimals(Number(depositStatus.minAmountAllowed.uiAmount), NUM_OF_DECIMALS)
+    : 0
+  const maxRaisedTokenInput = depositStatus
+    ? truncateDecimals(Number(depositStatus.maxAmountAllowed.uiAmount), NUM_OF_DECIMALS)
+    : 0
 
   const checkIfUserInvestedMaxAmount = useCallback(() => {
-    if (typeof maxBorgInput !== "number" || typeof maxBorgInput !== "number") {
+    if (typeof maxRaisedTokenInput !== "number" || typeof minRaisedTokenInput !== "number") {
       return false
     }
-    if (maxBorgInput < 0.1) return true
+    if (maxRaisedTokenInput < 0.1) return true
     // edge case if there is a small amount left to be invested
-    if (maxBorgInput < minBorgInput) return true
+    if (maxRaisedTokenInput < minRaisedTokenInput) return true
     return false
-  }, [maxBorgInput, minBorgInput])
+  }, [maxRaisedTokenInput, minRaisedTokenInput])
   const userInvestedMaxAmount = checkIfUserInvestedMaxAmount()
 
   const { handleSubmit, control, setValue, watch, clearErrors, setError } = useForm<FormInputs>({ mode: "onBlur" })
@@ -167,14 +171,14 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   const checkIfValueIsValid = (value: string) => {
     const ticker = projectData?.config.raisedTokenData.ticker
     if (!balance?.uiAmountString) return
-    if (+value > maxBorgInput) {
-      setError("borgInputValue", { message: `Max investment value is ${maxBorgInput.toFixed(2)} ${ticker}` })
+    if (+value > maxRaisedTokenInput) {
+      setError("raisedTokenInputValue", { message: `Max investment value is ${maxRaisedTokenInput} ${ticker}` })
       return false
     } else if (Number(value) > Number(balance.uiAmountString)) {
-      setError("borgInputValue", { message: `Insufficient ${ticker} Balance.` })
+      setError("raisedTokenInputValue", { message: `Insufficient ${ticker} Balance.` })
       return false
-    } else if (+value < minBorgInput) {
-      setError("borgInputValue", { message: `Min investment value is ${minBorgInput.toFixed(2)} ${ticker}` })
+    } else if (+value < minRaisedTokenInput) {
+      setError("raisedTokenInputValue", { message: `Min investment value is ${minRaisedTokenInput} ${ticker}` })
       return false
     }
     return true
@@ -182,10 +186,10 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
-      const tokenAmount = parseFloat(data.borgInputValue.replace(",", ""))
+      const tokenAmount = parseFloat(data.raisedTokenInputValue.replace(",", ""))
       if (walletProvider === "") throw new Error("No wallet provider!")
       if (!tokenMintAddress) throw new Error("No Mint Address!")
-      const isValid = checkIfValueIsValid(data.borgInputValue)
+      const isValid = checkIfValueIsValid(data.raisedTokenInputValue)
       if (!isValid) return
       if (walletState === "CONNECTED") {
         const serializedTransaction = await makeDepositTransaction({
@@ -208,7 +212,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
           projectId: projectId ?? "",
           serializedTx,
         })
-        setValue("borgInputValue", "0")
+        setValue("raisedTokenInputValue", "0")
       } else {
         toast.error("Wallet error. Please try again or contact our support.")
       }
@@ -219,25 +223,25 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
   }
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
-    if (!balance || !maxBorgInput) return
-    const floatValue = Number(((balancePercentage / 100) * Number(maxBorgInput)).toFixed(6))
-    if (floatValue > maxBorgInput) {
-      setValue("borgInputValue", maxBorgInput.toString(), {
+    if (!balance || !maxRaisedTokenInput) return
+    const floatValue = Number(((balancePercentage / 100) * Number(maxRaisedTokenInput)).toFixed(6))
+    if (floatValue > maxRaisedTokenInput) {
+      setValue("raisedTokenInputValue", maxRaisedTokenInput.toString(), {
         shouldValidate: true,
         shouldDirty: true,
       })
       return
     }
-    setValue("borgInputValue", floatValue.toString(), {
+    setValue("raisedTokenInputValue", floatValue.toString(), {
       shouldValidate: true,
       shouldDirty: true,
     })
   }
 
-  const borgCoinInput = watch("borgInputValue")
+  const raisedTokenInputValue = watch("raisedTokenInputValue")
 
-  const isInputMaxAmount = +borgCoinInput === maxBorgInput
-  const maxAmountString = `Use Max Allowed: ${formatCurrencyAmount(+maxBorgInput, { customDecimals: 0 })} ${projectData?.config.raisedTokenData.ticker}`
+  const isInputMaxAmount = +raisedTokenInputValue === maxRaisedTokenInput
+  const maxAmountString = `Use Max Allowed: ${formatCurrencyAmount(+maxRaisedTokenInput, { customDecimals: 0 })} ${projectData?.config.raisedTokenData.ticker}`
 
   const scrollToWhitelistRequirements = () => {
     const top = eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
@@ -261,19 +265,20 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
               <div className="flex flex-col">
                 <Controller
                   control={control}
-                  name="borgInputValue"
+                  name="raisedTokenInputValue"
                   rules={{ required: true }}
                   render={({ field: { value, onChange }, fieldState: { error } }) => (
                     <LiveNowInput
-                      minBorgInput={minBorgInput}
-                      maxBorgInput={maxBorgInput}
-                      disabled={userInvestedMaxAmount}
-                      onChange={onChange}
+                      minRaisedTokenInput={minRaisedTokenInput}
+                      maxRaisedTokenInput={maxRaisedTokenInput}
+                      raisedTokenPriceInUSD={raisedTokenPriceInUSD}
                       value={value}
-                      setError={setError}
+                      onChange={onChange}
+                      numberOfDecimals={NUM_OF_DECIMALS}
                       error={error}
-                      clearError={() => clearErrors("borgInputValue")}
-                      borgPriceInUSD={borgPriceInUSD}
+                      setError={setError}
+                      clearError={() => clearErrors("raisedTokenInputValue")}
+                      disabled={userInvestedMaxAmount}
                     />
                   )}
                 />
@@ -299,18 +304,6 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
                     )}
                     onClick={() => clickProvideLiquidityBtn(100)}
                   />
-                  {/* Max test */}
-                  {/* <div className="flex items-center justify-end">
-                    <span className={"text-nowrap"}>
-                      {formatCurrencyAmount(+maxBorgInput, { customDecimals: 2 })} BORG
-                    </span>
-                  </div> */}
-                  {/* <span className="text-nowrap">Min:</span>{" "}
-                  <div className="flex items-center justify-end">
-                    <span className="text-nowrap ">
-                      {formatCurrencyAmount(+minBorgInput, { customDecimals: 2 })} BORG
-                    </span>
-                  </div> */}
                 </div>
               )}
               {balance !== null && (
@@ -333,9 +326,8 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
           <span className="w-full pl-1 text-left text-xs opacity-50">{t("tge.to_receive")}</span>
 
           <TokenRewards
-            borgCoinInput={borgCoinInput}
-            tokenPriceInBORG={tokenPriceInBORG}
-            borgPriceInUSD={borgPriceInUSD}
+            raisedTokenInput={raisedTokenInputValue}
+            raisedTokenPriceInUSD={raisedTokenPriceInUSD}
             tokenPriceInUSD={tokenPriceInUSD}
           />
         </div>

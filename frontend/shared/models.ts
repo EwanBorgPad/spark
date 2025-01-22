@@ -271,3 +271,10 @@ export type SaleResults = {
   marketCap: number
   fdv: number
 }
+
+export type DepositStatus = {
+  amountDeposited: TokenAmountModel
+  minAmountAllowed: TokenAmountModel
+  maxAmountAllowed: TokenAmountModel
+  startTime: Date
+}

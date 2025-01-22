@@ -25,6 +25,7 @@ type Context = {
   truncatedAddress: string
   signMessage: (message: string) => Promise<Uint8Array>
   signTransaction: (transaction: Transaction, walletType: SupportedWallet) => Promise<Transaction | null>
+  isWalletConnected: boolean
 }
 
 const WalletContext = createContext<Context | undefined>(undefined)
@@ -80,6 +81,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [walletProvider, setWalletProvider] = usePersistedState<SupportedWallet | "">("wallet")
   const initialWalletState: WalletState = address ? "CONNECTED" : "NOT_CONNECTED"
   const [walletState, setWalletState] = useState<WalletState>(initialWalletState)
+
+  const isWalletConnected = walletState === "CONNECTED" && Boolean(address)
 
   // autoConnect feature
   const [searchParams, setSearchParams] = useSearchParams()
@@ -211,28 +214,28 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     let provider
     try {
       if (walletType === "BACKPACK") {
-        // @ts-ignore-next-line
+        // @ts-expect-error no typing
         provider = window?.backpack
         if (!provider.isConnected) {
           toast("Wallet session timed out, please sign in again")
           await signInWithBackpack()
         }
       } else if (walletType === "PHANTOM") {
-        // @ts-ignore-next-line
+        // @ts-expect-error no typing
         provider = window?.phantom.solana
         if (!provider.isConnected) {
           toast("Wallet session timed out, please sign in again")
           await signInWithPhantom()
         }
       } else if (walletType === "SOLFLARE") {
-        // @ts-ignore-next-line
+        // @ts-expect-error no typing
         provider = window?.solflare
         if (!provider.isConnected) {
           toast("Wallet session timed out, please sign in again")
           await signInWithSolflare()
         }
       }
-      if (!provider) throw new Error('Provider not found!')
+      if (!provider) throw new Error("Provider not found!")
       const signedTx = await provider.signTransaction(transaction)
 
       return signedTx
@@ -253,15 +256,15 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   async function signMessage(message: string) {
     if (walletProvider === "PHANTOM") {
-      // @ts-expect-error
+      // @ts-expect-error no typing
       const signature = await window.solana.signMessage(Buffer.from(message))
       return signature.signature
     } else if (walletProvider === "BACKPACK") {
-      // @ts-expect-error
+      // @ts-expect-error no typing
       const signature = await window.backpack.signMessage(Buffer.from(message))
       return signature.signature
     } else if (walletProvider === "SOLFLARE") {
-      // @ts-expect-error
+      // @ts-expect-error no typing
       const signature = await window.solflare.signMessage(Buffer.from(message))
       return signature.signature
     } else {
@@ -270,37 +273,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }
 
   const truncatedAddress = truncateAddress(address)
-
-  const checkIfUserIsDisconnectedFromWallet = useCallback(
-    (callbackIfDisconnected: () => void) => {
-      if (!walletProvider) return
-      let provider
-      if (walletProvider === "BACKPACK") {
-        // @ts-expect-error types
-        provider = window?.backpack
-        if (!provider.isConnected) {
-          callbackIfDisconnected()
-        }
-      } else if (walletProvider === "PHANTOM") {
-        // @ts-expect-error types
-        provider = window?.phantom.solana
-        if (!provider.isConnected) {
-          callbackIfDisconnected()
-        }
-      } else if (walletProvider === "SOLFLARE") {
-        // @ts-expect-error types
-        provider = window?.solflare
-        if (!provider.isConnected) {
-          callbackIfDisconnected()
-        }
-      }
-    },
-    [walletProvider],
-  )
-
-  // useEffect(() => {
-  //   checkIfUserIsDisconnectedFromWallet(() => setWalletState("NOT_CONNECTED"))
-  // }, [checkIfUserIsDisconnectedFromWallet])
 
   return (
     <WalletContext.Provider
@@ -315,6 +287,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         truncatedAddress,
         signMessage,
         signTransaction,
+        isWalletConnected,
       }}
     >
       {children}

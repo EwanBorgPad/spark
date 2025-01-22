@@ -16,10 +16,6 @@ import DiscoverSection from "@/components/LandingPage/DiscoverSection"
 import JoinCommunityBtn from "@/components/Button/JoinTheCommunityBtn"
 import RotatingSubtitle from "@/components/LandingPage/RotatingSubtitle"
 import { Button } from "@/components/Button/Button"
-import ActiveLaunchPoolBtn from "@/components/Button/ActiveLaunchPoolBtn"
-
-// Arbitrary launch date for Countdown timer. Currently disabled
-// const LAUNCH_DATE = addDays(new Date(), 5.1411)
 
 const LandingPage = () => {
   return (
@@ -91,7 +87,7 @@ const LandingPage = () => {
               />
               <div className="absolute inset-0 z-[-1] h-full w-full rounded-xl shadow-around-1 transition-shadow duration-500 group-hover:shadow-around-2"></div>
             </Link>
-            {/* <ActiveLaunchPoolBtn /> */}
+            {/* <CountdownBtnForNextLbp projectId="ambient-network" /> */}
           </div>
         </div>
       </section>

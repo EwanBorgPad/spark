@@ -8,10 +8,6 @@ const SaleUnsuccessful = () => {
   const { t } = useTranslation()
   const { walletState } = useWalletContext()
 
-  //////////////////////////////////////////////////////
-  // @TODO - Add API call for Claiming Refund //////////
-  //////////////////////////////////////////////////////
-
   return (
     <div className="flex flex-col items-center gap-6">
       <span className="w-full max-w-[520px] whitespace-pre-line text-center text-sm opacity-60">

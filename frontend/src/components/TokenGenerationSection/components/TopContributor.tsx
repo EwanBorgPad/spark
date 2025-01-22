@@ -1,8 +1,6 @@
 import { Icon } from "@/components/Icon/Icon"
 
 const TopContributor = () => {
-  // @TODO - fetch and insert dynamic contribution values below
-
   return (
     <div className="w-full rounded-lg bg-gradient-to-t from-brand-primary/50 to-brand-primary/15 p-[1px]">
       <div className=" relative flex items-center gap-4 rounded-[7px] bg-secondary bg-top-contributor bg-bottom bg-no-repeat object-cover px-4 py-3 ">
