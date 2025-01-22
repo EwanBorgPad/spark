@@ -3,7 +3,8 @@ import { backendApi } from "@/data/backendApi"
 import { useQuery } from "@tanstack/react-query"
 import { ScrollRestoration } from "react-router-dom"
 
-import launchPoolsBg from "@/assets/launchPools/launch-pools-background.png"
+import blitzPoolsBg from "@/assets/launchPools/bg-blitz-pools-min-new.png"
+import blitzPoolsLogo from "@/assets/launchPools/blitz-pools-logo.png"
 import swissborgLogo from "@/assets/launchPools/swissborg-logo.png"
 import jupiterLogo from "@/assets/launchPools/jupiter-logo.png"
 import orcaLogo from "@/assets/launchPools/orca-logo.png"
@@ -40,13 +41,18 @@ const BlitzPools = () => {
 
   return (
     <main className="relative z-[10] min-h-screen w-full bg-transparent pt-[48px] md:pt-[68px]">
-      <img src={launchPoolsBg} className="absolute top-[48px] z-[-1] w-full md:top-[68px]" role="presentation" />
+      <img
+        src={blitzPoolsBg}
+        className="absolute top-[48px] z-[-1] w-full opacity-55 md:top-[68px]"
+        role="presentation"
+      />
 
       <section className="z-[1] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
+        <Img src={blitzPoolsLogo} customClass="max-h-[40px] max-w-[174px] mb-2" />
         <h1 className="text-center text-[40px] font-semibold leading-[120%] md:w-full">
-          {t("launch_pools.liquidity_to_the")}
+          {"Blazing fast launch pools"}
           <br></br>
-          <span className="text-fg-brand-primary">{t("launch_pools.power_to_the")}</span>
+          <span className="text-blitz-yellow">{"Electric return opportunities"}</span>
         </h1>
         <p className="max-w-[522px] text-center font-normal lg:text-lg">
           {t("launch_pools.provide_liquidity_subtitle")}
