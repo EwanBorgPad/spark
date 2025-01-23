@@ -85,7 +85,7 @@ const BlitzPools = () => {
       </section>
 
       <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
-        <div className="mt-[64px] flex w-full max-w-[1080px] flex-col items-center">
+        <div className="flex w-full max-w-[1080px] flex-col items-center">
           <ul className="grid w-full grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {!isLoading
               ? phases?.map((phase) =>
