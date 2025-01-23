@@ -146,6 +146,11 @@ export const projectSchema = z.object({
       }),
     ),
     tiers: z.array(TierSchema).min(1),
+    nftConfiguration: z.object({
+      name: z.string(),
+      symbol: z.string(),
+      uri: z.string(),
+    })
   }),
 })
 export type ProjectModel = z.infer<typeof projectSchema>

@@ -36,7 +36,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             throw new Error('Misconfigured env!')
         }
 
-        return jsonResponse({ message: 'Sale is not open!' }, 409)
+        // return jsonResponse({ message: 'Sale is not open!' }, 409)
 
         // validate request
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
@@ -87,10 +87,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         }
 
         // handle errors from chain
-        if ('err' in transactionStatus) {
-            const message = JSON.stringify(transactionStatus.err)
-            throw new Error(`Transaction error! err=(${message}), txId=(${transactionStatus.txId})`)
-        }
+        // if ('err' in transactionStatus) {
+        //     const message = JSON.stringify(transactionStatus.err)
+        //     throw new Error(`Transaction error! err=(${message}), txId=(${transactionStatus.txId})`)
+        // }
 
         const heliusApiKey = SOLANA_RPC_URL.split('api-key=')[1]    // extract helius api key
 

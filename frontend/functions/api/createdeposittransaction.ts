@@ -28,6 +28,11 @@ const requestSchema = z.object({
     tokenAmount: z.number(),
     projectId: z.string()
 })
+type NftConfiguration = {
+    symbol: string;
+    name: string;
+    uri: string;
+}
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const db = ctx.env.DB
     const drizzleDb = drizzle(db, { logger: true })
@@ -39,7 +44,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             throw new Error('Misconfigured env!')
         }
 
-        return jsonResponse({ message: 'Sale is not open!' }, 409)
+        // return jsonResponse({ message: 'Sale is not open!' }, 409)
 
         // request validation
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
@@ -99,8 +104,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const validationError = await validateTx(eligibilityStatus.isEligible, depositStatus, tokenAmount, endDate, saleResults)
         if (validationError) return validationError
 
+        const nftConfig = project.json.info.nftConfiguration
         // create transfer and mint nft instruction
-        const tx = await createUserDepositTransaction(userWalletAddress, receivingAddress, tokenMint, tokenAmount, connection, privateKey)
+        const tx = await createUserDepositTransaction(userWalletAddress, receivingAddress, tokenMint, tokenAmount, connection, privateKey, nftConfig)
 
         await SnapshotService.createSnapshot({ db: drizzleDb, address: userWalletAddress, projectId, eligibilityStatus })
 
@@ -140,7 +146,8 @@ export async function createUserDepositTransaction(
     tokenMint: string,
     amount: number,
     connection: Connection,
-    privateKey: string
+    privateKey: string,
+    nftConfig: NftConfiguration
 ): Promise<string> {
     try {
         const fromPublicKey = new PublicKey(fromWallet)
@@ -175,7 +182,7 @@ export async function createUserDepositTransaction(
         })
 
         // get instructions from the builder for transfering nft
-        const { instructions: listOfInstructions, nftMintSigner } = await mintNftAndCreateTransferNftInstructions(connection, privateKey, fromPublicKey.toBase58())
+        const { instructions: listOfInstructions, nftMintSigner } = await mintNftAndCreateTransferNftInstructions(connection, privateKey, fromPublicKey.toBase58(), nftConfig)
 
         // create the transaction and all the neccessary instructions to it
         const transaction = new Transaction().add(transferInstruction).add(addPriorityFee)
@@ -223,7 +230,7 @@ export const onRequestOptions: PagesFunction<ENV> = async (ctx) => {
     }
 }
 
-async function mintNftAndCreateTransferNftInstructions(connection: Connection, privateKey: string, usersWalletAddress: string) {
+async function mintNftAndCreateTransferNftInstructions(connection: Connection, privateKey: string, usersWalletAddress: string, nftConfig: NftConfiguration) {
     // create umi client for mpl token package
     const umi = createUmi(connection)
     const userPublicKey = publicKey(usersWalletAddress)
@@ -243,10 +250,10 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
 
     // make tx for minting nft
     const builder = transactionBuilder().add(createProgrammableNft(umi, {
-        symbol: 'bpMATES',
+        symbol: nftConfig.symbol,
         mint: mintSigner,
-        name: "MATES Liquidity Provider",
-        uri: "https://files.borgpad.com/moemate/nft-metadata/metadata.json",
+        name: nftConfig.name,
+        uri: nftConfig.uri,
         updateAuthority: signer,
         sellerFeeBasisPoints: percentAmount(0),
         payer: userSigner,
