@@ -9,7 +9,7 @@ import EnvBanner from "./components/EnvBanner"
 
 function App() {
   return (
-    <div className="max-w-screen flex min-h-screen flex-col items-center justify-center overflow-x-hidden overscroll-x-none  bg-default font-geist text-fg-primary">
+    <div className="max-w-screen flex min-h-screen flex-col items-center justify-center overflow-x-hidden overscroll-x-none bg-accent font-geist text-fg-primary">
       <EnvBanner />
       <ToastContainer />
 
