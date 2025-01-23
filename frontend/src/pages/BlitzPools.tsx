@@ -41,14 +41,25 @@ const BlitzPools = () => {
 
   return (
     <main className="relative z-[10] min-h-screen w-full bg-transparent pt-[48px] md:pt-[68px]">
-      <img
+      {/* <img
         src={blitzPoolsBg}
         className="absolute top-[48px] z-[-1] w-full opacity-55 md:top-[68px]"
         role="presentation"
-      />
+      /> */}
 
-      <section className="z-[1] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
+      <div className="absolute top-[48px] z-[-1] w-screen opacity-100 md:top-[68px] ">
+        <iframe
+          src="https://unicorn.studio/embed/VCrtNOf57Pw8t4QHWIm5"
+          width="100%"
+          height="642px"
+          loading="lazy"
+          className="z-[101] opacity-50"
+        ></iframe>
+      </div>
+
+      <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
         <Img src={blitzPoolsLogo} customClass="max-h-[40px] max-w-[174px] mb-2" />
+
         <h1 className="text-center text-[40px] font-semibold leading-[120%] md:w-full">
           {"Blazing fast launch pools"}
           <br></br>
