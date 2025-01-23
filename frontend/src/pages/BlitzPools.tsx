@@ -40,7 +40,7 @@ const BlitzPools = () => {
   }, [data?.projects])
 
   return (
-    <main className="relative z-[10] min-h-screen w-full bg-transparent pt-[48px] md:pt-[68px]">
+    <main className="relative z-[10] flex min-h-screen w-full flex-col items-center bg-transparent pt-[48px] md:pt-[68px]">
       {/* <img
         src={blitzPoolsBg}
         className="absolute top-[48px] z-[-1] w-full opacity-55 md:top-[68px]"
@@ -57,7 +57,7 @@ const BlitzPools = () => {
         ></iframe>
       </div>
 
-      <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
+      <section className="z-[11] flex w-fit flex-col items-center gap-4 bg-transparent px-4 pt-[60px] md:pt-[80px]">
         <Img src={blitzPoolsLogo} customClass="max-h-[40px] max-w-[174px] mb-2" />
 
         <h1 className="text-center text-[40px] font-semibold leading-[120%] md:w-full">
@@ -82,7 +82,9 @@ const BlitzPools = () => {
             <span className="text-sm opacity-90">...and many more</span>
           </div>
         </div>
+      </section>
 
+      <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
         <div className="mt-[64px] flex w-full max-w-[1080px] flex-col items-center">
           <ul className="grid w-full grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {!isLoading
