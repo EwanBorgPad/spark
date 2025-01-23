@@ -13,7 +13,7 @@ export default {
           headers: { 'Authorization': ADMIN_API_KEY },
         })
         
-        console.log(`Refetching exchange data done. Date=(${new Date().toISOString()}). Status=${JSON.stringify(await response.json())}`)
+        console.log(`Refetching exchange data done. Date=(${new Date().toISOString()}). Status=${JSON.stringify(await response.text())}`)
       } catch (e) {
         console.error('Something went wrong...')
         console.error(e)
