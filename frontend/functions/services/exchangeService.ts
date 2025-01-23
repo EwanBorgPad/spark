@@ -3,10 +3,20 @@ import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 import { and, eq } from "drizzle-orm"
 import { exchangeTable } from '../../shared/drizzle-schema'
 
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+/////////////////// REFRESH EXCHANGE DATA ////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+
 type RefreshExchangeData = {
   db: DrizzleD1Database
 }
-const refreshExchangeData = async ({ db }: RefreshExchangeData): Promise<void> => {
+type RefreshExchangeDataResponse = {
+  status: 'ok'
+  affectedRowsCount: number
+}
+const refreshExchangeData = async ({ db }: RefreshExchangeData): Promise<RefreshExchangeDataResponse> => {
 
   const exchangeRows = (await db
     .select()
@@ -35,6 +45,11 @@ const refreshExchangeData = async ({ db }: RefreshExchangeData): Promise<void> =
           eq(exchangeTable.targetCurrency, targetCurrency),
         )
       )
+  }
+
+  return {
+    status: 'ok',
+    affectedRowsCount: exchangeRows.length,
   }
 }
 
@@ -152,6 +167,12 @@ const getCoinMarketData = async ({ baseCurrency, targetCurrency }: GetCoinMarket
     rawExchangeResponse: responseJson,
   }
 }
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+///////////////////////// EXPORTS ////////////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 
 export const exchangeService = {
   SUPPORTED_CURRENCY_PAIRS,

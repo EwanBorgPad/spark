@@ -14,9 +14,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse(null, 401)
     }
 
-    await exchangeService.refreshExchangeData({ db })
+    const status = await exchangeService.refreshExchangeData({ db })
 
-    return jsonResponse({ message: "Ok!" }, 200)
+    return jsonResponse(status, 200)
   } catch (e) {
     await reportError(ctx.env.DB, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
