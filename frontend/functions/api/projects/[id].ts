@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/d1"
 
 type ENV = {
-  DB: D1Database
+  DB: D1Database,
 }
 /**
  * Get request handler - returns a project by id

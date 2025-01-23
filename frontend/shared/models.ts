@@ -82,6 +82,14 @@ const TokenDataSchema = z.object({
   coinGeckoName: optional(z.string()),
 })
 
+const nftConfigSchema = z.object({
+  name: z.string(),
+  symbol: z.string(),
+  uri: z.string(),
+})
+
+export type NftConfigType = z.infer<typeof nftConfigSchema>
+
 export const projectSchema = z.object({
   id: idSchema(),
   config: z.object({
@@ -103,7 +111,8 @@ export const projectSchema = z.object({
     lbpWalletAddress: SolanaAddressSchema.nullable(),
 
     raisedTokenData: TokenDataSchema,
-    launchedTokenData: TokenDataSchema
+    launchedTokenData: TokenDataSchema,
+    nftConfiguration: nftConfigSchema
   }),
   info: z.object({
     /// following 4 fields are typically added AFTER the sale
@@ -145,12 +154,7 @@ export const projectSchema = z.object({
         label: z.string().min(1),
       }),
     ),
-    tiers: z.array(TierSchema).min(1),
-    nftConfiguration: z.object({
-      name: z.string(),
-      symbol: z.string(),
-      uri: z.string(),
-    })
+    tiers: z.array(TierSchema).min(1)
   }),
 })
 export type ProjectModel = z.infer<typeof projectSchema>
