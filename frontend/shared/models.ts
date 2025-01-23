@@ -154,7 +154,7 @@ export const projectSchema = z.object({
         label: z.string().min(1),
       }),
     ),
-    tiers: z.array(TierSchema).min(1)
+    tiers: z.array(TierSchema).min(1),
   }),
 })
 export type ProjectModel = z.infer<typeof projectSchema>

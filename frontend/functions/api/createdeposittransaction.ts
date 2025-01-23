@@ -53,7 +53,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         if (!SOLANA_RPC_URL || !nftMintAuthorityPrivateKey) throw new Error('Misconfigured env!')
 
         /////////////////////////////////////////
-        // //// REQUEST PARSING AND VALIDATION /////
+        //// REQUEST PARSING AND VALIDATION /////
         /////////////////////////////////////////
 
         const { data, error } = requestSchema.safeParse(await ctx.request.json())
@@ -159,8 +159,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         const tokenMint = project.json.config.raisedTokenData.mintAddress
         const nftConfig = project.json.config.nftConfiguration
-        const endDate = project.json.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
-        if (!endDate) return jsonResponse({ message: 'End date is not defined in project json!' }, 500)
+
+        console.log('Creating transaction...')
 
         const tx = await createUserDepositTransaction(userWalletAddress, lbpWalletAddress, tokenMint, tokenAmount, connection, nftMintAuthorityPrivateKey, nftConfig)
 
