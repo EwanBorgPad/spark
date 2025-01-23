@@ -147,7 +147,7 @@ const getCoinMarketData = async ({ baseCurrency, targetCurrency }: GetCoinMarket
     targetCurrency,
     
     currentPrice: String(data.current_price),
-    quotedFrom: GET_COIN_MARKET_DATA_API_URL,
+    quotedFrom: url.toString(),
     quotedAt: new Date().toISOString(),
     rawExchangeResponse: responseJson,
   }
