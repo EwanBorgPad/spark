@@ -28,7 +28,7 @@ const refreshExchangeData = async ({ db }: RefreshExchangeData): Promise<void> =
         quotedFrom: coinMarketData.quotedFrom,
         quotedAt: coinMarketData.quotedAt,
         rawExchangeResponse: coinMarketData.rawExchangeResponse,
-       })
+      })
       .where(
         and(
           eq(exchangeTable.baseCurrency, baseCurrency),
@@ -133,6 +133,11 @@ const getCoinMarketData = async ({ baseCurrency, targetCurrency }: GetCoinMarket
       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
     },
   })
+
+  if (!response.ok) {
+    throw new Error(`CoinGecko error! statusCode=${response.status}`)
+  }
+
   const responseJson = (await response.json()) as GetCoinMarketDataApiResponse
 
   const data = responseJson[0]
@@ -151,4 +156,5 @@ const getCoinMarketData = async ({ baseCurrency, targetCurrency }: GetCoinMarket
 export const exchangeService = {
   SUPPORTED_CURRENCY_PAIRS,
   getExchangeData,
+  refreshExchangeData,
 }

@@ -87,13 +87,13 @@ CREATE TABLE exchange_cache (
     target_currency TEXT NOT NULL,
     
     current_price TEXT NOT NULL,
-    quoted_from TEXT NOT NULL
+    quoted_from TEXT NOT NULL,
     quoted_at TEXT NOT NULL,
     is_pinned INTEGER NOT NULL DEFAULT FALSE,
     raw_exchange_response JSONB NOT NULL DEFAULT '{}',
     
     PRIMARY KEY (base_currency, target_currency)
-)
+);
 
 INSERT INTO exchange_cache (base_currency, target_currency, current_price, quoted_from, quoted_at)
     VALUES ('swissborg', 'usd', 0, 'inserted-manually', CURRENT_TIMESTAMP);

@@ -91,7 +91,7 @@ export const exchangeTable = sqliteTable('exchange_cache', {
   quotedFrom: text('quoted_from').notNull(),
   quotedAt: text('quoted_at').notNull(),
   isPinned: integer('is_pinned', { mode: 'boolean' }).notNull(),
-  rawExchangeResponse: text('exchange_data', { mode: 'json' }).notNull(),
+  rawExchangeResponse: text('raw_exchange_response', { mode: 'json' }).notNull(),
 }, (table) => {
   return {
     pk: primaryKey({ columns: [table.baseCurrency, table.targetCurrency] })
