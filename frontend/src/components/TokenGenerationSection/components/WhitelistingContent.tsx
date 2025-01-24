@@ -33,7 +33,7 @@ const WhitelistingContent = () => {
     queryKey: ["getExchange", baseCurrency, targetCurrency],
     enabled: Boolean(baseCurrency),
   })
-  const raisedTokenPriceInUsd = data?.currentPrice || null
+  const raisedTokenPriceInUsd = Number(data?.currentPrice) || null
   const launchedTokenPriceInUsd = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0
   const launchedTokenPriceInRaisedToken = !raisedTokenPriceInUsd ? null : launchedTokenPriceInUsd / raisedTokenPriceInUsd
 

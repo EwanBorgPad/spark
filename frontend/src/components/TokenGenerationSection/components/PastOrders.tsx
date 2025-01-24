@@ -35,7 +35,7 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
     queryKey: ["getExchange", baseCurrency, targetCurrency],
     enabled: Boolean(baseCurrency),
   })
-  const raisedTokenPriceInUsd = data?.currentPrice || 0
+  const raisedTokenPriceInUsd = Number(data?.currentPrice) || 0
 
   const { data: getDepositsData } = useQuery({
     queryFn: () => {

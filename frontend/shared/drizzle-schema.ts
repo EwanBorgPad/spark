@@ -1,4 +1,4 @@
-import { primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core"
+import { primaryKey, sqliteTable, text, integer } from "drizzle-orm/sqlite-core"
 import { ProjectModel, UserModelJson } from "./models"
 import { sql } from "drizzle-orm"
 
@@ -82,6 +82,22 @@ export const eligibilityStatusSnapshotTable = sqliteTable('eligibility_status_sn
     pk: primaryKey({ columns: [table.address, table.projectId] }),
   };
 })
+
+export const exchangeTable = sqliteTable('exchange_cache', {
+  baseCurrency: text('base_currency').notNull(),
+  targetCurrency: text('target_currency').notNull(),
+  
+  currentPrice: text('current_price').notNull(),
+  quotedFrom: text('quoted_from').notNull(),
+  quotedAt: text('quoted_at').notNull(),
+  isPinned: integer('is_pinned', { mode: 'boolean' }).notNull(),
+  rawExchangeResponse: text('raw_exchange_response', { mode: 'json' }).notNull(),
+}, (table) => {
+  return {
+    pk: primaryKey({ columns: [table.baseCurrency, table.targetCurrency] })
+  }
+})
+
 // const db = drizzle()
 // db
 //   .select()
