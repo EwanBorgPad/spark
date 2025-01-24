@@ -12,13 +12,20 @@ export default {
           method: 'POST',
           headers: { 'Authorization': ADMIN_API_KEY },
         })
+
+        if (!response.ok) {
+          throw new Error(await response.text())
+        }
         
-        console.log(`Refetching exchange data done. Date=(${new Date().toISOString()}). Status=${JSON.stringify(await response.text())}`)
+        console.log(`Refetching exchange data successful. Date=(${new Date().toISOString()}). Status=${JSON.stringify(await response.text())}`)
       } catch (e) {
         console.error('Something went wrong...')
         console.error(e)
         console.error(e.message)
+        // rethrow error so that invocation is reported as errored
+        throw e
       }
     },
   }
+  
   
