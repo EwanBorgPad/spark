@@ -6,7 +6,6 @@ import hamburgerMenuBg from "@/assets/hamburgerMenuBg.png"
 
 import { WalletDropdown } from "@/components/Header/WalletDropdown.tsx"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
-import useHeaderShadow from "@/hooks/useHeaderShadow"
 import { Icon } from "@/components/Icon/Icon.tsx"
 import { ConnectButton } from "./ConnectButton"
 import { Button } from "../Button/Button"
@@ -15,33 +14,31 @@ type NavigationItem = {
   path: string
   url?: string
   label: string
+  activeClass?: string
+  underlineClass?: string
 }
 type NavigationBarProps = {
   className?: string
   itemClickedCallback: () => void
 }
 const navigationItems: NavigationItem[] = [
-  // {
-  //   path: "/angel-staking",
-  //   label: "Angel Staking",
-  // },
   {
     path: "/launch-pools",
     label: "Launch Pools",
+    activeClass: "text-brand-primary",
+  },
+  {
+    path: "/blitz-pools",
+    label: "Blitz Pools",
+    activeClass: "text-brand-blitz",
+    underlineClass: "border-brand-blitz",
   },
   {
     url: "https://docs.borgpad.com",
     label: "Docs",
     path: "",
+    activeClass: "text-brand-primary",
   },
-  // {
-  //   path: "blog",
-  //   label: "Blog",
-  // },
-  // {
-  //   path: "faq",
-  //   label: "FAQ",
-  // },
 ]
 
 const NavigationBar = ({ className = "", itemClickedCallback }: NavigationBarProps) => {
@@ -69,7 +66,7 @@ const NavigationBar = ({ className = "", itemClickedCallback }: NavigationBarPro
             key={item.path}
             className={twMerge(
               "relative flex w-full cursor-pointer flex-col items-start gap-1 py-3 text-left text-lg text-fg-secondary transition-colors duration-500 md:w-fit md:items-center md:py-0 md:text-center md:text-base",
-              isItemActive(item) && "text-brand-primary",
+              isItemActive(item) && item.activeClass,
             )}
             onClick={() => onItemClick(item)}
           >
@@ -78,6 +75,7 @@ const NavigationBar = ({ className = "", itemClickedCallback }: NavigationBarPro
               <div
                 className={twMerge(
                   "absolute bottom-[-4px] hidden w-4 animate-underline border border-brand-primary md:flex",
+                  item?.underlineClass,
                 )}
               ></div>
             )}
@@ -131,7 +129,7 @@ const Header = () => {
             </Button>
           </div>
 
-          {<NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />}
+          <NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />
 
           <div className="flex min-w-[286px] items-center justify-end gap-4">
             {isLandingPage ? (
@@ -160,7 +158,6 @@ const Header = () => {
               ) : (
                 <ConnectButton btnClassName="animate-fade-in" />
               ))}
-            {/* {isLandingPage && <div className="hidden w-[138px] md:block" />} */}
           </div>
         </div>
         <Button.Icon

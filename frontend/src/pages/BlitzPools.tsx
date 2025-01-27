@@ -3,7 +3,8 @@ import { backendApi } from "@/data/backendApi"
 import { useQuery } from "@tanstack/react-query"
 import { ScrollRestoration } from "react-router-dom"
 
-import launchPoolsBg from "@/assets/launchPools/launch-pools-background.png"
+import blitzPoolsBg from "@/assets/launchPools/bg-blitz-pools-min-new.png"
+import blitzPoolsLogo from "@/assets/launchPools/blitz-pools-logo.png"
 import swissborgLogo from "@/assets/launchPools/swissborg-logo.png"
 import jupiterLogo from "@/assets/launchPools/jupiter-logo.png"
 import orcaLogo from "@/assets/launchPools/orca-logo.png"
@@ -14,10 +15,11 @@ import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
 import Img from "@/components/Image/Img"
 import { useTranslation } from "react-i18next"
+import BlitzPoolsAnimation from "@/components/Animated/BlitzPoolsAnimation"
 
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
-const LaunchPools = () => {
+const BlitzPools = () => {
   const [phases, setPhases] = useState<ExpandedProject[][]>([])
   const { t } = useTranslation()
 
@@ -26,9 +28,9 @@ const LaunchPools = () => {
       backendApi.getProjects({
         page: 1,
         limit: 999,
-        projectType: "goat",
+        projectType: "blitz",
       }),
-    queryKey: ["getProjects", "goat"],
+    queryKey: ["getProjects", "blitz"],
   })
 
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
@@ -40,17 +42,23 @@ const LaunchPools = () => {
   }, [data?.projects])
 
   return (
-    <main className="relative z-[10] min-h-screen w-full bg-transparent pt-[48px] md:pt-[68px]">
-      <img src={launchPoolsBg} className="absolute top-[48px] z-[-1] w-full md:top-[68px]" role="presentation" />
+    <main className="relative z-[10] flex min-h-screen w-full flex-col items-center bg-transparent pt-[48px] md:pt-[68px]">
+      <div className="absolute top-[48px] z-[-1] w-screen opacity-100 md:top-[68px] ">
+        <BlitzPoolsAnimation />
+      </div>
 
-      <section className="z-[1] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
+      <section className="z-[11] flex w-fit flex-col items-center gap-4 bg-transparent px-4 pt-[60px] md:pt-[80px]">
+        <Img src={blitzPoolsLogo} customClass="max-h-[40px] max-w-[174px] mb-2" />
+
         <h1 className="text-center text-[40px] font-semibold leading-[120%] md:w-full">
-          {t("launch_pools.liquidity_to_the")}
+          {"Blazing fast launch pools"}
           <br></br>
-          <span className="text-fg-brand-primary">{t("launch_pools.power_to_the")}</span>
+          <span className="text-brand-blitz">{"High voltage opportunities."}</span>
         </h1>
         <p className="max-w-[522px] text-center font-normal text-fg-secondary lg:text-lg">
-          {t("launch_pools.provide_liquidity_subtitle")}
+          {
+            "Provide liquidity for your favourite high-risk, low-valuation tokens and lock in rewards at fixed pre-TGE prices."
+          }
         </p>
         <div className="flex flex-col items-center gap-4 pt-6">
           <span className="text-sm font-normal text-fg-primary opacity-90">{t("launch_pools.successful_lp")}</span>
@@ -66,8 +74,10 @@ const LaunchPools = () => {
             <span className="text-sm opacity-90">...and many more</span>
           </div>
         </div>
+      </section>
 
-        <div className="mt-[64px] flex w-full max-w-[1080px] flex-col items-center">
+      <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
+        <div className="flex w-full max-w-[1080px] flex-col items-center">
           <ul className="grid w-full grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {!isLoading
               ? phases?.map((phase) =>
@@ -83,4 +93,4 @@ const LaunchPools = () => {
   )
 }
 
-export default LaunchPools
+export default BlitzPools

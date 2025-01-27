@@ -28,6 +28,7 @@ import "./index.css"
 import { Buffer } from "buffer"
 import { toast } from "react-toastify"
 import LandingPage from "./pages/LandingPage"
+import BlitzPools from "./pages/BlitzPools"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -61,10 +62,10 @@ const router = createBrowserRouter([
       //   path: "/back-office",
       //   element: <BackOffice />,
       // },
-      {
-        path: "/angel-staking",
-        element: <AngelStaking />,
-      },
+      // {
+      //   path: "/angel-staking",
+      //   element: <AngelStaking />,
+      // },
       {
         path: "/launch-pools",
         errorElement: <SomethingWentWrong />,
@@ -85,9 +86,28 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/manifesto",
-        element: <Manifesto />,
+        path: "/blitz-pools",
+        errorElement: <SomethingWentWrong />,
+        element: <Outlet />,
+        children: [
+          {
+            path: ":projectId",
+            element: (
+              <ProjectDataProvider>
+                <Project />
+              </ProjectDataProvider>
+            ),
+          },
+          {
+            path: "",
+            element: <BlitzPools />,
+          },
+        ],
       },
+      // {
+      //   path: "/manifesto",
+      //   element: <Manifesto />,
+      // },
       {
         path: "/terms-of-use",
         element: <TermsOfUse />,
