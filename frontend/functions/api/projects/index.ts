@@ -79,9 +79,8 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
   const total = countResult || 0
   const totalPages = Math.ceil(total / limit)
 
-  const projects = projectsResult.map((project) =>
-    JSON.parse(project.json as string),
-  )
+  const projects = projectsResult
+    .map(project =>project.json)
     .filter(project => !(project.id || '').startsWith('hidden'))
 
   const response = {
