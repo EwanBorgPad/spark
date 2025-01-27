@@ -30,8 +30,8 @@ const navigationItems: NavigationItem[] = [
   {
     path: "/blitz-pools",
     label: "Blitz Pools",
-    activeClass: "text-blitz-yellow",
-    underlineClass: "border-b-blitz-yellow",
+    activeClass: "text-brand-blitz",
+    underlineClass: "border-brand-blitz",
   },
   {
     url: "https://docs.borgpad.com",

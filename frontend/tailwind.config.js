@@ -29,7 +29,8 @@ export default {
         "error-primary": "#3D1B16",
         "error-secondary": "#6C261B",
         "default-hover": "#131822",
-        "blitz-yellow": "#F6FF73",
+        "brand-blitz": "#F6FF73",
+        "brand-blitz-secondary": "#262716",
 
         // font colors
         fg: {
@@ -61,6 +62,7 @@ export default {
           danger: "#F97066",
           danger2: "#55160C",
           "success-primary": "#074D31",
+          blitz: "#5A5E28",
         },
 
         // other colors

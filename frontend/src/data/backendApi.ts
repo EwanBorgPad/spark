@@ -187,13 +187,16 @@ const getProject = async ({
 const getProjects = async ({
   page,
   limit,
+  projectType,
 }: {
   page: number
   limit: number
+  projectType?: ProjectModel["info"]["projectType"]
 }): Promise<GetProjectsResponse> => {
   const url = new URL(GET_PROJECT_API_URL, window.location.href)
   url.searchParams.set("page", page.toString())
   url.searchParams.set("limit", (limit || 10).toString())
+  if (projectType) url.searchParams.set("projectType", (projectType || 10).toString())
 
   const response = await fetch(url)
   const json = await response.json()

@@ -27,6 +27,7 @@ const BlitzPools = () => {
       backendApi.getProjects({
         page: 1,
         limit: 999,
+        projectType: "blitz",
       }),
     queryKey: ["getProjects", 1],
   })
@@ -63,10 +64,12 @@ const BlitzPools = () => {
         <h1 className="text-center text-[40px] font-semibold leading-[120%] md:w-full">
           {"Blazing fast launch pools"}
           <br></br>
-          <span className="text-blitz-yellow">{"Electric return opportunities"}</span>
+          <span className="text-brand-blitz">{"High voltage opportunities."}</span>
         </h1>
-        <p className="max-w-[522px] text-center font-normal lg:text-lg">
-          {t("launch_pools.provide_liquidity_subtitle")}
+        <p className="max-w-[522px] text-center font-normal text-fg-secondary lg:text-lg">
+          {
+            "Provide liquidity for your favourite high-risk, low-valuation tokens and lock in rewards at fixed pre-TGE prices."
+          }
         </p>
         <div className="flex flex-col items-center gap-4 pt-6">
           <span className="text-sm font-normal text-fg-primary opacity-90">{t("launch_pools.successful_lp")}</span>

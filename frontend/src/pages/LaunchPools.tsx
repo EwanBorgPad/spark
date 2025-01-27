@@ -26,6 +26,7 @@ const LaunchPools = () => {
       backendApi.getProjects({
         page: 1,
         limit: 999,
+        projectType: "goat",
       }),
     queryKey: ["getProjects", 1],
   })
@@ -48,7 +49,7 @@ const LaunchPools = () => {
           <br></br>
           <span className="text-fg-brand-primary">{t("launch_pools.power_to_the")}</span>
         </h1>
-        <p className="max-w-[522px] text-center font-normal lg:text-lg">
+        <p className="max-w-[522px] text-center font-normal text-fg-secondary lg:text-lg">
           {t("launch_pools.provide_liquidity_subtitle")}
         </p>
         <div className="flex flex-col items-center gap-4 pt-6">
