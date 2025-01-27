@@ -131,7 +131,7 @@ const Header = () => {
 
           <NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />
 
-          <div className="flex min-w-[286px] items-center justify-end gap-4">
+          <div className="flex items-center justify-end gap-4 md:min-w-[286px]">
             {isLandingPage ? (
               <a
                 className="hidden justify-center md:flex"
