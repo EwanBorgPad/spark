@@ -37,11 +37,11 @@
   },
   "info": {
     "claimUrl": null,
-
     "tweetUrl": null,
     "tokenContractUrl": null,
     "poolContractUrl": null,
 
+    "projectType": "blitz",
     "title": "Milan Crypto",
     "subtitle": "Anti-Slashing Liquid Staking Crypto Manic Market Making",
     "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/milan-crypto-test/avatar.png",
@@ -122,12 +122,12 @@
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2025-01-14"
+        "date": "2025-01-25"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2025-01-14"
+        "date": "2025-01-25"
       },
       {
         "id": "DISTRIBUTION_OVER",

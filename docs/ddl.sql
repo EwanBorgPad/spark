@@ -80,3 +80,20 @@ CREATE TABLE eligibility_status_snapshot (
     eligibility_status JSONB NOT NULL,
     PRIMARY KEY (address, project_id)
 )
+
+-- migration: exchange_cache
+CREATE TABLE exchange_cache (
+    base_currency TEXT NOT NULL,
+    target_currency TEXT NOT NULL,
+    
+    current_price TEXT NOT NULL,
+    quoted_from TEXT NOT NULL,
+    quoted_at TEXT NOT NULL,
+    is_pinned INTEGER NOT NULL DEFAULT FALSE,
+    raw_exchange_response JSONB NOT NULL DEFAULT '{}',
+    
+    PRIMARY KEY (base_currency, target_currency)
+);
+
+INSERT INTO exchange_cache (base_currency, target_currency, current_price, quoted_from, quoted_at)
+    VALUES ('swissborg', 'usd', 0, 'inserted-manually', CURRENT_TIMESTAMP);

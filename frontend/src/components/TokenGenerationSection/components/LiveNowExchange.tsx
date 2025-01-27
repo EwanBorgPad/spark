@@ -144,7 +144,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
     staleTime: ONE_HOUR,
     enabled: Boolean(baseCurrency),
   })
-  const raisedTokenPriceInUSD = exchangeData?.currentPrice || null
+  const raisedTokenPriceInUSD = Number(exchangeData?.currentPrice) || null
   const tokenPriceInUSD = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0
   const tokenPriceInRaisedToken = !raisedTokenPriceInUSD ? null : tokenPriceInUSD / raisedTokenPriceInUSD
 
