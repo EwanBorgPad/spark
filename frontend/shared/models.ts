@@ -116,7 +116,7 @@ export const projectSchema = z.object({
     poolContractUrl: optional(z.string()),
 
     ///// project metadata info /////
-    // TODO @removeDefault default is just for migration period
+    // TODO @goatDefault default is just for migration period
     projectType: ProjectTypeSchema.default('goat'),
     title: z.string().min(1),
     subtitle: z.string().min(1),

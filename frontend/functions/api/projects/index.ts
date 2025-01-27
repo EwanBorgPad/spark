@@ -48,7 +48,10 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 type GetProjectsFromDbArgs = z.infer<typeof requestSchema>
 const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbArgs): Promise<GetProjectsResponse | null> => {
 
-  const { page, limit, projectType } = args
+  const { page, limit } = args
+
+  // TODO @goatDefault
+  const projectType = args.projectType ?? 'goat'
 
   const offset = (page - 1) * limit
 
