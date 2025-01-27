@@ -44,7 +44,14 @@ const BlitzPools = () => {
   return (
     <main className="relative z-[10] flex min-h-screen w-full flex-col items-center bg-transparent pt-[48px] md:pt-[68px]">
       <div className="absolute top-[48px] z-[-1] w-screen opacity-100 md:top-[68px] ">
-        <BlitzPoolsAnimation />
+        <video
+          src="https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/unicorn-animation/sample3%20(online-video-cutter__78pct_smaller.mp4"
+          className="left-0 z-[101] h-[642px] w-full object-cover opacity-50 md:h-auto"
+          autoPlay
+          loop
+          muted
+          playsInline
+        />
       </div>
 
       <section className="z-[11] flex w-fit flex-col items-center gap-4 bg-transparent px-4 pt-[60px] md:pt-[80px]">
