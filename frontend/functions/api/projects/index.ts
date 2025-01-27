@@ -1,12 +1,20 @@
-import { GetProjectsResponse, projectSchema } from "../../../shared/models"
+import { GetProjectsResponse, projectSchema, ProjectTypeSchema } from "../../../shared/models"
 import {
   hasAdminAccess,
   jsonResponse,
   reportError,
 } from "../cfPagesFunctionsUtils"
 import { projectTable } from "../../../shared/drizzle-schema"
-import { eq, sql } from "drizzle-orm"
-import { drizzle } from "drizzle-orm/d1"
+import { count, eq, sql } from "drizzle-orm"
+import { drizzle, DrizzleD1Database } from "drizzle-orm/d1"
+import { z } from 'zod'
+
+
+const requestSchema = z.object({
+  page: z.coerce.number().int().default(1),
+  limit: z.coerce.number().int().default(9),
+  projectType: ProjectTypeSchema.optional(),
+})
 
 type ENV = {
   DB: D1Database
@@ -19,19 +27,18 @@ type ENV = {
  * @param ctx
  */
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
-  const db = ctx.env.DB
+  const db = drizzle(ctx.env.DB, { logger: true })
   try {
     const url = new URL(ctx.request.url)
-    const page = parseInt(url.searchParams.get("page") || "1")
-    const limit = parseInt(url.searchParams.get("limit") || "9")
 
-    if (page < 1 || limit < 1) {
-      return new Response("Invalid pagination parameters", { status: 400 })
-    }
+    const { data: requestData, error } = requestSchema.safeParse(new URL(ctx.request.url).searchParams)
 
-    const offset = (page - 1) * limit
+    console.log({ requestData })
 
-    const projects = await getProjectsFromDB(db, page, limit, offset)
+    if (!requestData || error) 
+      return jsonResponse({ message: 'Bad request!', error }, 400)
+
+    const projects = await getProjectsFromDB(db, requestData)
 
     return jsonResponse(projects, 200)
   } catch (e) {
@@ -40,26 +47,39 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   }
 }
 
-const getProjectsFromDB = async (
-  db: D1Database,
-  page: number,
-  limit: number,
-  offset: number,
-): Promise<GetProjectsResponse | null> => {
+type GetProjectsFromDbArgs = z.infer<typeof requestSchema>
+const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbArgs): Promise<GetProjectsResponse | null> => {
 
-  const selectProjects = await db
-    .prepare(`SELECT * FROM project LIMIT ? OFFSET ?`)
-    .bind(limit, offset)
-    .all()
+  const { page, limit, projectType } = args
 
-  const selectCount = (await db
-    .prepare(`SELECT COUNT(*) AS total FROM project`)
-    .first()) as { total: number }
+  const offset = (page - 1) * limit
 
-  const total = selectCount?.total || 0
+  const projectsQuery = db
+    .select()
+    .from(projectTable)
+    .limit(limit)
+    .offset(offset)
+  
+  const countQuery = db
+    .select({ count: count() })
+    .from(projectTable)
+
+  if (projectType) {
+    projectsQuery.where(sql`json -> info ->> 'projectType' = ${projectType}`)
+    countQuery.where(sql`json -> info ->> 'projectType' = ${projectType}`)
+  }
+
+  console.log('here')
+
+  const projectsResult = await projectsQuery.all()
+  const countResult = (await countQuery.get()).count
+
+  console.log('here2')
+
+  const total = countResult || 0
   const totalPages = Math.ceil(total / limit)
 
-  const projects = selectProjects.results.map((project) =>
+  const projects = projectsResult.map((project) =>
     JSON.parse(project.json as string),
   )
     .filter(project => !(project.id || '').startsWith('hidden'))
@@ -75,6 +95,10 @@ const getProjectsFromDB = async (
   }
   return response
 }
+
+////////////////////////////////////////////////
+////////////// CREATE PROJECT API //////////////
+////////////////////////////////////////////////
 
 /**
  * Post request handler - creates a project
