@@ -32,6 +32,8 @@
     "tweetUrl": null,
     "tokenContractUrl": null,
     "poolContractUrl": null,
+
+    "projectType": "goat",
     "title": "Ambient Network",
     "subtitle": "Data for a Cleaner World",
     "logoUrl": "",

@@ -32,6 +32,8 @@
     "tweetUrl": null,
     "tokenContractUrl": null,
     "poolContractUrl": null,
+
+    "projectType": "goat",
     "title": "Fitchin",
     "subtitle": "The Home of Esports in LatAm",
     "logoUrl": "",

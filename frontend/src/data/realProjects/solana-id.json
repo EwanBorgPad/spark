@@ -37,11 +37,11 @@
   },
   "info": {
     "claimUrl": "https://app.streamflow.finance/airdrops",
-
     "tweetUrl": "https://x.com/borgpadhq/status/1869813497384874467?s=46",
     "tokenContractUrl": "https://jup.ag/swap/SOL-SoLiDMWBct5TurG1LNcocemBK7QmTn4P33GSrRrcd2n",
     "poolContractUrl": "https://raydium.io/liquidity/increase/?mode=add&pool_id=4VLWQsgWF5WcC7pG9huCT3domqzhYVonY5GvcbHduCWv",
 
+    "projectType": "goat",
     "title": "Solana ID",
     "subtitle": "Solana's Digital Identity Layer",
     "logoUrl": "https://imgcdn.stablediffusionweb.com/2024/4/19/5acb9020-70dd-42c5-afca-3fe165e87d2c.jpg",

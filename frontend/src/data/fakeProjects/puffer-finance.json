@@ -37,11 +37,11 @@
   },
   "info": {
     "claimUrl": null,
-
     "tweetUrl": null,
     "tokenContractUrl": null,
     "poolContractUrl": null,
 
+    "projectType": "goat",
     "title": "Puffer Finance",
     "subtitle": "Anti-Slashing Liquid Staking",
     "logoUrl": "/images/puffer-finance/avatar.png",

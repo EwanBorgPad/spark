@@ -32,6 +32,8 @@
     "tweetUrl": null,
     "tokenContractUrl": null,
     "poolContractUrl": null,
+
+    "projectType": "goat",
     "title": "Intercellar",
     "subtitle": "The Tokenisation of Good Taste.",
     "logoUrl": "",
