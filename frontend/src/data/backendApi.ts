@@ -9,6 +9,7 @@ import {
   MyRewardsResponse,
   ProjectModel,
   projectSchema,
+  ProjectTypeSchema,
   SaleResultsResponse,
   TokenAmountModel,
 } from "../../shared/models.ts"
@@ -196,7 +197,7 @@ const getProjects = async ({
   const url = new URL(GET_PROJECT_API_URL, window.location.href)
   url.searchParams.set("page", page.toString())
   url.searchParams.set("limit", (limit || 10).toString())
-  if (projectType) url.searchParams.set("projectType", (projectType || 10).toString())
+  if (projectType) url.searchParams.set("projectType", projectType || "goat")
 
   const response = await fetch(url)
   const json = await response.json()

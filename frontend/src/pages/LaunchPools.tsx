@@ -28,7 +28,7 @@ const LaunchPools = () => {
         limit: 999,
         projectType: "goat",
       }),
-    queryKey: ["getProjects", 1],
+    queryKey: ["getProjects", "goat"],
   })
 
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)

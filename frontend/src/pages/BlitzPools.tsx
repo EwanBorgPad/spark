@@ -15,6 +15,7 @@ import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
 import Img from "@/components/Image/Img"
 import { useTranslation } from "react-i18next"
+import BlitzPoolsAnimation from "@/components/Animated/BlitzPoolsAnimation"
 
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
@@ -29,7 +30,7 @@ const BlitzPools = () => {
         limit: 999,
         projectType: "blitz",
       }),
-    queryKey: ["getProjects", 1],
+    queryKey: ["getProjects", "blitz"],
   })
 
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
@@ -42,20 +43,8 @@ const BlitzPools = () => {
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full flex-col items-center bg-transparent pt-[48px] md:pt-[68px]">
-      {/* <img
-        src={blitzPoolsBg}
-        className="absolute top-[48px] z-[-1] w-full opacity-55 md:top-[68px]"
-        role="presentation"
-      /> */}
-
       <div className="absolute top-[48px] z-[-1] w-screen opacity-100 md:top-[68px] ">
-        <iframe
-          src="https://unicorn.studio/embed/VCrtNOf57Pw8t4QHWIm5"
-          width="100%"
-          height="642px"
-          loading="lazy"
-          className="z-[101] opacity-50"
-        ></iframe>
+        <BlitzPoolsAnimation />
       </div>
 
       <section className="z-[11] flex w-fit flex-col items-center gap-4 bg-transparent px-4 pt-[60px] md:pt-[80px]">
