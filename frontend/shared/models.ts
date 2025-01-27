@@ -82,6 +82,8 @@ const TokenDataSchema = z.object({
   coinGeckoName: optional(z.string()),
 })
 
+export const ProjectTypeSchema = z.enum([ 'goat', 'blitz' ])
+
 export const projectSchema = z.object({
   id: idSchema(),
   config: z.object({
@@ -109,12 +111,13 @@ export const projectSchema = z.object({
     /// following 4 fields are typically added AFTER the sale
     // link for claiming rewards (currently doing airdrops with streamflow, but could be anything)
     claimUrl: optional(z.string()),
-
     tweetUrl: optional(z.string()),
     tokenContractUrl: optional(z.string()),
     poolContractUrl: optional(z.string()),
 
     ///// project metadata info /////
+    // TODO @goatDefault default is just for migration period
+    projectType: ProjectTypeSchema.default('goat'),
     title: z.string().min(1),
     subtitle: z.string().min(1),
     logoUrl: urlSchema(),

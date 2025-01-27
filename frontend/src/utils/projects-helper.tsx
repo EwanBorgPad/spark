@@ -4,6 +4,7 @@ import { expandTimelineDataInfo } from "./timeline"
 import { getCurrentTgeEvent } from "./getCurrentTgeEvent"
 import { ProjectModel } from "shared/models"
 import i18n from "@/i18n/i18n"
+import { twMerge } from "tailwind-merge"
 
 export type ExpandedProject = ProjectModel & {
   additionalData: {
@@ -16,11 +17,13 @@ export type ExpandedProject = ProjectModel & {
 
 export type EventTypeId = ExpandedTimelineEventType["id"]
 
-export const generateAdditionalEventData = (tgeEvent: ExpandedTimelineEventType) => {
+export const generateAdditionalEventData = (tgeEvent: ExpandedTimelineEventType, project: ProjectModel) => {
   const fallbackText = i18n.t("launch_pools.at_tbd")
   const getEventDateString = (date: Date | null) => {
     return date ? formatDateMonthDateHours(date) : fallbackText
   }
+
+  const isBlitz = project.info.projectType === "blitz"
 
   switch (tgeEvent.id) {
     case "UPCOMING": {
@@ -34,7 +37,9 @@ export const generateAdditionalEventData = (tgeEvent: ExpandedTimelineEventType)
     case "REGISTRATION_OPENS": {
       const text = getEventDateString(tgeEvent.nextEventDate)
       return {
-        badgeClassName: "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
+        badgeClassName: isBlitz
+          ? "text-brand-blitz bg-brand-blitz-secondary border-bd-blitz"
+          : "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
         endMessage: i18n.t("launch_pools.whitelist_closes", { text }),
         badgeLabel: "Whitelisting",
       }
@@ -42,7 +47,9 @@ export const generateAdditionalEventData = (tgeEvent: ExpandedTimelineEventType)
     case "SALE_OPENS": {
       const text = getEventDateString(tgeEvent.nextEventDate)
       return {
-        badgeClassName: "text-fg-alt-default border-bd-secondary bg-brand-primary",
+        badgeClassName: isBlitz
+          ? "bg-brand-blitz text-fg-alt-default border-brand-blitz"
+          : "text-fg-alt-default border-bd-secondary bg-brand-primary",
         endMessage: i18n.t("launch_pools.sale_closes", { text }),
         badgeLabel: "Live Now",
       }
@@ -50,7 +57,9 @@ export const generateAdditionalEventData = (tgeEvent: ExpandedTimelineEventType)
     case "SALE_CLOSES": {
       const text = getEventDateString(tgeEvent.nextEventDate)
       return {
-        badgeClassName: "text-fg-primary border-bd-primary bg-default",
+        badgeClassName: isBlitz
+          ? "text-brand-blitz bg-brand-blitz-secondary border-bd-blitz"
+          : "text-fg-primary border-bd-primary bg-default",
         endMessage: i18n.t("launch_pools.reward_distribution_start", { text }),
         badgeLabel: "Sale Over",
       }
@@ -58,7 +67,9 @@ export const generateAdditionalEventData = (tgeEvent: ExpandedTimelineEventType)
     case "REWARD_DISTRIBUTION": {
       const text = getEventDateString(tgeEvent.nextEventDate)
       return {
-        badgeClassName: "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
+        badgeClassName: isBlitz
+          ? "text-brand-blitz bg-brand-blitz-secondary border-bd-blitz"
+          : "text-fg-brand-primary border-bd-brand-secondary bg-tertiary",
         endMessage: i18n.t("launch_pools.reward_distribution_ends", { text }),
         badgeLabel: "Reward Distribution",
       }
@@ -66,7 +77,9 @@ export const generateAdditionalEventData = (tgeEvent: ExpandedTimelineEventType)
     case "DISTRIBUTION_OVER": {
       const text = getEventDateString(tgeEvent.date)
       return {
-        badgeClassName: "text-fg-primary border-bd-primary bg-default",
+        badgeClassName: isBlitz
+          ? "text-brand-blitz bg-default border-bd-blitz"
+          : "text-fg-primary border-bd-primary bg-default",
         endMessage: i18n.t("launch_pools.reward_distribution_ended", { text }),
         badgeLabel: "Closed",
       }
@@ -121,13 +134,16 @@ const sortProjectsByPhases = (expandedProjects: ExpandedProject[]) => {
     const eventConfig = event[1]
     const projectsInPhase = expandedProjects.filter((project) => project.additionalData.currentEvent.id === eventId)
     if (eventConfig.customSort) {
-      const customSorted = [...eventConfig.customSort]
+      const customArrayStart = [...eventConfig.customSort]
         .map((orderId) => {
           return projectsInPhase.find((item) => item.id === orderId)
         })
         .filter((project) => !!project)
+      const remainingProjects = projectsInPhase.filter((item) => !eventConfig.customSort?.includes(item.id))
+      const restOfArray = sortByReferencedDate(remainingProjects, eventConfig)
+      const customArray = [...customArrayStart, ...restOfArray]
 
-      return sortByReferencedDate(customSorted, eventConfig)
+      return sortByReferencedDate(customArray, eventConfig)
     } else {
       return sortByReferencedDate(projectsInPhase, eventConfig)
     }
@@ -139,7 +155,7 @@ export const sortProjectsPerStatus = (projects: ProjectModel[]): ExpandedProject
     const expandedTimeline = expandTimelineDataInfo(project.info.timeline)
     const currentEvent = getCurrentTgeEvent(expandedTimeline)
 
-    const { endMessage, badgeClassName, badgeLabel } = generateAdditionalEventData(currentEvent)
+    const { endMessage, badgeClassName, badgeLabel } = generateAdditionalEventData(currentEvent, project)
     const additionalData = {
       currentEvent,
       endMessage,

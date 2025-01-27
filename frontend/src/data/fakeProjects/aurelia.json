@@ -37,11 +37,11 @@
   },
   "info": {
     "claimUrl": null,
-
     "tweetUrl": null,
     "tokenContractUrl": null,
     "poolContractUrl": null,
 
+    "projectType": "goat",
     "title": "Aurelia",
     "subtitle": "Data ownership for the decentralized digital age",
     "logoUrl": "https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/images/aurelia/project-logo-867281999",
