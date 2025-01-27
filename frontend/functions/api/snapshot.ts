@@ -15,6 +15,7 @@ const requestSchema = z.object({
 
 type ENV = {
   DB: D1Database
+  SOLANA_RPC_URL: string
   ADMIN_API_KEY_HASH: string
 }
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
@@ -46,8 +47,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const rpcUrl = getRpcUrlForCluster(ctx.env.SOLANA_RPC_URL, project.json.config.cluster)
 
     // load addresses
-    const addresses = (await db.run(sql`SELECT address FROM user WHERE address NOT IN (SELECT address FROM eligibility_status_snapshot WHERE project_id = ${projectId})`))
-      .results.map(obj => obj.address) as string[]
+    const addressesQueryResult = (await db
+      .run(sql`SELECT address FROM user WHERE address NOT IN (SELECT address FROM eligibility_status_snapshot WHERE project_id = ${projectId})`)
+    ).results as { address: string}[]
+    const addresses = addressesQueryResult.map(obj => obj.address)
 
     const paginatedAddresses = addresses.slice(offset, limit)
 

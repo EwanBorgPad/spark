@@ -1,11 +1,16 @@
 import {
   AcceptTermsRequest,
+  DepositStatus,
   GetExchangeResponse,
   GetPresignedUrlResponse,
   GetProjectsResponse,
-  InvestmentIntentRequest, InvestmentIntentSummary, MyRewardsResponse,
+  InvestmentIntentRequest,
+  InvestmentIntentSummary,
+  MyRewardsResponse,
   ProjectModel,
-  projectSchema, SaleResultsResponse, TokenAmountModel,
+  projectSchema,
+  SaleResultsResponse,
+  TokenAmountModel,
 } from "../../shared/models.ts"
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
 
@@ -82,13 +87,6 @@ const getDeposits = async ({ address, projectId }: GetDepositsRequest): Promise<
   return json
 }
 
-// @TODO move to shared folder
-type DepositStatus = {
-  amountDeposited: TokenAmountModel
-  minAmountAllowed: TokenAmountModel
-  maxAmountAllowed: TokenAmountModel
-  startTime: Date
-}
 const getDepositStatus = async ({ address, projectId }: GetDepositsRequest): Promise<DepositStatus> => {
   const url = new URL(GET_DEPOSIT_STATUS_URL, window.location.href)
   url.searchParams.set("address", address)

@@ -1,5 +1,5 @@
 import { z, ZodTypeAny } from "zod"
-import { TierSchema } from "./eligibilityModel.ts"
+import { TierSchema } from "./eligibilityModel"
 /**
  * @deprecated deprecate , use drizzle
  * UserModel, user table in the database.
@@ -160,10 +160,12 @@ export type CacheStoreModel = {
 export type GetExchangeResponse = {
   baseCurrency: string
   targetCurrency: string
-  currentPrice: number
-  fullyDilutedValuation: number
+  
+  currentPrice: string
+  
   quotedFrom?: string
-  cache?: unknown
+  quotedAt?: string
+  rawExchangeResponse?: unknown
 }
 export type GetPresignedUrlResponse = {
   signedUrl: string
@@ -270,4 +272,11 @@ export type SaleResults = {
   sellOutPercentage: number
   marketCap: number
   fdv: number
+}
+
+export type DepositStatus = {
+  amountDeposited: TokenAmountModel
+  minAmountAllowed: TokenAmountModel
+  maxAmountAllowed: TokenAmountModel
+  startTime: Date
 }

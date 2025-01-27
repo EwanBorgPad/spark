@@ -146,6 +146,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
 
         tierQuestsWithCompletion.push({
           ...quest,
+          // @ts-expect-error TS2353: Object literal may only specify known properties, and 'holdTokenType' does not exist in type
           holdTokenType,
           holdingAmount: fungibles[quest.tokenMintAddress]?.uiAmount ?? 0,
           isCompleted: isOwner,

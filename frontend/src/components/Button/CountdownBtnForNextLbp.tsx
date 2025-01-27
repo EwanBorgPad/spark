@@ -6,9 +6,7 @@ import { backendApi } from "@/data/backendApi"
 import Text from "@/components/Text"
 import { Link } from "react-router-dom"
 
-const projectId = "moemate"
-
-const ActiveLaunchPoolBtn = () => {
+const CountdownBtnForNextLbp = ({ projectId }: { projectId: string }) => {
   const { data: projectData, isLoading } = useQuery({
     queryFn: () => backendApi.getProject({ projectId }),
     queryKey: ["backendApi", "getProject", projectId],
@@ -25,7 +23,7 @@ const ActiveLaunchPoolBtn = () => {
   return (
     <Link to={`/launch-pools/${projectId}`}>
       <div className="relative overflow-hidden rounded-[13px] bg-[#abff73]/25 p-[2px]">
-        <div className="animated-conic-gradient animate-rotate-border absolute z-[-1]" />
+        <div className="animated-conic-gradient absolute z-[-1] animate-rotate-border" />
         <div className="z-[10] flex h-[40px] items-center gap-2 rounded-xl bg-[#16231e] p-3">
           <Img src={projectData?.config.launchedTokenData.iconUrl} size="6" isFetchingLink={isLoading} isRounded />
           <Text text={projectData?.info.title} isLoading={isLoading} className="text-nowrap text-sm" />
@@ -39,5 +37,4 @@ const ActiveLaunchPoolBtn = () => {
     </Link>
   )
 }
-
-export default ActiveLaunchPoolBtn
+export default CountdownBtnForNextLbp

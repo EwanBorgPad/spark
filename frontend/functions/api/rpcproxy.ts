@@ -8,7 +8,7 @@ const allowedMethods = [
   "getLatestBlockhash",
   "getMinimumBalanceForRentExemption",
   'sendTransaction'
-] as const
+]
 
 const RpcSchema = z.object({
   id: z.string(),
@@ -53,7 +53,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     })
 
     const rpcResponse = await fetch(request)
-    const responseJson = await rpcResponse.json()
+    const responseJson = await rpcResponse.json() as Record<string, unknown>
     const response = {
       cluster,
       ...responseJson,

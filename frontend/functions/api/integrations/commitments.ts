@@ -6,7 +6,7 @@ import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 import { userTable } from "../../../shared/drizzle-schema"
 
 type ENV = {
-  DB: DrizzleD1Database
+  DB: D1Database
   INTEGRATIONS_API_KEY: string
 }
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {

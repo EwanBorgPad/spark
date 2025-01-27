@@ -21,7 +21,7 @@ import { FinalSnapshotTaken } from "@/components/EligibilitySection/FinalSnapsho
 
 export const EligibilityTiersSection = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
-  const { address, walletState } = useWalletContext()
+  const { address, isWalletConnected } = useWalletContext()
   const { projectId } = useParams()
 
   const { data: eligibilityStatus, isFetching } = useQuery({
@@ -34,10 +34,7 @@ export const EligibilityTiersSection = ({ className }: { className?: string }) =
     staleTime: 1000 * 60 * 60,
   })
 
-  // @TODO - replace checkup below with more reliable source of data
-  if (walletState !== "CONNECTED") return null
-
-  const eligibilityTierId = eligibilityStatus?.eligibilityTier?.id ? eligibilityStatus.eligibilityTier.id : null
+  if (!isWalletConnected) return null
 
   return (
     <section id="tiersSection" className={className}>
@@ -72,14 +69,14 @@ export const EligibilityTiersSection = ({ className }: { className?: string }) =
           <TierSkeletonContainer />
         )}
       </div>
-      <FinalSnapshotTaken className='mt-2' />
+      <FinalSnapshotTaken className="mt-2" />
     </section>
   )
 }
 
 export const EligibilityCompliancesSection = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
-  const { address, walletState } = useWalletContext()
+  const { address, isWalletConnected } = useWalletContext()
   const { projectId } = useParams()
 
   const { data: eligibilityStatus, isLoading } = useQuery({
@@ -92,8 +89,7 @@ export const EligibilityCompliancesSection = ({ className }: { className?: strin
     staleTime: 1000 * 60 * 60,
   })
 
-  // @TODO - replace checkup below with more reliable source of data
-  if (walletState !== "CONNECTED") return null
+  if (!isWalletConnected) return null
 
   const skeletonCompliances = Array.from({ length: 2 }, (_, i) => i)
   const complianceQuests = eligibilityStatus?.compliances ? sortByCompletionStatus(eligibilityStatus.compliances) : null

@@ -35,7 +35,7 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
     queryKey: ["getExchange", baseCurrency, targetCurrency],
     enabled: Boolean(baseCurrency),
   })
-  const raisedTokenPriceInUsd = data?.currentPrice || 0
+  const raisedTokenPriceInUsd = Number(data?.currentPrice) || 0
 
   const { data: getDepositsData } = useQuery({
     queryFn: () => {
@@ -91,7 +91,7 @@ export const PastOrder = ({
   uiAmount,
   raisedTokenPriceInUsd,
 }: PastOrderProps) => {
-  const borgValueInUsd = formatCurrencyAmount(raisedTokenPriceInUsd * Number(uiAmount), { withDollarSign: true })
+  const raisedTokenValueInUsd = formatCurrencyAmount(raisedTokenPriceInUsd * Number(uiAmount), { withDollarSign: true })
   const { projectData } = useProjectDataContext()
 
   return (
@@ -105,7 +105,7 @@ export const PastOrder = ({
         <div className="flex items-center gap-1">
           <span className="text-base font-medium">{formatCurrencyAmount(uiAmount)}</span>
           <span>{projectData?.config.raisedTokenData.ticker}</span>
-          <Img size={'4'} src={projectData?.config.raisedTokenData.iconUrl} />
+          <Img size={"4"} src={projectData?.config.raisedTokenData.iconUrl} />
         </div>
         <div className="relative h-6 w-6">
           <ExternalLink.Icon
@@ -115,7 +115,7 @@ export const PastOrder = ({
         </div>
       </div>
       <div className="flex w-full items-center justify-between text-sm text-fg-tertiary">
-        <span>{borgValueInUsd}</span>
+        <span>{raisedTokenValueInUsd}</span>
         <span>{formatDateForDisplay(createdAt)}</span>
       </div>
     </div>

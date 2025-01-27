@@ -1,4 +1,4 @@
-import { Commitment } from "./SolanaWeb3.ts"
+import { Commitment } from "./SolanaWeb3"
 /**
  * Solana public RPC endpoint.
  * Should only be used while testing/developing.

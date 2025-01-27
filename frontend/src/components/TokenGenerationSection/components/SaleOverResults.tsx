@@ -75,8 +75,6 @@ const SaleOverResults = () => {
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
-
-        {/* @TODO - Check: FDV (fully diluted value) is fixed from the beginning. Check if this is in every project */}
         <Text
           text={formatCurrencyAmount(projectData?.config.fdv, { withDollarSign: true, customDecimals: 0 })}
           isLoading={isLoading}

@@ -33,7 +33,7 @@ const WhitelistingContent = () => {
     queryKey: ["getExchange", baseCurrency, targetCurrency],
     enabled: Boolean(baseCurrency),
   })
-  const raisedTokenPriceInUsd = data?.currentPrice || null
+  const raisedTokenPriceInUsd = Number(data?.currentPrice) || null
   const launchedTokenPriceInUsd = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0
   const launchedTokenPriceInRaisedToken = !raisedTokenPriceInUsd ? null : launchedTokenPriceInUsd / raisedTokenPriceInUsd
 
@@ -56,16 +56,15 @@ const WhitelistingContent = () => {
     >
       <div className="flex w-full flex-col gap-2">
         <div className="flex w-full items-center justify-center gap-2 text-base">
-          <Img size={'4'} src={projectData?.config.raisedTokenData.iconUrl} />
+          <Img size={"4"} src={projectData?.config.raisedTokenData.iconUrl} />
           <p className="flex gap-1">
             <span>{`1 ${projectData?.config.raisedTokenData.ticker} (${formatCurrencyAmount(raisedTokenPriceInUsd, { withDollarSign: true, customDecimals: 2 })})`}</span>
           </p>
           <span className="text-fg-tertiary">Gives you:</span>
         </div>
         <TokenRewards
-          borgCoinInput={"1"}
-          tokenPriceInBORG={launchedTokenPriceInRaisedToken}
-          borgPriceInUSD={raisedTokenPriceInUsd}
+          raisedTokenInput={"1"}
+          raisedTokenPriceInUSD={raisedTokenPriceInUsd}
           tokenPriceInUSD={launchedTokenPriceInUsd}
         />
       </div>

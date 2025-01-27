@@ -1,4 +1,4 @@
-import { COMMITMENT_LEVEL } from "./constants.ts"
+import { COMMITMENT_LEVEL } from "./constants"
 
 type GetSplTokenBalanceArgs = {
   address: string
