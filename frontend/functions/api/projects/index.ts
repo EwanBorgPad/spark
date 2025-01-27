@@ -29,11 +29,9 @@ type ENV = {
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
   try {
-    const url = new URL(ctx.request.url)
+    const requestDataObject = Object.fromEntries(new URL(ctx.request.url).searchParams)
 
-    const { data: requestData, error } = requestSchema.safeParse(new URL(ctx.request.url).searchParams)
-
-    console.log({ requestData })
+    const { data: requestData, error } = requestSchema.safeParse(requestDataObject)
 
     if (!requestData || error) 
       return jsonResponse({ message: 'Bad request!', error }, 400)
@@ -65,16 +63,12 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
     .from(projectTable)
 
   if (projectType) {
-    projectsQuery.where(sql`json -> info ->> 'projectType' = ${projectType}`)
-    countQuery.where(sql`json -> info ->> 'projectType' = ${projectType}`)
+    projectsQuery.where(sql`json -> 'info' ->> 'projectType' = ${projectType}`)
+    countQuery.where(sql`json -> 'info' ->> 'projectType' = ${projectType}`)
   }
-
-  console.log('here')
 
   const projectsResult = await projectsQuery.all()
   const countResult = (await countQuery.get()).count
-
-  console.log('here2')
 
   const total = countResult || 0
   const totalPages = Math.ceil(total / limit)
