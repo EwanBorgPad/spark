@@ -150,7 +150,7 @@ const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
         }),
         description: "",
         // TODO @productionPush
-        additionalElement: <HoldTokenBtn tokenName={quest.tokenName} />,
+        additionalElement: <HoldTokenBtn tokenName={quest.tokenName} tokenMintAddress={quest.tokenMintAddress} />,
       }
     if (type === "WHITELIST")
       return {
@@ -187,15 +187,14 @@ const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
     </div>
   )
 }
-const HoldTokenBtn = ({ tokenName }: { tokenName: string }) => {
+type HoldTokenBtnProps = {
+  tokenName: string
+  tokenMintAddress: string
+}
+const HoldTokenBtn = ({ tokenName, tokenMintAddress }: HoldTokenBtnProps) => {
   const { t } = useTranslation()
 
-  const tokens = ['BORG', 'MOE']
-
-  if (!tokens.includes(tokenName))
-    return null
-
-  const swapLink = `https://jup.ag/swap/SOL-${tokenName}`
+  const swapLink = `https://jup.ag/swap/SOL-${tokenMintAddress}`
 
   return (
     <div className="mt-2 flex justify-start">
