@@ -43,12 +43,11 @@ export const CurrencyInputField = ({
   )
 
   const onChangeHandler = (newValue: string | undefined) => {
-    onChange(newValue)
     if (!newValue) return
     if (maxValue && +newValue > maxValue) {
       onChange(maxValue.toString())
     } else {
-      onChange(newValue.toString())
+      onChange(newValue)
     }
   }
 
