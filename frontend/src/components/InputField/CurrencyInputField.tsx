@@ -13,6 +13,7 @@ type CurrencyInputFieldProps = HTMLProps<"input"> & {
   onChange: (value: string | undefined) => void
   value: number | undefined
   placeholder?: string
+  maxValue: number | undefined
 }
 
 export const CurrencyInputField = ({
@@ -27,6 +28,7 @@ export const CurrencyInputField = ({
   label,
   placeholder,
   maxLength,
+  maxValue,
   ...props
 }: CurrencyInputFieldProps) => {
   const containerClassName = twMerge(
@@ -39,6 +41,15 @@ export const CurrencyInputField = ({
     error && "ring-1 ring-bd-danger focus-within:ring-bd-danger",
     inputClassName,
   )
+
+  const onChangeHandler = (newValue: string | undefined) => {
+    if (!newValue) return
+    if (maxValue && +newValue > maxValue) {
+      onChange(maxValue.toString())
+    } else {
+      onChange(newValue)
+    }
+  }
 
   return (
     <div className={containerClassName}>
@@ -55,7 +66,7 @@ export const CurrencyInputField = ({
             "h-[40px] w-full max-w-[360px] bg-transparent px-2 py-2.5 text-sm placeholder:text-white/30 focus:outline-none"
           }
           decimalsLimit={6}
-          onValueChange={onChange}
+          onValueChange={onChangeHandler}
         />
       </div>
       {error && <span className="-mt-1 text-xs text-fg-error-primary">{error}</span>}

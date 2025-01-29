@@ -115,13 +115,13 @@ type SortPhaseConfigType = {
 }
 
 const sortConfig: Record<EventTypeId, SortPhaseConfigType> = {
+  REGISTRATION_OPENS: { referencedDate: "nextEventDate", order: "ascending" },
+  SALE_OPENS: { referencedDate: "nextEventDate", order: "ascending" },
   UPCOMING: {
     referencedDate: "nextEventDate",
     order: "ascending",
     customSort: ["ambient-network", "intercellar", "fitchin"],
   },
-  REGISTRATION_OPENS: { referencedDate: "nextEventDate", order: "ascending" },
-  SALE_OPENS: { referencedDate: "nextEventDate", order: "ascending" },
   SALE_CLOSES: { referencedDate: "nextEventDate", order: "ascending" },
   REWARD_DISTRIBUTION: { referencedDate: "nextEventDate", order: "descending" },
   DISTRIBUTION_OVER: { referencedDate: "nextEventDate", order: "ascending" },

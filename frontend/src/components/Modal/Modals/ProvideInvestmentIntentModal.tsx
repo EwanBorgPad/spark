@@ -11,19 +11,21 @@ import { useParams } from "react-router-dom"
 import { InvestmentIntentRequest } from "../../../../shared/models.ts"
 import { Badge } from "@/components/Badge/Badge.tsx"
 import { toast } from "react-toastify"
+import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 
 type ProvideInvestmentIntentModalProps = {
   onClose: () => void
 }
-const ProvideInvestmentIntentModal = ({
-  onClose,
-}: ProvideInvestmentIntentModalProps) => {
+const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentIntentModalProps) => {
   const { t } = useTranslation()
   const { address, signMessage } = useWalletContext()
+  const { projectData } = useProjectDataContext()
   const { projectId } = useParams()
   const queryClient = useQueryClient()
 
   const [amount, setAmount] = useState<null | number>(null)
+
+  const maxInvestment = projectData?.info.tiers[0].benefits.maxInvestment || 0
 
   const { data: investmentSummaryData } = useQuery({
     queryFn: () =>
@@ -85,8 +87,9 @@ const ProvideInvestmentIntentModal = ({
               maxLength={12}
               containerClassName="max-w-[999px]"
               inputClassName="bg-emphasis text-white"
-              placeholder={t("investment.intent.quest.placeholder")}
+              placeholder={`Enter amount in USDC (e.g. ${maxInvestment})`}
               value={amount ?? undefined}
+              maxValue={Number(maxInvestment)}
               onChange={(e) => setAmount(Number(e) || 0)}
             />
           </div>
