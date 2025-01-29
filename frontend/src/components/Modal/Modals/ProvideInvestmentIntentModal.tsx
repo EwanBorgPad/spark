@@ -90,7 +90,7 @@ const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentIntentModalP
               placeholder={`Enter amount in USDC (e.g. ${maxInvestment})`}
               value={amount ?? undefined}
               maxValue={Number(maxInvestment)}
-              onChange={(e) => setAmount(Number(e) || 0)}
+              onChange={(e) => setAmount(e ? Number(e) : null)}
             />
           </div>
 

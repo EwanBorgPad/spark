@@ -44,7 +44,7 @@ export const CurrencyInputField = ({
 
   const onChangeHandler = (newValue: string | undefined) => {
     if (!newValue) {
-      onChange("")
+      onChange(undefined)
       return
     }
     if (maxValue && +newValue > maxValue) {
@@ -53,6 +53,8 @@ export const CurrencyInputField = ({
       onChange(newValue)
     }
   }
+
+  console.log(value)
 
   return (
     <div className={containerClassName}>
@@ -69,6 +71,7 @@ export const CurrencyInputField = ({
             "h-[40px] w-full max-w-[360px] bg-transparent px-2 py-2.5 text-sm placeholder:text-white/30 focus:outline-none"
           }
           decimalsLimit={6}
+          // onValueChange={(e) => console.log(e)}
           onValueChange={onChangeHandler}
         />
       </div>

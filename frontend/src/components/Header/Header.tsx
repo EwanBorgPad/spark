@@ -14,6 +14,7 @@ type NavigationItem = {
   path: string
   url?: string
   label: string
+  className?: string
   activeClass?: string
   underlineClass?: string
 }
@@ -26,18 +27,21 @@ const navigationItems: NavigationItem[] = [
     path: "/launch-pools",
     label: "Launch Pools",
     activeClass: "text-brand-primary",
+    className: "hover:text-brand-primary",
   },
   {
     path: "/blitz-pools",
     label: "Blitz Pools",
     activeClass: "text-brand-blitz",
     underlineClass: "border-brand-blitz",
+    className: "hover:text-brand-blitz",
   },
   {
     url: "https://docs.borgpad.com",
     label: "Docs",
     path: "",
-    activeClass: "text-brand-primary",
+    activeClass: "text-white",
+    className: "hover:text-white",
   },
 ]
 
@@ -66,6 +70,7 @@ const NavigationBar = ({ className = "", itemClickedCallback }: NavigationBarPro
             key={item.path}
             className={twMerge(
               "relative flex w-full cursor-pointer flex-col items-start gap-1 py-3 text-left text-lg text-fg-secondary transition-colors duration-500 md:w-fit md:items-center md:py-0 md:text-center md:text-base",
+              item.className,
               isItemActive(item) && item.activeClass,
             )}
             onClick={() => onItemClick(item)}
