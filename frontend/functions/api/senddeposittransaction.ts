@@ -147,7 +147,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const tokensCalculation = calculateTokens({
             projectData: project.json,
             borgCoinInput: tokenAmount,
-            borgPriceInUSD: exchangeData.currentPrice,
+            borgPriceInUSD: Number(exchangeData.currentPrice),
         })
 
         const eligibilityStatus = await EligibilityService.getEligibilityStatus({
