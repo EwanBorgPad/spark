@@ -16,6 +16,7 @@ import DiscoverSection from "@/components/LandingPage/DiscoverSection"
 import JoinCommunityBtn from "@/components/Button/JoinTheCommunityBtn"
 import RotatingSubtitle from "@/components/LandingPage/RotatingSubtitle"
 import { Button } from "@/components/Button/Button"
+import CountdownBtnForNextLbp from "@/components/Button/CountdownBtnForNextLbp"
 
 const LandingPage = () => {
   return (
@@ -79,15 +80,26 @@ const LandingPage = () => {
             </div>
           </h1>
           <div className="flex flex-col items-center gap-6">
-            <Link to={"/launch-pools"} className="group relative h-fit">
-              <Button
-                btnText="Explore Launch Pools"
-                textClassName="text-sm px-3"
-                className="explore-lp px-6 py-4 hover:opacity-100 "
-              />
-              <div className="absolute inset-0 z-[-1] h-full w-full rounded-xl shadow-around-1 transition-shadow duration-500 group-hover:shadow-around-2"></div>
-            </Link>
-            {/* <CountdownBtnForNextLbp projectId="ambient-network" /> */}
+            <div className="flex w-full flex-col items-center gap-4 md:flex-row">
+              <Link to={"/goat-pools"} className="group relative h-fit w-full min-w-[200px]">
+                <Button
+                  btnText="Explore Launch Pools"
+                  textClassName="text-sm px-3"
+                  className="explore-goat-pools w-full px-6 py-4 hover:opacity-100"
+                />
+                <div className="absolute inset-0 z-[-1] h-full w-full rounded-xl shadow-around-1 transition-shadow duration-500 group-hover:shadow-around-2"></div>
+              </Link>
+              <Link to={"/blitz-pools"} className="group relative h-fit w-full min-w-[200px]">
+                <Button
+                  btnText="Explore Blitz Pools"
+                  textClassName="text-sm px-3"
+                  className="explore-blitz-pools w-full px-6 py-4 hover:opacity-100"
+                />
+                <div className="absolute inset-0 z-[-1] h-full w-full rounded-xl shadow-around-1 transition-shadow duration-500 group-hover:shadow-around-2"></div>
+              </Link>
+            </div>
+            {/* PLACE FOR PROJECT COUNTDOWN */}
+            <CountdownBtnForNextLbp projectId="zkagi" />
           </div>
         </div>
       </section>

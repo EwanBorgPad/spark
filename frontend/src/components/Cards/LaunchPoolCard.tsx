@@ -60,7 +60,7 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
         ) : (
           <div className="flex w-full flex-col rounded-xl bg-default">
             <span className="px-4 py-2 text-sm leading-5 text-fg-tertiary">{endMessage}</span>
-            <Link to={`/launch-pools/${project?.id}`}>
+            <Link to={`/goat-pools/${project?.id}`}>
               <Button
                 btnText="Learn More"
                 className={twMerge("w-full p-3", isBlitz && "bg-brand-blitz active:bg-brand-blitz")}

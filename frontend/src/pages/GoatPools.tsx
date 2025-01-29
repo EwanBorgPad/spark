@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next"
 
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
-const LaunchPools = () => {
+const GoatPools = () => {
   const [phases, setPhases] = useState<ExpandedProject[][]>([])
   const { t } = useTranslation()
 
@@ -89,4 +89,4 @@ const LaunchPools = () => {
   )
 }
 
-export default LaunchPools
+export default GoatPools

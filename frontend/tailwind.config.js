@@ -8,8 +8,8 @@ export default {
         black: "#000000",
 
         // background colors
-        default: "#0C111D",
-        secondary: "#161B26",
+        default: "#0B0F19",
+        secondary: "#121621",
         tertiary: "#1F242F",
         emphasis: "#1F242F",
         accent: "#060A14",

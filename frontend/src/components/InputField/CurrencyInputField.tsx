@@ -42,8 +42,14 @@ export const CurrencyInputField = ({
     inputClassName,
   )
 
+  console.log(value)
+
   const onChangeHandler = (newValue: string | undefined) => {
-    if (!newValue) return
+    console.log(newValue)
+    if (!newValue) {
+      onChange(undefined)
+      return
+    }
     if (maxValue && +newValue > maxValue) {
       onChange(maxValue.toString())
     } else {
@@ -59,7 +65,7 @@ export const CurrencyInputField = ({
       <div className={inputClasses}>
         <CurrencyInput
           maxLength={maxLength}
-          value={value}
+          value={value ?? ""}
           allowNegativeValue={false}
           placeholder={placeholder ?? "0"}
           className={
