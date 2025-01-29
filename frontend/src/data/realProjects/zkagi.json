@@ -126,7 +126,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2025-02-05T16:00:00Z",
+          "startDate": "2025-02-05T15:00:00Z",
           "minInvestment": "100",
           "maxInvestment": "750"
         }
@@ -144,7 +144,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2025-02-05T16:00:00Z",
+          "startDate": "2025-02-05T15:00:00Z",
           "minInvestment": "100",
           "maxInvestment": "750"
         }
@@ -162,7 +162,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2025-02-05T16:00:00Z",
+          "startDate": "2025-02-05T15:00:00Z",
           "minInvestment": "100",
           "maxInvestment": "750"
         }
@@ -170,10 +170,10 @@
       {
         "id": "tier99",
         "label": "Public Sale",
-        "description": "Access to sale at 16:15 PM CET. Max Investment $250",
+        "description": "Access to sale at 4:15 PM CET. Max Investment $250",
         "quests": [],
         "benefits": {
-          "startDate": "2025-02-05T16:15:00Z",
+          "startDate": "2025-02-05T15:15:00Z",
           "minInvestment": "10",
           "maxInvestment": "250"
         }
