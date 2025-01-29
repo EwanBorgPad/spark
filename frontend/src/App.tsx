@@ -13,7 +13,7 @@ Sentry.init({
   // Learn more at
   // https://docs.sentry.io/platforms/javascript/configuration/options/#traces-sample-rate
   tracesSampleRate: 1.0,
-  environment: import.meta.env.VITE_ENVIRONMENT_TYPE
+  environment: import.meta.env.VITE_ENVIRONMENT_TYPE,
 })
 
 function App() {

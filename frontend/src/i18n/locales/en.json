@@ -134,7 +134,8 @@
 
   "launch_pools.liquidity_to_the": "Liquidity to the Founders.",
   "launch_pools.power_to_the": "Power to the People.",
-  "launch_pools.provide_liquidity_subtitle": "Provide liquidity to launch your favorite projects. Earn rewards at fixed pre-TGE prices.",
+  "launch_pools.provide_liquidity_subtitle_1": "Provide liquidity to launch your favorite projects.",
+  "launch_pools.provide_liquidity_subtitle_2": "Earn rewards at fixed pre-TGE prices.",
   "launch_pools.successful_lp": "Successful Launch Pools Secure Listings On:",
   "launch_pools.at_tbd": "at TBD",
   "launch_pools.whitelist_opens": "Whitelisting opens {{ text }}",

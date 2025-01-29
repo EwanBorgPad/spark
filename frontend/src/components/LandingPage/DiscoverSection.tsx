@@ -13,22 +13,32 @@ type Item = {
   path: string
   description: string
   imgUrl: string
+  label: string
 }
 
 const content: Item[] = [
   {
-    path: "",
-    description: "Stake $SOL, Receive Airdrops from Early Investments.",
+    path: "/goat-pools",
+    label: "Launch Pools",
+    description: "Provide Liquidity, Earn Tokens at Pre-TGE Valuations.",
     imgUrl: discover1,
   },
   {
-    path: "",
-    description: "Get Early Access to Exclusive Token Sales.",
+    path: "/blitz-pools",
+    label: "Blitz Pools",
+    description: "Blazing fast pools with electric return opportunities",
     imgUrl: discover2,
   },
   {
-    path: "/launch-pools",
-    description: "Provide Liquidity to Earn Rewards at Pre-TGE Valuations",
+    path: "",
+    label: "Angel Staking",
+    description: "Stake $SOL, Receive Airdrops from Early Investments.",
+    imgUrl: discover3,
+  },
+  {
+    path: "",
+    label: "Alpha Raises",
+    description: "Get Early Access to Exclusive Token Sales.",
     imgUrl: discover3,
   },
 ]

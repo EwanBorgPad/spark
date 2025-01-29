@@ -1,5 +1,6 @@
 @import "./style/inputSlider.css";
 @import url('https://fonts.googleapis.com/css2?family=Sulphur+Point:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sulphur+Point:wght@700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -27,7 +28,7 @@
 }
 
 html {
-  background-color: #0C111D;
+  background-color: #060a14;
   font-synthesis-weight: none
 }
 body {
