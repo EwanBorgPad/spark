@@ -108,7 +108,7 @@ const sortByReferencedDate = (projects: ExpandedProject[], config: SortPhaseConf
 }
 
 type SortPhaseConfigType = {
-  referencedDate: "nextEventDate" | "date"
+  referencedDate: keyof Pick<ExpandedTimelineEventType, "date" | "nextEventDate">
   order: "ascending" | "descending"
   customSort?: string[]
 }

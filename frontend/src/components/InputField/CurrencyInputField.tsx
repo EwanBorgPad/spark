@@ -10,7 +10,7 @@ type CurrencyInputFieldProps = HTMLProps<"input"> & {
   prefixElement?: PropsWithChildren["children"]
   suffixElement?: PropsWithChildren["children"]
   label?: string
-  onChange: (value: string | undefined) => void
+  onChange: (value: string | null) => void
   value: number | undefined
   placeholder?: string
   maxValue: number | undefined
@@ -44,7 +44,7 @@ export const CurrencyInputField = ({
 
   const onChangeHandler = (newValue: string | undefined) => {
     if (!newValue) {
-      onChange(undefined)
+      onChange(null)
       return
     }
     if (maxValue && +newValue > maxValue) {
