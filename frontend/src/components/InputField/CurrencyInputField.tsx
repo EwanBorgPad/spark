@@ -54,8 +54,6 @@ export const CurrencyInputField = ({
     }
   }
 
-  console.log(value)
-
   return (
     <div className={containerClassName}>
       <label htmlFor={props.name} className="font-medium">
@@ -71,7 +69,6 @@ export const CurrencyInputField = ({
             "h-[40px] w-full max-w-[360px] bg-transparent px-2 py-2.5 text-sm placeholder:text-white/30 focus:outline-none"
           }
           decimalsLimit={6}
-          // onValueChange={(e) => console.log(e)}
           onValueChange={onChangeHandler}
         />
       </div>
