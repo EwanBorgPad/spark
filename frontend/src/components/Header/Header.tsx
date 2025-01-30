@@ -9,11 +9,13 @@ import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { Icon } from "@/components/Icon/Icon.tsx"
 import { ConnectButton } from "./ConnectButton"
 import { Button } from "../Button/Button"
+import { ROUTES } from "@/utils/routes"
 
 type NavigationItem = {
   path: string
   url?: string
   label: string
+  className?: string
   activeClass?: string
   underlineClass?: string
 }
@@ -23,21 +25,24 @@ type NavigationBarProps = {
 }
 const navigationItems: NavigationItem[] = [
   {
-    path: "/launch-pools",
-    label: "Launch Pools",
+    path: ROUTES.GOAT_POOLS,
+    label: "Goat Pools",
     activeClass: "text-brand-primary",
+    className: "hover:text-brand-primary",
   },
   {
-    path: "/blitz-pools",
+    path: ROUTES.BLITZ_POOLS,
     label: "Blitz Pools",
     activeClass: "text-brand-blitz",
     underlineClass: "border-brand-blitz",
+    className: "hover:text-brand-blitz",
   },
   {
-    url: "https://docs.borgpad.com",
+    url: ROUTES.DOCS,
     label: "Docs",
     path: "",
-    activeClass: "text-brand-primary",
+    activeClass: "text-white",
+    className: "hover:text-white",
   },
 ]
 
@@ -66,6 +71,7 @@ const NavigationBar = ({ className = "", itemClickedCallback }: NavigationBarPro
             key={item.path}
             className={twMerge(
               "relative flex w-full cursor-pointer flex-col items-start gap-1 py-3 text-left text-lg text-fg-secondary transition-colors duration-500 md:w-fit md:items-center md:py-0 md:text-center md:text-base",
+              item.className,
               isItemActive(item) && item.activeClass,
             )}
             onClick={() => onItemClick(item)}
@@ -131,7 +137,7 @@ const Header = () => {
 
           <NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />
 
-          <div className="flex items-center justify-end gap-4 md:min-w-[286px]">
+          <div className="flex items-center justify-end gap-4 md:min-w-[291px]">
             {isLandingPage ? (
               <a
                 className="hidden justify-center md:flex"

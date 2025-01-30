@@ -22,7 +22,7 @@ const CountdownBtnForNextLbp = ({ projectId }: { projectId: string }) => {
 
   return (
     <Link to={`/launch-pools/${projectId}`}>
-      <div className="relative overflow-hidden rounded-[13px] bg-[#abff73]/25 p-[2px]">
+      <div className="group relative overflow-hidden rounded-[13px] bg-[#abff73]/25 p-[2px] transition-colors hover:bg-[#abff73]/50">
         <div className="animated-conic-gradient absolute z-[-1] animate-rotate-border" />
         <div className="z-[10] flex h-[40px] items-center gap-2 rounded-xl bg-[#16231e] p-3">
           <Img src={projectData?.config.launchedTokenData.iconUrl} size="6" isFetchingLink={isLoading} isRounded />
@@ -30,7 +30,10 @@ const CountdownBtnForNextLbp = ({ projectId }: { projectId: string }) => {
           <span className="font-thin opacity-40">|</span>
           <SmallCountDownTimer countdownEventDate={saleOpensDate} labelDuringCountdown="Sale Starts in" />
           <div className="w-[20px]">
-            <Icon icon="SvgArrowRight" className="w-[20px] text-xl opacity-50" />
+            <Icon
+              icon="SvgArrowRight"
+              className="w-[20px] text-xl opacity-50 transition-transform group-hover:translate-x-1"
+            />
           </div>
         </div>
       </div>

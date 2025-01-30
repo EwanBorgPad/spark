@@ -90,8 +90,8 @@ export const generateAdditionalEventData = (tgeEvent: ExpandedTimelineEventType,
 const sortByReferencedDate = (projects: ExpandedProject[], config: SortPhaseConfigType) => {
   if (!projects.length) return []
   const sortedProjects = [...projects].sort((a, b) => {
-    const dateA = a.additionalData.currentEvent.nextEventDate
-    const dateB = b.additionalData.currentEvent.nextEventDate
+    const dateA = a.additionalData.currentEvent[config.referencedDate]
+    const dateB = b.additionalData.currentEvent[config.referencedDate]
 
     // Handle `null` or `undefined` dates
     if (!dateA) return 1 // `a` goes to the end
@@ -100,7 +100,6 @@ const sortByReferencedDate = (projects: ExpandedProject[], config: SortPhaseConf
     // Compare valid dates
     const timeA = new Date(dateA).getTime()
     const timeB = new Date(dateB).getTime()
-
     return timeA - timeB
   })
   if (config.order === "descending") {
@@ -109,7 +108,7 @@ const sortByReferencedDate = (projects: ExpandedProject[], config: SortPhaseConf
 }
 
 type SortPhaseConfigType = {
-  referencedDate: "nextEventDate" | "date"
+  referencedDate: keyof Pick<ExpandedTimelineEventType, "date" | "nextEventDate">
   order: "ascending" | "descending"
   customSort?: string[]
 }
