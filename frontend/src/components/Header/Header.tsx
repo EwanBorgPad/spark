@@ -24,8 +24,8 @@ type NavigationBarProps = {
 }
 const navigationItems: NavigationItem[] = [
   {
-    path: "/launch-pools",
-    label: "Launch Pools",
+    path: "/goat-pools",
+    label: "Goat Pools",
     activeClass: "text-brand-primary",
     className: "hover:text-brand-primary",
   },
@@ -136,7 +136,7 @@ const Header = () => {
 
           <NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />
 
-          <div className="flex items-center justify-end gap-4 md:min-w-[286px]">
+          <div className="flex items-center justify-end gap-4 md:min-w-[291px]">
             {isLandingPage ? (
               <a
                 className="hidden justify-center md:flex"

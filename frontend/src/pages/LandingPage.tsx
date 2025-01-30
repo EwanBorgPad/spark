@@ -81,7 +81,7 @@ const LandingPage = () => {
           </h1>
           <div className="flex flex-col items-center gap-6">
             <div className="flex w-full flex-col items-center gap-4 md:flex-row">
-              <Link to={"/goat-pools"} className="group relative h-fit w-full min-w-[200px]">
+              <Link to={"/goat-pools"} className="group relative h-fit w-full min-w-[220px]">
                 <Button
                   btnText="Explore Launch Pools"
                   textClassName="text-sm px-3"
@@ -89,7 +89,7 @@ const LandingPage = () => {
                 />
                 <div className="absolute inset-0 z-[-1] h-full w-full rounded-xl shadow-around-1 transition-shadow duration-500 group-hover:shadow-around-2"></div>
               </Link>
-              <Link to={"/blitz-pools"} className="group relative h-fit w-full min-w-[200px]">
+              <Link to={"/blitz-pools"} className="group relative h-fit w-full min-w-[220px]">
                 <Button
                   btnText="Explore Blitz Pools"
                   textClassName="text-sm px-3"
