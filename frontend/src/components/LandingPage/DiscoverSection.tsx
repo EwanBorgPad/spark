@@ -1,35 +1,51 @@
-import React, { useRef } from "react"
+import { useRef } from "react"
 import discover1 from "@/assets/landingPage/discover1.png"
 import discover2 from "@/assets/landingPage/discover2.png"
-import discover3 from "@/assets/landingPage/discover3.png"
-import Img from "../Image/Img"
 import useScrollAnimation from "@/hooks/useScrollAnimation"
 import { useWindowSize } from "@/hooks/useWindowSize"
 import { twMerge } from "tailwind-merge"
-import { Button } from "../Button/Button"
-import { Link } from "react-router-dom"
+import DiscoverSectionCard from "../Cards/DiscoverSectionCard"
 
-type Item = {
+import blitzLogoSmall from "@/assets/landingPage/bolt-logo-small.png"
+import goatLogoSmall from "@/assets/landingPage/goat-logo-small.png"
+import { ROUTES } from "@/utils/routes"
+
+export type DiscoverSectionCardType = {
   path: string
   description: string
   imgUrl: string
+  label: string
+  imgClass?: string
 }
 
-const content: Item[] = [
+const content: DiscoverSectionCardType[] = [
+  {
+    path: ROUTES.GOAT_POOLS,
+    label: "Goat Pools",
+    description: "Provide Liquidity, Earn Tokens at Pre-TGE Valuations.",
+    imgUrl: goatLogoSmall,
+    imgClass: "h-[80px] w-[80px]",
+  },
+  {
+    path: ROUTES.BLITZ_POOLS,
+    label: "Blitz Pools",
+    description: "Blazing fast pools with electric return opportunities",
+    imgUrl: blitzLogoSmall,
+    imgClass: "h-[80px] w-[80px]",
+  },
   {
     path: "",
+    label: "",
     description: "Stake $SOL, Receive Airdrops from Early Investments.",
     imgUrl: discover1,
+    imgClass: "max-w-[240px] py-10 mb-0",
   },
   {
     path: "",
+    label: "",
     description: "Get Early Access to Exclusive Token Sales.",
     imgUrl: discover2,
-  },
-  {
-    path: "/launch-pools",
-    description: "Provide Liquidity to Earn Rewards at Pre-TGE Valuations",
-    imgUrl: discover3,
+    imgClass: "max-w-[240px] py-10 mb-0",
   },
 ]
 
@@ -52,25 +68,13 @@ const DiscoverSection = () => {
       <div
         ref={ref}
         className={twMerge(
-          "flex w-full flex-col items-center justify-center gap-12 md:flex-row md:items-start",
+          "grid w-full max-w-[862px] grid-cols-1 gap-6 md:grid-cols-2 md:flex-row md:items-start md:gap-12",
           transitionBase,
           isActive && transitionActive,
         )}
       >
         {content.map((item, index) => (
-          <div key={index} className="flex max-w-[405px] flex-col items-center gap-3">
-            <Img src={item.imgUrl} customClass="max-w-[240px]" />
-            <div className="flex w-full flex-col gap-4">
-              {item.path ? (
-                <Link to={item.path} className="w-full">
-                  <Button color="tertiary" btnText="Learn More" className="w-full" />
-                </Link>
-              ) : (
-                <span className="text-center opacity-50">Coming Soon</span>
-              )}
-              <p className="text-center text-fg-secondary">{item.description}</p>
-            </div>
-          </div>
+          <DiscoverSectionCard key={index} {...item} />
         ))}
       </div>
     </section>

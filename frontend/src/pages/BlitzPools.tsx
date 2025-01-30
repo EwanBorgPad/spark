@@ -1,21 +1,19 @@
 import { useEffect, useState } from "react"
 import { backendApi } from "@/data/backendApi"
+import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { ScrollRestoration } from "react-router-dom"
 
-import blitzPoolsBg from "@/assets/launchPools/bg-blitz-pools-min-new.png"
-import blitzPoolsLogo from "@/assets/launchPools/blitz-pools-logo.png"
-import swissborgLogo from "@/assets/launchPools/swissborg-logo.png"
-import jupiterLogo from "@/assets/launchPools/jupiter-logo.png"
 import orcaLogo from "@/assets/launchPools/orca-logo.png"
+import jupiterLogo from "@/assets/launchPools/jupiter-logo.png"
 import raydiumLogo from "@/assets/launchPools/raydium-logo.png"
+import swissborgLogo from "@/assets/launchPools/swissborg-logo.png"
+import blitzPoolsLogo from "@/assets/launchPools/blitz-pools-logo.png"
 
+import Img from "@/components/Image/Img"
 import { GetProjectsResponse } from "shared/models"
 import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
-import Img from "@/components/Image/Img"
-import { useTranslation } from "react-i18next"
-import BlitzPoolsAnimation from "@/components/Animated/BlitzPoolsAnimation"
 
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
@@ -46,7 +44,7 @@ const BlitzPools = () => {
       <div className="absolute top-[48px] z-[-1] w-screen opacity-100 md:top-[68px] ">
         <video
           src="https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/unicorn-animation/sample3%20(online-video-cutter__78pct_smaller.mp4"
-          className="left-0 z-[101] h-[642px] w-full object-cover opacity-50 md:h-auto"
+          className="animate-looped-video left-0 z-[101] h-[642px] w-full object-cover opacity-50 md:h-auto"
           autoPlay
           loop
           muted
@@ -55,8 +53,9 @@ const BlitzPools = () => {
       </div>
 
       <section className="z-[11] flex w-fit flex-col items-center gap-4 bg-transparent px-4 pt-[60px] md:pt-[80px]">
-        <Img src={blitzPoolsLogo} customClass="max-h-[40px] max-w-[174px] mb-2" />
-
+        <div className="mb-2 h-[40px] w-[170px]">
+          <Img src={blitzPoolsLogo} customClass="w-full h-full animate-fade-in-from-below-slow" />
+        </div>
         <h1 className="text-center text-[40px] font-semibold leading-[120%] md:w-full">
           {"Blazing fast launch pools"}
           <br></br>

@@ -8,8 +8,8 @@ export default {
         black: "#000000",
 
         // background colors
-        default: "#0C111D",
-        secondary: "#161B26",
+        default: "#0B0F19",
+        secondary: "#121621",
         tertiary: "#1F242F",
         emphasis: "#1F242F",
         accent: "#060A14",
@@ -35,7 +35,7 @@ export default {
         // font colors
         fg: {
           primary: "#F5F5F6",
-          secondary: "#CECFD2",
+          secondary: "#9C9C9D",
           tertiary: "#94969C",
           disabled: "#85888E",
           accent: "#ffffff",
@@ -199,6 +199,12 @@ export default {
           "82%": { transform: "translate(-75%, -50%) scale(1.4) rotate(385deg)" },
           "100%": { transform: "translate(-50%, -50%) scale(1.4) rotate(405deg)" },
         },
+        "looped-video": {
+          "0%": { opacity: 0 },
+          "14%": { opacity: 0.5 },
+          "86%": { opacity: 0.5 },
+          "100%": { opacity: 0 },
+        },
       },
       animation: {
         "top-down": "top-down 0.1s ease-out forwards",
@@ -214,6 +220,7 @@ export default {
         "activate-circle": "activate-circle 0.5s 1 ease-in-out ",
         "slide-in-from-left": "slide-in-from-left 0.5s 1 ease-in-out ",
         "rotate-border": "rotate-border 6s linear infinite",
+        "looped-video": "looped-video 7.04s ease-in-out infinite",
       },
     },
   },

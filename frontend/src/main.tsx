@@ -14,10 +14,8 @@ import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
 import App from "./App"
 import Project from "./pages/Project"
 import NotFound from "./pages/NotFound"
-import Manifesto from "./pages/Manifesto"
 import TermsOfUse from "./pages/TermsOfUse"
-import LaunchPools from "./pages/LaunchPools"
-import AngelStaking from "./pages/AngelStaking"
+import GoatPools from "./pages/GoatPools"
 import { WalletProvider } from "@/hooks/useWalletContext"
 import TermsAndConditions from "./pages/TermsAndConditions"
 import { ProjectDataProvider } from "./hooks/useProjectData"
@@ -29,6 +27,8 @@ import { Buffer } from "buffer"
 import { toast } from "react-toastify"
 import LandingPage from "./pages/LandingPage"
 import BlitzPools from "./pages/BlitzPools"
+import RedirectToGoatPools from "./components/LaunchPool/RedirectToGoatPools"
+import { ROUTES } from "./utils/routes"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -54,7 +54,7 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "/",
+        path: ROUTES.LANDING_PAGE,
         element: <LandingPage />,
       },
       // @backOffice
@@ -67,7 +67,7 @@ const router = createBrowserRouter([
       //   element: <AngelStaking />,
       // },
       {
-        path: "/launch-pools",
+        path: ROUTES.GOAT_POOLS,
         errorElement: <SomethingWentWrong />,
         element: <Outlet />,
         children: [
@@ -81,12 +81,12 @@ const router = createBrowserRouter([
           },
           {
             path: "",
-            element: <LaunchPools />,
+            element: <GoatPools />,
           },
         ],
       },
       {
-        path: "/blitz-pools",
+        path: ROUTES.BLITZ_POOLS,
         errorElement: <SomethingWentWrong />,
         element: <Outlet />,
         children: [
@@ -104,16 +104,16 @@ const router = createBrowserRouter([
           },
         ],
       },
-      // {
-      //   path: "/manifesto",
-      //   element: <Manifesto />,
-      // },
       {
-        path: "/terms-of-use",
+        path: "/launch-pools/*",
+        element: <RedirectToGoatPools />,
+      },
+      {
+        path: ROUTES.TERMS_OF_USE,
         element: <TermsOfUse />,
       },
       {
-        path: "/terms-and-conditions",
+        path: ROUTES.TERMS_AND_CONDITIONS,
         element: <TermsAndConditions />,
       },
       {
