@@ -28,6 +28,7 @@ import { toast } from "react-toastify"
 import LandingPage from "./pages/LandingPage"
 import BlitzPools from "./pages/BlitzPools"
 import RedirectToGoatPools from "./components/LaunchPool/RedirectToGoatPools"
+import { ROUTES } from "./utils/routes"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -53,7 +54,7 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "/",
+        path: ROUTES.LANDING_PAGE,
         element: <LandingPage />,
       },
       // @backOffice
@@ -66,7 +67,7 @@ const router = createBrowserRouter([
       //   element: <AngelStaking />,
       // },
       {
-        path: "/goat-pools",
+        path: ROUTES.GOAT_POOLS,
         errorElement: <SomethingWentWrong />,
         element: <Outlet />,
         children: [
@@ -85,7 +86,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/blitz-pools",
+        path: ROUTES.BLITZ_POOLS,
         errorElement: <SomethingWentWrong />,
         element: <Outlet />,
         children: [
@@ -108,11 +109,11 @@ const router = createBrowserRouter([
         element: <RedirectToGoatPools />,
       },
       {
-        path: "/terms-of-use",
+        path: ROUTES.TERMS_OF_USE,
         element: <TermsOfUse />,
       },
       {
-        path: "/terms-and-conditions",
+        path: ROUTES.TERMS_AND_CONDITIONS,
         element: <TermsAndConditions />,
       },
       {

@@ -1,3 +1,4 @@
+import { ROUTES } from "@/utils/routes"
 import { Navigate, useLocation } from "react-router-dom"
 
 /**
@@ -6,7 +7,7 @@ import { Navigate, useLocation } from "react-router-dom"
 const RedirectToGoatPools = () => {
   const { pathname } = useLocation()
   const projectId = pathname.split("/")[2]
-  return <Navigate to={`/goat-pools/${projectId ?? ""}`} replace />
+  return <Navigate to={`${ROUTES.GOAT_POOLS}/${projectId ?? ""}`} replace />
 }
 
 export default RedirectToGoatPools

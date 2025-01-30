@@ -9,6 +9,7 @@ import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { Icon } from "@/components/Icon/Icon.tsx"
 import { ConnectButton } from "./ConnectButton"
 import { Button } from "../Button/Button"
+import { ROUTES } from "@/utils/routes"
 
 type NavigationItem = {
   path: string
@@ -24,20 +25,20 @@ type NavigationBarProps = {
 }
 const navigationItems: NavigationItem[] = [
   {
-    path: "/goat-pools",
+    path: ROUTES.GOAT_POOLS,
     label: "Goat Pools",
     activeClass: "text-brand-primary",
     className: "hover:text-brand-primary",
   },
   {
-    path: "/blitz-pools",
+    path: ROUTES.BLITZ_POOLS,
     label: "Blitz Pools",
     activeClass: "text-brand-blitz",
     underlineClass: "border-brand-blitz",
     className: "hover:text-brand-blitz",
   },
   {
-    url: "https://docs.borgpad.com",
+    url: ROUTES.DOCS,
     label: "Docs",
     path: "",
     activeClass: "text-white",

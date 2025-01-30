@@ -8,6 +8,7 @@ import DiscoverSectionCard from "../Cards/DiscoverSectionCard"
 
 import blitzLogoSmall from "@/assets/landingPage/bolt-logo-small.png"
 import goatLogoSmall from "@/assets/landingPage/goat-logo-small.png"
+import { ROUTES } from "@/utils/routes"
 
 export type DiscoverSectionCardType = {
   path: string
@@ -19,14 +20,14 @@ export type DiscoverSectionCardType = {
 
 const content: DiscoverSectionCardType[] = [
   {
-    path: "/goat-pools",
+    path: ROUTES.GOAT_POOLS,
     label: "Goat Pools",
     description: "Provide Liquidity, Earn Tokens at Pre-TGE Valuations.",
     imgUrl: goatLogoSmall,
     imgClass: "h-[80px] w-[80px]",
   },
   {
-    path: "/blitz-pools",
+    path: ROUTES.BLITZ_POOLS,
     label: "Blitz Pools",
     description: "Blazing fast pools with electric return opportunities",
     imgUrl: blitzLogoSmall,
