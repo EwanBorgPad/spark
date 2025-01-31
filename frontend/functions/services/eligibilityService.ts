@@ -219,7 +219,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
 
   return {
     address,
-    
+
     isTwitterAccountConnected,
     isNftCheckNeeded,
     isCompliant,
