@@ -127,6 +127,8 @@ export const EligibilityStatusSchema = z.object({
   snapshotTakenAt: z.string().optional(),
   address: z.string(),
 
+  isNftCheckNeeded: z.boolean().optional(),
+
   // TODO @twitterAcc
   isTwitterAccountConnected: z.boolean(),
 

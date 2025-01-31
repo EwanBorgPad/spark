@@ -99,11 +99,20 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     .filter(quest => quest.type === 'HOLD_TOKEN')
     .map(quest => quest.tokenMintAddress)
 
-  const collectionMap = await isHoldingNftFromCollections({
-    rpcUrl,
-    ownerAddress: address,
-    collections,
-  })
+  // optimization method -- skip nft check if there's no nft quests in the project
+  const isNftCheckNeeded = project.json.info.tiers
+    .some(tier => tier.quests
+      // since we don't have separate types for fungible/non-fungible tokens, for now we consider any quest with tokenAmount=1 to be an nft quest
+      .some(quest => quest.type === 'HOLD_TOKEN' && quest.tokenAmount === "1")
+    )
+
+  const collectionMap = isNftCheckNeeded
+    ? await isHoldingNftFromCollections({
+      rpcUrl,
+      ownerAddress: address,
+      collections,
+    })
+    : {}
 
   const fungibles = await getTokenHoldingsMap({
     rpcUrl,
@@ -210,18 +219,17 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
 
   return {
     address,
-
+    
     isTwitterAccountConnected,
-
-    whitelistTierId,
-    whitelistedTier,
-
+    isNftCheckNeeded,
     isCompliant,
-
     isEligible,
+    whitelistTierId,
+    
+    whitelistedTier,
     eligibilityTier,
     compliances: compliancesWithCompletion,
-    tiers: tiersWithCompletion
+    tiers: tiersWithCompletion,
   }
 }
 
