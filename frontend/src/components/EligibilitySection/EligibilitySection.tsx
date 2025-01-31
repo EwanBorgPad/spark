@@ -51,11 +51,20 @@ export const EligibilityTiersSection = ({ className }: { className?: string }) =
         {!isFetching ? (
           eligibilityStatus?.tiers.map((tier) => {
             const tierQuests = sortByCompletionStatus(tier.quests)
+            const description = t('access.to.sale.at.TIME.max.investment.MAX', {
+              time: new Intl.DateTimeFormat("en-GB", {
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true,
+                timeZone: "CET",
+              }).format(new Date(tier.benefits.startDate)).toUpperCase() + ' CET',
+              max: tier.benefits.maxInvestment,
+            })
             return (
               // tier container
               <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
                 <span>{tier.label}</span>
-                {tier.description && <span className="text-xs text-fg-secondary">{tier.description}</span>}
+                <span className="text-xs text-fg-secondary">{description}</span>
                 <div className="flex flex-col gap-2 rounded-2xl">
                   {/* singular tier */}
                   {tierQuests.map((quest) => (

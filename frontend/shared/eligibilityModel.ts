@@ -108,7 +108,7 @@ const BooleanOperatorSchema = z.enum(['AND', 'OR'])
 export const TierSchema = z.object({
   id: z.string(),
   label: z.string(),
-  description: z.string().default(''),
+  description: z.string().optional(),
   questsOperator: BooleanOperatorSchema.default('AND'),
   quests: z.array(QuestSchema).min(QUESTS_MIN_LENGTH),
   benefits: BenefitsSchema,
@@ -142,7 +142,7 @@ export const EligibilityStatusSchema = z.object({
    */
   eligibilityTier: TierSchema.nullable(),
   compliances: QuestWithCompletionSchema.array(),
-  tiers: TierWithCompletionSchema.omit( { benefits: true }).array(),
+  tiers: TierWithCompletionSchema.array(),
 })
 export type EligibilityStatus = z.infer<typeof EligibilityStatusSchema>
 /**
