@@ -116,7 +116,6 @@
       {
         "id": "tier10",
         "label": "GoatIndex AI Club.",
-        "description": "Access to sale at 4 PM CET. Maximum Investment: $750",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -134,7 +133,6 @@
       {
         "id": "tier20",
         "label": "Send it Club",
-        "description": "Access to sale at 4 PM CET. Max Investment $750",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -152,7 +150,6 @@
       {
         "id": "tier30",
         "label": "Borgers Club",
-        "description": "Access to sale at 4 PM CET. Max Investment $750",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -170,7 +167,6 @@
       {
         "id": "tier99",
         "label": "Public Sale",
-        "description": "Access to sale at 4:15 PM CET. Max Investment $250",
         "quests": [],
         "benefits": {
           "startDate": "2025-02-06T15:15:00Z",
