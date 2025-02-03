@@ -19,6 +19,7 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
 
   const isUpcoming = project?.additionalData.currentEvent.id === "UPCOMING"
   const isBlitz = project?.info.projectType === "blitz"
+  const projectUrl = `${isBlitz ? ROUTES.BLITZ_POOLS : ROUTES.GOAT_POOLS}/${project?.id}`
 
   return (
     <li className="relative flex w-full max-w-[344px] flex-col overflow-hidden rounded-lg border-bd-primary bg-secondary">
@@ -61,7 +62,7 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
         ) : (
           <div className="flex w-full flex-col rounded-xl bg-default">
             <span className="px-4 py-2 text-sm leading-5 text-fg-tertiary">{endMessage}</span>
-            <Link to={`${ROUTES.GOAT_POOLS}/${project?.id}`}>
+            <Link to={projectUrl}>
               <Button
                 btnText="Learn More"
                 className={twMerge("w-full p-3", isBlitz && "bg-brand-blitz active:bg-brand-blitz")}

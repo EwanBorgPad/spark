@@ -140,12 +140,18 @@ const Header = () => {
           <div className="flex items-center justify-end gap-4 md:min-w-[291px]">
             {isLandingPage ? (
               <a
-                className="hidden justify-center md:flex"
+                className="flex justify-center"
                 href="https://borgpad.formo.so/founders"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button size="xs" color="secondary" btnText="Founders Apply Here" className="w-fit py-1.5" />
+                <Button
+                  size="xs"
+                  color="secondary"
+                  btnText="Founders Apply Here"
+                  className="w-fit py-1.5 "
+                  textClassName="text-[12px] md:text-sm"
+                />
               </a>
             ) : (
               <a
