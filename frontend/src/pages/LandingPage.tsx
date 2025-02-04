@@ -100,7 +100,7 @@ const LandingPage = () => {
               </Link>
             </div>
             {/* PLACE FOR PROJECT COUNTDOWN */}
-            <CountdownBtnForNextLbp projectId="zkagi" />
+            {/* <CountdownBtnForNextLbp projectId="zkagi" /> */}
           </div>
         </div>
       </section>
