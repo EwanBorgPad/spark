@@ -5,7 +5,7 @@ import { backendApi } from "@/data/backendApi.ts"
 import { Badge } from "../Badge/Badge"
 import { Icon } from "../Icon/Icon"
 import { twMerge } from "tailwind-merge"
-import React, { ReactNode, useMemo, useState } from "react"
+import React, { ReactNode, RefObject, useMemo, useState } from "react"
 import { QuestWithCompletion } from "../../../shared/eligibilityModel.ts"
 import { Button } from "@/components/Button/Button.tsx"
 import AcceptTermsOfUseModal from "@/components/Modal/Modals/AcceptTermsOfUseModal.tsx"
@@ -19,7 +19,12 @@ import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import EnterReferralCode from "./EnterReferralCode.tsx"
 import { FinalSnapshotTaken } from "@/components/EligibilitySection/FinalSnapshotTaken.tsx"
 
-export const EligibilityTiersSection = ({ className }: { className?: string }) => {
+type Props = {
+  className?: string
+  parentRef: RefObject<HTMLDivElement>
+}
+
+export const EligibilityTiersSection = ({ className, parentRef }: Props) => {
   const { t } = useTranslation()
   const { address, isWalletConnected } = useWalletContext()
   const { projectId } = useParams()
@@ -36,15 +41,38 @@ export const EligibilityTiersSection = ({ className }: { className?: string }) =
 
   if (!isWalletConnected) return null
 
+  console.log(eligibilityStatus)
+
+  const isAnyTierCompleted = eligibilityStatus?.tiers.some((tier) => tier.id !== "tier99" && tier.isCompleted)
+
+  const scrollToLaunchPool = () => {
+    const top = parentRef.current?.getBoundingClientRect().top ?? 0
+    window.scrollBy({
+      behavior: "smooth",
+      top: top - 100,
+    })
+  }
+
   return (
     <section id="tiersSection" className={className}>
-      <div id="tiersHeading" className="flex w-full items-center justify-between py-2">
-        <span>{t("tiers")}</span>
-        {eligibilityStatus && (
-          <Badge.Confirmation
-            label={eligibilityStatus.eligibilityTier?.label}
-            isConfirmed={eligibilityStatus.eligibilityTier !== null}
-          />
+      <div id="tiersHeading" className="flex w-full flex-col items-start gap-3 pb-4">
+        <div className="flex w-full items-center justify-between">
+          <span>{t("tiers")}</span>
+          {eligibilityStatus && (
+            <Badge.Confirmation
+              label={eligibilityStatus.eligibilityTier?.label}
+              isConfirmed={eligibilityStatus.eligibilityTier !== null}
+            />
+          )}
+        </div>
+        {!eligibilityStatus?.isCompliant && (
+          <div className={twMerge(isAnyTierCompleted ? "text-yellow-200" : "text-fg-primary")}>
+            <span className="text-sm ">To become eligible, complete steps in the</span>
+            <button type="button" className="px-1 text-sm underline" onClick={scrollToLaunchPool}>
+              {"Join the Launch Pool"}
+            </button>
+            <span className="text-sm">section above</span>
+          </div>
         )}
       </div>
       <div id="tiersContainer" className="rounded-lg border-[1px] border-bd-primary bg-secondary p-2">
