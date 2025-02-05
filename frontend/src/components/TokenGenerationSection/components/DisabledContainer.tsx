@@ -68,7 +68,9 @@ const DisabledContainer = ({
     return (
       <DisabledBlurContainer>
         <div className="flex w-full max-w-[340px] flex-col items-center rounded-lg bg-default p-4 shadow-sm shadow-white/5">
-          <span className="text-center text-fg-error-primary">Your Wallet was not whitelisted for this deal</span>
+          <span className="text-center text-fg-error-primary">
+            Your Wallet is not yet whitelisted <br></br> for this deal
+          </span>
           <Button
             onClick={scrollToWhitelistRequirements}
             size="md"
