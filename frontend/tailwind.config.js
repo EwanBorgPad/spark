@@ -207,6 +207,7 @@ export default {
         },
       },
       animation: {
+        "opacity-in": "opacity-in 0.6s ease-in-out forwards",
         "top-down": "top-down 0.1s ease-out forwards",
         "fade-in": "fade-in 0.2s ease-in-out",
         "fade-in-from-below-slow": "fade-in 1s ease-in-out forwards",

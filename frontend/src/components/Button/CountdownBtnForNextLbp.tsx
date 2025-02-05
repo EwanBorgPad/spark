@@ -18,7 +18,7 @@ const CountdownBtnForNextLbp = ({ projectId }: { projectId: string }) => {
   }
 
   const saleOpensDate = projectData?.info.timeline.find((tgeEvent) => tgeEvent.id === "SALE_OPENS")?.date
-  // if (!saleOpensDate) return <></>
+  if (!saleOpensDate) return <></>
 
   return (
     <Link to={`/launch-pools/${projectId}`}>

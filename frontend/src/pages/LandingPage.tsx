@@ -25,7 +25,10 @@ const LandingPage = () => {
       className="relative z-[10] flex w-full max-w-[100vw] flex-col items-center
      bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]"
     >
-      <div className="absolute top-12 z-[-1] flex w-screen justify-center overflow-hidden lg:top-[72px]">
+      <div
+        style={{ animationDelay: "1500ms" }}
+        className="animate-opacity-in absolute top-12 z-[-1] flex w-screen justify-center overflow-hidden opacity-0 lg:top-[72px]"
+      >
         <img
           src={angelStakingTexture1Mob}
           role="presentation"
