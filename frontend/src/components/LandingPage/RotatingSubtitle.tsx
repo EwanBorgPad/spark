@@ -1,4 +1,4 @@
-import { CSSProperties, HTMLAttributes, useCallback, useEffect, useRef, useState } from "react"
+import { HTMLAttributes, useCallback, useEffect, useRef, useState } from "react"
 
 const rotatingContent = [
   "Exchanges Dumping on You?",
@@ -54,10 +54,10 @@ const RotatingSubtitle = ({ style }: { style: HTMLAttributes<HTMLHeadingElement>
   return (
     <h2
       style={style}
-      className="flex h-[125px] w-full max-w-[752px] animate-fade-in-from-below-slow flex-col flex-wrap pb-4 text-2xl font-medium leading-snug opacity-0 md:h-auto md:flex-row md:gap-2 md:pb-7 md:pl-[80px] md:text-center"
+      className="flex h-[136px] w-full max-w-[752px] animate-fade-in-from-below-slow flex-col flex-wrap items-start  text-xl font-normal leading-snug opacity-0 md:items-center md:text-center"
     >
       <span className="text-nowrap opacity-60">Unsatisfied with</span>
-      <div className="flex w-full max-w-[472px]" ref={textRef}>
+      <div className="flex" ref={textRef}>
         <span className="text-wrap text-left">{rotatingContent[currentContentIndex]}</span>
         {/* <span className="h-[61px]">Exchanges Dumping on You?</span> */}
         {/* <span className="w-[472px]">Hidden Agendas Behind Token Launches?</span> */}

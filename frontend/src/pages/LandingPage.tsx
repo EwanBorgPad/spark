@@ -32,33 +32,33 @@ const LandingPage = () => {
         />
         <img src={angelStakingTexture1} role="presentation" className="hidden w-full mix-blend-lighten md:flex" />
       </div>
-      <section className="z-[1] flex w-full flex-col items-start gap-5 px-5 pb-[60px] pt-20 md:pb-[68px] md:pt-[56px]">
+      <section className="z-[1] flex w-full flex-col items-start gap-5 px-5 pb-[60px] pt-10 md:pb-[68px] md:pt-[40px]">
         <div className="flex w-full flex-col items-start md:items-center ">
-          <div className="flex animate-fade-in-from-below-slow flex-col gap-3 pb-10 opacity-0 md:flex-row md:pb-20">
-            <div className="flex gap-2 rounded-xl border border-bd-primary bg-default/75 px-3 py-2">
-              <span>Built on</span>
+          <div className="flex animate-fade-in-from-below-slow flex-col gap-3 pb-20 opacity-0 md:flex-row md:pb-20">
+            <div className="flex gap-2 rounded-xl bg-overlay/75 px-3 py-2 backdrop-blur-sm">
+              <span className="text-sm">Built on</span>
               <Img
                 src={solanaImg}
                 size="custom"
-                customClass="w-[108px] rounded-none"
+                customClass="w-[95px] rounded-none"
                 imgClassName="object-contain"
                 alt="Solana logo"
               />
             </div>
-            <div className="flex gap-2 rounded-xl border border-bd-primary bg-default/75 px-3 py-2">
-              <span>By the minds of</span>
+            <div className="flex gap-2 rounded-xl bg-overlay/75 px-3 py-2 backdrop-blur-sm">
+              <span className="text-sm">By the minds of</span>
               <Img
                 src={swissborgLogo}
                 size="custom"
-                customClass="w-[85px] rounded-none"
+                customClass="w-[90px] rounded-none"
                 imgClassName="object-contain"
               />
             </div>
           </div>
-          <h1 className="max-w-[720px] pb-[80px] text-[40px] font-semibold leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
+          <h1 className="max-w-[720px] pb-[16px] text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
             <span
               style={{ animationDelay: "300ms" }}
-              className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
+              className="translate-y-[50px] animate-fade-in-from-below-slow text-fg-primary opacity-0"
             >
               Experience
             </span>
@@ -86,10 +86,10 @@ const LandingPage = () => {
           <RotatingSubtitle style={{ animationDelay: "1500ms" }} />
           <div
             style={{ animationDelay: "1800ms" }}
-            className="flex animate-fade-in-from-below-slow flex-col items-center gap-6 opacity-0"
+            className="flex w-full animate-fade-in-from-below-slow flex-col items-center gap-6 opacity-0"
           >
-            <div className="flex w-full flex-col items-center gap-4 md:flex-row">
-              <Link to={ROUTES.GOAT_POOLS} className="group relative h-fit w-full min-w-[220px]">
+            <div className="flex w-full flex-col items-center justify-center gap-4 md:flex-row">
+              <Link to={ROUTES.GOAT_POOLS} className="group relative h-fit w-full min-w-[220px] md:w-[220px]">
                 <Button
                   btnText="Explore Goat Pools"
                   textClassName="text-sm px-3"
@@ -97,7 +97,7 @@ const LandingPage = () => {
                 />
                 <div className="absolute inset-0 z-[-1] h-full w-full rounded-xl shadow-around-1 transition-shadow duration-500 group-hover:shadow-around-2"></div>
               </Link>
-              <Link to={ROUTES.BLITZ_POOLS} className="group relative h-fit w-full min-w-[220px]">
+              <Link to={ROUTES.BLITZ_POOLS} className="group relative h-fit w-full min-w-[220px] md:w-[220px]">
                 <Button
                   btnText="Explore Blitz Pools"
                   textClassName="text-sm px-3"
