@@ -3,6 +3,8 @@ import React from "react"
 import DisabledBlurContainer from "./DisabledBlurContainer"
 import { formatDateForTimerWithTimezone } from "@/utils/date-helpers"
 import SimpleLoader from "@/components/Loaders/SimpleLoader"
+import { useWalletContext } from "@/hooks/useWalletContext"
+import { ConnectButton } from "@/components/Header/ConnectButton"
 
 type TierBenefitsType =
   | {
@@ -19,7 +21,7 @@ type Props = {
   isEligibleTierActive: boolean
   userInvestedMaxAmount: boolean
   scrollToWhitelistRequirements: () => void
-  scrollToTiers: () => void
+  scrollToEligibilitySection: () => void
   tierBenefits: TierBenefitsType
 }
 
@@ -30,9 +32,11 @@ const DisabledContainer = ({
   userInvestedMaxAmount,
   isDepositStatusLoading,
   scrollToWhitelistRequirements,
-  scrollToTiers,
+  scrollToEligibilitySection,
   tierBenefits,
 }: Props) => {
+  const { isWalletConnected } = useWalletContext()
+
   if (isDepositStatusLoading || isEligibilityLoading) {
     return (
       <DisabledBlurContainer>
@@ -50,6 +54,15 @@ const DisabledContainer = ({
       </DisabledBlurContainer>
     )
   }
+  if (!isWalletConnected)
+    return (
+      <DisabledBlurContainer>
+        <div className="flex w-full max-w-[340px] flex-col items-center gap-2 rounded-lg bg-default p-4 shadow-white/5">
+          <span className="text-center text-fg-primary">Connect your wallet in order to invest</span>
+          <ConnectButton />
+        </div>
+      </DisabledBlurContainer>
+    )
 
   if (!isUserEligible)
     return (
@@ -72,7 +85,7 @@ const DisabledContainer = ({
       <DisabledBlurContainer>
         <div className="flex flex-col items-center py-2 text-sm font-normal text-fg-primary">
           <p>
-            <span onClick={scrollToTiers} className="cursor-pointer underline">
+            <span onClick={scrollToEligibilitySection} className="cursor-pointer underline">
               Your Tier
             </span>
             <span>{" opens on: "}</span>

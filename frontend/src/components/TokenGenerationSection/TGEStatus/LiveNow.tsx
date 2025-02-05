@@ -25,7 +25,6 @@ type LiveNowProps = {
 const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
   const { t } = useTranslation()
   const eligibilitySectionRef = useRef<HTMLDivElement>(null)
-  const tiersRef = useRef<HTMLDivElement>(null)
 
   const { address } = useWalletContext()
   const { projectId } = useParams()
@@ -44,8 +43,8 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
   const isUserEligible = eligibilityStatusData?.isEligible
   const tierBenefits = eligibilityStatusData?.eligibilityTier?.benefits
 
-  const scrollToTiers = () => {
-    const top = tiersRef.current?.getBoundingClientRect().top ?? 0
+  const scrollToEligibilitySection = () => {
+    const top = eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
     window.scrollBy({
       behavior: "smooth",
       top: top - 100,
@@ -71,7 +70,10 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
                 className={twMerge(tierBenefits && "h-fit pb-3")}
               />
             )}
-            <LiveNowExchange scrollToTiers={scrollToTiers} eligibilitySectionRef={eligibilitySectionRef} />
+            <LiveNowExchange
+              scrollToEligibilitySection={scrollToEligibilitySection}
+              eligibilitySectionRef={eligibilitySectionRef}
+            />
           </TgeWrapper>
           {isUserEligible && (
             <>
@@ -80,7 +82,7 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
             </>
           )}
         </div>
-        <div ref={tiersRef} className="flex w-full flex-col items-center">
+        <div ref={eligibilitySectionRef} className="flex w-full flex-col items-center">
           <EligibilitySection />
         </div>
       </div>

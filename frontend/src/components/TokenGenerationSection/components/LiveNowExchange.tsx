@@ -30,7 +30,7 @@ type FormInputs = {
 
 type Props = {
   eligibilitySectionRef: RefObject<HTMLDivElement>
-  scrollToTiers: () => void
+  scrollToEligibilitySection: () => void
 }
 
 const truncateDecimals = (value: number, numOfDecimals: number) => {
@@ -42,7 +42,7 @@ const truncateDecimals = (value: number, numOfDecimals: number) => {
 const NUM_OF_DECIMALS = 2
 const ONE_HOUR = 60 * 60 * 1000
 
-const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
+const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: Props) => {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const { projectId } = useParams()
@@ -371,7 +371,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToTiers }: Props) => {
         isDepositStatusLoading={isDepositStatusLoading}
         isEligibleTierActive={isEligibleTierActive}
         isUserEligible={isUserEligible}
-        scrollToTiers={scrollToTiers}
+        scrollToEligibilitySection={scrollToEligibilitySection}
         scrollToWhitelistRequirements={scrollToWhitelistRequirements}
         tierBenefits={tierBenefits}
         userInvestedMaxAmount={userInvestedMaxAmount}
