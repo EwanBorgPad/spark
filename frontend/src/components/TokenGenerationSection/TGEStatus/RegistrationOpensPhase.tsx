@@ -6,11 +6,7 @@ import WhitelistingContent from "../components/WhitelistingContent"
 import CountDownTimer from "@/components/CountDownTimer"
 import { TgeWrapper } from "../components/Wrapper"
 import { formatDateForTimer } from "@/utils/date-helpers"
-import {
-  EligibilityCompliancesSection,
-  EligibilityTiersSection,
-} from "@/components/EligibilitySection/EligibilitySection.tsx"
-import React from "react"
+import { EligibilitySection } from "@/components/EligibilitySection/EligibilitySection.tsx"
 import DataRoom from "@/components/LaunchPool/DataRoom"
 
 type RegistrationOpensPhaseProps = {
@@ -33,7 +29,6 @@ const RegistrationOpensPhase = ({ eventData, timeline }: RegistrationOpensPhaseP
 
         <Timeline timelineEvents={timeline} />
 
-        <EligibilityCompliancesSection className="w-full max-w-[432px]" />
         {/* main section with borg/token math */}
         <div className="flex w-full max-w-[432px] flex-col gap-5">
           <TgeWrapper label={t("tge.lp_terms")}>
@@ -56,7 +51,7 @@ const RegistrationOpensPhase = ({ eventData, timeline }: RegistrationOpensPhaseP
             {t("tge.learn_more_about")}
           </a>
         </div>
-        <EligibilityTiersSection className="w-full max-w-[432px]" />
+        <EligibilitySection />
       </div>
     </div>
   )
