@@ -20,7 +20,11 @@ export const FinalSnapshotTaken = ({ className }: Props) => {
       <div className="flex w-full flex-wrap items-center justify-center gap-1">
         <Icon icon="SvgSnapshot" className="shrink-0 text-xl text-brand-primary" />
         <span className="text-nowrap text-sm text-fg-tertiary">{t("whitelisting.snapshot_taken")}</span>{" "}
-        <Text text={t("whitelisting.update_every", { date: formattedDate })} isLoading={isLoading} />
+        <Text
+          text={t("whitelisting.update_every", { date: formattedDate })}
+          isLoading={isLoading}
+          className="text-sm md:text-base"
+        />
       </div>
     </section>
   )

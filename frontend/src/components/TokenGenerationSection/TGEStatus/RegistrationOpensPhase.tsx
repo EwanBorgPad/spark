@@ -6,11 +6,7 @@ import WhitelistingContent from "../components/WhitelistingContent"
 import CountDownTimer from "@/components/CountDownTimer"
 import { TgeWrapper } from "../components/Wrapper"
 import { formatDateForTimer } from "@/utils/date-helpers"
-import {
-  EligibilityCompliancesSection,
-  EligibilityTiersSection,
-} from "@/components/EligibilitySection/EligibilitySection.tsx"
-import React, { useRef } from "react"
+import { EligibilitySection } from "@/components/EligibilitySection/EligibilitySection.tsx"
 import DataRoom from "@/components/LaunchPool/DataRoom"
 
 type RegistrationOpensPhaseProps = {
@@ -22,7 +18,6 @@ type RegistrationOpensPhaseProps = {
  * @constructor
  */
 const RegistrationOpensPhase = ({ eventData, timeline }: RegistrationOpensPhaseProps) => {
-  const eligibilityRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
 
   return (
@@ -56,10 +51,7 @@ const RegistrationOpensPhase = ({ eventData, timeline }: RegistrationOpensPhaseP
             {t("tge.learn_more_about")}
           </a>
         </div>
-        <div ref={eligibilityRef} className="flex w-full max-w-[764px] flex-col items-center gap-8">
-          <EligibilityCompliancesSection className="w-full max-w-[432px]" />
-          <EligibilityTiersSection parentRef={eligibilityRef} className="w-full max-w-[432px]" />
-        </div>
+        <EligibilitySection />
       </div>
     </div>
   )
