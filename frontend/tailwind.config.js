@@ -146,8 +146,8 @@ export default {
           "100%": { transform: "translateY(0)", opacity: "1" },
         },
         "fade-in": {
-          "0%": { opacity: 0, transform: "translateY(10%)" },
-          "100%": { opacity: 1, transform: "translateY(0%)" },
+          "0%": { opacity: 0, transform: "translateY(10%)", filter: "blur(10px)" },
+          "100%": { opacity: 1, transform: "translateY(0%)", filter: "blur(0px)" },
         },
         "fade-in-from-above": {
           "0%": { opacity: 0, transform: "translateY(-10%)" },

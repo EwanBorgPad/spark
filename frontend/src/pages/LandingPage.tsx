@@ -16,7 +16,6 @@ import DiscoverSection from "@/components/LandingPage/DiscoverSection"
 import JoinCommunityBtn from "@/components/Button/JoinTheCommunityBtn"
 import RotatingSubtitle from "@/components/LandingPage/RotatingSubtitle"
 import { Button } from "@/components/Button/Button"
-import CountdownBtnForNextLbp from "@/components/Button/CountdownBtnForNextLbp"
 import { ROUTES } from "@/utils/routes"
 
 const LandingPage = () => {
@@ -35,7 +34,7 @@ const LandingPage = () => {
       </div>
       <section className="z-[1] flex w-full flex-col items-start gap-5 px-5 pb-[60px] pt-20 md:pb-[68px] md:pt-[56px]">
         <div className="flex w-full flex-col items-start md:items-center ">
-          <div className="flex flex-col gap-3 pb-10 md:flex-row md:pb-20">
+          <div className="flex animate-fade-in-from-below-slow flex-col gap-3 pb-10 opacity-0 md:flex-row md:pb-20">
             <div className="flex gap-2 rounded-xl border border-bd-primary bg-default/75 px-3 py-2">
               <span>Built on</span>
               <Img
@@ -56,31 +55,39 @@ const LandingPage = () => {
               />
             </div>
           </div>
-          <RotatingSubtitle />
-          <h1 className="max-w-[720px] animate-fade-in-from-below-slow pb-[66px] text-[40px] font-semibold leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
-            <span>Experience</span>{" "}
+          <h1 className="max-w-[720px] pb-[80px] text-[40px] font-semibold leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
+            <span
+              style={{ animationDelay: "300ms" }}
+              className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
+            >
+              Experience
+            </span>
             <div className="flex flex-row items-center">
               <span
-                style={{ animationDelay: "500ms" }}
+                style={{ animationDelay: "600ms" }}
                 className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
               >
                 Better
               </span>
               <span
-                style={{ animationDelay: "1200ms" }}
+                style={{ animationDelay: "900ms" }}
                 className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
               >
                 Than
               </span>
               <span
-                style={{ animationDelay: "1900ms" }}
+                style={{ animationDelay: "1200ms" }}
                 className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
               >
                 CEX
               </span>
             </div>
           </h1>
-          <div className="flex flex-col items-center gap-6">
+          <RotatingSubtitle style={{ animationDelay: "1500ms" }} />
+          <div
+            style={{ animationDelay: "1800ms" }}
+            className="flex animate-fade-in-from-below-slow flex-col items-center gap-6 opacity-0"
+          >
             <div className="flex w-full flex-col items-center gap-4 md:flex-row">
               <Link to={ROUTES.GOAT_POOLS} className="group relative h-fit w-full min-w-[220px]">
                 <Button
