@@ -36,7 +36,7 @@ const LandingPage = () => {
       <section className="z-[1] flex w-full flex-col items-start gap-5 px-5 pb-[60px] pt-10 md:pb-[68px] md:pt-[40px]">
         <div className="flex w-full flex-col items-start md:items-center ">
           <div
-            style={{ animationDelay: "1800ms" }}
+            style={{ animationDelay: "1500ms" }}
             className="flex animate-fade-in-from-below-slow flex-col gap-3 pb-20 opacity-0 md:flex-row md:pb-20"
           >
             <div className="flex gap-2 rounded-xl bg-overlay/75 px-3 py-2 backdrop-blur-sm">
@@ -61,35 +61,35 @@ const LandingPage = () => {
           </div>
           <h1 className="max-w-[720px] pb-[16px] text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
             <span
-              style={{ animationDelay: "200ms" }}
+              style={{ animationDelay: "0ms" }}
               className="translate-y-[50px] animate-fade-in-from-below-slow text-fg-primary opacity-0"
             >
               Experience
             </span>
             <div className="flex flex-row items-center">
               <span
-                style={{ animationDelay: "500ms" }}
+                style={{ animationDelay: "300ms" }}
                 className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
               >
                 Better
               </span>
               <span
-                style={{ animationDelay: "800ms" }}
+                style={{ animationDelay: "600ms" }}
                 className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
               >
                 Than
               </span>
               <span
-                style={{ animationDelay: "1100ms" }}
+                style={{ animationDelay: "900ms" }}
                 className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
               >
                 CEX
               </span>
             </div>
           </h1>
-          <RotatingSubtitle style={{ animationDelay: "1400ms" }} />
+          <RotatingSubtitle style={{ animationDelay: "1200ms" }} />
           <div
-            style={{ animationDelay: "1700ms" }}
+            style={{ animationDelay: "1500ms" }}
             className="flex w-full animate-fade-in-from-below-slow flex-col items-center gap-6 opacity-0"
           >
             <div className="flex w-full flex-col items-center justify-center gap-4 md:flex-row">
@@ -111,7 +111,7 @@ const LandingPage = () => {
               </Link>
             </div>
             {/* PLACE FOR PROJECT COUNTDOWN */}
-            <CountdownBtnForNextLbp projectId="ambient-network" />
+            <CountdownBtnForNextLbp projectId="zkagi" />
           </div>
         </div>
       </section>
