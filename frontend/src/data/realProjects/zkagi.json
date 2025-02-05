@@ -57,8 +57,8 @@
     },
     "curator": {
       "avatarUrl": "https://files.borgpad.com/images/zkagi/curator-sendai-logo.png",
-      "fullName": "SendAI",
-      "position": "Solana AI Hackathon",
+      "fullName": "SendAI Solana AI Hackathon",
+      "position": "3rd Place Agent Infrastructure Track",
       "socials": [
         {
           "url": "https://www.solanaaihackathon.com/",
@@ -94,29 +94,28 @@
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": "2025-02-05T15:00:00Z"
+        "date": "2025-02-06T15:00:00Z"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2025-02-05T23:59:00Z"
+        "date": "2025-02-06T23:59:00Z"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2025-02-05T23:59:00Z"
+        "date": "2025-02-06T23:59:00Z"
       },
       {
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
-        "date": "2025-05-05T23:59:00Z"
+        "date": "2025-05-06T23:59:00Z"
       }
     ],
     "tiers": [
       {
         "id": "tier10",
         "label": "GoatIndex AI Club.",
-        "description": "Access to sale at 4 PM CET. Maximum Investment: $750",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -126,7 +125,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2025-02-05T15:00:00Z",
+          "startDate": "2025-02-06T15:00:00Z",
           "minInvestment": "100",
           "maxInvestment": "750"
         }
@@ -134,7 +133,6 @@
       {
         "id": "tier20",
         "label": "Send it Club",
-        "description": "Access to sale at 4 PM CET. Max Investment $750",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -144,7 +142,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2025-02-05T15:00:00Z",
+          "startDate": "2025-02-06T15:00:00Z",
           "minInvestment": "100",
           "maxInvestment": "750"
         }
@@ -152,7 +150,6 @@
       {
         "id": "tier30",
         "label": "Borgers Club",
-        "description": "Access to sale at 4 PM CET. Max Investment $750",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -162,7 +159,7 @@
           }
         ],
         "benefits": {
-          "startDate": "2025-02-05T15:00:00Z",
+          "startDate": "2025-02-06T15:00:00Z",
           "minInvestment": "100",
           "maxInvestment": "750"
         }
@@ -170,10 +167,9 @@
       {
         "id": "tier99",
         "label": "Public Sale",
-        "description": "Access to sale at 4:15 PM CET. Max Investment $250",
         "quests": [],
         "benefits": {
-          "startDate": "2025-02-05T15:15:00Z",
+          "startDate": "2025-02-06T15:15:00Z",
           "minInvestment": "10",
           "maxInvestment": "250"
         }

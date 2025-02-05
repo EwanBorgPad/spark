@@ -109,7 +109,7 @@ const Project = () => {
 
         {/* Deal curated by: */}
         <div className="flex w-full flex-col gap-3 lg:max-w-[760px]">
-          <h4 className="text-sm font-normal">{t("deal_curated_by")}</h4>
+          <h4 className="text-sm font-normal">Deal coming from</h4>
           <div className="w-full rounded-lg bg-gradient-to-r from-brand-primary/50 to-brand-secondary/15 p-[1px]">
             <div className="flex h-full w-full flex-col items-start justify-between gap-4 rounded-[7px] bg-gradient-to-br from-brand-dimmed-1 via-brand-dimmed-2 via-50% to-brand-dimmed-2 px-4 py-3 lg:flex-row lg:items-center lg:bg-gradient-to-r">
               <div className="flex items-center gap-4">
