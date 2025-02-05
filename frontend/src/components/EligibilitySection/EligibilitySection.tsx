@@ -3,79 +3,58 @@ import { useTranslation } from "react-i18next"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { backendApi } from "@/data/backendApi.ts"
 import { Badge } from "../Badge/Badge"
-import { Icon } from "../Icon/Icon"
 import { twMerge } from "tailwind-merge"
-import React, { ReactNode, useMemo, useState } from "react"
-import { QuestWithCompletion } from "../../../shared/eligibilityModel.ts"
-import { Button } from "@/components/Button/Button.tsx"
-import AcceptTermsOfUseModal from "@/components/Modal/Modals/AcceptTermsOfUseModal.tsx"
-import { getSignInWithTwitterUrl } from "@/hooks/useTwitterContext.tsx"
-import { ExternalLink } from "@/components/Button/ExternalLink.tsx"
+import { RefObject, useRef } from "react"
 import { useParams } from "react-router-dom"
-import ProvideInvestmentIntentModal from "@/components/Modal/Modals/ProvideInvestmentIntentModal.tsx"
-import Text from "@/components/Text.tsx"
-import SimpleLoader from "../Loaders/SimpleLoader.tsx"
-import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
-import EnterReferralCode from "./EnterReferralCode.tsx"
 import { FinalSnapshotTaken } from "@/components/EligibilitySection/FinalSnapshotTaken.tsx"
+import { QuestComponent, sortByCompletionStatus, TierWrapper } from "./Quests.tsx"
+import { Skeleton, TierSkeletonContainer } from "./EligibilitySkeletons.tsx"
+import { EligibilityStatus } from "shared/eligibilityModel.ts"
+import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
+import { ConnectButton } from "../Header/ConnectButton.tsx"
+import Divider from "../Divider.tsx"
+import { Icon } from "../Icon/Icon.tsx"
 
-export const EligibilityTiersSection = ({ className }: { className?: string }) => {
+type Props = {
+  className?: string
+  parentRef: RefObject<HTMLDivElement>
+}
+
+export const EligibilitySection = () => {
+  const eligibilityRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
-  const { address, isWalletConnected } = useWalletContext()
-  const { projectId } = useParams()
-
-  const { data: eligibilityStatus, isFetching } = useQuery({
-    queryFn: () => {
-      if (!address || !projectId) return
-      return backendApi.getEligibilityStatus({ address, projectId })
-    },
-    queryKey: ["getEligibilityStatus", address, projectId],
-    enabled: Boolean(address) && Boolean(projectId),
-    staleTime: 1000 * 60 * 60,
-  })
-
-  if (!isWalletConnected) return null
 
   return (
-    <section id="tiersSection" className={className}>
-      <div id="tiersHeading" className="flex w-full items-center justify-between py-2">
-        <span>{t("tiers")}</span>
-        {eligibilityStatus && (
-          <Badge.Confirmation
-            label={eligibilityStatus.eligibilityTier?.label}
-            isConfirmed={eligibilityStatus.eligibilityTier !== null}
-          />
-        )}
+    <div ref={eligibilityRef} className="flex w-full max-w-[536px] flex-col items-center gap-[36px] pt-10">
+      <Divider icon="SvgTwoAvatars" />
+      <div id="complianceHeading" className="flex w-full items-center justify-center py-2">
+        <h2 className="-mt-5 text-2xl font-semibold leading-tight md:text-[32px]">{t("tge.join_launch_pool")}</h2>
       </div>
-      <div id="tiersContainer" className="rounded-lg border-[1px] border-bd-primary bg-secondary p-2">
-        {!isFetching ? (
-          eligibilityStatus?.tiers.map((tier) => {
-            const tierQuests = sortByCompletionStatus(tier.quests)
-            return (
-              // tier container
-              <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
-                <span>{tier.label}</span>
-                {tier.description && <span className="text-xs text-fg-secondary">{tier.description}</span>}
-                <div className="flex flex-col gap-2 rounded-2xl">
-                  {/* singular tier */}
-                  {tierQuests.map((quest) => (
-                    <QuestComponent key={quest.type} quest={quest} />
-                  ))}
-                </div>
-              </div>
-            )
-          })
-        ) : (
-          <TierSkeletonContainer />
-        )}
-      </div>
-      <FinalSnapshotTaken className="mt-2" />
-    </section>
+      <ConnectWalletStep />
+      <EligibilityCompliancesSection />
+      <EligibilityTiersSection parentRef={eligibilityRef} />
+    </div>
   )
 }
 
-export const EligibilityCompliancesSection = ({ className }: { className?: string }) => {
-  const { t } = useTranslation()
+const ConnectWalletStep = () => {
+  const { isWalletConnected } = useWalletContext()
+
+  return (
+    <div className="relative flex w-full items-start gap-2 md:gap-5">
+      <SideElements number={1} isCompleted={isWalletConnected} />
+
+      <div className="flex w-full max-w-[432px] items-center justify-between">
+        <div className="flex w-full flex-col items-start">
+          <span className="text-base md:text-lg">Connect Wallet</span>
+        </div>
+        {!isWalletConnected && <ConnectButton />}
+      </div>
+    </div>
+  )
+}
+
+const EligibilityCompliancesSection = ({ className }: { className?: string }) => {
   const { address, isWalletConnected } = useWalletContext()
   const { projectId } = useParams()
 
@@ -89,291 +68,152 @@ export const EligibilityCompliancesSection = ({ className }: { className?: strin
     staleTime: 1000 * 60 * 60,
   })
 
-  if (!isWalletConnected) return null
-
   const skeletonCompliances = Array.from({ length: 2 }, (_, i) => i)
   const complianceQuests = eligibilityStatus?.compliances ? sortByCompletionStatus(eligibilityStatus.compliances) : null
+  const isCompliant = isWalletConnected && !!eligibilityStatus?.isCompliant
 
   return (
-    <section id="complianceSection" className={className}>
-      <div id="complianceHeading" className="flex w-full items-center justify-between py-2">
-        <span>{t("tge.join_launch_pool")}</span>
-      </div>
-      <div id="compliancesContainer" className="flex flex-col gap-2 rounded-lg">
+    <section id="complianceSection" className={twMerge("relative flex w-full items-start gap-2 md:gap-5", className)}>
+      <SideElements number={2} isCompleted={isCompliant} />
+
+      <div id="compliancesContainer" className="flex w-full max-w-[432px] flex-col gap-2 rounded-lg">
+        <span className="text-base md:text-lg">Accept ToU</span>
         {!isLoading
-          ? complianceQuests?.map((quest) => <QuestComponent key={quest.type} quest={quest} />)
+          ? complianceQuests
+            ? complianceQuests?.map((quest) => <QuestComponent key={quest.type} quest={quest} />)
+            : DEFAULT_COMPLIANCES.map((quest) => <QuestComponent key={quest.type} quest={quest} />)
           : skeletonCompliances.map((quest) => <Skeleton.Compliance key={quest} />)}
       </div>
     </section>
   )
 }
 
-type QuestComponentProps = {
-  quest: QuestWithCompletion
-  autoCheck?: boolean
-}
-const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
-  const { t } = useTranslation()
+const EligibilityTiersSection = ({ className, parentRef }: Props) => {
+  const { address, isWalletConnected } = useWalletContext()
+  const { projectId } = useParams()
+  const { projectData } = useProjectDataContext()
 
-  const { type } = quest
-  const isCompleted = autoCheck || quest.isCompleted
-
-  const typeData = ((): {
-    label: string
-    description: string
-    additionalElement?: ReactNode
-  } => {
-    if (type === "ACCEPT_TERMS_OF_USE")
-      return {
-        label: t("accept.terms.of.use.quest.heading"),
-        description: "",
-        additionalElement: <AcceptTermsOfUseBtn />,
-      }
-    if (type === "PROVIDE_INVESTMENT_INTENT")
-      return {
-        label: t("investment.intent.quest.heading"),
-        description: "",
-        additionalElement: <ProvideInvestmentIntentBtn />,
-      }
-
-    if (type === "FOLLOW_ON_TWITTER")
-      return {
-        label: t("follow.NAME.on.twitter", { name: quest.twitterLabel }),
-        description: "",
-        additionalElement: <FollowOnTwitterBtn />,
-      }
-    if (type === "HOLD_TOKEN")
-      return {
-        label: t("hold.AMOUNT.NAME.in.your.wallet", {
-          amount: quest.tokenAmount,
-          name: quest.tokenName,
-        }),
-        description: "",
-        // TODO @productionPush
-        additionalElement: <HoldTokenBtn tokenName={quest.tokenName} tokenMintAddress={quest.tokenMintAddress} />,
-      }
-    if (type === "WHITELIST")
-      return {
-        label: "Be a Superteam Member",
-        description: "",
-        // TODO @productionPush
-        // additionalElement: <HoldTokenBtn tokenName={quest.tokenName} />,
-      }
-    if (type === "REFERRAL")
-      return {
-        label: "Were you referred by someone? (optional)",
-        description: "Let us know who sent you to help us recognize community contributors",
-        // TODO @productionPush
-        additionalElement: <EnterReferralCode />,
-      }
-    else throw new Error("Unknown type")
-  })()
-
-  return (
-    <div
-      className={twMerge(
-        "flex w-full flex-col justify-start gap-1 rounded-lg border-b-[1px] border-b-bd-primary bg-emphasis p-4 text-sm",
-      )}
-    >
-      <div className="flex w-full items-center justify-between">
-        <span className={twMerge("font-medium", isCompleted && "opacity-50")}>{typeData.label}</span>
-        <Icon
-          icon={isCompleted ? "SvgRoundCheckmark" : "SvgEmptyCircle"}
-          className={twMerge("text-xl", isCompleted ? "text-fg-success-primary" : "")}
-        />
-      </div>
-      {typeData.description && <span className="pr-7 font-normal opacity-50">{typeData.description}</span>}
-      {!isCompleted && typeData.additionalElement}
-    </div>
-  )
-}
-type HoldTokenBtnProps = {
-  tokenName: string
-  tokenMintAddress: string
-}
-const HoldTokenBtn = ({ tokenName, tokenMintAddress }: HoldTokenBtnProps) => {
-  const { t } = useTranslation()
-
-  const swapLink = `https://jup.ag/swap/SOL-${tokenMintAddress}`
-
-  return (
-    <div className="mt-2 flex justify-start">
-      <a href={swapLink} target='_blank' rel="noopener noreferrer">
-        <Button
-          color="secondary"
-          size="xs"
-          className="rounded-lg px-3"
-        >
-          {t("buy")} {tokenName}
-        </Button>
-      </a>
-    </div>
-  )
-}
-
-const FollowOnTwitterBtn = () => {
-  const { address } = useWalletContext()
-  // TODO see if we can separate somehow the sign-in and follow actions on the ui/ux
-  const signInWithTwitterUrl = useMemo(
-    () => getSignInWithTwitterUrl(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [address],
-  )
-  return (
-    <div className="mt-2 flex justify-start">
-      <ExternalLink
-        externalLink={{
-          label: "Follow Us",
-          url: signInWithTwitterUrl,
-          iconType: "X_TWITTER",
-        }}
-        className="gap-1 rounded-lg"
-        iconClassName="opacity-50"
-      />
-    </div>
-  )
-}
-
-const AcceptTermsOfUseBtn = () => {
-  const [showModal, setShowModal] = useState(false)
-  const { t } = useTranslation()
-
-  return (
-    <div className="mt-2 flex justify-start">
-      <Button
-        color="secondary"
-        size="xs"
-        className="rounded-lg px-3"
-        onClick={() => setShowModal(!showModal)}
-      >
-        {t("accept.terms.of.use.quest.button")}
-      </Button>
-      {showModal && (
-        <AcceptTermsOfUseModal onClose={() => setShowModal(false)} />
-      )}
-    </div>
-  )
-}
-
-const ProvideInvestmentIntentBtn = () => {
-  const { t } = useTranslation()
-  const [showModal, setShowModal] = useState(false)
-
-  return (
-    <div className="mt-2 flex justify-start">
-      <Button
-        color="secondary"
-        size="xs"
-        className="rounded-lg px-3"
-        onClick={() => setShowModal(!showModal)}
-      >
-        {t("investment.intent.quest.button")}
-      </Button>
-      {showModal && (
-        <ProvideInvestmentIntentModal onClose={() => setShowModal(false)} />
-      )}
-    </div>
-  )
-}
-
-function sortByCompletionStatus<T extends { isCompleted: boolean }>(
-  arr: T[],
-): T[] {
-  return [...arr].sort((a, b) => {
-    // Sort completed first and uncompleted last
-    if (a.isCompleted === b.isCompleted) {
-      return 0 // Preserve original order when both are the same
-    }
-    return a.isCompleted ? -1 : 1 // Completed comes first
+  const { data: eligibilityStatus, isFetching } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getEligibilityStatus({ address, projectId })
+    },
+    queryKey: ["getEligibilityStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+    staleTime: 1000 * 60 * 60,
   })
-}
 
-const ComplianceSkeleton = () => {
-  return (
-    <div
-      className={twMerge(
-        "flex w-full flex-col justify-start gap-1 rounded-lg border-b-[1px] border-b-bd-primary bg-emphasis p-4 text-sm",
-      )}
-    >
-      <div className="flex w-full items-center justify-between gap-2">
-        <Text isLoading={true} className="h-[20px] max-w-[220px]" />
-        <SimpleLoader className="text-lg opacity-50" />
-      </div>
-      <div className="mt-2 flex w-full justify-start">
-        <Button
-          color="secondary"
-          size="xs"
-          className="w-[118px] rounded-lg px-3"
-          disabled
-        >
-          <Text isLoading={true} />
-        </Button>
-      </div>
-    </div>
-  )
-}
-const TierQuestSkeleton = () => {
-  return (
-    <div
-      className={twMerge(
-        "flex w-full flex-col justify-start gap-1 rounded-lg border-b-[1px] border-b-bd-primary bg-emphasis p-4 text-sm",
-      )}
-    >
-      <div className="flex w-full items-center justify-between gap-2">
-        <Text isLoading={true} className="h-[18px] max-w-[220px]" />
-        <SimpleLoader className="max-h-[20px] text-lg opacity-50" />
-      </div>
-    </div>
-  )
-}
-
-const Skeleton = {
-  Compliance: ComplianceSkeleton,
-  TierQuest: TierQuestSkeleton,
-}
-
-const TierSkeletonContainer = () => {
-  const { projectData, isFetching } = useProjectDataContext()
-
-  // arbitrary number of quests before projectData is fetched
-  const skeletonArray = Array.from({ length: 3 }, (_, i) => i)
-
-  if (isFetching) {
-    return (
-      <>
-        <div className="flex w-full flex-col gap-2 rounded-lg p-2">
-          <Text isLoading className="!max-w-[240px]" />
-          <div className="flex flex-col gap-2 rounded-2xl">
-            {skeletonArray.map((item) => (
-              <Skeleton.TierQuest key={item} />
-            ))}
-          </div>
-        </div>
-        <div className="flex w-full flex-col gap-2 rounded-lg p-2">
-          <Text isLoading className="!max-w-[240px]" />
-          <div className="flex flex-col gap-2 rounded-2xl">
-            {skeletonArray.map((item) => (
-              <Skeleton.TierQuest key={item} />
-            ))}
-          </div>
-        </div>
-      </>
-    )
+  const scrollToLaunchPool = () => {
+    const top = parentRef.current?.getBoundingClientRect().top ?? 0
+    window.scrollBy({
+      behavior: "smooth",
+      top: top - 100,
+    })
   }
 
-  return projectData?.info?.tiers.map((tier) => {
-    return (
-      // tier container
-      <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
-        <span>{tier.label}</span>
-        {tier.description && <span className="text-xs text-fg-secondary">{tier.description}</span>}
-        <div className="flex flex-col gap-2 rounded-2xl">
-          {/* singular tier */}
-          {tier.quests.map((_, index) => (
-            <Skeleton.TierQuest key={index} />
-          ))}
+  const getTiers = () => {
+    if (!projectData) return []
+    if (!eligibilityStatus) {
+      const restOfQuest = { isCompleted: false }
+      return projectData.info.tiers.map((tier) => {
+        // tier container
+        return (
+          <TierWrapper key={tier.id} tier={tier}>
+            {tier.quests.map((quest) => (
+              <QuestComponent key={quest.type} quest={{ ...quest, ...restOfQuest }} />
+            ))}
+          </TierWrapper>
+        )
+      })
+    } else {
+      return eligibilityStatus.tiers.map((tier) => {
+        const tierQuests = sortByCompletionStatus(tier.quests)
+        return (
+          <TierWrapper key={tier.id} tier={tier}>
+            {tierQuests.map((quest) => (
+              <QuestComponent key={quest.type} quest={quest} />
+            ))}
+          </TierWrapper>
+        )
+      })
+    }
+  }
+
+  const isConfirmed = !!eligibilityStatus && eligibilityStatus?.eligibilityTier !== null
+
+  return (
+    <section id="tiersSection" className={twMerge("relative flex w-full items-start gap-2 md:gap-5", className)}>
+      <SideElements number={3} isCompleted={isConfirmed} hasVerticalElement={false} className="mt-0.5" />
+      <div className="flex w-full max-w-[432px] flex-col">
+        <div id="tiersHeading" className="flex w-full flex-col items-start gap-3 pb-4">
+          <div className="flex w-full items-center justify-between">
+            <span className="text-base md:text-lg">Qualify for desired tier</span>
+            {eligibilityStatus && (
+              <Badge.Confirmation
+                label={eligibilityStatus.eligibilityTier?.label}
+                isConfirmed={eligibilityStatus.eligibilityTier !== null}
+              />
+            )}
+          </div>
+          {!eligibilityStatus?.isCompliant && isWalletConnected && (
+            <div className={twMerge("text-fg-primary")}>
+              <span className="text-sm ">To become eligible,</span>
+              <button type="button" className="px-1 text-sm underline" onClick={scrollToLaunchPool}>
+                accept Terms of Use
+              </button>
+              <span className="text-sm">in the above section</span>
+            </div>
+          )}
         </div>
+        <div id="tiersContainer" className="rounded-lg border-[1px] border-bd-secondary bg-default p-2">
+          {!isFetching ? getTiers() : <TierSkeletonContainer />}
+        </div>
+        <FinalSnapshotTaken className="mt-2" />
       </div>
-    )
-  })
+    </section>
+  )
+}
+
+const DEFAULT_COMPLIANCES: EligibilityStatus["compliances"] = [
+  {
+    type: "ACCEPT_TERMS_OF_USE",
+    isCompleted: false,
+  },
+  {
+    type: "PROVIDE_INVESTMENT_INTENT",
+    isOptional: true,
+    isCompleted: false,
+  },
+]
+
+const SideElements = ({
+  number,
+  isCompleted,
+  hasVerticalElement = true,
+  className,
+}: {
+  number: number
+  className?: string
+  isCompleted: boolean
+  hasVerticalElement?: boolean
+}) => {
+  return (
+    <>
+      <div
+        className={twMerge(
+          "relative mt-[-2px] flex h-8 w-[32px] min-w-[32px] items-center justify-center rounded-full bg-secondary",
+          className,
+        )}
+      >
+        {isCompleted ? (
+          <Icon icon={"SvgRoundCheckmark"} className={twMerge("text-xl text-fg-success-primary")} />
+        ) : (
+          <span className="text-sm text-fg-secondary">{number}</span>
+        )}
+      </div>
+      {hasVerticalElement && (
+        <div className="absolute left-[15px] top-7 h-[110%] min-h-[66px] border border-secondary"></div>
+      )}
+    </>
+  )
 }

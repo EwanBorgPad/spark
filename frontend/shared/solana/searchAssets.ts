@@ -74,6 +74,8 @@ export async function rpcSearchAssets({
     throw new Error(message)
   }
 
+  console.log('Helius searchAssets call...')
+
   return rpcResponse.result
 }
 
