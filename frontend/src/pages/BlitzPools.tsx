@@ -40,11 +40,11 @@ const BlitzPools = () => {
   }, [data?.projects])
 
   return (
-    <main className="relative z-[10] flex min-h-screen w-full flex-col items-center bg-transparent pt-[48px] md:pt-[68px]">
+    <main className="relative z-[10] flex min-h-screen w-full select-none flex-col items-center bg-transparent pt-[48px] md:pt-[68px]">
       <div className="absolute top-[48px] z-[-1] w-screen opacity-100 md:top-[68px] ">
         <video
           src="https://pub-afd56fb014c94eac935a52c2d0d6a5e8.r2.dev/unicorn-animation/sample3%20(online-video-cutter__78pct_smaller.mp4"
-          className="animate-looped-video left-0 z-[101] h-[642px] w-full object-cover opacity-50 md:h-auto"
+          className="left-0 z-[101] h-[642px] w-full animate-looped-video object-cover opacity-50 md:h-auto"
           autoPlay
           loop
           muted
