@@ -27,7 +27,7 @@ const LandingPage = () => {
     >
       <div
         style={{ animationDelay: "1500ms" }}
-        className="animate-opacity-in absolute top-12 z-[-1] flex w-screen justify-center overflow-hidden opacity-0 lg:top-[72px]"
+        className="absolute top-12 z-[-1] flex w-screen animate-opacity-in justify-center overflow-hidden opacity-0 lg:top-[72px]"
       >
         <img
           src={angelStakingTexture1Mob}
@@ -114,7 +114,7 @@ const LandingPage = () => {
               </Link>
             </div>
             {/* PLACE FOR PROJECT COUNTDOWN */}
-            <CountdownBtnForNextLbp projectId="zkagi" />
+            {/* <CountdownBtnForNextLbp projectId="zkagi" /> */}
           </div>
         </div>
       </section>
