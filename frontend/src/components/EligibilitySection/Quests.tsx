@@ -178,13 +178,34 @@ export const TierWrapper = ({
   tier,
 }: {
   children: ReactNode
-  tier: Pick<ProjectModel["info"]["tiers"][number], "id" | "label" | "description">
+  tier: Pick<ProjectModel["info"]["tiers"][number], "id" | "label" | "description" | "benefits">
 }) => {
+  const { t } = useTranslation()
+
+  const getDescription = (
+    tier: Pick<ProjectModel["info"]["tiers"][number], "id" | "label" | "description" | "benefits">,
+  ) => {
+    const description = t("access.to.sale.at.TIME.max.investment.MAX", {
+      time:
+        new Intl.DateTimeFormat("en-GB", {
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true,
+          timeZone: "CET",
+        })
+          .format(new Date(tier.benefits.startDate))
+          .toUpperCase() + " CET",
+      max: tier.benefits.maxInvestment,
+    })
+    return description
+  }
+  const description = getDescription(tier)
+
   return (
     <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
       <div className="flex flex-col">
         <span>{tier.label}</span>
-        {tier.description && <span className="text-xs text-fg-secondary">{tier.description}</span>}
+        {description && <span className="text-xs text-fg-secondary">{description}</span>}
       </div>
       <div className="flex flex-col gap-2 rounded-2xl">
         {/* singular tier */}
