@@ -81,7 +81,7 @@ export const ConnectButton = ({
                 <div
                   className={twMerge(
                     "flex w-full flex-col items-center justify-center lg:flex-row",
-                    "gap-4 lg:gap-6",
+                    "gap-4 md:gap-3",
                     // 'p-4 lg:flex-row lg:gap-6 lg:p-[56px] lg:pb-[40px]',
                   )}
                 >
