@@ -16,8 +16,8 @@ import DiscoverSection from "@/components/LandingPage/DiscoverSection"
 import JoinCommunityBtn from "@/components/Button/JoinTheCommunityBtn"
 import RotatingSubtitle from "@/components/LandingPage/RotatingSubtitle"
 import { Button } from "@/components/Button/Button"
-import CountdownBtnForNextLbp from "@/components/Button/CountdownBtnForNextLbp"
 import { ROUTES } from "@/utils/routes"
+import CountdownBtnForNextLbp from "@/components/Button/CountdownBtnForNextLbp"
 
 const LandingPage = () => {
   return (
@@ -25,7 +25,10 @@ const LandingPage = () => {
       className="relative z-[10] flex w-full max-w-[100vw] flex-col items-center
      bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]"
     >
-      <div className="absolute top-12 z-[-1] flex w-screen justify-center overflow-hidden lg:top-[72px]">
+      <div
+        style={{ animationDelay: "1500ms" }}
+        className="absolute top-12 z-[-1] flex w-screen animate-opacity-in justify-center overflow-hidden opacity-0 lg:top-[72px]"
+      >
         <img
           src={angelStakingTexture1Mob}
           role="presentation"
@@ -33,56 +36,67 @@ const LandingPage = () => {
         />
         <img src={angelStakingTexture1} role="presentation" className="hidden w-full mix-blend-lighten md:flex" />
       </div>
-      <section className="z-[1] flex w-full flex-col items-start gap-5 px-5 pb-[60px] pt-20 md:pb-[68px] md:pt-[56px]">
+      <section className="z-[1] flex w-full flex-col items-start gap-5 px-5 pb-[60px] pt-10 md:pb-[68px] md:pt-[40px]">
         <div className="flex w-full flex-col items-start md:items-center ">
-          <div className="flex flex-col gap-3 pb-10 md:flex-row md:pb-20">
-            <div className="flex gap-2 rounded-xl border border-bd-primary bg-default/75 px-3 py-2">
-              <span>Built on</span>
+          <div
+            style={{ animationDelay: "1500ms" }}
+            className="flex animate-fade-in-from-below-slow flex-col gap-3 pb-20 opacity-0 md:flex-row md:pb-20"
+          >
+            <div className="flex gap-2 rounded-xl bg-overlay/75 px-3 py-2 backdrop-blur-sm">
+              <span className="text-sm">Built on</span>
               <Img
                 src={solanaImg}
                 size="custom"
-                customClass="w-[108px] rounded-none"
+                customClass="w-[95px] rounded-none"
                 imgClassName="object-contain"
                 alt="Solana logo"
               />
             </div>
-            <div className="flex gap-2 rounded-xl border border-bd-primary bg-default/75 px-3 py-2">
-              <span>By the minds of</span>
+            <div className="flex gap-2 rounded-xl bg-overlay/75 px-3 py-2 backdrop-blur-sm">
+              <span className="text-sm">By the minds of</span>
               <Img
                 src={swissborgLogo}
                 size="custom"
-                customClass="w-[85px] rounded-none"
+                customClass="w-[90px] rounded-none"
                 imgClassName="object-contain"
               />
             </div>
           </div>
-          <RotatingSubtitle />
-          <h1 className="max-w-[720px] animate-fade-in-from-below-slow pb-[66px] text-[40px] font-semibold leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
-            <span>Experience</span>{" "}
+          <h1 className="max-w-[720px] pb-[16px] text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
+            <span
+              style={{ animationDelay: "0ms" }}
+              className="translate-y-[50px] animate-fade-in-from-below-slow text-fg-primary opacity-0"
+            >
+              Experience
+            </span>
             <div className="flex flex-row items-center">
               <span
-                style={{ animationDelay: "500ms" }}
+                style={{ animationDelay: "300ms" }}
                 className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
               >
                 Better
               </span>
               <span
-                style={{ animationDelay: "1200ms" }}
+                style={{ animationDelay: "600ms" }}
                 className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
               >
                 Than
               </span>
               <span
-                style={{ animationDelay: "1900ms" }}
+                style={{ animationDelay: "900ms" }}
                 className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
               >
                 CEX
               </span>
             </div>
           </h1>
-          <div className="flex flex-col items-center gap-6">
-            <div className="flex w-full flex-col items-center gap-4 md:flex-row">
-              <Link to={ROUTES.GOAT_POOLS} className="group relative h-fit w-full min-w-[220px]">
+          <RotatingSubtitle style={{ animationDelay: "1200ms" }} />
+          <div
+            style={{ animationDelay: "1500ms" }}
+            className="flex w-full animate-fade-in-from-below-slow flex-col items-center gap-6 opacity-0"
+          >
+            <div className="flex w-full flex-col items-center justify-center gap-4 md:flex-row">
+              <Link to={ROUTES.GOAT_POOLS} className="group relative h-fit w-full min-w-[220px] md:w-[220px]">
                 <Button
                   btnText="Explore Goat Pools"
                   textClassName="text-sm px-3"
@@ -90,7 +104,7 @@ const LandingPage = () => {
                 />
                 <div className="absolute inset-0 z-[-1] h-full w-full rounded-xl shadow-around-1 transition-shadow duration-500 group-hover:shadow-around-2"></div>
               </Link>
-              <Link to={ROUTES.BLITZ_POOLS} className="group relative h-fit w-full min-w-[220px]">
+              <Link to={ROUTES.BLITZ_POOLS} className="group relative h-fit w-full min-w-[220px] md:w-[220px]">
                 <Button
                   btnText="Explore Blitz Pools"
                   textClassName="text-sm px-3"

@@ -146,8 +146,8 @@ export default {
           "100%": { transform: "translateY(0)", opacity: "1" },
         },
         "fade-in": {
-          "0%": { opacity: 0, transform: "translateY(10%)" },
-          "100%": { opacity: 1, transform: "translateY(0%)" },
+          "0%": { opacity: 0, transform: "translateY(10%)", filter: "blur(10px)" },
+          "100%": { opacity: 1, transform: "translateY(0%)", filter: "blur(0px)" },
         },
         "fade-in-from-above": {
           "0%": { opacity: 0, transform: "translateY(-10%)" },
@@ -207,6 +207,7 @@ export default {
         },
       },
       animation: {
+        "opacity-in": "opacity-in 0.6s ease-in-out forwards",
         "top-down": "top-down 0.1s ease-out forwards",
         "fade-in": "fade-in 0.2s ease-in-out",
         "fade-in-from-below-slow": "fade-in 1s ease-in-out forwards",
