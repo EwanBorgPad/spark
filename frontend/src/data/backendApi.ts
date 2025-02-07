@@ -139,13 +139,19 @@ const postAcceptTermsOfUse = async (args: AcceptTermsOfUseArgs) => {
   })
 }
 type PostInvestmentIntentArgs = InvestmentIntentRequest
-const postInvestmentIntent = async (args: PostInvestmentIntentArgs) => {
+const postInvestmentIntent = async (args: PostInvestmentIntentArgs): Promise<void> => {
   const url = new URL(POST_INVESTMENT_INTENT_API, window.location.href)
 
-  await fetch(url, {
+  const response = await fetch(url, {
     body: JSON.stringify(args),
     method: "post",
   })
+  
+  if (response.status === 401) {
+    throw new Error('Signature mismatch! Please make sure you are signing the message with the correct wallet address!')
+  }
+
+  if (!response.ok) throw new Error('Something went wrong...')
 }
 type PostReferralArgs = {
   referrerTwitterHandle: string
