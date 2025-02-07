@@ -23,7 +23,7 @@ export const FinalSnapshotTaken = ({ className }: Props) => {
         <Text
           text={t("whitelisting.update_every", { date: formattedDate })}
           isLoading={isLoading}
-          className="text-sm md:text-base"
+          className="text-sm"
         />
       </div>
     </section>
