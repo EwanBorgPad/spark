@@ -10,6 +10,7 @@ import CheckboxField from "@/components/InputField/CheckboxField.tsx"
 import { useState } from "react"
 import { toast } from "react-toastify"
 import { useParams } from "react-router-dom"
+import { eligibilityStatusCacheBust } from "@/utils/cache-helper"
 
 type AcceptTermsOfUseModalProps = {
   onClose: () => void
@@ -39,6 +40,7 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
       await backendApi.postAcceptTermsOfUse(data)
     },
     onSuccess: () => {
+      eligibilityStatusCacheBust.invokeCacheBusting()
       queryClient.invalidateQueries({
         queryKey: ["getEligibilityStatus", address, projectId],
       })
@@ -51,7 +53,7 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
 
   return (
     <SimpleModal showCloseBtn={true} onClose={onClose} title={t("accept.terms.of.use.quest.heading")}>
-      <div className="relative flex w-full max-w-[460px] flex-col items-center justify-center max-sm:h-full">
+      <div className="relative flex w-full max-w-[520px] flex-col items-center justify-center max-sm:h-full">
         <>
           {/* Body */}
           <div className={twMerge("flex w-full grow flex-col justify-start gap-5 px-4 pb-8 pt-3 md:px-10")}>

@@ -14,6 +14,7 @@ import {
   TokenAmountModel,
 } from "../../shared/models.ts"
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
+import { eligibilityStatusCacheBust } from "@/utils/cache-helper.ts"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? `${window.location.origin}/api`
 const GET_ELIGIBILITY_STATUS_API = API_BASE_URL + "/eligibilitystatus"
@@ -43,6 +44,11 @@ const getEligibilityStatus = async ({ address, projectId }: GetEligibilityStatus
   const url = new URL(GET_ELIGIBILITY_STATUS_API, window.location.href)
   url.searchParams.set("address", address)
   url.searchParams.set("projectId", projectId)
+  const bustCacheStatus = eligibilityStatusCacheBust.getCacheStatus()
+  if (bustCacheStatus && bustCacheStatus === "1") {
+    url.searchParams.set("cache-bust", Date.now().toString())
+    eligibilityStatusCacheBust.removeCacheBustStatus()
+  }
 
   const response = await fetch(url)
   const json = await response.json()
