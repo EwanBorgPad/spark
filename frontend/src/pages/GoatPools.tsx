@@ -41,7 +41,7 @@ const GoatPools = () => {
   }, [data?.projects])
 
   return (
-    <main className="relative z-[10] min-h-screen w-full bg-transparent pt-[48px] md:pt-[68px]">
+    <main className="relative z-[10] min-h-screen w-full select-none bg-transparent pt-[48px] md:pt-[68px]">
       <img src={launchPoolsBg} className="absolute top-[48px] z-[-1] w-full md:top-[68px]" role="presentation" />
 
       <section className="z-[1] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">

@@ -22,7 +22,7 @@ const Project = () => {
   const expandedTimeline = expandTimelineDataInfo(projectData?.info.timeline ?? [])
 
   return (
-    <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[72px] font-normal text-fg-primary lg:py-[100px]">
+    <main className="z-[10] flex w-full max-w-full select-none flex-col items-center gap-10 overflow-y-hidden py-[72px] font-normal text-fg-primary lg:py-[100px]">
       <div className="max-w-screen absolute left-0 top-10 z-[-11] w-full overflow-hidden lg:top-16">
         <img src={backdropImg} className="h-[740px] min-w-[1440px] lg:h-auto lg:w-screen" />
       </div>
