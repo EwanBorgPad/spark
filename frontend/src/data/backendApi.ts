@@ -9,7 +9,6 @@ import {
   MyRewardsResponse,
   ProjectModel,
   projectSchema,
-  ProjectTypeSchema,
   SaleResultsResponse,
   TokenAmountModel,
 } from "../../shared/models.ts"
@@ -34,6 +33,18 @@ const CREATE_DEPOSIT_TRANSACTION = API_BASE_URL + "/createdeposittransaction"
 const CREATE_CLAIM_TRANSACTION = API_BASE_URL + "/createclaimtransaction"
 const SEND_DEPOSIT_TRANSACTION = API_BASE_URL + "/senddeposittransaction"
 const SEND_CLAIM_TRANSACTION = API_BASE_URL + "/sendclaimtransaction"
+
+const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
+  const response = await fetch(...args)
+
+  if (response.status === 401) {
+    throw new Error('Signature mismatch! Please make sure you are signing the message with the correct wallet address!')
+  }
+
+  if (!response.ok) {
+    throw new Error('Something went wrong...')
+  }
+}
 
 type GetEligibilityStatusArgs = {
   address: string
@@ -130,19 +141,19 @@ export type PostUserDepositRequest = {
   projectId: string
 }
 type AcceptTermsOfUseArgs = AcceptTermsRequest
-const postAcceptTermsOfUse = async (args: AcceptTermsOfUseArgs) => {
+const postAcceptTermsOfUse = async (args: AcceptTermsOfUseArgs): Promise<void> => {
   const url = new URL(POST_ACCEPT_TERMS_OF_USE_API, window.location.href)
 
-  await fetch(url, {
+  await failFastFetch(url, {
     body: JSON.stringify(args),
     method: "post",
   })
 }
 type PostInvestmentIntentArgs = InvestmentIntentRequest
-const postInvestmentIntent = async (args: PostInvestmentIntentArgs) => {
+const postInvestmentIntent = async (args: PostInvestmentIntentArgs): Promise<void> => {
   const url = new URL(POST_INVESTMENT_INTENT_API, window.location.href)
 
-  await fetch(url, {
+  await failFastFetch(url, {
     body: JSON.stringify(args),
     method: "post",
   })
@@ -155,10 +166,10 @@ type PostReferralArgs = {
   message: string
   signature: number[]
 }
-const postReferral = async (args: PostReferralArgs) => {
+const postReferral = async (args: PostReferralArgs): Promise<void> => {
   const url = new URL(POST_REFERRAL_API, window.location.href)
 
-  await fetch(url, {
+  await failFastFetch(url, {
     body: JSON.stringify(args),
     method: "post",
   })
