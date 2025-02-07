@@ -29,6 +29,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       new PublicKey(publicKey).toBytes(),
     );
     if (!isVerified) {
+      await reportError(db, new Error(`Invalid signature (investmentintent)! publicKey: ${publicKey}, message: ${message}, signature: ${signature}`))
       return jsonResponse(null, 401)
     }
 

@@ -58,7 +58,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       new PublicKey(publicKey).toBytes(),
     );
     if (!isVerified) {
-      await reportError(db, new Error(`Invalid signature! publicKey: ${publicKey}, message: ${message}, signature: ${signature}`))
+      await reportError(db, new Error(`Invalid signature (acceptterms)! publicKey: ${publicKey}, message: ${message}, signature: ${signature}`))
       return jsonResponse(null, 401)
     }
 
