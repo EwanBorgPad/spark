@@ -1,7 +1,14 @@
-const ELIGIBILITY_STATUS_CACHE_BUST_KEY = "eligibility-status-cache-bust"
+const CACHE_BUST_KEY_ELIGIBILITY_STATUS = "cache-bust-eligibility-status"
+const CACHE_BUST_KEY_INVESTMENT_INTENT = "cache-bust-investment-intent"
 
 export const eligibilityStatusCacheBust = {
-  getCacheStatus: () => localStorage.getItem(ELIGIBILITY_STATUS_CACHE_BUST_KEY),
-  invokeCacheBusting: () => localStorage.setItem(ELIGIBILITY_STATUS_CACHE_BUST_KEY, "1"),
-  removeCacheBustStatus: () => localStorage.removeItem(ELIGIBILITY_STATUS_CACHE_BUST_KEY),
+  getCacheBustStatus: () => localStorage.getItem(CACHE_BUST_KEY_ELIGIBILITY_STATUS),
+  invokeCacheBusting: () => localStorage.setItem(CACHE_BUST_KEY_ELIGIBILITY_STATUS, "1"),
+  removeCacheBustStatus: () => localStorage.removeItem(CACHE_BUST_KEY_ELIGIBILITY_STATUS),
+}
+
+export const investmentIntentSummaryCacheBust = {
+  getCacheBustStatus: () => localStorage.getItem(CACHE_BUST_KEY_INVESTMENT_INTENT),
+  invokeCacheBusting: () => localStorage.setItem(CACHE_BUST_KEY_INVESTMENT_INTENT, "1"),
+  removeCacheBustStatus: () => localStorage.removeItem(CACHE_BUST_KEY_INVESTMENT_INTENT),
 }
