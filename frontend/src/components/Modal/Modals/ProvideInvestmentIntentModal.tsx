@@ -12,6 +12,7 @@ import { InvestmentIntentRequest } from "../../../../shared/models.ts"
 import { Badge } from "@/components/Badge/Badge.tsx"
 import { toast } from "react-toastify"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
+import { eligibilityStatusCacheBust, investmentIntentSummaryCacheBust } from "@/utils/cache-helper.ts"
 
 type ProvideInvestmentIntentModalProps = {
   onClose: () => void
@@ -64,6 +65,8 @@ const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentIntentModalP
       await backendApi.postInvestmentIntent(data)
     },
     onSuccess: () => {
+      eligibilityStatusCacheBust.invokeCacheBusting()
+      investmentIntentSummaryCacheBust.invokeCacheBusting()
       queryClient.invalidateQueries({
         queryKey: ["getEligibilityStatus", address, projectId],
       })
