@@ -58,7 +58,7 @@ const TokenRewards = ({ raisedTokenInput, raisedTokenPriceInUSD, isYourContribut
               </span>
             </div>
             <span className="text-xs font-medium text-fg-tertiary">🔒 LP position permanently locked </span>
-            <span className="text-xs font-medium text-fg-tertiary">🔥 All LP fees burned</span>
+            <span className="text-xs font-medium text-fg-tertiary">🔥 All BORG fees burned</span>
           </div>
         </div>
       </div>
