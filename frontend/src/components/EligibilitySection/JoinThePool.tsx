@@ -20,7 +20,7 @@ type Props = {
   parentRef: RefObject<HTMLDivElement>
 }
 
-export const EligibilitySection = () => {
+export const JoinThePool = () => {
   const eligibilityRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
 
