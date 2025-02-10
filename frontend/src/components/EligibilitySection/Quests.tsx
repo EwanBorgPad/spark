@@ -187,6 +187,7 @@ export const TierWrapper = ({
   ) => {
     const description = t("access.to.sale.at.TIME.max.investment.MAX", {
       time:
+        tier.benefits.startDate &&
         new Intl.DateTimeFormat("en-GB", {
           hour: "numeric",
           minute: "numeric",
