@@ -40,6 +40,7 @@ export type TimelineEventType = {
   label: string
   date: Date | null
   id: (typeof timelineEventIds)[number]
+  fallbackText?: string
 }
 
 export type ExpandedTimelineEventType = {
@@ -125,7 +126,7 @@ const Timeline = ({ timelineEvents }: Props) => {
           >
             {event.label}
           </span>
-          <span className="truncate text-xs leading-[18px] opacity-50">{event.displayedTime || "TBD"}</span>
+          <span className="truncate text-xs leading-[18px] opacity-50">{event.displayedTime}</span>
         </div>
       </div>
     )
