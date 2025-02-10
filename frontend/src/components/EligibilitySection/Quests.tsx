@@ -202,7 +202,7 @@ export const TierWrapper = ({
   const description = getDescription(tier)
 
   return (
-    <div key={tier.id} className="flex flex-col gap-2 rounded-lg p-2">
+    <div key={tier.id} className="relative flex flex-col gap-2 rounded-lg p-2">
       <div className="flex flex-col">
         <span>{tier.label}</span>
         {description && <span className="text-xs text-fg-secondary">{description}</span>}
