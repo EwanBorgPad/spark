@@ -9,13 +9,14 @@ import CountDownTimer from "@/components/CountDownTimer"
 import { PastOrders } from "../components/PastOrders"
 import { TgeWrapper } from "../components/Wrapper"
 import { useRef } from "react"
-import { EligibilitySection } from "@/components/EligibilitySection/EligibilitySection.tsx"
+import { JoinThePool } from "@/components/EligibilitySection/JoinThePool.tsx"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi.ts"
 import DataRoom from "@/components/LaunchPool/DataRoom"
 import { twMerge } from "tailwind-merge"
+import { Button } from "@/components/Button/Button"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType
@@ -24,7 +25,7 @@ type LiveNowProps = {
 
 const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
   const { t } = useTranslation()
-  const eligibilitySectionRef = useRef<HTMLDivElement>(null)
+  const joinThePoolRef = useRef<HTMLDivElement>(null)
 
   const { address } = useWalletContext()
   const { projectId } = useParams()
@@ -43,8 +44,8 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
   const isUserEligible = eligibilityStatusData?.isEligible
   const tierBenefits = eligibilityStatusData?.eligibilityTier?.benefits
 
-  const scrollToEligibilitySection = () => {
-    const top = eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
+  const scrollToJoinThePool = () => {
+    const top = joinThePoolRef.current?.getBoundingClientRect().top ?? 0
     window.scrollBy({
       behavior: "smooth",
       top: top - 100,
@@ -60,6 +61,19 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
 
         <Timeline timelineEvents={timeline} />
 
+        {!isUserEligible && (
+          <div className="relative flex w-full justify-center pb-8">
+            <div className="relative h-fit">
+              <Button
+                btnText="Participate in the Pool"
+                onClick={scrollToJoinThePool}
+                className="w-full active:scale-100"
+              />
+              <div className="absolute inset-0 z-[-1] h-full w-full animate-pulse rounded-xl shadow-around shadow-brand-primary/60"></div>
+            </div>
+          </div>
+        )}
+
         <SaleProgress />
         <div className="flex w-full max-w-[432px] flex-col gap-5">
           <TgeWrapper label={t("tge.live_now")}>
@@ -70,10 +84,7 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
                 className={twMerge(tierBenefits && "h-fit pb-3")}
               />
             )}
-            <LiveNowExchange
-              scrollToEligibilitySection={scrollToEligibilitySection}
-              eligibilitySectionRef={eligibilitySectionRef}
-            />
+            <LiveNowExchange scrollToEligibilitySection={scrollToJoinThePool} eligibilitySectionRef={joinThePoolRef} />
           </TgeWrapper>
           {isUserEligible && (
             <>
@@ -82,8 +93,8 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
             </>
           )}
         </div>
-        <div ref={eligibilitySectionRef} className="flex w-full flex-col items-center">
-          <EligibilitySection />
+        <div ref={joinThePoolRef} className="flex w-full flex-col items-center">
+          <JoinThePool />
         </div>
       </div>
     </div>
