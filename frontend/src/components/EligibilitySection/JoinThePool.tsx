@@ -128,11 +128,18 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
     } else {
       return eligibilityStatus.tiers.map((tier) => {
         const tierQuests = sortByCompletionStatus(tier.quests)
+
+        const isPublicSaleTier = !tierQuests.length && tier.id === "tier99"
         return (
           <TierWrapper key={tier.id} tier={tier}>
-            {tierQuests.map((quest) => (
-              <QuestComponent key={quest.type} quest={quest} />
-            ))}
+            {!isPublicSaleTier ? (
+              tierQuests.map((quest) => <QuestComponent key={quest.type} quest={quest} />)
+            ) : (
+              <Icon
+                icon={"SvgRoundCheckmark"}
+                className={"absolute right-[24px] top-3 text-xl text-fg-success-primary"}
+              />
+            )}
           </TierWrapper>
         )
       })
