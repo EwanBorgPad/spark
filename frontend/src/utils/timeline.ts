@@ -13,7 +13,12 @@ export const expandTimelineDataInfo = (
   const nextEventDates = timelineEvents.slice(1)
   return timelineEvents.map((event, index) => {
 
-    const displayedTime = event.date ? formatDateForDisplay(event.date) : event.fallbackText || "TBD"
+    const displayedTime = event.date
+      ? formatDateForDisplay(event.date)
+      : event.fallbackText
+        ? event.fallbackText
+        : "TBD"
+    console.log(event.id, event.fallbackText, displayedTime)
     return {
       label: event.label,
       date: event.date,
