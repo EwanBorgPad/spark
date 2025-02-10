@@ -1,14 +1,7 @@
 import { useWindowSize } from "@/hooks/useWindowSize"
-import { expandTimelineDataInfo } from "@/utils/timeline"
 import { differenceInMilliseconds } from "date-fns"
 import { isBefore } from "date-fns/isBefore"
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import { CountDownCallback } from "../CountDownCallback"
 import { getCurrentTgeEvent } from "@/utils/getCurrentTgeEvent"

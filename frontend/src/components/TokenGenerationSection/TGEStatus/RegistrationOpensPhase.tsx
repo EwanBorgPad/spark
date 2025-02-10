@@ -74,7 +74,7 @@ const RegistrationOpensPhase = ({ eventData, timeline }: RegistrationOpensPhaseP
 
         {/* main section with borg/token math */}
         <div className="flex w-full max-w-[432px] flex-col gap-5">
-          <TgeWrapper label={t("tge.lp_terms")} className={!eventData?.nextEventDate ? "pt-10" : ""}>
+          <TgeWrapper label={t("tge.lp_terms")}>
             {eventData?.nextEventDate && (
               <>
                 <CountDownTimer
