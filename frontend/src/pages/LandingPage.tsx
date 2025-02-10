@@ -114,7 +114,7 @@ const LandingPage = () => {
               </Link>
             </div>
             {/* PLACE FOR PROJECT COUNTDOWN */}
-            {/* <CountdownBtnForNextLbp projectId="zkagi" /> */}
+            <CountdownBtnForNextLbp projectId="agentlauncher" />
           </div>
         </div>
       </section>
@@ -136,7 +136,10 @@ const LandingPage = () => {
             It&#39;s time to bring the upside back on-chain & fall in love with token launches again. We&#39;re
             empowering Teams & Communities to reclaim TGEs from the CEX-Cartel.
           </h2>
-          <JoinCommunityBtn />
+          <div className="relative h-fit">
+            <JoinCommunityBtn className="mt-0 md:mt-0" />
+            <div className="absolute inset-0 z-[-1] h-full w-full animate-pulse rounded-xl shadow-around shadow-brand-primary/60"></div>
+          </div>
           <div className="z-[-1] flex w-screen min-w-0 justify-center overflow-hidden px-0 md:pt-[200px]">
             <img src={dividerMobile} role="presentation" className="w-screen min-w-0 md:hidden" />
             <img src={divider} role="presentation" className="hidden w-screen min-w-0 max-w-[800px] md:flex" />
