@@ -18,7 +18,6 @@ export const expandTimelineDataInfo = (
       : event.fallbackText
         ? event.fallbackText
         : "TBD"
-    console.log(event.id, event.fallbackText, displayedTime)
     return {
       label: event.label,
       date: event.date,
