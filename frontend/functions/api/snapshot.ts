@@ -10,7 +10,9 @@ import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 const requestSchema = z.object({
   projectId: z.string().min(2),
   limit: z.number().int().min(0).max(999),
-  offset: z.number().int().min(0).max(9999).default(0)
+  offset: z.number().int().min(0).max(9999).default(0),
+  // if added, addresses are not loaded from the database
+  addresses: z.array(z.string()).optional(),
 })
 
 type ENV = {
@@ -47,10 +49,12 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const rpcUrl = getRpcUrlForCluster(ctx.env.SOLANA_RPC_URL, project.json.config.cluster)
 
     // load addresses
-    const addressesQueryResult = (await db
-      .run(sql`SELECT address FROM user WHERE address NOT IN (SELECT address FROM eligibility_status_snapshot WHERE project_id = ${projectId})`)
-    ).results as { address: string}[]
-    const addresses = addressesQueryResult.map(obj => obj.address)
+    const addresses: string[] = data.addresses 
+      ? data.addresses
+      : ((await db
+        .run(sql`SELECT address FROM user WHERE address NOT IN (SELECT address FROM eligibility_status_snapshot WHERE project_id = ${projectId})`)
+      ).results as { address: string}[])
+        .map(obj => obj.address)
 
     const paginatedAddresses = addresses.slice(offset, limit)
 
