@@ -34,6 +34,7 @@ const CREATE_DEPOSIT_TRANSACTION = API_BASE_URL + "/createdeposittransaction"
 const CREATE_CLAIM_TRANSACTION = API_BASE_URL + "/createclaimtransaction"
 const SEND_DEPOSIT_TRANSACTION = API_BASE_URL + "/senddeposittransaction"
 const SEND_CLAIM_TRANSACTION = API_BASE_URL + "/sendclaimtransaction"
+const POST_AFTER_SALE_UPDATE = API_BASE_URL + "/projects/after-sale-update"
 
 const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
   const response = await fetch(...args)
@@ -416,6 +417,28 @@ const postSendClaimTransaction = async ({
   return json
 }
 
+export type PostAfterSaleUpdateArgs = {
+  projectId: string
+  info: {
+    claimUrl: string
+    tweetUrl: string
+    tokenContractUrl: string
+    poolContractUrl: string
+  }
+}
+const postAfterSaleUpdate = async (args: PostAfterSaleUpdateArgs): Promise<void> => {
+  const url = new URL(POST_AFTER_SALE_UPDATE, window.location.href)
+  const response = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(args),
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+  if (response.status === 404) throw new Error('Project not found!')
+  if (!response.ok) throw new Error('Project update error!§')
+}
+
 
 export const backendApi = {
   getProject,
@@ -437,4 +460,5 @@ export const backendApi = {
   postSendDepositTransaction,
   postCreateClaimTx,
   postSendClaimTransaction,
+  postAfterSaleUpdate,
 }

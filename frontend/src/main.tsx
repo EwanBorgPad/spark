@@ -29,6 +29,7 @@ import LandingPage from "./pages/LandingPage"
 import BlitzPools from "./pages/BlitzPools"
 import RedirectToGoatPools from "./components/LaunchPool/RedirectToGoatPools"
 import { ROUTES } from "./utils/routes"
+import BackOffice from './pages/BackOffice2'
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -58,10 +59,10 @@ const router = createBrowserRouter([
         element: <LandingPage />,
       },
       // @backOffice
-      // {
-      //   path: "/back-office",
-      //   element: <BackOffice />,
-      // },
+      {
+        path: "/back-office",
+        element: <BackOffice />,
+      },
       // {
       //   path: "/angel-staking",
       //   element: <AngelStaking />,
