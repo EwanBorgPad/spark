@@ -115,7 +115,8 @@
 
   "follow.NAME.on.twitter": "Follow {{ name }} on X",
   "hold.AMOUNT.NAME.in.your.wallet": "Hold {{ amount }} {{ name }} in your wallet",
-  "access.to.sale.at.TIME.max.investment.MAX": "Access to sale at {{ time }}. Max Investment ${{ max }}",
+  "access.to.sale.at.TIME": "Access to sale at {{ time }}. ",
+  "max.investment.MAX": "Max Investment ${{ max }}",
 
   "accept.terms.of.use.quest.heading": "Accept our Terms of Use",
   "accept.terms.of.use.quest.button": "Show ToU",

@@ -185,20 +185,24 @@ export const TierWrapper = ({
   const getDescription = (
     tier: Pick<ProjectModel["info"]["tiers"][number], "id" | "label" | "description" | "benefits">,
   ) => {
-    const description = t("access.to.sale.at.TIME.max.investment.MAX", {
-      time:
-        tier.benefits.startDate &&
-        new Intl.DateTimeFormat("en-GB", {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-          timeZone: "CET",
+    const startTimeDescription = tier.benefits.startDate
+      ? t("access.to.sale.at.TIME", {
+          time:
+            new Intl.DateTimeFormat("en-GB", {
+              hour: "numeric",
+              minute: "numeric",
+              hour12: true,
+              timeZone: "CET",
+            })
+              .format(new Date(tier.benefits.startDate))
+              .toUpperCase() + " CET",
         })
-          .format(new Date(tier.benefits.startDate))
-          .toUpperCase() + " CET",
-      max: tier.benefits.maxInvestment,
-    })
-    return description
+      : ""
+    const investmentCapDescription = tier.benefits.maxInvestment
+      ? t("max.investment.MAX", { max: tier.benefits.maxInvestment })
+      : ""
+
+    return startTimeDescription + investmentCapDescription
   }
   const description = getDescription(tier)
 
