@@ -7,7 +7,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { DropdownSelector } from '@/components/Dropdown/Dropdown'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { GetProjectsResponse } from "shared/models"
 import { useWalletContext } from '@/hooks/useWalletContext'
 
@@ -30,19 +30,22 @@ type FormType = z.infer<typeof formSchema>
 
 // component
 const BackOffice = () => {
-  const { address } = useWalletContext()
+  const { address, signMessage } = useWalletContext()
 
-  const { data, isLoading } = useQuery<GetProjectsResponse>({
+  const { data, refetch, isLoading } = useQuery<GetProjectsResponse>({
     queryFn: () => backendApi.getProjects({ page: 1, limit: 999 }),
     queryKey: ["getProjects", "all"],
   })
-
   const [selectedProjectId, setSelectedProjectId] = useState('')
+
+  const dropdownOptions = data ? data.projects.map(project => ({ label: project.info.title, value: project.id })) : []
+  const selectedProject = data && selectedProjectId && data.projects.find(project => project.id)
 
   const {
     handleSubmit, 
     control,
-    formState: { isSubmitted, isDirty },
+    reset,
+    formState: { isDirty },
   } = useForm<FormType>({
     defaultValues: formDefaultValues,
     resolver: zodResolver(formSchema),
@@ -51,24 +54,34 @@ const BackOffice = () => {
 
   // create project - api
   const { mutate: postAfterSaleUpdate, isPending } = useMutation({
-    mutationFn: (payload: PostAfterSaleUpdateArgs) => backendApi.postAfterSaleUpdate(payload),
-    onSuccess: (_, variables) => { toast.success("Project updated!") },
+    mutationFn: async (payload: PostAfterSaleUpdateArgs) => backendApi.postAfterSaleUpdate(payload),
+    onSuccess: async (_, _variables) => { 
+      toast.success("Project updated!") 
+      await refetch()
+      if (selectedProject) reset(selectedProject.info)
+    },
     onError: (error) => { toast.error(error.message) },
   })
 
-  // onSubmit handler
+  useEffect(() => {
+    if (selectedProject) {
+      reset(selectedProject.info)
+    }
+  }, [selectedProject, reset])
+
   const onSubmit: SubmitHandler<FormType> = async (info) => {
-    console.log('submitting project')
-    console.log({ data, address, selectedProjectId })
+    const message = "I confirm I am an admin by signing this message."
+    const signature = Array.from(await signMessage(message))
+    const auth = { address, message, signature }
 
     postAfterSaleUpdate({
       projectId: selectedProjectId,
       info,
+      auth,
     })
   }
 
-  const dropdownOptions = data ? data.projects.map(project => ({ label: project.info.title, value: project.id })) : []
-
+  
   // load projects in dropdown
   // choose one project
   // load its state into the form
@@ -87,9 +100,6 @@ const BackOffice = () => {
         onChange={(value) => setSelectedProjectId(value)}
         selected={selectedProjectId}
         options={dropdownOptions} />
-      <h1>
-        Selected value: {selectedProjectId}
-      </h1>
       <form
         className="max-w-screen flex w-full flex-col items-start gap-8 px-4 md:max-w-[720px]"
         onSubmit={handleSubmit(onSubmit)}
@@ -150,6 +160,7 @@ const BackOffice = () => {
             type="submit"
             size="md"
             className="px-10"
+            disabled={!isDirty}
             isLoading={isPending}
           />
         </div>

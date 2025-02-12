@@ -425,6 +425,11 @@ export type PostAfterSaleUpdateArgs = {
     tokenContractUrl: string
     poolContractUrl: string
   }
+  auth: {
+    address: string
+    message: string
+    signature: number[]
+  }
 }
 const postAfterSaleUpdate = async (args: PostAfterSaleUpdateArgs): Promise<void> => {
   const url = new URL(POST_AFTER_SALE_UPDATE, window.location.href)
@@ -435,8 +440,10 @@ const postAfterSaleUpdate = async (args: PostAfterSaleUpdateArgs): Promise<void>
       "Content-Type": "application/json",
     }
   })
+  
   if (response.status === 404) throw new Error('Project not found!')
-  if (!response.ok) throw new Error('Project update error!§')
+  if (response.status === 401) throw new Error('Unauthorized!')
+  if (!response.ok) throw new Error('Project update error!')
 }
 
 
