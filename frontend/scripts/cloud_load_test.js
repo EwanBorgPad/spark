@@ -2,11 +2,11 @@ import http from "k6/http"
 
 export const options = {
   cloud: {
+    projectId: 3747037, // borgpad project in organization
     distribution: {
       "amazon:it:milan": { loadZone: "amazon:it:milan", percent: 100 },
     },
   },
-  projectId: 313131,
   thresholds: {},
   scenarios: {
     Scenario_1: {
