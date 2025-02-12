@@ -120,7 +120,8 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
 
   const isUserEligible = eligibilityStatus?.isEligible
   const tierBenefits = eligibilityStatus?.eligibilityTier?.benefits
-  const isEligibleTierActive = tierBenefits ? isBefore(tierBenefits.startDate, new Date()) : false
+  const isEligibleTierActive =
+    tierBenefits && tierBenefits.startDate ? isBefore(tierBenefits.startDate, new Date()) : false
 
   // Get deposit status
   const { data: depositStatus, isLoading: isDepositStatusLoading } = useQuery({

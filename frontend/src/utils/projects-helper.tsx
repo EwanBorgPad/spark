@@ -1,6 +1,6 @@
 import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { formatDateMonthDateHours } from "./date-helpers"
-import { expandTimelineDataInfo } from "./timeline"
+import { expandTimelineDataInfo } from "./timeline-helper"
 import { getCurrentTgeEvent } from "./getCurrentTgeEvent"
 import { ProjectModel } from "shared/models"
 import i18n from "@/i18n/i18n"

@@ -12,16 +12,20 @@ export const expandTimelineDataInfo = (
   const currentMoment = new Date()
   const nextEventDates = timelineEvents.slice(1)
   return timelineEvents.map((event, index) => {
+
+    const displayedTime = event.date
+      ? formatDateForDisplay(event.date)
+      : event.fallbackText
+        ? event.fallbackText
+        : "TBD"
     return {
       label: event.label,
       date: event.date,
       id: event.id,
       idRank: timelineEventIdRanks[event.id],
       nextEventDate: nextEventDates[index]?.date ?? null,
-      displayedTime: event.date ? formatDateForDisplay(event.date) : null,
-      wasEventBeforeCurrentMoment: event.date
-        ? isBefore(event.date, currentMoment)
-        : false,
+      displayedTime,
+      wasEventBeforeCurrentMoment: event.date ? isBefore(event.date, currentMoment) : false,
     }
   })
 }

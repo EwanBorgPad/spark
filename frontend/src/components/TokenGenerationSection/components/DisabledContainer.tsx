@@ -8,7 +8,7 @@ import { ConnectButton } from "@/components/Header/ConnectButton"
 
 type TierBenefitsType =
   | {
-      startDate: Date
+      startDate: Date | null
       minInvestment: string
       maxInvestment: string
     }
@@ -92,7 +92,11 @@ const DisabledContainer = ({
             </span>
             <span>{" opens on: "}</span>
           </p>
-          <span>{tierBenefits && formatDateForTimerWithTimezone(tierBenefits.startDate)}</span>
+          {
+            <span>
+              {tierBenefits && tierBenefits.startDate && formatDateForTimerWithTimezone(tierBenefits.startDate)}
+            </span>
+          }
         </div>
       </DisabledBlurContainer>
     )
