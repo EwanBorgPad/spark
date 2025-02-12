@@ -54,10 +54,10 @@ async function cleanDeployments(page) {
     return
   } else if (deployments.length <= 2 && page > 2) {
     console.log("starting again from page 2")
-    cleanDeployments(2)
+    cleanDeployments(1)
     return
   } else if (deployments.length <= 2) {
-    console.log("Latest live deployments of every branch must be removed MANUALLY.")
+    console.log("Note: Latest live deployments of every branch must be removed MANUALLY.")
     console.log("✅ Cleanup has finished.")
     return
   }
@@ -90,7 +90,7 @@ async function cleanDeployments(page) {
   latestMainDeployment?.id && console.log(`Kept latest 'main' deployment: ${latestMainDeployment.id}`)
   latestStageDeployment?.id && console.log(`Kept latest 'stage' deployment: ${latestStageDeployment.id}`)
 
-  console.log("invoking next cleanup batch...")
+  console.log("moving on to next batch cleanup...")
   cleanDeployments(page + 1)
 }
 

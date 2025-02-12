@@ -97,7 +97,7 @@ export type QuestType = z.infer<typeof QuestSchema>['type']
  * Min and Max Investments are string to cover for floating points issues, possibly change to number.
  */
 const BenefitsSchema = z.object({
-  startDate: z.coerce.date().min(new Date('2024')),
+  startDate: z.coerce.date().min(new Date("2024")).nullable(),
   minInvestment: z.string(),
   maxInvestment: z.string(),
 })

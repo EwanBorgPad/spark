@@ -105,7 +105,7 @@ export const projectSchema = z.object({
     lbpWalletAddress: SolanaAddressSchema.nullable(),
 
     raisedTokenData: TokenDataSchema,
-    launchedTokenData: TokenDataSchema
+    launchedTokenData: TokenDataSchema,
   }),
   info: z.object({
     /// following 4 fields are typically added AFTER the sale
@@ -117,7 +117,7 @@ export const projectSchema = z.object({
 
     ///// project metadata info /////
     // TODO @goatDefault default is just for migration period
-    projectType: ProjectTypeSchema.default('goat'),
+    projectType: ProjectTypeSchema.default("goat"),
     title: z.string().min(1),
     subtitle: z.string().min(1),
     logoUrl: urlSchema(),
@@ -127,7 +127,7 @@ export const projectSchema = z.object({
     tokenGenerationEventDate: optional(z.string()),
 
     chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
-    dataRoom: z.object({ backgroundImgUrl: urlSchema(), url: urlSchema() }),
+    dataRoom: z.object({ backgroundImgUrl: urlSchema().optional(), url: urlSchema() }),
     liquidityPool: z.object({
       name: z.string().min(1),
       iconUrl: urlSchema(),
@@ -145,6 +145,7 @@ export const projectSchema = z.object({
       z.object({
         id: timelineEventsSchema(),
         date: dateSchema().nullable(),
+        fallbackText: z.string().min(1).optional(),
         label: z.string().min(1),
       }),
     ),
