@@ -164,11 +164,14 @@ const getDepositStatus = async ({ db, projectId, walletAddress, rpcUrl }: GetDep
     }
 
     // also take into account project sale opens date, just in case
+    const saleOpensDate = project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date
+    const tierStartDate = eligibilityStatus.eligibilityTier.benefits.startDate
+
+    if (!saleOpensDate || !tierStartDate) throw new Error(`Misconfigured project (${projectId}), startDate or saleOpensDate field is missing`)
     const startTime = maxDate(
       new Date(eligibilityStatus.eligibilityTier.benefits.startDate),
       new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date),
     )
-    if (!startTime) throw new Error(`Misconfigured project (${projectId}), (startDate) field is missing`)
 
     return { 
         isEligible: true,
