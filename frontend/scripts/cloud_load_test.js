@@ -4,7 +4,9 @@ export const options = {
   cloud: {
     projectId: 3747037, // borgpad project in organization
     distribution: {
-      "amazon:it:milan": { loadZone: "amazon:it:milan", percent: 100 },
+      "amazon:fr:paris": { loadZone: "amazon:fr:paris", percent: 34 },
+      "amazon:it:milan": { loadZone: "amazon:it:milan", percent: 33 },
+      "amazon:de:frankfurt": { loadZone: "amazon:de:frankfurt", percent: 33 },
     },
   },
   thresholds: {},
@@ -13,9 +15,9 @@ export const options = {
       executor: "ramping-vus",
       gracefulStop: "20s",
       stages: [
-        { target: 1, duration: "15s" },
-        { target: 1, duration: "15s" },
-        { target: 0, duration: "15s" },
+        { target: 500, duration: "7s" },
+        { target: 500, duration: "2s" },
+        { target: 0, duration: "7s" },
       ],
       gracefulRampDown: "20s",
       exec: "scenario_1",
