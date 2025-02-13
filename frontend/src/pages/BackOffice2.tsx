@@ -39,7 +39,7 @@ const BackOffice = () => {
   const [selectedProjectId, setSelectedProjectId] = useState('')
 
   const dropdownOptions = data ? data.projects.map(project => ({ label: project.info.title, value: project.id })) : []
-  const selectedProject = data && selectedProjectId && data.projects.find(project => project.id)
+  const selectedProject = data && selectedProjectId && data.projects.find(project => project.id === selectedProjectId)
 
   const {
     handleSubmit, 
@@ -65,7 +65,13 @@ const BackOffice = () => {
 
   useEffect(() => {
     if (selectedProject) {
-      reset(selectedProject.info)
+      // manually resetting fields because of nullability
+      reset({
+        claimUrl: selectedProject.info.claimUrl ?? '',
+        tweetUrl: selectedProject.info.tweetUrl ?? '',
+        tokenContractUrl: selectedProject.info.tokenContractUrl ?? '',
+        poolContractUrl: selectedProject.info.poolContractUrl ?? '',
+      })
     }
   }, [selectedProject, reset])
 
