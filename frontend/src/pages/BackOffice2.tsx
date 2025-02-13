@@ -38,8 +38,11 @@ const BackOffice = () => {
   })
   const [selectedProjectId, setSelectedProjectId] = useState('')
 
-  const dropdownOptions = data ? data.projects.map(project => ({ label: project.info.title, value: project.id })) : []
-  const selectedProject = data && selectedProjectId && data.projects.find(project => project.id === selectedProjectId)
+  const dropdownOptions = data 
+    ? data.projects.map(project => ({ label: project.info.title, value: project.id })) 
+    : []
+  const selectedProject = data && selectedProjectId 
+    && data.projects.find(project => project.id === selectedProjectId)
 
   const {
     handleSubmit, 
@@ -86,16 +89,6 @@ const BackOffice = () => {
       auth,
     })
   }
-
-  
-  // load projects in dropdown
-  // choose one project
-  // load its state into the form
-  // isDirty flag enables the button
-  // isLoading on change
-  // toast success
-  // toast error
-  // solve loading states, success, and error messages
 
   return (
     <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[100px] font-normal text-fg-primary lg:py-[100px]">

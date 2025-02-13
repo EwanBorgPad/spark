@@ -1,11 +1,13 @@
-import { z } from 'zod'
-import { projectTable } from '../../../shared/drizzle-schema'
-import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
-import { drizzle } from "drizzle-orm/d1"
-import { eq } from "drizzle-orm"
+import { PublicKey } from '@solana/web3.js'
 import nacl from 'tweetnacl'
 import { decodeUTF8 } from 'tweetnacl-util'
-import { PublicKey } from '@solana/web3.js'
+
+import { eq } from "drizzle-orm"
+import { z } from 'zod'
+import { drizzle } from "drizzle-orm/d1"
+
+import { projectTable } from '../../../shared/drizzle-schema'
+import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 
 const requestSchema = z.object({
     projectId: z.string(),
@@ -34,25 +36,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     if (!ADMIN_ADDRESSES) throw new Error('Misconfigured env! ADMIN_ADDRESSES is missing')
     const adminAddresses = ADMIN_ADDRESSES.split(',')
 
-    // parse request
+    // parse/validate request
     const requestJson = await ctx.request.json()
     const { error, data } = requestSchema.safeParse(requestJson)
-
-    // validate request
-    if (error || !data) {
+    if (error || !data)
         return jsonResponse({ message: "Invalid request!", error }, 400)
-    }
-
-    // TODO authorization
-
-    const { projectId } = data
-
-    const {
-      claimUrl,
-      tweetUrl,
-      tokenContractUrl,
-      poolContractUrl
-    } = data.info
 
     //// auth
     const { address, message, signature } = data.auth
@@ -75,18 +63,18 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse(null, 401)
     }
 
-    // happy flow
+    //// happy flow
     const project = await db
         .select()
         .from(projectTable)
-        .where(eq(projectTable.id, projectId))
+        .where(eq(projectTable.id, data.projectId))
         .get()
     if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 
-    project.json.info.claimUrl = claimUrl
-    project.json.info.tweetUrl = tweetUrl
-    project.json.info.tokenContractUrl = tokenContractUrl
-    project.json.info.poolContractUrl = poolContractUrl
+    project.json.info.claimUrl = data.info.claimUrl
+    project.json.info.tweetUrl = data.info.tweetUrl
+    project.json.info.tokenContractUrl = data.info.tokenContractUrl
+    project.json.info.poolContractUrl = data.info.poolContractUrl
 
     await db.update(projectTable)
         .set({ json: project.json })
