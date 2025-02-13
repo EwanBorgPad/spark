@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react'
 import { GetProjectsResponse } from "shared/models"
 import { useWalletContext } from '@/hooks/useWalletContext'
 
-const urlSchema = z.string().url()
+const urlSchema = z.union([z.string().url(), z.literal("")])
 
 // schema & types
 const formSchema = z.object({
