@@ -50,8 +50,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
 
   const { page, limit } = args
 
-  // TODO @goatDefault
-  const projectType = args.projectType ?? 'goat'
+  const projectType = args.projectType
 
   const offset = (page - 1) * limit
 
