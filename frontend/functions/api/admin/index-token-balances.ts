@@ -1,5 +1,6 @@
 import { getRpcUrlForCluster } from '../../../shared/solana/rpcUtils'
 import { jsonResponse, reportError, hasAdminAccess } from "../cfPagesFunctionsUtils"
+import { bigDecimal } from 'js-big-decimal'
 
 const BorgMintAddress = '3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z'
 const BorgDecimals = 9
@@ -76,7 +77,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const ownerAddress = tokenAccount.owner
         const tokenMintAddress = tokenAccount.mint
         const quotedAt = now.toISOString()
-        const uiAmount = formatNumber(tokenAccount.amount / Math.pow(10, BorgDecimals), BorgDecimals)
+        const uiAmount = bigDecimal.divide(
+          tokenAccount.amount,  // dividend
+          Math.pow(10, BorgDecimals),  // divisor
+          BorgDecimals,  // precision (default precision 8, we need more, e.g. 9 for Borg)
+        )
         values.push(ownerAddress, tokenMintAddress, quotedAt, uiAmount)
         
         index += 4
