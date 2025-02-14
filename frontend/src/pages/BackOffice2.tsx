@@ -30,9 +30,9 @@ type FormType = z.infer<typeof formSchema>
 
 // component
 const BackOffice = () => {
-  const { address, signMessage } = useWalletContext()
+  const { address, signMessage, isWalletConnected } = useWalletContext()
 
-  const { data, refetch, isLoading } = useQuery<GetProjectsResponse>({
+  const { data, refetch } = useQuery<GetProjectsResponse>({
     queryFn: () => backendApi.getProjects({ page: 1, limit: 999 }),
     queryKey: ["getProjects", "all"],
   })
@@ -159,7 +159,7 @@ const BackOffice = () => {
             type="submit"
             size="md"
             className="px-10"
-            disabled={!isDirty}
+            disabled={!isDirty || !isWalletConnected}
             isLoading={isPending}
           />
         </div>
