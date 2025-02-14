@@ -27,11 +27,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse(null, 401)
     }
 
-    const tokenAccounts: TokenAccount[] = []
-    
+    // happy flow
     const now = new Date()
     
     console.log('Fetching token accounts...')
+    const tokenAccounts: TokenAccount[] = []
     let page = 1
     while (true) {
       const requestBody = {
@@ -46,7 +46,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       }
 
       console.log(`Fetching token accounts - solana RPC request: page=${page}`)
-      
       const response = await fetch(rpcUrl, {
         method: "post",
         headers: { "Content-Type": "application/json" },
@@ -131,8 +130,4 @@ function splitIntoBatches<T>(list: T[], batchSize: number): T[][] {
   }
 
   return batches;
-}
-
-function formatNumber(num: number, decimals: number): string {
-  return num.toExponential().includes("e") ? num.toFixed(decimals).replace(/\.?0+$/, "") : num.toFixed(decimals);
 }
