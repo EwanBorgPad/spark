@@ -102,7 +102,7 @@ export const tokenBalanceTable = sqliteTable('token_balance', {
   ownerAddress: text('owner_address').notNull(),
   tokenMintAddress: text('token_mint_address').notNull(),
   quotedAt: text('quoted_at').notNull(),
-  uiAmount: text('owner_address').notNull(),
+  uiAmount: text('ui_amount').notNull(),
 }, (table) => {
   return {
     pk: primaryKey({ columns: [table.ownerAddress, table.tokenMintAddress] })
