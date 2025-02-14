@@ -11,6 +11,8 @@ import { ExternalLink } from "../Button/ExternalLink"
 import AcceptTermsOfUseModal from "../Modal/Modals/AcceptTermsOfUseModal"
 import ProvideInvestmentIntentModal from "../Modal/Modals/ProvideInvestmentIntentModal"
 import { ProjectModel } from "shared/models"
+import { format } from "node_modules/date-fns/format"
+import { formatDateForDisplay, formatDateForTimer } from "@/utils/date-helpers"
 
 type QuestComponentProps = {
   quest: QuestWithCompletion
@@ -186,17 +188,7 @@ export const TierWrapper = ({
     tier: Pick<ProjectModel["info"]["tiers"][number], "id" | "label" | "description" | "benefits">,
   ) => {
     const startTimeDescription = tier.benefits.startDate
-      ? t("access.to.sale.at.TIME", {
-          time:
-            new Intl.DateTimeFormat("en-GB", {
-              hour: "numeric",
-              minute: "numeric",
-              hour12: true,
-              timeZone: "CET",
-            })
-              .format(new Date(tier.benefits.startDate))
-              .toUpperCase() + " CET",
-        })
+      ? t("access.to.sale.at.TIME", { time: formatDateForTimer(tier.benefits.startDate) })
       : ""
     const investmentCapDescription = tier.benefits.maxInvestment
       ? t("max.investment.MAX", { max: tier.benefits.maxInvestment })
