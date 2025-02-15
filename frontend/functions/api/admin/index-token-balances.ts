@@ -60,6 +60,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       
       tokenAccounts.push(...responseJson.result.token_accounts)
       
+      // sleep for half a second to avoid rate limiting
+      // rate limit for Helius Free Tier DAS APIs is 2req/s, we have a better tier, but let's cover this one also
+      await sleep(500)
       page += 1
     }
     console.log('Fetching token accounts done.')
@@ -130,4 +133,8 @@ function splitIntoBatches<T>(list: T[], batchSize: number): T[][] {
   }
 
   return batches;
+}
+
+function sleep(delayMs: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, delayMs))
 }
