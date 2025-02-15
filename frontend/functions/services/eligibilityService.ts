@@ -3,7 +3,7 @@ import { and, eq } from "drizzle-orm"
 
 import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } from "../../shared/eligibilityModel"
 import { followerTable, projectTable, tokenBalanceTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
-import { isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
+import { getTokenHoldingsMap, isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
 import { SnapshotService } from "./snapshotService"
 
 const BorgTokenMintAddress: string = '3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z'
@@ -117,18 +117,18 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     : {}
 
   //// <option1 retrieve fungible token holdings from Helius RPC using SearchAssets DAO API
-  // const fungibles: Record<string, { uiAmount: number}> = await getTokenHoldingsMap({
-  //   rpcUrl,
-  //   ownerAddress: address,
-  // })
-  //// <option2 retrieve borg token balance (currently only one that matters) from the database token balances
-  const balance = await getTokenBalance({
-    db,
+  const fungibles: Record<string, { uiAmount: number }> = await getTokenHoldingsMap({
+    rpcUrl,
     ownerAddress: address,
-    tokenMintAddress: BorgTokenMintAddress,
   })
-  const fungibles = { [BorgTokenMintAddress]: balance }
-  //// />
+  //// <option2 retrieve borg token balance (currently only one that matters) from the database token balances
+  // const balance = await getTokenBalance({
+  //   db,
+  //   ownerAddress: address,
+  //   tokenMintAddress: BorgTokenMintAddress,
+  // })
+  // const fungibles = { [BorgTokenMintAddress]: balance }
+  // //// />
 
   const tiersWithCompletion: TierWithCompletion[] = []
   if (!project) throw new Error(`EligibilityService: Project (id=?) not found!`)
