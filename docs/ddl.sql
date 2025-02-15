@@ -97,3 +97,12 @@ CREATE TABLE exchange_cache (
 
 INSERT INTO exchange_cache (base_currency, target_currency, current_price, quoted_from, quoted_at)
     VALUES ('swissborg', 'usd', 0, 'inserted-manually', CURRENT_TIMESTAMP);
+
+-- token_balance
+CREATE TABLE token_balance (
+    owner_address TEXT NOT NULL,
+    token_mint_address TEXT NOT NULL,
+    quoted_at TIMESTAMP NOT NULL,
+    ui_amount TEXT NOT NULL, 
+    PRIMARY KEY (owner_address, token_mint_address)
+);

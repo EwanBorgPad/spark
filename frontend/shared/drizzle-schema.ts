@@ -98,6 +98,17 @@ export const exchangeTable = sqliteTable('exchange_cache', {
   }
 })
 
+export const tokenBalanceTable = sqliteTable('token_balance', {
+  ownerAddress: text('owner_address').notNull(),
+  tokenMintAddress: text('token_mint_address').notNull(),
+  quotedAt: text('quoted_at').notNull(),
+  uiAmount: text('ui_amount').notNull(),
+}, (table) => {
+  return {
+    pk: primaryKey({ columns: [table.ownerAddress, table.tokenMintAddress] })
+  }
+})
+
 // const db = drizzle()
 // db
 //   .select()

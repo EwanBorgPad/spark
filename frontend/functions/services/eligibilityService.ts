@@ -2,9 +2,11 @@ import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 import { and, eq } from "drizzle-orm"
 
 import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } from "../../shared/eligibilityModel"
-import { followerTable, projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
+import { followerTable, projectTable, tokenBalanceTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
 import { getTokenHoldingsMap, isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
 import { SnapshotService } from "./snapshotService"
+
+const BorgTokenMintAddress: string = '3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z'
 
 /**
  * List of mandatory compliances.
@@ -114,10 +116,19 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     })
     : {}
 
-  const fungibles = await getTokenHoldingsMap({
+  //// <option1 retrieve fungible token holdings from Helius RPC using SearchAssets DAO API
+  const fungibles: Record<string, { uiAmount: number }> = await getTokenHoldingsMap({
     rpcUrl,
     ownerAddress: address,
   })
+  //// <option2 retrieve borg token balance (currently only one that matters) from the database token balances
+  // const balance = await getTokenBalance({
+  //   db,
+  //   ownerAddress: address,
+  //   tokenMintAddress: BorgTokenMintAddress,
+  // })
+  // const fungibles = { [BorgTokenMintAddress]: balance }
+  // //// />
 
   const tiersWithCompletion: TierWithCompletion[] = []
   if (!project) throw new Error(`EligibilityService: Project (id=?) not found!`)
@@ -157,6 +168,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
           ...quest,
           // @ts-expect-error TS2353: Object literal may only specify known properties, and 'holdTokenType' does not exist in type
           holdTokenType,
+          quotedAt: fungibles[quest.tokenMintAddress]?.quotedAt ?? null,
           holdingAmount: fungibles[quest.tokenMintAddress]?.uiAmount ?? 0,
           isCompleted: isOwner,
         })
@@ -231,6 +243,31 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     compliances: compliancesWithCompletion,
     tiers: tiersWithCompletion,
   }
+}
+
+type GetTokenBalanceArgs = {
+  db: DrizzleD1Database
+  ownerAddress: string
+  tokenMintAddress: string
+}
+/**
+ * Retrieves token balance from the database
+ */
+const getTokenBalance = async ({ db, ownerAddress, tokenMintAddress }: GetTokenBalanceArgs): Promise<{ uiAmount: number, quotedAt?: string }> => {
+  const balance = await db
+    .select()
+    .from(tokenBalanceTable)
+    .where(
+      and(
+        eq(tokenBalanceTable.ownerAddress, ownerAddress),
+        eq(tokenBalanceTable.tokenMintAddress, tokenMintAddress),
+      )
+    )
+    .get()
+
+  return balance 
+    ? { uiAmount: Number(balance.uiAmount), quotedAt: balance.quotedAt }
+    : { uiAmount: 0 }
 }
 
 export const EligibilityService = {
