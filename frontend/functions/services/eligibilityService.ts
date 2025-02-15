@@ -117,7 +117,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     : {}
 
   //// <option1 retrieve fungible token holdings from Helius RPC using SearchAssets DAO API
-  const fungibles: Record<string, { uiAmount: number }> = await getTokenHoldingsMap({
+  const fungibles = await getTokenHoldingsMap({
     rpcUrl,
     ownerAddress: address,
   })
