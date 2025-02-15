@@ -7,7 +7,7 @@ export const formatDateMonthDateHours = (date: Date) => {
   return format(date, "MMMM do, ha")
 }
 export const formatDateForTimer = (date: Date) => {
-  return format(date, "do MMMM, h a (O)")
+  return format(date, "do MMMM, h:mm a (O)")
 }
 export const formatDateForTimerWithTimezone = (date: Date) => {
   return format(date, "do MMMM, h a OOO")
