@@ -117,17 +117,17 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     : {}
 
   //// <option1 retrieve fungible token holdings from Helius RPC using SearchAssets DAO API
-  const fungibles = await getTokenHoldingsMap({
-    rpcUrl,
-    ownerAddress: address,
-  })
-  //// <option2 retrieve borg token balance (currently only one that matters) from the database token balances
-  // const balance = await getTokenBalance({
-  //   db,
+  // const fungibles = await getTokenHoldingsMap({
+  //   rpcUrl,
   //   ownerAddress: address,
-  //   tokenMintAddress: BorgTokenMintAddress,
   // })
-  // const fungibles = { [BorgTokenMintAddress]: balance }
+  //// <option2 retrieve borg token balance (currently only one that matters) from the database token balances
+  const balance = await getTokenBalance({
+    db,
+    ownerAddress: address,
+    tokenMintAddress: BorgTokenMintAddress,
+  })
+  const fungibles = { [BorgTokenMintAddress]: balance }
   // //// />
 
   const tiersWithCompletion: TierWithCompletion[] = []
