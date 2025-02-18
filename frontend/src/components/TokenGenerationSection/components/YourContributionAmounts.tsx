@@ -28,6 +28,10 @@ const YourContributionAmounts = () => {
 
   if (!projectData || !userPositions?.hasUserInvested) return <></>
 
+
+  const numberOfMonths = projectData.config.rewardsDistributionTimeInMonths
+  const remainingMonths = projectData.config.rewardsDistributionTimeInMonths - 1
+
   return (
     <div className="w-full bg-transparent">
       <div
@@ -51,7 +55,7 @@ const YourContributionAmounts = () => {
           <div className="flex flex-col items-center gap-1.5">
             <div className="flex h-fit items-center justify-center gap-1.5 rounded-full text-xs font-medium text-fg-tertiary ">
               <Icon icon="SvgChartLine" className="text-base text-white" />
-              <span>{t("tge.linearly_paid_out", { numberOfMonths: projectData.config.rewardsDistributionTimeInMonths })}</span>
+              <span>{t("tge.linearly_paid_out", { numberOfMonths, remainingMonths })}</span>
             </div>
             <span className="text-xs font-medium text-fg-tertiary">🔒 LP position permanently locked </span>
             <span className="text-xs font-medium text-fg-tertiary">🔥 All LP fees burned</span>
