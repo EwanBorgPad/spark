@@ -22,8 +22,8 @@
     "launchedTokenData": {
       "iconUrl": "https://files.borgpad.com/images/cvagentlauncher/agentlauncher-token.png",
       "ticker": "CVAI",
-      "mintAddress": null,
-      "decimals": 6,
+      "mintAddress": "8TC4ZJA5cwB5gmLemBfPP95v1Mft82kHGF9a87kepNno",
+      "decimals": 9,
       "fixedTokenPriceInUsd": 0.007
     }
   },
