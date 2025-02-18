@@ -99,12 +99,12 @@
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": "2025-02-18T23:59:00Z"
+        "date": "2025-02-18T17:00:00Z"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2025-02-18T17:23:00Z"
+        "date": "2025-02-18T17:00:00Z"
       },
       {
         "id": "DISTRIBUTION_OVER",
