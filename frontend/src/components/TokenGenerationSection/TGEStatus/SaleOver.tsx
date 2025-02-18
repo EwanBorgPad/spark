@@ -125,7 +125,8 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
             </>
           ) : (
             <div className="z-[1] w-full max-w-[400px] rounded-lg border border-bd-primary bg-secondary px-4 py-3 text-sm opacity-60">
-              If your contribution was successful, you`ll find a Contribution NFT in your wallet as confirmation. 🎉
+              If your contribution was successful, you`ll find a Contribution NFT on solscan.io or in your wallet as
+              confirmation. 🎉
             </div>
           )}
 
