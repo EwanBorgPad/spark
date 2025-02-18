@@ -28,12 +28,12 @@
     }
   },
   "info": {
-    "claimUrl": null,
-    "tweetUrl": null,
-    "tokenContractUrl": null,
+    "claimUrl": "https://app.streamflow.finance/airdrops",
+    "tweetUrl": "https://x.com/BorgPadHQ/status/1891872604023103775",
+    "tokenContractUrl": "8TC4ZJA5cwB5gmLemBfPP95v1Mft82kHGF9a87kepNno",
     "poolContractUrl": null,
 
-    "projectType": "blitz", 
+    "projectType": "blitz",
     "title": "Agentlauncher",
     "subtitle": "The AI Launchpad, create your own AI agents & tokens on the platform",
     "logoUrl": "https://files.borgpad.com/images/cvagentlauncher/cvagentlauncher-logo.png",
@@ -104,7 +104,7 @@
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": "2025-02-18T23:59:00Z"
+        "date": "2025-02-18T17:23:00Z"
       },
       {
         "id": "DISTRIBUTION_OVER",

@@ -79,14 +79,14 @@ const Rewards = () => {
               endOfEvent={new Date(nextScheduledPayment.date)}
             />
             <div className="w-full px-4 pb-6">
-              {nextScheduledPayment &&
-                (claimUrl ? (
-                  <a href={claimUrl} target="_blank" rel="noopener noreferrer">
-                    <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
-                  </a>
-                ) : (
+              {/* {nextScheduledPayment && */}
+              {/* (claimUrl ? ( */}
+              <a href={claimUrl} target="_blank" rel="noopener noreferrer">
+                <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
+              </a>
+              {/* ) : (
                   <Button btnText={btnText} size="lg" disabled={true} className="w-full py-3 font-normal" />
-                ))}
+                ))} */}
             </div>
           </>
         ) : (
