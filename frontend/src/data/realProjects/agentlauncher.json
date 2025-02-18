@@ -127,7 +127,7 @@
         "benefits": {
           "startDate": "2025-02-18T15:00:00Z",
           "minInvestment": "100",
-          "maxInvestment": "500"
+          "maxInvestment": "1500"
         }
       },
       {
@@ -137,7 +137,7 @@
         "benefits": {
           "startDate": "2025-02-18T15:15:00Z",
           "minInvestment": "10",
-          "maxInvestment": "250"
+          "maxInvestment": "1000"
         }
       }
     ]
