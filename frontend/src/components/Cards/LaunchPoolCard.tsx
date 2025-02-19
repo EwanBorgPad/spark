@@ -51,7 +51,7 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
             <Text
               text={project?.info?.subtitle}
               as="span"
-              className="line-clamp-2 text-base text-fg-tertiary"
+              className="line-clamp-3 text-base text-fg-tertiary"
               isLoading={isLoading}
             />
           </div>
