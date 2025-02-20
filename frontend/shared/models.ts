@@ -82,7 +82,7 @@ const TokenDataSchema = z.object({
   coinGeckoName: optional(z.string()),
 })
 
-export const ProjectTypeSchema = z.enum([ 'goat', 'blitz' ])
+export const ProjectTypeSchema = z.enum(["goat", "blitz", "draft-pick"])
 
 export const projectSchema = z.object({
   id: idSchema(),
@@ -124,6 +124,7 @@ export const projectSchema = z.object({
     origin: z.string().min(1),
     sector: z.string().min(1),
     tokenGenerationEventDate: optional(z.string()),
+    targetFdv: z.string().min(1).optional(),
 
     chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
     dataRoom: z.object({ backgroundImgUrl: urlSchema().optional(), url: urlSchema() }),

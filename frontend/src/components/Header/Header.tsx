@@ -38,6 +38,13 @@ const navigationItems: NavigationItem[] = [
     className: "hover:text-brand-blitz",
   },
   {
+    path: ROUTES.DRAFT_PICKS,
+    label: "Draft Picks",
+    activeClass: "text-draft-picks",
+    underlineClass: "border-draft-picks",
+    className: "hover:text-draft-picks",
+  },
+  {
     url: ROUTES.DOCS,
     label: "Docs",
     path: "",
