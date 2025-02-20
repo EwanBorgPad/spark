@@ -124,7 +124,8 @@ const getCardRows = (
     {
       icon: "SvgChartLine",
       label: "Total Commitment",
-      value: formatCurrencyAmount(141299, { withDollarSign: true }),
+      value: "TBD",
+      // value: formatCurrencyAmount(141299, { withDollarSign: true }),
     },
     {
       icon: "SvgCalendarFill",
