@@ -50,3 +50,13 @@ npx wrangler d1 execute borgpad-production-database --remote --command "SELECT
   json -> 'termsOfUse' ->> 'acceptedAt' AS terms_of_use_accepted_at
 FROM user
 WHERE json -> 'investmentIntent' -> 'agentlauncher' IS NOT NULL;" &> "export_agentlauncher_$(date -u +%Y%m%d_%H%M%S).json"
+
+# ambient-network
+npx wrangler d1 execute borgpad-production-database --remote --command "SELECT
+  address,
+  json -> 'investmentIntent' -> 'ambient-network' ->> 'amount' AS investment_interest_amount,
+  json -> 'investmentIntent' -> 'ambient-network' ->> 'providedAt' AS investment_interest_provided_at,
+  json -> 'termsOfUse' ->> 'countryOfOrigin' AS terms_of_use_country_of_origin,
+  json -> 'termsOfUse' ->> 'acceptedAt' AS terms_of_use_accepted_at
+FROM user
+WHERE json -> 'investmentIntent' -> 'ambient-network' IS NOT NULL;" &> "export_ambient-network_$(date -u +%Y%m%d_%H%M%S).json"
