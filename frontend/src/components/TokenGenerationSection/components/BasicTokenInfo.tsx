@@ -7,7 +7,11 @@ import { formatCurrencyAmount } from "shared/utils/format"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import Text from "@/components/Text"
 
-const BasicTokenInfo = () => {
+type Props = {
+  isDraftPick?: boolean
+}
+
+const BasicTokenInfo = ({ isDraftPick }: Props) => {
   const { t } = useTranslation()
   const { projectData, isLoading } = useProjectDataContext()
   const { projectId } = useParams()
@@ -22,7 +26,10 @@ const BasicTokenInfo = () => {
     staleTime: 30 * 60 * 1000,
   })
 
-  const fdv = projectData?.config.fdv ? formatCurrencyAmount(projectData?.config.fdv, { withDollarSign: true, customDecimals: 0 }) : ""
+  const fdv = projectData?.config.fdv
+    ? formatCurrencyAmount(projectData?.config.fdv, { withDollarSign: true, customDecimals: 0 })
+    : ""
+  const targetFdv = projectData?.info.targetFdv
   const tgeDate = projectData?.info.tokenGenerationEventDate || ""
 
   return (
@@ -37,14 +44,28 @@ const BasicTokenInfo = () => {
             text={formatCurrencyAmount(investmentSummaryData?.sum, { withDollarSign: true, customDecimals: 0 })}
           />
         </div>
-        <div className="flex flex-1 flex-col gap-2">
-          <span className="text-sm text-fg-tertiary">TGE</span>
-          <Text text={tgeDate} isLoading={isLoading} className="text-nowrap text-base text-fg-primary" />
-        </div>
-        <div className="flex flex-1 flex-col gap-2">
-          <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
-          <Text text={fdv} isLoading={isLoading} className="text-base text-fg-primary" />
-        </div>
+        {isDraftPick ? (
+          <div className="flex flex-1 flex-col gap-2">
+            <span className="text-sm text-fg-tertiary">Target TGE</span>
+            <Text text={tgeDate} isLoading={isLoading} className="text-nowrap text-base text-fg-primary" />
+          </div>
+        ) : (
+          <div className="flex flex-1 flex-col gap-2">
+            <span className="text-sm text-fg-tertiary">TGE</span>
+            <Text text={tgeDate} isLoading={isLoading} className="text-nowrap text-base text-fg-primary" />
+          </div>
+        )}
+        {isDraftPick ? (
+          <div className="flex flex-1 flex-col gap-2">
+            <span className="text-sm text-fg-tertiary">Target FDV</span>
+            <Text text={targetFdv} isLoading={isLoading} className="text-base text-fg-primary" />
+          </div>
+        ) : (
+          <div className="flex flex-1 flex-col gap-2">
+            <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
+            <Text text={fdv} isLoading={isLoading} className="text-base text-fg-primary" />
+          </div>
+        )}
       </div>
     </section>
   )

@@ -31,6 +31,7 @@ export default {
         "default-hover": "#131822",
         "brand-blitz": "#F6FF73",
         "brand-blitz-secondary": "#262716",
+        "draft-picks": "#96F5FF",
 
         // font colors
         fg: {

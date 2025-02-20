@@ -40,7 +40,7 @@
     "thumbnailUrl": "https://files.borgpad.com/images/ambient/thumbnail-ambient.png",
     "origin": "web3",
     "sector": "DePin",
-    "tokenGenerationEventDate": "End of Feb",
+    "tokenGenerationEventDate": "Q1",
     "chain": {
       "name": "Solana",
       "iconUrl": "https://files.borgpad.com/images/zkagi/solana-small.jpg"
@@ -94,19 +94,19 @@
         "id": "SALE_OPENS",
         "label": "Sale Opens",
         "date": null,
-        "fallbackText": "End of Feb"
+        "fallbackText": "Q1"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
         "date": null,
-        "fallbackText": "End of Feb"
+        "fallbackText": "Q1"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
         "date": null,
-        "fallbackText": "End of Feb"
+        "fallbackText": "Q1"
       },
       {
         "id": "DISTRIBUTION_OVER",
