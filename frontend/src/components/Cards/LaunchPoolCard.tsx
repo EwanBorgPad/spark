@@ -9,7 +9,7 @@ import { Button } from "../Button/Button"
 import { ExpandedProject } from "@/utils/projects-helper"
 import { ExternalLink } from "../Button/ExternalLink"
 import { getProjectRoute } from "@/utils/routes"
-import { Icon } from "../Icon/Icon"
+import { AvailableIcons, Icon } from "../Icon/Icon"
 import { ProjectModel } from "shared/models"
 import { formatCurrencyAmount } from "shared/utils/format"
 
@@ -24,6 +24,8 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
   const isUpcoming = !isDraftPick && project?.additionalData.currentEvent.id === "UPCOMING"
   const isBlitz = project?.info.projectType === "blitz"
   const projectUrl = getProjectRoute(project as ProjectModel)
+
+  const cardRows = getCardRows(project)
 
   return (
     <li className="relative flex w-full max-w-[344px] flex-col overflow-hidden rounded-lg border-[1px] border-bd-secondary/30 bg-default">
@@ -63,33 +65,23 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
           </div>
           {isDraftPick && (
             <div className="flex w-full flex-col">
-              <div className="flex w-full items-center justify-between gap-2 rounded-lg bg-secondary px-3 py-2 ">
-                <div className="flex w-full items-center gap-1 text-fg-secondary/25">
-                  <Icon icon="SvgDatabase" />
-                  <span className="text-sm text-fg-secondary">Target FDV</span>
+              {cardRows.map((row, index) => (
+                <div
+                  key={row.icon}
+                  className={twMerge(
+                    "flex w-full items-center justify-between gap-2 rounded-lg bg-secondary px-3 py-2 ",
+                    Boolean(index % 2) && "bg-transparent",
+                  )}
+                >
+                  <div className="flex w-full items-center gap-1 text-fg-secondary/25">
+                    <Icon icon={row.icon} />
+                    <span className="text-sm text-fg-secondary">{row.label}</span>
+                  </div>
+                  <span className={twMerge("whitespace-nowrap text-sm text-fg-secondary", row.valueClassName)}>
+                    {row.value}
+                  </span>
                 </div>
-                <span className="text-draft-picks whitespace-nowrap text-sm">
-                  {formatCurrencyAmount(project.config.fdv, { withDollarSign: true })}
-                </span>
-              </div>
-              <div className="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 ">
-                <div className="flex w-full items-center gap-1 text-fg-secondary/25">
-                  <Icon icon="SvgChartLine" />
-                  <span className="text-sm text-fg-secondary">Total Commitment</span>
-                </div>
-                <span className="whitespace-nowrap text-sm text-fg-secondary">
-                  {formatCurrencyAmount(141299, { withDollarSign: true })}
-                </span>
-              </div>
-              <div className="flex w-full items-center justify-between gap-2 rounded-lg bg-secondary px-3 py-2 ">
-                <div className="flex w-full items-center gap-1 text-fg-secondary/25">
-                  <Icon icon="SvgCalendarFill" />
-                  <span className="text-sm text-fg-secondary">Target Launch</span>
-                </div>
-                <span className="whitespace-nowrap text-sm text-fg-secondary">
-                  {project.info.tokenGenerationEventDate}
-                </span>
-              </div>
+              ))}
             </div>
           )}
         </div>
@@ -117,6 +109,30 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
 }
 
 const BORGPAD_X_URL = "https://x.com/BorgPadHQ"
+
+const getCardRows = (
+  project: ExpandedProject | null,
+): { icon: AvailableIcons; label: string; value: string | number; valueClassName?: string }[] => {
+  if (!project) return []
+  return [
+    {
+      icon: "SvgDatabase",
+      label: "Target FDV",
+      value: formatCurrencyAmount(project.config.fdv, { withDollarSign: true }),
+      valueClassName: "text-draft-picks",
+    },
+    {
+      icon: "SvgChartLine",
+      label: "Total Commitment",
+      value: formatCurrencyAmount(141299, { withDollarSign: true }),
+    },
+    {
+      icon: "SvgCalendarFill",
+      label: "Target Launch",
+      value: project.info.tokenGenerationEventDate,
+    },
+  ]
+}
 
 const FollowOnXBtn = () => {
   return (
