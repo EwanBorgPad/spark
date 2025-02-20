@@ -45,24 +45,29 @@ const DraftPicks = () => {
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full select-none flex-col items-center bg-transparent pt-[48px] md:pt-[68px]">
-      <img src={draftPicksBackground} className="absolute top-[48px] z-[-1] w-[576px] md:w-full right-0 md:top-[68px]" role="presentation" />
+      <img
+        style={{ animationDelay: "700ms" }}
+        src={draftPicksBackground}
+        className="absolute right-0 top-[48px] z-[-1] w-[576px] animate-opacity-in opacity-0 md:top-[68px] md:w-full"
+        role="presentation"
+      />
 
-      <section className="z-[11] flex w-full flex-col items-start md:items-center bg-transparent px-4 pt-[60px] md:pt-[80px]">
-        <div className="flex flex-col items-start animate-fade-in-from-below-slow">
+      <section className="z-[11] flex w-full flex-col items-start bg-transparent px-4 pt-[60px] md:items-center md:pt-[80px]">
+        <div className="flex animate-fade-in-from-below-slow flex-col items-start">
           <div className="flex md:w-full md:max-w-[288px]">
             <div className="flex items-center gap-1">
-              <Icon icon="SvgLogo" className="ml-[30px] h-[20px] text-2xl mb-1" />
+              <Icon icon="SvgLogo" className="mb-1 ml-[30px] h-[20px] text-2xl" />
               <span className="font-sulphur-point text-2xl leading-[28px] text-fg-primary">BorgPad</span>
             </div>
           </div>
-          <div className="mb-2 h-[162px] w-[280px] ml-[-4px] md:ml-0">
+          <div className="mb-2 ml-[-4px] h-[162px] w-[280px] md:ml-0">
             <Img src={draftPicksLogo} customClass="w-full h-full " />
           </div>
         </div>
-        <p className="max-w-[310px] md:max-w-[462px] mt-6 text-left md:text-center font-normal text-fg-primary md:text-lg">
-          Express your investment interest in the up-and-coming talent and help launch them on BorgPad. 
+        <p className="mt-6 max-w-[310px] text-left font-normal text-fg-primary md:max-w-[462px] md:text-center md:text-lg">
+          Express your investment interest in the up-and-coming talent and help launch them on BorgPad.
         </p>
-        <div className="flex flex-col items-start md:items-center gap-4 mt-10 md:mt-[60px]">
+        <div className="mt-10 flex flex-col items-start gap-4 md:mt-[60px] md:items-center">
           <span className="text-sm font-normal text-fg-secondary opacity-90">Popular projects launch on</span>
           <div className="flex min-h-[32px] flex-wrap items-center justify-center gap-10 gap-y-3">
             {displayLogos.map((logo) => (
@@ -82,8 +87,8 @@ const DraftPicks = () => {
           <ul className="grid w-full grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {!isLoading
               ? phases?.map((phase) =>
-                phase?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />),
-              )
+                  phase?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />),
+                )
               : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
           </ul>
         </div>
