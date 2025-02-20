@@ -114,7 +114,7 @@ const LandingPage = () => {
               </Link>
             </div>
             {/* PLACE FOR PROJECT COUNTDOWN */}
-            <CountdownBtnForNextLbp projectId="agentlauncher" />
+            {/* <CountdownBtnForNextLbp projectId="agentlauncher" /> */}
           </div>
         </div>
       </section>
