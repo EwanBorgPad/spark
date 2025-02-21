@@ -41,7 +41,10 @@ export const VouchYourSupport = () => {
   const eligibilityRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div ref={eligibilityRef} className="flex w-full max-w-[536px] flex-col items-center gap-[36px] pt-10">
+    <div
+      ref={eligibilityRef}
+      className="flex w-full max-w-[100%] flex-col items-center gap-[36px] px-4 pt-10 md:max-w-[536px] md:px-0"
+    >
       <Divider icon="SvgTwoAvatars" />
       <div id="complianceHeading" className="flex w-full max-w-[400px] flex-col items-center justify-center gap-1 py-2">
         <h2 className="-mt-5 text-2xl font-semibold leading-tight md:text-[32px]">Vouch Your Support</h2>

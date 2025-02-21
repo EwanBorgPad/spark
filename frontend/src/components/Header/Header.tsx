@@ -134,7 +134,7 @@ const Header = () => {
         ref={headerRef}
         className="fixed left-0 top-0 z-[12] flex h-12 w-full flex-row justify-center gap-3 border-b-[1px] border-secondary bg-accent/50 px-4 py-2 pr-2 backdrop-blur-lg transition-shadow duration-500 md:h-[72px] md:pr-4"
       >
-        <div className={"flex w-full max-w-[1180px] flex-row items-center justify-between"}>
+        <div className={"flex w-full max-w-[1180px] flex-row items-center justify-between gap-4"}>
           <div className="flex md:w-full md:max-w-[288px]">
             <Button color="plain" className="flex items-center gap-1 py-2" onClick={() => navigate("/")}>
               <Icon icon="SvgLogo" className="mb-[4px] h-[20px] text-2xl" />
