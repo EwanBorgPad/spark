@@ -1,10 +1,8 @@
 import { ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
-import TokenGenerationSection from "../components/TokenGenerationSection/TokenGenerationSection"
 import { ExternalLink } from "../components/Button/ExternalLink"
 import { useProjectDataContext } from "@/hooks/useProjectData"
-import { expandTimelineDataInfo } from "@/utils/timeline-helper"
 import backdropImg from "@/assets/backdropImgMin.png"
 import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
@@ -45,7 +43,7 @@ const DraftPickPage = () => {
                 <Text
                   text={projectData?.info.title}
                   as="h1"
-                  className="font-semibold text-4xl"
+                  className="text-4xl font-semibold"
                   isLoading={isLoading}
                   loadingClass="max-w-[120px]"
                 />
@@ -80,17 +78,20 @@ const DraftPickPage = () => {
               <Text text={projectData?.info.sector} isLoading={isLoading} />
             </div>
 
-            <a href="https://t.me/Mathis_btc" target="_blank" referrerPolicy="no-referrer" className="flex gap-1.5 items-center group"
-              rel="noreferrer">
+            <a
+              href="https://t.me/Mathis_btc"
+              target="_blank"
+              referrerPolicy="no-referrer"
+              className="group flex items-center gap-1.5"
+              rel="noreferrer"
+            >
               <Text text={"Apply to become a curator"} isLoading={isLoading} className="underline" />
               <Icon icon="SvgExternalLink" className="text-fg-secondary group-hover:text-fg-primary" />
             </a>
-
-
           </div>
         </div>
 
-        <BasicTokenInfo />
+        <BasicTokenInfo isDraftPick={true} />
 
         <DataRoom />
 
@@ -114,9 +115,8 @@ const DraftPickPage = () => {
             </div>
           </div>
         </div> */}
-
       </section>
-      
+
       <VouchYourSupport />
 
       <ScrollRestoration />
