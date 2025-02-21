@@ -33,7 +33,7 @@ const BasicTokenInfo = ({ isDraftPick }: Props) => {
   const tgeDate = projectData?.info.tokenGenerationEventDate || ""
 
   return (
-    <section className="max-w-screen flex w-full flex-col gap-[25px] lg:max-w-[792px]">
+    <section className="max-w-screen flex w-full flex-col gap-[25px] md:px-4 lg:max-w-[792px]">
       <div className="flex w-full flex-wrap justify-between gap-6">
         <div className="flex min-w-[118px] flex-1 flex-col gap-2">
           <span className="text-nowrap text-sm text-fg-tertiary">{t("total_investment_interest")}</span>
