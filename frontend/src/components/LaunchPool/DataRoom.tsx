@@ -15,7 +15,7 @@ const DataRoom = ({ className }: Props) => {
   const info = projectData?.info
 
   return (
-    <section className={twMerge("group w-full lg:max-w-[792px]", className)}>
+    <section className={twMerge("group w-full lg:max-w-[760px]", className)}>
       <a className="data-room w-full" target="_blank" rel="noreferrer" href={info?.dataRoom.url}>
         <div className="z-[1] flex flex-col">
           <Text text={`${info?.title} ${t("data_room")}`} className="font-medium" isLoading={isLoading} />

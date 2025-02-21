@@ -37,6 +37,27 @@ export const JoinThePool = () => {
   )
 }
 
+export const VouchYourSupport = () => {
+  const eligibilityRef = useRef<HTMLDivElement>(null)
+
+  return (
+    <div
+      ref={eligibilityRef}
+      className="flex w-full max-w-[100%] flex-col items-center gap-[36px] px-4 pt-10 md:max-w-[536px] md:px-0"
+    >
+      <Divider icon="SvgTwoAvatars" />
+      <div id="complianceHeading" className="flex w-full max-w-[400px] flex-col items-center justify-center gap-1 py-2">
+        <h2 className="-mt-5 text-2xl font-semibold leading-tight md:text-[32px]">Vouch Your Support</h2>
+        <h3 className="max-w-[80%] text-center text-sm font-normal text-fg-secondary opacity-90">
+          Express investment interested to get whitelisted for the launch pool.{" "}
+        </h3>
+      </div>
+      <ConnectWalletStep />
+      <EligibilityCompliancesSection isLastStep={true} isDraftPicks={true} />
+    </div>
+  )
+}
+
 const ConnectWalletStep = () => {
   const { isWalletConnected } = useWalletContext()
 
@@ -54,7 +75,15 @@ const ConnectWalletStep = () => {
   )
 }
 
-const EligibilityCompliancesSection = ({ className }: { className?: string }) => {
+const EligibilityCompliancesSection = ({
+  className,
+  isLastStep,
+  isDraftPicks,
+}: {
+  className?: string
+  isLastStep?: boolean
+  isDraftPicks?: boolean
+}) => {
   const { address, isWalletConnected } = useWalletContext()
   const { projectId } = useParams()
 
@@ -74,10 +103,10 @@ const EligibilityCompliancesSection = ({ className }: { className?: string }) =>
 
   return (
     <section id="complianceSection" className={twMerge("relative flex w-full items-start gap-2 md:gap-5", className)}>
-      <SideElements number={2} isCompleted={isCompliant} />
+      <SideElements number={2} isCompleted={isCompliant} hasVerticalElement={!isLastStep} />
 
       <div id="compliancesContainer" className="flex w-full max-w-[432px] flex-col gap-2 rounded-lg">
-        <span className="text-base md:text-lg">Accept ToU</span>
+        <span className="text-base md:text-lg">{`Accept ToU ${isDraftPicks ? "& Express your Interest" : ""}`}</span>
         {!isLoading
           ? complianceQuests
             ? complianceQuests?.map((quest) => <QuestComponent key={quest.type} quest={quest} />)

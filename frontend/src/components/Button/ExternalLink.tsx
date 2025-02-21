@@ -12,7 +12,15 @@ export type ExternalLinkType = {
   iconType: IconLinkType
   label?: string
 }
-export const ALL_ICON_LINK_TYPES = ["MEDIUM", "LINKED_IN", "WEB", "X_TWITTER", "OUTER_LINK", "NO_ICON"] as const
+export const ALL_ICON_LINK_TYPES = [
+  "MEDIUM",
+  "LINKED_IN",
+  "WEB",
+  "X_TWITTER",
+  "OUTER_LINK",
+  "TELEGRAM",
+  "NO_ICON",
+] as const
 export type IconLinkType = (typeof ALL_ICON_LINK_TYPES)[number]
 
 export const externalLinkObj: Record<Exclude<IconLinkType, "NO_ICON">, { icon: AvailableIcons; label: string }> = {
@@ -20,6 +28,7 @@ export const externalLinkObj: Record<Exclude<IconLinkType, "NO_ICON">, { icon: A
   LINKED_IN: { icon: "SvgLinkedin", label: "LinkedIn" },
   WEB: { icon: "SvgWeb", label: "Web Url" },
   X_TWITTER: { icon: "SvgTwitter", label: "X (ex Twitter)" },
+  TELEGRAM: { icon: "SvgTelegram", label: "Telegram" },
   OUTER_LINK: { icon: "SvgExternalLink", label: "External Link" },
 }
 

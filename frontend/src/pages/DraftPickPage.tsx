@@ -1,25 +1,24 @@
 import { ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
-import TokenGenerationSection from "../components/TokenGenerationSection/TokenGenerationSection"
 import { ExternalLink } from "../components/Button/ExternalLink"
 import { useProjectDataContext } from "@/hooks/useProjectData"
-import { expandTimelineDataInfo } from "@/utils/timeline-helper"
 import backdropImg from "@/assets/backdropImgMin.png"
 import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
 import ProjectTester2 from "@/components/QA/ProjectTester2.tsx"
 import { Icon } from "@/components/Icon/Icon.tsx"
 import { twMerge } from "tailwind-merge"
+import { VouchYourSupport } from "@/components/EligibilitySection/JoinThePool"
+import DataRoom from "@/components/LaunchPool/DataRoom"
+import BasicTokenInfo from "@/components/TokenGenerationSection/components/BasicTokenInfo"
 
 
-const Project = () => {
+const DraftPickPage = () => {
   const { projectData, isLoading } = useProjectDataContext()
   const { t } = useTranslation()
 
   const isDevnet = projectData?.config.cluster === "devnet"
-
-  const expandedTimeline = expandTimelineDataInfo(projectData?.info.timeline ?? [])
 
   return (
     <main className="z-[10] flex w-full max-w-full select-none flex-col items-center gap-10 overflow-y-hidden py-[72px] font-normal text-fg-primary lg:py-[100px]">
@@ -31,7 +30,7 @@ const Project = () => {
         {/* heading */}
         <div className="flex w-full flex-col justify-between gap-6 lg:max-w-[760px] lg:flex-row">
           {/* left side */}
-          <div className=" flex flex-col gap-6 lg:flex-row">
+          <div className="flex flex-col gap-6 lg:flex-row">
             <Img
               src={projectData?.info.logoUrl}
               isFetchingLink={isLoading}
@@ -39,12 +38,12 @@ const Project = () => {
               isRounded={true}
               size="20"
             />
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col justify-center gap-1">
               <div className="flex items-center gap-4">
                 <Text
                   text={projectData?.info.title}
                   as="h1"
-                  className="font-semibold"
+                  className="text-4xl font-semibold"
                   isLoading={isLoading}
                   loadingClass="max-w-[120px]"
                 />
@@ -68,47 +67,36 @@ const Project = () => {
 
         {/* Project details (chain, origin, sector) */}
         <div className="flex w-full flex-col gap-x-5 gap-y-3 text-sm md:flex-row lg:max-w-[760px]">
-          <div className="flex gap-5">
+          <div className="flex flex-col gap-5 md:flex-row">
             <div className="flex items-center gap-2 border-r-fg-gray-line pr-5 md:border-r-[1px]">
               <span className="text-fg-primary text-opacity-50">{t("chain")}</span>
               <Img size="4" src={projectData?.info.chain.iconUrl} isRounded />
               <Text text={projectData?.info.chain.name} isLoading={isLoading} loadingClass="max-w-[100px]" />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 border-r-fg-gray-line pr-5 md:border-r-[1px]">
               <span className="text-fg-primary text-opacity-50">{t("sector")}</span>
               <Text text={projectData?.info.sector} isLoading={isLoading} />
             </div>
-          </div>
-          <div className="flex flex-col md:flex-row">
-            {projectData?.info.tokenContractUrl && (
-              <a
-                href={projectData.info.tokenContractUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-2 border-r-[1px] px-5 md:border-l-[1px] md:border-x-fg-gray-line"
-              >
-                <Img size="4" src={projectData?.info.logoUrl} isRounded />
-                <Text text={`$${projectData.config.launchedTokenData.ticker}`} isLoading={isLoading} />
-                <Icon icon="SvgExternalLink" className="opacity-50 transition-opacity group-hover:opacity-100" />
-              </a>
-            )}
-            {projectData?.info.poolContractUrl && (
-              <a
-                href={projectData.info.poolContractUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-2 px-5  md:border-r-fg-gray-line"
-              >
-                <Img size="4" src={projectData?.info.logoUrl} isRounded />
-                <Text text={`$${projectData.config.launchedTokenData.ticker}/BORG`} isLoading={isLoading} />
-                <Icon icon="SvgExternalLink" className="opacity-50 transition-opacity group-hover:opacity-100" />
-              </a>
-            )}
+
+            <a
+              href="https://t.me/Mathis_btc"
+              target="_blank"
+              referrerPolicy="no-referrer"
+              className="group flex items-center gap-1.5"
+              rel="noreferrer"
+            >
+              <Text text={"Apply to become a curator"} isLoading={isLoading} className="underline" />
+              <Icon icon="SvgExternalLink" className="text-fg-secondary group-hover:text-fg-primary" />
+            </a>
           </div>
         </div>
 
+        <BasicTokenInfo isDraftPick={true} />
+
+        <DataRoom />
+
         {/* Deal curated by: */}
-        <div className="flex w-full flex-col gap-3 lg:max-w-[760px]">
+        {/* <div className="flex w-full flex-col gap-3 lg:max-w-[760px]">
           <h4 className="text-sm font-normal">Deal coming from</h4>
           <div className="w-full rounded-lg bg-gradient-to-r from-brand-primary/50 to-brand-secondary/15 p-[1px]">
             <div className="flex h-full w-full flex-col items-start justify-between gap-4 rounded-[7px] bg-gradient-to-br from-brand-dimmed-1 via-brand-dimmed-2 via-50% to-brand-dimmed-2 px-4 py-3 lg:flex-row lg:items-center lg:bg-gradient-to-r">
@@ -126,12 +114,10 @@ const Project = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </section>
 
-      <hr className="w-full max-w-[calc(100vw-32px)] border-bd-primary lg:max-w-[760px]"></hr>
-
-      {<TokenGenerationSection expandedTimeline={expandedTimeline} />}
+      <VouchYourSupport />
 
       <ScrollRestoration />
 
@@ -154,4 +140,5 @@ function DevnetFlag() {
   )
 }
 
-export default Project
+
+export default DraftPickPage

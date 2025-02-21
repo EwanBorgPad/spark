@@ -42,8 +42,7 @@ export type UserModelJson = {
  * Not sure what we wanna validate there ATM, so leave it as string for now.
  */
 const urlSchema = () => z.string()
-const iconTypeSchema = () =>
-  z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM", "OUTER_LINK"])
+const iconTypeSchema = () => z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM", "OUTER_LINK", "TELEGRAM"])
 const externalUrlSchema = () =>
   z.object({
     url: z.string().min(1),
@@ -82,7 +81,7 @@ const TokenDataSchema = z.object({
   coinGeckoName: optional(z.string()),
 })
 
-export const ProjectTypeSchema = z.enum([ 'goat', 'blitz' ])
+export const ProjectTypeSchema = z.enum(["goat", "blitz", "draft-pick"])
 
 export const projectSchema = z.object({
   id: idSchema(),
@@ -124,6 +123,7 @@ export const projectSchema = z.object({
     origin: z.string().min(1),
     sector: z.string().min(1),
     tokenGenerationEventDate: optional(z.string()),
+    targetFdv: z.string().min(1).optional(),
 
     chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
     dataRoom: z.object({ backgroundImgUrl: urlSchema().optional(), url: urlSchema() }),

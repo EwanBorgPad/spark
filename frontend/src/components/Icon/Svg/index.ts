@@ -39,5 +39,8 @@ export * from "./SvgHamburger"
 export * from "./SvgQuestionCloud"
 export * from "./SvgEmptyCircle"
 export * from "./SvgTwoAvatars"
+export * from "./SvgDatabase"
+export * from "./SvgCalendarFill"
+export * from "./SvgTelegram"
 
 export * from "./SvgSolflare"
