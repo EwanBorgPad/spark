@@ -118,15 +118,15 @@ const getCardRows = (
     {
       icon: "SvgDatabase",
       label: "Target FDV",
-      value: formatCurrencyAmount(project.config.fdv, { withDollarSign: true }),
+      value: project.info.targetFdv || "",
       valueClassName: "text-draft-picks",
     },
-    {
-      icon: "SvgChartLine",
-      label: "Total Commitment",
-      value: "TBD",
-      // value: formatCurrencyAmount(141299, { withDollarSign: true }),
-    },
+    // {
+    //   icon: "SvgChartLine",
+    //   label: "Total Commitment",
+    //   value: "TBD",
+    //   // value: formatCurrencyAmount(141299, { withDollarSign: true }),
+    // },
     {
       icon: "SvgCalendarFill",
       label: "Target Launch",
