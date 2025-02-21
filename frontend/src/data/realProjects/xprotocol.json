@@ -44,7 +44,7 @@
     "targetFdv": "$30M",
     "chain": {
       "name": "Base",
-      "iconUrl": "https://files.borgpad.com/images/zkagi/solana-small.jpg"
+      "iconUrl": "https://files.borgpad.com/images/shared/base_logo.png"
     },
     "dataRoom": {
       "backgroundImgUrl": "",

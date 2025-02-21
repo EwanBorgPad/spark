@@ -53,7 +53,7 @@ export const VouchYourSupport = () => {
         </h3>
       </div>
       <ConnectWalletStep />
-      <EligibilityCompliancesSection isLastStep={true} />
+      <EligibilityCompliancesSection isLastStep={true} isDraftPicks={true} />
     </div>
   )
 }
@@ -75,7 +75,15 @@ const ConnectWalletStep = () => {
   )
 }
 
-const EligibilityCompliancesSection = ({ className, isLastStep }: { className?: string; isLastStep?: boolean }) => {
+const EligibilityCompliancesSection = ({
+  className,
+  isLastStep,
+  isDraftPicks,
+}: {
+  className?: string
+  isLastStep?: boolean
+  isDraftPicks?: boolean
+}) => {
   const { address, isWalletConnected } = useWalletContext()
   const { projectId } = useParams()
 
@@ -98,7 +106,7 @@ const EligibilityCompliancesSection = ({ className, isLastStep }: { className?: 
       <SideElements number={2} isCompleted={isCompliant} hasVerticalElement={!isLastStep} />
 
       <div id="compliancesContainer" className="flex w-full max-w-[432px] flex-col gap-2 rounded-lg">
-        <span className="text-base md:text-lg">Accept ToU</span>
+        <span className="text-base md:text-lg">{`Accept ToU ${isDraftPicks ? "& Express your Interest" : ""}`}</span>
         {!isLoading
           ? complianceQuests
             ? complianceQuests?.map((quest) => <QuestComponent key={quest.type} quest={quest} />)
