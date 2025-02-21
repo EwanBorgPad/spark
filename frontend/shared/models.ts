@@ -42,8 +42,7 @@ export type UserModelJson = {
  * Not sure what we wanna validate there ATM, so leave it as string for now.
  */
 const urlSchema = () => z.string()
-const iconTypeSchema = () =>
-  z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM", "OUTER_LINK"])
+const iconTypeSchema = () => z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM", "OUTER_LINK", "TELEGRAM"])
 const externalUrlSchema = () =>
   z.object({
     url: z.string().min(1),

@@ -83,6 +83,11 @@
           "url": "https://x.com/CVAgentlauncher",
           "iconType": "X_TWITTER",
           "label": ""
+        },
+        {
+          "url": "https://t.me/Mathis_btc",
+          "iconType": "TELEGRAM",
+          "label": ""
         }
       ],
       "timeline": [

@@ -41,5 +41,6 @@ export * from "./SvgEmptyCircle"
 export * from "./SvgTwoAvatars"
 export * from "./SvgDatabase"
 export * from "./SvgCalendarFill"
+export * from "./SvgTelegram"
 
 export * from "./SvgSolflare"
