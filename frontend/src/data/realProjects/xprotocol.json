@@ -1,5 +1,5 @@
 {
-  "id": "XForge",
+  "id": "xprotocol",
   "config": {
     "cluster": "mainnet",
     "lpPositionToBeBurned": true,
@@ -34,8 +34,8 @@
     "poolContractUrl": null,
 
     "projectType": "draft-pick",
-    "title": "XForge",
-    "subtitle": "XForge is the first node-operated blockchain DePIN phone designed for mass adoption, backed by Razer, Cogitent Ventures, Coinfund and Dragonfly.",
+    "title": "XProtocol",
+    "subtitle": "XProtocol and XForge are the first node-operated blockchain DePIN phone designed for mass adoption, backed by Razer, Cogitent Ventures, Coinfund and Dragonfly.",
     "logoUrl": "https://files.borgpad.com/images/xprotocol/xprotocol-logo.png",
     "thumbnailUrl": "https://files.borgpad.com/images/xprotocol/xprotocol-thumbnail.png",
     "origin": "The Singularity",
