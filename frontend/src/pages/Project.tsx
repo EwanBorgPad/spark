@@ -31,7 +31,7 @@ const Project = () => {
         {/* heading */}
         <div className="flex w-full flex-col justify-between gap-6 lg:max-w-[760px] lg:flex-row">
           {/* left side */}
-          <div className="flex flex-col gap-6 lg:flex-row">
+          <div className=" flex flex-col gap-6 lg:flex-row">
             <Img
               src={projectData?.info.logoUrl}
               isFetchingLink={isLoading}
@@ -48,7 +48,6 @@ const Project = () => {
                   isLoading={isLoading}
                   loadingClass="max-w-[120px]"
                 />
-                {isDevnet && !isLoading && <DevnetFlag />}
               </div>
 
               <Text
@@ -61,8 +60,9 @@ const Project = () => {
             </div>
           </div>
           {/* right side */}
-          <div className="flex items-start gap-2">
+          <div className="relative flex items-start gap-2">
             {projectData?.info.projectLinks.map((link, index) => <ExternalLink.Icon key={index} externalLink={link} />)}
+            {isDevnet && !isLoading && <DevnetFlag />}
           </div>
         </div>
 
@@ -141,13 +141,17 @@ const Project = () => {
 }
 
 function DevnetFlag() {
-  return <div className={twMerge(
-    "flex items-center gap-1",
-    "px-3 py-2 text-md rounded-full text-fg-alt-default bg-brand-primary",
-  )}>
-    <Icon className="text-black" icon={"SvgRoundCheckmark"} />
-    <p>Devnet</p>
-  </div>
+  return (
+    <div
+      className={twMerge(
+        "absolute right-0 top-0 flex items-center gap-1 md:top-12",
+        "text-md rounded-full bg-brand-primary px-3 py-2 text-fg-alt-default",
+      )}
+    >
+      <Icon className="text-black" icon={"SvgRoundCheckmark"} />
+      <p>Devnet</p>
+    </div>
+  )
 }
 
 export default Project

@@ -47,7 +47,6 @@ const DraftPickPage = () => {
                   isLoading={isLoading}
                   loadingClass="max-w-[120px]"
                 />
-                {isDevnet && !isLoading && <DevnetFlag />}
               </div>
 
               <Text
@@ -60,14 +59,15 @@ const DraftPickPage = () => {
             </div>
           </div>
           {/* right side */}
-          <div className="flex items-start gap-2">
+          <div className="relative flex items-start gap-2">
             {projectData?.info.projectLinks.map((link, index) => <ExternalLink.Icon key={index} externalLink={link} />)}
+            {isDevnet && !isLoading && <DevnetFlag />}
           </div>
         </div>
 
         {/* Project details (chain, origin, sector) */}
         <div className="flex w-full flex-col gap-x-5 gap-y-3 text-sm md:flex-row lg:max-w-[760px]">
-          <div className="flex gap-5">
+          <div className="flex flex-col gap-5 md:flex-row">
             <div className="flex items-center gap-2 border-r-fg-gray-line pr-5 md:border-r-[1px]">
               <span className="text-fg-primary text-opacity-50">{t("chain")}</span>
               <Img size="4" src={projectData?.info.chain.iconUrl} isRounded />
@@ -127,13 +127,18 @@ const DraftPickPage = () => {
 }
 
 function DevnetFlag() {
-  return <div className={twMerge(
-    "flex items-center gap-1",
-    "px-3 py-2 text-md rounded-full text-fg-alt-default bg-brand-primary",
-  )}>
-    <Icon className="text-black" icon={"SvgRoundCheckmark"} />
-    <p>Devnet</p>
-  </div>
+  return (
+    <div
+      className={twMerge(
+        "absolute right-0 top-0 flex items-center gap-1 md:top-12",
+        "text-md rounded-full bg-brand-primary px-3 py-2 text-fg-alt-default",
+      )}
+    >
+      <Icon className="text-black" icon={"SvgRoundCheckmark"} />
+      <p>Devnet</p>
+    </div>
+  )
 }
+
 
 export default DraftPickPage
