@@ -40,8 +40,8 @@
     "thumbnailUrl": "https://files.borgpad.com/images/xprotocol/xprotocol-thumbnail.png",
     "origin": "The Singularity",
     "sector": "DePIN and AI",
-    "tokenGenerationEventDate": "Q2 2025",
-    "targetFdv": "$30M",
+    "tokenGenerationEventDate": "April 2025",
+    "targetFdv": "$26M - 50M",
     "chain": {
       "name": "Base",
       "iconUrl": "https://files.borgpad.com/images/shared/base_logo.png"
@@ -80,6 +80,11 @@
         "label": ""
       },
       {
+        "iconType": "TELEGRAM",
+        "url": "https://discord.gg/xprotocol",
+        "label": ""
+      },
+      {
         "iconType": "X_TWITTER",
         "url": "https://x.com/xforgeofficial",
         "label": ""
@@ -114,30 +119,13 @@
     ],
     "tiers": [
       {
-        "id": "tier10",
-        "label": "Borgers Club.",
-        "quests": [
-          {
-            "type": "HOLD_TOKEN",
-            "tokenName": "BORG",
-            "tokenAmount": "1000",
-            "tokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z"
-          }
-        ],
-        "benefits": {
-          "startDate": "2025-03-18T15:00:00Z",
-          "minInvestment": "100",
-          "maxInvestment": "500"
-        }
-      },
-      {
         "id": "tier99",
         "label": "Public Sale",
         "quests": [],
         "benefits": {
           "startDate": "2025-03-18T18:15:00Z",
           "minInvestment": "10",
-          "maxInvestment": "250"
+          "maxInvestment": "2500"
         }
       }
     ]

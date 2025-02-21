@@ -1,5 +1,5 @@
 {
-  "id": "Openware",
+  "id": "openware",
   "config": {
     "cluster": "mainnet",
     "lpPositionToBeBurned": true,
@@ -119,30 +119,13 @@
     ],
     "tiers": [
       {
-        "id": "tier10",
-        "label": "Borgers Club.",
-        "quests": [
-          {
-            "type": "HOLD_TOKEN",
-            "tokenName": "BORG",
-            "tokenAmount": "1000",
-            "tokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z"
-          }
-        ],
-        "benefits": {
-          "startDate": "2025-03-18T15:00:00Z",
-          "minInvestment": "100",
-          "maxInvestment": "500"
-        }
-      },
-      {
         "id": "tier99",
         "label": "Public Sale",
         "quests": [],
         "benefits": {
           "startDate": "2025-03-18T18:15:00Z",
           "minInvestment": "10",
-          "maxInvestment": "250"
+          "maxInvestment": "2500"
         }
       }
     ]
