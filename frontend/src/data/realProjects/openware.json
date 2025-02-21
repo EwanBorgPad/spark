@@ -34,10 +34,10 @@
       "poolContractUrl": null,
   
       "projectType": "draft-pick",
-      "title": "Madagascar Ski Resort",
+      "title": "Openware",
       "subtitle": "Openware.ai is the platform for deploying and tokenizing AI agents on Solana, enabling developers and users to interact with decentralized AI solutions seamlessly.",
-      "logoUrl": "https://pub-df1c985ad6dd424eb47a5dd9739f1f10.r2.dev/images/openware/openware.jpg",
-      "thumbnailUrl": "https://pub-df1c985ad6dd424eb47a5dd9739f1f10.r2.dev/images/openware/openware.jpg",
+      "logoUrl": "https://files.borgpad.com/images/openware/openware-logo.png",
+      "thumbnailUrl": "https://files.borgpad.com/images/openware/openware-thumnail.png",
       "origin": "The Singularity",
       "sector": "AI",
       "tokenGenerationEventDate": "March 2025",
@@ -79,7 +79,7 @@
           "url": "https://openware.ai",
           "label": ""
         },
- 	{
+ 	      {
           "iconType": "TELEGRAM",
           "url": "https://t.me/openwareai",
           "label": ""
