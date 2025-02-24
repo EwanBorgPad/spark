@@ -56,7 +56,11 @@ const TokenRewards = ({ raisedTokenInput, raisedTokenPriceInUSD, isYourContribut
           <div className="flex flex-col items-center gap-1.5">
             <div className="flex h-fit items-center justify-center gap-1.5 rounded-full text-xs font-medium text-fg-tertiary ">
               <Icon icon="SvgChartLine" className="text-base" />
-              <span>{t("tge.linearly_paid_out", { numberOfMonths, remainingMonths })}</span>
+              <span>
+                {projectData.id === "ta-da"
+                  ? "1/2 at TGE and 1/4 for 2 months"
+                  : t("tge.linearly_paid_out", { numberOfMonths, remainingMonths })}
+              </span>
             </div>
             <span className="text-xs font-medium text-fg-tertiary">🔒 LP position permanently locked </span>
             <span className="text-xs font-medium text-fg-tertiary">🔥 All BORG fees burned</span>
