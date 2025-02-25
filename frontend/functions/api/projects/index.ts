@@ -1,4 +1,4 @@
-import { GetProjectsResponse, projectSchema, ProjectTypeSchema } from "../../../shared/models"
+import { GetProjectsResponse, InvestmentIntentSummary, ProjectModel, projectSchema, ProjectTypeSchema } from "../../../shared/models"
 import {
   hasAdminAccess,
   jsonResponse,
@@ -79,8 +79,30 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
     .map(project =>project.json)
     .filter(project => !(project.id || '').startsWith('hidden'))
 
+  // add investment intent summary (commitments) to the response
+  const projectIds = projects.map(project => project.id)
+  const investmentIntentSummaries =  await db.all(
+    sql`
+      SELECT
+        json_each.key AS project_id,
+        SUM(json_each.value ->> 'amount') AS sum,
+        AVG(json_each.value ->> 'amount') AS avg,
+        COUNT(json_each.value ->> 'amount') AS count
+      FROM user, 
+      json_each(user.json, '$.investmentIntent') 
+      WHERE json_each.key IN (${sql.join(projectIds)})
+      GROUP BY json_each.key;
+    `
+  ) as { project_id: string, sum: number, avg: number, count: number }[];
+
+  const retvalProjects: (ProjectModel & { investmentIntentSummary: InvestmentIntentSummary })[] = 
+    projects.map(project => ({
+      ...project,
+      investmentIntentSummary: investmentIntentSummaries.find(summary => summary.project_id === project.id),
+    }))
+
   const response = {
-    projects: projects,
+    projects: retvalProjects,
     pagination: {
       page,
       limit,

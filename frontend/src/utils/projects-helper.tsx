@@ -2,11 +2,10 @@ import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { formatDateMonthDateHours } from "./date-helpers"
 import { expandTimelineDataInfo } from "./timeline-helper"
 import { getCurrentTgeEvent } from "./getCurrentTgeEvent"
-import { ProjectModel } from "shared/models"
+import { GetProjectsProjectResponse, ProjectModel } from "shared/models"
 import i18n from "@/i18n/i18n"
-import { twMerge } from "tailwind-merge"
 
-export type ExpandedProject = ProjectModel & {
+export type ExpandedProject = GetProjectsProjectResponse & {
   additionalData: {
     currentEvent: ExpandedTimelineEventType
     endMessage: string
@@ -149,7 +148,7 @@ const sortProjectsByPhases = (expandedProjects: ExpandedProject[]) => {
   })
 }
 
-export const sortProjectsPerStatus = (projects: ProjectModel[]): ExpandedProject[][] => {
+export const sortProjectsPerStatus = (projects: GetProjectsProjectResponse[]): ExpandedProject[][] => {
   const expandedProjects = projects.map((project) => {
     const expandedTimeline = expandTimelineDataInfo(project.info.timeline)
     const currentEvent = getCurrentTgeEvent(expandedTimeline)
