@@ -42,5 +42,5 @@ export * from "./SvgTwoAvatars"
 export * from "./SvgDatabase"
 export * from "./SvgCalendarFill"
 export * from "./SvgTelegram"
-
+export * from "./SvgDiscord"
 export * from "./SvgSolflare"
