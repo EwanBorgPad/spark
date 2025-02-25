@@ -90,7 +90,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
         COUNT(json_each.value ->> 'amount') AS count
       FROM user, 
       json_each(user.json, '$.investmentIntent') 
-      WHERE json_each.key IN (${sql.join(projectIds)})
+      WHERE json_each.key IN (${sql.join(projectIds, sql`, `)})
       GROUP BY json_each.key;
     `
   ) as { project_id: string, sum: number, avg: number, count: number }[];
