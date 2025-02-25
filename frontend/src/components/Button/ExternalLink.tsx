@@ -20,6 +20,7 @@ export const ALL_ICON_LINK_TYPES = [
   "OUTER_LINK",
   "TELEGRAM",
   "NO_ICON",
+  "DISCORD",
 ] as const
 export type IconLinkType = (typeof ALL_ICON_LINK_TYPES)[number]
 
@@ -29,6 +30,7 @@ export const externalLinkObj: Record<Exclude<IconLinkType, "NO_ICON">, { icon: A
   WEB: { icon: "SvgWeb", label: "Web Url" },
   X_TWITTER: { icon: "SvgTwitter", label: "X (ex Twitter)" },
   TELEGRAM: { icon: "SvgTelegram", label: "Telegram" },
+  DISCORD: { icon: "SvgDiscord", label: "Discord" },
   OUTER_LINK: { icon: "SvgExternalLink", label: "External Link" },
 }
 
