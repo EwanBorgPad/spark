@@ -121,12 +121,11 @@ const getCardRows = (
       value: project.info.targetFdv || "",
       valueClassName: "text-draft-picks",
     },
-    // {
-    //   icon: "SvgChartLine",
-    //   label: "Total Commitment",
-    //   value: "TBD",
-    //   // value: formatCurrencyAmount(141299, { withDollarSign: true }),
-    // },
+    {
+      icon: "SvgChartLine",
+      label: "Total Commitment",
+      value: formatCurrencyAmount(project?.investmentIntentSummary?.sum ?? 0, { withDollarSign: true }),
+    },
     {
       icon: "SvgCalendarFill",
       label: "Target Launch",

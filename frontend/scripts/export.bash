@@ -50,3 +50,23 @@ npx wrangler d1 execute borgpad-production-database --remote --command "SELECT
   json -> 'termsOfUse' ->> 'acceptedAt' AS terms_of_use_accepted_at
 FROM user
 WHERE json -> 'investmentIntent' -> 'agentlauncher' IS NOT NULL;" &> "export_agentlauncher_$(date -u +%Y%m%d_%H%M%S).json"
+
+# openware
+npx wrangler d1 execute borgpad-production-database --remote --command "SELECT
+  address,
+  json -> 'investmentIntent' -> 'openware' ->> 'amount' AS investment_interest_amount,
+  json -> 'investmentIntent' -> 'openware' ->> 'providedAt' AS investment_interest_provided_at,
+  json -> 'termsOfUse' ->> 'countryOfOrigin' AS terms_of_use_country_of_origin,
+  json -> 'termsOfUse' ->> 'acceptedAt' AS terms_of_use_accepted_at
+FROM user
+WHERE json -> 'investmentIntent' -> 'openware' IS NOT NULL;" &> "export_openware_$(date -u +%Y%m%d_%H%M%S).json"
+
+# xprotocol
+npx wrangler d1 execute borgpad-production-database --remote --command "SELECT
+  address,
+  json -> 'investmentIntent' -> 'xprotocol' ->> 'amount' AS investment_interest_amount,
+  json -> 'investmentIntent' -> 'xprotocol' ->> 'providedAt' AS investment_interest_provided_at,
+  json -> 'termsOfUse' ->> 'countryOfOrigin' AS terms_of_use_country_of_origin,
+  json -> 'termsOfUse' ->> 'acceptedAt' AS terms_of_use_accepted_at
+FROM user
+WHERE json -> 'investmentIntent' -> 'xprotocol' IS NOT NULL;" &> "export_xprotocol_$(date -u +%Y%m%d_%H%M%S).json"

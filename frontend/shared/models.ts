@@ -180,8 +180,9 @@ export type PaginationType = {
   total: number
   totalPages: number
 }
+export type GetProjectsProjectResponse = (ProjectModel & { investmentIntentSummary?: InvestmentIntentSummary })
 export type GetProjectsResponse = {
-  projects: ProjectModel[]
+  projects: GetProjectsProjectResponse[]
   pagination: PaginationType
 }
 
