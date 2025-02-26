@@ -32,7 +32,7 @@
       "tweetUrl": null,
       "tokenContractUrl": null,
       "poolContractUrl": null,
-  
+
       "projectType": "draft-pick",
       "title": "Taurus.AI",
       "subtitle": "Tauras.AI The number 1 tool to Connect Alpha with Instant Trading Action",
@@ -41,7 +41,7 @@
       "origin": "web3",
       "sector": "DeFai",
       "tokenGenerationEventDate": "March 2025",
-      "targetFdv": "$2m - $5m",
+      "targetFdv": "$5 - $10m",
       "chain": {
         "name": "Solana",
         "iconUrl": "https://files.borgpad.com/images/shared/solana-logo.png"
