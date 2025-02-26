@@ -27,3 +27,15 @@ export const formatCurrencyAmount = (amount: string | number | undefined | null,
 
   return value
 }
+
+export const formatCurrencyCompact = (amount: number | string | undefined) => {
+  if (!amount) return "$0"
+  const formattedValue = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    style: "currency",
+    currency: "USD",
+    compactDisplay: "short",
+    // maximumFractionDigits: 1,
+  }).format(Number(amount))
+  return formattedValue
+}

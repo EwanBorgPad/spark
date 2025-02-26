@@ -18,6 +18,7 @@ import { GetProjectsResponse } from "shared/models"
 import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
 import { Icon } from "@/components/Icon/Icon"
+import { ProjectPoolCard } from "@/components/Cards/ProjectPoolCard"
 
 const displayLogos = [blitzPoolsLogo, goatPoolsLogo]
 
@@ -86,9 +87,7 @@ const DraftPicks = () => {
         <div className="flex w-full max-w-[1080px] flex-col items-center">
           <ul className="grid w-full grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {!isLoading
-              ? phases?.map((phase) =>
-                  phase?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />),
-                )
+              ? phases?.map((phase) => phase?.map((project) => <ProjectPoolCard project={project} key={project.id} />))
               : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
           </ul>
         </div>
