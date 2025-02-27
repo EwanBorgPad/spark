@@ -47,7 +47,9 @@ project-root/
 │   ├── src/              # Frontend code root folder
 │   │── package.json            # Project metadata & dependencies
 │   │── tsconfig.json           # TypeScript configuration
-│   │── README.md               # Project documentation
+│── onchain/               # Root onchain folder, smart-contract code, not used anymore
+│── workers/               # Folder for workers which we deploy manually
+│── README.md               # Project documentation
 ```
 
 1. Known Flaws 
