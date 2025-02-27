@@ -120,6 +120,7 @@ export const projectSchema = z.object({
     subtitle: z.string().min(1),
     logoUrl: urlSchema(),
     thumbnailUrl: optional(urlSchema()),
+    thumbnailSquaredUrl: optional(urlSchema()),
     origin: z.string().min(1),
     sector: z.string().min(1),
     tokenGenerationEventDate: optional(z.string()),

@@ -26,7 +26,7 @@ export const ProjectPoolCard = ({ project, isLoading }: Props) => {
       <li className="flex aspect-square max-h-[346px] w-full max-w-[346px] flex-col overflow-hidden rounded-[22px] bg-default p-3">
         <div className="relative h-full w-full">
           <Img
-            src={project?.info?.thumbnailUrl || project?.info?.logoUrl}
+            src={project?.info?.thumbnailSquaredUrl || project?.info?.thumbnailUrl || project?.info?.logoUrl}
             customClass="h-full rounded-[10px]"
             showFallback
             isFetchingLink={isLoading}
@@ -55,11 +55,13 @@ export const ProjectPoolCard = ({ project, isLoading }: Props) => {
             <div className="flex h-[72px] items-end gap-4 bg-default pb-2 pr-1 pt-3">
               <div className="flex h-full flex-col items-center justify-end gap-1">
                 <Icon icon="SvgTwoAvatars" className="text-fg-secondary" />
-                <span className="text-sm font-semibold ">{project?.investmentIntentSummary?.count}</span>
+                <span className="text-sm font-semibold ">{project?.investmentIntentSummary?.count ?? 0}</span>
               </div>
               <div className="flex h-full flex-col items-start justify-end gap-1">
                 <span className="text-xs text-fg-secondary">Target FDV</span>
-                <span className="text-nowrap text-sm font-semibold  tracking-tighter">{project?.info.targetFdv}</span>
+                <span className="text-nowrap text-sm font-semibold  tracking-tighter">
+                  {project?.info.targetFdv ?? "TBD"}
+                </span>
               </div>
               <div className="flex h-full flex-col items-start justify-end gap-2">
                 <span className="text-xs text-fg-secondary">Commited</span>
