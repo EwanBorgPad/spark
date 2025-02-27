@@ -36,8 +36,11 @@
     "projectType": "draft-pick",
     "title": "Zenko Protocol",
     "subtitle": "Zenkō is a multi-purpose RWA protocol that turns marketing spend into a force for good",
+
     "logoUrl": "https://pub-df1c985ad6dd424eb47a5dd9739f1f10.r2.dev/images/zenko-protocol/zenko-protocol_logo.png",
     "thumbnailUrl": "https://pub-df1c985ad6dd424eb47a5dd9739f1f10.r2.dev/images/zenko-protocol/zenko-protocol_token.png",
+    "squaredThumbnailUrl": "https://files.borgpad.com/images/zenko/zenko-thumbnail-square.png",
+
     "origin": "web3",
     "sector": "RWA",
     "tokenGenerationEventDate": "March 2025",

@@ -36,8 +36,11 @@
     "projectType": "draft-pick",
     "title": "Fitchin",
     "subtitle": "FITCHIN Universe is the leading gaming platform empowering communities with tokenized clans, competitive tournaments, and shared liquidity rewards. Join the Own-to-Earn revolution!",
+
     "logoUrl": "https://pub-4b018f06ec944a0693e0f9679cab6f5a.r2.dev/Fitchin/fitchin%20logo.jpg",
     "thumbnailUrl": "https://pub-4b018f06ec944a0693e0f9679cab6f5a.r2.dev/Fitchin/FITCHIN%20banner.jpeg",
+    "squaredThumbnailUrl": "https://files.borgpad.com/images/fitchin/fitchin-thumbnail-square.png",
+
     "origin": "web3",
     "sector": "GameFi",
     "tokenGenerationEventDate": "March 2025",

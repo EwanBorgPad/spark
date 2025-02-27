@@ -26,7 +26,7 @@ export const ProjectPoolCard = ({ project, isLoading }: Props) => {
       <li className="flex aspect-square max-h-[346px] w-full max-w-[346px] flex-col overflow-hidden rounded-[22px] bg-default p-3">
         <div className="relative h-full w-full">
           <Img
-            src={project?.info?.thumbnailSquaredUrl || project?.info?.thumbnailUrl || project?.info?.logoUrl}
+            src={project?.info?.squaredThumbnailUrl || project?.info?.thumbnailUrl || project?.info?.logoUrl}
             customClass="h-full rounded-[10px]"
             showFallback
             isFetchingLink={isLoading}

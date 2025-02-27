@@ -36,8 +36,11 @@
     "projectType": "draft-pick",
     "title": "XProtocol",
     "subtitle": "XProtocol and XForge are the first node-operated blockchain DePIN phone designed for mass adoption, backed by Razer, Cogitent Ventures, Coinfund and Dragonfly.",
+
     "logoUrl": "https://files.borgpad.com/images/xprotocol/xprotocol-logo.png",
     "thumbnailUrl": "https://files.borgpad.com/images/xprotocol/xprotocol-thumbnail.png",
+    "squaredThumbnailUrl": "https://files.borgpad.com/images/xprotocol/xprotocol-thumbnail-square.png",
+
     "origin": "The Singularity",
     "sector": "DePIN and AI",
     "tokenGenerationEventDate": "April 2025",

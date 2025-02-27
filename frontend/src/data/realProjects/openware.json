@@ -36,8 +36,11 @@
     "projectType": "draft-pick",
     "title": "Openware",
     "subtitle": "Openware.ai is the platform for deploying and tokenizing AI agents on Solana, enabling developers and users to interact with decentralized AI solutions seamlessly.",
+
     "logoUrl": "https://files.borgpad.com/images/openware/openware-logo.png",
     "thumbnailUrl": "https://files.borgpad.com/images/openware/openware-thumnail.png",
+    "squaredThumbnailUrl": "https://files.borgpad.com/images/openware/openware-thumbnail-square.png",
+
     "origin": "The Singularity",
     "sector": "AI",
     "tokenGenerationEventDate": "March 2025",
