@@ -1,30 +1,19 @@
 import { Link } from "react-router-dom"
-import { twMerge } from "tailwind-merge"
-import { useTranslation } from "react-i18next"
 
 import Img from "../Image/Img"
+import { Icon } from "../Icon/Icon"
 import Text from "@/components/Text"
-import { Badge } from "../Badge/Badge"
-import { Button } from "../Button/Button"
-import { ExpandedProject } from "@/utils/projects-helper"
-import { ExternalLink } from "../Button/ExternalLink"
-import { getProjectRoute } from "@/utils/routes"
-import { AvailableIcons, Icon } from "../Icon/Icon"
 import { ProjectModel } from "shared/models"
-import { formatCurrencyAmount, formatCurrencyCompact } from "shared/utils/format"
+import { getProjectRoute } from "@/utils/routes"
+import { ExpandedProject } from "@/utils/projects-helper"
+import { formatCurrencyCompact } from "shared/utils/format"
+
 import topCorner from "@/assets/top-left-corner.svg"
 import bottomCorner from "@/assets/bottom-right-corner.svg"
 
 type Props = { project: ExpandedProject | null; isLoading?: boolean }
 
 export const ProjectPoolCard = ({ project, isLoading }: Props) => {
-  const { t } = useTranslation()
-
-  const { additionalData: { badgeClassName, endMessage, badgeLabel } = {} } = project ?? {}
-
-  const isDraftPick = project?.info.projectType === "draft-pick"
-  const isUpcoming = !isDraftPick && project?.additionalData.currentEvent.id === "UPCOMING"
-  const isBlitz = project?.info.projectType === "blitz"
   const projectUrl = getProjectRoute(project as ProjectModel)
 
   const committedSum = formatCurrencyCompact(project?.investmentIntentSummary?.sum)
@@ -32,9 +21,9 @@ export const ProjectPoolCard = ({ project, isLoading }: Props) => {
   return (
     <Link
       to={projectUrl}
-      className="hover:shadow-draft-pick-card transition-draft-pick-card rounded-[23px] bg-gradient-to-b from-bd-secondary to-bd-secondary p-[1px] shadow-none duration-1000 hover:from-draft-picks/25 hover:to-draft-picks/75"
+      className="hover:shadow-draft-pick-card transition-draft-pick-card max-w-[346px] rounded-[23px] bg-gradient-to-b from-bd-secondary to-bd-secondary p-[1px] shadow-none duration-500 hover:from-draft-picks/25 hover:to-draft-picks/75"
     >
-      <li className="flex aspect-square max-h-[344px] w-full max-w-[344px] flex-col overflow-hidden rounded-[22px] bg-default p-3">
+      <li className="flex aspect-square max-h-[346px] w-full max-w-[346px] flex-col overflow-hidden rounded-[22px] bg-default p-3">
         <div className="relative h-full w-full">
           <Img
             src={project?.info?.thumbnailUrl || project?.info?.logoUrl}
@@ -63,18 +52,20 @@ export const ProjectPoolCard = ({ project, isLoading }: Props) => {
 
           <div className="absolute bottom-0 right-0 flex items-start">
             <img src={bottomCorner} />
-            <div className="flex h-[72px] items-center gap-8 bg-default pb-2 pr-4 pt-3">
-              <div className="flex h-full flex-col items-center justify-between">
+            <div className="flex h-[72px] items-end gap-4 bg-default pb-2 pr-1 pt-3">
+              <div className="flex h-full flex-col items-center justify-end gap-1">
                 <Icon icon="SvgTwoAvatars" className="text-fg-secondary" />
-                <span className="text-base font-semibold ">{project?.investmentIntentSummary?.count}</span>
+                <span className="text-sm font-semibold ">{project?.investmentIntentSummary?.count}</span>
               </div>
-              <div className="flex h-full flex-col items-center justify-between">
-                <span className="text-sm leading-none text-fg-secondary">Target FDV</span>
-                <span className="text-nowrap text-base font-semibold">{project?.info.targetFdv}</span>
+              <div className="flex h-full flex-col items-start justify-end gap-1">
+                <span className="text-xs text-fg-secondary">Target FDV</span>
+                <span className="text-nowrap text-sm font-semibold  tracking-tighter">{project?.info.targetFdv}</span>
               </div>
-              <div className="flex h-full flex-col items-center justify-between">
-                <span className="text-sm leading-none text-fg-secondary">Commited</span>
-                <span className="text-draft-picks-2 text-2xl font-semibold">{committedSum}</span>
+              <div className="flex h-full flex-col items-start justify-end gap-2">
+                <span className="text-xs text-fg-secondary">Commited</span>
+                <span className="text-draft-picks-2 text-2xl font-semibold leading-none tracking-tighter">
+                  {committedSum}
+                </span>
               </div>
             </div>
           </div>
