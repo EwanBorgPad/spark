@@ -65,14 +65,14 @@ const content: DiscoverSectionCardType[][] = [
       label: "",
       description: "Stake $SOL, Receive Airdrops from Early Investments.",
       images: { small: discover1, medium: discover1 },
-      imgClass: "max-w-[240px] md:py-10 mb-0",
+      imgClass: "max-w-[240px] md:py-10 mb-0 md:mb-0",
     },
     {
       path: "",
       label: "",
       description: "Get Early Access to Exclusive Token Sales.",
       images: { small: discover2, medium: discover2 },
-      imgClass: "max-w-[240px] md:py-10 mb-0",
+      imgClass: "max-w-[240px] md:py-10 mb-0 md:mb-0",
     },
   ],
 ]
