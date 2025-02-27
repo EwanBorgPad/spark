@@ -30,7 +30,7 @@ const BasicTokenInfo = ({ isDraftPick }: Props) => {
     ? formatCurrencyAmount(projectData?.config.fdv, { withDollarSign: true, customDecimals: 0 })
     : ""
   const targetFdv = projectData?.info.targetFdv
-  const tgeDate = projectData?.info.tokenGenerationEventDate || ""
+  const tgeDate = projectData?.info.tokenGenerationEventDate || "TBD"
 
   return (
     <section className="max-w-screen flex w-full flex-col gap-[25px] md:px-4 lg:max-w-[792px]">
