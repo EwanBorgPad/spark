@@ -23,15 +23,17 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
 
   try {
-    const { searchParams } = new URL(ctx.request.url)
-    const projectId = searchParams.get('projectId')
-    if (!projectId) return jsonResponse({ message: 'projectId is missing!' }, 400)
-
     // authorize request
     if (!hasAdminAccess(ctx)) {
       return jsonResponse(null, 401)
     }
+    
+    // parse/validate request
+    const { searchParams } = new URL(ctx.request.url)
+    const projectId = searchParams.get('projectId')
+    if (!projectId) return jsonResponse({ message: 'projectId is missing!' }, 400)
 
+    // execute request
     const queryResult = await db
       .prepare(query)
       .bind(projectId)
