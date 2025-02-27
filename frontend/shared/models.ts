@@ -118,14 +118,18 @@ export const projectSchema = z.object({
     projectType: ProjectTypeSchema,
     title: z.string().min(1),
     subtitle: z.string().min(1),
+
+    ///// images /////
     logoUrl: urlSchema(),
     thumbnailUrl: optional(urlSchema()),
+    squaredThumbnailUrl: optional(urlSchema()),
+
     origin: z.string().min(1),
     sector: z.string().min(1),
     tokenGenerationEventDate: optional(z.string()),
     targetFdv: z.string().min(1).optional(),
-
     chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
+
     dataRoom: z.object({ backgroundImgUrl: urlSchema().optional(), url: urlSchema() }),
     liquidityPool: z.object({
       name: z.string().min(1),

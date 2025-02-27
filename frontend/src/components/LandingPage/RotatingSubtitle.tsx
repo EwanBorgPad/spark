@@ -54,7 +54,7 @@ const RotatingSubtitle = ({ style }: { style: HTMLAttributes<HTMLHeadingElement>
   return (
     <h2
       style={style}
-      className="flex h-[136px] w-full max-w-[752px] animate-fade-in-from-below-slow flex-col flex-wrap items-start  text-xl font-normal leading-snug opacity-0 md:items-center md:text-center"
+      className="flex h-[116px] w-full max-w-[752px] animate-fade-in-from-below-slow flex-col flex-wrap items-start  text-xl font-normal leading-snug opacity-0 md:items-center md:text-center"
     >
       <span className="text-nowrap opacity-60">Unsatisfied with</span>
       <div className="flex" ref={textRef}>

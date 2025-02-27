@@ -36,8 +36,11 @@
       "projectType": "draft-pick",
       "title": "TrueTribe",
       "subtitle": "A complete operational platform for managing airdrops, from engagement support to post-distribution analytics",
+
       "logoUrl": "https://files.borgpad.com/images/truetribe/Avatar%20-%20Taurus.png",
       "thumbnailUrl": "https://files.borgpad.com/images/truetribe/Project%20Cover%20-%20Rectangle.png",
+      "squaredThumbnailUrl": "https://files.borgpad.com/images/truetribe/truetribe-thumbnail-square.png",
+
       "origin": "web3",
       "sector": "Airdrop",
       "tokenGenerationEventDate": "March 2025",

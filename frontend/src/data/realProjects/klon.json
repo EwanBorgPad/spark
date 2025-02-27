@@ -36,8 +36,11 @@
     "projectType": "draft-pick",
     "title": "KLON",
     "subtitle": "KLON is the first Al agent for autonomous digital self-representation, integrated with a decentralized identity suite.",
+
     "logoUrl": "https://pub-df1c985ad6dd424eb47a5dd9739f1f10.r2.dev/images/klon/klon_logo.png",
     "thumbnailUrl": "https://pub-df1c985ad6dd424eb47a5dd9739f1f10.r2.dev/images/klon/klon_token.png",
+    "squaredThumbnailUrl": "https://files.borgpad.com/images/klon/klon-thumbnail-square.png",
+
     "origin": "web3",
     "sector": "AI Agent",
     "tokenGenerationEventDate": "March 2025",

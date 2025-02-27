@@ -36,8 +36,11 @@
       "projectType": "draft-pick",
       "title": "Taurus AI",
       "subtitle": "The Number 1 Tool to Connect Alpha with Instant Trading Action",
+
       "logoUrl": "https://files.borgpad.com/images/taurus-ai/logo.png",
       "thumbnailUrl": "https://files.borgpad.com/images/taurus-ai/thumbnail-rectangle.png",
+      "squaredThumbnailUrl": "https://files.borgpad.com/images/taurus-ai/thumbnail-square.png",
+
       "origin": "web3",
       "sector": "DeFAI",
       "tokenGenerationEventDate": "March 2025",

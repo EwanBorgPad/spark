@@ -1,29 +1,24 @@
 import { useEffect, useState } from "react"
 import { backendApi } from "@/data/backendApi"
-import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { ScrollRestoration } from "react-router-dom"
 
-import orcaLogo from "@/assets/launchPools/orca-logo.png"
-import jupiterLogo from "@/assets/launchPools/jupiter-logo.png"
-import raydiumLogo from "@/assets/launchPools/raydium-logo.png"
-import swissborgLogo from "@/assets/launchPools/swissborg-logo.png"
 import goatPoolsLogo from "@/assets/launchPools/goat-pools-logo.png"
 import blitzPoolsLogo from "@/assets/launchPools/blitz-pools-logo.png"
 import draftPicksLogo from "@/assets/launchPools/draft-picks-logo.png"
 import draftPicksBackground from "@/assets/launchPools/draft-picks-background.png"
 
 import Img from "@/components/Image/Img"
+import { Icon } from "@/components/Icon/Icon"
 import { GetProjectsResponse } from "shared/models"
 import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
+import { ProjectPoolCard } from "@/components/Cards/ProjectPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
-import { Icon } from "@/components/Icon/Icon"
 
 const displayLogos = [blitzPoolsLogo, goatPoolsLogo]
 
 const DraftPicks = () => {
   const [phases, setPhases] = useState<ExpandedProject[][]>([])
-  const { t } = useTranslation()
 
   const { data, isLoading } = useQuery<GetProjectsResponse>({
     queryFn: () =>
@@ -84,11 +79,9 @@ const DraftPicks = () => {
 
       <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
         <div className="flex w-full max-w-[1080px] flex-col items-center">
-          <ul className="grid w-full grid-cols-1 justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid w-full grid-cols-1 place-items-center items-center justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {!isLoading
-              ? phases?.map((phase) =>
-                  phase?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />),
-                )
+              ? phases?.map((phase) => phase?.map((project) => <ProjectPoolCard project={project} key={project.id} />))
               : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
           </ul>
         </div>

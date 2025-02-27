@@ -32,6 +32,7 @@ export default {
         "brand-blitz": "#F6FF73",
         "brand-blitz-secondary": "#262716",
         "draft-picks": "#96F5FF",
+        "draft-picks-2": "#96EAFF",
 
         // font colors
         fg: {
@@ -90,6 +91,7 @@ export default {
         around: "0 0 10px 4px rgba(172, 255, 115, 0.2);",
         "around-1": "0 10px 10px 4px rgba(172, 255, 115, 0.05);",
         "around-2": "0 10px 20px 8px rgba(172, 255, 115, 0.15);",
+        "draft-pick-card": "0px 4px 12px 0px rgba(150, 234, 255, 0.25);",
       },
       gridTemplateColumns: {
         "borg-input": "minmax(180px, 1fr) 88px",
@@ -139,7 +141,8 @@ export default {
         ],
       },
       transitionProperty: {
-        "translate-opacity": "transform, opacity ",
+        "draft-pick-card": "colors, box-shadow",
+        "opacity-colors": "opacity, colors",
       },
       keyframes: {
         "top-down": {
