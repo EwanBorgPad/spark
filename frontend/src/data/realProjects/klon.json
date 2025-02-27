@@ -1,5 +1,5 @@
 {
-  "id": "fitchin",
+  "id": "klon",
   "config": {
     "cluster": "mainnet",
     "lpPositionToBeBurned": true,
@@ -34,21 +34,21 @@
     "poolContractUrl": null,
 
     "projectType": "draft-pick",
-    "title": "Fitchin",
-    "subtitle": "FITCHIN Universe is the leading gaming platform empowering communities with tokenized clans, competitive tournaments, and shared liquidity rewards. Join the Own-to-Earn revolution!",
-    "logoUrl": "https://pub-4b018f06ec944a0693e0f9679cab6f5a.r2.dev/Fitchin/fitchin%20logo.jpg",
-    "thumbnailUrl": "https://pub-4b018f06ec944a0693e0f9679cab6f5a.r2.dev/Fitchin/FITCHIN%20banner.jpeg",
+    "title": "KLON",
+    "subtitle": "KLON is the first Al agent for autonomous digital self-representation, integrated with a decentralized identity suite.",
+    "logoUrl": "https://pub-df1c985ad6dd424eb47a5dd9739f1f10.r2.dev/images/klon/klon_logo.png",
+    "thumbnailUrl": "https://pub-df1c985ad6dd424eb47a5dd9739f1f10.r2.dev/images/klon/klon_token.png",
     "origin": "web3",
-    "sector": "GameFi",
+    "sector": "AI Agent",
     "tokenGenerationEventDate": "March 2025",
-    "targetFdv": "$15M - 25M",
+    "targetFdv": "$2m - $5m",
     "chain": {
       "name": "Solana",
       "iconUrl": "https://files.borgpad.com/images/shared/solana-logo.png"
     },
     "dataRoom": {
       "backgroundImgUrl": "",
-      "url": "https://fitchin.gitbook.io/fitchin-litepaper"
+      "url": "https://docs.google.com/document/d/14SAGGWYMXm1uWT4hUs3oc8XRcP_Mhqf4mJl6Jhvzx4s/edit?tab=t.0"
     },
     "liquidityPool": {
       "name": "Raydium",
@@ -62,12 +62,12 @@
       "position": "TBD",
       "socials": [
         {
-          "url": "https://fitchin.io/",
+          "url": "www.klon.ai",
           "iconType": "WEB",
           "label": "Web"
         },
         {
-          "url": "https://x.com/FITCHINuniverse",
+          "url": "https://x.com/klon_ai",
           "iconType": "X_TWITTER",
           "label": "X (ex-Twitter)"
         }
@@ -76,17 +76,17 @@
     "projectLinks": [
       {
         "iconType": "WEB",
-        "url": "https://fitchin.io/",
+        "url": "www.klon.ai",
         "label": ""
       },
       {
-        "iconType": "DISCORD",
-        "url": "https://discord.com/invite/fitchin",
+        "iconType": "TELEGRAM",
+        "url": "@KLON_Community",
         "label": ""
       },
       {
         "iconType": "X_TWITTER",
-        "url": "https://x.com/FITCHINuniverse",
+        "url": "https://x.com/klon_ai",
         "label": ""
       }
     ],
