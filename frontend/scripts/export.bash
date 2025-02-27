@@ -70,3 +70,33 @@ npx wrangler d1 execute borgpad-production-database --remote --command "SELECT
   json -> 'termsOfUse' ->> 'acceptedAt' AS terms_of_use_accepted_at
 FROM user
 WHERE json -> 'investmentIntent' -> 'xprotocol' IS NOT NULL;" &> "export_xprotocol_$(date -u +%Y%m%d_%H%M%S).json"
+
+# ta-da
+npx wrangler d1 execute borgpad-production-database --remote --command "SELECT
+  address,
+  json -> 'investmentIntent' -> 'ta-da' ->> 'amount' AS investment_interest_amount,
+  json -> 'investmentIntent' -> 'ta-da' ->> 'providedAt' AS investment_interest_provided_at,
+  json -> 'termsOfUse' ->> 'countryOfOrigin' AS terms_of_use_country_of_origin,
+  json -> 'termsOfUse' ->> 'acceptedAt' AS terms_of_use_accepted_at
+FROM user
+WHERE json -> 'investmentIntent' -> 'ta-da' IS NOT NULL;" &> "export_ta-da_$(date -u +%Y%m%d_%H%M%S).json"
+
+# fitchin
+npx wrangler d1 execute borgpad-production-database --remote --command "SELECT
+  address,
+  json -> 'investmentIntent' -> 'fitchin' ->> 'amount' AS investment_interest_amount,
+  json -> 'investmentIntent' -> 'fitchin' ->> 'providedAt' AS investment_interest_provided_at,
+  json -> 'termsOfUse' ->> 'countryOfOrigin' AS terms_of_use_country_of_origin,
+  json -> 'termsOfUse' ->> 'acceptedAt' AS terms_of_use_accepted_at
+FROM user
+WHERE json -> 'investmentIntent' -> 'fitchin' IS NOT NULL;" &> "export_fitchin_$(date -u +%Y%m%d_%H%M%S).json"
+
+# taurus-ai
+npx wrangler d1 execute borgpad-production-database --remote --command "SELECT
+  address,
+  json -> 'investmentIntent' -> 'taurus-ai' ->> 'amount' AS investment_interest_amount,
+  json -> 'investmentIntent' -> 'taurus-ai' ->> 'providedAt' AS investment_interest_provided_at,
+  json -> 'termsOfUse' ->> 'countryOfOrigin' AS terms_of_use_country_of_origin,
+  json -> 'termsOfUse' ->> 'acceptedAt' AS terms_of_use_accepted_at
+FROM user
+WHERE json -> 'investmentIntent' -> 'taurus-ai' IS NOT NULL;" &> "export_taurus-ai_$(date -u +%Y%m%d_%H%M%S).json"
