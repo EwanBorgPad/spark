@@ -27,7 +27,7 @@ const DiscoverSectionCard = ({
         className,
       )}
     >
-      <div className="relative h-fit min-h-[293px] max-w-[362px] rounded-[11px] bg-default ">
+      <div className="relative h-fit max-w-[362px] rounded-[11px] bg-default md:min-h-[293px] ">
         {backdropImg && (
           <Img
             src={backdropImg}
@@ -36,12 +36,12 @@ const DiscoverSectionCard = ({
             }
           />
         )}
-        <div className="relative z-[100] flex h-full w-full flex-col items-center gap-2 px-4 py-6">
-          <Img src={isMobile ? images.small : images.medium} customClass={twMerge("mb-8", imgClass)} />
+        <div className="relative z-[100] flex h-full w-full flex-col items-start p-6 md:items-center md:gap-2 md:px-4">
+          <Img src={isMobile ? images.small : images.medium} customClass={twMerge("mb-5 md:mb-8", imgClass)} />
           <h3 className="hidden font-sulphur-point">{label}</h3>
-          <div className="flex w-full flex-col gap-4">
-            {isComingSoon && <span className="text-center opacity-50">Coming Soon</span>}{" "}
-            <p className="mb-4 text-center text-fg-secondary">{description}</p>
+          <div className="flex w-full flex-col">
+            {isComingSoon && <span className="py-2 text-left opacity-50 md:text-center">Coming Soon</span>}
+            <p className="mb-4 text-left text-fg-secondary md:text-center">{description}</p>
             {!isComingSoon && (
               <Link to={path} className="group relative w-full">
                 <Button
