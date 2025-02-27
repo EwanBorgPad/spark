@@ -43,7 +43,7 @@ const DiscoverSectionCard = ({
             {isComingSoon && <span className="py-2 text-left opacity-50 md:text-center">Coming Soon</span>}
             <p className="mb-4 text-left text-fg-secondary md:text-center">{description}</p>
             {!isComingSoon && (
-              <Link to={path} className="group relative w-full">
+              <Link to={path} className="group relative w-fit md:w-full">
                 <Button
                   color="tertiary"
                   size="lg"
