@@ -22,7 +22,7 @@ const DiscoverSectionCard = ({
   return (
     <div
       className={twMerge(
-        "group flex rounded-xl bg-bd-secondary bg-opacity-[50%] p-[1px]",
+        "group flex max-w-[364px] rounded-xl bg-bd-secondary bg-opacity-[50%] p-[1px]",
         isComingSoon && "bg-secondary",
         className,
       )}
