@@ -4,8 +4,8 @@ import {
   jsonResponse,
   reportError,
 } from "../cfPagesFunctionsUtils"
-import { projectTable } from "../../../shared/drizzle-schema"
-import { count, eq, sql } from "drizzle-orm"
+import { projectTable, ProjectStatus } from "../../../shared/drizzle-schema"
+import { and, count, eq, like, not, sql } from "drizzle-orm"
 import { drizzle, DrizzleD1Database } from "drizzle-orm/d1"
 import { z } from 'zod'
 
@@ -19,8 +19,6 @@ const requestSchema = z.object({
 type ENV = {
   DB: D1Database
   ADMIN_API_KEY_HASH: string
-  ADMIN_AUTHORITY_SECRET_KEY: string
-  SOLANA_RPC_URL: string
 }
 /**
  * Get request handler - returns a list of projects
@@ -48,39 +46,36 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 type GetProjectsFromDbArgs = z.infer<typeof requestSchema>
 const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbArgs): Promise<GetProjectsResponse | null> => {
 
-  const { page, limit } = args
-
   const projectType = args.projectType
-
+  
+  const { page, limit } = args
   const offset = (page - 1) * limit
 
-  const projectsQuery = db
+  const whereConditions = and(
+    eq(projectTable.status, 'active'),
+    not(like(projectTable.id, 'hidden%')),
+    projectType ? sql`json -> 'info' ->> 'projectType' = ${projectType}` : undefined,
+  )
+  
+  const projectsResult = await db
     .select()
     .from(projectTable)
+    .where(whereConditions)
     .limit(limit)
     .offset(offset)
+    .all()
   
   const countQuery = db
     .select({ count: count() })
     .from(projectTable)
-
-  if (projectType) {
-    projectsQuery.where(sql`json -> 'info' ->> 'projectType' = ${projectType}`)
-    countQuery.where(sql`json -> 'info' ->> 'projectType' = ${projectType}`)
-  }
-
-  const projectsResult = await projectsQuery.all()
+    .where(whereConditions)
   const countResult = (await countQuery.get()).count
 
   const total = countResult || 0
   const totalPages = Math.ceil(total / limit)
 
-  const projects = projectsResult
-    .map(project =>project.json)
-    .filter(project => !(project.id || '').startsWith('hidden'))
-
   // add investment intent summary (commitments) to the response
-  const projectIds = projects.map(project => project.id)
+  const projectIds = projectsResult.map(project => project.id)
   const investmentIntentSummaries =  await db.all(
     sql`
       SELECT
@@ -96,10 +91,11 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
   ) as { project_id: string, sum: number, avg: number, count: number }[];
 
   const retvalProjects: (ProjectModel & { investmentIntentSummary: InvestmentIntentSummary })[] = 
-    projects.map(project => ({
-      ...project,
-      investmentIntentSummary: investmentIntentSummaries.find(summary => summary.project_id === project.id),
-    }))
+    projectsResult
+      .map(project => ({
+        ...project.json,
+        investmentIntentSummary: investmentIntentSummaries.find(summary => summary.project_id === project.id),
+      }))
 
   const response = {
     projects: retvalProjects,
@@ -142,26 +138,29 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     // check if exists
-    if (!overwrite) {
-      const project = await db
-        .select()
-        .from(projectTable)
-        .where(eq(projectTable.id, data.id))
-        .get()
-      if (project) return jsonResponse({ message: "Project with provided id already exists!", }, 409)
-    }
+    const project = await db
+      .select()
+      .from(projectTable)
+      .where(eq(projectTable.id, data.id))
+      .get()
+    
+    const projectExists = Boolean(project)
+    if (!overwrite && projectExists) return jsonResponse({ message: "Project with provided id already exists!", }, 409)
 
     const id = data.id
     const json = JSON.stringify(data)
+    const now = new Date().toISOString()
+    // projects created/updated through this API are always 'active'
+    const newStatus: ProjectStatus = 'active'
     // persist in db
-    if (overwrite) {
-      await db.run(sql`REPLACE INTO project (id, json) VALUES (${id}, ${json})`)
+    if (projectExists) {
+      await db.run(sql`UPDATE project SET status = ${newStatus}, updated_at = ${now}, json = ${json} WHERE id = ${id};`)
     } else {
-      await db.run(sql`INSERT INTO project (id, json) VALUES (${id}, ${json})`)
+      await db.run(sql`INSERT INTO project (id, status, created_at, updated_at, json) VALUES (${id}, ${newStatus}, ${now}, ${now}, ${json})`)
     }
 
     const retval = {
-      message: overwrite ? 'Updated!' : 'Created!'
+      message: projectExists ? 'Updated!' : 'Created!'
     }
 
     return jsonResponse(retval, 201)

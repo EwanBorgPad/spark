@@ -106,3 +106,17 @@ CREATE TABLE token_balance (
     ui_amount TEXT NOT NULL, 
     PRIMARY KEY (owner_address, token_mint_address)
 );
+
+---- migration: project status
+-- introduce new column 'status' for projects, with 'pending' as default
+ALTER TABLE project ADD COLUMN status TEXT NOT NULL DEFAULT 'pending';
+-- update all existing projects to be 'active'
+UPDATE project SET status = 'active' WHERE TRUE;
+
+-- introduce created_at and updated_at columns
+ALTER TABLE project ADD COLUMN created_at TIMESTAMP;
+ALTER TABLE project ADD COLUMN updated_at TIMESTAMP;
+-- update all existing projects to the same value
+UPDATE project SET created_at = '2024-01-01T00:00:00.000Z' WHERE TRUE;
+UPDATE project SET updated_at = '2024-01-01T00:00:00.000Z' WHERE TRUE;
+---- end
