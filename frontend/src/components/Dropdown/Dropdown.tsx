@@ -32,40 +32,35 @@ export function DropdownSelector({ options, selected, onChange, placeholder, bas
   accentColor = 'hover:bg-' + accentColor
 
   return (
-    <div
-      ref={ref}
-      className="relative w-64 z-10">
+    <div ref={ref} className="relative z-[10] w-64">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={twMerge(
-          "w-full flex justify-between items-center", 
-          "px-4 py-2 border rounded-lg shadow-md",
-          baseColor, accentColor,
+          "flex w-full items-center justify-between",
+          "rounded-lg border px-4 py-2 shadow-md",
+          baseColor,
+          accentColor,
         )}
       >
         {selectedLabel}
         <Icon
-          className={twMerge(
-            "transition-transform duration-150",
-            isOpen && "rotate-180 transform",
-          )}
+          className={twMerge("transition-transform duration-150", isOpen && "rotate-180 transform")}
           icon={"SvgChevronDown"}
         />
       </button>
       {isOpen && (
-        <ul className={twMerge(
-          "absolute left-0 right-0 mt-1 border rounded-lg shadow-lg",
-          baseColor,
-          "transition-transform ease-out",
-          isOpen && "animate-top-down",
-        )}>
+        <ul
+          className={twMerge(
+            "absolute left-0 right-0 mt-1 rounded-lg border shadow-lg",
+            baseColor,
+            "transition-transform ease-out",
+            isOpen && "animate-top-down",
+          )}
+        >
           {options.map((option) => (
             <li
               key={option.value}
-              className={twMerge(
-                "px-4 py-2 cursor-pointer first:rounded-t-lg last:rounded-b-lg",
-                accentColor,
-              )}
+              className={twMerge("cursor-pointer px-4 py-2 first:rounded-t-lg last:rounded-b-lg", accentColor)}
               onClick={() => {
                 onChange(option.value)
                 setIsOpen(false)
