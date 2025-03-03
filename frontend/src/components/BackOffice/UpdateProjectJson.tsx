@@ -1,5 +1,5 @@
-import React from "react"
-import { JsonData, JsonEditor } from "json-edit-react"
+import React, { useEffect } from "react"
+import { JsonData, JsonEditor, githubDarkTheme } from "json-edit-react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { DropdownSelector } from "../Dropdown/Dropdown"
 import { useWalletContext } from "@/hooks/useWalletContext"
@@ -30,7 +30,7 @@ const UpdateProjectJson = () => {
     setValue,
     watch,
     reset,
-    formState: { isDirty },
+    formState: { isDirty, errors },
   } = useForm<FormType>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
@@ -97,9 +97,20 @@ const UpdateProjectJson = () => {
         options={dropdownOptions}
       />
       <form className="flex w-full justify-center" onSubmit={handleSubmit(onSubmit)}>
-        {selectedProjectData && <JsonEditor data={selectedProjectData} rootName="json" setData={setData} />}
         {selectedProjectData && (
-          <div className="flex flex-col px-4">
+          <div className="flex-[5]">
+            <JsonEditor
+              data={selectedProjectData}
+              rootName="json"
+              setData={setData}
+              enableClipboard
+              className="w-full !max-w-[100%] ring-[1px] ring-white/50"
+              theme={githubDarkTheme}
+            />
+          </div>
+        )}
+        {selectedProjectData && (
+          <div className="flex max-w-[300px] flex-[1] flex-col px-4">
             <div style={{ position: "sticky" }} className="top-[120px] flex w-full flex-col gap-4">
               <Button
                 btnText="Reset"
@@ -118,6 +129,15 @@ const UpdateProjectJson = () => {
                 disabled={!isDirty || !isWalletConnected}
                 isLoading={isPending}
               />
+              {errors?.project && (
+                <p className="w-full max-w-[300px] text-wrap text-bd-danger">
+                  <span>Error hint:</span>
+                  <br />
+                  <span className="whitespace-pre-line">
+                    {JSON.stringify(errors.project).replaceAll('":{"', '":\n"').replaceAll('","', '",\n"')}
+                  </span>
+                </p>
+              )}
             </div>
           </div>
         )}
