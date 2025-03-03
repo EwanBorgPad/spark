@@ -51,9 +51,9 @@ export function DropdownSelector({ options, selected, onChange, placeholder, bas
       {isOpen && (
         <ul
           className={twMerge(
-            "absolute left-0 right-0 mt-1 rounded-lg border shadow-lg",
+            "absolute left-0 right-0 mt-1 max-h-[400px] overflow-y-scroll rounded-lg border shadow-lg",
             baseColor,
-            "transition-transform ease-out",
+            "transition-transform ease-in-out",
             isOpen && "animate-top-down",
           )}
         >

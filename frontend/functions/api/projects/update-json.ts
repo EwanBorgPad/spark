@@ -15,9 +15,6 @@ import { PublicKey } from "@solana/web3.js"
 
 type ENV = {
     DB: D1Database
-    ADMIN_API_KEY_HASH: string
-    ADMIN_AUTHORITY_SECRET_KEY: string
-    SOLANA_RPC_URL: string
     ADMIN_ADDRESSES: string
     VITE_ENVIRONMENT_TYPE: string
 }
@@ -39,48 +36,48 @@ type ENV = {
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
   try {
-     // validate env
-     const {VITE_ENVIRONMENT_TYPE} = ctx.env
-     if (VITE_ENVIRONMENT_TYPE !== "develop") throw new Error('Environment is not on stage')
+    // validate env
+    const {VITE_ENVIRONMENT_TYPE} = ctx.env
+    if (VITE_ENVIRONMENT_TYPE !== "develop") throw new Error('Environment is not on stage')
 
-     const { ADMIN_ADDRESSES } = ctx.env
-     if (!ADMIN_ADDRESSES) throw new Error('Misconfigured env! ADMIN_ADDRESSES is missing')
-     const adminAddresses = ADMIN_ADDRESSES.split(',')
+    const { ADMIN_ADDRESSES } = ctx.env
+    if (!ADMIN_ADDRESSES) throw new Error('Misconfigured env! ADMIN_ADDRESSES is missing')
+    const adminAddresses = ADMIN_ADDRESSES.split(',')
+
+    // parse/validate request
+    const requestJson = await ctx.request.json()
+    const { error, data } = requestSchema.safeParse(requestJson)
+    if (error || !data)
+        return jsonResponse({ message: "Invalid request!", error }, 400)
+
+    //// auth
+    const { address, message, signature } = data.auth
+
+    // auth - confirm signature
+    const isVerified = nacl.sign.detached.verify(
+      decodeUTF8(message),
+      new Uint8Array(signature),
+      new PublicKey(address).toBytes(),
+    );
+    if (!isVerified) {
+      await reportError(db, new Error(`Invalid signature (after-sale-update)! publicKey: ${address}, message: ${message}, signature: ${signature}`))
+      return jsonResponse(null, 401)
+    }
  
-     // parse/validate request
-     const requestJson = await ctx.request.json()
-     const { error, data } = requestSchema.safeParse(requestJson)
-     if (error || !data)
-         return jsonResponse({ message: "Invalid request!", error }, 400)
- 
-     //// auth
-     const { address, message, signature } = data.auth
- 
-     // auth - confirm signature
-     const isVerified = nacl.sign.detached.verify(
-       decodeUTF8(message),
-       new Uint8Array(signature),
-       new PublicKey(address).toBytes(),
-     );
-     if (!isVerified) {
-       await reportError(db, new Error(`Invalid signature (after-sale-update)! publicKey: ${address}, message: ${message}, signature: ${signature}`))
-       return jsonResponse(null, 401)
-     }
- 
-     // auth - confirm address is admin address
-     const isAdminConfirmed = adminAddresses.includes(address)
-     if (!isAdminConfirmed) {
-       await reportError(db, new Error(`Non-admin tried accessing admin functionality! address=(${address})`))
-       return jsonResponse(null, 401)
-     }
+    // auth - confirm address is admin address
+    const isAdminConfirmed = adminAddresses.includes(address)
+    if (!isAdminConfirmed) {
+      await reportError(db, new Error(`Non-admin tried accessing admin functionality! address=(${address})`))
+      return jsonResponse(null, 401)
+    }
  
      //// happy flow
-     const project = await db
+    const project = await db
          .select()
          .from(projectTable)
          .where(eq(projectTable.id, data.projectId))
          .get()
-     if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
+    if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
     const id = data.projectId
     const json = JSON.stringify(data.project)
     // persist in db
