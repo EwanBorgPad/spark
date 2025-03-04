@@ -190,11 +190,8 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
       const tokenAmount = parseFloat(data.raisedTokenInputValue.replace(",", ""))
       if (walletProvider === "") throw new Error("No wallet provider!")
       if (!tokenMintAddress) throw new Error("No Mint Address!")
-      console.log("marker 2")
       const isValid = checkIfValueIsValid(data.raisedTokenInputValue)
-      console.log(isValid)
       if (!isValid) return
-      console.log("marker 4")
       if (walletState === "CONNECTED") {
         const serializedTransaction = await makeDepositTransaction({
           userWalletAddress: address,
