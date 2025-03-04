@@ -79,12 +79,12 @@
     "projectLinks": [
       {
         "iconType": "WEB",
-        "url": "www.klon.ai",
+        "url": "https://klon.ai",
         "label": ""
       },
       {
         "iconType": "TELEGRAM",
-        "url": "@KLON_Community",
+        "url": "https://t.me/KLON_Community",
         "label": ""
       },
       {
