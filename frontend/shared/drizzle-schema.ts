@@ -1,6 +1,7 @@
 import { primaryKey, sqliteTable, text, integer } from "drizzle-orm/sqlite-core"
 import { ProjectModel, UserModelJson } from "./models"
 import { sql } from "drizzle-orm"
+import { z } from 'zod'
 
 export const whitelistTable = sqliteTable('whitelist', {
   address: text().notNull(),
@@ -17,8 +18,14 @@ export const userTable = sqliteTable('user', {
   json: text({ mode: 'json' }).notNull().$type<UserModelJson>()
 })
 
+export const ProjectStatusSchema = z.enum(["pending", "active"])
+export type ProjectStatus = z.infer<typeof ProjectStatusSchema>
+
 export const projectTable = sqliteTable('project', {
   id: text().primaryKey(),
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  status: text('status').notNull().$type<ProjectStatus>(),
   json: text({ mode: 'json' }).notNull().$type<ProjectModel>()
 })
 

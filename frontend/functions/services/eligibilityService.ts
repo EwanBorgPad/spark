@@ -5,6 +5,7 @@ import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } fro
 import { followerTable, projectTable, tokenBalanceTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
 import { getTokenHoldingsMap, isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
 import { SnapshotService } from "./snapshotService"
+import { ProjectModel } from "../../shared/models"
 
 const BorgTokenMintAddress: string = '3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z'
 
@@ -14,19 +15,18 @@ const BorgTokenMintAddress: string = '3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi
  * Return SUM investment.
  * SqlQuery: SELECT SUM(json -> 'investmentIntent' -> 'puffer-finance' -> 'amount') FROM user;
  */
-const COMPLIANCES: Quest[] = [
-  {
-    type: 'ACCEPT_TERMS_OF_USE',
-  },
-  {
-    type: 'PROVIDE_INVESTMENT_INTENT',
-    isOptional: true,
-  },
-  // {
-  //   type: 'REFERRAL',
-  //   isOptional: true,
-  // },
-]
+const getCompliances = (project:ProjectModel):Quest[] => {
+  const isDraftPick = project.info?.projectType === "draft-pick"
+  return [
+    {
+      type: 'ACCEPT_TERMS_OF_USE',
+    },
+    {
+      type: 'PROVIDE_INVESTMENT_INTENT',
+      isOptional: !isDraftPick,
+    }
+  ]
+}
 
 
 type GetEligibilityStatusArgs = {
@@ -71,7 +71,9 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     .get()
 
   const compliancesWithCompletion: QuestWithCompletion[] = []
-  for (const quest of COMPLIANCES) {
+  const listOfCompliances = getCompliances(project.json)
+  console.log(listOfCompliances);
+  for (const quest of listOfCompliances) {
     if (quest.type === 'ACCEPT_TERMS_OF_USE') {
       const hasAcceptedTermsOfUse = Boolean(user.json.termsOfUse?.acceptedAt)
       compliancesWithCompletion.push({
@@ -94,6 +96,8 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
       throw new Error(`Unknown compliance type (${quest.type})!`)
     }
   }
+  console.log(compliancesWithCompletion);
+
 
   const collections: string[] = project.json.info.tiers
     .map(tier => tier.quests)

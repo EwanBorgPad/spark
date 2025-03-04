@@ -1,22 +1,20 @@
-import { Link, ScrollRestoration } from "react-router-dom"
+import { ScrollRestoration } from "react-router-dom"
 
 import solanaImg from "@/assets/angelStaking/solana.png"
 import swissborgLogo from "@/assets/landingPage/swissborg-logo.png"
 import angelStakingTexture1Mob from "@/assets/angelStaking/angelStakingTexture1-mob.png"
 import angelStakingTexture1 from "@/assets/angelStaking/angelStakingTexture1.png"
 import angelStakingBottom from "@/assets/angelStaking/angelStakingBottom-min.png"
-import fearlessBackdrop from "@/assets/landingPage/fearless-backdrop-min.png"
-import fearlessBackdropMobile from "@/assets/landingPage/fearless-backdrop-mobile-min.png"
 import divider from "@/assets/landingPage/fearless-divider-min.png"
 import dividerMobile from "@/assets/landingPage/fearless-divider-min.png"
+import fearlessBackdrop from "@/assets/landingPage/fearless-backdrop-min.png"
+import fearlessBackdropMobile from "@/assets/landingPage/fearless-backdrop-mobile-min.png"
 
 import Img from "@/components/Image/Img"
 import DontBeACexToy from "@/components/LandingPage/DontBeACexToy"
 import DiscoverSection from "@/components/LandingPage/DiscoverSection"
 import JoinCommunityBtn from "@/components/Button/JoinTheCommunityBtn"
 import RotatingSubtitle from "@/components/LandingPage/RotatingSubtitle"
-import { Button } from "@/components/Button/Button"
-import { ROUTES } from "@/utils/routes"
 import CountdownBtnForNextLbp from "@/components/Button/CountdownBtnForNextLbp"
 
 const LandingPage = () => {
@@ -36,7 +34,7 @@ const LandingPage = () => {
         />
         <img src={angelStakingTexture1} role="presentation" className="hidden w-full mix-blend-lighten md:flex" />
       </div>
-      <section className="z-[1] flex w-full flex-col items-start gap-5 px-5 pb-[60px] pt-10 md:pb-[68px] md:pt-[40px]">
+      <section className="z-[1] flex w-full flex-col items-start gap-5 px-5 pb-[60px] pt-10 md:pb-[56px] md:pt-[40px]">
         <div className="flex w-full flex-col items-start md:items-center ">
           <div
             style={{ animationDelay: "1500ms" }}
@@ -91,33 +89,13 @@ const LandingPage = () => {
             </div>
           </h1>
           <RotatingSubtitle style={{ animationDelay: "1200ms" }} />
-          <div
-            style={{ animationDelay: "1500ms" }}
-            className="flex w-full animate-fade-in-from-below-slow flex-col items-center gap-6 opacity-0"
-          >
-            <div className="flex w-full flex-col items-center justify-center gap-4 md:flex-row">
-              <Link to={ROUTES.GOAT_POOLS} className="group relative h-fit w-full min-w-[220px] md:w-[220px]">
-                <Button
-                  btnText="Explore Goat Pools"
-                  textClassName="text-sm px-3"
-                  className="explore-goat-pools w-full px-6 py-4 hover:opacity-100"
-                />
-                <div className="absolute inset-0 z-[-1] h-full w-full rounded-xl shadow-around-1 transition-shadow duration-500 group-hover:shadow-around-2"></div>
-              </Link>
-              <Link to={ROUTES.BLITZ_POOLS} className="group relative h-fit w-full min-w-[220px] md:w-[220px]">
-                <Button
-                  btnText="Explore Blitz Pools"
-                  textClassName="text-sm px-3"
-                  className="explore-blitz-pools w-full px-6 py-4 hover:opacity-100"
-                />
-                <div className="absolute inset-0 z-[-1] h-full w-full rounded-xl shadow-around-1 transition-shadow duration-500 group-hover:shadow-around-2"></div>
-              </Link>
-            </div>
-            {/* PLACE FOR PROJECT COUNTDOWN */}
-            <CountdownBtnForNextLbp projectId="agentlauncher" />
-          </div>
+
+          {/* PLACE FOR PROJECT COUNTDOWN */}
+          <CountdownBtnForNextLbp projectId="ta-da" />
         </div>
       </section>
+
+      <DiscoverSection />
 
       <section className="relative z-[1] w-full gap-5 overflow-hidden px-5 pt-16 md:px-16 md:pt-28">
         <div className="absolute bottom-0 left-0 right-0 z-[-1] flex max-w-[1282px] justify-center overflow-hidden md:pb-10">
@@ -148,8 +126,6 @@ const LandingPage = () => {
       </section>
 
       <DontBeACexToy />
-
-      <DiscoverSection />
 
       <section className="relative z-[1] w-full gap-5 overflow-hidden px-5 py-16 md:max-h-[432px] md:px-16 md:py-28">
         <div className="absolute top-0 z-[-1] flex max-w-[100vw] justify-center overflow-hidden lg:bottom-0">

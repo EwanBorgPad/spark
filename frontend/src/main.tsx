@@ -30,6 +30,8 @@ import BlitzPools from "./pages/BlitzPools"
 import RedirectToGoatPools from "./components/LaunchPool/RedirectToGoatPools"
 import { ROUTES } from "./utils/routes"
 import BackOffice from './pages/BackOffice2'
+import DraftPicks from "./pages/DraftPicks"
+import DraftPickPage from "./pages/DraftPickPage"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -102,6 +104,25 @@ const router = createBrowserRouter([
           {
             path: "",
             element: <BlitzPools />,
+          },
+        ],
+      },
+      {
+        path: ROUTES.DRAFT_PICKS,
+        errorElement: <SomethingWentWrong />,
+        element: <Outlet />,
+        children: [
+          {
+            path: ":projectId",
+            element: (
+              <ProjectDataProvider>
+                <DraftPickPage />
+              </ProjectDataProvider>
+            ),
+          },
+          {
+            path: "",
+            element: <DraftPicks />,
           },
         ],
       },
