@@ -206,7 +206,7 @@ export async function createUserDepositTransaction(
         const multiplier = Math.pow(10, decimals)
 
         if (!toTokenAccount?.value?.[0]?.pubkey) {
-            throw new Error("Check if receiving wallet has been seeded with the raised token. If not, send any amount of the raised token to the receiving wallet address")
+            throw new Error("Error! Receiving token account pubkey missing! Check if token account is initialized for receiving wallet!")
         }
 
         // create transfer instruction
