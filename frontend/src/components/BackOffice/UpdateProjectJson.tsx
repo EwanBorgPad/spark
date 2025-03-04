@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { JsonData, JsonEditor, githubDarkTheme } from "json-edit-react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { DropdownSelector } from "../Dropdown/Dropdown"
@@ -55,7 +55,6 @@ const UpdateProjectJson = () => {
     onSuccess: async (_, _variables) => {
       toast.success("Project updated!")
       await refetch()
-      //   if (selectedProject) reset(selectedProject.info)
     },
     onError: (error) => {
       toast.error(error.message)

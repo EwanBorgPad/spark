@@ -80,8 +80,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
     const id = data.projectId
     const json = JSON.stringify(data.project)
-    // persist in db
-    await db.run(sql`REPLACE INTO project (id, json) VALUES (${id}, ${json})`)
+    await db.run(sql`UPDATE project SET json = ${json} WHERE id = ${id}`)
     
     return jsonResponse("Updated!", 201)
   } catch (e) {
