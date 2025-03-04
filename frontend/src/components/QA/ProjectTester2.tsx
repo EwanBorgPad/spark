@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge"
 
 import { Button } from "../Button/Button"
 import DateTimeField from "@/components/InputField/DateTimeField.tsx"
+import OffsetAllEvents from "./OffsetAllEvents"
 
 const FAKE_DATE_KEY = 'fakeDate'
 
@@ -34,28 +35,27 @@ const ProjectTester2 = () => {
   }
 
   return (
-    <div ref={ref} className="fixed right-3 top-[50vh] z-[20]">
+    <div ref={ref} className="fixed right-3 top-[10vh] z-[20]">
       {isOpened ? (
-        <div className="flex w-[420px] flex-col gap-4 rounded-2xl border-[1px] border-brand-primary bg-default p-4">
-          <DateTimeField value={fakeDate} onChange={setFakeDate} />
+        <div className="flex w-[440px] flex-col gap-4 rounded-2xl border-[1px] border-brand-primary/20 bg-default/50 p-4 pt-14">
+          <div className="flex flex-col gap-4 rounded-xl border-[1px]  border-brand-primary/10 p-4">
+            <span className="text-base">Fixate Date in time</span>
 
-          <div className='flex flex-row gap-4 w-full'>
-            <Button
-              disabled={!Boolean(fakeDate)}
-              className='w-full'
-              size="md"
-              color="primary"
-              btnText="Apply"
-              onClick={applyFakeDate}
-            />
-            <Button
-              className='w-full'
-              size="md"
-              color="danger"
-              btnText="Reset"
-              onClick={resetFakeDate}
-            />
+            <DateTimeField value={fakeDate} onChange={setFakeDate} />
+
+            <div className="flex w-full flex-row gap-4">
+              <Button
+                disabled={!fakeDate}
+                className="w-full"
+                size="md"
+                color="primary"
+                btnText="Apply"
+                onClick={applyFakeDate}
+              />
+              <Button className="w-full" size="md" color="danger" btnText="Reset" onClick={resetFakeDate} />
+            </div>
           </div>
+          <OffsetAllEvents />
 
           {/* close button */}
           <Button.Icon
@@ -70,11 +70,8 @@ const ProjectTester2 = () => {
         <Button.Icon
           icon={"SvgChevronDown"}
           size="md"
-          color={isDateFaked ? 'danger' : 'primary'}
-          className={twMerge(
-            "rounded-full",
-            !isOpened && "rotate-90",
-          )}
+          color={isDateFaked ? "danger" : "primary"}
+          className={twMerge("rounded-full", !isOpened && "rotate-90")}
           onClick={() => setIsOpen(true)}
         />
       )}
