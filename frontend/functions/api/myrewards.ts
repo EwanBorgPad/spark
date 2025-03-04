@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/d1"
 import { claimTable, depositTable, projectTable } from "../../shared/drizzle-schema"
 import { and, desc, eq } from "drizzle-orm"
 import { addMonths } from "date-fns/addMonths"
+import { RewardsService } from "../services/rewardsService"
 
 type ENV = {
   DB: D1Database
@@ -76,34 +77,10 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     if (!rewardsDistributionStart) {
       return jsonResponse({ message: 'Reward distribution not started!' }, 409)
     }
+    const monthsPassedFromRewardsDistributionStart = monthsPassedFrom(rewardsDistributionStart, currentDate)
 
     // payout schedule
-    const payoutOnTgeDay = project.json.config.rewardDistribution.atTge.rewardRatio * rewardsTotalAmount
-    const payoutAfterTgeDay = project.json.config.rewardDistribution.afterTge.rewardRatio * rewardsTotalAmount
-    const numberOfPaymentsAfterTgeDay = project.json.config.rewardDistribution.afterTge.numberOfPayments
-
-    const monthsPassedFromRewardsDistributionStart = monthsPassedFrom(rewardsDistributionStart, currentDate)
-    const claimablePerMonthAfterTge = payoutAfterTgeDay / numberOfPaymentsAfterTgeDay
-    console.log({ claimablePerMonthAfterTge, rewardsTotalAmount })
-
-    const payoutAtTge = {
-      amount: String(payoutOnTgeDay / Math.pow(10, launchedTokenDecimals)),
-      // TODO @claimsStreamFlowIntegration
-      isClaimed: false,
-      date: rewardsDistributionStart,
-    }
-    const payoutsAfterTge = [
-      ...Array(numberOfPaymentsAfterTgeDay).keys(),
-    ].map((index) => {
-      const payoutDate = addMonths(new Date(rewardsDistributionStart), index + 1)
-      return {
-        amount: String(claimablePerMonthAfterTge / Math.pow(10, launchedTokenDecimals)),
-        // TODO @claimsStreamFlowIntegration
-        isClaimed: false,
-        date: payoutDate,
-      }
-    })
-    const payoutSchedule = [payoutAtTge, ...payoutsAfterTge]
+    const { payoutSchedule, payoutOnTgeDay, claimablePerMonthAfterTge } = RewardsService.getPayoutSchedule(project.json, rewardsTotalAmount, rewardsDistributionStart)
 
     ///// claimable-claimed /////
     const claimableToThisDateAmount = payoutOnTgeDay + (monthsPassedFromRewardsDistributionStart + 2) * claimablePerMonthAfterTge
