@@ -71,42 +71,48 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const rewardsTotalUiAmount = deposits.reduce((acc, curr) => acc + Number(curr.json.tokensCalculation.rewardDistribution.tokenRaw), 0)
     const rewardsTotalAmount = rewardsTotalUiAmount * Math.pow(10, launchedTokenDecimals)
 
-    const monthsCount = project.json.config.rewardsDistributionTimeInMonths
     const rewardsDistributionStart = project.json.info.timeline.find(timeline => timeline.id === 'REWARD_DISTRIBUTION')?.date
 
     if (!rewardsDistributionStart) {
       return jsonResponse({ message: 'Reward distribution not started!' }, 409)
     }
 
+    // payout schedule
+    const payoutOnTgeDay = project.json.config.rewardDistribution.atTge.rewardRatio * rewardsTotalAmount
+    const payoutAfterTgeDay = project.json.config.rewardDistribution.afterTge.rewardRatio * rewardsTotalAmount
+    const numberOfPaymentsAfterTgeDay = project.json.config.rewardDistribution.afterTge.numberOfPayments
+
     const monthsPassedFromRewardsDistributionStart = monthsPassedFrom(rewardsDistributionStart, currentDate)
-    const claimablePerMonth = rewardsTotalAmount / monthsCount
-    const claimedMonths = Math.floor(claimedAmount / claimablePerMonth)
+    const claimablePerMonthAfterTge = payoutAfterTgeDay / numberOfPaymentsAfterTgeDay
+    console.log({ claimablePerMonthAfterTge, rewardsTotalAmount })
 
-    console.log({ claimablePerMonth, rewardsTotalAmount, monthsCount })
-
-    const payoutSchedule = [
-      ...Array(monthsCount).keys(),
-    ].map((index) => {
-      const payoutDate = addMonths(new Date(rewardsDistributionStart), index)
+    const payoutAtTge = {
+      amount: String(payoutOnTgeDay / Math.pow(10, launchedTokenDecimals)),
       // TODO @claimsStreamFlowIntegration
-      const isClaimed = index < (claimedMonths - 1)
+      isClaimed: false,
+      date: rewardsDistributionStart,
+    }
+    const payoutsAfterTge = [
+      ...Array(numberOfPaymentsAfterTgeDay).keys(),
+    ].map((index) => {
+      const payoutDate = addMonths(new Date(rewardsDistributionStart), index + 1)
       return {
-        amount: String(claimablePerMonth / Math.pow(10, launchedTokenDecimals)),
-        isClaimed,
+        amount: String(claimablePerMonthAfterTge / Math.pow(10, launchedTokenDecimals)),
+        // TODO @claimsStreamFlowIntegration
+        isClaimed: false,
         date: payoutDate,
       }
     })
+    const payoutSchedule = [payoutAtTge, ...payoutsAfterTge]
 
-    const claimableToThisDateAmount = (monthsPassedFromRewardsDistributionStart + 1) * claimablePerMonth
+    ///// claimable-claimed /////
+    const claimableToThisDateAmount = payoutOnTgeDay + (monthsPassedFromRewardsDistributionStart + 2) * claimablePerMonthAfterTge
     const claimableAmount = Math.max(claimableToThisDateAmount - claimedAmount, 0)
-
-    // console.log({ monthsPassedFromRewardsDistributionStart, claimablePerMonth, claimableToThisDateAmount, claimedAmount })
-
+    
     const hasUserClaimedTotalAmount = claimedAmount >= rewardsTotalAmount
     const hasUserClaimedAvailableAmount = claimedAmount >= claimableAmount
 
     const hasRewardsDistributionStarted = rewardsDistributionStart && (currentDate > new Date(rewardsDistributionStart))
-
 
     const raisedTokenDecimals = project.json.config.raisedTokenData.decimals
     const lpRaisedTokenTotalUiAmount = deposits.reduce((acc, curr) => acc + Number(curr.json.tokensCalculation.lpPosition.borgRaw), 0)

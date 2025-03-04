@@ -98,6 +98,17 @@ export const projectSchema = z.object({
     totalTokensForRewardDistribution: integerSchema(),
 
     rewardsDistributionTimeInMonths: integerSchema(),
+    rewardDistribution: z
+      .object({
+        atTge: z.object({
+          rewardRatio: z.number().min(0).max(1),
+        }),
+        afterTge: z.object({
+          rewardRatio: z.number().min(0).max(1),
+          numberOfPayments: z.number().min(0),
+        }),
+      })
+      .optional(),
 
     finalSnapshotTimestamp: optional(dateSchema()),
 
