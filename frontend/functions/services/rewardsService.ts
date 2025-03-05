@@ -5,7 +5,7 @@ import { ProjectModel } from "../../shared/models"
 const getPayoutSchedule = (project: ProjectModel, rewardsTotalAmount: number, rewardsDistributionStart: Date) => {
     const launchedTokenDecimals = project.config.launchedTokenData.decimals
 
-    const rewardDistribution = getRewardDistribution(project)
+    const rewardDistribution = getRewardDistributionConfig(project)
 
     const payoutOnTgeDay = rewardDistribution.atTge.rewardRatio * rewardsTotalAmount
     const payoutAfterTgeDay = rewardDistribution.afterTge.rewardRatio * rewardsTotalAmount
@@ -36,13 +36,12 @@ const getPayoutSchedule = (project: ProjectModel, rewardsTotalAmount: number, re
     return { payoutSchedule, payoutOnTgeDay, claimablePerMonthAfterTge }
 }
 
-const getRewardDistribution = (project: ProjectModel) => {
-    console.log(project);
+const getRewardDistributionConfig = (project: ProjectModel) => {
     if (project.config?.rewardDistribution) {
-        return project.config.rewardDistribution
+      return project.config.rewardDistribution
     }
     if (!project.config?.rewardsDistributionTimeInMonths) {
-        throw new Error("Project reward distribution misconfigured.")
+      throw new Error("Project reward distribution misconfigured.")
     }
     
     // avoid breaking changes
@@ -51,13 +50,13 @@ const getRewardDistribution = (project: ProjectModel) => {
     const numberOfPaymentsAfterTge = numberOfPayments - 1
 
     return {
-        atTge:{
-            rewardRatio: rewardDistributionPerOnePayout,
-        },
-        afterTge:{
-            rewardRatio: rewardDistributionPerOnePayout * numberOfPaymentsAfterTge,
-            numberOfPayments: numberOfPaymentsAfterTge,
-        },
+      atTge:{
+          rewardRatio: rewardDistributionPerOnePayout,
+      },
+      afterTge:{
+          rewardRatio: rewardDistributionPerOnePayout * numberOfPaymentsAfterTge,
+          numberOfPayments: numberOfPaymentsAfterTge,
+      },
     }
 }
 
