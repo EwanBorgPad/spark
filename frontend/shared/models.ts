@@ -98,6 +98,17 @@ export const projectSchema = z.object({
     totalTokensForRewardDistribution: integerSchema(),
 
     rewardsDistributionTimeInMonths: integerSchema(),
+    rewardDistribution: z
+      .object({
+        atTge: z.object({
+          rewardRatio: z.number().min(0).max(1),
+        }),
+        afterTge: z.object({
+          rewardRatio: z.number().min(0).max(1),
+          numberOfPayments: z.number().min(0),
+        }),
+      })
+      .optional(),
 
     finalSnapshotTimestamp: optional(dateSchema()),
 
@@ -128,6 +139,7 @@ export const projectSchema = z.object({
     sector: z.string().min(1),
     tokenGenerationEventDate: optional(z.string()),
     targetFdv: z.string().min(1).optional(),
+    targetVesting: z.string().min(1).optional(),
     chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
 
     dataRoom: z.object({ backgroundImgUrl: urlSchema().optional(), url: urlSchema() }),

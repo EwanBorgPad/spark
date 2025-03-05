@@ -5,6 +5,7 @@ import { Icon } from "@/components/Icon/Icon"
 import Img from "@/components/Image/Img"
 import { calculateTokens } from "../../../../shared/utils/calculateTokens"
 import { twMerge } from "tailwind-merge"
+import { getRewardDistributionMessage } from "@/utils/reward-helper"
 
 type TokenRewardsProps = {
   raisedTokenInput: string
@@ -31,6 +32,8 @@ const TokenRewards = ({ raisedTokenInput, raisedTokenPriceInUSD, isYourContribut
   const numberOfMonths = projectData.config.rewardsDistributionTimeInMonths
   const remainingMonths = projectData.config.rewardsDistributionTimeInMonths - 1
 
+  const rewardDistributionLabel = getRewardDistributionMessage(projectData)
+
   return (
     <div className="w-full bg-transparent">
       <div
@@ -56,11 +59,7 @@ const TokenRewards = ({ raisedTokenInput, raisedTokenPriceInUSD, isYourContribut
           <div className="flex flex-col items-center gap-1.5">
             <div className="flex h-fit items-center justify-center gap-1.5 rounded-full text-xs font-medium text-fg-tertiary ">
               <Icon icon="SvgChartLine" className="text-base" />
-              <span>
-                {projectData.id === "ta-da"
-                  ? "1/2 at TGE and 1/4 for 2 months"
-                  : t("tge.linearly_paid_out", { numberOfMonths, remainingMonths })}
-              </span>
+              <span>{rewardDistributionLabel}</span>
             </div>
             <span className="text-xs font-medium text-fg-tertiary">🔒 LP position permanently locked </span>
             <span className="text-xs font-medium text-fg-tertiary">🔥 All BORG fees burned</span>

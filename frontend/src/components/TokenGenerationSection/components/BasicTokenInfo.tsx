@@ -29,8 +29,9 @@ const BasicTokenInfo = ({ isDraftPick }: Props) => {
   const fdv = projectData?.config.fdv
     ? formatCurrencyAmount(projectData?.config.fdv, { withDollarSign: true, customDecimals: 0 })
     : ""
-  const targetFdv = projectData?.info.targetFdv
-  const tgeDate = projectData?.info.tokenGenerationEventDate || "TBD"
+  const targetFdv = projectData?.info?.targetFdv
+  const tgeDate = projectData?.info?.tokenGenerationEventDate || "TBD"
+  const targetVesting = projectData?.info?.targetVesting || projectData?.info.tokenGenerationEventDate || "TBD"
 
   return (
     <section className="max-w-screen flex w-full flex-col gap-[25px] md:px-4 lg:max-w-[792px]">
@@ -46,8 +47,8 @@ const BasicTokenInfo = ({ isDraftPick }: Props) => {
         </div>
         {isDraftPick ? (
           <div className="flex min-w-[118px] flex-1 flex-col gap-2">
-            <span className="text-sm text-fg-tertiary">Target TGE</span>
-            <Text text={tgeDate} isLoading={isLoading} className="text-nowrap text-base text-fg-primary" />
+            <span className="text-sm text-fg-tertiary">Target Vesting</span>
+            <Text text={targetVesting} isLoading={isLoading} className="text-nowrap text-base text-fg-primary" />
           </div>
         ) : (
           <div className="flex min-w-[118px] flex-1 flex-col gap-2">
