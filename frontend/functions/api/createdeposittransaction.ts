@@ -265,10 +265,10 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
 
     // make tx for minting nft
     const builder = transactionBuilder().add(createProgrammableNft(umi, {
-        symbol: 'bpCVAI',
+        symbol: 'bpTADA',
+        name: "TADA Liquidity Provider",
+        uri: "https://files.borgpad.com/Tada/nft-metadata/metadata.json",
         mint: mintSigner,
-        name: "CVAI Liquidity Provider",
-        uri: "https://files.borgpad.com/agentlauncher/nft-metadata/metadata.json",
         updateAuthority: signer,
         sellerFeeBasisPoints: percentAmount(0),
         payer: userSigner,
@@ -277,7 +277,7 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
         collection: {
             verified: false,
             // @ts-expect-error TS2322: Type 'string' is not assignable to type 'PublicKey'.
-            key: '3W9wyGGE1QuYDHkbqruiDs1qe9WmFjbi5p2p34GxCUpY', // https://solscan.io/token/3W9wyGGE1QuYDHkbqruiDs1qe9WmFjbi5p2p34GxCUpY
+            key: 'H4TkbayRd1fhF7wu9odrrYZREkHNMrV5Rhmtkor9wVoK', // https://solscan.io/token/H4TkbayRd1fhF7wu9odrrYZREkHNMrV5Rhmtkor9wVoK
         }
     }))
 

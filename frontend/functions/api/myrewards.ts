@@ -29,13 +29,6 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       .get()
     if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 
-    const cluster = project.json.config.cluster
-    const launchedTokenMintAddress = project.json.config.launchedTokenData.mintAddress
-
-    if (!launchedTokenMintAddress) {
-      throw new Error(`launchedTokenMintAddress not found! projectId=(${projectId})`)
-    }
-
     // load deposits and claims
     const deposits = await db
       .select()
