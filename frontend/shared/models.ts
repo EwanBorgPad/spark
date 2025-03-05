@@ -139,6 +139,7 @@ export const projectSchema = z.object({
     sector: z.string().min(1),
     tokenGenerationEventDate: optional(z.string()),
     targetFdv: z.string().min(1).optional(),
+    targetVesting: z.string().min(1).optional(),
     chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
 
     dataRoom: z.object({ backgroundImgUrl: urlSchema().optional(), url: urlSchema() }),
