@@ -53,7 +53,7 @@ const questions = [
     "1/15 - What is your project name? 🏷️",
     "2/15 - One sentence to describe your project 💎 (Max 80 characters)",
     "3/15 - Send your project logo in jpg or png format 🖼️ (optimal size: 200x200px)",
-    "4/15 - Send your thumbnail picture in jpg or png format 🖼️ (optimal size: 600x330px)",
+    "4/15 - Send your thumbnail picture in jpg or png format 🖼️ (optimal size: 400x400px)",
     "5/15 - Your website Link 🌐",
     "6/15 - Your telegram OR discord link (your main channel to communicate your community) 💬",
     "7/15 - Your X link 🐦",
@@ -701,9 +701,9 @@ async function handleImage(ctx: MyContext, env: Env, fileUrl: string, isToken: b
                 return;
             }
         } else if (isThumbnail) {
-            // Pour les thumbnails, dimensions minimales de 400x220
-            if (dimensions.width < 400 || dimensions.height < 220) {
-                await ctx.reply(`Thumbnail size is ${dimensions.width}x${dimensions.height} pixels. Try to not compress the image. Thumbnail must be at least 400x220 pixels! Optimal size is 600x330 pixels. 🖼️`);
+            // Pour les thumbnails, dimensions minimales de 400x400
+            if (dimensions.width < 400 || dimensions.height < 400) {
+                await ctx.reply(`Thumbnail size is ${dimensions.width}x${dimensions.height} pixels. Try to not compress the image. Thumbnail must be at least 400x400 pixels! 🖼️`);
                 return;
             }
         } else if (isToken) {
@@ -727,8 +727,8 @@ async function handleImage(ctx: MyContext, env: Env, fileUrl: string, isToken: b
                 targetWidth = 80;
                 targetHeight = 80;
             } else if (isThumbnail) {
-                targetWidth = 600;
-                targetHeight = 330;
+                targetWidth = 400;
+                targetHeight = 400;
             } else {
                 targetWidth = 200;
                 targetHeight = 200;
@@ -819,7 +819,7 @@ async function handleImage(ctx: MyContext, env: Env, fileUrl: string, isToken: b
 
         // Informer l'utilisateur du résultat
         if (!processedSuccessfully) {
-            await ctx.reply(`Note: The image could not be processed by our resizing services, so we've saved the original. It will work, but for optimal display, consider manually resizing your image to ${isToken ? '80x80' : isThumbnail ? '600x330' : '200x200'} pixels.`);
+            await ctx.reply(`Note: The image could not be processed by our resizing services, so we've saved the original. It will work, but for optimal display, consider manually resizing your image to ${isToken ? '80x80' : isThumbnail ? '400x400' : '200x200'} pixels.`);
         }
 
         ctx.session.answers.currentQuestion++;
