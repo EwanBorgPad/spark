@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/d1"
 import { claimTable, depositTable, projectTable } from "../../shared/drizzle-schema"
 import { and, desc, eq } from "drizzle-orm"
 import { addMonths } from "date-fns/addMonths"
+import { RewardsService } from "../services/rewardsService"
 
 type ENV = {
   DB: D1Database
@@ -71,42 +72,24 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const rewardsTotalUiAmount = deposits.reduce((acc, curr) => acc + Number(curr.json.tokensCalculation.rewardDistribution.tokenRaw), 0)
     const rewardsTotalAmount = rewardsTotalUiAmount * Math.pow(10, launchedTokenDecimals)
 
-    const monthsCount = project.json.config.rewardsDistributionTimeInMonths
     const rewardsDistributionStart = project.json.info.timeline.find(timeline => timeline.id === 'REWARD_DISTRIBUTION')?.date
 
     if (!rewardsDistributionStart) {
       return jsonResponse({ message: 'Reward distribution not started!' }, 409)
     }
-
     const monthsPassedFromRewardsDistributionStart = monthsPassedFrom(rewardsDistributionStart, currentDate)
-    const claimablePerMonth = rewardsTotalAmount / monthsCount
-    const claimedMonths = Math.floor(claimedAmount / claimablePerMonth)
 
-    console.log({ claimablePerMonth, rewardsTotalAmount, monthsCount })
+    // payout schedule
+    const { payoutSchedule, payoutOnTgeDay, claimablePerMonthAfterTge } = RewardsService.getPayoutSchedule(project.json, rewardsTotalAmount, rewardsDistributionStart)
 
-    const payoutSchedule = [
-      ...Array(monthsCount).keys(),
-    ].map((index) => {
-      const payoutDate = addMonths(new Date(rewardsDistributionStart), index)
-      // TODO @claimsStreamFlowIntegration
-      const isClaimed = index < (claimedMonths - 1)
-      return {
-        amount: String(claimablePerMonth / Math.pow(10, launchedTokenDecimals)),
-        isClaimed,
-        date: payoutDate,
-      }
-    })
-
-    const claimableToThisDateAmount = (monthsPassedFromRewardsDistributionStart + 1) * claimablePerMonth
+    ///// claimable-claimed /////
+    const claimableToThisDateAmount = payoutOnTgeDay + (monthsPassedFromRewardsDistributionStart + 2) * claimablePerMonthAfterTge
     const claimableAmount = Math.max(claimableToThisDateAmount - claimedAmount, 0)
-
-    // console.log({ monthsPassedFromRewardsDistributionStart, claimablePerMonth, claimableToThisDateAmount, claimedAmount })
-
+    
     const hasUserClaimedTotalAmount = claimedAmount >= rewardsTotalAmount
     const hasUserClaimedAvailableAmount = claimedAmount >= claimableAmount
 
     const hasRewardsDistributionStarted = rewardsDistributionStart && (currentDate > new Date(rewardsDistributionStart))
-
 
     const raisedTokenDecimals = project.json.config.raisedTokenData.decimals
     const lpRaisedTokenTotalUiAmount = deposits.reduce((acc, curr) => acc + Number(curr.json.tokensCalculation.lpPosition.borgRaw), 0)
