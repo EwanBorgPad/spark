@@ -200,10 +200,14 @@ export async function createUserDepositTransaction(
             toPublicKey,
             { mint: tokenMintPublicKey }
         )
-
+        
         // logic for decimals
         const decimals = await getNumberDecimals(tokenMint, connection)
         const multiplier = Math.pow(10, decimals)
+
+        if (!toTokenAccount?.value?.[0]?.pubkey) {
+            throw new Error("Error! Receiving token account pubkey missing! Check if token account is initialized for receiving wallet!")
+        }
 
         // create transfer instruction
         const transferInstruction: TransactionInstruction = createTransferInstruction(
