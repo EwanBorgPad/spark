@@ -338,8 +338,9 @@ async function showSummary(ctx: MyContext, env: Env) {
                     squaredThumbnailUrl: answers.thumbnailPicture || "",
                     origin: "The Singularity",
                     sector: answers.sector || "",
-                    tokenGenerationEventDate: answers.vesting || "",
+                    tokenGenerationEventDate: "TBD",
                     targetFdv: answers.fdv || `$${answers.fdvMin || '0'}M - $${answers.fdvMax || '0'}M`,
+                    targetVesting: answers.vesting || "",
                     chain: {
                         name: answers.chain || "Solana",
                         iconUrl: "https://files.borgpad.com/images/zkagi/solana-small.jpg"
