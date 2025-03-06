@@ -16,6 +16,7 @@ import DiscoverSection from "@/components/LandingPage/DiscoverSection"
 import JoinCommunityBtn from "@/components/Button/JoinTheCommunityBtn"
 import RotatingSubtitle from "@/components/LandingPage/RotatingSubtitle"
 import CountdownBtnForNextLbp from "@/components/Button/CountdownBtnForNextLbp"
+import HeroCtaSection from "@/components/LandingPage/HeroCtaSection"
 
 const LandingPage = () => {
   return (
@@ -90,8 +91,8 @@ const LandingPage = () => {
           </h1>
           <RotatingSubtitle style={{ animationDelay: "1200ms" }} />
 
-          {/* PLACE FOR PROJECT COUNTDOWN */}
-          <CountdownBtnForNextLbp projectId="ta-da" />
+          {/* Add project countdown CTA component inside section below */}
+          <HeroCtaSection />
         </div>
       </section>
 
