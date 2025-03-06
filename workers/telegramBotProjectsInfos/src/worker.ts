@@ -1238,25 +1238,51 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                             break;
                         case 2: answers.projectPicture = ctx.message.text; break;
                         case 3: answers.thumbnailPicture = ctx.message.text; break;
-                        case 4: answers.websiteLink = ctx.message.text; break;
-                        case 5: answers.communityLink = ctx.message.text; break;
-                        case 6: answers.xLink = ctx.message.text; break;
+                        case 4: // Website link
+                            let websiteLink = ctx.message.text;
+                            if (!websiteLink.startsWith('https://') && !websiteLink.startsWith('http://')) {
+                                websiteLink = 'https://' + websiteLink;
+                                await ctx.reply(`✅ Added 'https://' to your website link: ${websiteLink}`);
+                            }
+                            answers.websiteLink = websiteLink;
+                            break;
+                        case 5: // Community link
+                            let communityLink = ctx.message.text;
+                            if (!communityLink.startsWith('https://') && !communityLink.startsWith('http://')) {
+                                communityLink = 'https://' + communityLink;
+                                await ctx.reply(`✅ Added 'https://' to your community link: ${communityLink}`);
+                            }
+                            answers.communityLink = communityLink;
+                            break;
+                        case 6: // X link
+                            let xLink = ctx.message.text;
+                            if (!xLink.startsWith('https://') && !xLink.startsWith('http://')) {
+                                xLink = 'https://' + xLink;
+                                await ctx.reply(`✅ Added 'https://' to your X link: ${xLink}`);
+                            }
+                            answers.xLink = xLink;
+                            break;
                         case 7: answers.chain = ctx.message.text; break;
                         case 8: answers.sector = ctx.message.text; break;
                         case 9: answers.vesting = ctx.message.text; break;
                         case 10: answers.fdvMin = ctx.message.text; break;
                         case 11: answers.fdvMax = ctx.message.text; break;
                         case 12: 
-                        if (!ctx.message.text.startsWith('$') || ctx.message.text.length > 6) {
-                            await ctx.reply("Invalid ticker format. Must start with '$' and be up to 5 characters long in uppercase. 💔");
-                            shouldMoveToNextQuestion = false;
-                            return;
-                        }
-                        answers.ticker = ctx.message.text;
-                        break;
-                        case 14:
-                            answers.dataRoom = ctx.message.text;
-                            console.log('Saving dataRoom:', ctx.message.text);
+                            if (!ctx.message.text.startsWith('$') || ctx.message.text.length > 6) {
+                                await ctx.reply("Invalid ticker format. Must start with '$' and be up to 5 characters long in uppercase. 💔");
+                                shouldMoveToNextQuestion = false;
+                                return;
+                            }
+                            answers.ticker = ctx.message.text;
+                            break;
+                        case 14: // Data room
+                            let dataRoomLink = ctx.message.text;
+                            if (!dataRoomLink.startsWith('https://') && !dataRoomLink.startsWith('http://')) {
+                                dataRoomLink = 'https://' + dataRoomLink;
+                                await ctx.reply(`✅ Added 'https://' to your data room link: ${dataRoomLink}`);
+                            }
+                            answers.dataRoom = dataRoomLink;
+                            console.log('Saving dataRoom:', dataRoomLink);
                             
                             // Force save to KV
                             if (ctx.from?.id) {
