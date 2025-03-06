@@ -32,6 +32,7 @@ import { ROUTES } from "./utils/routes"
 import BackOffice from './pages/BackOffice2'
 import DraftPicks from "./pages/DraftPicks"
 import DraftPickPage from "./pages/DraftPickPage"
+import BackOfficeDashboard from "./pages/BackOfficeDashboard"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
       {
         path: "/back-office",
         element: <BackOffice />,
+      },
+      {
+        path: ROUTES.BACK_OFFICE,
+        element: <BackOfficeDashboard />,
       },
       // {
       //   path: "/angel-staking",
