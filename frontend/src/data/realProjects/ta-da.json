@@ -25,6 +25,15 @@
       "mintAddress": null,
       "decimals": 8,
       "fixedTokenPriceInUsd": 0.0075
+    },
+    "rewardDistribution": {
+      "atTge": {
+        "rewardRatio": 0.5
+      },
+      "afterTge": {
+        "rewardRatio": 0.5,
+        "numberOfPayments": 2
+      }
     }
   },
   "info": {

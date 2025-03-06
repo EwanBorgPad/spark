@@ -1,5 +1,5 @@
 {
-    "id": "kaiko",
+    "id": "waldos",
     "config": {
       "cluster": "mainnet",
       "lpPositionToBeBurned": true,
@@ -32,23 +32,23 @@
       "tweetUrl": null,
       "tokenContractUrl": null,
       "poolContractUrl": null,
-
+  
       "projectType": "draft-pick",
-      "title": "Kaiko",
-      "subtitle": "The EQ Infrastructure Layer for Agents—Powering the next phase of Agent-to-human interaction with LiveIP",
-      "logoUrl": "https://pub-df1c985ad6dd424eb47a5dd9739f1f10.r2.dev/images/kaiko-studios/kaiko-studios_logo.png",
-      "thumbnailUrl": "https://files.borgpad.com/images/kaiko/thumbnail.png",
+      "title": "Waldos Legend",
+      "subtitle": "Meet the Next-Gen Web3 Legal Cannabis Brand and $PEPOS: the 420 community token.",
+      "logoUrl": "https://pub-df1c985ad6dd424eb47a5dd9739f1f10.r2.dev/images/waldos-legend/waldos-legend_logo_200x200.jpg",
+      "thumbnailUrl": "https://pub-df1c985ad6dd424eb47a5dd9739f1f10.r2.dev/images/waldos-legend/waldos-legend_thumbnail_400x400.jpg",
       "origin": "web3",
-      "sector": "AI",
+      "sector": "RWA",
       "tokenGenerationEventDate": "March 2025",
-      "targetFdv": "$5m - $10m",
+      "targetFdv": "$1m - $5m",
       "chain": {
         "name": "Solana",
         "iconUrl": "https://files.borgpad.com/images/shared/solana-logo.png"
       },
       "dataRoom": {
         "backgroundImgUrl": "",
-        "url": "https://fir-mushroom-48a.notion.site/Kaiko-Studios-Project-Introduction-1a5905bd97a3804fa56ad2888b20be8b?pvs=4"
+        "url": "https://drive.google.com/drive/folders/1WxM_QtH1ZBwTsNem-OTsvhXcBPhHjXzL?usp=sharing"
       },
       "liquidityPool": {
         "name": "Raydium",
@@ -62,12 +62,12 @@
         "position": "TBD",
         "socials": [
           {
-            "url": "https://Kaikostudios.xyz",
+            "url": "www.waldoslegend.com",
             "iconType": "WEB",
             "label": "Web"
           },
           {
-            "url": "https://x.com/KAIKOHQ",
+            "url": "https://x.com/WaldosLegend",
             "iconType": "X_TWITTER",
             "label": "X (ex-Twitter)"
           }
@@ -76,17 +76,17 @@
       "projectLinks": [
         {
           "iconType": "WEB",
-          "url": "https://Kaikostudios.xyz",
+          "url": "https://www.waldoslegend.com",
           "label": ""
         },
         {
-          "iconType": "TELEGRAM",
-          "url": "HTTPS://t.me/kaikoportal",
+          "iconType": "DISCORD",
+          "url": "https://discord.gg/waldoslegend",
           "label": ""
         },
         {
           "iconType": "X_TWITTER",
-          "url": "https://x.com/KAIKOHQ",
+          "url": "https://x.com/WaldosLegend",
           "label": ""
         }
       ],
@@ -119,6 +119,24 @@
       ],
       "tiers": [
         {
+          "id": "tier30",
+          "label": "BORGers Club",
+          "description": "",
+          "quests": [
+            {
+              "type": "HOLD_TOKEN",
+              "tokenName": "BORG",
+              "tokenAmount": "1000",
+              "tokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z"
+            }
+          ],
+          "benefits": {
+            "startDate": "2025-12-31T23:59:59Z",
+            "minInvestment": "100",
+            "maxInvestment": "1500"
+          }
+        },
+        {
           "id": "tier99",
           "label": "Public Sale",
           "description": "",
@@ -126,7 +144,7 @@
           "benefits": {
             "startDate": "2025-12-31T23:59:59Z",
             "minInvestment": "10",
-            "maxInvestment": "2500"
+            "maxInvestment": "500"
           }
         }
       ]
