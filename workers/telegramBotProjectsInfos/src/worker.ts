@@ -1239,28 +1239,28 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                         case 2: answers.projectPicture = ctx.message.text; break;
                         case 3: answers.thumbnailPicture = ctx.message.text; break;
                         case 4: // Website link
-                            if (!ctx.message.text.startsWith('https://')) {
-                                await ctx.reply("Your website link must start with 'https://'. Please provide a valid URL. 🌐");
-                                shouldMoveToNextQuestion = false;
-                                return;
+                            let websiteLink = ctx.message.text;
+                            if (!websiteLink.startsWith('https://') && !websiteLink.startsWith('http://')) {
+                                websiteLink = 'https://' + websiteLink;
+                                await ctx.reply(`✅ Added 'https://' to your website link: ${websiteLink}`);
                             }
-                            answers.websiteLink = ctx.message.text;
+                            answers.websiteLink = websiteLink;
                             break;
                         case 5: // Community link
-                            if (!ctx.message.text.startsWith('https://')) {
-                                await ctx.reply("Your community link must start with 'https://'. Please provide a valid URL. 🌐");
-                                shouldMoveToNextQuestion = false;
-                                return;
+                            let communityLink = ctx.message.text;
+                            if (!communityLink.startsWith('https://') && !communityLink.startsWith('http://')) {
+                                communityLink = 'https://' + communityLink;
+                                await ctx.reply(`✅ Added 'https://' to your community link: ${communityLink}`);
                             }
-                            answers.communityLink = ctx.message.text;
+                            answers.communityLink = communityLink;
                             break;
                         case 6: // X link
-                            if (!ctx.message.text.startsWith('https://')) {
-                                await ctx.reply("Your X link must start with 'https://'. Please provide a valid URL. 🌐");
-                                shouldMoveToNextQuestion = false;
-                                return;
+                            let xLink = ctx.message.text;
+                            if (!xLink.startsWith('https://') && !xLink.startsWith('http://')) {
+                                xLink = 'https://' + xLink;
+                                await ctx.reply(`✅ Added 'https://' to your X link: ${xLink}`);
                             }
-                            answers.xLink = ctx.message.text;
+                            answers.xLink = xLink;
                             break;
                         case 7: answers.chain = ctx.message.text; break;
                         case 8: answers.sector = ctx.message.text; break;
@@ -1276,13 +1276,13 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                             answers.ticker = ctx.message.text;
                             break;
                         case 14: // Data room
-                            if (!ctx.message.text.startsWith('https://')) {
-                                await ctx.reply("Your data room link must start with 'https://'. Please provide a valid URL. 🌐");
-                                shouldMoveToNextQuestion = false;
-                                return;
+                            let dataRoomLink = ctx.message.text;
+                            if (!dataRoomLink.startsWith('https://') && !dataRoomLink.startsWith('http://')) {
+                                dataRoomLink = 'https://' + dataRoomLink;
+                                await ctx.reply(`✅ Added 'https://' to your data room link: ${dataRoomLink}`);
                             }
-                            answers.dataRoom = ctx.message.text;
-                            console.log('Saving dataRoom:', ctx.message.text);
+                            answers.dataRoom = dataRoomLink;
+                            console.log('Saving dataRoom:', dataRoomLink);
                             
                             // Force save to KV
                             if (ctx.from?.id) {
