@@ -1240,7 +1240,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                         case 3: answers.thumbnailPicture = ctx.message.text; break;
                         case 4: // Website link
                             if (!ctx.message.text.startsWith('https://')) {
-                                await ctx.reply("Your website link must start with 'https://'. Please provide a valid URL.");
+                                await ctx.reply("Your website link must start with 'https://'. Please provide a valid URL. 🌐");
                                 shouldMoveToNextQuestion = false;
                                 return;
                             }
@@ -1248,7 +1248,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                             break;
                         case 5: // Community link
                             if (!ctx.message.text.startsWith('https://')) {
-                                await ctx.reply("Your community link must start with 'https://'. Please provide a valid URL.");
+                                await ctx.reply("Your community link must start with 'https://'. Please provide a valid URL. 🌐");
                                 shouldMoveToNextQuestion = false;
                                 return;
                             }
@@ -1256,7 +1256,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                             break;
                         case 6: // X link
                             if (!ctx.message.text.startsWith('https://')) {
-                                await ctx.reply("Your X link must start with 'https://'. Please provide a valid URL.");
+                                await ctx.reply("Your X link must start with 'https://'. Please provide a valid URL. 🌐");
                                 shouldMoveToNextQuestion = false;
                                 return;
                             }
@@ -1277,7 +1277,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                             break;
                         case 14: // Data room
                             if (!ctx.message.text.startsWith('https://')) {
-                                await ctx.reply("Your data room link must start with 'https://'. Please provide a valid URL.");
+                                await ctx.reply("Your data room link must start with 'https://'. Please provide a valid URL. 🌐");
                                 shouldMoveToNextQuestion = false;
                                 return;
                             }
