@@ -1238,23 +1238,49 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                             break;
                         case 2: answers.projectPicture = ctx.message.text; break;
                         case 3: answers.thumbnailPicture = ctx.message.text; break;
-                        case 4: answers.websiteLink = ctx.message.text; break;
-                        case 5: answers.communityLink = ctx.message.text; break;
-                        case 6: answers.xLink = ctx.message.text; break;
+                        case 4: // Website link
+                            if (!ctx.message.text.startsWith('https://')) {
+                                await ctx.reply("Your website link must start with 'https://'. Please provide a valid URL.");
+                                shouldMoveToNextQuestion = false;
+                                return;
+                            }
+                            answers.websiteLink = ctx.message.text;
+                            break;
+                        case 5: // Community link
+                            if (!ctx.message.text.startsWith('https://')) {
+                                await ctx.reply("Your community link must start with 'https://'. Please provide a valid URL.");
+                                shouldMoveToNextQuestion = false;
+                                return;
+                            }
+                            answers.communityLink = ctx.message.text;
+                            break;
+                        case 6: // X link
+                            if (!ctx.message.text.startsWith('https://')) {
+                                await ctx.reply("Your X link must start with 'https://'. Please provide a valid URL.");
+                                shouldMoveToNextQuestion = false;
+                                return;
+                            }
+                            answers.xLink = ctx.message.text;
+                            break;
                         case 7: answers.chain = ctx.message.text; break;
                         case 8: answers.sector = ctx.message.text; break;
                         case 9: answers.vesting = ctx.message.text; break;
                         case 10: answers.fdvMin = ctx.message.text; break;
                         case 11: answers.fdvMax = ctx.message.text; break;
                         case 12: 
-                        if (!ctx.message.text.startsWith('$') || ctx.message.text.length > 6) {
-                            await ctx.reply("Invalid ticker format. Must start with '$' and be up to 5 characters long in uppercase. 💔");
-                            shouldMoveToNextQuestion = false;
-                            return;
-                        }
-                        answers.ticker = ctx.message.text;
-                        break;
-                        case 14:
+                            if (!ctx.message.text.startsWith('$') || ctx.message.text.length > 6) {
+                                await ctx.reply("Invalid ticker format. Must start with '$' and be up to 5 characters long in uppercase. 💔");
+                                shouldMoveToNextQuestion = false;
+                                return;
+                            }
+                            answers.ticker = ctx.message.text;
+                            break;
+                        case 14: // Data room
+                            if (!ctx.message.text.startsWith('https://')) {
+                                await ctx.reply("Your data room link must start with 'https://'. Please provide a valid URL.");
+                                shouldMoveToNextQuestion = false;
+                                return;
+                            }
                             answers.dataRoom = ctx.message.text;
                             console.log('Saving dataRoom:', ctx.message.text);
                             
