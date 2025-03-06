@@ -1,5 +1,6 @@
 import { getRpcUrlForCluster } from '../../../shared/solana/rpcUtils'
-import { jsonResponse, reportError, hasAdminAccess } from "../cfPagesFunctionsUtils"
+import { isApiKeyValid } from '../../services/apiKeyService'
+import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 import { bigDecimal } from 'js-big-decimal'
 
 const BorgMintAddress = '3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z'
@@ -7,23 +8,18 @@ const BorgDecimals = 9
 
 type ENV = {
   DB: D1Database
-  ADMIN_API_KEY_HASH: string
   SOLANA_RPC_URL: string
 }
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
   try {
     // load/validate env
-    const { ADMIN_API_KEY_HASH, SOLANA_RPC_URL } = ctx.env
-
-    if (!ADMIN_API_KEY_HASH || !SOLANA_RPC_URL) {
-      throw new Error('Misconfigured env!')
-    }
-
+    const { SOLANA_RPC_URL } = ctx.env
+    if (!SOLANA_RPC_URL) throw new Error('Misconfigured env!')
     const rpcUrl = getRpcUrlForCluster(SOLANA_RPC_URL, 'mainnet')
 
     // authorize request
-    if (!hasAdminAccess(ctx)) {
+    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
       return jsonResponse(null, 401)
     }
 

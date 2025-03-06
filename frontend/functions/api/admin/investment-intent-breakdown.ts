@@ -1,4 +1,5 @@
-import { hasAdminAccess, jsonResponse, reportError } from "../cfPagesFunctionsUtils"
+import { isApiKeyValid } from '../../services/apiKeyService'
+import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 
 /**
  * Query for fetching investment intents.
@@ -17,14 +18,13 @@ const query = `
 
 type ENV = {
   DB: D1Database
-  ADMIN_API_KEY_HASH: string
 }
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
 
   try {
     // authorize request
-    if (!hasAdminAccess(ctx)) {
+    if (!await isApiKeyValid({ ctx, permissions: ['read'] })) {
       return jsonResponse(null, 401)
     }
     

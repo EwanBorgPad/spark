@@ -1,16 +1,16 @@
+import { isApiKeyValid } from '../../services/apiKeyService'
 import { exchangeService } from '../../services/exchangeService'
-import { jsonResponse, reportError, hasAdminAccess } from "../cfPagesFunctionsUtils"
+import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 import { drizzle } from "drizzle-orm/d1"
 
 type ENV = {
   DB: D1Database
-  ADMIN_API_KEY_HASH: string
 }
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
   try {
     // authorize request
-    if (!hasAdminAccess(ctx)) {
+    if (!await isApiKeyValid({ ctx, permissions: ['read'] })) {
       return jsonResponse(null, 401)
     }
 

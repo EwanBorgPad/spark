@@ -70,20 +70,6 @@ export const reportError = async (db: D1Database | DrizzleD1Database, error: unk
       .run()
   }
 }
-/**
- * Call this function to check if the user has admin privileges in provided context.
- * @param ctx
- */
-export const hasAdminAccess = (ctx: EventContext<{ ADMIN_API_KEY_HASH: string }, any, Record<string, unknown>>) => {
-  const providedApiKey = (ctx.request.headers.get('authorization') ?? '').replace('Bearer ', '')
-  const providedApiKeyHash = createHash('sha256').update(providedApiKey).digest('hex')
-
-  const correctApiKeyHash = ctx.env.ADMIN_API_KEY_HASH
-
-  const isValid = Boolean(providedApiKey) && Boolean(correctApiKeyHash)
-    && providedApiKeyHash === correctApiKeyHash
-  return isValid
-}
 /**************************************/
 /********* PRIVATE FUNCTIONS **********/
 /**************************************/

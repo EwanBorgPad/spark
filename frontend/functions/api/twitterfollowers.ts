@@ -1,4 +1,5 @@
-import { hasAdminAccess, jsonResponse, reportError } from "./cfPagesFunctionsUtils"
+import { isApiKeyValid } from '../services/apiKeyService'
+import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 
 const borgPadTwitterId = '1791134718131408897' // @borgpadhq // https://x.com/borgpadhq
 /**
@@ -10,7 +11,6 @@ type ENV = {
   TWITTER_AUTH_BEARER: string
   TWITTER_AUTH_COOKIE: string
   TWITTER_AUTH_X_CSRF_TOKEN: string
-  ADMIN_API_KEY_HASH: string
 }
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const env = ctx.env
@@ -21,12 +21,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       throw new Error('Twitter auth misconfigured!')
     }
 
-    if (!env.ADMIN_API_KEY_HASH) {
-      throw new Error('Env variables misconfigured!')
-    }
-
     // authorize request
-    if (!hasAdminAccess(ctx)) {
+    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
       return jsonResponse(null, 401)
     }
 
