@@ -1368,6 +1368,8 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
             const currentQuestion = ctx.session.answers.currentQuestion;
             
             if (currentQuestion === 2 || currentQuestion === 3 || currentQuestion === 13) {
+                // Send a message to the user that we are processing the image
+                await ctx.reply("🔍 Processing image... Please wait...");
                 const doc = ctx.message.document;
                 
                 if (!doc.mime_type?.startsWith('image/')) {
