@@ -68,7 +68,7 @@ const questions = [
     "15/15 - What is your biggest strength / differentiating points compared to your potential competitors? 💪"
 ];
 
-// Storage adapter pour Cloudflare KV
+// Storage adapter for Cloudflare KV
 class CloudflareStorage {
     constructor(private namespace: KVNamespace) {}
 
@@ -89,7 +89,7 @@ class CloudflareStorage {
             console.log('Writing session for key:', key);
             console.log('Writing value:', JSON.stringify(value));
             await this.namespace.put(key, JSON.stringify(value));
-            // Vérification immédiate
+            // Immediate verification
             const written = await this.read(key);
             console.log('Verification after write:', written);
         } catch (error) {
@@ -106,7 +106,7 @@ class CloudflareStorage {
     }
 }
 
-// Migration SQL pour créer la table
+// SQL migration to create the table
 const CREATE_TABLE = `
 CREATE TABLE IF NOT EXISTS projects (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -129,12 +129,12 @@ CREATE TABLE IF NOT EXISTS projects (
     createdAt TEXT
 )`;
 
-// Fonction pour poser la question suivante
+// Function to ask the next question
 async function askNextQuestion(ctx: MyContext, env: Env) {
     const currentQuestion = ctx.session.answers.currentQuestion;
     
     if (currentQuestion < questions.length) {
-        // Créer les boutons pour les questions spécifiques
+        // Create buttons for specific questions
         if (currentQuestion === 7) { // Chain question
             const keyboard = new InlineKeyboard()
                 .text("Solana 🟪", "chain_Solana")
@@ -147,7 +147,7 @@ async function askNextQuestion(ctx: MyContext, env: Env) {
             
             await ctx.reply(questions[currentQuestion], { reply_markup: keyboard });
         }
-        else if (currentQuestion === 9) { // Vesting question (remplace TGE date)
+        else if (currentQuestion === 9) { // Vesting question (replaces TGE date)
             const keyboard = new InlineKeyboard()
                 .text("6 month vesting", "vesting_6month")
                 .row()
@@ -177,43 +177,43 @@ async function askNextQuestion(ctx: MyContext, env: Env) {
             await ctx.reply(questions[currentQuestion], { reply_markup: keyboard });
         }
         else if (currentQuestion === 11) { // FDV Max
-            // Récupérer la valeur minimale pour filtrer les options
+            // Get the minimum value to filter options
             const minValue = parseInt(ctx.session.answers.fdvMin || "1");
             
-            // Créer un clavier avec seulement les valeurs supérieures au minimum
+            // Create a keyboard with only values greater than the minimum
             const keyboard = new InlineKeyboard();
             
-            // Première ligne
+            // First row
             if (5 > minValue) keyboard.text("$5M", "fdvMax_5");
             if (10 > minValue) keyboard.text("$10M", "fdvMax_10");
             if (15 > minValue) keyboard.text("$15M", "fdvMax_15");
             
-            // Deuxième ligne (si au moins un bouton a été ajouté à la première ligne)
+            // Second row (if at least one button was added to the first row)
             if (keyboard.inline_keyboard.length > 0 && keyboard.inline_keyboard[0].length > 0) {
                 keyboard.row();
             }
             
-            // Ajouter les boutons de la deuxième ligne
+            // Add buttons for the second row
             if (20 > minValue) keyboard.text("$20M", "fdvMax_20");
             if (25 > minValue) keyboard.text("$25M", "fdvMax_25");
             if (30 > minValue) keyboard.text("$30M", "fdvMax_30");
             
-            // Troisième ligne (si au moins un bouton a été ajouté à la deuxième ligne)
+            // Third row (if at least one button was added to the second row)
             if (keyboard.inline_keyboard.length > 0 && keyboard.inline_keyboard[keyboard.inline_keyboard.length - 1].length > 0) {
                 keyboard.row();
             }
             
-            // Ajouter les boutons de la troisième ligne
+            // Add buttons for the third row
             if (35 > minValue) keyboard.text("$35M", "fdvMax_35");
             if (40 > minValue) keyboard.text("$40M", "fdvMax_40");
             if (45 > minValue) keyboard.text("$45M", "fdvMax_45");
             
-            // Quatrième ligne (si au moins un bouton a été ajouté à la troisième ligne)
+            // Fourth row (if at least one button was added to the third row)
             if (keyboard.inline_keyboard.length > 0 && keyboard.inline_keyboard[keyboard.inline_keyboard.length - 1].length > 0) {
                 keyboard.row();
             }
             
-            // Ajouter le bouton de la quatrième ligne
+            // Add button for the fourth row
             if (50 > minValue) keyboard.text("$50M", "fdvMax_50");
             if (75 > minValue) keyboard.text("$75M", "fdvMax_75");
             if (100 > minValue) keyboard.text("$100M", "fdvMax_100");
@@ -228,7 +228,7 @@ async function askNextQuestion(ctx: MyContext, env: Env) {
     }
 }
 
-// Modifier la fonction showSummary pour gérer les conflits d'ID
+// Modify the showSummary function to handle ID conflicts
 async function showSummary(ctx: MyContext, env: Env) {
     try {
         const answers = ctx.session.answers;
@@ -236,23 +236,23 @@ async function showSummary(ctx: MyContext, env: Env) {
         console.log('Saving data for user:', userId);
         console.log('Answers:', JSON.stringify(answers, null, 2));
 
-        // Vérifier si userId existe
+        // Check if userId exists
         if (!userId) {
             throw new Error('User ID is undefined');
         }
 
-        // Vérifier si les champs requis sont présents
+        // Check if required fields are present
         if (!answers.twitterUsername) {
             throw new Error('Twitter username is required');
         }
         
-        // S'assurer que le champ fdv est correctement défini
+        // Ensure that the fdv field is properly defined
         if (answers.fdvMin && answers.fdvMax && !answers.fdv) {
             answers.fdv = `$${answers.fdvMin}M - $${answers.fdvMax}M`;
             console.log('Setting FDV range:', answers.fdv);
         }
 
-        // Sauvegarder dans D1 avec gestion des nulls
+        // Save to D1 with null handling
         const result = await env.DB.prepare(`
             INSERT INTO projects (
                 userId, twitterUsername, projectName, description, 
@@ -281,28 +281,28 @@ async function showSummary(ctx: MyContext, env: Env) {
 
         console.log('DB insert result:', result);
 
-        // Formater l'ID du projet (uniquement lettres minuscules, chiffres et tirets)
+        // Format the project ID (only lowercase letters, numbers and hyphens)
         let formattedProjectId = answers.projectName
             ? answers.projectName
-                .toLowerCase()                     // Convertir en minuscules
-                .replace(/\s+/g, '-')             // Remplacer les espaces par des tirets
-                .replace(/[^a-z0-9-]/g, '')       // Supprimer tous les caractères spéciaux
-                .replace(/-+/g, '-')              // Remplacer les tirets multiples par un seul
-                .replace(/^-|-$/g, '')            // Supprimer les tirets au début et à la fin
-            : `project-${Date.now()}`;            // Fallback si le nom du projet est vide
+                .toLowerCase()                     // Convert to lowercase
+                .replace(/\s+/g, '-')             // Replace spaces with hyphens
+                .replace(/[^a-z0-9-]/g, '')       // Remove all special characters
+                .replace(/-+/g, '-')              // Replace multiple hyphens with a single one
+                .replace(/^-|-$/g, '')            // Remove hyphens at the beginning and end
+            : `project-${Date.now()}`;            // Fallback if project name is empty
         
         console.log('Initial formatted project ID:', formattedProjectId);
 
-        // Modifier la fonction createAndSendProjectJson pour corriger les erreurs de validation
+        // Modify the function createAndSendProjectJson to correct validation errors
         const createAndSendProjectJson = async (projectId: string, retryCount = 0): Promise<any> => {
-            // Créer l'objet JSON au format souhaité, aligné avec les exemples
+            // Create the JSON object in the desired format, aligned with examples
             const projectJson = {
                 id: projectId,
                 config: {
                     cluster: "mainnet",
                     lpPositionToBeBurned: true,
                     raiseTargetInUsd: 100000,
-                    fdv: parseInt(answers.fdvMin || '0') * 1000000, // Utiliser fdvMin pour le calcul
+                    fdv: parseInt(answers.fdvMin || '0') * 1000000, // Use fdvMin for calculation
                     marketCap: 0,
                     totalTokensForLiquidityPool: 14285714,
                     totalTokensForRewardDistribution: 14285714,
@@ -456,7 +456,7 @@ async function showSummary(ctx: MyContext, env: Env) {
             console.log('Project JSON ID:', projectJson.id);
             
             try {
-                // Construire l'URL complète de l'API
+                // Construct the complete API URL
                 const apiUrl = `${env.CREATE_PROJECT_API_URL}/projects/propose`;
                 console.log('API URL:', apiUrl);
                 
@@ -470,19 +470,19 @@ async function showSummary(ctx: MyContext, env: Env) {
                 });
                 
                 if (apiResponse.status === 409) {
-                    // Conflit d'ID - l'ID est déjà pris
+                    // ID conflict detected (409)
                     console.log('ID conflict detected (409)');
                     
-                    // Limiter le nombre de tentatives
+                    // Limit retry attempts
                     if (retryCount >= 5) {
                         throw new Error('Maximum retry attempts reached for ID conflict');
                     }
                     
-                    // Générer un nouvel ID avec un nombre à la fin
+                    // Generate a new ID with a number at the end
                     const newProjectId = `${projectId}-${retryCount + 1}`;
                     console.log('Retrying with new ID:', newProjectId);
                     
-                    // Réessayer avec le nouvel ID
+                    // Retry with the new ID
                     return await createAndSendProjectJson(newProjectId, retryCount + 1);
                 }
                 
@@ -495,7 +495,7 @@ async function showSummary(ctx: MyContext, env: Env) {
                 const apiResult = await apiResponse.json();
                 console.log('API response:', apiResult);
                 
-                // Optionnel : Sauvegarder l'ID de projet retourné par l'API
+                // Optional: Save the project ID returned by the API
                 if (apiResult.id) {
                     await env.DB.prepare(`
                         UPDATE projects SET apiProjectId = ? WHERE projectName = ?
@@ -509,12 +509,12 @@ async function showSummary(ctx: MyContext, env: Env) {
             }
         };
 
-        // Envoyer le JSON à l'API externe avec gestion des conflits d'ID
+        // Send the JSON to the external API with ID conflict handling
         try {
             await createAndSendProjectJson(formattedProjectId);
         } catch (apiError) {
             console.error('Error calling external API:', apiError);
-            // Continuer malgré l'erreur API pour ne pas bloquer l'utilisateur
+            // Continue despite API error to not block the user
         }
 
         const summary = `
@@ -541,11 +541,11 @@ async function showSummary(ctx: MyContext, env: Env) {
 You will be reached asap by our team  ! 💚
 `;
 
-        // Après avoir sauvegardé dans la base de données
-        const notificationGroupId = "-1002474316235"; // ID du supergroupe
-        const botAlerteThreadId = env.TELEGRAM_THREAD_ID; // ID du topic "Bot Alerte"
+        // After saving to the database
+        const notificationGroupId = "-1002474316235"; // ID of the supergroup
+        const botAlerteThreadId = env.TELEGRAM_THREAD_ID; // ID of the "Bot Alerte" topic
         
-        // Récupérer le nom d'utilisateur Telegram
+        // Get the Telegram username
         const telegramUsername = ctx.from?.username || "Unknown";
         
         const notificationMessage = `
@@ -570,7 +570,7 @@ You will be reached asap by our team  ! 💚
 
         try {
             await ctx.api.sendMessage(notificationGroupId, notificationMessage, {
-                message_thread_id: botAlerteThreadId // Spécifier le topic
+                message_thread_id: botAlerteThreadId // Specify the topic
             });
             console.log('Notification sent to Bot Alerte topic');
         } catch (error) {
@@ -584,7 +584,7 @@ You will be reached asap by our team  ! 💚
     }
 }
 
-// Fonction pour obtenir les dimensions de l'image
+// Function to get image dimensions
 async function getImageDimensions(imageUrl: string): Promise<{ width: number; height: number }> {
     try {
         const response = await fetch(imageUrl);
@@ -595,13 +595,13 @@ async function getImageDimensions(imageUrl: string): Promise<{ width: number; he
         const arrayBuffer = await response.arrayBuffer();
         const buffer = new Uint8Array(arrayBuffer);
 
-        // Vérifier si c'est un PNG
+        // Check if it's a PNG
         if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47) {
             const width = buffer[16] * 256 * 256 * 256 + buffer[17] * 256 * 256 + buffer[18] * 256 + buffer[19];
             const height = buffer[20] * 256 * 256 * 256 + buffer[21] * 256 * 256 + buffer[22] * 256 + buffer[23];
             return { width, height };
         }
-        // Vérifier si c'est un JPEG
+        // Check if it's a JPEG
         else if (buffer[0] === 0xFF && buffer[1] === 0xD8) {
             let pos = 2;
             while (pos < buffer.length) {
@@ -621,42 +621,42 @@ async function getImageDimensions(imageUrl: string): Promise<{ width: number; he
     }
 }
 
-// Fonction pour redimensionner l'image via un service d'URL avec des contraintes spécifiques
+// Function to resize image via a URL service with specific constraints
 async function resizeImageWithService(imageUrl: string, width: number, height: number, isThumbnail: boolean, isSquare: boolean): Promise<ArrayBuffer> {
     try {
-        // Utiliser images.weserv.nl, un service de transformation d'images
+        // Use images.weserv.nl, an image transformation service
         const serviceUrl = new URL('https://images.weserv.nl/');
         
-        // Ajouter l'URL de l'image source
+        // Add the image source URL
         serviceUrl.searchParams.append('url', imageUrl);
         
-        // Ajouter les paramètres de redimensionnement
+        // Add resizing parameters
         if (isThumbnail) {
-            // Pour les thumbnails, on veut respecter le ratio 600x330
+            // For thumbnails, we want to respect the 600x330 ratio
             serviceUrl.searchParams.append('w', width.toString());
             serviceUrl.searchParams.append('h', height.toString());
-            serviceUrl.searchParams.append('fit', 'cover'); // Recadrer pour remplir exactement les dimensions
-            serviceUrl.searchParams.append('a', 'center'); // Centrer le recadrage
+            serviceUrl.searchParams.append('fit', 'cover'); // Crop to fill exactly the dimensions
+            serviceUrl.searchParams.append('a', 'center'); // Center the crop
         } else if (isSquare) {
-            // Pour les logos et tokens, on veut des images carrées
+            // For logos and tokens, we want square images
             serviceUrl.searchParams.append('w', width.toString());
             serviceUrl.searchParams.append('h', height.toString());
-            serviceUrl.searchParams.append('fit', 'cover'); // Recadrer pour obtenir un carré
-            serviceUrl.searchParams.append('a', 'center'); // Centrer le recadrage
+            serviceUrl.searchParams.append('fit', 'cover'); // Crop to get a square
+            serviceUrl.searchParams.append('a', 'center'); // Center the crop
         } else {
-            // Fallback (ne devrait pas être utilisé)
+            // Fallback (should not be used)
             serviceUrl.searchParams.append('w', width.toString());
             serviceUrl.searchParams.append('h', height.toString());
             serviceUrl.searchParams.append('fit', 'inside');
         }
         
-        // Ajouter des paramètres de qualité
+        // Add quality parameters
         serviceUrl.searchParams.append('q', '90');
         serviceUrl.searchParams.append('output', 'jpg');
         
         console.log('Resizing image with service:', serviceUrl.toString());
         
-        // Récupérer l'image redimensionnée
+        // Get the resized image
         const response = await fetch(serviceUrl.toString());
         if (!response.ok) {
             throw new Error(`Failed to resize image: ${response.status} ${response.statusText}`);
@@ -669,13 +669,13 @@ async function resizeImageWithService(imageUrl: string, width: number, height: n
     }
 }
 
-// Modifier la fonction handleImage pour supprimer l'utilisation de Cloudflare Images
+// Modify the handleImage function to remove Cloudflare Images usage
 async function handleImage(ctx: MyContext, env: Env, fileUrl: string, isToken: boolean, isThumbnail: boolean) {
     try {
         console.log('Processing image:', fileUrl);
         console.log('Image type:', isToken ? 'token' : isThumbnail ? 'thumbnail' : 'logo');
 
-        // Vérifier la taille du fichier
+        // Check file size
         const response = await fetch(fileUrl);
         if (!response.ok) {
             throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
@@ -690,25 +690,25 @@ async function handleImage(ctx: MyContext, env: Env, fileUrl: string, isToken: b
             return;
         }
 
-        // Vérifier les dimensions
+        // Check dimensions
         const dimensions = await getImageDimensions(fileUrl);
         console.log('Image dimensions:', dimensions);
 
-        // Vérifications des dimensions
+        // Dimension checks
         if (!isToken && !isThumbnail) {
-            // Pour les logos, taille minimale de 120x120
+            // For logos, minimum size of 120x120
             if (dimensions.width < 120 || dimensions.height < 120) {
                 await ctx.reply(`Logo size is ${dimensions.width}x${dimensions.height} pixels. Try to not compress the image. Logo must be at least 120x120 pixels! Optimal size is 200x200 pixels. 🎨`);
                 return;
             }
         } else if (isThumbnail) {
-            // Pour les thumbnails, dimensions minimales de 400x400
+            // For thumbnails, minimum dimensions of 400x400
             if (dimensions.width < 400 || dimensions.height < 400) {
                 await ctx.reply(`Thumbnail size is ${dimensions.width}x${dimensions.height} pixels. Try to not compress the image. Thumbnail must be at least 400x400 pixels! 🖼️`);
                 return;
             }
         } else if (isToken) {
-            // Pour les tokens, taille minimale de 24x24
+            // For tokens, minimum size of 24x24
             if (dimensions.width < 24 || dimensions.height < 24) {
                 await ctx.reply(`Token size is ${dimensions.width}x${dimensions.height} pixels. Try to not compress the image. Token image must be at least 24x24 pixels! Optimal size is 80x80 pixels. 🎯`);
                 return;
@@ -721,7 +721,7 @@ async function handleImage(ctx: MyContext, env: Env, fileUrl: string, isToken: b
         try {
             console.log('Using resize service for image processing');
             
-            // Déterminer les dimensions cibles
+            // Determine target dimensions
             let targetWidth, targetHeight;
             
             if (isToken) {
@@ -735,10 +735,10 @@ async function handleImage(ctx: MyContext, env: Env, fileUrl: string, isToken: b
                 targetHeight = 200;
             }
             
-            // Redimensionner l'image
+            // Resize the image
             const resizedImageBuffer = await resizeImageWithService(fileUrl, targetWidth, targetHeight, isThumbnail, !isThumbnail);
             
-            // Sauvegarder l'image redimensionnée dans R2
+            // Save the resized image to R2
             const cleanProjectName = (ctx.session.answers.projectName || 'unknown').toLowerCase().replace(/[^a-z0-9]/g, '-');
             
             let fileName;
@@ -761,7 +761,7 @@ async function handleImage(ctx: MyContext, env: Env, fileUrl: string, isToken: b
             finalImageUrl = `https://${env.BUCKET_URL}/${filePath}`;
             processedSuccessfully = true;
             
-            // Stocker l'URL de l'image
+            // Store the image URL
             if (isToken) {
                 ctx.session.answers.tokenPicture = finalImageUrl;
             } else if (isThumbnail) {
@@ -770,17 +770,17 @@ async function handleImage(ctx: MyContext, env: Env, fileUrl: string, isToken: b
                 ctx.session.answers.projectPicture = finalImageUrl;
             }
             
-            // Envoyer un message avec l'image redimensionnée
+            // Send a message with the resized image
             await ctx.replyWithPhoto(finalImageUrl, {
                 caption: `✅ ${isToken ? 'Token' : isThumbnail ? 'Thumbnail' : 'Logo'} image has been saved.`
             });
         } catch (resizeError) {
             console.error('Resize service error:', resizeError);
             
-            // En dernier recours, utiliser l'image originale
+            // As a last resort, use the original image
             const imageBuffer = await response.arrayBuffer();
             
-            // Sauvegarder l'image dans R2
+            // Save the image to R2
             const cleanProjectName = (ctx.session.answers.projectName || 'unknown').toLowerCase().replace(/[^a-z0-9]/g, '-');
             
             let fileName;
@@ -803,7 +803,7 @@ async function handleImage(ctx: MyContext, env: Env, fileUrl: string, isToken: b
             finalImageUrl = `https://${env.BUCKET_URL}/${filePath}`;
             console.log('Original image saved to R2:', finalImageUrl);
             
-            // Stocker l'URL de l'image
+            // Store the image URL
             if (isToken) {
                 ctx.session.answers.tokenPicture = finalImageUrl;
             } else if (isThumbnail) {
@@ -812,13 +812,13 @@ async function handleImage(ctx: MyContext, env: Env, fileUrl: string, isToken: b
                 ctx.session.answers.projectPicture = finalImageUrl;
             }
             
-            // Envoyer un message avec l'image originale
+            // Send a message with the original image
             await ctx.replyWithPhoto(finalImageUrl, {
                 caption: `⚠️ Image saved but not resized (using original dimensions).\n\n${isToken ? 'Token' : isThumbnail ? 'Thumbnail' : 'Logo'} image has been saved.`
             });
         }
 
-        // Informer l'utilisateur du résultat
+        // Inform the user of the result
         if (!processedSuccessfully) {
             await ctx.reply(`Note: The image could not be processed by our resizing services, so we've saved the original. It will work, but for optimal display, consider manually resizing your image to ${isToken ? '80x80' : isThumbnail ? '400x400' : '200x200'} pixels.`);
         }
@@ -837,10 +837,10 @@ async function handleImage(ctx: MyContext, env: Env, fileUrl: string, isToken: b
 
 export default {
     async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-        // Créer la table si elle n'existe pas
+        // Create the table if it doesn't exist
         await env.DB.prepare(CREATE_TABLE).run();
 
-        // Gérer le callback Twitter
+        // Handle Twitter callback
         if (request.url.includes('/twitter/callback')) {
             console.log('2.1-Received Twitter callback request:', request.url);
             const url = new URL(request.url);
@@ -864,7 +864,7 @@ export default {
                 return Response.json({ error: 'Missing parameters' }, { status: 400 });
             }
 
-            // Récupérer le username depuis le token
+            // Get username from token
             console.log('2.5-Exchanging code for access token');
             try {
                 const response = await fetch('https://api.twitter.com/2/oauth2/token', {
@@ -895,7 +895,7 @@ export default {
                 console.log('2.9-Token type:', data.token_type);
                 console.log('2.10-Expires in:', data.expires_in);
                 
-                // Récupérer les infos utilisateur
+                // Get user information
                 console.log('2.11-Fetching user information');
                 const userResponse = await fetch('https://api.twitter.com/2/users/me', {
                     headers: {
@@ -931,7 +931,7 @@ export default {
                 const username = userData.data.username;
                 console.log('2.19-Twitter username retrieved:', username);
 
-                // Rediriger vers Telegram avec le username
+                // Redirect to Telegram with username
                 const botUsername = env.BOT_USERNAME;
                 const startParam = `twitter_success_${username}`;
                 const redirectUrl = `https://t.me/${botUsername}?start=${startParam}`;
@@ -965,7 +965,7 @@ export default {
             });
             
             try {
-                // Essayer d'envoyer dans le chat d'origine
+                // Try to send in the original chat
                 await ctx.api.sendMessage(chatId, `
 Debug Chat Info:
 ID: ${chatId}
@@ -976,7 +976,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                 `);
             } catch (error) {
                 console.error('Error sending message:', error);
-                // Si échec, essayer d'envoyer dans le chat général
+                // If failed, try to send in the general chat
                 await ctx.reply(`Error sending to original chat: ${error instanceof Error ? error.message : 'Unknown error'}`);
             }
         });
@@ -985,10 +985,10 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
             await ctx.reply("Pong!");
         });
 
-        // Middleware de debug et initialisation de session
+        // Debug and session initialization middleware
         bot.use(async (ctx, next) => {
             try {
-                // Lire d'abord la session existante
+                // Read existing session first
                 if (ctx.from?.id) {
                     const storage = new CloudflareStorage(env.SESSION_STORE);
                     const existingSession = await storage.read(ctx.from.id.toString());
@@ -997,7 +997,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                         ctx.session = existingSession;
                         console.log('Loaded existing session:', existingSession);
                     } else {
-                        // Initialiser une nouvelle session seulement si aucune n'existe
+                        // Initialize a new session only if none exists
                         console.log('No existing session found, creating new one');
                         ctx.session = {
                             answers: {
@@ -1029,7 +1029,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
 
                 await next();
                 
-                // Sauvegarder les modifications de session
+                // Save session modifications
                 if (ctx.from?.id && ctx.session) {
                     const storage = new CloudflareStorage(env.SESSION_STORE);
                     await storage.write(ctx.from.id.toString(), ctx.session);
@@ -1040,7 +1040,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
             }
         });
 
-        // Configuration de la session (après le middleware)
+        // Session configuration (after middleware)
         bot.use(session<SessionData, MyContext>({
             initial: () => ({
                 answers: {
@@ -1070,19 +1070,19 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
             getSessionKey: (ctx) => ctx.from?.id?.toString()
         }));
 
-        // Commande /start
+        // /start command
         bot.command("start", async (ctx) => {
             console.log('1-Start command received:', ctx.message?.text);
             console.log('1.1-Username:', ctx.from?.username);
             const userName = ctx.from?.first_name || "there";
             
-            // Si c'est un callback Twitter
+            // If it's a Twitter callback
             if (ctx.message?.text?.includes('twitter_success_')) {
                 console.log('1.2-Processing Twitter success');
                 try {
                     const username = ctx.message.text.split('twitter_success_')[1];
                     
-                    // Forcer l'initialisation de la session si nécessaire
+                    // Force session initialization if necessary
                     if (!ctx.session) {
                         ctx.session = {
                             answers: {
@@ -1110,17 +1110,17 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                         };
                     }
 
-                    // Mettre à jour l'état de connexion Twitter
+                    // Update Twitter connection status
                     ctx.session.answers.twitterConnected = true;
                     ctx.session.answers.twitterUsername = username;
 
-                    // Forcer la sauvegarde immédiate de la session
+                    // Force immediate session save
                     if (ctx.from?.id) {
                         const storage = new CloudflareStorage(env.SESSION_STORE);
                         await storage.write(ctx.from.id.toString(), ctx.session);
                     }
 
-                    // Envoyer les images d'exemple en utilisant des URLs
+                    // Send example images using URLs
                     await ctx.replyWithPhoto("https://pub-0cbbb3349b8a4e4384de7e35e44350eb.r2.dev/screenshots/screen1.png");
                     await ctx.replyWithPhoto("https://pub-0cbbb3349b8a4e4384de7e35e44350eb.r2.dev/screenshots/screen2.png");
 
@@ -1134,7 +1134,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                 return;
             }
 
-            // Générer le lien d'authentification Twitter
+            // Generate Twitter authentication link
             try {
                 const state = Math.random().toString(36).substring(7);
                 const codeChallenge = 'challenge'; // PKCE requirement
@@ -1167,7 +1167,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
             }
         });
 
-        // Gestionnaire de messages
+        // Message handler
         bot.on(["message:text", "message:photo"], async (ctx) => {
             console.log('Session state:', {
                 exists: !!ctx.session,
@@ -1175,7 +1175,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                 username: ctx.session?.answers?.twitterUsername
             });
 
-            // Vérifier si Twitter est connecté
+            // Check if Twitter is connected
             if (!ctx.session?.answers?.twitterConnected) {
                 const keyboard = new InlineKeyboard()
                     .url("Connect with X 🐦", generateTwitterAuthUrl(env));
@@ -1194,7 +1194,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
 
             let shouldMoveToNextQuestion = true;
 
-            // Vérifier si une image est attendue
+            // Check if an image is expected
             if (currentQuestion === 2 || currentQuestion === 3 || currentQuestion === 13) {
                 if (!ctx.message.photo && !ctx.message.document) {
                     await ctx.reply("Please send an image (jpg or png format) 🖼️");
@@ -1207,10 +1207,10 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                 return;
             }
 
-            // Gérer les réponses selon la question
+            // Handle responses based on the question
             try {
                 if (ctx.message.photo && (currentQuestion === 2 || currentQuestion === 3 || currentQuestion === 13)) {
-                    const photo = ctx.message.photo[0]; // Utiliser la première version (non compressée)
+                    const photo = ctx.message.photo[0]; // Use the first version (uncompressed)
                     const file = await ctx.api.getFile(photo.file_id);
                     
                     if (!file.file_path) {
@@ -1221,9 +1221,9 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
 
                     const fileUrl = `https://api.telegram.org/file/bot${env.BOT_TOKEN}/${file.file_path}`;
                     
-                    // Sauvegarder l'image dans R2
+                    // Save the image to R2
                     await handleImage(ctx, env, fileUrl, currentQuestion === 13, currentQuestion === 3);
-                    return; // Ajout de ce return pour éviter le double traitement
+                    return; // Add this return to avoid double processing
                     
                 } else if (ctx.message.text) {
                     switch (currentQuestion) {
@@ -1258,7 +1258,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                             answers.dataRoom = ctx.message.text;
                             console.log('Saving dataRoom:', ctx.message.text);
                             
-                            // Force la sauvegarde dans le KV
+                            // Force save to KV
                             if (ctx.from?.id) {
                                 const storage = new CloudflareStorage(env.SESSION_STORE);
                                 await storage.write(ctx.from.id.toString(), ctx.session);
@@ -1269,7 +1269,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                             answers.strengths = ctx.message.text;
                             console.log('Saving strengths:', ctx.message.text);
                             
-                            // Force la sauvegarde dans le KV
+                            // Force save to KV
                             if (ctx.from?.id) {
                                 const storage = new CloudflareStorage(env.SESSION_STORE);
                                 await storage.write(ctx.from.id.toString(), ctx.session);
@@ -1279,7 +1279,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                     }
                 }
 
-                // Passer à la question suivante seulement si tout s'est bien passé
+                // Move to the next question only if everything went well
                 if (shouldMoveToNextQuestion) {
                     answers.currentQuestion++;
                     console.log('Moving to question:', answers.currentQuestion);
@@ -1291,12 +1291,12 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
             }
         });
 
-        // Gestionnaire pour les photos (compressées)
+        // Photo handler (compressed)
         bot.on("message:photo", async (ctx) => {
             const currentQuestion = ctx.session.answers.currentQuestion;
             
             if (currentQuestion === 2 || currentQuestion === 3 || currentQuestion === 13) {
-                const photo = ctx.message.photo[ctx.message.photo.length - 1]; // Meilleure qualité disponible
+                const photo = ctx.message.photo[ctx.message.photo.length - 1]; // Best quality available
                 const file = await ctx.api.getFile(photo.file_id);
                 
                 if (!file.file_path) {
@@ -1309,7 +1309,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
             }
         });
 
-        // Gestionnaire pour les documents (non compressés)
+        // Document handler (uncompressed)
         bot.on("message:document", async (ctx) => {
             const currentQuestion = ctx.session.answers.currentQuestion;
             
@@ -1332,7 +1332,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
             }
         });
 
-        // Fonction utilitaire pour générer l'URL Twitter
+        // Utility function to generate Twitter URL
         function generateTwitterAuthUrl(env: Env): string {
             const state = Math.random().toString(36).substring(7);
             const params = new URLSearchParams({
@@ -1348,7 +1348,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
             return `https://twitter.com/i/oauth2/authorize?${params.toString()}`;
         }
 
-        // Ajouter le gestionnaire de boutons
+        // Add button handler
         bot.on("callback_query:data", async (ctx) => {
             const data = ctx.callbackQuery.data;
             const answers = ctx.session.answers;
@@ -1359,14 +1359,14 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                 answers.chain = data.replace("chain_", "");
                 await ctx.reply(`Chain selected: ${answers.chain} ✅`);
                 
-                // Passer à la question suivante
+                // Move to the next question
                 answers.currentQuestion++;
                 await askNextQuestion(ctx, env);
             }
             else if (data?.startsWith("vesting_")) {
                 const vestingType = data.replace("vesting_", "");
                 
-                // Définir le texte descriptif en fonction du type de vesting
+                // Define text description based on vesting type
                 let vestingDescription = "";
                 if (vestingType === "6month") {
                     vestingDescription = "6 month vesting";
@@ -1379,7 +1379,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                 answers.vesting = vestingDescription;
                 await ctx.reply(`Vesting set to: ${vestingDescription} ✅`);
                 
-                // Passer à la question suivante
+                // Move to the next question
                 answers.currentQuestion++;
                 await askNextQuestion(ctx, env);
             }
@@ -1388,7 +1388,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                 answers.fdvMin = minValue;
                 await ctx.reply(`FDV Min set to: $${minValue}M ✅`);
                 
-                // Passer à la question suivante
+                // Move to the next question
                 answers.currentQuestion++;
                 await askNextQuestion(ctx, env);
             }
@@ -1396,18 +1396,18 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                 const maxValue = data.replace("fdvMax_", "");
                 answers.fdvMax = maxValue;
                 
-                // Mettre à jour le champ fdv avec la fourchette complète
+                // Update fdv field with complete range
                 const min = answers.fdvMin || "1";
                 answers.fdv = `$${min}M - $${maxValue}M`;
                 
                 await ctx.reply(`FDV Max set to: $${maxValue}M ✅\nFDV Range: ${answers.fdv}`);
                 
-                // Passer à la question suivante
+                // Move to the next question
                 answers.currentQuestion++;
                 await askNextQuestion(ctx, env);
             }
 
-            // Confirmer la sélection
+            // Confirm selection
             await ctx.answerCallbackQuery();
         });
 
