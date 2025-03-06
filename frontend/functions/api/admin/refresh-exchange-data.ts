@@ -10,7 +10,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
   try {
     // authorize request
-    if (!await isApiKeyValid({ ctx, permissions: ['read'] })) {
+    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
       return jsonResponse(null, 401)
     }
 

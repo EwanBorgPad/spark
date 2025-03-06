@@ -36,8 +36,6 @@ Format: sk_NAME_SECRET
 
 `sk_peter_prod_8iam21k8f7v6s5sbxg134`
 
-TODO add permissions to the db table (just a comma-separated TEXT would be perfect I think)
-TODO keys are not retrievable (can be seen only once)
 TODO should we insist on api key through authorization header instead of query params which might leave a trace in browser history, if one decides to use their key like that
 TODO drop ADMIN_API_KEY_HASH and INTEGRATIONS_API_KEY
 

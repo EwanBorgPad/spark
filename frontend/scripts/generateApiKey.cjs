@@ -11,8 +11,4 @@ function generateApiKey(keyName) {
 }
 
 
-generateApiKey('milan')
-
-// TODO remove env variable which holds the api key
-// TODO remove env variable for integrations
-// TODO add permissions (read, write)
+generateApiKey('api_key_name_here')
