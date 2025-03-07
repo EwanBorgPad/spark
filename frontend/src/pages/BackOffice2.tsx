@@ -91,14 +91,15 @@ const BackOffice = () => {
   }
 
   return (
-    <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[100px] font-normal text-fg-primary lg:py-[100px]">
+    <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[100px] font-normal text-fg-primary lg:py-[20px]">
       <h1>Update Project</h1>
       <DropdownSelector
-        baseColor='secondary'
-        accentColor='tertiary'
+        baseColor="secondary"
+        accentColor="tertiary"
         onChange={(value) => setSelectedProjectId(value)}
         selected={selectedProjectId}
-        options={dropdownOptions} />
+        options={dropdownOptions}
+      />
       <form
         className="max-w-screen flex w-full flex-col items-start gap-8 px-4 md:max-w-[720px]"
         onSubmit={handleSubmit(onSubmit)}
@@ -112,7 +113,9 @@ const BackOffice = () => {
                 label="Claim URL"
                 value={value}
                 error={error?.message}
-                onChange={(event) => { onChange(event) }}
+                onChange={(event) => {
+                  onChange(event)
+                }}
               />
             )}
           />
@@ -124,7 +127,9 @@ const BackOffice = () => {
                 label="Tweet URL"
                 value={value}
                 error={error?.message}
-                onChange={(event) => { onChange(event) }}
+                onChange={(event) => {
+                  onChange(event)
+                }}
               />
             )}
           />
@@ -136,7 +141,9 @@ const BackOffice = () => {
                 label="Token Contract URL"
                 value={value}
                 error={error?.message}
-                onChange={(event) => { onChange(event) }}
+                onChange={(event) => {
+                  onChange(event)
+                }}
               />
             )}
           />
@@ -148,7 +155,9 @@ const BackOffice = () => {
                 label="Pool Contract URL"
                 value={value}
                 error={error?.message}
-                onChange={(event) => { onChange(event) }}
+                onChange={(event) => {
+                  onChange(event)
+                }}
               />
             )}
           />

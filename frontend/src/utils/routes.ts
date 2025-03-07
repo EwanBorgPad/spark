@@ -8,6 +8,7 @@ export enum ROUTES {
   TERMS_OF_USE = "/terms-of-use",
   TERMS_AND_CONDITIONS = "/terms-and-conditions",
   DOCS = "https://docs.borgpad.com",
+  BACK_OFFICE = "/back-office-dashboard-2025",
 }
 
 const projectTypeRoutes: Record<ProjectModel["info"]["projectType"], string> = {
