@@ -59,7 +59,8 @@ const LiveNowInput = ({
         onValueChange={onChangeHandler}
         {...props}
       />
-      <span className="text-fg-tertiary">{equivalentUsdValue}</span>
+      {/* Equivalent USD value */}
+      {/* <span className="text-fg-tertiary">{equivalentUsdValue}</span> */}
       {error && <span className="text-fg-error-primary">{error.message}</span>}
     </div>
   )
