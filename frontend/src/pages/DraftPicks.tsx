@@ -14,6 +14,7 @@ import { GetProjectsResponse } from "shared/models"
 import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
 import { ProjectPoolCard } from "@/components/Cards/ProjectPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
+import { twMerge } from "tailwind-merge"
 
 const displayLogos = [blitzPoolsLogo, goatPoolsLogo]
 
@@ -79,10 +80,15 @@ const DraftPicks = () => {
 
       <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
         <div className="flex w-full max-w-[1080px] flex-col items-center">
-          <ul className="grid grid-cols-1 place-content-center justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul
+            className={twMerge(
+              "grid grid-cols-1 place-content-center justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3",
+              isLoading && "w-full",
+            )}
+          >
             {!isLoading
               ? phases?.map((phase) => phase?.map((project) => <ProjectPoolCard project={project} key={project.id} />))
-              : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
+              : skeletonItems.map((item) => <ProjectPoolCard key={item} isLoading project={null} />)}
           </ul>
         </div>
       </section>

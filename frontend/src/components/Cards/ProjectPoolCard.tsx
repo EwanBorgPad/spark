@@ -14,7 +14,7 @@ import bottomCorner from "@/assets/bottom-right-corner.svg"
 type Props = { project: ExpandedProject | null; isLoading?: boolean }
 
 export const ProjectPoolCard = ({ project, isLoading }: Props) => {
-  const projectUrl = getProjectRoute(project as ProjectModel)
+  const projectUrl = getProjectRoute(project as ProjectModel) ?? "#"
 
   const committedSum = formatCurrencyCompact(project?.investmentIntentSummary?.sum)
 
