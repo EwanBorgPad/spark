@@ -13,6 +13,10 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
 
   try {
+    // TODO @commitments deprecate this API
+    // not sure if anyone actually uses it, let's throw an error first and see if anyone complains
+    return jsonResponse({ message: 'This API is deprecated! Contact BorgPad team for more info.' }, 410)
+
     // env loading/validation
     const integrationsApiKey = ctx.env.INTEGRATIONS_API_KEY
     if (!integrationsApiKey) {

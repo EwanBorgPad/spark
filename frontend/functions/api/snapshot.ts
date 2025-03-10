@@ -1,10 +1,12 @@
-import { hasAdminAccess, jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { z } from "zod"
-import { SnapshotService } from "../services/snapshotService"
+import { eq, sql } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/d1"
+
+import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
+import { SnapshotService } from "../services/snapshotService"
+import { isApiKeyValid } from '../services/apiKeyService'
 import { EligibilityService } from "../services/eligibilityService"
 import { projectTable } from "../../shared/drizzle-schema"
-import { eq, sql } from "drizzle-orm"
 import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 
 const requestSchema = z.object({
@@ -18,14 +20,13 @@ const requestSchema = z.object({
 type ENV = {
   DB: D1Database
   SOLANA_RPC_URL: string
-  ADMIN_API_KEY_HASH: string
 }
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
 
   try {
     // authorize request
-    if (!hasAdminAccess(ctx)) {
+    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
       return jsonResponse(null, 401)
     }
 

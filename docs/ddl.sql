@@ -120,3 +120,12 @@ ALTER TABLE project ADD COLUMN updated_at TIMESTAMP;
 UPDATE project SET created_at = '2024-01-01T00:00:00.000Z' WHERE TRUE;
 UPDATE project SET updated_at = '2024-01-01T00:00:00.000Z' WHERE TRUE;
 ---- end
+
+---- migration: api keys
+CREATE TABLE api_key (
+    id TEXT NOT NULL PRIMARY KEY,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    permissions TEXT NOT NULL,
+    hash TEXT NOT NULL
+);
+---- end
