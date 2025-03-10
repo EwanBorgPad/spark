@@ -223,10 +223,9 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
     }
   }
 
-  const clickProvideLiquidityBtn = (balancePercentage: number) => {
+  const inputMaxAmountHandler = () => {
     if (!balance || !maxRaisedTokenInput) return
-    const maxAllowed = Number(((balancePercentage / 100) * Number(maxRaisedTokenInput)).toFixed(6))
-    const inputFloatValue = Math.min(Number(balance.uiAmountString), maxAllowed)
+    const inputFloatValue = Math.min(Number(balance.uiAmountString), maxRaisedTokenInput)
     const inputValue = truncateDecimals(inputFloatValue, 0)
     setValue("raisedTokenInputValue", inputValue.toString(), {
       shouldValidate: true,
@@ -298,7 +297,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
                       "text-[12px] leading-none text-fg-tertiary font-normal",
                       isInputMaxAmount ? "text-white" : "",
                     )}
-                    onClick={() => clickProvideLiquidityBtn(100)}
+                    onClick={inputMaxAmountHandler}
                   />
                 </div>
               )}

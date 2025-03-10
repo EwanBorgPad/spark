@@ -13,6 +13,7 @@ import { Icon } from "@/components/Icon/Icon"
 import { GetProjectsResponse } from "shared/models"
 import { ProjectPoolCard } from "@/components/Cards/ProjectPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
+import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
 
 const displayLogos = [blitzPoolsLogo, goatPoolsLogo]
 
