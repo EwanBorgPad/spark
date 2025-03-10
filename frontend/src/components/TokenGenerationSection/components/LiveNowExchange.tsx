@@ -39,7 +39,7 @@ const truncateDecimals = (value: number, numOfDecimals: number) => {
 }
 
 // CONFIG
-const NUM_OF_DECIMALS = 2
+const NUM_OF_DECIMALS = 0
 const ONE_HOUR = 60 * 60 * 1000
 
 const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: Props) => {
@@ -94,7 +94,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
   })
 
   // Get Spl token balance
-  const { data: balance } = useQuery({
+  const { data: balance, isLoading: isBalanceLoading } = useQuery({
     queryFn: () => {
       if (!address || !projectId || !tokenMintAddress) return
       return getSplTokenBalance({
@@ -147,7 +147,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
   })
   const raisedTokenPriceInUSD = Number(exchangeData?.currentPrice) || null
   const tokenPriceInUSD = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0
-  const tokenPriceInRaisedToken = !raisedTokenPriceInUSD ? null : tokenPriceInUSD / raisedTokenPriceInUSD
+  // const tokenPriceInRaisedToken = !raisedTokenPriceInUSD ? null : tokenPriceInUSD / raisedTokenPriceInUSD
 
   const minRaisedTokenInput = depositStatus
     ? truncateDecimals(Number(depositStatus.minAmountAllowed.uiAmount), NUM_OF_DECIMALS)
@@ -160,7 +160,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
     if (typeof maxRaisedTokenInput !== "number" || typeof minRaisedTokenInput !== "number") {
       return false
     }
-    if (maxRaisedTokenInput < 0.1) return true
+    if (maxRaisedTokenInput < 1) return true
     // edge case if there is a small amount left to be invested
     if (maxRaisedTokenInput < minRaisedTokenInput) return true
     return false
@@ -225,15 +225,10 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
 
   const clickProvideLiquidityBtn = (balancePercentage: number) => {
     if (!balance || !maxRaisedTokenInput) return
-    const floatValue = Number(((balancePercentage / 100) * Number(maxRaisedTokenInput)).toFixed(6))
-    if (floatValue > maxRaisedTokenInput) {
-      setValue("raisedTokenInputValue", maxRaisedTokenInput.toString(), {
-        shouldValidate: true,
-        shouldDirty: true,
-      })
-      return
-    }
-    setValue("raisedTokenInputValue", floatValue.toString(), {
+    const maxAllowed = Number(((balancePercentage / 100) * Number(maxRaisedTokenInput)).toFixed(6))
+    const inputFloatValue = Math.min(Number(balance.uiAmountString), maxAllowed)
+    const inputValue = truncateDecimals(inputFloatValue, 0)
+    setValue("raisedTokenInputValue", inputValue.toString(), {
       shouldValidate: true,
       shouldDirty: true,
     })
@@ -261,7 +256,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
         <span className="w-full pb-2.5 text-center text-base font-semibold">{t("tge.provide_liquidity")}</span>
         <div className="re relative flex w-full max-w-[400px] flex-col items-center gap-2.5 rounded-t-2xl border border-bd-primary bg-secondary px-3 py-4">
           <span className="w-full text-left text-xs opacity-50">{t("tge.youre_paying")}</span>
-          <div className="flex w-full flex-col justify-between gap-2.5">
+          <div className="flex w-full flex-col justify-between gap-2.5 pb-2">
             <div className="grid w-full grid-cols-borg-input gap-x-2">
               <div className="flex flex-col">
                 <Controller
@@ -372,6 +367,8 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
         isDepositStatusLoading={isDepositStatusLoading}
         isEligibleTierActive={isEligibleTierActive}
         isUserEligible={isUserEligible}
+        isBalanceLoading={isBalanceLoading}
+        balance={balance}
         scrollToEligibilitySection={scrollToEligibilitySection}
         scrollToWhitelistRequirements={scrollToWhitelistRequirements}
         tierBenefits={tierBenefits}
