@@ -1,13 +1,10 @@
 import { GetProjectsResponse, InvestmentIntentSummary, ProjectModel, projectSchema, ProjectTypeSchema } from "../../../shared/models"
-import {
-  hasAdminAccess,
-  jsonResponse,
-  reportError,
-} from "../cfPagesFunctionsUtils"
+import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 import { projectTable, ProjectStatus } from "../../../shared/drizzle-schema"
 import { and, count, eq, like, not, sql } from "drizzle-orm"
 import { drizzle, DrizzleD1Database } from "drizzle-orm/d1"
 import { z } from 'zod'
+import { isApiKeyValid } from '../../services/apiKeyService'
 
 
 const requestSchema = z.object({
@@ -18,7 +15,6 @@ const requestSchema = z.object({
 
 type ENV = {
   DB: D1Database
-  ADMIN_API_KEY_HASH: string
 }
 /**
  * Get request handler - returns a list of projects
@@ -121,7 +117,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
   try {
     // authorize request
-    if (!hasAdminAccess(ctx)) {
+    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
       return jsonResponse(null, 401)
     }
 
