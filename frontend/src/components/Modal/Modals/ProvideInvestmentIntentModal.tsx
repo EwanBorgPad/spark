@@ -95,13 +95,13 @@ export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentInten
         setShowJoinCommunityCta(true)
       }
       window.safary?.track({
-        eventType: 'investment-interest',
-        eventName: 'confirm interest',
+        eventType: "investment-interest",
+        eventName: "confirm interest",
         parameters: {
-          walletAddress: (address as string),
-          toProject: (projectId as string),
-          amount: (amount as number),
-          currency: 'USDC',
+          walletAddress: address as string,
+          toProject: projectId as string,
+          amount: amount as number,
+          currency: "USDC",
         },
       })
     },
@@ -112,7 +112,7 @@ export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentInten
     <SimpleModal
       showCloseBtn={!showJoinCommunityCta}
       onClose={onCloseHandler}
-      title={!showJoinCommunityCta ? "Thank you for expressing interest" : t("investment.intent.quest.heading")}
+      title={showJoinCommunityCta ? "Your Next Step Starts Here" : t("investment.intent.quest.heading")}
       className="bg-default"
       headerClass={twMerge("bg-default", showJoinCommunityCta && "pt-8 grid-cols-1 px-4 md:px-8")}
     >
@@ -179,7 +179,7 @@ const JoinUsOnTelegram = ({ onCloseHandler }: { onCloseHandler: () => void }) =>
   return (
     <div className="flex w-full max-w-[460px] flex-col items-center justify-center gap-6 p-4 pb-6 pt-0 max-sm:h-full md:p-8 md:pb-6 md:pt-0">
       <span className="w-full text-center text-sm font-medium text-fg-secondary">
-        To stay up to date, join our telegram with dedicated channels to each project:
+        Get exclusive insights. Chat with project founders. Join our Telegram now!
       </span>
       <div className="mt-2 flex w-full max-w-[332px] flex-col items-center gap-4 rounded-lg bg-secondary p-4 ring-[1px] ring-bd-secondary">
         <Img src={telegramBorgpadOGs} customClass="h-[60px] w-[60px] rounded-full" />
