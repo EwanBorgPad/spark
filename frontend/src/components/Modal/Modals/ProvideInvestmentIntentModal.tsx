@@ -94,6 +94,16 @@ export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentInten
       if (!userAlreadyClickedOnTelegramUrl) {
         setShowJoinCommunityCta(true)
       }
+      window.safary?.track({
+        eventType: 'investment-interest',
+        eventName: 'confirm interest',
+        parameters: {
+          walletAddress: (address as string),
+          toProject: (projectId as string),
+          amount: (amount as number),
+          currency: 'USDC',
+        },
+      })
     },
     onError: (error) => toast.error(error.message, { theme: "colored" }),
   })

@@ -1,14 +1,14 @@
 import { drizzle } from 'drizzle-orm/d1'
 import { eq, sql } from 'drizzle-orm'
 
-import { hasAdminAccess, jsonResponse, reportError } from '../cfPagesFunctionsUtils'
+import { jsonResponse, reportError } from '../cfPagesFunctionsUtils'
 import { projectSchema } from '../../../shared/models'
 import { ProjectStatus, projectTable } from '../../../shared/drizzle-schema'
+import { isApiKeyValid } from '../../services/apiKeyService'
 
 
 type ENV = {
     DB: D1Database
-    ADMIN_API_KEY_HASH: string
 }
 /**
  * Post request handler - creates a project
@@ -18,7 +18,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
   try {
     // authorize request
-    if (!hasAdminAccess(ctx)) {
+    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
       return jsonResponse(null, 401)
     }
 

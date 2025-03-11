@@ -70,7 +70,7 @@ const TokenRewards = ({ raisedTokenInput, raisedTokenPriceInUSD, isYourContribut
       {/* label below container */}
       {!isYourContribution && (
         <span className="mt-[9px] block w-full text-center text-xs font-medium text-fg-primary opacity-50">
-          $ values for {tokenTicker} are shown at TGE valuation price
+          $ values for {tokenTicker} are shown at BorgPad valuation price
         </span>
       )}
     </div>

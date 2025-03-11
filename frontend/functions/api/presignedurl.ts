@@ -1,9 +1,6 @@
 import { AwsClient } from "aws4fetch"
-import {
-  hasAdminAccess,
-  jsonResponse,
-  reportError,
-} from "./cfPagesFunctionsUtils"
+import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
+import { isApiKeyValid } from '../services/apiKeyService'
 
 type ENV = {
   DB: D1Database
@@ -12,7 +9,6 @@ type ENV = {
   R2_ACCESS_KEY_ID: string
   R2_SECRET_ACCESS_KEY: string
   R2_PUBLIC_URL_BASE_PATH: string
-  ADMIN_API_KEY_HASH: string
 }
 
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
@@ -20,7 +16,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
   try {
     // authorize request
-    if (!hasAdminAccess(ctx)) {
+    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
       return jsonResponse(null, 401)
     }
 

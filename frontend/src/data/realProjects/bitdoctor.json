@@ -3,11 +3,13 @@
   "config": {
     "cluster": "mainnet",
     "lpPositionToBeBurned": true,
-    "raiseTargetInUsd": 0,
-    "fdv": 0,
+    "raiseTargetInUsd": 200000,
+    "fdv": 5000000,
+    "targetFdv": "$5M",
+    "targetVesting": "6 months linear",
     "marketCap": 0,
     "totalTokensForLiquidityPool": 0,
-    "totalTokensForRewardDistribution": 0,
+    "totalTokensForRewardDistribution": 40000000,
     "rewardsDistributionTimeInMonths": 6,
     "finalSnapshotTimestamp": null,
     "lbpWalletAddress": null,
@@ -20,11 +22,11 @@
       "coinGeckoName": "usd"
     },
     "launchedTokenData": {
-      "iconUrl": "",
-      "ticker": "",
+      "iconUrl": "https://files.borgpad.com/images/bitdoctor/bitdoctor-logo.png",
+      "ticker": "AIDD",
       "mintAddress": null,
       "decimals": 0,
-      "fixedTokenPriceInUsd": 0
+      "fixedTokenPriceInUsd": 0.005
     }
   },
   "info": {
@@ -39,15 +41,15 @@
     "logoUrl": "https://files.borgpad.com/images/bitdoctor/bitdoctor-logo.png",
     "thumbnailUrl": "https://files.borgpad.com/images/bitdoctor/bitdoctor-thumbnail.png",
     "origin": "web3",
-    "sector": "AI",
-    "tokenGenerationEventDate": "",
+    "sector": "AI / DeSci",
+    "tokenGenerationEventDate": "March 19",
     "chain": {
       "name": "Solana",
       "iconUrl": "https://files.borgpad.com/images/zkagi/solana-small.jpg"
     },
     "dataRoom": {
       "backgroundImgUrl": "",
-      "url": ""
+      "url": "https://docs.bitdoctor.ai/"
     },
     "liquidityPool": {
       "name": "Raydium",
@@ -74,47 +76,53 @@
     },
     "projectLinks": [
       {
-        "url": "x.com",
+        "url": "https://bitdoctor.ai/",
         "iconType": "WEB",
-        "label": ""
+        "label": "Web"
       },
       {
-        "url": "x.com",
+        "url": "https://twitter.com/bitdoctorai",
         "iconType": "X_TWITTER",
-        "label": ""
+        "label": "X"
+      },
+      {
+        "url": "https://t.me/BitDocAI",
+        "iconType": "TELEGRAM",
+        "label": "Telegram"
       }
     ],
     "timeline": [
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": null
+        "date": "2025-03-07T10:00:00.000Z"
       },
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": null
+        "date": "2025-03-19T15:00:00.000Z"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": null
+        "date": "2025-03-19T10:59:00.000Z"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
+        "fallbackText": "Once Sold Out",
         "date": null
       },
       {
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
-        "date": null
+        "date": "2025-08-19T12:00:00.000Z"
       }
     ],
     "tiers": [
       {
         "id": "tier10",
-        "label": "Borgers Club.",
+        "label": "Borgers Club",
         "quests": [
           {
             "type": "HOLD_TOKEN",

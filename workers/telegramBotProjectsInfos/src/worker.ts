@@ -1167,6 +1167,34 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
             }
         });
 
+        // Add reset command
+        bot.command("reset", async (ctx) => {
+            try {
+                // Get user ID
+                const userId = ctx.from?.id.toString();
+                if (!userId) {
+                    await ctx.reply("Error: Could not identify user.");
+                    return;
+                }
+                
+                // Delete the session from KV store
+                const storage = new CloudflareStorage(env.SESSION_STORE);
+                await storage.delete(userId);
+                
+                // Reset the session in memory
+                ctx.session = {
+                    answers: {
+                        currentQuestion: 0
+                    }
+                };
+                
+                await ctx.reply("🔄 Your session has been reset. You can start over by using the /start command.");
+            } catch (error) {
+                console.error('Error resetting session:', error);
+                await ctx.reply("An error occurred while resetting your session. Please try again.");
+            }
+        });
+
         // Message handler
         bot.on(["message:text", "message:photo"], async (ctx) => {
             console.log('Session state:', {
@@ -1340,6 +1368,8 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
             const currentQuestion = ctx.session.answers.currentQuestion;
             
             if (currentQuestion === 2 || currentQuestion === 3 || currentQuestion === 13) {
+                // Send a message to the user that we are processing the image
+                await ctx.reply("🔍 Processing image... Please wait...");
                 const doc = ctx.message.document;
                 
                 if (!doc.mime_type?.startsWith('image/')) {
