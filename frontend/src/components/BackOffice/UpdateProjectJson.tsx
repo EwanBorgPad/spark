@@ -53,7 +53,7 @@ const UpdateProjectJson = () => {
   const { mutate: updateJson, isPending } = useMutation({
     mutationFn: async (payload: UpdateJsonArgs) => backendApi.updateJson(payload),
     onSuccess: async (_, _variables) => {
-      toast.success("Project updated!")
+      toast.success("Project updated!", { theme: "colored" })
       await refetch()
     },
     onError: (error) => {

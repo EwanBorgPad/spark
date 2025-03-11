@@ -9,10 +9,9 @@ import { Button } from "../Button/Button"
 import { getSignInWithTwitterUrl } from "@/hooks/useTwitterContext"
 import { ExternalLink } from "../Button/ExternalLink"
 import AcceptTermsOfUseModal from "../Modal/Modals/AcceptTermsOfUseModal"
-import ProvideInvestmentIntentModal from "../Modal/Modals/ProvideInvestmentIntentModal"
+import { ProvideInvestmentIntentModal } from "../Modal/Modals/ProvideInvestmentIntentModal"
 import { ProjectModel } from "shared/models"
-import { format } from "node_modules/date-fns/format"
-import { formatDateForDisplay, formatDateForTimer } from "@/utils/date-helpers"
+import { formatDateForTimer } from "@/utils/date-helpers"
 
 type QuestComponentProps = {
   quest: QuestWithCompletion
