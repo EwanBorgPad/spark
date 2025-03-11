@@ -1,42 +1,40 @@
 import { drizzle } from "drizzle-orm/d1"
-import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 import { eq } from "drizzle-orm"
 
 import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 import { userTable } from "../../../shared/drizzle-schema"
+import { isApiKeyValid } from '../../services/apiKeyService'
 
 type ENV = {
   DB: D1Database
-  INTEGRATIONS_API_KEY: string
 }
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
 
   try {
-    // TODO @commitments deprecate this API
-    // not sure if anyone actually uses it, let's throw an error first and see if anyone complains
-    return jsonResponse({ message: 'This API is deprecated! Contact BorgPad team for more info.' }, 410)
-
-    // env loading/validation
-    const integrationsApiKey = ctx.env.INTEGRATIONS_API_KEY
-    if (!integrationsApiKey) {
-      throw new Error('INTEGRATIONS_API_KEY is missing!')
+    // authorize request 01 - api key permissions
+    if (!await isApiKeyValid({ ctx, permissions: ['commitments'] })) {
+      return jsonResponse(null, 401)
     }
 
     // request parsing
     const { searchParams } = new URL(ctx.request.url)
     const projectId = searchParams.get('projectId')
     const address = searchParams.get('address')
-    const apiKey = searchParams.get('apiKey')
+    const apiKey = ctx.request.headers.get('authorization') ?? ''
 
     // request validation
-    if (!projectId || !address || !apiKey) {
-      return jsonResponse({ message: 'Bad request! Please provide projectId, address, and apiKey!' }, 400)
+    if (!projectId || !address) {
+      return jsonResponse({ message: 'Bad request! Please provide projectId and address as query params!' }, 400)
     }
 
-    // authorization
-    if (!apiKey || !integrationsApiKey || apiKey !== integrationsApiKey) {
-      return jsonResponse({ message: 'Unauthorized!' }, 401)
+    // authorize request 02 - resource access
+    // if projectId is present in api key, resource access is granted
+    const normalizedProjectId = projectId.replaceAll('-', '_')
+    const isResourceAccessGranted = apiKey.startsWith('sk_' + normalizedProjectId + '_')
+    if (!isResourceAccessGranted) {
+      console.error('Unauthorized! Resource access denied!')
+      return jsonResponse(null, 401)
     }
 
     const user = await db
