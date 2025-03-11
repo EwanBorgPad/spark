@@ -158,17 +158,11 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
       return eligibilityStatus.tiers.map((tier) => {
         const tierQuests = sortByCompletionStatus(tier.quests)
 
-        const isPublicSaleTier = !tierQuests.length && tier.id === "tier99"
         return (
           <TierWrapper key={tier.id} tier={tier}>
-            {!isPublicSaleTier ? (
-              tierQuests.map((quest) => <QuestComponent key={quest.type} quest={quest} />)
-            ) : (
-              <Icon
-                icon={"SvgRoundCheckmark"}
-                className={"absolute right-[24px] top-3 text-xl text-fg-success-primary"}
-              />
-            )}
+            {tierQuests.map((quest) => (
+              <QuestComponent key={quest.type} quest={quest} />
+            ))}
           </TierWrapper>
         )
       })
@@ -183,13 +177,14 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
       <div className="flex w-full max-w-[432px] flex-col">
         <div id="tiersHeading" className="flex w-full flex-col items-start gap-3 pb-4">
           <div className="flex w-full items-center justify-between">
-            <span className="text-base md:text-lg">Qualify for desired tier</span>
-            {eligibilityStatus && (
+            <span className="text-base md:text-lg">Whitelist for the desired tier</span>
+            {/* a badge that displays highest whitelisted tier */}
+            {/* {eligibilityStatus && (
               <Badge.Confirmation
                 label={eligibilityStatus.eligibilityTier?.label}
                 isConfirmed={eligibilityStatus.eligibilityTier !== null}
               />
-            )}
+            )} */}
           </div>
           {!eligibilityStatus?.isCompliant && isWalletConnected && (
             <div className={twMerge("text-fg-primary")}>
@@ -201,7 +196,7 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
             </div>
           )}
         </div>
-        <div id="tiersContainer" className="rounded-lg border-[1px] border-bd-secondary bg-default p-2">
+        <div id="tiersContainer" className="flex flex-col gap-4">
           {!isFetching ? getTiers() : <TierSkeletonContainer />}
         </div>
         <FinalSnapshotTaken className="mt-2" />
