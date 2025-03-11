@@ -43,10 +43,12 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       .where(eq(userTable.address, address))
       .get()
 
-    const isCommitted = Boolean(user?.json.investmentIntent?.[projectId])
+    const investmentIntentData = user?.json.investmentIntent?.[projectId]
+    const isCommitted = Boolean(investmentIntentData)
 
     const retval = {
       isCommitted,
+      amount: investmentIntentData ? investmentIntentData.amount : null,
     }
 
     return jsonResponse(retval, 200)
