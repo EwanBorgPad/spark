@@ -11,7 +11,6 @@ import draftPicksBackground from "@/assets/launchPools/draft-picks-background.pn
 import Img from "@/components/Image/Img"
 import { Icon } from "@/components/Icon/Icon"
 import { GetProjectsResponse } from "shared/models"
-import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
 import { ProjectPoolCard } from "@/components/Cards/ProjectPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
 import { twMerge } from "tailwind-merge"

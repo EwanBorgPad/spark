@@ -5,6 +5,7 @@ import { formatDateForTimer } from "@/utils/date-helpers"
 import SimpleLoader from "@/components/Loaders/SimpleLoader"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { ConnectButton } from "@/components/Header/ConnectButton"
+import { TokenAmount } from "@solana/web3.js"
 
 type TierBenefitsType =
   | {
@@ -19,6 +20,8 @@ type Props = {
   isEligibilityLoading: boolean
   isDepositStatusLoading: boolean
   isEligibleTierActive: boolean
+  isBalanceLoading: boolean
+  balance: TokenAmount | null | undefined
   userInvestedMaxAmount: boolean
   scrollToWhitelistRequirements: () => void
   scrollToEligibilitySection: () => void
@@ -29,6 +32,8 @@ const DisabledContainer = ({
   isUserEligible,
   isEligibilityLoading,
   isEligibleTierActive,
+  isBalanceLoading,
+  balance,
   userInvestedMaxAmount,
   isDepositStatusLoading,
   scrollToWhitelistRequirements,
@@ -37,12 +42,15 @@ const DisabledContainer = ({
 }: Props) => {
   const { isWalletConnected } = useWalletContext()
 
-  if (isDepositStatusLoading || isEligibilityLoading) {
+  if (isDepositStatusLoading || isEligibilityLoading || isBalanceLoading) {
     return (
       <DisabledBlurContainer>
         <div className="flex w-full max-w-[340px] flex-col items-center gap-2 rounded-lg bg-default p-4 ">
           <SimpleLoader className="text-2xl" />
           <div className="flex animate-pulse flex-col items-start">
+            {isBalanceLoading && (
+              <span className="text-center text-fg-tertiary">{`Loading User's USDC balance...`}</span>
+            )}
             {isDepositStatusLoading && (
               <span className="text-center text-fg-tertiary">{`Loading Deposit Status...`}</span>
             )}
@@ -96,12 +104,24 @@ const DisabledContainer = ({
         </div>
       </DisabledBlurContainer>
     )
+  if (!balance?.uiAmountString)
+    return (
+      <DisabledBlurContainer>
+        <div className="flex flex-col items-center py-2 text-sm font-normal text-fg-primary">
+          <p>
+            <span onClick={scrollToEligibilitySection} className="cursor-pointer underline">
+              No raised token balance
+            </span>
+          </p>
+        </div>
+      </DisabledBlurContainer>
+    )
 
   if (userInvestedMaxAmount)
     return (
       <DisabledBlurContainer>
         <div className="py-2 text-sm font-normal text-fg-primary">
-          <span>You have invested max amount</span>
+          <span>You have invested max amount 🎉</span>
         </div>
       </DisabledBlurContainer>
     )
