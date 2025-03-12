@@ -22,8 +22,6 @@ const BackOfficeDashboard = () => {
     }
   }
 
-  const isStagingOrDevelop = import.meta.env.VITE_ENVIRONMENT_TYPE === "develop"
-
   return (
     <div className="relative flex min-h-[70vh] w-full flex-col gap-6 px-20 py-4 pt-[86px]">
       {/* Header */}
@@ -45,14 +43,12 @@ const BackOfficeDashboard = () => {
                 >
                   <span className="w-full text-center text-base">Update Project After Sale</span>
                 </div>
-                {isStagingOrDevelop && (
-                  <div
-                    className="flex max-w-[300px] flex-1 cursor-pointer justify-center rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-primary/30 p-10 ring-[1px] ring-brand-primary/40 hover:bg-brand-secondary/40"
-                    onClick={() => setRenderedFeature("UPDATE_JSON_FILE")}
-                  >
-                    <span className="w-full text-center text-base">Update JSON files</span>
-                  </div>
-                )}
+                <div
+                  className="flex max-w-[300px] flex-1 cursor-pointer justify-center rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-primary/30 p-10 ring-[1px] ring-brand-primary/40 hover:bg-brand-secondary/40"
+                  onClick={() => setRenderedFeature("UPDATE_JSON_FILE")}
+                >
+                  <span className="w-full text-center text-base">Update JSON files</span>
+                </div>
               </div>
             </div>
           ) : (
