@@ -26,6 +26,7 @@ type ENV = {
     DB: D1Database
     SOLANA_RPC_URL: string
     NFT_MINT_WALLET_PRIVATE_KEY: string
+    R2_BUCKET_BASE_URL: string
 }
 const requestSchema = z.object({
     userWalletAddress: SolanaAddressSchema,
@@ -50,7 +51,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     try {
         const SOLANA_RPC_URL = ctx.env.SOLANA_RPC_URL
         const nftMintAuthorityPrivateKey = ctx.env.NFT_MINT_WALLET_PRIVATE_KEY
-        if (!SOLANA_RPC_URL || !nftMintAuthorityPrivateKey) throw new Error('Misconfigured env!')
+        const r2BucketBaseUrl = ctx.env.R2_BUCKET_BASE_URL
+        
+        if (!SOLANA_RPC_URL || !nftMintAuthorityPrivateKey || !r2BucketBaseUrl) throw new Error('Misconfigured env!')
 
         /////////////////////////////////////////
         //// REQUEST PARSING AND VALIDATION /////
@@ -161,8 +164,18 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const nftConfig = project.json.config.nftConfig
 
         console.log('Creating transaction...')
-
-        const tx = await createUserDepositTransaction(userWalletAddress, lbpWalletAddress, tokenMint, tokenAmount, connection, nftMintAuthorityPrivateKey, nftConfig)
+        
+        const tx = await createUserDepositTransaction({
+            projectId,
+            fromWallet: userWalletAddress,
+            toWallet: lbpWalletAddress,
+            tokenMint: tokenMint,
+            amount: tokenAmount,
+            connection,
+            nftMintAuthorityPrivateKey,
+            nftConfig,
+            r2BucketBaseUrl,
+        })
 
         console.log('Creating snapshot...')
 
@@ -179,15 +192,28 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 }
 
-export async function createUserDepositTransaction(
-    fromWallet: string,
-    toWallet: string,
-    tokenMint: string,
-    amount: number,
-    connection: Connection,
-    privateKey: string,
+type CreateUserDepositTransactionArgs = {
+    projectId: string
+    fromWallet: string
+    toWallet: string
+    tokenMint: string
+    amount: number
+    connection: Connection
+    nftMintAuthorityPrivateKey: string
     nftConfig: NftConfigType
-): Promise<string> {
+    r2BucketBaseUrl: string
+}
+export async function createUserDepositTransaction({
+    projectId,
+    fromWallet,
+    toWallet,
+    tokenMint,
+    amount,
+    connection,
+    nftMintAuthorityPrivateKey,
+    nftConfig,
+    r2BucketBaseUrl,
+}: CreateUserDepositTransactionArgs): Promise<string> {
     try {
         const fromPublicKey = new PublicKey(fromWallet)
         const toPublicKey = new PublicKey(toWallet)
@@ -225,7 +251,14 @@ export async function createUserDepositTransaction(
         })
 
         // get instructions from the builder for transfering nft
-        const { instructions: listOfInstructions, nftMintSigner } = await mintNftAndCreateTransferNftInstructions(connection, privateKey, fromPublicKey.toBase58(), nftConfig)
+        const { instructions: listOfInstructions, nftMintSigner } = await mintNftAndCreateTransferNftInstructions({
+            projectId,
+            connection,
+            usersWalletAddress: fromPublicKey.toBase58(),
+            nftMintAuthorityPrivateKey,
+            nftConfig,
+            r2BucketBaseUrl,
+        })
 
         // create the transaction and all the neccessary instructions to it
         const transaction = new Transaction().add(transferInstruction).add(addPriorityFee)
@@ -251,13 +284,27 @@ export async function createUserDepositTransaction(
     }
 }
 
-
-async function mintNftAndCreateTransferNftInstructions(connection: Connection, privateKey: string, usersWalletAddress: string, nftConfig: NftConfigType) {
+type MintNftAndCreateTransferNftInstructionsArgs = {
+    projectId: string
+    connection: Connection
+    usersWalletAddress: string
+    nftMintAuthorityPrivateKey: string
+    nftConfig: NftConfigType
+    r2BucketBaseUrl: string
+}
+async function mintNftAndCreateTransferNftInstructions({ 
+    projectId,
+    connection, 
+    usersWalletAddress,
+    nftMintAuthorityPrivateKey, 
+    nftConfig,
+    r2BucketBaseUrl,
+}: MintNftAndCreateTransferNftInstructionsArgs) {
     // create umi client for mpl token package
     const umi = createUmi(connection)
     const userPublicKey = publicKey(usersWalletAddress)
     const userSigner = createNoopSigner(userPublicKey)
-    const privateKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(privateKey)))
+    const privateKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(nftMintAuthorityPrivateKey)))
     // convert to Umi compatible keypair
     const mintingWalletKeypair = umi.eddsa.createKeypairFromSecretKey(privateKeypair.secretKey)
     const signer = createSignerFromKeypair(umi, mintingWalletKeypair)
@@ -270,11 +317,13 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
     umi.use(signerIdentity(signer))
     umi.use(mplTokenMetadata())
 
+    const metadataKey = `${projectId}/nft-metadata/metadata.json`
+    const metadataUrl = new URL(metadataKey, projectId).href
     // make tx for minting nft
     const builder = transactionBuilder().add(createProgrammableNft(umi, {
         symbol: nftConfig.symbol,
         name: nftConfig.name,
-        uri: nftConfig.uri,
+        uri: metadataUrl,
         
         mint: mintSigner,
         updateAuthority: signer,
