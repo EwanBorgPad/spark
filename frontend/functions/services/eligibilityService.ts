@@ -24,6 +24,10 @@ const getCompliances = (project:ProjectModel):Quest[] => {
     {
       type: 'PROVIDE_INVESTMENT_INTENT',
       isOptional: !isDraftPick,
+    },
+    {
+      type: 'PROVIDE_EMAIL',
+      isOptional: !isDraftPick,
     }
   ]
 }
@@ -92,6 +96,12 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
         ...quest,
         isCompleted: providedReferralForProject,
       })
+    } else if (quest.type === 'PROVIDE_EMAIL') {
+      const providedEmailForProject = Boolean(user.json.emailIntent?.[projectId])
+      compliancesWithCompletion.push({
+        ...quest,
+        isCompleted: providedEmailForProject,
+      })  
     } else {
       throw new Error(`Unknown compliance type (${quest.type})!`)
     }
