@@ -148,7 +148,7 @@ const Header = () => {
             {isLandingPage ? (
               <a
                 className="flex justify-center"
-                href="https://borgpad.formo.so/founders"
+                href="https://t.me/BorgPadInternApplicationBot"
                 target="_blank"
                 rel="noopener noreferrer"
               >
