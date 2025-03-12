@@ -2,9 +2,12 @@ import { DrizzleD1Database } from "drizzle-orm/d1/driver"
 import { and, eq } from "drizzle-orm"
 
 import { EligibilityStatus, Quest, QuestWithCompletion, TierWithCompletion } from "../../shared/eligibilityModel"
-import { followerTable, projectTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
+import { followerTable, projectTable, tokenBalanceTable, userTable, whitelistTable } from "../../shared/drizzle-schema"
 import { getTokenHoldingsMap, isHoldingNftFromCollections } from "../../shared/solana/searchAssets"
 import { SnapshotService } from "./snapshotService"
+import { ProjectModel } from "../../shared/models"
+
+const BorgTokenMintAddress: string = '3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z'
 
 /**
  * List of mandatory compliances.
@@ -12,19 +15,18 @@ import { SnapshotService } from "./snapshotService"
  * Return SUM investment.
  * SqlQuery: SELECT SUM(json -> 'investmentIntent' -> 'puffer-finance' -> 'amount') FROM user;
  */
-const COMPLIANCES: Quest[] = [
-  {
-    type: 'ACCEPT_TERMS_OF_USE',
-  },
-  {
-    type: 'PROVIDE_INVESTMENT_INTENT',
-    isOptional: true,
-  },
-  // {
-  //   type: 'REFERRAL',
-  //   isOptional: true,
-  // },
-]
+const getCompliances = (project:ProjectModel):Quest[] => {
+  const isDraftPick = project.info?.projectType === "draft-pick"
+  return [
+    {
+      type: 'ACCEPT_TERMS_OF_USE',
+    },
+    {
+      type: 'PROVIDE_INVESTMENT_INTENT',
+      isOptional: !isDraftPick,
+    }
+  ]
+}
 
 
 type GetEligibilityStatusArgs = {
@@ -69,7 +71,9 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     .get()
 
   const compliancesWithCompletion: QuestWithCompletion[] = []
-  for (const quest of COMPLIANCES) {
+  const listOfCompliances = getCompliances(project.json)
+  console.log(listOfCompliances);
+  for (const quest of listOfCompliances) {
     if (quest.type === 'ACCEPT_TERMS_OF_USE') {
       const hasAcceptedTermsOfUse = Boolean(user.json.termsOfUse?.acceptedAt)
       compliancesWithCompletion.push({
@@ -92,6 +96,8 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
       throw new Error(`Unknown compliance type (${quest.type})!`)
     }
   }
+  console.log(compliancesWithCompletion);
+
 
   const collections: string[] = project.json.info.tiers
     .map(tier => tier.quests)
@@ -99,16 +105,34 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     .filter(quest => quest.type === 'HOLD_TOKEN')
     .map(quest => quest.tokenMintAddress)
 
-  const collectionMap = await isHoldingNftFromCollections({
-    rpcUrl,
-    ownerAddress: address,
-    collections,
-  })
+  // optimization method -- skip nft check if there's no nft quests in the project
+  const isNftCheckNeeded = project.json.info.tiers
+    .some(tier => tier.quests
+      // since we don't have separate types for fungible/non-fungible tokens, for now we consider any quest with tokenAmount=1 to be an nft quest
+      .some(quest => quest.type === 'HOLD_TOKEN' && quest.tokenAmount === "1")
+    )
 
-  const fungibles = await getTokenHoldingsMap({
-    rpcUrl,
+  const collectionMap = isNftCheckNeeded
+    ? await isHoldingNftFromCollections({
+      rpcUrl,
+      ownerAddress: address,
+      collections,
+    })
+    : {}
+
+  //// <option1 retrieve fungible token holdings from Helius RPC using SearchAssets DAO API
+  // const fungibles = await getTokenHoldingsMap({
+  //   rpcUrl,
+  //   ownerAddress: address,
+  // })
+  //// <option2 retrieve borg token balance (currently only one that matters) from the database token balances
+  const balance = await getTokenBalance({
+    db,
     ownerAddress: address,
+    tokenMintAddress: BorgTokenMintAddress,
   })
+  const fungibles = { [BorgTokenMintAddress]: balance }
+  // //// />
 
   const tiersWithCompletion: TierWithCompletion[] = []
   if (!project) throw new Error(`EligibilityService: Project (id=?) not found!`)
@@ -148,6 +172,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
           ...quest,
           // @ts-expect-error TS2353: Object literal may only specify known properties, and 'holdTokenType' does not exist in type
           holdTokenType,
+          quotedAt: fungibles[quest.tokenMintAddress]?.quotedAt ?? null,
           holdingAmount: fungibles[quest.tokenMintAddress]?.uiAmount ?? 0,
           isCompleted: isOwner,
         })
@@ -212,17 +237,41 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
     address,
 
     isTwitterAccountConnected,
-
-    whitelistTierId,
-    whitelistedTier,
-
+    isNftCheckNeeded,
     isCompliant,
-
     isEligible,
+    whitelistTierId,
+    
+    whitelistedTier,
     eligibilityTier,
     compliances: compliancesWithCompletion,
-    tiers: tiersWithCompletion
+    tiers: tiersWithCompletion,
   }
+}
+
+type GetTokenBalanceArgs = {
+  db: DrizzleD1Database
+  ownerAddress: string
+  tokenMintAddress: string
+}
+/**
+ * Retrieves token balance from the database
+ */
+const getTokenBalance = async ({ db, ownerAddress, tokenMintAddress }: GetTokenBalanceArgs): Promise<{ uiAmount: number, quotedAt?: string }> => {
+  const balance = await db
+    .select()
+    .from(tokenBalanceTable)
+    .where(
+      and(
+        eq(tokenBalanceTable.ownerAddress, ownerAddress),
+        eq(tokenBalanceTable.tokenMintAddress, tokenMintAddress),
+      )
+    )
+    .get()
+
+  return balance 
+    ? { uiAmount: Number(balance.uiAmount), quotedAt: balance.quotedAt }
+    : { uiAmount: 0 }
 }
 
 export const EligibilityService = {

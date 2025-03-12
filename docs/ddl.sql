@@ -80,3 +80,52 @@ CREATE TABLE eligibility_status_snapshot (
     eligibility_status JSONB NOT NULL,
     PRIMARY KEY (address, project_id)
 )
+
+-- migration: exchange_cache
+CREATE TABLE exchange_cache (
+    base_currency TEXT NOT NULL,
+    target_currency TEXT NOT NULL,
+    
+    current_price TEXT NOT NULL,
+    quoted_from TEXT NOT NULL,
+    quoted_at TEXT NOT NULL,
+    is_pinned INTEGER NOT NULL DEFAULT FALSE,
+    raw_exchange_response JSONB NOT NULL DEFAULT '{}',
+    
+    PRIMARY KEY (base_currency, target_currency)
+);
+
+INSERT INTO exchange_cache (base_currency, target_currency, current_price, quoted_from, quoted_at)
+    VALUES ('swissborg', 'usd', 0, 'inserted-manually', CURRENT_TIMESTAMP);
+
+-- token_balance
+CREATE TABLE token_balance (
+    owner_address TEXT NOT NULL,
+    token_mint_address TEXT NOT NULL,
+    quoted_at TIMESTAMP NOT NULL,
+    ui_amount TEXT NOT NULL, 
+    PRIMARY KEY (owner_address, token_mint_address)
+);
+
+---- migration: project status
+-- introduce new column 'status' for projects, with 'pending' as default
+ALTER TABLE project ADD COLUMN status TEXT NOT NULL DEFAULT 'pending';
+-- update all existing projects to be 'active'
+UPDATE project SET status = 'active' WHERE TRUE;
+
+-- introduce created_at and updated_at columns
+ALTER TABLE project ADD COLUMN created_at TIMESTAMP;
+ALTER TABLE project ADD COLUMN updated_at TIMESTAMP;
+-- update all existing projects to the same value
+UPDATE project SET created_at = '2024-01-01T00:00:00.000Z' WHERE TRUE;
+UPDATE project SET updated_at = '2024-01-01T00:00:00.000Z' WHERE TRUE;
+---- end
+
+---- migration: api keys
+CREATE TABLE api_key (
+    id TEXT NOT NULL PRIMARY KEY,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    permissions TEXT NOT NULL,
+    hash TEXT NOT NULL
+);
+---- end

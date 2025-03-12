@@ -27,7 +27,7 @@
 }
 
 html {
-  background-color: #0C111D;
+  background-color: #060a14;
   font-synthesis-weight: none
 }
 body {
@@ -108,10 +108,32 @@ input[type="checkbox"] {
 .contribution-gradient {
   background: linear-gradient(90deg, #F4FFEC 0%, #ACFF73 8%, rgba(172, 255, 115, 0.25) 29.5%, rgba(172, 255, 115, 0.00) 100%);
 }
-.explore-lp {
+.explore-goat-pools {
   border-radius: var(--sm, 12px);
   background: linear-gradient(180deg, #ACFF73 46.06%, #C5FF9D 100%);
   box-shadow: 0px -2px 2px 0px rgba(104, 255, 0, 0.75) inset, 0px 2px 0px 0px rgba(255, 255, 255, 0.50) inset, 0px 0px 50px 5px rgba(172, 255, 115, 0.15);
+}
+.explore-blitz-pools {
+  border-radius: var(--sm, 12px);
+  background: linear-gradient(180deg, #F6FF73 46.06%, #FAFFB5 100%);
+  box-shadow: 0px -2px 2px 0px rgba(243, 255, 75, 0.75) inset, 0px 2px 0px 0px rgba(255, 255, 255, 0.50) inset, 0px 0px 60px 5px rgba(243, 255, 75, 0.15);
+}
+.explore-draft-picks {
+  border-radius: var(--sm, 12px);
+  background: linear-gradient(180deg, #6CE2FF 46.06%, #AFEFFF 100%);
+  box-shadow: 0px -2px 2px 0px #96EAFF inset, 0px 2px 0px 0px rgba(255, 255, 255, 0.50) inset, 0px 0px 50px 5px rgba(150, 234, 255, 0.15);
+}
+.discover-draft-picks:hover {
+  background: linear-gradient(180deg, rgba(108, 226, 255,0.2) 0%, rgba(108, 226, 255, 0.6) 100%);
+  box-shadow: 0px 2px 6px 0px rgba(150, 234, 255, 0.25);
+}
+.discover-blitz-pools:hover {
+  background: linear-gradient(180deg, rgba(246, 255, 115,0.2) 0%, rgba(246, 255, 115, 0.6) 100%);
+  box-shadow: 0px 2px 6px 0px rgba(246, 255, 115, 0.25);
+}
+.discover-goat-pools:hover {
+  background: linear-gradient(180deg, rgba(172, 255, 115,0.2) 0%, rgba(172, 255, 115, 0.6) 100%);
+  box-shadow: 0px 2px 6px 0px rgba(172, 255, 115, 0.25);
 }
 
 /* Conic gradient */

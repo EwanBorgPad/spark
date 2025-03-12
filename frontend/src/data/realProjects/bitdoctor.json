@@ -1,0 +1,152 @@
+{
+  "id": "bitdoctor",
+  "config": {
+    "cluster": "mainnet",
+    "lpPositionToBeBurned": true,
+    "raiseTargetInUsd": 200000,
+    "fdv": 5000000,
+    "targetFdv": "$5M",
+    "targetVesting": "6 months linear",
+    "marketCap": 0,
+    "totalTokensForLiquidityPool": 0,
+    "totalTokensForRewardDistribution": 40000000,
+    "rewardsDistributionTimeInMonths": 6,
+    "finalSnapshotTimestamp": null,
+    "lbpWalletAddress": null,
+    "raisedTokenData": {
+      "iconUrl": "https://files.borgpad.com/usdc-logo.png",
+      "ticker": "USDC",
+      "mintAddress": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "decimals": 6,
+      "fixedTokenPriceInUsd": 1,
+      "coinGeckoName": "usd"
+    },
+    "launchedTokenData": {
+      "iconUrl": "https://files.borgpad.com/images/bitdoctor/bitdoctor-logo.png",
+      "ticker": "AIDD",
+      "mintAddress": null,
+      "decimals": 0,
+      "fixedTokenPriceInUsd": 0.005
+    }
+  },
+  "info": {
+    "claimUrl": null,
+    "tweetUrl": null,
+    "tokenContractUrl": null,
+    "poolContractUrl": null,
+
+    "projectType": "blitz",
+    "title": "BitDoctor",
+    "subtitle": "AI Doctor that streamlines health data, clinical trials, medical advice and diagnostic services with AI & DePIN",
+    "logoUrl": "https://files.borgpad.com/images/bitdoctor/bitdoctor-logo.png",
+    "thumbnailUrl": "https://files.borgpad.com/images/bitdoctor/bitdoctor-thumbnail.png",
+    "origin": "web3",
+    "sector": "AI / DeSci",
+    "tokenGenerationEventDate": "March 19",
+    "chain": {
+      "name": "Solana",
+      "iconUrl": "https://files.borgpad.com/images/zkagi/solana-small.jpg"
+    },
+    "dataRoom": {
+      "backgroundImgUrl": "",
+      "url": "https://docs.bitdoctor.ai/"
+    },
+    "liquidityPool": {
+      "name": "Raydium",
+      "iconUrl": "https://files.borgpad.com/images/shared/raydium-logo-small.png",
+      "lbpType": "Mixed",
+      "lockingPeriod": "∞"
+    },
+    "curator": {
+      "avatarUrl": "https://files.borgpad.com/images/shared/borgpad-logo-green-bg.png",
+      "fullName": "SwissBorg",
+      "position": "Alpha Deal",
+      "socials": [
+        {
+          "url": "https://swissborg.com",
+          "iconType": "WEB",
+          "label": "Web"
+        },
+        {
+          "url": "https://x.com/swissborg",
+          "iconType": "X_TWITTER",
+          "label": ""
+        }
+      ]
+    },
+    "projectLinks": [
+      {
+        "url": "https://bitdoctor.ai/",
+        "iconType": "WEB",
+        "label": "Web"
+      },
+      {
+        "url": "https://twitter.com/bitdoctorai",
+        "iconType": "X_TWITTER",
+        "label": "X"
+      },
+      {
+        "url": "https://t.me/BitDocAI",
+        "iconType": "TELEGRAM",
+        "label": "Telegram"
+      }
+    ],
+    "timeline": [
+      {
+        "id": "REGISTRATION_OPENS",
+        "label": "Registration Opens",
+        "date": "2025-03-07T10:00:00.000Z"
+      },
+      {
+        "id": "SALE_OPENS",
+        "label": "Sale Opens",
+        "date": "2025-03-19T15:00:00.000Z"
+      },
+      {
+        "id": "SALE_CLOSES",
+        "label": "Sale Closes",
+        "date": "2025-03-19T10:59:00.000Z"
+      },
+      {
+        "id": "REWARD_DISTRIBUTION",
+        "label": "Reward Distribution",
+        "fallbackText": "Once Sold Out",
+        "date": null
+      },
+      {
+        "id": "DISTRIBUTION_OVER",
+        "label": "Distribution Over",
+        "date": "2025-08-19T12:00:00.000Z"
+      }
+    ],
+    "tiers": [
+      {
+        "id": "tier10",
+        "label": "Borgers Club",
+        "quests": [
+          {
+            "type": "HOLD_TOKEN",
+            "tokenName": "BORG",
+            "tokenAmount": "1000",
+            "tokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z"
+          }
+        ],
+        "benefits": {
+          "startDate": null,
+          "minInvestment": "100",
+          "maxInvestment": "1500"
+        }
+      },
+      {
+        "id": "tier99",
+        "label": "Public Sale",
+        "quests": [],
+        "benefits": {
+          "startDate": null,
+          "minInvestment": "10",
+          "maxInvestment": "1000"
+        }
+      }
+    ]
+  }
+}

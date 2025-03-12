@@ -158,7 +158,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         })
 
         const tokenMint = project.json.config.raisedTokenData.mintAddress
-        const nftConfig = project.json.config.nftConfiguration
+        const nftConfig = project.json.config.nftConfig
 
         console.log('Creating transaction...')
 
@@ -202,10 +202,14 @@ export async function createUserDepositTransaction(
             toPublicKey,
             { mint: tokenMintPublicKey }
         )
-
+        
         // logic for decimals
         const decimals = await getNumberDecimals(tokenMint, connection)
         const multiplier = Math.pow(10, decimals)
+
+        if (!toTokenAccount?.value?.[0]?.pubkey) {
+            throw new Error("Error! Receiving token account pubkey missing! Check if token account is initialized for receiving wallet!")
+        }
 
         // create transfer instruction
         const transferInstruction: TransactionInstruction = createTransferInstruction(
@@ -269,18 +273,20 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
     // make tx for minting nft
     const builder = transactionBuilder().add(createProgrammableNft(umi, {
         symbol: nftConfig.symbol,
-        mint: mintSigner,
         name: nftConfig.name,
         uri: nftConfig.uri,
+        
+        mint: mintSigner,
         updateAuthority: signer,
         sellerFeeBasisPoints: percentAmount(0),
         payer: userSigner,
         authority: signer,
         tokenOwner: userPublicKey,
+        
         collection: {
             verified: false,
             // @ts-expect-error TS2322: Type 'string' is not assignable to type 'PublicKey'.
-            key: 'H6bkHw2eWxNUatXGyYXcWdFnQXG4nJkdtKWfgY5swG8S', // https://solscan.io/token/H6bkHw2eWxNUatXGyYXcWdFnQXG4nJkdtKWfgY5swG8S
+            key: 'H4TkbayRd1fhF7wu9odrrYZREkHNMrV5Rhmtkor9wVoK', // https://solscan.io/token/H4TkbayRd1fhF7wu9odrrYZREkHNMrV5Rhmtkor9wVoK
         }
     }))
 

@@ -9,7 +9,7 @@ import { SaleResults } from "../../shared/models"
  * 1 means the same as raiseTarget
  * 1.01 means 1 percent MORE than the raiseTarget
  */
-const RAISE_TARGET_FACTOR = 0.9
+const RAISE_TARGET_FACTOR = 1
 
 type GetSaleResultsArgs = {
   db: DrizzleD1Database

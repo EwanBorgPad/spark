@@ -3,12 +3,12 @@
   "config": {
     "cluster": "mainnet",
     "lpPositionToBeBurned": true,
-    "raiseTargetInUsd": 0,
-    "fdv": 0,
+    "raiseTargetInUsd": 750000,
+    "fdv": 40000000,
     "marketCap": 0,
     "totalTokensForLiquidityPool": 0,
-    "totalTokensForRewardDistribution": 0,
-    "rewardsDistributionTimeInMonths": 6,
+    "totalTokensForRewardDistribution": 18750000,
+    "rewardsDistributionTimeInMonths": 3,
     "finalSnapshotTimestamp": null,
     "lbpWalletAddress": null,
     "raisedTokenData": {
@@ -20,11 +20,11 @@
       "coinGeckoName": "usd"
     },
     "launchedTokenData": {
-      "iconUrl": "",
-      "ticker": "",
+      "iconUrl": "https://files.borgpad.com/images/ambient/ambient%20logo.png",
+      "ticker": "AMBINET",
       "mintAddress": null,
-      "decimals": 0,
-      "fixedTokenPriceInUsd": 0
+      "decimals": 6,
+      "fixedTokenPriceInUsd": 0.04
     }
   },
   "info": {
@@ -32,34 +32,36 @@
     "tweetUrl": null,
     "tokenContractUrl": null,
     "poolContractUrl": null,
+
+    "projectType": "goat",
     "title": "Ambient Network",
     "subtitle": "Data for a Cleaner World",
-    "logoUrl": "",
+    "logoUrl": "https://files.borgpad.com/images/ambient/ambient%20logo.png",
     "thumbnailUrl": "https://files.borgpad.com/images/ambient/thumbnail-ambient.png",
     "origin": "web3",
     "sector": "DePin",
-    "tokenGenerationEventDate": "",
+    "tokenGenerationEventDate": "Q1",
     "chain": {
       "name": "Solana",
-      "iconUrl": "https://i.redd.it/yfsqpy0126r81.jpg"
+      "iconUrl": "https://files.borgpad.com/images/zkagi/solana-small.jpg"
     },
     "dataRoom": {
       "backgroundImgUrl": "",
-      "url": "#"
+      "url": "https://borgpad-data-room.notion.site/ambient?pvs=4"
     },
     "liquidityPool": {
       "name": "Raydium",
-      "iconUrl": "https://cdn.prod.website-files.com/614c99cf4f23700c8aa3752a/637db1045802ea0c2b7dbcea_public.png",
+      "iconUrl": "https://files.borgpad.com/images/shared/raydium-logo-small.png",
       "lbpType": "Mixte",
       "lockingPeriod": "∞"
     },
     "curator": {
-      "avatarUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/2499.png",
+      "avatarUrl": "https://files.borgpad.com/images/shared/borgpad-logo-green-bg.png",
       "fullName": "SwissBorg",
       "position": "Alpha Deal",
       "socials": [
         {
-          "url": "https://swissborg.com/alpha/moemate",
+          "url": "https://academy.swissborg.com/en/learn/ambient-investment-thesis",
           "iconType": "WEB",
           "label": "Web"
         },
@@ -72,14 +74,13 @@
     },
     "projectLinks": [
       {
-        "url": "#",
-        "__comment": "Possible values: \"MEDIUM\" | \"LINKED_IN\" | \"WEB\" | \"X_TWITTER\"",
-        "iconType": "WEB",
+        "url": "https://x.com/AmbientNetwork",
+        "iconType": "X_TWITTER",
         "label": ""
       },
       {
-        "url": "#",
-        "iconType": "X_TWITTER",
+        "url": "https://ambient.network/landing",
+        "iconType": "WEB",
         "label": ""
       }
     ],
@@ -87,34 +88,37 @@
       {
         "id": "REGISTRATION_OPENS",
         "label": "Registration Opens",
-        "date": null
+        "date": "2025-02-10T10:00:00Z"
       },
       {
         "id": "SALE_OPENS",
         "label": "Sale Opens",
-        "date": null
+        "date": null,
+        "fallbackText": "Q1"
       },
       {
         "id": "SALE_CLOSES",
         "label": "Sale Closes",
-        "date": null
+        "date": null,
+        "fallbackText": "Q1"
       },
       {
         "id": "REWARD_DISTRIBUTION",
         "label": "Reward Distribution",
-        "date": null
+        "date": null,
+        "fallbackText": "Q1"
       },
       {
         "id": "DISTRIBUTION_OVER",
         "label": "Distribution Over",
-        "date": null
+        "date": null,
+        "fallbackText": "End of April"
       }
     ],
     "tiers": [
       {
         "id": "tier30",
         "label": "BORGers Club",
-        "description": "",
         "quests": [
           {
             "type": "HOLD_TOKEN",
@@ -124,20 +128,19 @@
           }
         ],
         "benefits": {
-          "startDate": "2025-12-31T23:59:59Z",
+          "startDate": null,
           "minInvestment": "100",
-          "maxInvestment": "3500"
+          "maxInvestment": "1500"
         }
       },
       {
         "id": "tier99",
         "label": "Public Sale",
-        "description": "",
         "quests": [],
         "benefits": {
-          "startDate": "2025-12-31T23:59:59Z",
+          "startDate": null,
           "minInvestment": "10",
-          "maxInvestment": "2000"
+          "maxInvestment": "1000"
         }
       }
     ]

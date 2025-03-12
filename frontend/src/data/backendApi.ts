@@ -13,6 +13,7 @@ import {
   TokenAmountModel,
 } from "../../shared/models.ts"
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
+import { eligibilityStatusCacheBust, investmentIntentSummaryCacheBust } from "@/utils/cache-helper.ts"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? `${window.location.origin}/api`
 const GET_ELIGIBILITY_STATUS_API = API_BASE_URL + "/eligibilitystatus"
@@ -33,6 +34,20 @@ const CREATE_DEPOSIT_TRANSACTION = API_BASE_URL + "/createdeposittransaction"
 const CREATE_CLAIM_TRANSACTION = API_BASE_URL + "/createclaimtransaction"
 const SEND_DEPOSIT_TRANSACTION = API_BASE_URL + "/senddeposittransaction"
 const SEND_CLAIM_TRANSACTION = API_BASE_URL + "/sendclaimtransaction"
+const POST_AFTER_SALE_UPDATE = API_BASE_URL + "/projects/after-sale-update"
+const UPDATE_JSON = API_BASE_URL + "/projects/update-json"
+
+const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
+  const response = await fetch(...args)
+
+  if (response.status === 401) {
+    throw new Error("Signature mismatch! Please make sure you are signing the message with the correct wallet address!")
+  }
+
+  if (!response.ok) {
+    throw new Error("Something went wrong...")
+  }
+}
 
 type GetEligibilityStatusArgs = {
   address: string
@@ -42,6 +57,11 @@ const getEligibilityStatus = async ({ address, projectId }: GetEligibilityStatus
   const url = new URL(GET_ELIGIBILITY_STATUS_API, window.location.href)
   url.searchParams.set("address", address)
   url.searchParams.set("projectId", projectId)
+  const cacheBustStatus = eligibilityStatusCacheBust.getCacheBustStatus()
+  if (cacheBustStatus && cacheBustStatus === "1") {
+    url.searchParams.set("cache-bust", Date.now().toString())
+    eligibilityStatusCacheBust.removeCacheBustStatus()
+  }
 
   const response = await fetch(url)
   const json = await response.json()
@@ -98,7 +118,6 @@ const getDepositStatus = async ({ address, projectId }: GetDepositsRequest): Pro
   return json
 }
 
-
 const getSaleResults = async ({ projectId }: { projectId: string }): Promise<SaleResultsResponse> => {
   const url = new URL(GET_SALE_RESULTS_URL, window.location.href)
   url.searchParams.set("projectId", projectId)
@@ -109,7 +128,6 @@ const getSaleResults = async ({ projectId }: { projectId: string }): Promise<Sal
   return json
 }
 
-
 type GetInvestmentIntentSummary = {
   projectId: string
 }
@@ -118,6 +136,11 @@ const getInvestmentIntentSummary = async ({
 }: GetInvestmentIntentSummary): Promise<InvestmentIntentSummary> => {
   const url = new URL(GET_INVESTMENT_INTENT_SUMMARY_URL, window.location.href)
   url.searchParams.set("projectId", projectId)
+  const cacheBustStatus = investmentIntentSummaryCacheBust.getCacheBustStatus()
+  if (cacheBustStatus && cacheBustStatus === "1") {
+    url.searchParams.set("cache-bust", Date.now().toString())
+    investmentIntentSummaryCacheBust.removeCacheBustStatus()
+  }
 
   const response = await fetch(url)
   const json = await response.json()
@@ -125,23 +148,23 @@ const getInvestmentIntentSummary = async ({
   return json
 }
 export type PostUserDepositRequest = {
-  transaction: string,
+  transaction: string
   projectId: string
 }
 type AcceptTermsOfUseArgs = AcceptTermsRequest
-const postAcceptTermsOfUse = async (args: AcceptTermsOfUseArgs) => {
+const postAcceptTermsOfUse = async (args: AcceptTermsOfUseArgs): Promise<void> => {
   const url = new URL(POST_ACCEPT_TERMS_OF_USE_API, window.location.href)
 
-  await fetch(url, {
+  await failFastFetch(url, {
     body: JSON.stringify(args),
     method: "post",
   })
 }
 type PostInvestmentIntentArgs = InvestmentIntentRequest
-const postInvestmentIntent = async (args: PostInvestmentIntentArgs) => {
+const postInvestmentIntent = async (args: PostInvestmentIntentArgs): Promise<void> => {
   const url = new URL(POST_INVESTMENT_INTENT_API, window.location.href)
 
-  await fetch(url, {
+  await failFastFetch(url, {
     body: JSON.stringify(args),
     method: "post",
   })
@@ -154,24 +177,17 @@ type PostReferralArgs = {
   message: string
   signature: number[]
 }
-const postReferral = async (args: PostReferralArgs) => {
+const postReferral = async (args: PostReferralArgs): Promise<void> => {
   const url = new URL(POST_REFERRAL_API, window.location.href)
 
-  await fetch(url, {
+  await failFastFetch(url, {
     body: JSON.stringify(args),
     method: "post",
   })
 }
 
-const getProject = async ({
-  projectId,
-}: {
-  projectId: string
-}): Promise<ProjectModel> => {
-  const url = new URL(
-    `${GET_PROJECT_API_URL}/${projectId}`,
-    window.location.href,
-  )
+const getProject = async ({ projectId }: { projectId: string }): Promise<ProjectModel> => {
+  const url = new URL(`${GET_PROJECT_API_URL}/${projectId}`, window.location.href)
 
   const response = await fetch(url)
   const json = await response.json()
@@ -187,13 +203,16 @@ const getProject = async ({
 const getProjects = async ({
   page,
   limit,
+  projectType,
 }: {
   page: number
   limit: number
+  projectType?: ProjectModel["info"]["projectType"]
 }): Promise<GetProjectsResponse> => {
   const url = new URL(GET_PROJECT_API_URL, window.location.href)
   url.searchParams.set("page", page.toString())
   url.searchParams.set("limit", (limit || 10).toString())
+  if (projectType) url.searchParams.set("projectType", projectType || "goat")
 
   const response = await fetch(url)
   const json = await response.json()
@@ -224,10 +243,7 @@ type GetExchangeArgs = {
   baseCurrency: string
   targetCurrency: string
 }
-const getExchange = async ({
-  baseCurrency,
-  targetCurrency,
-}: GetExchangeArgs): Promise<GetExchangeResponse> => {
+const getExchange = async ({ baseCurrency, targetCurrency }: GetExchangeArgs): Promise<GetExchangeResponse> => {
   const url = new URL(GET_EXCHANGE_API_URL, window.location.href)
   url.searchParams.set("baseCurrency", baseCurrency)
   url.searchParams.set("targetCurrency", targetCurrency)
@@ -264,10 +280,7 @@ type PutFileArgs = {
   presignedUrl: string
   file: File
 }
-const uploadFileToBucket = async ({
-  presignedUrl,
-  file,
-}: PutFileArgs): Promise<undefined> => {
+const uploadFileToBucket = async ({ presignedUrl, file }: PutFileArgs): Promise<undefined> => {
   const url = new URL("", presignedUrl)
 
   await fetch(url, {
@@ -281,10 +294,9 @@ const uploadFileToBucket = async ({
   })
 }
 
-
 export type PostCreateDepositTxArgs = {
-  userWalletAddress: string,
-  tokenAmount: number,
+  userWalletAddress: string
+  tokenAmount: number
   projectId: string
 }
 export type PostCreateClaimTxArgs = PostCreateDepositTxArgs
@@ -297,21 +309,21 @@ type CreateClaimTxReturnType = CreateDepositTxReturnType
 const postCreateDepositTx = async ({
   userWalletAddress,
   tokenAmount,
-  projectId
+  projectId,
 }: PostCreateDepositTxArgs): Promise<CreateDepositTxReturnType> => {
   const url = new URL(CREATE_DEPOSIT_TRANSACTION, window.location.href)
   const requestObject = {
     userWalletAddress,
     tokenAmount,
-    projectId
+    projectId,
   }
   const request = JSON.stringify(requestObject)
   const response = await fetch(url, {
-    method: 'POST',
+    method: "POST",
     body: request,
     headers: {
       "Content-Type": "application/json",
-    }
+    },
   })
   const json = await response.json()
   if (!response.ok) throw new Error(json.message)
@@ -321,21 +333,21 @@ const postCreateDepositTx = async ({
 const postCreateClaimTx = async ({
   userWalletAddress,
   tokenAmount,
-  projectId
+  projectId,
 }: PostCreateDepositTxArgs): Promise<CreateClaimTxReturnType> => {
   const url = new URL(CREATE_CLAIM_TRANSACTION, window.location.href)
   const requestObject = {
     userWalletAddress,
     tokenAmount,
-    projectId
+    projectId,
   }
   const request = JSON.stringify(requestObject)
   const response = await fetch(url, {
-    method: 'POST',
+    method: "POST",
     body: request,
     headers: {
       "Content-Type": "application/json",
-    }
+    },
   })
   const json = await response.json()
   if (!response.ok) throw new Error(json.message)
@@ -343,27 +355,27 @@ const postCreateClaimTx = async ({
 }
 
 export type PostSendDepositTransactionArgs = {
-  serializedTx: string,
+  serializedTx: string
   projectId: string
 }
 export type postSendClaimTransactionArgs = PostSendDepositTransactionArgs
 
 const postSendDepositTransaction = async ({
   serializedTx,
-  projectId
+  projectId,
 }: PostSendDepositTransactionArgs): Promise<CreateDepositTxReturnType> => {
   const url = new URL(SEND_DEPOSIT_TRANSACTION, window.location.href)
   const requestObject = {
     serializedTx,
-    projectId
+    projectId,
   }
   const request = JSON.stringify(requestObject)
   const response = await fetch(url, {
-    method: 'POST',
+    method: "POST",
     body: request,
     headers: {
       "Content-Type": "application/json",
-    }
+    },
   })
   const json = await response.json()
   if (!response.ok) throw new Error(json.message)
@@ -372,24 +384,77 @@ const postSendDepositTransaction = async ({
 
 const postSendClaimTransaction = async ({
   serializedTx,
-  projectId
+  projectId,
 }: PostSendDepositTransactionArgs): Promise<CreateClaimTxReturnType> => {
   const url = new URL(SEND_CLAIM_TRANSACTION, window.location.href)
   const requestObject = {
     serializedTx,
-    projectId
+    projectId,
   }
   const request = JSON.stringify(requestObject)
   const response = await fetch(url, {
-    method: 'POST',
+    method: "POST",
     body: request,
     headers: {
       "Content-Type": "application/json",
-    }
+    },
   })
   const json = await response.json()
   if (!response.ok) throw new Error(json.message)
   return json
+}
+
+export type PostAfterSaleUpdateArgs = {
+  projectId: string
+  info: {
+    claimUrl: string
+    tweetUrl: string
+    tokenContractUrl: string
+    poolContractUrl: string
+  }
+  auth: {
+    address: string
+    message: string
+    signature: number[]
+  }
+}
+const postAfterSaleUpdate = async (args: PostAfterSaleUpdateArgs): Promise<void> => {
+  const url = new URL(POST_AFTER_SALE_UPDATE, window.location.href)
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(args),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+
+  if (response.status === 404) throw new Error("Project not found!")
+  if (response.status === 401) throw new Error("Unauthorized!")
+  if (!response.ok) throw new Error("Project update error!")
+}
+
+export type UpdateJsonArgs = {
+  projectId: string
+  project: ProjectModel
+  auth: {
+    address: string
+    message: string
+    signature: number[]
+  }
+}
+const updateJson = async (args: UpdateJsonArgs): Promise<void> => {
+  const url = new URL(UPDATE_JSON, window.location.href)
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(args),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+
+  if (response.status === 404) throw new Error("Project not found!")
+  if (response.status === 401) throw new Error("Unauthorized!")
+  if (!response.ok) throw new Error("Project update error!")
 }
 
 
@@ -413,4 +478,6 @@ export const backendApi = {
   postSendDepositTransaction,
   postCreateClaimTx,
   postSendClaimTransaction,
+  postAfterSaleUpdate,
+  updateJson,
 }

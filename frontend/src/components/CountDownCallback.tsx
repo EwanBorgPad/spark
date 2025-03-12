@@ -7,10 +7,7 @@ export type CountDownType = {
   interval?: number // milliseconds
 }
 
-export const CountDownCallback = ({
-  endOfEvent,
-  callbackWhenTimeExpires,
-}: CountDownType) => {
+export const CountDownCallback = ({ endOfEvent, callbackWhenTimeExpires }: CountDownType) => {
   useCountDown({ endOfEvent, callbackWhenTimeExpires })
   return null
 }

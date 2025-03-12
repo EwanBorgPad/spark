@@ -37,11 +37,11 @@
   },
   "info": {
     "claimUrl": "https://app.streamflow.finance/airdrops",
-
     "tweetUrl": "https://x.com/BorgPadHQ/status/1866470792734572572",
     "tokenContractUrl": "https://jup.ag/swap/SOL-BorGY4ub2Fz4RLboGxnuxWdZts7EKhUTB624AFmfCgX",
     "poolContractUrl": "https://raydium.io/liquidity/increase/?mode=add&pool_id=BLNidhiuiovET21aeQtnj7wQNdXdvPSeLo3ZjUCqKMzK",
 
+    "projectType": "blitz",
     "title": "BORGY",
     "subtitle": "The Community Pet of SwissBorg",
     "logoUrl": "https://files.borgpad.com/images/borgy/borgy-logo.webp",

@@ -4,7 +4,7 @@ import {
   reportError,
 } from "../cfPagesFunctionsUtils"
 import { projectTable } from "../../../shared/drizzle-schema"
-import { eq } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/d1"
 
 type ENV = {
@@ -28,7 +28,12 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const project = await db
       .select()
       .from(projectTable)
-      .where(eq(projectTable.id, projectId))
+      .where(
+        and(
+          eq(projectTable.id, projectId),
+          eq(projectTable.status, 'active'),
+        )
+      )
       .get()
     if (!project) return jsonResponse({ message: 'Project not found!' }, 404)
 

@@ -14,10 +14,8 @@ import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
 import App from "./App"
 import Project from "./pages/Project"
 import NotFound from "./pages/NotFound"
-import Manifesto from "./pages/Manifesto"
 import TermsOfUse from "./pages/TermsOfUse"
-import LaunchPools from "./pages/LaunchPools"
-import AngelStaking from "./pages/AngelStaking"
+import GoatPools from "./pages/GoatPools"
 import { WalletProvider } from "@/hooks/useWalletContext"
 import TermsAndConditions from "./pages/TermsAndConditions"
 import { ProjectDataProvider } from "./hooks/useProjectData"
@@ -28,6 +26,13 @@ import "./index.css"
 import { Buffer } from "buffer"
 import { toast } from "react-toastify"
 import LandingPage from "./pages/LandingPage"
+import BlitzPools from "./pages/BlitzPools"
+import RedirectToGoatPools from "./components/LaunchPool/RedirectToGoatPools"
+import { ROUTES } from "./utils/routes"
+import BackOffice from './pages/BackOffice2'
+import DraftPicks from "./pages/DraftPicks"
+import DraftPickPage from "./pages/DraftPickPage"
+import BackOfficeDashboard from "./pages/BackOfficeDashboard"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -53,20 +58,24 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "/",
+        path: ROUTES.LANDING_PAGE,
         element: <LandingPage />,
       },
       // @backOffice
-      // {
-      //   path: "/back-office",
-      //   element: <BackOffice />,
-      // },
       {
-        path: "/angel-staking",
-        element: <AngelStaking />,
+        path: "/back-office",
+        element: <BackOffice />,
       },
       {
-        path: "/launch-pools",
+        path: ROUTES.BACK_OFFICE,
+        element: <BackOfficeDashboard />,
+      },
+      // {
+      //   path: "/angel-staking",
+      //   element: <AngelStaking />,
+      // },
+      {
+        path: ROUTES.GOAT_POOLS,
         errorElement: <SomethingWentWrong />,
         element: <Outlet />,
         children: [
@@ -80,20 +89,58 @@ const router = createBrowserRouter([
           },
           {
             path: "",
-            element: <LaunchPools />,
+            element: <GoatPools />,
           },
         ],
       },
       {
-        path: "/manifesto",
-        element: <Manifesto />,
+        path: ROUTES.BLITZ_POOLS,
+        errorElement: <SomethingWentWrong />,
+        element: <Outlet />,
+        children: [
+          {
+            path: ":projectId",
+            element: (
+              <ProjectDataProvider>
+                <Project />
+              </ProjectDataProvider>
+            ),
+          },
+          {
+            path: "",
+            element: <BlitzPools />,
+          },
+        ],
       },
       {
-        path: "/terms-of-use",
+        path: ROUTES.DRAFT_PICKS,
+        errorElement: <SomethingWentWrong />,
+        element: <Outlet />,
+        children: [
+          {
+            path: ":projectId",
+            element: (
+              <ProjectDataProvider>
+                <DraftPickPage />
+              </ProjectDataProvider>
+            ),
+          },
+          {
+            path: "",
+            element: <DraftPicks />,
+          },
+        ],
+      },
+      {
+        path: "/launch-pools/*",
+        element: <RedirectToGoatPools />,
+      },
+      {
+        path: ROUTES.TERMS_OF_USE,
         element: <TermsOfUse />,
       },
       {
-        path: "/terms-and-conditions",
+        path: ROUTES.TERMS_AND_CONDITIONS,
         element: <TermsAndConditions />,
       },
       {

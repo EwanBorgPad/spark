@@ -13,12 +13,12 @@ Sentry.init({
   // Learn more at
   // https://docs.sentry.io/platforms/javascript/configuration/options/#traces-sample-rate
   tracesSampleRate: 1.0,
-  environment: import.meta.env.VITE_ENVIRONMENT_TYPE
+  environment: import.meta.env.VITE_ENVIRONMENT_TYPE,
 })
 
 function App() {
   return (
-    <div className="max-w-screen flex min-h-screen flex-col items-center justify-center overflow-x-hidden overscroll-x-none  bg-default font-geist text-fg-primary">
+    <div className="max-w-screen relative flex min-h-screen flex-col items-center justify-center overscroll-x-none bg-accent font-geist text-fg-primary">
       <EnvBanner />
       <ToastContainer />
 

@@ -18,9 +18,13 @@ export const FinalSnapshotTaken = ({ className }: Props) => {
   return (
     <section className={className}>
       <div className="flex w-full flex-wrap items-center justify-center gap-1">
-        <Icon icon="SvgSnapshot" className="shrink-0 text-xl text-brand-primary" />
-        <span className="text-nowrap text-sm text-fg-tertiary">{t("whitelisting.snapshot_taken")}</span>{" "}
-        <Text text={t("whitelisting.update_every", { date: formattedDate })} isLoading={isLoading} />
+        <Icon icon="SvgSnapshot" className="shrink-0 text-base text-brand-primary" />
+        <span className="text-nowrap text-xs text-fg-tertiary">{t("whitelisting.snapshot_taken")}</span>{" "}
+        <Text
+          text={t("whitelisting.update_every", { date: formattedDate })}
+          isLoading={isLoading}
+          className="text-xs"
+        />
       </div>
     </section>
   )

@@ -1,20 +1,13 @@
 import { useWindowSize } from "@/hooks/useWindowSize"
-import { expandTimelineDataInfo } from "@/utils/timeline"
 import { differenceInMilliseconds } from "date-fns"
 import { isBefore } from "date-fns/isBefore"
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import { CountDownCallback } from "../CountDownCallback"
 import { getCurrentTgeEvent } from "@/utils/getCurrentTgeEvent"
 
 export type Props = {
-  timelineEvents: TimelineEventType[]
+  timelineEvents: ExpandedTimelineEventType[]
 }
 
 export const timelineEventIds = [
@@ -25,10 +18,7 @@ export const timelineEventIds = [
   "REWARD_DISTRIBUTION",
   "DISTRIBUTION_OVER",
 ] as const
-export const timelineEventIdRanks: Record<
-  (typeof timelineEventIds)[number],
-  number
-> = {
+export const timelineEventIdRanks: Record<(typeof timelineEventIds)[number], number> = {
   UPCOMING: 1,
   REGISTRATION_OPENS: 2,
   SALE_OPENS: 3,
@@ -40,6 +30,7 @@ export type TimelineEventType = {
   label: string
   date: Date | null
   id: (typeof timelineEventIds)[number]
+  fallbackText?: string | null
 }
 
 export type ExpandedTimelineEventType = {
@@ -56,7 +47,7 @@ const HORIZONTAL_PADDING = 16
 
 const Timeline = ({ timelineEvents }: Props) => {
   const [containerWidth, setContainerWidth] = useState<number | null>(null)
-  const [timelineData, setTimelineData] = useState(expandTimelineDataInfo(timelineEvents))
+  const [timelineData, setTimelineData] = useState<ExpandedTimelineEventType[]>([])
   const containerRef = useRef<HTMLDivElement>(null)
   const dataLength = timelineData.length
   const currentTgeEvent = getCurrentTgeEvent(timelineData)
@@ -125,7 +116,7 @@ const Timeline = ({ timelineEvents }: Props) => {
           >
             {event.label}
           </span>
-          <span className="truncate text-xs leading-[18px] opacity-50">{event.displayedTime || "TBD"}</span>
+          <span className="truncate text-xs leading-[18px] opacity-50">{event.displayedTime}</span>
         </div>
       </div>
     )
@@ -138,8 +129,7 @@ const Timeline = ({ timelineEvents }: Props) => {
   }, [width])
 
   const updateTimeline = useCallback(() => {
-    const updatedTimelineData = expandTimelineDataInfo(timelineEvents)
-    setTimelineData(updatedTimelineData)
+    setTimelineData(timelineEvents)
   }, [timelineEvents])
 
   useEffect(() => {

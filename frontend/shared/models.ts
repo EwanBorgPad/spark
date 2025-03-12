@@ -42,8 +42,7 @@ export type UserModelJson = {
  * Not sure what we wanna validate there ATM, so leave it as string for now.
  */
 const urlSchema = () => z.string()
-const iconTypeSchema = () =>
-  z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM", "OUTER_LINK"])
+const iconTypeSchema = () => z.enum(["WEB", "LINKED_IN", "X_TWITTER", "MEDIUM", "OUTER_LINK", "TELEGRAM", "DISCORD"])
 const externalUrlSchema = () =>
   z.object({
     url: z.string().min(1),
@@ -90,6 +89,8 @@ const nftConfigSchema = z.object({
 
 export type NftConfigType = z.infer<typeof nftConfigSchema>
 
+export const ProjectTypeSchema = z.enum(["goat", "blitz", "draft-pick"])
+
 export const projectSchema = z.object({
   id: idSchema(),
   config: z.object({
@@ -105,6 +106,17 @@ export const projectSchema = z.object({
     totalTokensForRewardDistribution: integerSchema(),
 
     rewardsDistributionTimeInMonths: integerSchema(),
+    rewardDistribution: z
+      .object({
+        atTge: z.object({
+          rewardRatio: z.number().min(0).max(1),
+        }),
+        afterTge: z.object({
+          rewardRatio: z.number().min(0).max(1),
+          numberOfPayments: z.number().min(0),
+        }),
+      })
+      .optional(),
 
     finalSnapshotTimestamp: optional(dateSchema()),
 
@@ -112,28 +124,34 @@ export const projectSchema = z.object({
 
     raisedTokenData: TokenDataSchema,
     launchedTokenData: TokenDataSchema,
-    nftConfiguration: nftConfigSchema
+    nftConfig: nftConfigSchema,
   }),
   info: z.object({
     /// following 4 fields are typically added AFTER the sale
     // link for claiming rewards (currently doing airdrops with streamflow, but could be anything)
     claimUrl: optional(z.string()),
-
     tweetUrl: optional(z.string()),
     tokenContractUrl: optional(z.string()),
     poolContractUrl: optional(z.string()),
 
     ///// project metadata info /////
+    projectType: ProjectTypeSchema,
     title: z.string().min(1),
     subtitle: z.string().min(1),
+
+    ///// images /////
     logoUrl: urlSchema(),
     thumbnailUrl: optional(urlSchema()),
+    squaredThumbnailUrl: optional(urlSchema()),
+
     origin: z.string().min(1),
     sector: z.string().min(1),
     tokenGenerationEventDate: optional(z.string()),
-
+    targetFdv: z.string().min(1).optional(),
+    targetVesting: z.string().min(1).optional(),
     chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
-    dataRoom: z.object({ backgroundImgUrl: urlSchema(), url: urlSchema() }),
+
+    dataRoom: z.object({ backgroundImgUrl: urlSchema().optional(), url: urlSchema() }),
     liquidityPool: z.object({
       name: z.string().min(1),
       iconUrl: urlSchema(),
@@ -151,6 +169,7 @@ export const projectSchema = z.object({
       z.object({
         id: timelineEventsSchema(),
         date: dateSchema().nullable(),
+        fallbackText: z.string().min(1).optional(),
         label: z.string().min(1),
       }),
     ),
@@ -169,10 +188,12 @@ export type CacheStoreModel = {
 export type GetExchangeResponse = {
   baseCurrency: string
   targetCurrency: string
-  currentPrice: number
-  fullyDilutedValuation: number
+  
+  currentPrice: string
+  
   quotedFrom?: string
-  cache?: unknown
+  quotedAt?: string
+  rawExchangeResponse?: unknown
 }
 export type GetPresignedUrlResponse = {
   signedUrl: string
@@ -184,8 +205,9 @@ export type PaginationType = {
   total: number
   totalPages: number
 }
+export type GetProjectsProjectResponse = (ProjectModel & { investmentIntentSummary?: InvestmentIntentSummary })
 export type GetProjectsResponse = {
-  projects: ProjectModel[]
+  projects: GetProjectsProjectResponse[]
   pagination: PaginationType
 }
 

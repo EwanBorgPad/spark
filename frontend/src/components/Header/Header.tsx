@@ -6,42 +6,51 @@ import hamburgerMenuBg from "@/assets/hamburgerMenuBg.png"
 
 import { WalletDropdown } from "@/components/Header/WalletDropdown.tsx"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
-import useHeaderShadow from "@/hooks/useHeaderShadow"
 import { Icon } from "@/components/Icon/Icon.tsx"
 import { ConnectButton } from "./ConnectButton"
 import { Button } from "../Button/Button"
+import { ROUTES } from "@/utils/routes"
 
 type NavigationItem = {
   path: string
   url?: string
   label: string
+  className?: string
+  activeClass?: string
+  underlineClass?: string
 }
 type NavigationBarProps = {
   className?: string
   itemClickedCallback: () => void
 }
 const navigationItems: NavigationItem[] = [
-  // {
-  //   path: "/angel-staking",
-  //   label: "Angel Staking",
-  // },
   {
-    path: "/launch-pools",
-    label: "Launch Pools",
+    path: ROUTES.DRAFT_PICKS,
+    label: "Draft Picks",
+    activeClass: "text-draft-picks",
+    underlineClass: "border-draft-picks",
+    className: "hover:text-draft-picks",
   },
   {
-    url: "https://docs.borgpad.com",
+    path: ROUTES.BLITZ_POOLS,
+    label: "Blitz Pools",
+    activeClass: "text-brand-blitz",
+    underlineClass: "border-brand-blitz",
+    className: "hover:text-brand-blitz",
+  },
+  {
+    path: ROUTES.GOAT_POOLS,
+    label: "Goat Pools",
+    activeClass: "text-brand-primary",
+    className: "hover:text-brand-primary",
+  },
+  {
+    url: ROUTES.DOCS,
     label: "Docs",
     path: "",
+    activeClass: "text-white",
+    className: "hover:text-white",
   },
-  // {
-  //   path: "blog",
-  //   label: "Blog",
-  // },
-  // {
-  //   path: "faq",
-  //   label: "FAQ",
-  // },
 ]
 
 const NavigationBar = ({ className = "", itemClickedCallback }: NavigationBarProps) => {
@@ -69,7 +78,8 @@ const NavigationBar = ({ className = "", itemClickedCallback }: NavigationBarPro
             key={item.path}
             className={twMerge(
               "relative flex w-full cursor-pointer flex-col items-start gap-1 py-3 text-left text-lg text-fg-secondary transition-colors duration-500 md:w-fit md:items-center md:py-0 md:text-center md:text-base",
-              isItemActive(item) && "text-brand-primary",
+              item.className,
+              isItemActive(item) && item.activeClass,
             )}
             onClick={() => onItemClick(item)}
           >
@@ -78,6 +88,7 @@ const NavigationBar = ({ className = "", itemClickedCallback }: NavigationBarPro
               <div
                 className={twMerge(
                   "absolute bottom-[-4px] hidden w-4 animate-underline border border-brand-primary md:flex",
+                  item?.underlineClass,
                 )}
               ></div>
             )}
@@ -123,7 +134,7 @@ const Header = () => {
         ref={headerRef}
         className="fixed left-0 top-0 z-[12] flex h-12 w-full flex-row justify-center gap-3 border-b-[1px] border-secondary bg-accent/50 px-4 py-2 pr-2 backdrop-blur-lg transition-shadow duration-500 md:h-[72px] md:pr-4"
       >
-        <div className={"flex w-full max-w-[1180px] flex-row items-center justify-between"}>
+        <div className={"flex w-full max-w-[1180px] flex-row items-center justify-between gap-4"}>
           <div className="flex md:w-full md:max-w-[288px]">
             <Button color="plain" className="flex items-center gap-1 py-2" onClick={() => navigate("/")}>
               <Icon icon="SvgLogo" className="mb-[4px] h-[20px] text-2xl" />
@@ -131,17 +142,23 @@ const Header = () => {
             </Button>
           </div>
 
-          {<NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />}
+          <NavigationBar className="hidden md:flex" itemClickedCallback={closeMenu} />
 
-          <div className="flex min-w-[286px] items-center justify-end gap-4">
+          <div className="flex items-center justify-end gap-4 md:min-w-[291px]">
             {isLandingPage ? (
               <a
-                className="hidden justify-center md:flex"
+                className="flex justify-center"
                 href="https://borgpad.formo.so/founders"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button size="xs" color="secondary" btnText="Founders Apply Here" className="w-fit py-1.5" />
+                <Button
+                  size="xs"
+                  color="secondary"
+                  btnText="Founders Apply Here"
+                  className="w-fit py-1.5 "
+                  textClassName="text-[12px] md:text-sm"
+                />
               </a>
             ) : (
               <a
@@ -160,7 +177,6 @@ const Header = () => {
               ) : (
                 <ConnectButton btnClassName="animate-fade-in" />
               ))}
-            {/* {isLandingPage && <div className="hidden w-[138px] md:block" />} */}
           </div>
         </div>
         <Button.Icon

@@ -1,6 +1,7 @@
-import { hasAdminAccess, jsonResponse, reportError } from "./cfPagesFunctionsUtils"
+import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { SolanaAddressSchema } from "../../shared/models"
 import { z } from "zod"
+import { isApiKeyValid } from '../services/apiKeyService'
 
 const requestSchema = z.object({
   rows: z.array(z.object({
@@ -12,14 +13,13 @@ const requestSchema = z.object({
 
 type ENV = {
   DB: D1Database
-  ADMIN_API_KEY_HASH: string
 }
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
 
   try {
     // authorize request
-    if (!hasAdminAccess(ctx)) {
+    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
       return jsonResponse(null, 401)
     }
 

@@ -16,6 +16,8 @@ build
 # cloudflare wrangler
 .wrangler
 wrangler.toml
+wrangler_production.toml
+wrangler_staging.toml
 
 # misc
 .env

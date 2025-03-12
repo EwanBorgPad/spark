@@ -1,6 +1,7 @@
-import { primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core"
+import { primaryKey, sqliteTable, text, integer } from "drizzle-orm/sqlite-core"
 import { ProjectModel, UserModelJson } from "./models"
 import { sql } from "drizzle-orm"
+import { z } from 'zod'
 
 export const whitelistTable = sqliteTable('whitelist', {
   address: text().notNull(),
@@ -17,8 +18,14 @@ export const userTable = sqliteTable('user', {
   json: text({ mode: 'json' }).notNull().$type<UserModelJson>()
 })
 
+export const ProjectStatusSchema = z.enum(["pending", "active"])
+export type ProjectStatus = z.infer<typeof ProjectStatusSchema>
+
 export const projectTable = sqliteTable('project', {
   id: text().primaryKey(),
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  status: text('status').notNull().$type<ProjectStatus>(),
   json: text({ mode: 'json' }).notNull().$type<ProjectModel>()
 })
 
@@ -82,6 +89,33 @@ export const eligibilityStatusSnapshotTable = sqliteTable('eligibility_status_sn
     pk: primaryKey({ columns: [table.address, table.projectId] }),
   };
 })
+
+export const exchangeTable = sqliteTable('exchange_cache', {
+  baseCurrency: text('base_currency').notNull(),
+  targetCurrency: text('target_currency').notNull(),
+  
+  currentPrice: text('current_price').notNull(),
+  quotedFrom: text('quoted_from').notNull(),
+  quotedAt: text('quoted_at').notNull(),
+  isPinned: integer('is_pinned', { mode: 'boolean' }).notNull(),
+  rawExchangeResponse: text('raw_exchange_response', { mode: 'json' }).notNull(),
+}, (table) => {
+  return {
+    pk: primaryKey({ columns: [table.baseCurrency, table.targetCurrency] })
+  }
+})
+
+export const tokenBalanceTable = sqliteTable('token_balance', {
+  ownerAddress: text('owner_address').notNull(),
+  tokenMintAddress: text('token_mint_address').notNull(),
+  quotedAt: text('quoted_at').notNull(),
+  uiAmount: text('ui_amount').notNull(),
+}, (table) => {
+  return {
+    pk: primaryKey({ columns: [table.ownerAddress, table.tokenMintAddress] })
+  }
+})
+
 // const db = drizzle()
 // db
 //   .select()

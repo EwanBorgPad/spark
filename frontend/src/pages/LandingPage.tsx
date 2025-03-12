@@ -1,21 +1,22 @@
-import { Link, ScrollRestoration } from "react-router-dom"
+import { ScrollRestoration } from "react-router-dom"
 
 import solanaImg from "@/assets/angelStaking/solana.png"
 import swissborgLogo from "@/assets/landingPage/swissborg-logo.png"
 import angelStakingTexture1Mob from "@/assets/angelStaking/angelStakingTexture1-mob.png"
 import angelStakingTexture1 from "@/assets/angelStaking/angelStakingTexture1.png"
 import angelStakingBottom from "@/assets/angelStaking/angelStakingBottom-min.png"
-import fearlessBackdrop from "@/assets/landingPage/fearless-backdrop-min.png"
-import fearlessBackdropMobile from "@/assets/landingPage/fearless-backdrop-mobile-min.png"
 import divider from "@/assets/landingPage/fearless-divider-min.png"
 import dividerMobile from "@/assets/landingPage/fearless-divider-min.png"
+import fearlessBackdrop from "@/assets/landingPage/fearless-backdrop-min.png"
+import fearlessBackdropMobile from "@/assets/landingPage/fearless-backdrop-mobile-min.png"
 
 import Img from "@/components/Image/Img"
 import DontBeACexToy from "@/components/LandingPage/DontBeACexToy"
 import DiscoverSection from "@/components/LandingPage/DiscoverSection"
 import JoinCommunityBtn from "@/components/Button/JoinTheCommunityBtn"
 import RotatingSubtitle from "@/components/LandingPage/RotatingSubtitle"
-import { Button } from "@/components/Button/Button"
+import CountdownBtnForNextLbp from "@/components/Button/CountdownBtnForNextLbp"
+import HeroCtaSection from "@/components/LandingPage/HeroCtaSection"
 
 const LandingPage = () => {
   return (
@@ -23,7 +24,10 @@ const LandingPage = () => {
       className="relative z-[10] flex w-full max-w-[100vw] flex-col items-center
      bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]"
     >
-      <div className="absolute top-12 z-[-1] flex w-screen justify-center overflow-hidden lg:top-[72px]">
+      <div
+        style={{ animationDelay: "1500ms" }}
+        className="absolute top-12 z-[-1] flex w-screen animate-opacity-in justify-center overflow-hidden opacity-0 lg:top-[72px]"
+      >
         <img
           src={angelStakingTexture1Mob}
           role="presentation"
@@ -31,66 +35,68 @@ const LandingPage = () => {
         />
         <img src={angelStakingTexture1} role="presentation" className="hidden w-full mix-blend-lighten md:flex" />
       </div>
-      <section className="z-[1] flex w-full flex-col items-start gap-5 px-5 pb-[60px] pt-20 md:pb-[68px] md:pt-[56px]">
+      <section className="z-[1] flex w-full flex-col items-start gap-5 px-5 pb-[60px] pt-10 md:pb-[56px] md:pt-[40px]">
         <div className="flex w-full flex-col items-start md:items-center ">
-          <div className="flex flex-col gap-3 pb-10 md:flex-row md:pb-20">
-            <div className="flex gap-2 rounded-xl border border-bd-primary bg-default/75 px-3 py-2">
-              <span>Built on</span>
+          <div
+            style={{ animationDelay: "1500ms" }}
+            className="flex animate-fade-in-from-below-slow flex-col gap-3 pb-20 opacity-0 md:flex-row md:pb-20"
+          >
+            <div className="flex gap-2 rounded-xl bg-overlay/75 px-3 py-2 backdrop-blur-sm">
+              <span className="text-sm">Built on</span>
               <Img
                 src={solanaImg}
                 size="custom"
-                customClass="w-[108px] rounded-none"
+                customClass="w-[95px] rounded-none"
                 imgClassName="object-contain"
                 alt="Solana logo"
               />
             </div>
-            <div className="flex gap-2 rounded-xl border border-bd-primary bg-default/75 px-3 py-2">
-              <span>By the minds of</span>
+            <div className="flex gap-2 rounded-xl bg-overlay/75 px-3 py-2 backdrop-blur-sm">
+              <span className="text-sm">By the minds of</span>
               <Img
                 src={swissborgLogo}
                 size="custom"
-                customClass="w-[85px] rounded-none"
+                customClass="w-[90px] rounded-none"
                 imgClassName="object-contain"
               />
             </div>
           </div>
-          <RotatingSubtitle />
-          <h1 className="max-w-[720px] animate-fade-in-from-below-slow pb-[66px] text-[40px] font-semibold leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
-            <span>Experience</span>{" "}
+          <h1 className="max-w-[720px] pb-[16px] text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-center md:text-[68px] md:leading-[74px]">
+            <span
+              style={{ animationDelay: "0ms" }}
+              className="translate-y-[50px] animate-fade-in-from-below-slow text-fg-primary opacity-0"
+            >
+              Experience
+            </span>
             <div className="flex flex-row items-center">
               <span
-                style={{ animationDelay: "500ms" }}
+                style={{ animationDelay: "300ms" }}
                 className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
               >
                 Better
               </span>
               <span
-                style={{ animationDelay: "1200ms" }}
+                style={{ animationDelay: "600ms" }}
                 className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
               >
                 Than
               </span>
               <span
-                style={{ animationDelay: "1900ms" }}
+                style={{ animationDelay: "900ms" }}
                 className="translate-y-[50px] animate-fade-in-from-below-slow text-brand-primary opacity-0"
               >
                 CEX
               </span>
             </div>
           </h1>
-          <div className="flex flex-col items-center gap-6">
-            <Link to={"/launch-pools"} className="group relative h-fit">
-              <Button
-                btnText="Explore Launch Pools"
-                textClassName="text-sm px-3"
-                className="explore-lp px-6 py-4 hover:opacity-100 "
-              />
-              <div className="absolute inset-0 z-[-1] h-full w-full rounded-xl shadow-around-1 transition-shadow duration-500 group-hover:shadow-around-2"></div>
-            </Link>
-            {/* <CountdownBtnForNextLbp projectId="ambient-network" /> */}
-          </div>
+          <RotatingSubtitle style={{ animationDelay: "1200ms" }} />
+
+          {/* Add project countdown CTA component inside section below */}
+          <HeroCtaSection />
         </div>
       </section>
+
+      <DiscoverSection />
 
       <section className="relative z-[1] w-full gap-5 overflow-hidden px-5 pt-16 md:px-16 md:pt-28">
         <div className="absolute bottom-0 left-0 right-0 z-[-1] flex max-w-[1282px] justify-center overflow-hidden md:pb-10">
@@ -109,7 +115,10 @@ const LandingPage = () => {
             It&#39;s time to bring the upside back on-chain & fall in love with token launches again. We&#39;re
             empowering Teams & Communities to reclaim TGEs from the CEX-Cartel.
           </h2>
-          <JoinCommunityBtn />
+          <div className="relative h-fit">
+            <JoinCommunityBtn className="mt-0 md:mt-0" />
+            <div className="absolute inset-0 z-[-1] h-full w-full animate-pulse rounded-xl shadow-around shadow-brand-primary/60"></div>
+          </div>
           <div className="z-[-1] flex w-screen min-w-0 justify-center overflow-hidden px-0 md:pt-[200px]">
             <img src={dividerMobile} role="presentation" className="w-screen min-w-0 md:hidden" />
             <img src={divider} role="presentation" className="hidden w-screen min-w-0 max-w-[800px] md:flex" />
@@ -118,8 +127,6 @@ const LandingPage = () => {
       </section>
 
       <DontBeACexToy />
-
-      <DiscoverSection />
 
       <section className="relative z-[1] w-full gap-5 overflow-hidden px-5 py-16 md:max-h-[432px] md:px-16 md:py-28">
         <div className="absolute top-0 z-[-1] flex max-w-[100vw] justify-center overflow-hidden lg:bottom-0">

@@ -58,6 +58,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       cluster,
       ...responseJson,
     }
+    if (responseJson?.error) {
+      console.log(responseJson?.error);
+      return jsonResponse(response, 400)
+    }
 
     return jsonResponse(response, rpcResponse.status)
   } catch (e) {

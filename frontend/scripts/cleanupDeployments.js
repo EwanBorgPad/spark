@@ -1,9 +1,10 @@
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 // READ THIS BEFORE USING SCRIPT /////////////////////////////////////////
-// only latest "main" and "stage" deployment will not be removed, so /////
-// if there are any new exceptions, please add them in the script below; /
-// cleans max 10 deployments per script execution ////////////////////////
+// Only latest "main" and "stage" deployment will not be removed. ////////
+// Also, Cloudflare requires latest LIVE deployments of branches to be  //
+// removed MANUALLY. ///////////////////////////////////////////////////// 
+// Cleans max 25 deployments per script execution. ///////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
@@ -24,8 +25,9 @@ const headers = {
 }
 
 // Function to get all deployments
-async function getDeployments() {
-  const response = await fetch(CLOUDFLARE_API_URL, {
+async function getDeployments(page) {
+  console.log("fetching next batch of deployments")
+  const response = await fetch(CLOUDFLARE_API_URL + `?page=${page}`, {
     method: "GET",
     headers,
   })
@@ -36,33 +38,38 @@ async function getDeployments() {
 // Function to delete a deployment
 async function deleteDeployment(deploymentId) {
   const deleteUrl = `${CLOUDFLARE_API_URL}/${deploymentId}`
-  await fetch(deleteUrl, {
+  const response = await fetch(deleteUrl, {
     method: "DELETE",
     headers,
   })
-  console.log(`Deleted deployment: ${deploymentId}`)
+  const status = response?.status && response?.status === 200 ? "🟢 200" : `🟨 ${response?.status}`
+  console.log(`deleteDeployment '${deploymentId}' response status: ${status}`)
 }
 
 // Main function to clean up old deployments
-async function cleanDeployments() {
-  const deployments = await getDeployments()
-  console.log(deployments)
+async function cleanDeployments(page) {
+  const deployments = await getDeployments(page)
+  if (!deployments) {
+    console.log("no deployments fetched, something might be wrong")
+    return
+  } else if (deployments.length <= 2 && page > 2) {
+    console.log("starting again from page 2")
+    cleanDeployments(1)
+    return
+  } else if (deployments.length <= 2) {
+    console.log("Note: Latest live deployments of every branch must be removed MANUALLY.")
+    console.log("✅ Cleanup has finished.")
+    return
+  }
+  console.log(`fetched ${deployments.length} deployments of project '${PROJECT_NAME}'`)
 
   // Filter for 'main' branch deployments
-  const mainDeployments = deployments.filter(
-    (deployment) => deployment.deployment_trigger.metadata.branch === "main",
-  )
-  const stageDeployments = deployments.filter(
-    (deployment) => deployment.deployment_trigger.metadata.branch === "stage",
-  )
+  const mainDeployments = deployments.filter((deployment) => deployment.deployment_trigger.metadata.branch === "main")
+  const stageDeployments = deployments.filter((deployment) => deployment.deployment_trigger.metadata.branch === "stage")
 
   // Sort deployments by creation time (latest first)
-  mainDeployments.sort(
-    (a, b) => new Date(b.created_on) - new Date(a.created_on),
-  )
-  stageDeployments.sort(
-    (a, b) => new Date(b.created_on) - new Date(a.created_on),
-  )
+  mainDeployments.sort((a, b) => new Date(b.created_on).getTime() - new Date(a.created_on).getTime())
+  stageDeployments.sort((a, b) => new Date(b.created_on).getTime() - new Date(a.created_on).getTime())
 
   // Keep the latest 'main' and 'stage' deployments
   const latestMainDeployment = mainDeployments[0]
@@ -70,20 +77,22 @@ async function cleanDeployments() {
 
   // Delete all other deployments except the latest
   const oldDeployments = deployments.filter((deployment) => {
-    return (
-      deployment.id !== latestMainDeployment.id &&
-      deployment.id !== latestStageDeployment.id
-    )
+    if (latestMainDeployment && deployment.id === latestMainDeployment?.id) return false
+    if (latestStageDeployment && deployment.id === latestStageDeployment?.id) return false
+    return true
   })
 
-  console.log("initiating cleanup of batch of deployments")
+  console.log("initiating batch cleanup of deployments")
   for (const deployment of oldDeployments) {
     await deleteDeployment(deployment.id)
   }
 
-  console.log(`Kept latest 'main' deployment: ${latestMainDeployment.id}`)
-  console.log(`Kept latest 'stage' deployment: ${latestStageDeployment.id}`)
+  latestMainDeployment?.id && console.log(`Kept latest 'main' deployment: ${latestMainDeployment.id}`)
+  latestStageDeployment?.id && console.log(`Kept latest 'stage' deployment: ${latestStageDeployment.id}`)
+
+  console.log("moving on to next batch cleanup...")
+  cleanDeployments(page + 1)
 }
 
 // Run the cleanup script
-cleanDeployments().catch(console.error)
+cleanDeployments(1).catch(console.error)

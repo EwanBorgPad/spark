@@ -8,6 +8,10 @@ import { Badge } from "../Badge/Badge"
 import { Button } from "../Button/Button"
 import { ExpandedProject } from "@/utils/projects-helper"
 import { ExternalLink } from "../Button/ExternalLink"
+import { getProjectRoute } from "@/utils/routes"
+import { AvailableIcons, Icon } from "../Icon/Icon"
+import { ProjectModel } from "shared/models"
+import { formatCurrencyAmount } from "shared/utils/format"
 
 type Props = { project: ExpandedProject | null; isLoading?: boolean }
 
@@ -16,20 +20,27 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
 
   const { additionalData: { badgeClassName, endMessage, badgeLabel } = {} } = project ?? {}
 
-  const isUpcoming = project?.additionalData.currentEvent.id === "UPCOMING"
+  const isDraftPick = project?.info.projectType === "draft-pick"
+  const isUpcoming = !isDraftPick && project?.additionalData.currentEvent.id === "UPCOMING"
+  const isBlitz = project?.info.projectType === "blitz"
+  const projectUrl = getProjectRoute(project as ProjectModel)
+
+  const cardRows = getCardRows(project)
 
   return (
-    <li className="relative flex w-full max-w-[344px] flex-col overflow-hidden rounded-lg border-bd-primary bg-secondary">
+    <li className="relative flex w-full max-w-[344px] flex-col overflow-hidden rounded-lg border-[1px] border-bd-secondary/30 bg-default">
       <Img
         src={project?.info?.thumbnailUrl || project?.info?.logoUrl}
         customClass="h-[189px] rounded-none"
         showFallback
         isFetchingLink={isLoading}
       />
-      <Badge
-        label={badgeLabel || "Loading..."}
-        className={twMerge("absolute left-4 top-4 px-3 py-1 text-sm", badgeClassName)}
-      />
+      {!isDraftPick && (
+        <Badge
+          label={badgeLabel || "Loading..."}
+          className={twMerge("absolute left-4 top-4 px-3 py-1 text-sm", badgeClassName)}
+        />
+      )}
       <div className="flex w-full flex-1 grow flex-col justify-between gap-4 p-4">
         <div className="flex w-full flex-col gap-4">
           <div className="flex flex-wrap gap-x-4 gap-y-1">
@@ -48,19 +59,47 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
             <Text
               text={project?.info?.subtitle}
               as="span"
-              className="line-clamp-2 text-base text-fg-tertiary"
+              className="line-clamp-3 text-base text-fg-tertiary"
               isLoading={isLoading}
             />
           </div>
+          {isDraftPick && (
+            <div className="flex w-full flex-col">
+              {cardRows.map((row, index) => (
+                <div
+                  key={row.icon}
+                  className={twMerge(
+                    "flex w-full items-center justify-between gap-2 rounded-lg bg-secondary px-3 py-2 ",
+                    Boolean(index % 2) && "bg-transparent",
+                  )}
+                >
+                  <div className="flex w-full items-center gap-1 text-fg-secondary/25">
+                    <Icon icon={row.icon} />
+                    <span className="text-sm text-fg-secondary">{row.label}</span>
+                  </div>
+                  <span className={twMerge("whitespace-nowrap text-sm text-fg-secondary", row.valueClassName)}>
+                    {row.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {isUpcoming ? (
           <FollowOnXBtn />
         ) : (
           <div className="flex w-full flex-col rounded-xl bg-default">
-            <span className="px-4 py-2 text-sm leading-5 text-fg-tertiary">{endMessage}</span>
-            <Link to={`/launch-pools/${project?.id}`}>
-              <Button btnText="Learn More" className="w-full p-3" />
+            {!isDraftPick && <span className="px-4 py-2 text-sm leading-5 text-fg-tertiary">{endMessage}</span>}
+            <Link to={projectUrl}>
+              <Button
+                btnText="Learn More"
+                className={twMerge(
+                  "w-full p-3",
+                  isBlitz && "bg-brand-blitz active:bg-brand-blitz",
+                  isDraftPick && "bg-draft-picks active:bg-draft-picks",
+                )}
+              />
             </Link>
           </div>
         )}
@@ -70,6 +109,30 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
 }
 
 const BORGPAD_X_URL = "https://x.com/BorgPadHQ"
+
+const getCardRows = (
+  project: ExpandedProject | null,
+): { icon: AvailableIcons; label: string; value: string | number; valueClassName?: string }[] => {
+  if (!project) return []
+  return [
+    {
+      icon: "SvgDatabase",
+      label: "Target FDV",
+      value: project.info.targetFdv || "",
+      valueClassName: "text-draft-picks",
+    },
+    {
+      icon: "SvgChartLine",
+      label: "Total Commitment",
+      value: formatCurrencyAmount(project?.investmentIntentSummary?.sum ?? 0, { withDollarSign: true }),
+    },
+    {
+      icon: "SvgCalendarFill",
+      label: "Target Launch",
+      value: project.info.tokenGenerationEventDate,
+    },
+  ]
+}
 
 const FollowOnXBtn = () => {
   return (

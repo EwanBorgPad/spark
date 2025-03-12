@@ -97,7 +97,7 @@ export type QuestType = z.infer<typeof QuestSchema>['type']
  * Min and Max Investments are string to cover for floating points issues, possibly change to number.
  */
 const BenefitsSchema = z.object({
-  startDate: z.coerce.date().min(new Date('2024')),
+  startDate: z.coerce.date().min(new Date("2024")).nullable(),
   minInvestment: z.string(),
   maxInvestment: z.string(),
 })
@@ -108,7 +108,7 @@ const BooleanOperatorSchema = z.enum(['AND', 'OR'])
 export const TierSchema = z.object({
   id: z.string(),
   label: z.string(),
-  description: z.string().default(''),
+  description: z.string().optional(),
   questsOperator: BooleanOperatorSchema.default('AND'),
   quests: z.array(QuestSchema).min(QUESTS_MIN_LENGTH),
   benefits: BenefitsSchema,
@@ -127,6 +127,8 @@ export const EligibilityStatusSchema = z.object({
   snapshotTakenAt: z.string().optional(),
   address: z.string(),
 
+  isNftCheckNeeded: z.boolean().optional(),
+
   // TODO @twitterAcc
   isTwitterAccountConnected: z.boolean(),
 
@@ -140,7 +142,7 @@ export const EligibilityStatusSchema = z.object({
    */
   eligibilityTier: TierSchema.nullable(),
   compliances: QuestWithCompletionSchema.array(),
-  tiers: TierWithCompletionSchema.omit( { benefits: true }).array(),
+  tiers: TierWithCompletionSchema.array(),
 })
 export type EligibilityStatus = z.infer<typeof EligibilityStatusSchema>
 /**

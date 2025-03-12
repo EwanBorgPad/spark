@@ -1,29 +1,32 @@
-import { hasAdminAccess, jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { z } from "zod"
-import { SnapshotService } from "../services/snapshotService"
+import { eq, sql } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/d1"
+
+import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
+import { SnapshotService } from "../services/snapshotService"
+import { isApiKeyValid } from '../services/apiKeyService'
 import { EligibilityService } from "../services/eligibilityService"
 import { projectTable } from "../../shared/drizzle-schema"
-import { eq, sql } from "drizzle-orm"
 import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 
 const requestSchema = z.object({
   projectId: z.string().min(2),
   limit: z.number().int().min(0).max(999),
-  offset: z.number().int().min(0).max(9999).default(0)
+  offset: z.number().int().min(0).max(9999).default(0),
+  // if added, addresses are not loaded from the database
+  addresses: z.array(z.string()).optional(),
 })
 
 type ENV = {
   DB: D1Database
   SOLANA_RPC_URL: string
-  ADMIN_API_KEY_HASH: string
 }
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
 
   try {
     // authorize request
-    if (!hasAdminAccess(ctx)) {
+    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
       return jsonResponse(null, 401)
     }
 
@@ -47,10 +50,12 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const rpcUrl = getRpcUrlForCluster(ctx.env.SOLANA_RPC_URL, project.json.config.cluster)
 
     // load addresses
-    const addressesQueryResult = (await db
-      .run(sql`SELECT address FROM user WHERE address NOT IN (SELECT address FROM eligibility_status_snapshot WHERE project_id = ${projectId})`)
-    ).results as { address: string}[]
-    const addresses = addressesQueryResult.map(obj => obj.address)
+    const addresses: string[] = data.addresses 
+      ? data.addresses
+      : ((await db
+        .run(sql`SELECT address FROM user WHERE address NOT IN (SELECT address FROM eligibility_status_snapshot WHERE project_id = ${projectId})`)
+      ).results as { address: string}[])
+        .map(obj => obj.address)
 
     const paginatedAddresses = addresses.slice(offset, limit)
 

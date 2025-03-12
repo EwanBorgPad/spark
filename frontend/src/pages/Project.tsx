@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import TokenGenerationSection from "../components/TokenGenerationSection/TokenGenerationSection"
 import { ExternalLink } from "../components/Button/ExternalLink"
 import { useProjectDataContext } from "@/hooks/useProjectData"
-import { expandTimelineDataInfo } from "@/utils/timeline"
+import { expandTimelineDataInfo } from "@/utils/timeline-helper"
 import backdropImg from "@/assets/backdropImgMin.png"
 import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
@@ -22,7 +22,7 @@ const Project = () => {
   const expandedTimeline = expandTimelineDataInfo(projectData?.info.timeline ?? [])
 
   return (
-    <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[72px] font-normal text-fg-primary lg:py-[100px]">
+    <main className="z-[10] flex w-full max-w-full select-none flex-col items-center gap-10 overflow-y-hidden py-[72px] font-normal text-fg-primary lg:py-[100px]">
       <div className="max-w-screen absolute left-0 top-10 z-[-11] w-full overflow-hidden lg:top-16">
         <img src={backdropImg} className="h-[740px] min-w-[1440px] lg:h-auto lg:w-screen" />
       </div>
@@ -31,7 +31,7 @@ const Project = () => {
         {/* heading */}
         <div className="flex w-full flex-col justify-between gap-6 lg:max-w-[760px] lg:flex-row">
           {/* left side */}
-          <div className="flex flex-col gap-6 lg:flex-row">
+          <div className=" flex flex-col gap-6 lg:flex-row">
             <Img
               src={projectData?.info.logoUrl}
               isFetchingLink={isLoading}
@@ -48,7 +48,6 @@ const Project = () => {
                   isLoading={isLoading}
                   loadingClass="max-w-[120px]"
                 />
-                {isDevnet && !isLoading && <DevnetFlag />}
               </div>
 
               <Text
@@ -61,8 +60,9 @@ const Project = () => {
             </div>
           </div>
           {/* right side */}
-          <div className="flex items-start gap-2">
+          <div className="relative flex items-start gap-2">
             {projectData?.info.projectLinks.map((link, index) => <ExternalLink.Icon key={index} externalLink={link} />)}
+            {isDevnet && !isLoading && <DevnetFlag />}
           </div>
         </div>
 
@@ -109,7 +109,7 @@ const Project = () => {
 
         {/* Deal curated by: */}
         <div className="flex w-full flex-col gap-3 lg:max-w-[760px]">
-          <h4 className="text-sm font-normal">{t("deal_curated_by")}</h4>
+          <h4 className="text-sm font-normal">Deal coming from</h4>
           <div className="w-full rounded-lg bg-gradient-to-r from-brand-primary/50 to-brand-secondary/15 p-[1px]">
             <div className="flex h-full w-full flex-col items-start justify-between gap-4 rounded-[7px] bg-gradient-to-br from-brand-dimmed-1 via-brand-dimmed-2 via-50% to-brand-dimmed-2 px-4 py-3 lg:flex-row lg:items-center lg:bg-gradient-to-r">
               <div className="flex items-center gap-4">
@@ -141,13 +141,17 @@ const Project = () => {
 }
 
 function DevnetFlag() {
-  return <div className={twMerge(
-    "flex items-center gap-1",
-    "px-3 py-2 text-md rounded-full text-fg-alt-default bg-brand-primary",
-  )}>
-    <Icon className="text-black" icon={"SvgRoundCheckmark"} />
-    <p>Devnet</p>
-  </div>
+  return (
+    <div
+      className={twMerge(
+        "absolute right-0 top-0 flex items-center gap-1 md:top-12",
+        "text-md rounded-full bg-brand-primary px-3 py-2 text-fg-alt-default",
+      )}
+    >
+      <Icon className="text-black" icon={"SvgRoundCheckmark"} />
+      <p>Devnet</p>
+    </div>
+  )
 }
 
 export default Project
