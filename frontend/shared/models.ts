@@ -147,7 +147,7 @@ export const projectSchema = z.object({
       name: z.string().min(1),
       iconUrl: urlSchema(),
       lbpType: z.string().min(1),
-      lockingPeriod: z.string().min(1),
+      lockingPeriod: z.string().min(1).optional(),
     }),
     curator: z.object({
       avatarUrl: urlSchema(),

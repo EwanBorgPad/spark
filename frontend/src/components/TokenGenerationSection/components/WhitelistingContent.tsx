@@ -137,13 +137,6 @@ const WhitelistingContent = () => {
           <span>{t("tge.lbp_type")}</span>
           <Text text={projectData?.info.liquidityPool.lbpType} isLoading={isLoading} />
         </div>
-        <hr className="w-full border-bd-primary opacity-50"></hr>
-
-        {/* Locking Period */}
-        <div className="flex w-full items-center justify-between py-3">
-          <span>{t("tge.locking_period")}</span>
-          <Text text={projectData?.info.liquidityPool.lockingPeriod} isLoading={isLoading} />
-        </div>
       </div>
 
       {walletState !== "CONNECTED" && (
