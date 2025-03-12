@@ -84,7 +84,8 @@ const TokenDataSchema = z.object({
 const nftConfigSchema = z.object({
   name: z.string(),
   symbol: z.string(),
-  uri: z.string(),
+  description: z.string(),
+  imageUrl: z.string(),
 })
 
 export type NftConfigType = z.infer<typeof nftConfigSchema>
@@ -124,7 +125,7 @@ export const projectSchema = z.object({
 
     raisedTokenData: TokenDataSchema,
     launchedTokenData: TokenDataSchema,
-    nftConfig: nftConfigSchema,
+    nftConfig: nftConfigSchema.optional(),
   }),
   info: z.object({
     /// following 4 fields are typically added AFTER the sale
