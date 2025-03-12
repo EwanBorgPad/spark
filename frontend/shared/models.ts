@@ -36,6 +36,9 @@ export type UserModelJson = {
     message: string
     signature: number[]
   }>
+  email?: {
+    email: string
+  }
 }
 /**
  * Represents url type
