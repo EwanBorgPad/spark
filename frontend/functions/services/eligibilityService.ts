@@ -27,7 +27,6 @@ const getCompliances = (project:ProjectModel):Quest[] => {
     },
     {
       type: 'PROVIDE_EMAIL',
-      isOptional: !isDraftPick,
     }
   ]
 }
