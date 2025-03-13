@@ -19,13 +19,14 @@ import { PRIORITY_FEE_MICRO_LAMPORTS } from '../../shared/constants'
 import { DepositService } from '../services/depositService'
 import { SaleResultsService } from '../services/saleResultsService'
 import { SnapshotService } from '../services/snapshotService'
-import { SolanaAddressSchema } from '../../shared/models'
+import { NftConfigType, SolanaAddressSchema } from '../../shared/models'
 
 
 type ENV = {
     DB: D1Database
     SOLANA_RPC_URL: string
     NFT_MINT_WALLET_PRIVATE_KEY: string
+    R2_BUCKET_BASE_URL: string
 }
 const requestSchema = z.object({
     userWalletAddress: SolanaAddressSchema,
@@ -50,7 +51,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     try {
         const SOLANA_RPC_URL = ctx.env.SOLANA_RPC_URL
         const nftMintAuthorityPrivateKey = ctx.env.NFT_MINT_WALLET_PRIVATE_KEY
-        if (!SOLANA_RPC_URL || !nftMintAuthorityPrivateKey) throw new Error('Misconfigured env!')
+        const r2BucketBaseUrl = ctx.env.R2_BUCKET_BASE_URL
+        
+        if (!SOLANA_RPC_URL || !nftMintAuthorityPrivateKey || !r2BucketBaseUrl) throw new Error('Misconfigured env!')
 
         /////////////////////////////////////////
         //// REQUEST PARSING AND VALIDATION /////
@@ -82,12 +85,12 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const now = new Date()
 
         const saleOpensDate = project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date
-          ? new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date)
-          : null
+            ? new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date)
+            : null
 
         const saleClosesDate = project.json.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
-          ? new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date)
-          : null
+            ? new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date)
+            : null
 
         if (!saleOpensDate) throw new Error(`SALE_OPENS not found for (${projectId})!`)
         if (!saleClosesDate) throw new Error(`SALE_CLOSES not found for (${projectId})!`)
@@ -134,9 +137,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         // @VALIDATION: userCaps
         const userDepositAmount = tokenAmount * Math.pow(10, amountDeposited.decimals)
-        
+
         console.log(`userDepositAmount: (${userDepositAmount}); minAmountAllowed: (${minAmountAllowed.amount}); maxAmountAllowed: (${maxAmountAllowed.amount})`)
-        
+
         if (userDepositAmount > Number(maxAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MAX_INVESTMENT_EXCEEDED' }, 409)
         if (userDepositAmount < Number(minAmountAllowed.amount)) return jsonResponse({ errorCode: 'USER_MIN_INVESTMENT_INSUFFICIENT' }, 409)
 
@@ -153,15 +156,30 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
         const connection = new Connection(rpcUrl, {
             confirmTransactionInitialTimeout: 10000,
-            commitment: 'confirmed',    // status has to be confirmed because we mint the nft and get the address of it immediately after sending the mint tx
+            commitment: 'confirmed',
             disableRetryOnRateLimit: true,
         })
 
         const tokenMint = project.json.config.raisedTokenData.mintAddress
+        const nftConfig = project.json.config.nftConfig
+
+        if (!nftConfig) {
+            throw new Error('NFT Config missing from project!')
+        }
 
         console.log('Creating transaction...')
-
-        const tx = await createUserDepositTransaction(userWalletAddress, lbpWalletAddress, tokenMint, tokenAmount, connection, nftMintAuthorityPrivateKey)
+        
+        const tx = await createUserDepositTransaction({
+            projectId,
+            fromWallet: userWalletAddress,
+            toWallet: lbpWalletAddress,
+            tokenMint: tokenMint,
+            amount: tokenAmount,
+            connection,
+            nftMintAuthorityPrivateKey,
+            nftConfig,
+            r2BucketBaseUrl,
+        })
 
         console.log('Creating snapshot...')
 
@@ -178,14 +196,28 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 }
 
-export async function createUserDepositTransaction(
-    fromWallet: string,
-    toWallet: string,
-    tokenMint: string,
-    amount: number,
-    connection: Connection,
-    privateKey: string
-): Promise<string> {
+type CreateUserDepositTransactionArgs = {
+    projectId: string
+    fromWallet: string
+    toWallet: string
+    tokenMint: string
+    amount: number
+    connection: Connection
+    nftMintAuthorityPrivateKey: string
+    nftConfig: NftConfigType
+    r2BucketBaseUrl: string
+}
+export async function createUserDepositTransaction({
+    projectId,
+    fromWallet,
+    toWallet,
+    tokenMint,
+    amount,
+    connection,
+    nftMintAuthorityPrivateKey,
+    nftConfig,
+    r2BucketBaseUrl,
+}: CreateUserDepositTransactionArgs): Promise<string> {
     try {
         const fromPublicKey = new PublicKey(fromWallet)
         const toPublicKey = new PublicKey(toWallet)
@@ -223,7 +255,14 @@ export async function createUserDepositTransaction(
         })
 
         // get instructions from the builder for transfering nft
-        const { instructions: listOfInstructions, nftMintSigner } = await mintNftAndCreateTransferNftInstructions(connection, privateKey, fromPublicKey.toBase58())
+        const { instructions: listOfInstructions, nftMintSigner } = await mintNftAndCreateTransferNftInstructions({
+            projectId,
+            connection,
+            usersWalletAddress: fromPublicKey.toBase58(),
+            nftMintAuthorityPrivateKey,
+            nftConfig,
+            r2BucketBaseUrl,
+        })
 
         // create the transaction and all the neccessary instructions to it
         const transaction = new Transaction().add(transferInstruction).add(addPriorityFee)
@@ -249,12 +288,27 @@ export async function createUserDepositTransaction(
     }
 }
 
-async function mintNftAndCreateTransferNftInstructions(connection: Connection, privateKey: string, usersWalletAddress: string) {
+type MintNftAndCreateTransferNftInstructionsArgs = {
+    projectId: string
+    connection: Connection
+    usersWalletAddress: string
+    nftMintAuthorityPrivateKey: string
+    nftConfig: NftConfigType
+    r2BucketBaseUrl: string
+}
+async function mintNftAndCreateTransferNftInstructions({ 
+    projectId,
+    connection, 
+    usersWalletAddress,
+    nftMintAuthorityPrivateKey, 
+    nftConfig,
+    r2BucketBaseUrl,
+}: MintNftAndCreateTransferNftInstructionsArgs) {
     // create umi client for mpl token package
     const umi = createUmi(connection)
     const userPublicKey = publicKey(usersWalletAddress)
     const userSigner = createNoopSigner(userPublicKey)
-    const privateKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(privateKey)))
+    const privateKeypair = Keypair.fromSecretKey(new Uint8Array(bs58.default.decode(nftMintAuthorityPrivateKey)))
     // convert to Umi compatible keypair
     const mintingWalletKeypair = umi.eddsa.createKeypairFromSecretKey(privateKeypair.secretKey)
     const signer = createSignerFromKeypair(umi, mintingWalletKeypair)
@@ -267,21 +321,26 @@ async function mintNftAndCreateTransferNftInstructions(connection: Connection, p
     umi.use(signerIdentity(signer))
     umi.use(mplTokenMetadata())
 
+    const metadataKey = `${projectId}/nft-metadata/metadata.json`
+    const metadataUrl = new URL(metadataKey, projectId).href
     // make tx for minting nft
     const builder = transactionBuilder().add(createProgrammableNft(umi, {
-        symbol: 'bpTADA',
-        name: "TADA Liquidity Provider",
-        uri: "https://files.borgpad.com/Tada/nft-metadata/metadata.json",
+        symbol: nftConfig.symbol,
+        name: nftConfig.name,
+        uri: metadataUrl,
+        
         mint: mintSigner,
         updateAuthority: signer,
         sellerFeeBasisPoints: percentAmount(0),
         payer: userSigner,
         authority: signer,
         tokenOwner: userPublicKey,
+        
         collection: {
             verified: false,
             // @ts-expect-error TS2322: Type 'string' is not assignable to type 'PublicKey'.
-            key: 'H4TkbayRd1fhF7wu9odrrYZREkHNMrV5Rhmtkor9wVoK', // https://solscan.io/token/H4TkbayRd1fhF7wu9odrrYZREkHNMrV5Rhmtkor9wVoK
+            key: nftConfig.collection,
+            // key: 'H4TkbayRd1fhF7wu9odrrYZREkHNMrV5Rhmtkor9wVoK', // https://solscan.io/token/H4TkbayRd1fhF7wu9odrrYZREkHNMrV5Rhmtkor9wVoK
         }
     }))
 

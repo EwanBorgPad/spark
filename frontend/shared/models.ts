@@ -81,6 +81,16 @@ const TokenDataSchema = z.object({
   coinGeckoName: optional(z.string()),
 })
 
+const nftConfigSchema = z.object({
+  name: z.string(),
+  symbol: z.string(),
+  description: z.string(),
+  imageUrl: z.string(),
+  collection: z.string(),
+})
+
+export type NftConfigType = z.infer<typeof nftConfigSchema>
+
 export const ProjectTypeSchema = z.enum(["goat", "blitz", "draft-pick"])
 
 export const projectSchema = z.object({
@@ -116,6 +126,7 @@ export const projectSchema = z.object({
 
     raisedTokenData: TokenDataSchema,
     launchedTokenData: TokenDataSchema,
+    nftConfig: nftConfigSchema.optional(),
   }),
   info: z.object({
     /// following 4 fields are typically added AFTER the sale
