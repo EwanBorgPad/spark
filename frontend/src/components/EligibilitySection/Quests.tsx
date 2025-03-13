@@ -12,6 +12,7 @@ import AcceptTermsOfUseModal from "../Modal/Modals/AcceptTermsOfUseModal"
 import { ProvideInvestmentIntentModal } from "../Modal/Modals/ProvideInvestmentIntentModal"
 import { ProjectModel } from "shared/models"
 import { formatDateForTimer } from "@/utils/date-helpers"
+import { useParams } from "react-router-dom"
 
 type QuestComponentProps = {
   quest: QuestWithCompletion
@@ -153,10 +154,23 @@ const AcceptTermsOfUseBtn = () => {
 const ProvideInvestmentIntentBtn = () => {
   const { t } = useTranslation()
   const [showModal, setShowModal] = useState(false)
+  const { address } = useWalletContext()
+  const { projectId } = useParams()
 
   return (
     <div className="mt-2 flex justify-start">
-      <Button color="secondary" size="xs" className="rounded-lg px-3" onClick={() => setShowModal(!showModal)}>
+      <Button color="secondary" size="xs" className="rounded-lg px-3" onClick={
+        () => {
+          window.safary?.track({
+            eventType: "investment-intent",
+            eventName: "2-provide investment intent",
+            parameters: {
+              walletAddress: address as string,
+              toProject: projectId as string,
+            },
+          })
+          setShowModal(!showModal)
+        }}>
         {t("investment.intent.quest.button")}
       </Button>
       {showModal && <ProvideInvestmentIntentModal onClose={() => setShowModal(false)} />}

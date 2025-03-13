@@ -95,8 +95,8 @@ export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentInten
         setShowJoinCommunityCta(true)
       }
       window.safary?.track({
-        eventType: "investment-interest",
-        eventName: "confirm interest",
+        eventType: "investment-confirmation",
+        eventName: "3-confirm investment",
         parameters: {
           walletAddress: address as string,
           toProject: projectId as string,
@@ -164,16 +164,24 @@ export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentInten
           </div>
         </div>
       ) : (
-        <JoinUsOnTelegram onCloseHandler={onCloseHandler} />
+        <JoinUsOnTelegram onCloseHandler={onCloseHandler} address={address} projectId={projectId} />
       )}
     </SimpleModal>
   )
 }
 
-const JoinUsOnTelegram = ({ onCloseHandler }: { onCloseHandler: () => void }) => {
+const JoinUsOnTelegram = ({ onCloseHandler, address, projectId }: { onCloseHandler: () => void, address: string, projectId: string | undefined }) => {
   const joinTelegramHandler = () => {
     localStorage.setItem("clickedOnTelegramUrl", "true")
     window.open(BORGPAD_TELEGRAM_URL, "_blank")
+    window.safary?.track({
+      eventType: "telegram-join",
+      eventName: "4-join telegram",
+      parameters: {
+        walletAddress: address as string,
+        toProject: projectId as string,
+      },
+    })
   }
 
   return (
