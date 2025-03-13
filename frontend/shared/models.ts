@@ -86,6 +86,7 @@ const nftConfigSchema = z.object({
   symbol: z.string(),
   description: z.string(),
   imageUrl: z.string(),
+  collection: z.string(),
 })
 
 export type NftConfigType = z.infer<typeof nftConfigSchema>
