@@ -152,12 +152,7 @@
   "email.provide.heading": "Provide your email",
   "email.provide.description": "We will use this email to send you important updates about your investments.",
   "email.provide.button": "Provide Email",
-  "email.register.success": "Email registered successfully",
-  "email.register.description": "We will use this email to send you important updates about your investments.",
-  "email.register.button": "Register Email",
-  "email.register.heading": "Register your email",
   "email.register.placeholder": "Enter your email",
   "email.provide.message": "I acknowledge that I plan to provide my email",
-  "email.invalid": "Invalid email address",
-  "email.update.button": "Update Email"
+  "email.invalid": "Invalid email address"
 }
