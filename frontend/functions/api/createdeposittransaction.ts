@@ -163,6 +163,10 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const tokenMint = project.json.config.raisedTokenData.mintAddress
         const nftConfig = project.json.config.nftConfig
 
+        if (!nftConfig) {
+            throw new Error('NFT Config missing from project!')
+        }
+
         console.log('Creating transaction...')
         
         const tx = await createUserDepositTransaction({
