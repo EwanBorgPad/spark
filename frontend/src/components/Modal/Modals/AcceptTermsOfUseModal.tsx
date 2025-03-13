@@ -44,6 +44,14 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
       queryClient.invalidateQueries({
         queryKey: ["getEligibilityStatus", address, projectId],
       })
+      window.safary?.track({
+        eventType: "accept-terms-of-use",
+        eventName: "1-accept terms of use",
+        parameters: {
+          walletAddress: address as string,
+          toProject: projectId as string,
+        },
+      })
       onClose()
     },
     onError: (error) => toast.error(error.message, { theme: "colored" }),
