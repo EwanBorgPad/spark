@@ -60,15 +60,15 @@ const CountDownTimer = ({
     setTimeLeft(calculateTimeLeft(endOfEvent))
   }, [endOfEvent])
 
-  const isEventFinished = isAfter(new Date(), endOfEvent)
+  const isEventFinished = endOfEvent ? isAfter(new Date(), endOfEvent) : false
   useEffect(() => {
     if (isEventFinished) return
-    const timerId = setTimeout(() => {
-      setTimeLeft((prev) => prev - 1000)
+    const countdownInterval = setInterval(() => {
+      setTimeLeft(calculateTimeLeft(endOfEvent))
     }, 1000)
 
     return () => {
-      clearTimeout(timerId)
+      clearInterval(countdownInterval)
     }
   })
   const { days, hours, minutes, seconds } = getCountdownTime(timeLeft)

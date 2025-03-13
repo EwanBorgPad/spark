@@ -34,8 +34,6 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
   const { address } = useWalletContext()
   const { projectId } = useParams()
 
-  console.log(projectData?.info.tiers)
-
   // GET eligibility status
   const { data: eligibilityStatusData } = useQuery({
     queryFn: () => {
@@ -48,7 +46,6 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
   })
 
   const isUserEligible = eligibilityStatusData?.isEligible
-  const tierBenefits = eligibilityStatusData?.eligibilityTier?.benefits
 
   const scrollToJoinThePool = () => {
     const top = joinThePoolRef.current?.getBoundingClientRect().top ?? 0

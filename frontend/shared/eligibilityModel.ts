@@ -113,6 +113,7 @@ export const TierSchema = z.object({
   quests: z.array(QuestSchema).min(QUESTS_MIN_LENGTH),
   benefits: BenefitsSchema,
 })
+export type TierType = z.infer<typeof TierSchema>
 /**
  * Same as TierSchema but with QuestWithCompletionSchema.
  * This should be served to the frontend.

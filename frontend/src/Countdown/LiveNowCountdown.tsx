@@ -1,39 +1,37 @@
 import CountDownTimer from "@/components/CountDownTimer"
 import { formatDateForTimer } from "@/utils/date-helpers"
 import { isAfter } from "date-fns/isAfter"
-import React from "react"
 import { ProjectModel } from "shared/models"
 import { twMerge } from "tailwind-merge"
 
 const LiveNowCountdown = ({ project }: { project: ProjectModel | undefined }) => {
   const tiers = project?.info.tiers ?? []
+  const saleClosesPhaseStartDate = project?.info.timeline.find((phase) => phase.id === "SALE_CLOSES")?.date ?? null
 
-  const getNextTier = () => {
-    if (!project?.info.timeline)
+  const getNextTier = (tiers: ProjectModel["info"]["tiers"], saleClosesPhaseStartDate: Date | null) => {
+    if (!saleClosesPhaseStartDate)
       return {
         countdownEvent: null,
         labelAboveTimer: "Loading countdown...",
       }
     const nextTier = tiers.find((tier) => {
       if (!tier.benefits.startDate) return false
-      return isAfter( tier.benefits.startDate,new Date())
+      return isAfter(tier.benefits.startDate, new Date())
     })
     if (nextTier)
       return {
         countdownEvent: nextTier.benefits.startDate,
         labelAboveTimer: `Tier ${nextTier.label} opens in ${nextTier.benefits.startDate && formatDateForTimer(nextTier.benefits.startDate)}`,
       }
-    const saleClosesPhase = project.info.timeline.find((phase) => phase.id === "SALE_CLOSES")
     return {
-      countdownEvent: saleClosesPhase?.date ?? null,
-      labelAboveTimer: saleClosesPhase?.date ? `Sale closes in ${formatDateForTimer(saleClosesPhase.date)}` : "",
+      countdownEvent: saleClosesPhaseStartDate,
+      labelAboveTimer: saleClosesPhaseStartDate ? `Sale closes in ${formatDateForTimer(saleClosesPhaseStartDate)}` : "",
     }
   }
-  const nextTier = getNextTier()
+
+  const nextTier = getNextTier(tiers, saleClosesPhaseStartDate)
 
   if (!nextTier.countdownEvent) return <></>
-
-  console.log(nextTier.countdownEvent)
 
   return (
     <CountDownTimer

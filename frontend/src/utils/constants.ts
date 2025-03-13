@@ -26,3 +26,4 @@ export const timelineEventOptions = Object.entries(timelineEventLabels).map(
 export const MAX_IMAGE_SIZE = 2097152 // 2MB
 
 export const BORGPAD_TELEGRAM_URL = "https://t.me/borgpad"
+export const FOUNDERS_APPLY_URL = "https://t.me/BorgPadInternApplicationBot"
