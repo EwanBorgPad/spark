@@ -15,6 +15,7 @@ const requestSchema = z.object({
 
 type ENV = {
   DB: D1Database
+  R2: R2Bucket
 }
 /**
  * Get request handler - returns a list of projects
@@ -155,8 +156,24 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       await db.run(sql`INSERT INTO project (id, status, created_at, updated_at, json) VALUES (${id}, ${newStatus}, ${now}, ${now}, ${json})`)
     }
 
+    // nft metadata update
+    let nftMetadataUploaded = false
+    const nftConfig = data.config.nftConfig
+    if (nftConfig) {
+      const nftMetadata = {
+        "name": nftConfig.name,
+        "symbol": nftConfig.symbol,
+        "description": nftConfig.description,
+        "image": nftConfig.imageUrl,
+      }
+      const metadataKey = `${id}/nft-metadata/metadata.json`
+      await ctx.env.R2.put(metadataKey, JSON.stringify(nftMetadata, null, 2))
+      nftMetadataUploaded = true
+    }
+
     const retval = {
-      message: projectExists ? 'Updated!' : 'Created!'
+      message: projectExists ? 'Updated!' : 'Created!',
+      nftMetadataUploaded,
     }
 
     return jsonResponse(retval, 201)

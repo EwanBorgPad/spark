@@ -13,7 +13,7 @@ function generateApiKey(keyName) {
 function generateApiKeys(keyNames) {
   if (!Array.isArray(keyNames)) throw new Error('keyNames must be an array of strings!')
   const keys = keyNames.map(generateApiKey)
-  // console.log(JSON.stringify(keys, null, 2))
+  console.log(JSON.stringify(keys, null, 2))
 
   // insert query generation
   const insertQueries = keys.map(key => 

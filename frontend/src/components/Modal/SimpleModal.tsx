@@ -45,7 +45,7 @@ export function SimpleModal({ children, showCloseBtn, onClose, className, header
   return (
     <Portal id="simple-modal">
       {/* fixed backdrop */}
-      <div ref={backdropRef} className="fixed inset-0 z-20 animate-fade-in bg-overlay bg-opacity-75 px-5"></div>
+      <div ref={backdropRef} className="animate-opacity-in-fast fixed inset-0 z-20 bg-overlay bg-opacity-75 px-5"></div>
 
       {/* modal wrapper */}
       <div className="fixed inset-0 z-[30] flex h-screen w-screen items-center px-5 ">
@@ -56,7 +56,7 @@ export function SimpleModal({ children, showCloseBtn, onClose, className, header
             "mx-auto my-auto overflow-x-hidden overflow-y-scroll",
             "max-h-[95vh] w-[460px] max-w-[90vw]",
             "rounded-[10px] border border-solid border-bd-primary bg-secondary",
-            "animate-fade-in",
+            "animate-fade-in-from-below",
             className,
           )}
         >

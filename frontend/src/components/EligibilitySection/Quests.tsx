@@ -1,6 +1,6 @@
 import { ReactNode, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { QuestWithCompletion } from "shared/eligibilityModel"
+import { EligibilityStatus, QuestWithCompletion } from "shared/eligibilityModel"
 import EnterReferralCode from "./EnterReferralCode"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "../Icon/Icon"
@@ -9,11 +9,12 @@ import { Button } from "../Button/Button"
 import { getSignInWithTwitterUrl } from "@/hooks/useTwitterContext"
 import { ExternalLink } from "../Button/ExternalLink"
 import AcceptTermsOfUseModal from "../Modal/Modals/AcceptTermsOfUseModal"
-import ProvideInvestmentIntentModal from "../Modal/Modals/ProvideInvestmentIntentModal"
+import { ProvideInvestmentIntentModal } from "../Modal/Modals/ProvideInvestmentIntentModal"
 import ProvideEmailModal from "../Modal/Modals/ProvideEmailModal"
+
 import { ProjectModel } from "shared/models"
-import { format } from "node_modules/date-fns/format"
-import { formatDateForDisplay, formatDateForTimer } from "@/utils/date-helpers"
+import { formatDateForTimer } from "@/utils/date-helpers"
+import { useParams } from "react-router-dom"
 
 type QuestComponentProps = {
   quest: QuestWithCompletion
@@ -161,10 +162,23 @@ const AcceptTermsOfUseBtn = () => {
 const ProvideInvestmentIntentBtn = () => {
   const { t } = useTranslation()
   const [showModal, setShowModal] = useState(false)
+  const { address } = useWalletContext()
+  const { projectId } = useParams()
 
   return (
     <div className="mt-2 flex justify-start">
-      <Button color="secondary" size="xs" className="rounded-lg px-3" onClick={() => setShowModal(!showModal)}>
+      <Button color="secondary" size="xs" className="rounded-lg px-3" onClick={
+        () => {
+          window.safary?.track({
+            eventType: "investment-intent",
+            eventName: "2-provide investment intent",
+            parameters: {
+              walletAddress: address as string,
+              toProject: projectId as string,
+            },
+          })
+          setShowModal(!showModal)
+        }}>
         {t("investment.intent.quest.button")}
       </Button>
       {showModal && <ProvideInvestmentIntentModal onClose={() => setShowModal(false)} />}
@@ -206,7 +220,8 @@ export const TierWrapper = ({
   tier,
 }: {
   children: ReactNode
-  tier: Pick<ProjectModel["info"]["tiers"][number], "id" | "label" | "description" | "benefits">
+  tier: Pick<ProjectModel["info"]["tiers"][number], "id" | "label" | "description" | "benefits"> &
+    Partial<Pick<EligibilityStatus["tiers"][number], "isCompleted">>
 }) => {
   const { t } = useTranslation()
 
@@ -225,9 +240,22 @@ export const TierWrapper = ({
   const description = getDescription(tier)
 
   return (
-    <div key={tier.id} className="relative flex flex-col gap-2 rounded-lg p-2">
-      <div className="flex flex-col">
-        <span>{tier.label}</span>
+    <div
+      key={tier.id}
+      className={twMerge(
+        "relative flex flex-col gap-2 rounded-lg border-[1px] border-bd-secondary bg-default p-4",
+        tier?.isCompleted && "border-bd-success-primary",
+      )}
+    >
+      <div className="flex flex-col gap-1">
+        <div className="flex w-full items-center justify-between">
+          <span>{tier.label}</span>
+          {tier?.isCompleted ? (
+            <span className="text-sm text-fg-success-primary">Eligible</span>
+          ) : (
+            <span className="text-sm text-fg-error-primary">Not Eligible</span>
+          )}
+        </div>
         {description && <span className="text-xs text-fg-secondary">{description}</span>}
       </div>
       <div className="flex flex-col gap-2 rounded-2xl">
