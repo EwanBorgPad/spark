@@ -150,7 +150,7 @@
   "referral.message": "I acknowledge that I have been referred to {{ projectId }} by {{ twitterHandle }}",
 
   "email.provide.heading": "Provide your email",
-  "email.provide.description": "We will use this email to send you important updates about your investments.",
+  "email.provide.description": "Your email will not be sold—it will only be used to communicate updates about your investments and upcoming opportunities.",
   "email.provide.button": "Provide Email",
   "email.register.placeholder": "Enter your email",
   "email.provide.message": "I acknowledge that I plan to provide my email",
