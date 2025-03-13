@@ -1,5 +1,6 @@
 import {
   AcceptTermsRequest,
+  CreateEmailRequest,
   DepositStatus,
   GetExchangeResponse,
   GetPresignedUrlResponse,
@@ -37,7 +38,6 @@ const SEND_CLAIM_TRANSACTION = API_BASE_URL + "/sendclaimtransaction"
 const POST_AFTER_SALE_UPDATE = API_BASE_URL + "/projects/after-sale-update"
 const UPDATE_JSON = API_BASE_URL + "/projects/update-json"
 
-const GET_EMAIL_API = API_BASE_URL + "/email"
 const POST_CREATE_EMAIL = API_BASE_URL + "/createemail"
 
 const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
@@ -460,42 +460,15 @@ const updateJson = async (args: UpdateJsonArgs): Promise<void> => {
   if (!response.ok) throw new Error("Project update error!")
 }
 
+type CreateEmailArgs = CreateEmailRequest
+const postCreateEmail = async (args: CreateEmailArgs): Promise<void> => {
+  const url = new URL(POST_CREATE_EMAIL, window.location.href)
 
-const getEmail = async ({ wallet_address }: { wallet_address: string }) => {
-  const response = await fetch(`${GET_EMAIL_API}?wallet=${wallet_address}`)
-  if (!response.ok) throw new Error("Failed to get email")
-  return response.json()
-}
-
-const createEmail = async ({ 
-  email, 
-  publicKey, 
-  message, 
-  signature 
-}: { 
-  email: string
-  publicKey: string
-  message: string
-  signature: number[]
-}) => {
-  const response = await fetch(POST_CREATE_EMAIL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ 
-      email, 
-      publicKey,
-      message,
-      signature 
-    }),
+  await failFastFetch(url, {
+    body: JSON.stringify(args),
+    method: "post",
   })
-  if (!response.ok) throw new Error("Failed to update email")
-  return response.json()
 }
-
-
-
 
 export const backendApi = {
   getProject,
@@ -519,6 +492,5 @@ export const backendApi = {
   postSendClaimTransaction,
   postAfterSaleUpdate,
   updateJson,
-  getEmail,
-  createEmail,
+  postCreateEmail,
 }

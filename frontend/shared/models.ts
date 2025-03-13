@@ -37,9 +37,9 @@ export type UserModelJson = {
     signature: number[]
   }>
   emailIntent?: {
-    email: string
-    message: string
-    signature: number[]
+    email: string,
+    providedAt: Date,
+    acceptedTextSigned: string
   }
 }
 /**
@@ -231,17 +231,12 @@ export const InvestmentIntentSummarySchema = z.object({
 export type InvestmentIntentSummary = z.infer<typeof InvestmentIntentSummarySchema>
 
 export const CreateEmailRequestSchema = z.object({
-  publicKey: z.string(),
   email: z.string(),
+  publicKey: z.string(),
   message: z.string(),
   signature: z.array(z.number().int()),
 })
 export type CreateEmailRequest = z.infer<typeof CreateEmailRequestSchema>
-
-export const GetEmailRequestSchema = z.object({
-  publicKey: z.string(),
-})
-export type GetEmailRequest = z.infer<typeof GetEmailRequestSchema>
 
 export type TokenAmountModel = {
   /**

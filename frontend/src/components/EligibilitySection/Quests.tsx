@@ -186,7 +186,7 @@ const ProvideEmailBtn = () => {
       >
         {t("email.provide.button")}
       </Button>
-      {showModal && <ProvideEmailModal onClose={() => setShowModal(false)} variant="provide" />}
+      {showModal && <ProvideEmailModal onClose={() => setShowModal(false)} />}
     </div>
   )
 }

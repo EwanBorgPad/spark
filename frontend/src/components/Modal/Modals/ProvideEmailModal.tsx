@@ -4,12 +4,13 @@ import { Button } from "@/components/Button/Button"
 import { useTranslation } from "react-i18next"
 import { backendApi } from "@/data/backendApi"
 import { useWalletContext } from "@/hooks/useWalletContext"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { EmailInputField } from "@/components/InputField/EmailInputField"
 import React, { useState } from "react"
 import { useParams } from "react-router-dom"
 import { Badge } from "@/components/Badge/Badge"
 import { toast } from "react-toastify"
+import { eligibilityStatusCacheBust } from "@/utils/cache-helper"
 
 type ProvideEmailModalProps = {
   onClose: () => void
@@ -19,42 +20,42 @@ const ProvideEmailModal = ({ onClose }: ProvideEmailModalProps) => {
   const { t } = useTranslation()
   const { address, signMessage } = useWalletContext()
   const { projectId } = useParams()
-  
-  const [email, setEmail] = useState<string | null>(null)
+  const queryClient = useQueryClient()
 
-  const { data: existingEmail } = useQuery({
-    queryKey: ["getEmail", address],
-    queryFn: () => backendApi.getEmail({ wallet_address: address }),
-    enabled: !!address,
-  })
 
   const {
     mutate: updateEmail,
     isPending,
     isSuccess,
   } = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (address: string) => {
       if (!address || !email || !projectId) return
-
-      const message = t("email.provide.message", {
-        email,
-        projectId,
-      })
+      const message = t("email.provide.message", { email })
 
       const signature = await signMessage(message)
 
-      await backendApi.createEmail({
+      const data = {
         email,
         publicKey: address,
+        // TODO no nonce or expiration, possibly a security concern
         message,
         signature: Array.from(signature),
-      })
+      }
+
+      await backendApi.postCreateEmail(data)
     },
     onSuccess: () => {
-      toast.success(t("email.register.success"))
+      eligibilityStatusCacheBust.invokeCacheBusting()
+      queryClient.invalidateQueries({
+        queryKey: ["getEligibilityStatus", address, projectId],
+      })
+      onClose()
     },
-    onError: (error) => toast.error(error.message),
+    onError: (error) => toast.error(error.message, { theme: "colored" }),
   })
+
+  const [email, setEmail] = useState<string | null>(null)
+
 
   function isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -91,8 +92,8 @@ const ProvideEmailModal = ({ onClose }: ProvideEmailModalProps) => {
             <Button
               disabled={!email || isPending || !isValidEmail(email)}
               isLoading={isPending}
-              btnText={existingEmail?.email ? t("email.update.button") : t("email.provide.button")}
-              onClick={() => updateEmail()}
+              btnText={t("email.provide.button")}
+              onClick={() => updateEmail(address)}
             />
           )}
         </div>

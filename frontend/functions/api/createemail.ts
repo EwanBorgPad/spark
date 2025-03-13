@@ -51,7 +51,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     console.log({ existingUser })
 
-    const emailIntent = { email, message, signature, providedAt: new Date() }
+    const emailIntent = { email, providedAt: new Date(), acceptedTextSigned: message }
 
     if (!existingUser) {
       console.log("User not found in db, inserting...")
