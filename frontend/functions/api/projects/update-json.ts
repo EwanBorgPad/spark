@@ -1,12 +1,8 @@
-import { GetProjectsResponse, InvestmentIntentSummary, ProjectModel, projectSchema, ProjectTypeSchema } from "../../../shared/models"
-import {
-  hasAdminAccess,
-  jsonResponse,
-  reportError,
-} from "../cfPagesFunctionsUtils"
+import { projectSchema } from "../../../shared/models"
+import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 import { projectTable } from "../../../shared/drizzle-schema"
-import { count, eq, sql } from "drizzle-orm"
-import { drizzle, DrizzleD1Database } from "drizzle-orm/d1"
+import { eq, sql } from "drizzle-orm"
+import { drizzle } from "drizzle-orm/d1"
 import { z } from 'zod'
 import nacl from "tweetnacl"
 import { decodeUTF8 } from "tweetnacl-util"
