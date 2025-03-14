@@ -36,6 +36,11 @@ export type UserModelJson = {
     message: string
     signature: number[]
   }>
+  emailData?: {
+    email: string,
+    providedAt: Date,
+    acceptedTextSigned: string
+  }
 }
 /**
  * Represents url type
@@ -235,6 +240,14 @@ export const InvestmentIntentSummarySchema = z.object({
   count: z.number(),
 })
 export type InvestmentIntentSummary = z.infer<typeof InvestmentIntentSummarySchema>
+
+export const CreateEmailRequestSchema = z.object({
+  email: z.string(),
+  publicKey: z.string(),
+  message: z.string(),
+  signature: z.array(z.number().int()),
+})
+export type CreateEmailRequest = z.infer<typeof CreateEmailRequestSchema>
 
 export type TokenAmountModel = {
   /**
