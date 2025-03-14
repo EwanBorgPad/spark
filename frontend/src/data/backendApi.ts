@@ -1,5 +1,6 @@
 import {
   AcceptTermsRequest,
+  CreateEmailRequest,
   DepositStatus,
   GetExchangeResponse,
   GetPresignedUrlResponse,
@@ -36,6 +37,8 @@ const SEND_DEPOSIT_TRANSACTION = API_BASE_URL + "/senddeposittransaction"
 const SEND_CLAIM_TRANSACTION = API_BASE_URL + "/sendclaimtransaction"
 const POST_AFTER_SALE_UPDATE = API_BASE_URL + "/projects/after-sale-update"
 const UPDATE_JSON = API_BASE_URL + "/projects/update-json"
+
+const POST_CREATE_EMAIL = API_BASE_URL + "/createemail"
 
 const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
   const response = await fetch(...args)
@@ -457,6 +460,15 @@ const updateJson = async (args: UpdateJsonArgs): Promise<void> => {
   if (!response.ok) throw new Error("Project update error!")
 }
 
+type CreateEmailArgs = CreateEmailRequest
+const postCreateEmail = async (args: CreateEmailArgs): Promise<void> => {
+  const url = new URL(POST_CREATE_EMAIL, window.location.href)
+
+  await failFastFetch(url, {
+    body: JSON.stringify(args),
+    method: "post",
+  })
+}
 
 export const backendApi = {
   getProject,
@@ -480,4 +492,5 @@ export const backendApi = {
   postSendClaimTransaction,
   postAfterSaleUpdate,
   updateJson,
+  postCreateEmail,
 }
