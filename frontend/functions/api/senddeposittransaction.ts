@@ -61,12 +61,12 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         const now = new Date()
 
         const saleOpensDate = project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date
-          ? new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date)
-          : null
+            ? new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_OPENS')?.date)
+            : null
 
         const saleClosesDate = project.json.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date
-          ? new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date)
-          : null
+            ? new Date(project.json.info.timeline.find(timeline => timeline.id === 'SALE_CLOSES')?.date)
+            : null
 
         if (!saleOpensDate) throw new Error(`SALE_OPENS not found for (${projectId})!`)
         if (!saleClosesDate) throw new Error(`SALE_CLOSES not found for (${projectId})!`)
@@ -87,7 +87,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         if (saleResults.raiseTargetReached) return jsonResponse({ errorCode: 'PROJECT_RAISE_TARGET_REACHED' }, 409)
 
         console.log('raiseTargetNotReached confirmed.')
-        
+
         /////////////////////////////////////////
         ////////////// HAPPY FLOW ///////////////
         /////////////////////////////////////////
