@@ -322,7 +322,7 @@ async function mintNftAndCreateTransferNftInstructions({
     umi.use(mplTokenMetadata())
 
     const metadataKey = `${projectId}/nft-metadata/metadata.json`
-    const metadataUrl = new URL(metadataKey, projectId).href
+    const metadataUrl = new URL(metadataKey, r2BucketBaseUrl).href
     // make tx for minting nft
     const builder = transactionBuilder().add(createProgrammableNft(umi, {
         symbol: nftConfig.symbol,
