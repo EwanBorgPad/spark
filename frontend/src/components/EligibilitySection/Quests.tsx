@@ -10,8 +10,6 @@ import { getSignInWithTwitterUrl } from "@/hooks/useTwitterContext"
 import { ExternalLink } from "../Button/ExternalLink"
 import AcceptTermsOfUseModal from "../Modal/Modals/AcceptTermsOfUseModal"
 import { ProvideInvestmentIntentModal } from "../Modal/Modals/ProvideInvestmentIntentModal"
-import ProvideEmailModal from "../Modal/Modals/ProvideEmailModal"
-
 import { ProjectModel } from "shared/models"
 import { formatDateForTimer } from "@/utils/date-helpers"
 import { useParams } from "react-router-dom"
@@ -43,12 +41,6 @@ export const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
         label: t("investment.intent.quest.heading"),
         description: "",
         additionalElement: <ProvideInvestmentIntentBtn />,
-      }
-    if (type === "PROVIDE_EMAIL")
-      return {
-        label: t("email.provide.heading"),
-        description: "",
-        additionalElement: <ProvideEmailBtn />,
       }
 
     if (type === "FOLLOW_ON_TWITTER")
@@ -182,25 +174,6 @@ const ProvideInvestmentIntentBtn = () => {
         {t("investment.intent.quest.button")}
       </Button>
       {showModal && <ProvideInvestmentIntentModal onClose={() => setShowModal(false)} />}
-    </div>
-  )
-}
-
-const ProvideEmailBtn = () => {
-  const { t } = useTranslation()
-  const [showModal, setShowModal] = useState(false)
-
-  return (
-    <div className="mt-2 flex justify-start">
-      <Button 
-        color="secondary" 
-        size="xs" 
-        className="rounded-lg px-3" 
-        onClick={() => setShowModal(!showModal)}
-      >
-        {t("email.provide.button")}
-      </Button>
-      {showModal && <ProvideEmailModal onClose={() => setShowModal(false)} />}
     </div>
   )
 }
