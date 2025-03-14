@@ -36,7 +36,7 @@ export type UserModelJson = {
     message: string
     signature: number[]
   }>
-  emailIntent?: {
+  emailData?: {
     email: string,
     providedAt: Date,
     acceptedTextSigned: string

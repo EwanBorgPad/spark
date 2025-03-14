@@ -51,12 +51,12 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     console.log({ existingUser })
 
-    const emailIntent = { email, providedAt: new Date(), acceptedTextSigned: message }
+    const emailData = { email, providedAt: new Date(), acceptedTextSigned: message }
 
     if (!existingUser) {
       console.log("User not found in db, inserting...")
       const json: UserModelJson = {
-        emailIntent: emailIntent,
+        emailData: emailData,
       }
       await db
         .prepare("INSERT INTO user (address, json) VALUES (?1, ?2)")
@@ -67,7 +67,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       console.log("User found in db, updating...")
 
       const json: UserModelJson = existingUser.json ?? {}
-      json.emailIntent = emailIntent
+      json.emailData = emailData
 
       await db
         .prepare("UPDATE user SET json = ?2 WHERE address = ?1")
