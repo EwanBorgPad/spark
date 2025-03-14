@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "prepare": "husky",
     "precommit": "npm run lint && npm run format",
-    "clean-deployments": "node --env-file=.env scripts/cleanupDeployments.js"
+    "clean-deployments": "node --env-file=.env scripts/cleanupDeployments.js",
+    "start-workers": "npx wrangler pages dev dist"
   },
   "dependencies": {
     "@cloudflare/pages-plugin-sentry": "^1.1.4",
