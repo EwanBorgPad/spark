@@ -11,6 +11,7 @@ const requestSchema = z.object({
   page: z.coerce.number().int().default(1),
   limit: z.coerce.number().int().default(9),
   projectType: ProjectTypeSchema.optional(),
+  sortByCommitments: z.enum(['asc', 'desc']).optional(),
 })
 
 type ENV = {
@@ -42,8 +43,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
 type GetProjectsFromDbArgs = z.infer<typeof requestSchema>
 const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbArgs): Promise<GetProjectsResponse | null> => {
-  const projectType = args.projectType
-  const { page, limit } = args
+  const { projectType, sortByCommitments, page, limit } = args
   const offset = (page - 1) * limit
 
   const whereConditions = and(
@@ -61,16 +61,16 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
   const total = countResult || 0
   const totalPages = Math.ceil(total / limit)
 
-  // For draft-picks, we need to get all projects first to sort by investment intent
-  const isDraftPick = projectType === 'draft-pick'
+  // If sorting by commitments, we need to get all projects first to sort
+  const shouldSortByCommitments = Boolean(sortByCommitments)
   
-  // Get projects - for draft picks get all, for others apply pagination in query
+  // Get projects - if sorting by commitments get all, otherwise apply pagination in query
   const projectsResult = await db
     .select()
     .from(projectTable)
     .where(whereConditions)
-    .limit(isDraftPick ? undefined : limit)
-    .offset(isDraftPick ? undefined : offset)
+    .limit(shouldSortByCommitments ? undefined : limit)
+    .offset(shouldSortByCommitments ? undefined : offset)
     .all()
   
   // Get project IDs for investment intent query
@@ -91,10 +91,10 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
     `
   ) as { project_id: string, sum: number, avg: number, count: number }[];
 
-  // Process projects based on type
+  // Process projects based on sorting preference
   let processedProjects = projectsResult;
   
-  if (isDraftPick) {
+  if (shouldSortByCommitments) {
     // Create a map for quick lookup of investment summaries
     const summaryMap = new Map(
       investmentIntentSummaries.map(summary => [summary.project_id, summary])
@@ -106,10 +106,12 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       investmentSummary: summaryMap.get(project.id) || { sum: 0, avg: 0, count: 0 }
     }));
     
-    // Sort by investment intent sum (descending)
-    const sortedProjects = projectsWithSummaries.sort((a, b) => 
-      (b.investmentSummary.sum || 0) - (a.investmentSummary.sum || 0)
-    );
+    // Sort by investment intent sum
+    const sortedProjects = projectsWithSummaries.sort((a, b) => {
+      const sumA = a.investmentSummary.sum || 0;
+      const sumB = b.investmentSummary.sum || 0;
+      return sortByCommitments === 'desc' ? sumB - sumA : sumA - sumB;
+    });
     
     // Apply pagination after sorting
     processedProjects = sortedProjects.slice(offset, offset + limit);
@@ -118,7 +120,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
   // Map projects to return format
   const retvalProjects: (ProjectModel & { investmentIntentSummary: InvestmentIntentSummary })[] = 
     processedProjects.map(project => {
-      const summary = isDraftPick 
+      const summary = shouldSortByCommitments 
         ? (project as any).investmentSummary 
         : investmentIntentSummaries.find(summary => summary.project_id === project.id);
         
