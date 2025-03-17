@@ -57,6 +57,8 @@ export const PastOrders = ({ label, className }: PastOrdersProps) => {
       subLabel={`(${depositsCount})`}
       maxChildrenHeight={MAX_ACCORDION_CONTAINER_HEIGHT}
       className={className}
+      disabled={!deposits.length}
+      questionClassName="disabled:bg-opacity-100"
     >
       {deposits.map((deposit, index) => {
         return (

@@ -3,9 +3,8 @@ import { Button } from "../Button/Button"
 import useScrollAnimation from "@/hooks/useScrollAnimation"
 import { twMerge } from "tailwind-merge"
 import { useWindowSize } from "@/hooks/useWindowSize"
-
-const GITBOOK_URL = "https://docs.borgpad.com/"
-const FOUNDERS_APPLY_URL = "https://borgpad.formo.so/founders"
+import { FOUNDERS_APPLY_URL } from "@/utils/constants"
+import { ROUTES } from "@/utils/routes"
 
 const DontBeACexToy = () => {
   const headingRef = useRef<HTMLHeadingElement | null>(null)
@@ -98,7 +97,7 @@ const DontBeACexToy = () => {
         </div>
       </div>
       <div className="flex w-full flex-col gap-4 pt-3 md:mt-10 md:max-w-[320px] md:pt-4">
-        <a href={GITBOOK_URL} target={"_blank"} rel="noreferrer" className="w-full">
+        <a href={ROUTES.DOCS} target={"_blank"} rel="noreferrer" className="w-full">
           <Button
             btnText="Dive into Our Vision"
             size="xl"

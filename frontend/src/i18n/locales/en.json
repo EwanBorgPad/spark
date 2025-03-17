@@ -147,5 +147,12 @@
   "launch_pools.reward_distribution_ends": "Reward distribution ends {{ text }}",
   "launch_pools.reward_distribution_ended": "Reward distribution ended {{ text }}",
 
-  "referral.message": "I acknowledge that I have been referred to {{ projectId }} by {{ twitterHandle }}"
+  "referral.message": "I acknowledge that I have been referred to {{ projectId }} by {{ twitterHandle }}",
+
+  "email.provide.heading": "Provide your email",
+  "email.provide.description": "Your email will not be sold—it will only be used to communicate updates about your investments and upcoming opportunities.",
+  "email.provide.button": "Provide Email",
+  "email.register.placeholder": "Enter your email",
+  "email.provide.message": "I acknowledge that I plan to provide my email",
+  "email.invalid": "Invalid email address"
 }

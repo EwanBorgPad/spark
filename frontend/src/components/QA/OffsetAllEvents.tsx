@@ -1,14 +1,12 @@
-import { useMemo, useRef, useState } from "react"
-import { twMerge } from "tailwind-merge"
+import { useMemo, useState } from "react"
 
-
-import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import { addMinutes } from "date-fns/addMinutes"
 import { addHours } from "date-fns/addHours"
 import { addDays } from "date-fns/addDays"
 import { addWeeks } from "date-fns/addWeeks"
 import { Button } from "../Button/Button"
+import { TierType } from "shared/eligibilityModel"
 
 const TIMESPANS = ["weeks", "days", "hours", "minutes"] as const
 type ChangeType = (typeof TIMESPANS)[number]
@@ -18,36 +16,19 @@ type UpdateEventsProps = {
 }
 type OffsetEventInputType = {
   changeType: ChangeType
-  updateEvents: (
-    changeType: ChangeType,
-    valueChange: UpdateEventsProps["valueChange"],
-  ) => void
+  updateEvents: (changeType: ChangeType, valueChange: UpdateEventsProps["valueChange"]) => void
   currentOffset: Record<ChangeType, number>
 }
 const defaultOffset = { weeks: 0, days: 0, hours: 0, minutes: 0 }
 
-const OffsetEventInput = ({
-  currentOffset,
-  changeType,
-  updateEvents,
-}: OffsetEventInputType) => {
+const OffsetEventInput = ({ currentOffset, changeType, updateEvents }: OffsetEventInputType) => {
   return (
     <div className="flex w-full items-center justify-between">
       <span className="text-sm capitalize">{changeType}</span>
       <div className="flex items-center gap-2">
-        <Button
-          size="xs"
-          color="secondary"
-          btnText="-"
-          onClick={() => updateEvents(changeType, -1)}
-        />
+        <Button size="xs" color="secondary" btnText="-" onClick={() => updateEvents(changeType, -1)} />
         <span className="w-5 text-center">{currentOffset[changeType]}</span>
-        <Button
-          size="xs"
-          color="secondary"
-          btnText="+"
-          onClick={() => updateEvents(changeType, 1)}
-        />
+        <Button size="xs" color="secondary" btnText="+" onClick={() => updateEvents(changeType, 1)} />
       </div>
     </div>
   )
@@ -85,12 +66,16 @@ const OffsetAllEvents = () => {
     }
 
     const newTimeline = projectData?.info.timeline.map((event) => {
-      return { ...event, date: event?.date ? updateEvent(event?.date) : null }
+      return { ...event, date: event?.date ? updateEvent(event.date) : null }
     })
-    if (!newTimeline || !projectData) return
+    const newTiers: TierType[] | undefined = projectData?.info.tiers.map((tier) => {
+      const { startDate, ...restOfBenefits } = tier.benefits
+      return { ...tier, benefits: { ...restOfBenefits, startDate: startDate ? updateEvent(startDate) : null } }
+    })
+    if (!newTimeline || !projectData || !newTiers) return
     setProjectData({
       ...projectData,
-      info: { ...projectData?.info, timeline: newTimeline },
+      info: { ...projectData?.info, timeline: newTimeline, tiers: newTiers },
     })
   }
 
@@ -103,29 +88,19 @@ const OffsetAllEvents = () => {
     })
   }
 
-
   return (
-    <div className="w-full flex justify-end">
+    <div className="flex w-full justify-end">
       <div className="flex w-full flex-col gap-4 rounded-2xl border-[1px] border-brand-primary/10 bg-default p-4">
-        <span className="text-base">Offset All Events</span>
-        
+        <p className="flex flex-col">
+          <span className="text-base">Offset All Events</span>
+          <span className="text-xs text-fg-secondary">Offset dates of all project phases and tiers.</span>
+        </p>
         <div className="flex w-full flex-col gap-2 rounded-md">
-
           {TIMESPANS.map((timespan) => (
-            <OffsetEventInput
-              key={timespan}
-              changeType={timespan}
-              updateEvents={updateEvents}
-              currentOffset={offset}
-            />
+            <OffsetEventInput key={timespan} changeType={timespan} updateEvents={updateEvents} currentOffset={offset} />
           ))}
         </div>
-        <Button
-          size="xs"
-          color="primary"
-          btnText="Reset"
-          onClick={resetOffset}
-        />
+        <Button size="xs" color="primary" btnText="Reset" onClick={resetOffset} />
       </div>
     </div>
   )

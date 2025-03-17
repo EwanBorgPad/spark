@@ -17,6 +17,9 @@ import { backendApi } from "@/data/backendApi.ts"
 import DataRoom from "@/components/LaunchPool/DataRoom"
 import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
+import { useProjectDataContext } from "@/hooks/useProjectData"
+import LiveNowCountdown from "@/Countdown/LiveNowCountdown"
+import { isBefore } from "date-fns"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType
@@ -25,6 +28,7 @@ type LiveNowProps = {
 
 const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
   const { t } = useTranslation()
+  const { projectData } = useProjectDataContext()
   const joinThePoolRef = useRef<HTMLDivElement>(null)
 
   const { address } = useWalletContext()
@@ -42,7 +46,6 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
   })
 
   const isUserEligible = eligibilityStatusData?.isEligible
-  const tierBenefits = eligibilityStatusData?.eligibilityTier?.benefits
 
   const scrollToJoinThePool = () => {
     const top = joinThePoolRef.current?.getBoundingClientRect().top ?? 0
@@ -51,6 +54,16 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
       top: top - 100,
     })
   }
+
+  const getCurrentTierLabel = () => {
+    if (!projectData?.info.tiers) return
+    const currentTier = projectData.info.tiers.findLast((tier) => {
+      if (!tier.benefits.startDate) return false
+      return isBefore(tier.benefits.startDate, new Date())
+    })
+    return currentTier?.label ?? null
+  }
+  const currentTierLabel = getCurrentTierLabel()
 
   return (
     <div className="flex w-full flex-col items-center px-4">
@@ -76,14 +89,8 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
 
         <SaleProgress />
         <div className="flex w-full max-w-[432px] flex-col gap-5">
-          <TgeWrapper label={t("tge.live_now")}>
-            {eventData?.nextEventDate && (
-              <CountDownTimer
-                endOfEvent={eventData.nextEventDate}
-                labelAboveTimer={`Ends on ${formatDateForTimer(eventData.nextEventDate)}`}
-                className={twMerge(tierBenefits && "h-fit pb-3")}
-              />
-            )}
+          <TgeWrapper label={`${t("tge.live_now")}${currentTierLabel ? ` - ${currentTierLabel}` : ""}`}>
+            <LiveNowCountdown project={projectData} />
             <LiveNowExchange scrollToEligibilitySection={scrollToJoinThePool} eligibilitySectionRef={joinThePoolRef} />
           </TgeWrapper>
           {isUserEligible && (

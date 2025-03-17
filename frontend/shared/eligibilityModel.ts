@@ -58,6 +58,12 @@ const WhitelistQuestSchema = BaseQuestSchema.extend({
   type: z.literal('WHITELIST'),
 })
 /**
+ * Requires the User to provide their email.
+ */
+const ProvideEmailQuestSchema = BaseQuestSchema.extend({
+  type: z.literal('PROVIDE_EMAIL'),
+})
+/**
  * Quests that the User does in order to become eligible.
  * Quests names should be in imperative, like HOLD_TOKEN, FOLLOW_ON_X, not in passive like HOLDS, FOLLOWS.
  * Previously had DONT_RESIDE_IN_US, but that is now part of compliance, not quests anymore.
@@ -69,6 +75,7 @@ const QuestSchema = z.discriminatedUnion("type", [
   ProvideInvestmentIntentQuestSchema,
   WhitelistQuestSchema,
   ReferralQuestSchema,
+  ProvideEmailQuestSchema,
 ])
 export type Quest = z.infer<typeof QuestSchema>
 /**
@@ -87,6 +94,7 @@ const QuestWithCompletionSchema = z.union([
   ProvideInvestmentIntentQuestSchema.merge(CompletionSchema),
   ReferralQuestSchema.merge(CompletionSchema),
   WhitelistQuestSchema.merge(CompletionSchema),
+  ProvideEmailQuestSchema.merge(CompletionSchema),
 ])
 export type QuestWithCompletion = z.infer<typeof QuestWithCompletionSchema>
 export type QuestType = z.infer<typeof QuestSchema>['type']
@@ -113,6 +121,7 @@ export const TierSchema = z.object({
   quests: z.array(QuestSchema).min(QUESTS_MIN_LENGTH),
   benefits: BenefitsSchema,
 })
+export type TierType = z.infer<typeof TierSchema>
 /**
  * Same as TierSchema but with QuestWithCompletionSchema.
  * This should be served to the frontend.
