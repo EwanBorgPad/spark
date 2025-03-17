@@ -34,8 +34,19 @@ const DraftPicks = () => {
 
   useEffect(() => {
     if (!data?.projects) return
-    const sortedProjects = sortProjectsPerStatus(data.projects)
-    setPhases(sortedProjects)
+    
+    // First get projects organized by status
+    const projectsByStatus = sortProjectsPerStatus(data.projects)
+    
+    // Flatten and sort all projects by investment intent
+    const sortedByInvestmentIntent = projectsByStatus.flat().sort((a, b) => {
+      const investmentSumA = a.investmentIntentSummary?.sum || 0
+      const investmentSumB = b.investmentIntentSummary?.sum || 0
+      return investmentSumB - investmentSumA // Descending order (higher values first)
+    })
+    
+    // Set as a single phase for display
+    setPhases([sortedByInvestmentIntent])
   }, [data?.projects])
 
   return (
