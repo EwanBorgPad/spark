@@ -42,9 +42,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
 type GetProjectsFromDbArgs = z.infer<typeof requestSchema>
 const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbArgs): Promise<GetProjectsResponse | null> => {
-
   const projectType = args.projectType
-  
   const { page, limit } = args
   const offset = (page - 1) * limit
 
@@ -54,32 +52,49 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
     projectType ? sql`json -> 'info' ->> 'projectType' = ${projectType}` : undefined,
   )
   
-  // For draft-picks, we need to sort by investment intent
-  if (projectType === 'draft-pick') {
-    // Get all projects that match criteria
-    const projectsResult = await db
-      .select()
-      .from(projectTable)
-      .where(whereConditions)
-      .all()
-    
-    const projectIds = projectsResult.map(project => project.id)
-    
-    // Get investment intent summaries
-    const investmentIntentSummaries = await db.all(
-      sql`
-        SELECT
-          json_each.key AS project_id,
-          SUM(json_each.value ->> 'amount') AS sum,
-          AVG(json_each.value ->> 'amount') AS avg,
-          COUNT(json_each.value ->> 'amount') AS count
-        FROM user, 
-        json_each(user.json, '$.investmentIntent') 
-        WHERE json_each.key IN (${sql.join(projectIds, sql`, `)})
-        GROUP BY json_each.key;
-      `
-    ) as { project_id: string, sum: number, avg: number, count: number }[];
+  // Get count for pagination
+  const countQuery = db
+    .select({ count: count() })
+    .from(projectTable)
+    .where(whereConditions)
+  const countResult = (await countQuery.get()).count
+  const total = countResult || 0
+  const totalPages = Math.ceil(total / limit)
 
+  // For draft-picks, we need to get all projects first to sort by investment intent
+  const isDraftPick = projectType === 'draft-pick'
+  
+  // Get projects - for draft picks get all, for others apply pagination in query
+  const projectsResult = await db
+    .select()
+    .from(projectTable)
+    .where(whereConditions)
+    .limit(isDraftPick ? undefined : limit)
+    .offset(isDraftPick ? undefined : offset)
+    .all()
+  
+  // Get project IDs for investment intent query
+  const projectIds = projectsResult.map(project => project.id)
+  
+  // Get investment intent summaries for all projects
+  const investmentIntentSummaries = await db.all(
+    sql`
+      SELECT
+        json_each.key AS project_id,
+        SUM(json_each.value ->> 'amount') AS sum,
+        AVG(json_each.value ->> 'amount') AS avg,
+        COUNT(json_each.value ->> 'amount') AS count
+      FROM user, 
+      json_each(user.json, '$.investmentIntent') 
+      WHERE json_each.key IN (${sql.join(projectIds, sql`, `)})
+      GROUP BY json_each.key;
+    `
+  ) as { project_id: string, sum: number, avg: number, count: number }[];
+
+  // Process projects based on type
+  let processedProjects = projectsResult;
+  
+  if (isDraftPick) {
     // Create a map for quick lookup of investment summaries
     const summaryMap = new Map(
       investmentIntentSummaries.map(summary => [summary.project_id, summary])
@@ -97,77 +112,23 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
     );
     
     // Apply pagination after sorting
-    const paginatedProjects = sortedProjects.slice(offset, offset + limit);
-    
-    const countQuery = db
-      .select({ count: count() })
-      .from(projectTable)
-      .where(whereConditions)
-    const countResult = (await countQuery.get()).count
-
-    const total = countResult || 0
-    const totalPages = Math.ceil(total / limit)
-
-    const retvalProjects: (ProjectModel & { investmentIntentSummary: InvestmentIntentSummary })[] = 
-      paginatedProjects.map(project => ({
-        ...project.json,
-        investmentIntentSummary: project.investmentSummary,
-      }))
-
-    const response = {
-      projects: retvalProjects,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-      },
-    }
-    return response
+    processedProjects = sortedProjects.slice(offset, offset + limit);
   }
   
-  // For other project types, use the original logic
-  const projectsResult = await db
-    .select()
-    .from(projectTable)
-    .where(whereConditions)
-    .limit(limit)
-    .offset(offset)
-    .all()
-  
-  const countQuery = db
-    .select({ count: count() })
-    .from(projectTable)
-    .where(whereConditions)
-  const countResult = (await countQuery.get()).count
-
-  const total = countResult || 0
-  const totalPages = Math.ceil(total / limit)
-
-  // add investment intent summary (commitments) to the response
-  const projectIds = projectsResult.map(project => project.id)
-  const investmentIntentSummaries =  await db.all(
-    sql`
-      SELECT
-        json_each.key AS project_id,
-        SUM(json_each.value ->> 'amount') AS sum,
-        AVG(json_each.value ->> 'amount') AS avg,
-        COUNT(json_each.value ->> 'amount') AS count
-      FROM user, 
-      json_each(user.json, '$.investmentIntent') 
-      WHERE json_each.key IN (${sql.join(projectIds, sql`, `)})
-      GROUP BY json_each.key;
-    `
-  ) as { project_id: string, sum: number, avg: number, count: number }[];
-
+  // Map projects to return format
   const retvalProjects: (ProjectModel & { investmentIntentSummary: InvestmentIntentSummary })[] = 
-    projectsResult
-      .map(project => ({
+    processedProjects.map(project => {
+      const summary = isDraftPick 
+        ? (project as any).investmentSummary 
+        : investmentIntentSummaries.find(summary => summary.project_id === project.id);
+        
+      return {
         ...project.json,
-        investmentIntentSummary: investmentIntentSummaries.find(summary => summary.project_id === project.id),
-      }))
+        investmentIntentSummary: summary,
+      };
+    });
 
-  const response = {
+  return {
     projects: retvalProjects,
     pagination: {
       page,
@@ -175,8 +136,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       total,
       totalPages,
     },
-  }
-  return response
+  };
 }
 
 ////////////////////////////////////////////////
