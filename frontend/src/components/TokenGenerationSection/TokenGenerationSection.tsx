@@ -39,10 +39,9 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
 
   const updateTgeStatus = useCallback(() => {
     if (isLoading) return
-    // if sale is live, saleData will be truthy. In that case if raise target has been reached.
-    const hasDistributionStarted = currentTgeEvent?.id === "REWARD_DISTRIBUTION"
-    if (hasDistributionStarted) return
     if (saleData && saleData.raiseTargetReached) {
+      if (currentTgeEvent?.id !== "SALE_OPENS") return
+      // if sale is live and target has been reached => close the sale
       const saleOverEvent = expandedTimeline.find((event) => event.id === "SALE_CLOSES")
       if (!saleOverEvent) return
       setCurrentTgeEvent(saleOverEvent)

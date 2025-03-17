@@ -29,9 +29,6 @@ const TokenRewards = ({ raisedTokenInput, raisedTokenPriceInUSD, isYourContribut
     borgPriceInUSD: raisedTokenPriceInUSD,
   })
 
-  const numberOfMonths = projectData.config.rewardsDistributionTimeInMonths
-  const remainingMonths = projectData.config.rewardsDistributionTimeInMonths - 1
-
   const rewardDistributionLabel = getRewardDistributionMessage(projectData)
 
   return (

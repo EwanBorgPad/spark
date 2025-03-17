@@ -10,6 +10,7 @@ import { Icon } from "@/components/Icon/Icon.tsx"
 import { ConnectButton } from "./ConnectButton"
 import { Button } from "../Button/Button"
 import { ROUTES } from "@/utils/routes"
+import { FOUNDERS_APPLY_URL } from "@/utils/constants"
 
 type NavigationItem = {
   path: string
@@ -146,12 +147,7 @@ const Header = () => {
 
           <div className="flex items-center justify-end gap-4 md:min-w-[291px]">
             {isLandingPage ? (
-              <a
-                className="flex justify-center"
-                href="https://t.me/BorgPadInternApplicationBot"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a className="flex justify-center" href={FOUNDERS_APPLY_URL} target="_blank" rel="noopener noreferrer">
                 <Button
                   size="xs"
                   color="secondary"

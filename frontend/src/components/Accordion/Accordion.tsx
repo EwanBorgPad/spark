@@ -13,6 +13,7 @@ type AccordionProps = {
   questionClassName?: string
   answerClassName?: string
   chevronClassName?: string
+  disabled?: boolean
 }
 
 const BORDER_HEIGHT = 1
@@ -26,6 +27,7 @@ const Accordion = ({
   questionClassName,
   answerClassName,
   chevronClassName,
+  disabled,
 }: AccordionProps) => {
   const [isOpen, setOpen] = useState(false)
   const accordionRef = useRef<HTMLDivElement>(null)
@@ -33,9 +35,7 @@ const Accordion = ({
   useEffect(() => {
     if (!accordionRef.current) return
     setOpen(false)
-    const maxContainerHeight =
-      maxChildrenHeight ||
-      2 * BORDER_HEIGHT + accordionRef.current?.scrollHeight
+    const maxContainerHeight = maxChildrenHeight || 2 * BORDER_HEIGHT + accordionRef.current?.scrollHeight
     accordionRef.current.style.maxHeight = maxContainerHeight + "px"
   }, [maxChildrenHeight])
 
@@ -44,9 +44,10 @@ const Accordion = ({
       <Button
         color="secondary"
         size="xl"
+        disabled={disabled}
         onClick={() => setOpen(!isOpen)}
         className={twMerge(
-          "z-[10] scale-100 gap-1 rounded-lg p-3 text-sm hover:opacity-100 active:!scale-[100%] ",
+          "z-[10] scale-100 gap-1 rounded-lg p-3 text-sm hover:opacity-100 active:!scale-[100%]",
           questionClassName,
         )}
       >

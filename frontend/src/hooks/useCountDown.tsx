@@ -23,13 +23,13 @@ export const useCountDown = ({
       callbackWhenTimeExpires?.()
       return
     }
-    const timerId = setTimeout(() => {
+    const countdownInterval = setInterval(() => {
       callbackAsPerInterval?.()
-      setTimeLeft((prev) => prev - interval)
+      setTimeLeft(calculateTimeLeft(endOfEvent))
     }, interval)
 
     return () => {
-      clearTimeout(timerId)
+      clearInterval(countdownInterval)
     }
   })
 }
