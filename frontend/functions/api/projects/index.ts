@@ -136,7 +136,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       total,
       totalPages,
     },
-  };
+  }
 
   return response
 }
