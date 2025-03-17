@@ -54,6 +54,79 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
     projectType ? sql`json -> 'info' ->> 'projectType' = ${projectType}` : undefined,
   )
   
+  // For draft-picks, we need to sort by investment intent
+  if (projectType === 'draft-pick') {
+    // Get all projects that match criteria
+    const projectsResult = await db
+      .select()
+      .from(projectTable)
+      .where(whereConditions)
+      .all()
+    
+    const projectIds = projectsResult.map(project => project.id)
+    
+    // Get investment intent summaries
+    const investmentIntentSummaries = await db.all(
+      sql`
+        SELECT
+          json_each.key AS project_id,
+          SUM(json_each.value ->> 'amount') AS sum,
+          AVG(json_each.value ->> 'amount') AS avg,
+          COUNT(json_each.value ->> 'amount') AS count
+        FROM user, 
+        json_each(user.json, '$.investmentIntent') 
+        WHERE json_each.key IN (${sql.join(projectIds, sql`, `)})
+        GROUP BY json_each.key;
+      `
+    ) as { project_id: string, sum: number, avg: number, count: number }[];
+
+    // Create a map for quick lookup of investment summaries
+    const summaryMap = new Map(
+      investmentIntentSummaries.map(summary => [summary.project_id, summary])
+    );
+    
+    // Combine projects with their summaries
+    const projectsWithSummaries = projectsResult.map(project => ({
+      ...project,
+      investmentSummary: summaryMap.get(project.id) || { sum: 0, avg: 0, count: 0 }
+    }));
+    
+    // Sort by investment intent sum (descending)
+    const sortedProjects = projectsWithSummaries.sort((a, b) => 
+      (b.investmentSummary.sum || 0) - (a.investmentSummary.sum || 0)
+    );
+    
+    // Apply pagination after sorting
+    const paginatedProjects = sortedProjects.slice(offset, offset + limit);
+    
+    const countQuery = db
+      .select({ count: count() })
+      .from(projectTable)
+      .where(whereConditions)
+    const countResult = (await countQuery.get()).count
+
+    const total = countResult || 0
+    const totalPages = Math.ceil(total / limit)
+
+    const retvalProjects: (ProjectModel & { investmentIntentSummary: InvestmentIntentSummary })[] = 
+      paginatedProjects.map(project => ({
+        ...project.json,
+        investmentIntentSummary: project.investmentSummary,
+      }))
+
+    const response = {
+      projects: retvalProjects,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+      },
+    }
+    return response
+  }
+  
+  // For other project types, use the original logic
   const projectsResult = await db
     .select()
     .from(projectTable)
