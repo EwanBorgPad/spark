@@ -1124,7 +1124,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                     await ctx.replyWithPhoto("https://pub-0cbbb3349b8a4e4384de7e35e44350eb.r2.dev/screenshots/screen1.png");
                     await ctx.replyWithPhoto("https://pub-0cbbb3349b8a4e4384de7e35e44350eb.r2.dev/screenshots/screen2.png");
 
-                    await ctx.reply(`GM @${username}! 👋\n\nI'll guide you through creating your page in the Draft Pick section on BorgPad. You'll find attached photos showing where all the information will be displayed. Shall we begin?`);
+                    await ctx.reply(`GM @${username}! 👋\n\nYou'll find attached photos showing where all the information will be displayed on BorgPad. Please read carefully all the message - and respect the rules!\nReady to start? 🚀`);
                     await askNextQuestion(ctx, env);
                     console.log('1.3-Twitter success processed');
                 } catch (error) {
@@ -1157,7 +1157,7 @@ From Chat: ${JSON.stringify(fromChat, null, 2)}
                     .row();
 
                 await ctx.reply(
-                    `Welcome ${userName}! 👋\n\nI'm the BorgPad Curator Bot. First, please connect your X account:`,
+                    `Welcome ${userName}! 👋\n\nI'm the BorgPad Curator Bot. I will help you register your project on https://borgpad.com/draft-picks.\nThis will allow you to see your project's traction! 🚀\nFirst, please connect your X account:`,
                     { reply_markup: keyboard }
                 );
                 console.log('1.6-Twitter auth link sent');
