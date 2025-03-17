@@ -128,7 +128,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       };
     });
 
-  return {
+  const response = {
     projects: retvalProjects,
     pagination: {
       page,
@@ -137,6 +137,8 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       totalPages,
     },
   };
+
+  return response
 }
 
 ////////////////////////////////////////////////
