@@ -33,7 +33,7 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
   return (
     <>
       {!isRewardDistribution && (
-        <li className="relative flex w-full max-w-[344px] flex-col overflow-hidden rounded-lg border-[1px] border-bd-secondary/30 bg-default">
+        <li className="relative flex w-full min-w-[315px] max-w-[344px] flex-col overflow-hidden rounded-lg border-[1px] border-bd-secondary/30 bg-default">
           <Img
             src={project?.info?.thumbnailUrl || project?.info?.logoUrl}
             customClass="h-[189px] rounded-none"
@@ -66,7 +66,7 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
                         <Icon icon="SvgDatabase" />
                         <span className="text-fg-secondary">Valuation (FDV)</span>
                       </div>
-                      <span className="text-fg-brand-primary">{project?.info?.targetFdv ?? "$0"}</span>
+                      <span className="text-fg-brand-primary">${project?.config.fdv ? (project.config.fdv / 1000000).toFixed(1) + 'M' : "$0"}</span>
                     </div>
                     <div className="flex items-center justify-between bg-transparent p-2 rounded-lg">
                       <div className="flex items-center gap-2">
@@ -104,7 +104,7 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
                         <Icon icon="SvgDatabase" />
                         <span className="text-fg-secondary">Valuation (FDV)</span>
                       </div>
-                      <span className="text-fg-brand-primary">${project?.config.fdv ?? "$0"}M</span>
+                      <span className="text-fg-brand-primary">${project?.config.fdv ? (project.config.fdv / 1000000).toFixed(1) + 'M' : "$0"}</span>
                     </div>
                     <div className="flex items-center justify-between bg-transparent p-2 rounded-lg">
                       <div className="flex items-center gap-2">
