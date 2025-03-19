@@ -60,97 +60,28 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
 
               <div className="flex flex-col gap-0">
                 {(isRegistrationOpen || isUpcoming) && (
-                  <>
-                    <div className="flex items-center justify-between bg-secondary p-2 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Icon icon="SvgDatabase" />
-                        <span className="text-fg-secondary">Valuation (FDV)</span>
-                      </div>
-                      <span className="text-fg-brand-primary">${project?.config.fdv ? (project.config.fdv / 1000000).toFixed(1) + 'M' : "$0"}</span>
-                    </div>
-                    <div className="flex items-center justify-between bg-transparent p-2 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Icon icon="SvgChartLine" />
-                        <span className="text-fg-secondary">Sector</span>
-                      </div>
-                      <span className="text-fg-secondary">{project?.info?.sector ?? "N/A"}</span>
-                    </div>
-                    <div className="flex items-center justify-between bg-secondary p-2 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Icon icon="SvgCalendarFill" />
-                        <span className="text-fg-secondary">Whitelisting Ends</span>
-                      </div>
-                      <span className="text-fg-secondary">
-                        {project?.info?.timeline?.find(t => t.id === "SALE_OPENS")?.date
-                          ? new Date(project.info.timeline.find(t => t.id === "SALE_OPENS")!.date!).toLocaleString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: 'numeric',
-                            hour12: true
-                          }).replace(/(\d+)/, (match) => {
-                            const num = parseInt(match);
-                            const suffix = ['th', 'st', 'nd', 'rd'][num % 10 > 3 ? 0 : (num % 100 - num % 10 != 10 ? num % 10 : 0)];
-                            return num + suffix;
-                          }).replace(' PM', 'PM').replace(' AM', 'AM')
-                          : "TBC"}
-                      </span>
-                    </div>
-                  </>
+                  <ProjectDetailRows
+                    project={project}
+                    rows={[
+                      createDetailRow("SvgDatabase", "Valuation (FDV)", formatFdv(project?.config.fdv), "text-fg-brand-primary"),
+                      createDetailRow("SvgChartLine", "Sector", project?.info?.sector ?? "N/A"),
+                      createDetailRow("SvgCalendarFill", "Whitelisting Ends", formatEventDate(project, "SALE_OPENS"))
+                    ]}
+                  />
                 )}
                 {isSaleOpen && (
-                  <>
-                    <div className="flex items-center justify-between bg-secondary p-2 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Icon icon="SvgDatabase" />
-                        <span className="text-fg-secondary">Valuation (FDV)</span>
-                      </div>
-                      <span className="text-fg-brand-primary">${project?.config.fdv ? (project.config.fdv / 1000000).toFixed(1) + 'M' : "$0"}</span>
-                    </div>
-                    <div className="flex items-center justify-between bg-transparent p-2 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Icon icon="SvgChartLine" />
-                        <span className="text-fg-secondary">Sector</span>
-                      </div>
-                      <span className="text-fg-secondary">{project?.info?.sector ?? "N/A"}</span>
-                    </div>
-                    <div className="flex items-center justify-between bg-secondary p-2 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Icon icon="SvgTwoAvatars" />
-                        <span className="text-fg-secondary">Participants</span>
-                      </div>
-                      <span className="text-fg-secondary">{project?.investmentIntentSummary?.count ?? 0}</span>
-                    </div>
-                    <div className="flex items-center justify-between bg-transparent p-2 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Icon icon="SvgWalletFilled" />
-                        <span className="text-fg-secondary">Total Invested</span>
-                      </div>
-                      <span className="text-fg-secondary">{project?.investmentIntentSummary?.sum ?? "$0"}</span>
-                    </div>
-                    <div className="flex items-center justify-between bg-secondary p-2 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Icon icon="SvgCalendarFill" />
-                        <span className="text-fg-secondary">Sale Ends</span>
-                      </div>
-                      <span className="text-fg-secondary">
-                        {project?.info?.timeline?.find(t => t.id === "SALE_CLOSES")?.date
-                          ? new Date(project.info.timeline.find(t => t.id === "SALE_CLOSES")!.date!).toLocaleString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: 'numeric',
-                            hour12: true
-                          }).replace(/(\d+)/, (match) => {
-                            const num = parseInt(match);
-                            const suffix = ['th', 'st', 'nd', 'rd'][num % 10 > 3 ? 0 : (num % 100 - num % 10 != 10 ? num % 10 : 0)];
-                            return num + suffix;
-                          }).replace(' PM', 'PM').replace(' AM', 'AM')
-                          : "TBC"}
-                      </span>
-                    </div>
-                  </>
+                  <ProjectDetailRows
+                    project={project}
+                    rows={[
+                      createDetailRow("SvgDatabase", "Valuation (FDV)", formatFdv(project?.config.fdv), "text-fg-brand-primary"),
+                      createDetailRow("SvgChartLine", "Sector", project?.info?.sector ?? "N/A"),
+                      createDetailRow("SvgTwoAvatars", "Participants", project?.investmentIntentSummary?.count ?? 0),
+                      createDetailRow("SvgWalletFilled", "Total Invested", formatTotalInvested(project?.investmentIntentSummary?.sum ?? 0)),
+                      createDetailRow("SvgCalendarFill", "Sale Ends", formatEventDate(project, "SALE_CLOSES"))
+                    ]}
+                  />
                 )}
               </div>
-
 
               {isDraftPick && (
                 <div className="flex w-full flex-col">
@@ -196,6 +127,80 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
       )}
     </>
   )
+}
+
+type DetailRow = {
+  icon: AvailableIcons
+  label: string
+  value: string | number
+  valueClassName?: string
+}
+
+const ProjectDetailRows = ({
+  project,
+  rows
+}: {
+  project: ExpandedProject | null
+  rows: DetailRow[]
+}) => {
+  if (!project) return null
+
+  return (
+    <>
+      {rows.map((row, index) => (
+        <div
+          key={`${row.icon}-${index}`}
+          className={twMerge(
+            "flex items-center justify-between p-2 rounded-lg",
+            index % 2 === 0 ? "bg-secondary" : "bg-transparent"
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <Icon icon={row.icon} />
+            <span className="text-fg-secondary">{row.label}</span>
+          </div>
+          <span className={twMerge("text-fg-secondary", row.valueClassName)}>
+            {row.value}
+          </span>
+        </div>
+      ))}
+    </>
+  )
+}
+
+const createDetailRow = (
+  icon: AvailableIcons,
+  label: string,
+  value: string | number,
+  valueClassName?: string
+): DetailRow => {
+  return { icon, label, value, valueClassName }
+}
+
+const formatFdv = (fdv?: number): string => {
+  return fdv ? `$${(fdv / 1000000).toFixed(1)}M` : "$0"
+}
+
+const formatTotalInvested = (totalInvested?: number): string => {
+  return totalInvested ? `$${(totalInvested / 1000).toFixed(1)}K` : "$0"
+}
+
+const formatEventDate = (project: ExpandedProject | null, eventId: string): string => {
+  if (!project?.info?.timeline) return "TBC"
+
+  const event = project.info.timeline.find(t => t.id === eventId)
+  if (!event?.date) return "TBC"
+
+  return new Date(event.date).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    hour12: true
+  }).replace(/(\d+)/, (match) => {
+    const num = parseInt(match)
+    const suffix = ['th', 'st', 'nd', 'rd'][num % 10 > 3 ? 0 : (num % 100 - num % 10 != 10 ? num % 10 : 0)]
+    return num + suffix
+  }).replace(' PM', 'PM').replace(' AM', 'AM')
 }
 
 const BORGPAD_X_URL = "https://x.com/BorgPadHQ"
