@@ -14,9 +14,9 @@ import { AvailableIcons, Icon } from "../Icon/Icon"
 import { ProjectModel } from "shared/models"
 import { formatCurrencyAmount } from "shared/utils/format"
 
-type Props = { 
+type Props = {
   projects: ExpandedProject[]
-  isLoading?: boolean 
+  isLoading?: boolean
 }
 
 type SortField = 'title' | 'date' | 'sector' | 'raised' | 'fdv' | 'participants' | 'rewards'
@@ -43,10 +43,10 @@ export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
 
   const sortedProjects = useMemo(() => {
     if (!projects?.length) return []
-    
+
     return [...projects].sort((a, b) => {
       const multiplier = sortDirection === 'asc' ? 1 : -1
-      
+
       switch (sortField) {
         case 'title':
           return (a.info.title || '').localeCompare(b.info.title || '') * multiplier
@@ -74,33 +74,36 @@ export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
   if (!projects?.length && !isLoading) return null
 
   return (
-    <div className="relative flex w-full col-span-full flex-col overflow-hidden rounded-lg border-[1px] border-bd-secondary/30 bg-default">
-      <div className="overflow-x-auto max-h-[80vh] -mx-4 px-4">
-        <table className="w-full min-w-[1200px] divide-y divide-bd-secondary/30">
-          <thead className="sticky top-0 bg-default">
+    <div className="relative flex w-full col-span-full flex-col overflow-hidden rounded-lg border-[1px] border-bd-secondary/30 bg-transparent">
+      <div className="overflow-x-auto max-h-[80vh]">
+        <table className="w-full divide-y divide-bd-secondary/30">
+          <thead className="sticky top-0 bg-transparent">
             <tr>
-              <TableHeader onClick={() => handleSort('title')} className="w-[15%] px-10">
+              <TableHeader className="w-[5%] text-center">
+                {" "}
+              </TableHeader>
+              <TableHeader onClick={() => handleSort('title')} className="w-[10%]">
                 Project {getSortIcon('title')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('date')} className="w-[12%]" isCategory>
+              <TableHeader onClick={() => handleSort('date')} className="w-[10%]">
                 Date {getSortIcon('date')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('sector')} className="w-[12%]" isCategory>
+              <TableHeader onClick={() => handleSort('sector')} className="w-[10%]">
                 Category {getSortIcon('sector')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('raised')} className="w-[12%]" isCategory>
+              <TableHeader onClick={() => handleSort('raised')} className="w-[10%]">
                 Raised {getSortIcon('raised')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('fdv')} className="w-[12%]" isCategory>
+              <TableHeader onClick={() => handleSort('fdv')} className="w-[10%]">
                 FDV {getSortIcon('fdv')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('participants')} className="w-[12%]" isCategory>
+              <TableHeader onClick={() => handleSort('participants')} className="w-[10%]">
                 Participants {getSortIcon('participants')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('rewards')} className="w-[15%]" isCategory>
-                Rewards Distributed {getSortIcon('rewards')}
+              <TableHeader onClick={() => handleSort('rewards')} className="w-[10%]">
+                Rewards {getSortIcon('rewards')}
               </TableHeader>
-              <TableHeader className="w-[10%] text-center">
+              <TableHeader className="w-[2%] text-center">
                 {" "}
               </TableHeader>
             </tr>
@@ -108,30 +111,44 @@ export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
           <tbody className="divide-y divide-bd-secondary/20">
             {isLoading ? (
               <tr>
-                <td colSpan={8} className="px-3 py-4 text-center text-fg-tertiary">
+                <td colSpan={9} className="px-3 py-4 text-center text-fg-tertiary">
                   Loading...
                 </td>
               </tr>
             ) : sortedProjects.map((proj, index) => (
-              <tr 
+              <tr
                 key={proj.id}
                 onClick={() => window.location.href = getProjectRoute(proj as ProjectModel)}
-                className="cursor-pointer hover:bg-secondary/50 transition-colors"
+                className="cursor-pointer hover:bg-secondary/50 transition-colors group"
               >
-                <TableCell className="px-6">{proj.info?.title || "—"}</TableCell>
-                <TableCell>{formatEventDate(proj, "REWARD_DISTRIBUTION")}</TableCell>
-                <TableCell>{proj.info?.sector || "—"}</TableCell>
-                <TableCell>{formatCurrencyAmount(proj.investmentIntentSummary?.sum ?? 0, { withDollarSign: true })}</TableCell>
-                <TableCell>{formatFdv(proj.config.fdv)}</TableCell>
-                <TableCell>{proj.investmentIntentSummary?.count ?? 0}</TableCell>
-                <TableCell>{formatCurrencyAmount(proj.investmentIntentSummary?.sum ?? 0, { withDollarSign: true })}</TableCell>
-                <TableCell className="text-center">
-                  <Link 
+                <TableCell className="px-4 flex items-center">
+                  <Img
+                    src={proj.info.logoUrl}
+                    isFetchingLink={isLoading}
+                    imgClassName="scale-[102%]"
+                    isRounded={true}
+                    size="8"
+                  />
+                </TableCell>
+                <TableCell isCategory={false}>
+                  <div className="flex items-center gap-1">
+                    <span className="text-white">{proj.info?.title || "—"}</span>
+                    <Icon icon="SvgShare" className="w-5 h-5 opacity-50" />
+                  </div>
+                </TableCell>
+                <TableCell isCategory={true}>{formatEventDate(proj, "REWARD_DISTRIBUTION")}</TableCell>
+                <TableCell isCategory={true}>{proj.info?.sector || "—"}</TableCell>
+                <TableCell isCategory={true}>{formatCurrencyAmount(proj.investmentIntentSummary?.sum ?? 0, { withDollarSign: true })}</TableCell>
+                <TableCell isCategory={true}>{formatFdv(proj.config.fdv)}</TableCell>
+                <TableCell isCategory={true}>{proj.investmentIntentSummary?.count ?? 0}</TableCell>
+                <TableCell isCategory={true}>{formatCurrencyAmount(proj.investmentIntentSummary?.sum ?? 0, { withDollarSign: true })}</TableCell>
+                <TableCell isCategory={false} className="text-center">
+                  <Link
                     to={getProjectRoute(proj as ProjectModel)}
-                    className="text-brand-primary hover:text-brand-primary-hover inline-flex justify-center"
+                    className="inline-flex justify-center items-center w-8 h-8 rounded bg-bd-secondary group-hover:bg-transparent border-none transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Icon icon="SvgArrowRight" className="w-5 h-5" />
+                    <Icon icon="SvgArrowRight" className="w-5 h-5 text-white" />
                   </Link>
                 </TableCell>
               </tr>
@@ -143,22 +160,20 @@ export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
   )
 }
 
-const TableHeader = ({ 
-  children, 
+const TableHeader = ({
+  children,
   onClick,
   className = "",
-  isCategory = false
-}: { 
+}: {
   children: React.ReactNode
   onClick?: () => void
   className?: string
   isCategory?: boolean
 }) => (
-  <th 
+  <th
     className={twMerge(
-      "text-left text-xs font-medium text-fg-tertiary tracking-wider",
+      "text-left text-xs font-medium text-fg-tertiary tracking-wider px-2 py-3 w-[12%]",
       onClick && "cursor-pointer hover:bg-secondary/50 transition-colors",
-      isCategory && "px-3 py-3",
       className
     )}
     onClick={onClick}
@@ -167,8 +182,22 @@ const TableHeader = ({
   </th>
 )
 
-const TableCell = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
-  <td className={twMerge("px-3 py-6 text-sm whitespace-nowrap", className)}>{children}</td>
+const TableCell = ({ 
+  children, 
+  className = "",
+  isCategory = false
+}: { 
+  children: React.ReactNode, 
+  className?: string,
+  isCategory?: boolean 
+}) => (
+  <td className={twMerge(
+    "px-2 py-6 text-sm whitespace-nowrap", 
+    isCategory && "text-fg-tertiary", 
+    className
+  )}>
+    {children}
+  </td>
 )
 
 const formatFdv = (fdv?: number): string => {
@@ -177,10 +206,10 @@ const formatFdv = (fdv?: number): string => {
 
 const formatEventDate = (project: ExpandedProject | null, eventId: string): string => {
   if (!project?.info?.timeline) return "—"
-  
+
   const event = project.info.timeline.find(t => t.id === eventId)
   if (!event?.date) return "—"
-  
+
   return new Date(event.date).toLocaleString('en-US', {
     month: 'short',
     day: 'numeric',
