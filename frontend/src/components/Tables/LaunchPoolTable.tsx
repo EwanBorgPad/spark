@@ -2,17 +2,15 @@ import { Link } from "react-router-dom"
 import { twMerge } from "tailwind-merge"
 import { useTranslation } from "react-i18next"
 import { useState, useMemo } from "react"
+import { useQuery } from "@tanstack/react-query"
 
 import Img from "../Image/Img"
-import Text from "@/components/Text"
-import { Badge } from "../Badge/Badge"
-import { Button } from "../Button/Button"
 import { ExpandedProject } from "@/utils/projects-helper"
-import { ExternalLink } from "../Button/ExternalLink"
 import { getProjectRoute } from "@/utils/routes"
-import { AvailableIcons, Icon } from "../Icon/Icon"
+import { Icon } from "../Icon/Icon"
 import { ProjectModel } from "shared/models"
 import { formatCurrencyAmount } from "shared/utils/format"
+import { backendApi } from "@/data/backendApi.ts"
 
 type Props = {
   projects: ExpandedProject[]
@@ -26,6 +24,38 @@ export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
   const { t } = useTranslation()
   const [sortField, setSortField] = useState<SortField>('date')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
+  
+  // Fetch sale results for all projects
+  const projectIds = projects?.map(p => p.id) || []
+  const { data: saleResultsMap, isLoading: isLoadingSaleResults } = useQuery({
+    queryFn: async () => {
+      if (!projectIds.length) return {}
+      
+      // Fetch sale results for each project and create a map for easy lookup
+      const results = await Promise.all(
+        projectIds.map(async (projectId) => {
+          try {
+            const data = await backendApi.getSaleResults({ projectId })
+            return { projectId, data }
+          } catch (error) {
+            console.error(`Error fetching sale results for ${projectId}:`, error)
+            return { projectId, data: null }
+          }
+        })
+      )
+      
+      // Convert to a map for easy lookup by project ID
+      return results.reduce((acc, { projectId, data }) => {
+        acc[projectId] = data
+        return acc
+      }, {} as Record<string, any>)
+    },
+    queryKey: ["saleResults", projectIds.join(",")],
+    enabled: Boolean(projectIds.length),
+    staleTime: 30 * 1000,
+  })
+  
+  const isTableLoading = isLoading || isLoadingSaleResults
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -71,7 +101,29 @@ export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
     })
   }, [projects, sortField, sortDirection])
 
-  if (!projects?.length && !isLoading) return null
+  const getSaleData = (projectId: string) => {
+    return saleResultsMap?.[projectId] || null
+  }
+
+  const getAmountRaised = (proj: ExpandedProject) => {
+    const saleData = getSaleData(proj.id)
+    if (saleData?.totalAmountRaised?.amountInUsd) {
+      return formatCurrencyAmount(Number(saleData.totalAmountRaised.amountInUsd), { withDollarSign: true })
+    }
+    // Fallback to the existing data if sale results are not available
+    return formatCurrencyAmount(proj.investmentIntentSummary?.sum ?? 0, { withDollarSign: true })
+  }
+
+  const getParticipantsCount = (proj: ExpandedProject) => {
+    const saleData = getSaleData(proj.id)
+    if (saleData?.participantsCount) {
+      return saleData.participantsCount
+    }
+    // Fallback to the existing data if sale results are not available
+    return proj.investmentIntentSummary?.count ?? 0
+  }
+
+  if (!projects?.length && !isTableLoading) return null
 
   return (
     <div className="relative flex w-full col-span-full flex-col overflow-hidden rounded-lg border-[1px] border-bd-secondary/30 bg-transparent">
@@ -79,7 +131,7 @@ export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
         <table className="w-full divide-y divide-bd-secondary/30">
           <thead className="sticky top-0 bg-transparent">
             <tr>
-              <TableHeader className="w-[5%] text-center">
+              <TableHeader className="w-[1%] text-center">
                 {" "}
               </TableHeader>
               <TableHeader onClick={() => handleSort('title')} className="w-[10%]">
@@ -100,16 +152,16 @@ export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
               <TableHeader onClick={() => handleSort('participants')} className="w-[10%]">
                 Participants {getSortIcon('participants')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('rewards')} className="w-[10%]">
-                Rewards {getSortIcon('rewards')}
-              </TableHeader>
+              {/* <TableHeader onClick={() => handleSort('rewards')} className="w-[10%]">
+                Rewards Given {getSortIcon('rewards')}
+              </TableHeader> */}
               <TableHeader className="w-[2%] text-center">
                 {" "}
               </TableHeader>
             </tr>
           </thead>
           <tbody className="divide-y divide-bd-secondary/20">
-            {isLoading ? (
+            {isTableLoading ? (
               <tr>
                 <td colSpan={9} className="px-3 py-4 text-center text-fg-tertiary">
                   Loading...
@@ -138,10 +190,10 @@ export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
                 </TableCell>
                 <TableCell isCategory={true}>{formatEventDate(proj, "REWARD_DISTRIBUTION")}</TableCell>
                 <TableCell isCategory={true}>{proj.info?.sector || "—"}</TableCell>
-                <TableCell isCategory={true}>{formatCurrencyAmount(proj.investmentIntentSummary?.sum ?? 0, { withDollarSign: true })}</TableCell>
+                <TableCell isCategory={true}>{getAmountRaised(proj)}</TableCell>
                 <TableCell isCategory={true}>{formatFdv(proj.config.fdv)}</TableCell>
-                <TableCell isCategory={true}>{proj.investmentIntentSummary?.count ?? 0}</TableCell>
-                <TableCell isCategory={true}>{formatCurrencyAmount(proj.investmentIntentSummary?.sum ?? 0, { withDollarSign: true })}</TableCell>
+                <TableCell isCategory={true}>{getParticipantsCount(proj)}</TableCell>
+                {/* <TableCell isCategory={true}>{formatCurrencyAmount(proj.investmentIntentSummary?.sum ?? 0, { withDollarSign: true })}</TableCell> */}
                 <TableCell isCategory={false} className="text-center">
                   <Link
                     to={getProjectRoute(proj as ProjectModel)}
