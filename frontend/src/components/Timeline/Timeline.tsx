@@ -137,8 +137,8 @@ const Timeline = ({ timelineEvents }: Props) => {
   }, [timelineEvents, updateTimeline])
 
   return (
-    <section className="w-full lg:max-w-[792px]">
-      <h2 className="w-full pb-3 text-left text-base">Timeline</h2>
+    <section className="w-full max-w-[792px]">
+      <h2 className="w-full pb-3 text-left text-xl font-semibold md:text-2xl">Timeline</h2>
       <div
         ref={containerRef}
         className="flex w-full flex-col justify-between gap-4 rounded-lg border border-bd-secondary bg-secondary/50 px-4 py-5 lg:flex-row"

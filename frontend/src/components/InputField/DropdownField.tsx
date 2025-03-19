@@ -68,18 +68,15 @@ export const DropdownField = ({
         )}
         <Icon
           icon={"SvgChevronDown"}
-          className={twMerge(
-            "absolute right-2 select-none transition-transform",
-            dropdownOpened && "rotate-180",
-          )}
+          className={twMerge("absolute right-2 select-none transition-transform", dropdownOpened && "rotate-180")}
         />
         {dropdownOpened && (
-          <div className="absolute left-0 top-11 z-[101] flex max-h-[400px] w-full  flex-col overflow-y-scroll rounded-lg bg-secondary py-1.5">
+          <div className="absolute left-0 top-11 z-[101] flex max-h-[400px] w-full  flex-col overflow-y-scroll rounded-lg bg-secondary py-1.5 shadow shadow-slate-400/20">
             {options.map((option) => (
               <div
                 key={option.id}
                 onClick={() => onChange(option.id)}
-                className="w-full rounded-md px-3 py-1.5 text-fg-primary hover:bg-brand-secondary hover:text-fg-alt-default"
+                className="w-full rounded-md px-3 py-1.5 text-fg-primary hover:bg-brand-dimmed-1"
               >
                 <span className="">{option.label}</span>
               </div>
@@ -87,9 +84,7 @@ export const DropdownField = ({
           </div>
         )}
       </div>
-      {error && (
-        <span className="-mt-1 text-xs text-fg-error-primary">{error}</span>
-      )}
+      {error && <span className="-mt-1 text-xs text-fg-error-primary">{error}</span>}
     </div>
   )
 }

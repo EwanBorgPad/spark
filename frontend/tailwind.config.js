@@ -54,7 +54,7 @@ export default {
         // border colors
         bd: {
           primary: "#333741",
-          secondary: "#1F242F",
+          secondary: "#ffffff0f",
           "brand-secondary": "#496537",
           subtle: "#1F242F",
           emphasis: "#0C111D",
@@ -99,6 +99,7 @@ export default {
         "curator-socials": "128px, 24px, 328px, 32px",
         "bo-timeline": "160px minmax(320px, 1fr)",
         "min-max": "30px 1fr",
+        "form-steps": "32px minmax(220px, 400px)",
       },
       lineHeight: {
         11: "44px",

@@ -28,7 +28,7 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
   const cardRows = getCardRows(project)
 
   return (
-    <li className="relative flex w-full max-w-[344px] flex-col overflow-hidden rounded-lg border-[1px] border-bd-secondary/30 bg-default">
+    <li className="relative flex w-full max-w-[344px] flex-col overflow-hidden rounded-lg border-[1px] border-bd-secondary bg-default">
       <Img
         src={project?.info?.thumbnailUrl || project?.info?.logoUrl}
         customClass="h-[189px] rounded-none"

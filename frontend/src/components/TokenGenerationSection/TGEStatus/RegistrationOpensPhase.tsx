@@ -7,7 +7,6 @@ import CountDownTimer from "@/components/CountDownTimer"
 import { TgeWrapper } from "../components/Wrapper"
 import { formatDateForTimer } from "@/utils/date-helpers"
 import { JoinThePool } from "@/components/EligibilitySection/JoinThePool.tsx"
-import DataRoom from "@/components/LaunchPool/DataRoom"
 import { Button } from "@/components/Button/Button"
 import { useRef } from "react"
 import { useWalletContext } from "@/hooks/useWalletContext"
@@ -53,10 +52,6 @@ const RegistrationOpensPhase = ({ eventData, timeline }: RegistrationOpensPhaseP
   return (
     <div className="flex w-full flex-col items-center px-4">
       <div className="flex w-full max-w-[764px] flex-col items-center gap-[52px]">
-        <BasicTokenInfo />
-
-        <DataRoom />
-
         <Timeline timelineEvents={timeline} />
 
         {!isUserEligible && (

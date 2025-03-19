@@ -79,7 +79,25 @@ const ExternalLinkIcon = ({
     </a>
   )
 }
+const ExternalLinkIcon2 = ({ externalLink, className, iconClassName }: Props) => {
+  return (
+    <a
+      href={externalLink.url}
+      target="_blank"
+      rel="noreferrer"
+      className={twMerge(
+        "flex items-center justify-center rounded-lg bg-secondary p-2 px-[7px] text-xl hover:bg-bd-primary/40 active:scale-[98%]",
+        className,
+      )}
+    >
+      {externalLink.iconType !== "NO_ICON" && (
+        <Icon icon={externalLinkObj[externalLink.iconType].icon} className={twMerge("leading-none", iconClassName)} />
+      )}
+    </a>
+  )
+}
 
 export const ExternalLink = Object.assign(ExternalLinkWithLabel, {
   Icon: ExternalLinkIcon,
+  Icon2: ExternalLinkIcon2,
 })
