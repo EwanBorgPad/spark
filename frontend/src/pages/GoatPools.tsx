@@ -15,11 +15,13 @@ import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
 import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
 import Img from "@/components/Image/Img"
 import { useTranslation } from "react-i18next"
+import { LaunchPoolTable } from "@/components/Tables/LaunchPoolTable"
 
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
 const GoatPools = () => {
   const [phases, setPhases] = useState<ExpandedProject[][]>([])
+  const [completedProjects, setCompletedProjects] = useState<ExpandedProject[]>([])
   const { t } = useTranslation()
 
   const { data, isLoading } = useQuery<GetProjectsResponse>({
@@ -38,6 +40,7 @@ const GoatPools = () => {
     if (!data?.projects) return
     const sortedProjects = sortProjectsPerStatus(data.projects)
     setPhases(sortedProjects)
+    setCompletedProjects(sortedProjects.flat().filter(project => project.additionalData.currentEvent.id === "REWARD_DISTRIBUTION"))
   }, [data?.projects])
 
   return (
@@ -81,6 +84,15 @@ const GoatPools = () => {
                 )
               : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
           </ul>
+        </div>
+      </section>
+
+      <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
+        <div className="flex w-full max-w-[1080px] flex-col items-center">
+          <h3 className="mb-8 text-center text-[32px] font-semibold leading-[120%] md:w-full">
+            {"Completed Goat Pools"}
+          </h3>
+          <LaunchPoolTable projects={completedProjects} isLoading={isLoading} />
         </div>
       </section>
 
