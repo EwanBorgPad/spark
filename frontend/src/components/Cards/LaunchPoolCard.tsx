@@ -12,6 +12,7 @@ import { getProjectRoute } from "@/utils/routes"
 import { AvailableIcons, Icon } from "../Icon/Icon"
 import { ProjectModel } from "shared/models"
 import { formatCurrencyAmount } from "shared/utils/format"
+import { formatDateForProject } from "@/utils/date-helpers"
 
 type Props = { project: ExpandedProject | null; isLoading?: boolean }
 
@@ -65,7 +66,7 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
                     rows={[
                       createDetailRow("SvgDatabase", "Valuation (FDV)", formatFdv(project?.config.fdv), "text-fg-brand-primary"),
                       createDetailRow("SvgChartLine", "Sector", project?.info?.sector ?? "N/A"),
-                      createDetailRow("SvgCalendarFill", "Whitelisting Ends", formatEventDate(project, "SALE_OPENS"))
+                      createDetailRow("SvgCalendarFill", "Whitelisting Ends", project?.info.timeline?.find(t => t.id === "SALE_OPENS")?.date ? formatDateForProject(new Date(project?.info.timeline?.find(t => t.id === "SALE_OPENS")?.date || 0)) : "TBC")
                     ]}
                   />
                 )}
@@ -77,7 +78,7 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
                       createDetailRow("SvgChartLine", "Sector", project?.info?.sector ?? "N/A"),
                       createDetailRow("SvgTwoAvatars", "Participants", project?.investmentIntentSummary?.count ?? 0),
                       createDetailRow("SvgWalletFilled", "Total Invested", formatTotalInvested(project?.investmentIntentSummary?.sum ?? 0)),
-                      createDetailRow("SvgCalendarFill", "Sale Ends", formatEventDate(project, "SALE_CLOSES"))
+                      createDetailRow("SvgCalendarFill", "Sale Ends", project?.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date ? formatDateForProject(new Date(project?.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date || 0)) : "TBC")
                     ]}
                   />
                 )}

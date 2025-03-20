@@ -11,6 +11,7 @@ import { Icon } from "../Icon/Icon"
 import { ProjectModel } from "shared/models"
 import { formatCurrencyAmount } from "shared/utils/format"
 import { backendApi } from "@/data/backendApi.ts"
+import { formatDateForProject } from "@/utils/date-helpers"
 
 type Props = {
   projects: ExpandedProject[]
@@ -188,7 +189,7 @@ export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
                     <Icon icon="SvgShare" className="w-5 h-5 opacity-50" />
                   </div>
                 </TableCell>
-                <TableCell isCategory={true}>{formatEventDate(proj, "REWARD_DISTRIBUTION")}</TableCell>
+                <TableCell isCategory={true}>{formatDateForProject(new Date(proj.info.timeline?.find(t => t.id === "REWARD_DISTRIBUTION")?.date || 0))}</TableCell>
                 <TableCell isCategory={true}>{proj.info?.sector || "—"}</TableCell>
                 <TableCell isCategory={true}>{getAmountRaised(proj)}</TableCell>
                 <TableCell isCategory={true}>{formatFdv(proj.config.fdv)}</TableCell>
@@ -254,21 +255,4 @@ const TableCell = ({
 
 const formatFdv = (fdv?: number): string => {
   return fdv ? `$${(fdv / 1000000).toFixed(1)}M` : "—"
-}
-
-const formatEventDate = (project: ExpandedProject | null, eventId: string): string => {
-  if (!project?.info?.timeline) return "—"
-
-  const event = project.info.timeline.find(t => t.id === eventId)
-  if (!event?.date) return "—"
-
-  return new Date(event.date).toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  }).replace(/(\d+)/, (match) => {
-    const num = parseInt(match)
-    const suffix = ['th', 'st', 'nd', 'rd'][num % 10 > 3 ? 0 : (num % 100 - num % 10 != 10 ? num % 10 : 0)]
-    return num + suffix
-  })
 }
