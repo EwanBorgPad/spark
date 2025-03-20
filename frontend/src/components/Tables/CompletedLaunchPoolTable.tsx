@@ -12,6 +12,8 @@ import { ProjectModel } from "shared/models"
 import { formatCurrencyAmount } from "shared/utils/format"
 import { backendApi } from "@/data/backendApi.ts"
 import { formatDateForProject } from "@/utils/date-helpers"
+import { TableHeader } from "./TableHeader"
+import { TableCell } from "./TableCell"
 
 type Props = {
   projects: ExpandedProject[]
@@ -21,7 +23,7 @@ type Props = {
 type SortField = 'title' | 'date' | 'sector' | 'raised' | 'fdv' | 'participants' | 'rewards'
 type SortDirection = 'asc' | 'desc'
 
-export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
+export const CompletedLaunchPoolTable = ({ projects, isLoading }: Props) => {
   const { t } = useTranslation()
   const [sortField, setSortField] = useState<SortField>('date')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
@@ -135,22 +137,22 @@ export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
               <TableHeader className="w-[1%] text-center">
                 {" "}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('title')} className="w-[10%]">
+              <TableHeader onClick={() => handleSort('title')}>
                 Project {getSortIcon('title')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('date')} className="w-[10%]">
+              <TableHeader onClick={() => handleSort('date')}>
                 Date {getSortIcon('date')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('sector')} className="w-[10%]">
+              <TableHeader onClick={() => handleSort('sector')}>
                 Category {getSortIcon('sector')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('raised')} className="w-[10%]">
+              <TableHeader onClick={() => handleSort('raised')}>
                 Raised {getSortIcon('raised')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('fdv')} className="w-[10%]">
+              <TableHeader onClick={() => handleSort('fdv')}>
                 FDV {getSortIcon('fdv')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('participants')} className="w-[10%]">
+              <TableHeader onClick={() => handleSort('participants')} className="md:hidden">
                 Participants {getSortIcon('participants')}
               </TableHeader>
               {/* <TableHeader onClick={() => handleSort('rewards')} className="w-[10%]">
@@ -193,7 +195,7 @@ export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
                 <TableCell isCategory={true}>{proj.info?.sector || "—"}</TableCell>
                 <TableCell isCategory={true}>{getAmountRaised(proj)}</TableCell>
                 <TableCell isCategory={true}>{formatFdv(proj.config.fdv)}</TableCell>
-                <TableCell isCategory={true}>{getParticipantsCount(proj)}</TableCell>
+                <TableCell isCategory={true} className="md:hidden">{getParticipantsCount(proj)}</TableCell>
                 {/* <TableCell isCategory={true}>{formatCurrencyAmount(proj.investmentIntentSummary?.sum ?? 0, { withDollarSign: true })}</TableCell> */}
                 <TableCell isCategory={false} className="text-center">
                   <Link
@@ -212,46 +214,6 @@ export const LaunchPoolTable = ({ projects, isLoading }: Props) => {
     </div>
   )
 }
-
-const TableHeader = ({
-  children,
-  onClick,
-  className = "",
-}: {
-  children: React.ReactNode
-  onClick?: () => void
-  className?: string
-  isCategory?: boolean
-}) => (
-  <th
-    className={twMerge(
-      "text-left text-xs font-medium text-fg-tertiary tracking-wider px-2 py-3 w-[12%]",
-      onClick && "cursor-pointer hover:bg-secondary/50 transition-colors",
-      className
-    )}
-    onClick={onClick}
-  >
-    {children}
-  </th>
-)
-
-const TableCell = ({ 
-  children, 
-  className = "",
-  isCategory = false
-}: { 
-  children: React.ReactNode, 
-  className?: string,
-  isCategory?: boolean 
-}) => (
-  <td className={twMerge(
-    "px-2 py-6 text-sm whitespace-nowrap", 
-    isCategory && "text-fg-tertiary", 
-    className
-  )}>
-    {children}
-  </td>
-)
 
 const formatFdv = (fdv?: number): string => {
   return fdv ? `$${(fdv / 1000000).toFixed(1)}M` : "—"
