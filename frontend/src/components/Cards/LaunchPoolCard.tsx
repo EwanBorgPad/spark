@@ -82,28 +82,6 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
                   />
                 )}
               </div>
-
-              {isDraftPick && (
-                <div className="flex w-full flex-col">
-                  {cardRows.map((row, index) => (
-                    <div
-                      key={row.icon}
-                      className={twMerge(
-                        "flex w-full items-center justify-between gap-2 rounded-lg bg-secondary px-3 py-2 ",
-                        Boolean(index % 2) && "bg-transparent",
-                      )}
-                    >
-                      <div className="flex w-full items-center gap-1 text-fg-secondary/25">
-                        <Icon icon={row.icon} />
-                        <span className="text-sm text-fg-secondary">{row.label}</span>
-                      </div>
-                      <span className={twMerge("whitespace-nowrap text-sm text-fg-secondary", row.valueClassName)}>
-                        {row.value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
 
             {isUpcoming ? (
