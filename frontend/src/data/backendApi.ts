@@ -39,6 +39,7 @@ const POST_AFTER_SALE_UPDATE = API_BASE_URL + "/projects/after-sale-update"
 const UPDATE_JSON = API_BASE_URL + "/projects/update-json"
 
 const POST_CREATE_EMAIL = API_BASE_URL + "/createemail"
+const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
 
 const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
   const response = await fetch(...args)
@@ -470,6 +471,18 @@ const postCreateEmail = async (args: CreateEmailArgs): Promise<void> => {
   })
 }
 
+const getTwitterAuthUrl = async (): Promise<{ twitterAuthUrl: string }> => {
+  const url = new URL(GET_TWITTER_AUTH_URL, window.location.href)
+
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  const json = await response.json()
+  return json
+}
+
 export const backendApi = {
   getProject,
   getProjects,
@@ -493,4 +506,5 @@ export const backendApi = {
   postAfterSaleUpdate,
   updateJson,
   postCreateEmail,
+  getTwitterAuthUrl,
 }

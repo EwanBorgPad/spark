@@ -16,29 +16,38 @@ type ProjectId = string
 export type UserModelJson = {
   twitter?: {
     twitterId: string
-    follows: Record<TwitterHandle, {
-      isFollowing: boolean,
-    }>
+    follows: Record<
+      TwitterHandle,
+      {
+        isFollowing: boolean
+      }
+    >
   }
-  investmentIntent?: Record<ProjectId, {
-    amount: string
-    message: string
-    signature: number[]
-  }>
+  investmentIntent?: Record<
+    ProjectId,
+    {
+      amount: string
+      message: string
+      signature: number[]
+    }
+  >
   termsOfUse?: {
     acceptedAt: Date
     acceptedTextSigned: string
     countryOfOrigin: string
   }
-  referral?: Record<ProjectId, {
-    referrerTwitterHandle: string
-    createdAt: string
-    message: string
-    signature: number[]
-  }>
+  referral?: Record<
+    ProjectId,
+    {
+      referrerTwitterHandle: string
+      createdAt: string
+      message: string
+      signature: number[]
+    }
+  >
   emailData?: {
-    email: string,
-    providedAt: Date,
+    email: string
+    providedAt: Date
     acceptedTextSigned: string
   }
 }
@@ -56,24 +65,18 @@ const externalUrlSchema = () =>
   })
 const dateSchema = () => z.coerce.date()
 const timelineEventsSchema = () =>
-  z.enum([
-    "REGISTRATION_OPENS",
-    "SALE_OPENS",
-    "SALE_CLOSES",
-    "REWARD_DISTRIBUTION",
-    "DISTRIBUTION_OVER",
-  ])
+  z.enum(["REGISTRATION_OPENS", "SALE_OPENS", "SALE_CLOSES", "REWARD_DISTRIBUTION", "DISTRIBUTION_OVER"])
 
-const optional = (type: ZodTypeAny) => type.optional().nullable();
+const optional = (type: ZodTypeAny) => type.optional().nullable()
 
-const integerSchema = () => z.number().min(0).max(Number.MAX_SAFE_INTEGER).int();
+const integerSchema = () => z.number().min(0).max(Number.MAX_SAFE_INTEGER).int()
 const idSchema = () =>
   z
     .string()
     .min(1)
     .regex(new RegExp(/^[A-Za-z0-9-]+$/), "Only letters, numbers, and dashes are allowed")
 export const SolanaAddressSchema = z.string().regex(/[1-9A-HJ-NP-Za-km-z]{32,44}/)
-const SolanaClusterSchema = z.enum(['mainnet', 'devnet'])
+const SolanaClusterSchema = z.enum(["mainnet", "devnet"])
 
 const TokenDataSchema = z.object({
   iconUrl: urlSchema(),
@@ -195,9 +198,9 @@ export type CacheStoreModel = {
 export type GetExchangeResponse = {
   baseCurrency: string
   targetCurrency: string
-  
+
   currentPrice: string
-  
+
   quotedFrom?: string
   quotedAt?: string
   rawExchangeResponse?: unknown
@@ -212,7 +215,7 @@ export type PaginationType = {
   total: number
   totalPages: number
 }
-export type GetProjectsProjectResponse = (ProjectModel & { investmentIntentSummary?: InvestmentIntentSummary })
+export type GetProjectsProjectResponse = ProjectModel & { investmentIntentSummary?: InvestmentIntentSummary }
 export type GetProjectsResponse = {
   projects: GetProjectsProjectResponse[]
   pagination: PaginationType
@@ -249,6 +252,28 @@ export const CreateEmailRequestSchema = z.object({
 })
 export type CreateEmailRequest = z.infer<typeof CreateEmailRequestSchema>
 
+const analystRoleSchema = z.enum(["FREELANCE_WRITER", "TEAM_MEMBER", "SPONSORED_ANALYST"])
+export type AnalystEnumType = z.infer<typeof analystRoleSchema>
+
+export const AnalystSchema = z.object({
+  twitterId: z.string(),
+  twitter: z
+    .object({
+      accountName: z.string(),
+    })
+    .optional(),
+  role: analystRoleSchema.optional(),
+  articles: z
+    .array(
+      z.object({
+        projectId: z.string(),
+        articleUrls: z.array(urlSchema()),
+      }),
+    )
+    .min(0),
+})
+export type AnalystType = z.infer<typeof AnalystSchema>
+
 export type TokenAmountModel = {
   /**
    * Raw amount of tokens as a string, ignoring decimals
@@ -271,7 +296,6 @@ export type TokenAmountModel = {
    */
   tokenPriceInUsd: string
 }
-
 
 export type SaleResultsResponse = {
   raiseTargetInUsd: string
