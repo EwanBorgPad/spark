@@ -207,15 +207,18 @@ const getProjects = async ({
   page,
   limit,
   projectType,
+  sortByCommitments,
 }: {
   page: number
   limit: number
   projectType?: ProjectModel["info"]["projectType"]
+  sortByCommitments?: 'asc' | 'desc'
 }): Promise<GetProjectsResponse> => {
   const url = new URL(GET_PROJECT_API_URL, window.location.href)
   url.searchParams.set("page", page.toString())
   url.searchParams.set("limit", (limit || 10).toString())
   if (projectType) url.searchParams.set("projectType", projectType || "goat")
+  if (sortByCommitments) url.searchParams.set("sortByCommitments", sortByCommitments)
 
   const response = await fetch(url)
   const json = await response.json()

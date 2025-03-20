@@ -26,16 +26,18 @@ const DraftPicks = () => {
         page: 1,
         limit: 999,
         projectType: "draft-pick",
+        sortByCommitments: "desc",
       }),
-    queryKey: ["getProjects", "draft-pick"],
+    queryKey: ["getProjects", "draft-pick", "sortByCommitments"],
   })
 
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
 
   useEffect(() => {
     if (!data?.projects) return
-    const sortedProjects = sortProjectsPerStatus(data.projects)
-    setPhases(sortedProjects)
+    
+    // When using sortByCommitments, we should preserve the backend sorting instead of re-sorting by status
+    setPhases([data.projects as ExpandedProject[]])
   }, [data?.projects])
 
   return (
