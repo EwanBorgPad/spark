@@ -216,7 +216,7 @@ const getProjects = async ({
   limit: number
   projectType?: ProjectModel["info"]["projectType"]
   completionStatus?: 'completed' | 'active' | 'all'
-  sortBy?: 'name' | 'date' | 'raised' | 'fdv' | 'participants' | 'commitments'
+  sortBy?: 'name' | 'date' | 'raised' | 'fdv' | 'participants' | 'commitments' | 'sector'
   sortDirection?: 'asc' | 'desc'
   cacheBuster?: string // Optional cache busting parameter
 }): Promise<GetProjectsResponse> => {

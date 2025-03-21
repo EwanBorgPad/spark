@@ -23,7 +23,6 @@ const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
 const BlitzPools = () => {
   const [activeProjects, setActiveProjects] = useState<ExpandedProject[]>([])
-  const [completedProjects, setCompletedProjects] = useState<ExpandedProject[]>([])
   const [sortOption, setSortOption] = useState<string>("name-asc")
   const { t } = useTranslation()
   const { isMobile } = useWindowSize()
@@ -35,35 +34,18 @@ const BlitzPools = () => {
         limit: 999,
         projectType: "blitz",
         completionStatus: "active",
-        sortBy: "commitments",
-        sortDirection: "desc",
+        sortBy: "date",
+        sortDirection: "asc",
       }),
-    queryKey: ["getProjects", "blitz", "active", "commitments", "desc"],
+    queryKey: ["getProjects", "blitz", "active", "date", "asc"],
   })  
 
-  const { data: completedData, isLoading: isCompletedLoading } = useQuery<GetProjectsResponse>({
-    queryFn: () =>
-      backendApi.getProjects({
-        page: 1,
-        limit: 999,
-        projectType: "blitz",
-        completionStatus: "completed",
-        sortBy: "commitments",
-        sortDirection: "desc",
-      }),
-    queryKey: ["getProjects", "blitz", "completed", "commitments", "desc"],
-  })
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
 
   useEffect(() => {
     if (!data?.projects) return
-    // Process projects to add additionalData before setting state
     setActiveProjects(processProjects(data.projects))
-    
-    if (completedData?.projects) {
-      setCompletedProjects(processProjects(completedData.projects))
-    }
-  }, [data?.projects, completedData?.projects])
+  }, [data?.projects])
 
   const sortOptions = [
     { value: "name-asc", label: "Sort by Name, A to Z" },
@@ -158,7 +140,7 @@ const BlitzPools = () => {
               </ul>
             </div>
           ) : (
-            <CompletedLaunchPoolTable projects={completedProjects} isLoading={isCompletedLoading} />
+            <CompletedLaunchPoolTable projectStatus="completed"/>
           )}
         </div>
       </section>

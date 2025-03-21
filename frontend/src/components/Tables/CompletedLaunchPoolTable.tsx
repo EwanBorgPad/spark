@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom"
 import { twMerge } from "tailwind-merge"
 import { useTranslation } from "react-i18next"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import Img from "../Image/Img"
-import { ExpandedProject } from "@/utils/projects-helper"
+import { ExpandedProject, processProjects } from "@/utils/projects-helper"
 import { getProjectRoute } from "@/utils/routes"
 import { Icon } from "../Icon/Icon"
-import { ProjectModel } from "shared/models"
+import { GetProjectsResponse, ProjectModel } from "shared/models"
 import { formatCurrencyAmount } from "shared/utils/format"
 import { backendApi } from "@/data/backendApi.ts"
 import { formatDateForProject } from "@/utils/date-helpers"
@@ -16,24 +16,46 @@ import { TableHeader } from "./TableHeader"
 import { TableCell } from "./TableCell"
 
 type Props = {
-  projects: ExpandedProject[]
-  isLoading?: boolean
+  projectStatus: "completed" | "active" | "all"
 }
 
-type SortField = 'title' | 'date' | 'sector' | 'raised' | 'fdv' | 'participants' | 'rewards'
+type SortField = 'name' | 'date' | 'raised' | 'fdv' | 'participants' | 'commitments' | 'sector'
 type SortDirection = 'asc' | 'desc'
 
-export const CompletedLaunchPoolTable = ({ projects, isLoading }: Props) => {
+export const CompletedLaunchPoolTable = ({ projectStatus }: Props) => {
   const { t } = useTranslation()
   const [sortField, setSortField] = useState<SortField>('date')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
-  
+  const [completedProjects, setCompletedProjects] = useState<ExpandedProject[]>([])
+
+
+  const { data: completedData, isLoading: isCompletedLoading } = useQuery<GetProjectsResponse>({
+    queryFn: () =>
+      backendApi.getProjects({
+        page: 1,
+        limit: 999,
+        projectType: "blitz",
+        completionStatus: projectStatus,
+        sortBy: sortField,
+        sortDirection: sortDirection,
+      }),
+    queryKey: ["getProjects", "blitz", projectStatus, sortField, sortDirection],
+  })
+
+  const skeletonItems = Array.from({ length: 5 }, (_, i) => i)
+
+  useEffect(() => {
+    if (completedData?.projects) {
+      setCompletedProjects(processProjects(completedData.projects))
+    }
+  }, [completedData?.projects])
+
   // Fetch sale results for all projects
-  const projectIds = projects?.map(p => p.id) || []
+  const projectIds = completedProjects?.map(p => p.id) || []
   const { data: saleResultsMap, isLoading: isLoadingSaleResults } = useQuery({
     queryFn: async () => {
       if (!projectIds.length) return {}
-      
+
       // Fetch sale results for each project and create a map for easy lookup
       const results = await Promise.all(
         projectIds.map(async (projectId) => {
@@ -46,7 +68,7 @@ export const CompletedLaunchPoolTable = ({ projects, isLoading }: Props) => {
           }
         })
       )
-      
+
       // Convert to a map for easy lookup by project ID
       return results.reduce((acc, { projectId, data }) => {
         acc[projectId] = data
@@ -57,8 +79,8 @@ export const CompletedLaunchPoolTable = ({ projects, isLoading }: Props) => {
     enabled: Boolean(projectIds.length),
     staleTime: 30 * 1000,
   })
-  
-  const isTableLoading = isLoading || isLoadingSaleResults
+
+  const isTableLoading = isCompletedLoading || isLoadingSaleResults
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -73,36 +95,6 @@ export const CompletedLaunchPoolTable = ({ projects, isLoading }: Props) => {
     if (sortField !== field) return '↓'
     return sortDirection === 'asc' ? '↑' : '↓'
   }
-
-  const sortedProjects = useMemo(() => {
-    if (!projects?.length) return []
-
-    return [...projects].sort((a, b) => {
-      const multiplier = sortDirection === 'asc' ? 1 : -1
-
-      switch (sortField) {
-        case 'title':
-          return (a.info.title || '').localeCompare(b.info.title || '') * multiplier
-        case 'date': {
-          const aDate = new Date(a.info.timeline?.find(t => t.id === "REWARD_DISTRIBUTION")?.date || 0).getTime()
-          const bDate = new Date(b.info.timeline?.find(t => t.id === "REWARD_DISTRIBUTION")?.date || 0).getTime()
-          return (aDate - bDate) * multiplier
-        }
-        case 'sector':
-          return (a.info.sector || '').localeCompare(b.info.sector || '') * multiplier
-        case 'raised':
-          return ((a.investmentIntentSummary?.sum || 0) - (b.investmentIntentSummary?.sum || 0)) * multiplier
-        case 'fdv':
-          return ((a.config.fdv || 0) - (b.config.fdv || 0)) * multiplier
-        case 'participants':
-          return ((a.investmentIntentSummary?.count || 0) - (b.investmentIntentSummary?.count || 0)) * multiplier
-        case 'rewards':
-          return ((a.investmentIntentSummary?.sum || 0) - (b.investmentIntentSummary?.sum || 0)) * multiplier
-        default:
-          return 0
-      }
-    })
-  }, [projects, sortField, sortDirection])
 
   const getSaleData = (projectId: string) => {
     return saleResultsMap?.[projectId] || null
@@ -126,7 +118,7 @@ export const CompletedLaunchPoolTable = ({ projects, isLoading }: Props) => {
     return proj.investmentIntentSummary?.count ?? 0
   }
 
-  if (!projects?.length && !isTableLoading) return null
+  if (!completedProjects?.length && !isTableLoading) return null
 
   return (
     <div className="relative flex w-full col-span-full flex-col overflow-hidden rounded-lg border-[1px] border-bd-secondary/30 bg-transparent">
@@ -137,8 +129,8 @@ export const CompletedLaunchPoolTable = ({ projects, isLoading }: Props) => {
               <TableHeader className="w-[1%] text-center">
                 {" "}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('title')}>
-                Project {getSortIcon('title')}
+              <TableHeader onClick={() => handleSort('name')}>
+                Project {getSortIcon('name')}
               </TableHeader>
               <TableHeader onClick={() => handleSort('date')}>
                 Date {getSortIcon('date')}
@@ -165,12 +157,36 @@ export const CompletedLaunchPoolTable = ({ projects, isLoading }: Props) => {
           </thead>
           <tbody className="divide-y divide-bd-secondary/20">
             {isTableLoading ? (
-              <tr>
-                <td colSpan={9} className="px-3 py-4 text-center text-fg-tertiary">
-                  Loading...
-                </td>
-              </tr>
-            ) : sortedProjects.map((proj, index) => (
+              // Display skeleton rows when loading
+              skeletonItems.map((item) => (
+                <tr key={`skeleton-${item}`} className="animate-pulse">
+                  <TableCell className="px-4 flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-bd-secondary/30"></div>
+                  </TableCell>
+                  <TableCell isCategory={false}>
+                    <div className="h-5 w-24 bg-bd-secondary/30 rounded"></div>
+                  </TableCell>
+                  <TableCell isCategory={true}>
+                    <div className="h-5 w-20 bg-bd-secondary/30 rounded"></div>
+                  </TableCell>
+                  <TableCell isCategory={true}>
+                    <div className="h-5 w-16 bg-bd-secondary/30 rounded"></div>
+                  </TableCell>
+                  <TableCell isCategory={true}>
+                    <div className="h-5 w-16 bg-bd-secondary/30 rounded"></div>
+                  </TableCell>
+                  <TableCell isCategory={true}>
+                    <div className="h-5 w-16 bg-bd-secondary/30 rounded"></div>
+                  </TableCell>
+                  <TableCell isCategory={true} className="md:hidden">
+                    <div className="h-5 w-10 bg-bd-secondary/30 rounded"></div>
+                  </TableCell>
+                  <TableCell isCategory={false} className="text-center">
+                    <div className="inline-flex justify-center items-center w-8 h-8 rounded bg-bd-secondary/30"></div>
+                  </TableCell>
+                </tr>
+              ))
+            ) : completedProjects?.map((proj, index) => (
               <tr
                 key={proj.id}
                 onClick={() => window.location.href = getProjectRoute(proj as ProjectModel)}
@@ -179,7 +195,7 @@ export const CompletedLaunchPoolTable = ({ projects, isLoading }: Props) => {
                 <TableCell className="px-4 flex items-center">
                   <Img
                     src={proj.info.logoUrl}
-                    isFetchingLink={isLoading}
+                    isFetchingLink={isCompletedLoading}
                     imgClassName="scale-[102%]"
                     isRounded={true}
                     size="8"

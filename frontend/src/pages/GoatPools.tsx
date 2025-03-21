@@ -23,48 +23,29 @@ const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
 const GoatPools = () => {
   const [activeProjects, setActiveProjects] = useState<ExpandedProject[]>([])
-  const [completedProjects, setCompletedProjects] = useState<ExpandedProject[]>([])
   const [sortOption, setSortOption] = useState<string>("name-asc")
   const { t } = useTranslation()
   const { isMobile } = useWindowSize()
 
-  const { data: activeData, isLoading: isActiveLoading } = useQuery<GetProjectsResponse>({
+  const { data, isLoading } = useQuery<GetProjectsResponse>({
     queryFn: () =>
       backendApi.getProjects({
         page: 1,
         limit: 999,
         projectType: "goat",
         completionStatus: "active",
-        sortBy: "commitments",
-        sortDirection: "desc",
+        sortBy: "date",
+        sortDirection: "asc",
       }),
-    queryKey: ["getProjects", "goat", "active", "commitments", "desc"],
-  })
-
-  const { data: completedData, isLoading: isCompletedLoading } = useQuery<GetProjectsResponse>({
-    queryFn: () =>
-      backendApi.getProjects({
-        page: 1,
-        limit: 999,
-        projectType: "goat",
-        completionStatus: "completed",
-        sortBy: "commitments",
-        sortDirection: "desc",
-      }),
-    queryKey: ["getProjects", "goat", "completed", "commitments", "desc"],
+    queryKey: ["getProjects", "goat", "active", "date", "asc"],
   })
 
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
 
   useEffect(() => {
-    if (!activeData?.projects) return
-    // Process projects to add additionalData before setting state
-    setActiveProjects(processProjects(activeData.projects))
-    
-    if (completedData?.projects) {
-      setCompletedProjects(processProjects(completedData.projects))
-    }
-  }, [activeData?.projects, completedData?.projects])
+    if (!data?.projects) return
+    setActiveProjects(processProjects(data.projects))
+  }, [data?.projects])
 
   const sortOptions = [
     { value: "name-asc", label: "Sort by Name, A to Z" },
@@ -110,7 +91,7 @@ const GoatPools = () => {
 
         <div className="mt-[64px] flex w-full max-w-[1080px] flex-col items-center">
           <ul className="grid grid-cols-1 place-content-center justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {!isActiveLoading
+            {!isLoading
               ? activeProjects?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />)
               : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
           </ul>
@@ -133,14 +114,14 @@ const GoatPools = () => {
                 />
               </div>
               <ul className="grid grid-cols-1 place-items-center justify-center gap-6 w-full max-w-[344px] mx-auto">
-                {isActiveLoading
-                  ? <LaunchPoolCard isLoading project={null} />
+                {isLoading
+                  ? <CompletedLaunchPoolCard isLoading project={null} />
                   : activeProjects?.length > 0
                     ? activeProjects.map(project => (
                       <CompletedLaunchPoolCard
                         key={`completed-${project.id}`}
                         project={project}
-                        isLoading={isActiveLoading}
+                        isLoading={isLoading}
                       />
                     ))
                     : <p className="text-center text-fg-secondary">No completed projects yet</p>
@@ -148,7 +129,7 @@ const GoatPools = () => {
               </ul>
             </div>
           ) : (
-            <CompletedLaunchPoolTable projects={completedProjects} isLoading={isCompletedLoading} />
+            <CompletedLaunchPoolTable projectStatus="completed" />
           )}
         </div>
       </section>
