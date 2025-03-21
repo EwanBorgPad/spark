@@ -17,13 +17,11 @@ import { ExpandedProject, processProjects } from "@/utils/projects-helper"
 import { CompletedLaunchPoolTable } from "@/components/Tables/CompletedLaunchPoolTable"
 import { CompletedLaunchPoolCard } from "@/components/Cards/CompletedLaunchPoolCard"
 import { useWindowSize } from "@/hooks/useWindowSize"
-import { SortDropdown } from "@/components/Dropdown/SortDropdown"
 
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
 const BlitzPools = () => {
   const [activeProjects, setActiveProjects] = useState<ExpandedProject[]>([])
-  const [sortOption, setSortOption] = useState<string>("name-asc")
   const { t } = useTranslation()
   const { isMobile } = useWindowSize()
 
@@ -38,7 +36,7 @@ const BlitzPools = () => {
         sortDirection: "asc",
       }),
     queryKey: ["getProjects", "blitz", "active", "date", "asc"],
-  })  
+  })
 
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
 
@@ -46,15 +44,6 @@ const BlitzPools = () => {
     if (!data?.projects) return
     setActiveProjects(processProjects(data.projects))
   }, [data?.projects])
-
-  const sortOptions = [
-    { value: "name-asc", label: "Sort by Name, A to Z" },
-    { value: "name-desc", label: "Sort by Name, Z to A" },
-    { value: "date-asc", label: "Sort by Date, Oldest first" },
-    { value: "date-desc", label: "Sort by Date, Newest first" },
-    { value: "raised-asc", label: "Sort by Raised, Low to High" },
-    { value: "raised-desc", label: "Sort by Raised, High to Low" },
-  ]
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full select-none flex-col items-center bg-transparent pt-[48px] md:pt-[68px]">
@@ -116,31 +105,12 @@ const BlitzPools = () => {
           </h3>
           {isMobile ? (
             <div className="flex flex-col items-center gap-6">
-              <div className="w-full max-w-[344px] mx-auto">
-                <SortDropdown
-                  options={sortOptions}
-                  selected={sortOption}
-                  onChange={setSortOption}
-                  placeholder="Sort by Name, A to Z"
-                />
-              </div>
               <ul className="grid grid-cols-1 place-items-center justify-center gap-6 w-full max-w-[344px] mx-auto">
-                {isLoading
-                  ? <LaunchPoolCard isLoading project={null} />
-                  : activeProjects?.length > 0
-                    ? activeProjects.map(project => (
-                      <CompletedLaunchPoolCard
-                        key={`completed-${project.id}`}
-                        project={project}
-                        isLoading={isLoading}
-                      />
-                    ))
-                    : <p className="text-center text-fg-secondary">No completed projects yet</p>
-                }
+                <CompletedLaunchPoolCard projectStatus="completed" projectType="blitz" />
               </ul>
             </div>
           ) : (
-            <CompletedLaunchPoolTable projectStatus="completed"/>
+            <CompletedLaunchPoolTable projectStatus="completed" />
           )}
         </div>
       </section>
