@@ -207,18 +207,27 @@ const getProjects = async ({
   page,
   limit,
   projectType,
-  sortByCommitments,
+  completionStatus,
+  sortBy,
+  sortDirection,
+  cacheBuster,
 }: {
   page: number
   limit: number
   projectType?: ProjectModel["info"]["projectType"]
-  sortByCommitments?: 'asc' | 'desc'
+  completionStatus?: 'completed' | 'active' | 'all'
+  sortBy?: 'name' | 'date' | 'raised' | 'fdv' | 'participants' | 'commitments'
+  sortDirection?: 'asc' | 'desc'
+  cacheBuster?: string // Optional cache busting parameter
 }): Promise<GetProjectsResponse> => {
   const url = new URL(GET_PROJECT_API_URL, window.location.href)
   url.searchParams.set("page", page.toString())
   url.searchParams.set("limit", (limit || 10).toString())
   if (projectType) url.searchParams.set("projectType", projectType || "goat")
-  if (sortByCommitments) url.searchParams.set("sortByCommitments", sortByCommitments)
+  if (completionStatus) url.searchParams.set("completionStatus", completionStatus)
+  if (sortBy) url.searchParams.set("sortBy", sortBy)
+  if (sortDirection) url.searchParams.set("sortDirection", sortDirection)
+  if (cacheBuster) url.searchParams.set("_cb", cacheBuster) // Add cache buster if provided
 
   const response = await fetch(url)
   const json = await response.json()
