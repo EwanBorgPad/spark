@@ -13,7 +13,7 @@ import blitzPoolsLogo from "@/assets/launchPools/blitz-pools-logo.png"
 import Img from "@/components/Image/Img"
 import { GetProjectsResponse } from "shared/models"
 import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
-import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
+import { ExpandedProject, processProjects } from "@/utils/projects-helper"
 import { CompletedLaunchPoolTable } from "@/components/Tables/CompletedLaunchPoolTable"
 import { CompletedLaunchPoolCard } from "@/components/Cards/CompletedLaunchPoolCard"
 import { useWindowSize } from "@/hooks/useWindowSize"
@@ -22,39 +22,48 @@ import { SortDropdown } from "@/components/Dropdown/SortDropdown"
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
 const BlitzPools = () => {
-  const [phases, setPhases] = useState<ExpandedProject[][]>([])
+  const [activeProjects, setActiveProjects] = useState<ExpandedProject[]>([])
   const [completedProjects, setCompletedProjects] = useState<ExpandedProject[]>([])
   const [sortOption, setSortOption] = useState<string>("name-asc")
   const { t } = useTranslation()
   const { isMobile } = useWindowSize()
+
   const { data, isLoading } = useQuery<GetProjectsResponse>({
     queryFn: () =>
       backendApi.getProjects({
         page: 1,
         limit: 999,
         projectType: "blitz",
+        completionStatus: "active",
+        sortBy: "commitments",
+        sortDirection: "desc",
       }),
-    queryKey: ["getProjects", "blitz"],
-  })
+    queryKey: ["getProjects", "blitz", "active", "commitments", "desc"],
+  })  
 
+  const { data: completedData, isLoading: isCompletedLoading } = useQuery<GetProjectsResponse>({
+    queryFn: () =>
+      backendApi.getProjects({
+        page: 1,
+        limit: 999,
+        projectType: "blitz",
+        completionStatus: "completed",
+        sortBy: "commitments",
+        sortDirection: "desc",
+      }),
+    queryKey: ["getProjects", "blitz", "completed", "commitments", "desc"],
+  })
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
 
   useEffect(() => {
     if (!data?.projects) return
-    const sortedProjects = sortProjectsPerStatus(data.projects)
-
-    // Filter out completed projects (those in REWARD_DISTRIBUTION phase)
-    const completed = sortedProjects
-      .flat()
-      .filter(project =>
-        project &&
-        !project.info.projectType.includes("draft-pick") &&
-        project.additionalData.currentEvent.id === "REWARD_DISTRIBUTION"
-      )
-
-    setCompletedProjects(completed)
-    setPhases(sortedProjects)
-  }, [data?.projects])
+    // Process projects to add additionalData before setting state
+    setActiveProjects(processProjects(data.projects))
+    
+    if (completedData?.projects) {
+      setCompletedProjects(processProjects(completedData.projects))
+    }
+  }, [data?.projects, completedData?.projects])
 
   const sortOptions = [
     { value: "name-asc", label: "Sort by Name, A to Z" },
@@ -64,35 +73,6 @@ const BlitzPools = () => {
     { value: "raised-asc", label: "Sort by Raised, Low to High" },
     { value: "raised-desc", label: "Sort by Raised, High to Low" },
   ]
-
-  const sortedCompletedProjects = useMemo(() => {
-    if (!completedProjects?.length) return []
-
-    return [...completedProjects].sort((a, b) => {
-      switch (sortOption) {
-        case "name-asc":
-          return (a.info.title || "").localeCompare(b.info.title || "")
-        case "name-desc":
-          return (b.info.title || "").localeCompare(a.info.title || "")
-        case "date-asc": {
-          const aDate = new Date(a.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date || 0).getTime()
-          const bDate = new Date(b.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date || 0).getTime()
-          return aDate - bDate
-        }
-        case "date-desc": {
-          const aDate = new Date(a.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date || 0).getTime()
-          const bDate = new Date(b.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date || 0).getTime()
-          return bDate - aDate
-        }
-        case "raised-asc":
-          return ((a.investmentIntentSummary?.sum || 0) - (b.investmentIntentSummary?.sum || 0))
-        case "raised-desc":
-          return ((b.investmentIntentSummary?.sum || 0) - (a.investmentIntentSummary?.sum || 0))
-        default:
-          return 0
-      }
-    })
-  }, [completedProjects, sortOption])
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full select-none flex-col items-center bg-transparent pt-[48px] md:pt-[68px]">
@@ -141,9 +121,7 @@ const BlitzPools = () => {
         <div className="flex w-full max-w-[1080px] flex-col items-center">
           <ul className="grid grid-cols-1 place-content-center justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {!isLoading
-              ? phases?.map((phase) =>
-                phase?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />),
-              )
+              ? activeProjects?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />)
               : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
           </ul>
         </div>
@@ -167,8 +145,8 @@ const BlitzPools = () => {
               <ul className="grid grid-cols-1 place-items-center justify-center gap-6 w-full max-w-[344px] mx-auto">
                 {isLoading
                   ? <LaunchPoolCard isLoading project={null} />
-                  : sortedCompletedProjects?.length > 0
-                    ? sortedCompletedProjects.map(project => (
+                  : activeProjects?.length > 0
+                    ? activeProjects.map(project => (
                       <CompletedLaunchPoolCard
                         key={`completed-${project.id}`}
                         project={project}
@@ -180,7 +158,7 @@ const BlitzPools = () => {
               </ul>
             </div>
           ) : (
-            <CompletedLaunchPoolTable projects={completedProjects} isLoading={isLoading} />
+            <CompletedLaunchPoolTable projects={completedProjects} isLoading={isCompletedLoading} />
           )}
         </div>
       </section>
@@ -189,6 +167,5 @@ const BlitzPools = () => {
     </main>
   )
 }
-
 
 export default BlitzPools

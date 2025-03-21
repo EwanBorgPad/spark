@@ -12,7 +12,7 @@ import goatPoolsLogo from "@/assets/launchPools/goat-pools-logo.png"
 
 import { GetProjectsResponse } from "shared/models"
 import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
-import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
+import { ExpandedProject, processProjects } from "@/utils/projects-helper"
 import Img from "@/components/Image/Img"
 import { useTranslation } from "react-i18next"
 import { CompletedLaunchPoolTable } from "@/components/Tables/CompletedLaunchPoolTable"
@@ -22,29 +22,49 @@ import { SortDropdown } from "@/components/Dropdown/SortDropdown"
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
 const GoatPools = () => {
-  const [phases, setPhases] = useState<ExpandedProject[][]>([])
+  const [activeProjects, setActiveProjects] = useState<ExpandedProject[]>([])
   const [completedProjects, setCompletedProjects] = useState<ExpandedProject[]>([])
   const [sortOption, setSortOption] = useState<string>("name-asc")
   const { t } = useTranslation()
   const { isMobile } = useWindowSize()
-  const { data, isLoading } = useQuery<GetProjectsResponse>({
+
+  const { data: activeData, isLoading: isActiveLoading } = useQuery<GetProjectsResponse>({
     queryFn: () =>
       backendApi.getProjects({
         page: 1,
         limit: 999,
         projectType: "goat",
+        completionStatus: "active",
+        sortBy: "commitments",
+        sortDirection: "desc",
       }),
-    queryKey: ["getProjects", "goat"],
+    queryKey: ["getProjects", "goat", "active", "commitments", "desc"],
+  })
+
+  const { data: completedData, isLoading: isCompletedLoading } = useQuery<GetProjectsResponse>({
+    queryFn: () =>
+      backendApi.getProjects({
+        page: 1,
+        limit: 999,
+        projectType: "goat",
+        completionStatus: "completed",
+        sortBy: "commitments",
+        sortDirection: "desc",
+      }),
+    queryKey: ["getProjects", "goat", "completed", "commitments", "desc"],
   })
 
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
 
   useEffect(() => {
-    if (!data?.projects) return
-    const sortedProjects = sortProjectsPerStatus(data.projects)
-    setPhases(sortedProjects)
-    setCompletedProjects(sortedProjects.flat().filter(project => project.additionalData.currentEvent.id === "REWARD_DISTRIBUTION"))
-  }, [data?.projects])
+    if (!activeData?.projects) return
+    // Process projects to add additionalData before setting state
+    setActiveProjects(processProjects(activeData.projects))
+    
+    if (completedData?.projects) {
+      setCompletedProjects(processProjects(completedData.projects))
+    }
+  }, [activeData?.projects, completedData?.projects])
 
   const sortOptions = [
     { value: "name-asc", label: "Sort by Name, A to Z" },
@@ -54,35 +74,6 @@ const GoatPools = () => {
     { value: "raised-asc", label: "Sort by Raised, Low to High" },
     { value: "raised-desc", label: "Sort by Raised, High to Low" },
   ]
-
-  const sortedCompletedProjects = useMemo(() => {
-    if (!completedProjects?.length) return []
-
-    return [...completedProjects].sort((a, b) => {
-      switch (sortOption) {
-        case "name-asc":
-          return (a.info.title || "").localeCompare(b.info.title || "")
-        case "name-desc":
-          return (b.info.title || "").localeCompare(a.info.title || "")
-        case "date-asc": {
-          const aDate = new Date(a.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date || 0).getTime()
-          const bDate = new Date(b.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date || 0).getTime()
-          return aDate - bDate
-        }
-        case "date-desc": {
-          const aDate = new Date(a.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date || 0).getTime()
-          const bDate = new Date(b.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date || 0).getTime()
-          return bDate - aDate
-        }
-        case "raised-asc":
-          return ((a.investmentIntentSummary?.sum || 0) - (b.investmentIntentSummary?.sum || 0))
-        case "raised-desc":
-          return ((b.investmentIntentSummary?.sum || 0) - (a.investmentIntentSummary?.sum || 0))
-        default:
-          return 0
-      }
-    })
-  }, [completedProjects, sortOption])
 
   return (
     <main className="relative z-[10] min-h-screen w-full select-none bg-transparent pt-[48px] md:pt-[68px]">
@@ -119,10 +110,8 @@ const GoatPools = () => {
 
         <div className="mt-[64px] flex w-full max-w-[1080px] flex-col items-center">
           <ul className="grid grid-cols-1 place-content-center justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {!isLoading
-              ? phases?.map((phase) =>
-                phase?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />),
-              )
+            {!isActiveLoading
+              ? activeProjects?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />)
               : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
           </ul>
         </div>
@@ -144,14 +133,14 @@ const GoatPools = () => {
                 />
               </div>
               <ul className="grid grid-cols-1 place-items-center justify-center gap-6 w-full max-w-[344px] mx-auto">
-                {isLoading
+                {isActiveLoading
                   ? <LaunchPoolCard isLoading project={null} />
-                  : sortedCompletedProjects?.length > 0
-                    ? sortedCompletedProjects.map(project => (
+                  : activeProjects?.length > 0
+                    ? activeProjects.map(project => (
                       <CompletedLaunchPoolCard
                         key={`completed-${project.id}`}
                         project={project}
-                        isLoading={isLoading}
+                        isLoading={isActiveLoading}
                       />
                     ))
                     : <p className="text-center text-fg-secondary">No completed projects yet</p>
@@ -159,7 +148,7 @@ const GoatPools = () => {
               </ul>
             </div>
           ) : (
-            <CompletedLaunchPoolTable projects={completedProjects} isLoading={isLoading} />
+            <CompletedLaunchPoolTable projects={completedProjects} isLoading={isCompletedLoading} />
           )}
         </div>
       </section>

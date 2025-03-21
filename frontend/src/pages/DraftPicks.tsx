@@ -26,12 +26,12 @@ const DraftPicks = () => {
       backendApi.getProjects({
         page: 1,
         limit: 999,
-        projectType: "goat",
-        completionStatus: "completed",
-        sortBy: "fdv",
+        projectType: "draft-pick",
+        completionStatus: "all",
+        sortBy: "commitments",
         sortDirection: "desc",
       }),
-    queryKey: ["getProjects", "goat", "completed", "fdv", "desc"],
+    queryKey: ["getProjects", "draft-pick", "all", "commitments", "desc"],
   })
 
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)

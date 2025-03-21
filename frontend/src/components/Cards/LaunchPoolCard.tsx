@@ -7,6 +7,7 @@ import Text from "@/components/Text"
 import { Badge } from "../Badge/Badge"
 import { Button } from "../Button/Button"
 import { ExpandedProject } from "@/utils/projects-helper"
+import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { ExternalLink } from "../Button/ExternalLink"
 import { getProjectRoute } from "@/utils/routes"
 import { AvailableIcons, Icon } from "../Icon/Icon"
@@ -19,17 +20,26 @@ type Props = { project: ExpandedProject | null; isLoading?: boolean }
 export const LaunchPoolCard = ({ project, isLoading }: Props) => {
   const { t } = useTranslation()
 
-  const { additionalData: { badgeClassName, endMessage, badgeLabel } = {} } = project ?? {}
+  const defaultAdditionalData = {
+    badgeClassName: "",
+    endMessage: "",
+    badgeLabel: "",
+    currentEvent: undefined as ExpandedTimelineEventType | undefined
+  }
+  
+  const additionalData = project?.additionalData || defaultAdditionalData
+  const badgeClassName = additionalData.badgeClassName || ""
+  const endMessage = additionalData.endMessage || ""
+  const badgeLabel = additionalData.badgeLabel || ""
+  const currentEvent = additionalData.currentEvent
 
   const isDraftPick = project?.info.projectType === "draft-pick"
-  const isUpcoming = !isDraftPick && project?.additionalData.currentEvent.id === "UPCOMING"
-  const isRegistrationOpen = !isDraftPick && project?.additionalData.currentEvent.id === "REGISTRATION_OPENS"
-  const isSaleOpen = !isDraftPick && project?.additionalData.currentEvent.id === "SALE_OPENS"
-  const isRewardDistribution = !isDraftPick && project?.additionalData.currentEvent.id === "REWARD_DISTRIBUTION"
+  const isUpcoming = !isDraftPick && currentEvent?.id === "UPCOMING"
+  const isRegistrationOpen = !isDraftPick && currentEvent?.id === "REGISTRATION_OPENS"
+  const isSaleOpen = !isDraftPick && currentEvent?.id === "SALE_OPENS"
+  const isRewardDistribution = !isDraftPick && currentEvent?.id === "REWARD_DISTRIBUTION"
   const isBlitz = project?.info.projectType === "blitz"
   const projectUrl = getProjectRoute(project as ProjectModel)
-
-  const cardRows = getCardRows(project)
 
   return (
     <>
@@ -164,49 +174,7 @@ const formatTotalInvested = (totalInvested?: number): string => {
   return totalInvested ? `$${(totalInvested / 1000).toFixed(1)}K` : "$0"
 }
 
-const formatEventDate = (project: ExpandedProject | null, eventId: string): string => {
-  if (!project?.info?.timeline) return "TBC"
-
-  const event = project.info.timeline.find(t => t.id === eventId)
-  if (!event?.date) return "TBC"
-
-  return new Date(event.date).toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    hour12: true
-  }).replace(/(\d+)/, (match) => {
-    const num = parseInt(match)
-    const suffix = ['th', 'st', 'nd', 'rd'][num % 10 > 3 ? 0 : (num % 100 - num % 10 != 10 ? num % 10 : 0)]
-    return num + suffix
-  }).replace(' PM', 'PM').replace(' AM', 'AM')
-}
-
 const BORGPAD_X_URL = "https://x.com/BorgPadHQ"
-
-const getCardRows = (
-  project: ExpandedProject | null,
-): { icon: AvailableIcons; label: string; value: string | number; valueClassName?: string }[] => {
-  if (!project) return []
-  return [
-    {
-      icon: "SvgDatabase",
-      label: "Target FDV",
-      value: project.info.targetFdv || "",
-      valueClassName: "text-draft-picks",
-    },
-    {
-      icon: "SvgChartLine",
-      label: "Total Commitment",
-      value: formatCurrencyAmount(project?.investmentIntentSummary?.sum ?? 0, { withDollarSign: true }),
-    },
-    {
-      icon: "SvgCalendarFill",
-      label: "Target Launch",
-      value: project.info.tokenGenerationEventDate,
-    },
-  ]
-}
 
 const FollowOnXBtn = () => {
   return (
