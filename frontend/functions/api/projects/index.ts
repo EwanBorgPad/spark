@@ -37,7 +37,11 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     const projects = await getProjectsFromDB(db, requestData)
 
-    return jsonResponse(projects, 200)
+    return jsonResponse(projects, {
+      headers: {
+        "Cache-Control": "public, max-age=15"
+      }
+    })
   } catch (e) {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
@@ -75,11 +79,11 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       )
       break
   }
-  
+
   if (completionStatus !== 'all') {
     // Get current date in ISO format, ensuring we compare strings in a way SQLite will understand
     const now = new Date().toISOString();
-    
+
     if (completionStatus === 'completed') {
       // A project is completed if its SALE_CLOSES date is in the past
       // Modified to use direct JSON path syntax instead of json_each
@@ -121,7 +125,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       // 2. SALE_CLOSES has a NULL date, OR 
       // 3. SALE_CLOSES has an empty string date, OR
       // 4. SALE_CLOSES has a future date
-      
+
       // Modified to use direct JSON path syntax instead of json_each
       whereConditions = and(
         whereConditions,
@@ -175,7 +179,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       )
     }
   }
-  
+
   const countQuery = db
     .select({ count: count() })
     .from(projectTable)
@@ -190,10 +194,10 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
     .from(projectTable)
     .where(whereConditions)
     .all()
-  
+
   // Get project IDs for investment intent query
   const projectIds = projectsResult.map(project => project.id)
-  
+
   // Get investment intent summaries for all projects
   const investmentIntentSummaries = await db.all(
     sql`
@@ -208,7 +212,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       GROUP BY json_each.key;
     `
   ) as { project_id: string, sum: number, avg: number, count: number }[];
-  
+
   // Get sale results for all projects using SaleResultsService
   const saleResultsPromises = projectIds.map(async (projectId) => {
     try {
@@ -219,7 +223,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       return { projectId, saleResults: null };
     }
   });
-  
+
   const saleResultsArray = await Promise.all(saleResultsPromises);
   const saleResultsMap = saleResultsArray.reduce((acc, { projectId, saleResults }) => {
     if (saleResults) {
@@ -230,11 +234,11 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
 
   // Map projects to return format with investment intent summaries and sale results
   const projectsWithSummaries = projectsResult.map(project => {
-    const summary = investmentIntentSummaries.find(summary => summary.project_id === project.id) || 
+    const summary = investmentIntentSummaries.find(summary => summary.project_id === project.id) ||
       { project_id: project.id, sum: 0, avg: 0, count: 0 };
-      
+
     const saleResults = saleResultsMap[project.id] || null;
-    
+
     return {
       ...project,
       investmentIntentSummary: summary,
@@ -244,11 +248,11 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
 
   // Apply sorting based on the requested sort criteria
   let sortedProjects = [...projectsWithSummaries];
-  
+
   if (sortBy) {
     sortedProjects.sort((a, b) => {
       const multiplier = sortDirection === 'asc' ? 1 : -1;
-      
+
       switch (sortBy) {
         case 'commitments':
           // Sort by commitments respecting sortDirection
@@ -276,17 +280,17 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
           const bTimeline = b.json?.info?.timeline || [];
           const aEvent = aTimeline.find((t: any) => t.id === 'SALE_CLOSES');
           const bEvent = bTimeline.find((t: any) => t.id === 'SALE_CLOSES');
-          
+
           // If date is null, treat it specially in sorting
           // For ascending: null dates go at the end (considered "larger")
           // For descending: null dates go at the beginning (considered "larger")
           if (aEvent?.date === null && bEvent?.date === null) return 0;
           if (aEvent?.date === null) return sortDirection === 'asc' ? 1 : -1;
           if (bEvent?.date === null) return sortDirection === 'asc' ? -1 : 1;
-          
+
           const aDate = aEvent?.date ? new Date(aEvent.date).getTime() : 0;
           const bDate = bEvent?.date ? new Date(bEvent.date).getTime() : 0;
-          return (bDate - aDate) * multiplier; 
+          return (bDate - aDate) * multiplier;
         }
         case 'fdv':
           const fdvA = a.json?.config?.fdv || 0;
@@ -297,12 +301,12 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       }
     });
   }
-  
+
   // Apply pagination after sorting
   const paginatedProjects = sortedProjects.slice(offset, offset + limit);
-  
+
   // Map to final return format
-  const retvalProjects = 
+  const retvalProjects =
     paginatedProjects.map(project => {
       // Create a default investment summary if none exists
       const investmentSummary = project.investmentIntentSummary || {
@@ -311,7 +315,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
         avg: 0,
         count: 0
       };
-      
+
       return {
         ...project.json,
         investmentIntentSummary: investmentSummary,
@@ -366,7 +370,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       .from(projectTable)
       .where(eq(projectTable.id, data.id))
       .get()
-    
+
     const projectExists = Boolean(project)
     if (!overwrite && projectExists) return jsonResponse({ message: "Project with provided id already exists!", }, 409)
 
