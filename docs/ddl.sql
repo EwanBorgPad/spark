@@ -129,3 +129,26 @@ CREATE TABLE api_key (
     hash TEXT NOT NULL
 );
 ---- end
+
+---- migration: analyst and analyst_article - 21.03.2025
+CREATE TABLE analyst (
+    id TEXT NOT NULL PRIMARY KEY,
+    twitter_id TEXT NOT NULL UNIQUE,
+    twitter_username TEXT,
+    twitter_name TEXT,
+    twitter_avatar TEXT
+);
+
+CREATE TABLE analysis (
+    id TEXT NOT NULL PRIMARY KEY,
+    analyst_id TEXT NOT NULL,
+    twitter_id TEXT NOT NULL,
+    project_id TEXT NOT NULL,
+    article_url TEXT NOT NULL,
+    analyst_role TEXT NOT NULL,
+    FOREIGN KEY (analyst_id) REFERENCES analyst(id) ON DELETE CASCADE,
+    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_analysis_project_id ON analysis(project_id);
+---- end
