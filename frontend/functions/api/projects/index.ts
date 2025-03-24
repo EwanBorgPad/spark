@@ -13,7 +13,7 @@ const requestSchema = z.object({
   limit: z.coerce.number().int().default(9),
   projectType: ProjectTypeSchema.optional(),
   completionStatus: z.enum(['completed', 'active', 'all']).default('all'),
-  sortBy: z.enum(['name', 'date', 'raised', 'fdv', 'participants', 'commitments']).optional(),
+  sortBy: z.enum(['name', 'date', 'raised', 'fdv', 'participants', 'commitments', 'sector']).optional(),
   sortDirection: z.enum(['asc', 'desc']).default('desc'),
 })
 
@@ -66,6 +66,11 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
         sql`json_extract(json, '$.info.title') IS NOT NULL`
       )
       break
+    case 'sector':
+      whereConditions = and(
+        whereConditions,
+        sql`json_extract(json, '$.info.sector') IS NOT NULL`
+      )
     case 'date':
       whereConditions = and(
         whereConditions,
@@ -264,6 +269,10 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
           const raisedA = a.investmentIntentSummary?.sum || 0;
           const raisedB = b.investmentIntentSummary?.sum || 0;
           return (raisedA - raisedB) * multiplier;
+        case 'sector':
+          const sectorA = a.json?.info?.sector || '';
+          const sectorB = b.json?.info?.sector || '';
+          return sectorA.localeCompare(sectorB) * multiplier;        
         case 'participants':
           // Sort by participants respecting sortDirection
           const countA = a.investmentIntentSummary?.count || 0;
