@@ -1,12 +1,13 @@
-import { AnalystType } from "../../../shared/models"
 import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 import { AnalystService } from "../../services/analystService"
+import { GetMeTwitterResponse } from "../../../shared/types/api-types"
 
 const TWITTER_API_OAUTH2_TOKEN_URL = "https://api.twitter.com/2/oauth2/token"
-const TWITTER_API_GET_ME_URL = "https://api.twitter.com/2/analysts/me" // ?analyst.fields=profile_image_url
+const TWITTER_API_GET_ME_URL = "https://api.twitter.com/2/users/me?user.fields=profile_image_url"
 
 type ENV = {
   TWITTER_CLIENT_ID: string
+  TWITTER_CLIENT_SECRET: string
   DB: D1Database
 }
 export const onRequest: PagesFunction<ENV> = async (ctx) => {
@@ -16,11 +17,12 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
 
     const code = new URL(url).searchParams.get("code")
     console.log("🚀 ~ code:", code)
-    const address = new URL(url).searchParams.get("address")
-    console.log("🚀 ~ address:", address)
+    const state = new URL(url).searchParams.get("state")
+    console.log("🚀 ~ state:", state)
 
-    if (!code || !address) {
-      return new Response(JSON.stringify({ message: "Code or address is missing!" }), {
+
+    if (!code || !state ) {
+      return new Response(JSON.stringify({ message: "Code, state or project url is missing!" }), {
         status: 400,
       })
     }
@@ -33,58 +35,63 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     const accessToken = await signInWithCode({
       code,
       clientId: ctx.env.TWITTER_CLIENT_ID,
+      clientSecret: ctx.env.TWITTER_CLIENT_SECRET,
       redirectUri: redirectUri.href,
     })
     console.log("🚀 ~ accessToken:", accessToken)
 
     // get me
-    const getMeRes = await fetch(TWITTER_API_GET_ME_URL, {
-      method: "get",
+    const userResponse = await fetch(TWITTER_API_GET_ME_URL, {
       headers: {
-        Authorization: "Bearer " + accessToken,
+        "Authorization": `Bearer ${accessToken}`,
       },
     })
-    const getMeResponse = await getMeRes.json<GetMeResponse>()
-    console.log("🚀 ~ getMeResponse:", getMeResponse)
+    console.log("🚀 ~ userResponse:", userResponse)
+    if (!userResponse.ok) {
+      throw new Error("Get Me Response Failed!")
+    }
+
+    const userResponseBody = await userResponse.json<GetMeTwitterResponse>()
+    console.log("🚀 ~ userResponseBody:", userResponseBody)
 
     // database business
-    const twitterId = getMeResponse.data.id
+    const twitterId = userResponseBody.data.id
 
     // check if the analyst is stored in the db
     const existingAnalyst = await AnalystService.findAnalystByTwitterAccount({ db, twitterId })
 
     console.log({ existingAnalyst })
 
-    const initialTwitterData = {
-      twitterId,
+    if (!existingAnalyst) {
+      console.log("User not found in db, inserting...")
+      const newAnalyst = await AnalystService.createNewAnalyst({db, ...userResponseBody.data })
+      console.log("User inserted into db.")
+
+      return jsonResponse({analyst: newAnalyst}, {
+        statusCode: 302,
+        headers: { 
+          "Location": `http://localhost:5173/draft-picks/null?analystId=${newAnalyst.id}`
+        }
+      })
+    } else {
+      console.log("User found in db, updating twitter id...")
+
+      const updatedAnalyst = await AnalystService.updateAnalyst({
+        db, 
+        analyst:existingAnalyst, 
+        updates: {
+          twitterId: twitterId
+        }
+      })
+
+      console.log("✅ User twitter id updated, returning updated version of analyst.")
+      return jsonResponse({ analyst: updatedAnalyst }, {
+        statusCode: 302,
+        headers: { 
+          "Location": `http://localhost:5173/draft-picks/null?analystId=${existingAnalyst.id}`
+        }
+      })
     }
-    // if (!existingAnalyst) {
-    //   console.log("Analyst not found in db, inserting...")
-    //   const json: AnalystType = { twitterId }
-    //   await db
-    //     .prepare("INSERT INTO analyst (address, json) VALUES (?1, ?2)")
-    //     .bind(address, JSON.stringify(json))
-    //     .run()
-    //   console.log("Analyst inserted into db.")
-    // } else {
-    //   console.log("Analyst found in db, updating...")
-
-    //   const json = existingAnalyst ?? {}
-    //   if (!json.twitter) json.twitterId = twitterId
-
-    //   await db
-    //     .prepare("UPDATE analyst SET json = ?2 WHERE address = ?1")
-    //     .bind(address, JSON.stringify(json))
-    //     .run()
-    //   console.log("Analyst twitter id updated")
-    // }
-
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: "/",
-      },
-    })
   } catch (e) {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
@@ -94,11 +101,13 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
 type SignInWithCodeArgs = {
   code: string
   clientId: string
+  clientSecret: string
   redirectUri: string
 }
 async function signInWithCode({
   code,
   clientId,
+  clientSecret,
   redirectUri,
 }: SignInWithCodeArgs): Promise<string> {
   const twitterAuthUrl = new URL(TWITTER_API_OAUTH2_TOKEN_URL)
@@ -108,21 +117,27 @@ async function signInWithCode({
   twitterAuthUrl.searchParams.set("redirect_uri", redirectUri)
   twitterAuthUrl.searchParams.set("code_verifier", "challenge")
 
+  const bearerToken = btoa(`${clientId}:${clientSecret}`)
+  console.log("🚀 ~ twitterAuthUrl:", twitterAuthUrl)
+  console.log("🚀 ~ Authorization:", `Basic ${bearerToken}`)
+
   const authRes = await fetch(twitterAuthUrl, {
     method: "post",
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `Basic ${bearerToken}`
+  },
   })
   const authResponse = await authRes.json<SignInWithCodeResponse>()
+  console.log("🚀 ~ authResponse:", authResponse)
+  if (authResponse?.error) throw new Error ("signInWithCode failed")
 
   return authResponse["access_token"]
 }
 
 type SignInWithCodeResponse = {
   access_token: string
+  error?: string
+  error_description?: string
 }
-type GetMeResponse = {
-  data: {
-    id: string
-    userName: string
-    name: string
-  }
-}
+

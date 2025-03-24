@@ -13,6 +13,12 @@ import {
   SaleResultsResponse,
   TokenAmountModel,
 } from "../../shared/models.ts"
+import {
+  analystSchema,
+  GetListOfAnalysisResponse,
+  NewAnalysisSchemaType,
+} from "../../shared/schemas/analysis-schema.ts"
+import { Analyst, Analysis } from "../../shared/drizzle-schema.ts"
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
 import { eligibilityStatusCacheBust, investmentIntentSummaryCacheBust } from "@/utils/cache-helper.ts"
 
@@ -40,6 +46,9 @@ const UPDATE_JSON = API_BASE_URL + "/projects/update-json"
 
 const POST_CREATE_EMAIL = API_BASE_URL + "/createemail"
 const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
+const GET_ANALYST_URL = API_BASE_URL + "/analyst"
+const POST_ANALYSIS = API_BASE_URL + "/analyst/analysis"
+const GET_ANALYSIS_LIST = API_BASE_URL + "/analyst/analysis"
 
 const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
   const response = await fetch(...args)
@@ -482,6 +491,42 @@ const getTwitterAuthUrl = async (): Promise<{ twitterAuthUrl: string }> => {
   const json = await response.json()
   return json
 }
+const getAnalyst = async ({ analystId }: { analystId: string }): Promise<Analyst> => {
+  const url = new URL(`${GET_ANALYST_URL}/${analystId}`, window.location.href)
+
+  const response = await fetch(url)
+  const json = await response.json()
+  try {
+    const parsedJson = analystSchema.parse(json)
+    return parsedJson
+  } catch (e) {
+    console.error("GET /analysts/[id] validation error!")
+    throw e
+  }
+}
+const postNewAnalysis = async ({ newAnalysis }: { newAnalysis: NewAnalysisSchemaType }): Promise<Analysis> => {
+  const url = new URL(POST_ANALYSIS, window.location.href)
+  const request = JSON.stringify(newAnalysis)
+  const response = await fetch(url, {
+    method: "POST",
+    body: request,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+const getAnalysisList = async ({ projectId }: { projectId: string }): Promise<GetListOfAnalysisResponse> => {
+  const url = new URL(GET_ANALYSIS_LIST, window.location.href)
+  url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json
+}
 
 export const backendApi = {
   getProject,
@@ -507,4 +552,7 @@ export const backendApi = {
   updateJson,
   postCreateEmail,
   getTwitterAuthUrl,
+  getAnalyst,
+  postNewAnalysis,
+  getAnalysisList,
 }

@@ -70,7 +70,7 @@ const timelineEventsSchema = () =>
 const optional = (type: ZodTypeAny) => type.optional().nullable()
 
 const integerSchema = () => z.number().min(0).max(Number.MAX_SAFE_INTEGER).int()
-const idSchema = () =>
+export const idSchema = () =>
   z
     .string()
     .min(1)
@@ -251,28 +251,6 @@ export const CreateEmailRequestSchema = z.object({
   signature: z.array(z.number().int()),
 })
 export type CreateEmailRequest = z.infer<typeof CreateEmailRequestSchema>
-
-const analystRoleSchema = z.enum(["FREELANCE_WRITER", "TEAM_MEMBER", "SPONSORED_ANALYST"])
-export type AnalystEnumType = z.infer<typeof analystRoleSchema>
-
-export const AnalystSchema = z.object({
-  twitterId: z.string(),
-  twitter: z
-    .object({
-      accountName: z.string(),
-    })
-    .optional(),
-  role: analystRoleSchema.optional(),
-  articles: z
-    .array(
-      z.object({
-        projectId: z.string(),
-        articleUrls: z.array(urlSchema()),
-      }),
-    )
-    .min(0),
-})
-export type AnalystType = z.infer<typeof AnalystSchema>
 
 export type TokenAmountModel = {
   /**

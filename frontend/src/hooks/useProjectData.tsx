@@ -20,7 +20,7 @@ export function useProjectDataContext() {
 
 export function ProjectDataProvider({ children }: { children: ReactNode }) {
   let { projectId } = useParams()
-  projectId = projectId || ""
+  projectId = !!projectId && projectId !== "null" ? projectId || "" : ""
 
   const {
     data: projectData,

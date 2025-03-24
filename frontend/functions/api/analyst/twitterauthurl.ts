@@ -2,31 +2,35 @@
 import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 
 const TWITTER_OAUTH2_BASE_PATH = "https://twitter.com/i/oauth2/authorize"
-// const TWITTER_ANALYST_CALLBACK_URL = "https://borgpad.com"
-const TWITTER_ANALYST_CALLBACK_URL = "https://borgpad.com/api/analyst/twittercallback"
+const TWITTER_ANALYST_CALLBACK_URL = "http://localhost:8788/api/analyst/twittercallback"
+// const TWITTER_ANALYST_CALLBACK_URL = "https://borgpad.com/api/analyst/twittercallback"
 
 type ENV = {
   TWITTER_CLIENT_ID: string
   TWITTER_CALLBACK_URL: string
+  VITE_ENVIRONMENT_TYPE: string
   DB: D1Database
 }
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
   try {
+    const url = ctx.request.url
+    const projectPath = new URL(url).searchParams.get("projectPath")
+
     const state = Math.random().toString(36).substring(7);
     const params = new URLSearchParams({
         'response_type': 'code',
         'client_id': ctx.env.TWITTER_CLIENT_ID,
         'redirect_uri': TWITTER_ANALYST_CALLBACK_URL,
-        'scope': 'users.read',
+        'scope': 'users.read tweet.read offline.access',
         'state': state,
-        'code_challenge': 'challenge2025',
+        'code_challenge': 'challenge',
         'code_challenge_method': 'plain'
     });
 
     const twitterAuthUrl = `${TWITTER_OAUTH2_BASE_PATH}?${params.toString()}`
 
-    return jsonResponse({ twitterAuthUrl }, 200)
+    return jsonResponse({ twitterAuthUrl }, 302 )
     
   } catch (e) {
     await reportError(db, e)
@@ -36,10 +40,11 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
 export const onRequestOptions: PagesFunction<ENV> = async (ctx) => {
   try {
+    if (ctx.env.VITE_ENVIRONMENT_TYPE !== "develop") return
     return new Response(null, {
       status: 204,
       headers: {
-        'Access-Control-Allow-Origin': 'http://localhost:5173', // Adjust this to frontend origin
+        'Access-Control-Allow-Origin': 'http://localhost:5173', // Adjusted this for frontend origin
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       },

@@ -62,7 +62,7 @@ const LiveNow = ({ eventData, timeline }: LiveNowProps) => {
 
   return (
     <div className="flex w-full flex-col items-center px-4">
-      <div className="flex w-full max-w-[764px] flex-col items-center gap-8">
+      <div className="flex w-full max-w-[792px] flex-col items-center gap-8">
         <Timeline timelineEvents={timeline} />
 
         {!isUserEligible && (

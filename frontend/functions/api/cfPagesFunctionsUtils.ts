@@ -88,6 +88,15 @@ export const extractProjectId = (url: string) => {
 
   return id
 }
+export const extractAnalystId = (url: string) => {
+  const parsedUrl = new URL(url)
+  const pathSegments = parsedUrl.pathname.split("/")
+
+  const analystsIndex = pathSegments.indexOf("analyst")
+  const id = analystsIndex !== -1 ? pathSegments[analystsIndex + 1] : null
+
+  return id
+}
 
 function removeUndefinedValues(obj: Record<string, any>): Record<string, any> {
   return Object.fromEntries(

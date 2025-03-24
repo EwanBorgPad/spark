@@ -116,9 +116,9 @@ const Project = () => {
           )}
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex w-full max-w-[792px] flex-col gap-4">
           {/* Deal curated by: */}
-          <div className="flex w-full flex-col gap-4 md:flex-row lg:max-w-[760px]">
+          <div className="flex w-full flex-col gap-4 md:flex-row lg:max-w-[792px]">
             <div className="flex w-full flex-[1] flex-col gap-3">
               <h4 className="text-sm font-normal">Deal coming from</h4>
 
