@@ -17,12 +17,13 @@ import { TableCell } from "./TableCell"
 
 type Props = {
   projectStatus: "completed" | "active" | "all"
+  projectType: "blitz" | "goat"
 }
 
 type SortField = 'name' | 'date' | 'raised' | 'fdv' | 'participants' | 'commitments' | 'sector'
 type SortDirection = 'asc' | 'desc'
 
-export const CompletedLaunchPoolTable = ({ projectStatus }: Props) => {
+export const CompletedLaunchPoolTable = ({ projectStatus, projectType }: Props) => {
   const { t } = useTranslation()
   const [sortField, setSortField] = useState<SortField>('date')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
@@ -34,12 +35,12 @@ export const CompletedLaunchPoolTable = ({ projectStatus }: Props) => {
       backendApi.getProjects({
         page: 1,
         limit: 999,
-        projectType: "blitz",
+        projectType: projectType,
         completionStatus: projectStatus,
         sortBy: sortField,
         sortDirection: sortDirection,
       }),
-    queryKey: ["getProjects", "blitz", projectStatus, sortField, sortDirection],
+    queryKey: ["getProjects", projectType, projectStatus, sortField, sortDirection],
   })
 
   const skeletonItems = Array.from({ length: 5 }, (_, i) => i)

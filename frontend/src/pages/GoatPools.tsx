@@ -100,7 +100,7 @@ const GoatPools = () => {
               </ul>
             </div>
           ) : (
-            <CompletedLaunchPoolTable projectStatus="completed" />
+            <CompletedLaunchPoolTable projectStatus="completed" projectType="goat"/>
           )}
         </div>
       </section>

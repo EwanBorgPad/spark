@@ -110,7 +110,7 @@ const BlitzPools = () => {
               </ul>
             </div>
           ) : (
-            <CompletedLaunchPoolTable projectStatus="completed" />
+            <CompletedLaunchPoolTable projectStatus="completed" projectType="blitz"/>
           )}
         </div>
       </section>
