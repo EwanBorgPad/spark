@@ -2,16 +2,18 @@ import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { formatDateMonthDateHours } from "./date-helpers"
 import { expandTimelineDataInfo } from "./timeline-helper"
 import { getCurrentTgeEvent } from "./getCurrentTgeEvent"
-import { GetProjectsProjectResponse, ProjectModel } from "shared/models"
+import { GetProjectsProjectResponse, ProjectModel, InvestmentIntentSummary, SaleResults } from "shared/models"
 import i18n from "@/i18n/i18n"
 
-export type ExpandedProject = GetProjectsProjectResponse & {
+export type ExpandedProject = ProjectModel & {
+  investmentIntentSummary?: InvestmentIntentSummary
   additionalData: {
-    currentEvent: ExpandedTimelineEventType
-    endMessage: string
     badgeClassName: string
+    endMessage: string
     badgeLabel: string
+    currentEvent?: ExpandedTimelineEventType
   }
+  saleResults?: SaleResults
 }
 
 export type EventTypeId = ExpandedTimelineEventType["id"]

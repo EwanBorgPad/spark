@@ -11,7 +11,7 @@ import { ExpandedProject, processProjects } from "@/utils/projects-helper"
 import { getProjectRoute } from "@/utils/routes"
 import { Icon } from "../Icon/Icon"
 import { GetProjectsResponse, ProjectModel } from "shared/models"
-import { formatCurrencyAmount } from "shared/utils/format"
+import { formatCurrencyAmount, formatCurrencyCompact } from "shared/utils/format"
 import { formatDateForProject } from "@/utils/date-helpers"
 import { createDetailRow, ProjectDetailRows } from "../Tables/ProjectDetailsRows"
 import { SortDropdown } from "../Dropdown/SortDropdown"
@@ -192,9 +192,9 @@ export const CompletedLaunchPoolCard = ({ projectStatus, projectType }: Props) =
                     project={project}
                     rows={[
                       createDetailRow("SvgCalendarFill", "Date", project.info.timeline?.find((t) => t.id === "SALE_CLOSES")?.date ? formatDateForProject(new Date(project.info.timeline?.find((t) => t.id === "SALE_CLOSES")?.date || 0)) : "TBC"),
-                      createDetailRow("SvgChartLine", "FDV", formatFdv(project.config.fdv)),
-                      createDetailRow("SvgWalletFilled", "Raised", formatTotalInvested(project.investmentIntentSummary?.sum ?? 0)),
-                      createDetailRow("SvgTwoAvatars", "Participants", project.investmentIntentSummary?.count ?? 0),
+                      createDetailRow("SvgChartLine", "FDV", formatCurrencyCompact(project?.config.fdv)),
+                      createDetailRow("SvgWalletFilled", "Raised", formatCurrencyAmount(project?.saleResults?.totalAmountRaised?.amountInUsd)),
+                      createDetailRow("SvgTwoAvatars", "Participants", project?.saleResults?.participantsCount ?? 0),
                       createDetailRow("SvgChartLine", "Sector", project.info?.sector ?? "N/A"),
                     ]}
                   />
@@ -216,12 +216,4 @@ export const CompletedLaunchPoolCard = ({ projectStatus, projectType }: Props) =
       })}
     </div>
   );
-}
-
-const formatFdv = (fdv?: number): string => {
-  return fdv ? `$${(fdv / 1000000).toFixed(1)}M` : "$0"
-}
-
-const formatTotalInvested = (totalInvested?: number): string => {
-  return totalInvested ? `$${(totalInvested / 1000).toFixed(1)}K` : "$0"
 }

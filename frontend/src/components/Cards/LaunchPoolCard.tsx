@@ -12,7 +12,7 @@ import { ExternalLink } from "../Button/ExternalLink"
 import { getProjectRoute } from "@/utils/routes"
 import { AvailableIcons, Icon } from "../Icon/Icon"
 import { ProjectModel } from "shared/models"
-import { formatCurrencyAmount } from "shared/utils/format"
+import { formatCurrencyAmount, formatCurrencyCompact } from "shared/utils/format"
 import { formatDateForProject } from "@/utils/date-helpers"
 
 type Props = { project: ExpandedProject | null; isLoading?: boolean }
@@ -74,7 +74,7 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
                   <ProjectDetailRows
                     project={project}
                     rows={[
-                      createDetailRow("SvgDatabase", "Valuation (FDV)", formatFdv(project?.config.fdv), "text-fg-brand-primary"),
+                      createDetailRow("SvgChartLine", "Valuation (FDV)", formatCurrencyCompact(project?.config.fdv), project?.info.projectType === "blitz" ? "text-brand-blitz" : "text-fg-brand-primary"),
                       createDetailRow("SvgChartLine", "Sector", project?.info?.sector ?? "N/A"),
                       createDetailRow("SvgCalendarFill", "Whitelisting Ends", project?.info.timeline?.find(t => t.id === "SALE_OPENS")?.date ? formatDateForProject(new Date(project?.info.timeline?.find(t => t.id === "SALE_OPENS")?.date || 0)) : "TBC")
                     ]}
@@ -84,10 +84,10 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
                   <ProjectDetailRows
                     project={project}
                     rows={[
-                      createDetailRow("SvgDatabase", "Valuation (FDV)", formatFdv(project?.config.fdv), "text-fg-brand-primary"),
+                      createDetailRow("SvgChartLine", "Valuation (FDV)", formatCurrencyCompact(project?.config.fdv), project?.info.projectType === "blitz" ? "text-brand-blitz" : "text-fg-brand-primary"),
                       createDetailRow("SvgChartLine", "Sector", project?.info?.sector ?? "N/A"),
-                      createDetailRow("SvgTwoAvatars", "Participants", project?.investmentIntentSummary?.count ?? 0),
-                      createDetailRow("SvgWalletFilled", "Total Invested", formatTotalInvested(project?.investmentIntentSummary?.sum ?? 0)),
+                      createDetailRow("SvgTwoAvatars", "Participants", project?.saleResults?.participantsCount ?? 0),
+                      createDetailRow("SvgWalletFilled", "Total Raised", formatCurrencyAmount(project?.saleResults?.totalAmountRaised?.amountInUsd)),
                       createDetailRow("SvgCalendarFill", "Sale Ends", project?.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date ? formatDateForProject(new Date(project?.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date || 0)) : "TBC")
                     ]}
                   />
@@ -164,14 +164,6 @@ const createDetailRow = (
   valueClassName?: string
 ): DetailRow => {
   return { icon, label, value, valueClassName }
-}
-
-const formatFdv = (fdv?: number): string => {
-  return fdv ? `$${(fdv / 1000000).toFixed(1)}M` : "$0"
-}
-
-const formatTotalInvested = (totalInvested?: number): string => {
-  return totalInvested ? `$${(totalInvested / 1000).toFixed(1)}K` : "$0"
 }
 
 const BORGPAD_X_URL = "https://x.com/BorgPadHQ"

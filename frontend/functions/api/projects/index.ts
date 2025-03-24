@@ -5,6 +5,7 @@ import { and, count, eq, like, not, sql } from "drizzle-orm"
 import { drizzle, DrizzleD1Database } from "drizzle-orm/d1"
 import { z } from 'zod'
 import { isApiKeyValid } from '../../services/apiKeyService'
+import { SaleResultsService } from "../../services/saleResultsService"
 
 
 const requestSchema = z.object({
@@ -207,15 +208,37 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       GROUP BY json_each.key;
     `
   ) as { project_id: string, sum: number, avg: number, count: number }[];
+  
+  // Get sale results for all projects using SaleResultsService
+  const saleResultsPromises = projectIds.map(async (projectId) => {
+    try {
+      const saleResults = await SaleResultsService.getSaleResults({ db, projectId });
+      return { projectId, saleResults };
+    } catch (error) {
+      console.error(`Error fetching sale results for ${projectId}:`, error);
+      return { projectId, saleResults: null };
+    }
+  });
+  
+  const saleResultsArray = await Promise.all(saleResultsPromises);
+  const saleResultsMap = saleResultsArray.reduce((acc, { projectId, saleResults }) => {
+    if (saleResults) {
+      acc[projectId] = saleResults;
+    }
+    return acc;
+  }, {} as Record<string, any>);
 
-  // Map projects to return format with investment intent summaries
+  // Map projects to return format with investment intent summaries and sale results
   const projectsWithSummaries = projectsResult.map(project => {
     const summary = investmentIntentSummaries.find(summary => summary.project_id === project.id) || 
       { project_id: project.id, sum: 0, avg: 0, count: 0 };
       
+    const saleResults = saleResultsMap[project.id] || null;
+    
     return {
       ...project,
-      investmentIntentSummary: summary
+      investmentIntentSummary: summary,
+      saleResults
     };
   });
 
@@ -279,7 +302,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
   const paginatedProjects = sortedProjects.slice(offset, offset + limit);
   
   // Map to final return format
-  const retvalProjects: (ProjectModel & { investmentIntentSummary: InvestmentIntentSummary })[] = 
+  const retvalProjects = 
     paginatedProjects.map(project => {
       // Create a default investment summary if none exists
       const investmentSummary = project.investmentIntentSummary || {
@@ -292,6 +315,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       return {
         ...project.json,
         investmentIntentSummary: investmentSummary,
+        saleResults: project.saleResults,
       };
     });
 

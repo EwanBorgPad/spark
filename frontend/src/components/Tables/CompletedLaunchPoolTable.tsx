@@ -29,8 +29,7 @@ export const CompletedLaunchPoolTable = ({ projectStatus, projectType }: Props) 
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
   const [completedProjects, setCompletedProjects] = useState<ExpandedProject[]>([])
 
-
-  const { data: completedData, isLoading: isCompletedLoading } = useQuery<GetProjectsResponse>({
+  const { data: completedData, isLoading: isTableLoading } = useQuery<GetProjectsResponse>({
     queryFn: () =>
       backendApi.getProjects({
         page: 1,
@@ -51,38 +50,6 @@ export const CompletedLaunchPoolTable = ({ projectStatus, projectType }: Props) 
     }
   }, [completedData?.projects])
 
-  // Fetch sale results for all projects
-  const projectIds = completedProjects?.map(p => p.id) || []
-  const { data: saleResultsMap, isLoading: isLoadingSaleResults } = useQuery({
-    queryFn: async () => {
-      if (!projectIds.length) return {}
-
-      // Fetch sale results for each project and create a map for easy lookup
-      const results = await Promise.all(
-        projectIds.map(async (projectId) => {
-          try {
-            const data = await backendApi.getSaleResults({ projectId })
-            return { projectId, data }
-          } catch (error) {
-            console.error(`Error fetching sale results for ${projectId}:`, error)
-            return { projectId, data: null }
-          }
-        })
-      )
-
-      // Convert to a map for easy lookup by project ID
-      return results.reduce((acc, { projectId, data }) => {
-        acc[projectId] = data
-        return acc
-      }, {} as Record<string, any>)
-    },
-    queryKey: ["saleResults", projectIds.join(",")],
-    enabled: Boolean(projectIds.length),
-    staleTime: 30 * 1000,
-  })
-
-  const isTableLoading = isCompletedLoading || isLoadingSaleResults
-
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
@@ -97,23 +64,17 @@ export const CompletedLaunchPoolTable = ({ projectStatus, projectType }: Props) 
     return sortDirection === 'asc' ? '↑' : '↓'
   }
 
-  const getSaleData = (projectId: string) => {
-    return saleResultsMap?.[projectId] || null
-  }
-
   const getAmountRaised = (proj: ExpandedProject) => {
-    const saleData = getSaleData(proj.id)
-    if (saleData?.totalAmountRaised?.amountInUsd) {
-      return formatCurrencyAmount(Number(saleData.totalAmountRaised.amountInUsd), { withDollarSign: true })
+    if (proj.saleResults?.totalAmountRaised?.amountInUsd) {
+      return formatCurrencyAmount(Number(proj.saleResults.totalAmountRaised.amountInUsd), { withDollarSign: true })
     }
     // Fallback to the existing data if sale results are not available
     return formatCurrencyAmount(proj.investmentIntentSummary?.sum ?? 0, { withDollarSign: true })
   }
 
   const getParticipantsCount = (proj: ExpandedProject) => {
-    const saleData = getSaleData(proj.id)
-    if (saleData?.participantsCount) {
-      return saleData.participantsCount
+    if (proj.saleResults?.participantsCount) {
+      return proj.saleResults.participantsCount
     }
     // Fallback to the existing data if sale results are not available
     return proj.investmentIntentSummary?.count ?? 0
@@ -196,7 +157,7 @@ export const CompletedLaunchPoolTable = ({ projectStatus, projectType }: Props) 
                 <TableCell className="px-4 flex items-center">
                   <Img
                     src={proj.info.logoUrl}
-                    isFetchingLink={isCompletedLoading}
+                    isFetchingLink={isTableLoading}
                     imgClassName="scale-[102%]"
                     isRounded={true}
                     size="8"
