@@ -52,136 +52,66 @@ type GetProjectsFromDbArgs = z.infer<typeof requestSchema>
 const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbArgs): Promise<GetProjectsResponse | null> => {
   const { projectType, completionStatus, sortBy, sortDirection, page, limit } = args
   const offset = (page - 1) * limit
+  const now = new Date().toISOString();
 
+  // Base where conditions that apply to all queries
   let whereConditions = and(
     eq(projectTable.status, 'active'),
     not(like(projectTable.id, 'hidden%')),
     projectType ? sql`json -> 'info' ->> 'projectType' = ${projectType}` : undefined,
   )
 
-  switch (sortBy) {
-    case 'name':
-      whereConditions = and(
-        whereConditions,
-        sql`json_extract(json, '$.info.title') IS NOT NULL`
-      )
-      break
-    case 'sector':
-      whereConditions = and(
-        whereConditions,
-        sql`json_extract(json, '$.info.sector') IS NOT NULL`
-      )
-    case 'date':
-      whereConditions = and(
-        whereConditions,
-        sql`json_extract(json, '$.info.timeline') IS NOT NULL`
-      )
-      break
-    case 'fdv':
-      whereConditions = and(
-        whereConditions,
-        sql`json_extract(json, '$.config.fdv') IS NOT NULL`
-      )
-      break
-  }
+  // Helper function to safely compare ISO date strings
+  const isDateInPast = (dateStr: string): boolean => {
+    return dateStr !== '' && dateStr.localeCompare(now) < 0;
+  };
 
+  const isDateInFutureOrInvalid = (dateStr: string): boolean => {
+    return dateStr === '' || dateStr.localeCompare(now) >= 0;
+  };
+
+  // Handle completion status filtering using direct Drizzle ORM conditions
   if (completionStatus !== 'all') {
-    // Get current date in ISO format, ensuring we compare strings in a way SQLite will understand
-    const now = new Date().toISOString();
-
-    if (completionStatus === 'completed') {
-      // A project is completed if its SALE_CLOSES date is in the past
-      // Modified to use direct JSON path syntax instead of json_each
+    // First get all projects that meet the base conditions
+    const allProjects = await db
+      .select()
+      .from(projectTable)
+      .where(whereConditions)
+      .all();
+    
+    // Filter projects based on completion status
+    const filteredProjectIds = allProjects
+      .filter(project => {
+        const timeline = project.json?.info?.timeline || [];
+        const saleClosesEvent = timeline.find((event: any) => event.id === 'SALE_CLOSES');
+        
+        if (completionStatus === 'completed') {
+          // Project is completed if it has a SALE_CLOSES event with a date in the past
+          return saleClosesEvent?.date && 
+                 typeof saleClosesEvent.date === 'string' && 
+                 isDateInPast(saleClosesEvent.date);
+        } else {
+          // Project is active if it has no SALE_CLOSES event or the date is in the future/null/empty
+          return !saleClosesEvent || 
+                 !saleClosesEvent.date || 
+                 typeof saleClosesEvent.date !== 'string' || 
+                 isDateInFutureOrInvalid(saleClosesEvent.date);
+        }
+      })
+      .map(project => project.id);
+    
+    // Add condition to filter by the IDs we found
+    if (filteredProjectIds.length > 0) {
       whereConditions = and(
         whereConditions,
-        // First ensure that the project has a timeline
-        sql`json_extract(json, '$.info.timeline') IS NOT NULL`,
-        // Find events where SALE_CLOSES has a date in the past - add extra parentheses to maintain proper grouping
-        sql`((
-          json_extract(json, '$.info.timeline[0].id') = 'SALE_CLOSES' AND 
-          json_extract(json, '$.info.timeline[0].date') IS NOT NULL AND 
-          json_extract(json, '$.info.timeline[0].date') != "" AND 
-          json_extract(json, '$.info.timeline[0].date') < ${now}
-        ) OR (
-          json_extract(json, '$.info.timeline[1].id') = 'SALE_CLOSES' AND 
-          json_extract(json, '$.info.timeline[1].date') IS NOT NULL AND 
-          json_extract(json, '$.info.timeline[1].date') != "" AND 
-          json_extract(json, '$.info.timeline[1].date') < ${now}
-        ) OR (
-          json_extract(json, '$.info.timeline[2].id') = 'SALE_CLOSES' AND 
-          json_extract(json, '$.info.timeline[2].date') IS NOT NULL AND 
-          json_extract(json, '$.info.timeline[2].date') != "" AND 
-          json_extract(json, '$.info.timeline[2].date') < ${now}
-        ) OR (
-          json_extract(json, '$.info.timeline[3].id') = 'SALE_CLOSES' AND 
-          json_extract(json, '$.info.timeline[3].date') IS NOT NULL AND 
-          json_extract(json, '$.info.timeline[3].date') != "" AND 
-          json_extract(json, '$.info.timeline[3].date') < ${now}
-        ) OR (
-          json_extract(json, '$.info.timeline[4].id') = 'SALE_CLOSES' AND 
-          json_extract(json, '$.info.timeline[4].date') IS NOT NULL AND 
-          json_extract(json, '$.info.timeline[4].date') != "" AND 
-          json_extract(json, '$.info.timeline[4].date') < ${now}
-        ))`
-      )
-    } else if (completionStatus === 'active') {
-      // A project is active if:
-      // 1. It has no SALE_CLOSES event, OR
-      // 2. SALE_CLOSES has a NULL date, OR 
-      // 3. SALE_CLOSES has an empty string date, OR
-      // 4. SALE_CLOSES has a future date
-
-      // Modified to use direct JSON path syntax instead of json_each
+        sql`id IN (${sql.join(filteredProjectIds, sql`, `)})`
+      );
+    } else {
+      // If no projects match the completion criteria, return empty results
       whereConditions = and(
         whereConditions,
-        // First ensure that the project has a timeline
-        sql`json_extract(json, '$.info.timeline') IS NOT NULL`,
-        // Check all possible positions for SALE_CLOSES in the array
-        sql`((
-          (
-            json_extract(json, '$.info.timeline[0].id') = 'SALE_CLOSES' AND (
-              json_extract(json, '$.info.timeline[0].date') IS NULL OR
-              json_extract(json, '$.info.timeline[0].date') = "" OR
-              json_extract(json, '$.info.timeline[0].date') = 'null' OR
-              json_extract(json, '$.info.timeline[0].date') > ${now}
-            )
-          ) OR (
-            json_extract(json, '$.info.timeline[1].id') = 'SALE_CLOSES' AND (
-              json_extract(json, '$.info.timeline[1].date') IS NULL OR
-              json_extract(json, '$.info.timeline[1].date') = "" OR
-              json_extract(json, '$.info.timeline[1].date') = 'null' OR
-              json_extract(json, '$.info.timeline[1].date') > ${now}
-            )
-          ) OR (
-            json_extract(json, '$.info.timeline[2].id') = 'SALE_CLOSES' AND (
-              json_extract(json, '$.info.timeline[2].date') IS NULL OR
-              json_extract(json, '$.info.timeline[2].date') = "" OR
-              json_extract(json, '$.info.timeline[2].date') = 'null' OR
-              json_extract(json, '$.info.timeline[2].date') > ${now}
-            )
-          ) OR (
-            json_extract(json, '$.info.timeline[3].id') = 'SALE_CLOSES' AND (
-              json_extract(json, '$.info.timeline[3].date') IS NULL OR
-              json_extract(json, '$.info.timeline[3].date') = "" OR
-              json_extract(json, '$.info.timeline[3].date') = 'null' OR
-              json_extract(json, '$.info.timeline[3].date') > ${now}
-            )
-          ) OR (
-            json_extract(json, '$.info.timeline[4].id') = 'SALE_CLOSES' AND (
-              json_extract(json, '$.info.timeline[4].date') IS NULL OR
-              json_extract(json, '$.info.timeline[4].date') = "" OR
-              json_extract(json, '$.info.timeline[4].date') = 'null' OR
-              json_extract(json, '$.info.timeline[4].date') > ${now}
-            )
-          ) OR (
-            json_extract(json, '$.info.timeline[0].id') != 'SALE_CLOSES' AND
-            json_extract(json, '$.info.timeline[1].id') != 'SALE_CLOSES' AND
-            json_extract(json, '$.info.timeline[2].id') != 'SALE_CLOSES' AND
-            json_extract(json, '$.info.timeline[3].id') != 'SALE_CLOSES' AND
-            json_extract(json, '$.info.timeline[4].id') != 'SALE_CLOSES'
-          )
-        ))`
-      )
+        sql`1 = 0` // This ensures no projects are returned
+      );
     }
   }
 
@@ -261,13 +191,13 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       switch (sortBy) {
         case 'commitments':
           // Sort by commitments respecting sortDirection
-          const sumA = a.investmentIntentSummary?.sum || 0;
-          const sumB = b.investmentIntentSummary?.sum || 0;
-          return (sumA - sumB) * multiplier;
+          const commitmentsA = a.investmentIntentSummary?.sum || 0;
+          const commitmentsB = b.investmentIntentSummary?.sum || 0;
+          return (commitmentsA - commitmentsB) * multiplier;
         case 'raised':
           // Sort by raised respecting sortDirection
-          const raisedA = a.investmentIntentSummary?.sum || 0;
-          const raisedB = b.investmentIntentSummary?.sum || 0;
+          const raisedA = Number(a.saleResults.totalAmountRaised?.amountInUsd) || 0;
+          const raisedB = Number(b.saleResults.totalAmountRaised?.amountInUsd) || 0;
           return (raisedA - raisedB) * multiplier;
         case 'sector':
           const sectorA = a.json?.info?.sector || '';
