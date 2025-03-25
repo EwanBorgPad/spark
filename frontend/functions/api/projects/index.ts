@@ -183,21 +183,25 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
 
   // Apply sorting based on the requested sort criteria
   let sortedProjects = [...projectsWithSummaries];
+  
+  // Get deposit stats if needed for sorting by real deposits
+  let depositStats: Record<string, { totalDepositedInUsd: number, participantsCount: number }> = {};
+  // Get deposit amounts and participant counts separately
+  const depositAmounts = await SaleResultsService.getDepositAmount(db);
+  const participantCounts = await SaleResultsService.getDepositParticipants(db);
 
+  // Combine data for all projects
+  const allProjectIds = new Set([...depositAmounts.keys(), ...participantCounts.keys()]);
+
+  // Create a record with combined data
+  Array.from(allProjectIds).forEach(projectId => {
+    depositStats[projectId] = {
+      totalDepositedInUsd: depositAmounts.get(projectId) || 0,
+      participantsCount: participantCounts.get(projectId) || 0
+    };
+  });
+  
   if (sortBy) {
-    // Get deposit stats if needed for sorting by real deposits
-    let depositStats: Record<string, { totalDepositedInUsd: number, participantsCount: number }> = {};
-    if (sortBy === 'raised' || sortBy === 'participants') {
-      const stats = await SaleResultsService.getDepositStats(db, sortDirection);
-      depositStats = stats.reduce((acc, stat) => {
-        acc[stat.projectId] = {
-          totalDepositedInUsd: stat.totalDepositedInUsd,
-          participantsCount: stat.participantsCount
-        };
-        return acc;
-      }, {} as Record<string, { totalDepositedInUsd: number, participantsCount: number }>);
-      console.log('depositStats', depositStats)
-    }
 
     sortedProjects.sort((a, b) => {
       const multiplier = sortDirection === 'asc' ? 1 : -1;
