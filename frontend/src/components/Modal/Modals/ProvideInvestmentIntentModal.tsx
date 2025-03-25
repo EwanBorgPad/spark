@@ -159,6 +159,7 @@ export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentInten
                 isLoading={isPending}
                 btnText={t("investment.intent.quest.modal.button")}
                 onClick={() => provideInvestmentIntent(address)}
+                className="plausible-event-name=3-ConfirmInvestment"
               />
             )}
           </div>
@@ -195,7 +196,7 @@ const JoinUsOnTelegram = ({ onCloseHandler, address, projectId }: { onCloseHandl
         <Button
           btnText="Join Us In Telegram"
           onClick={joinTelegramHandler}
-          prefixElement={<Icon icon={"SvgTelegram"} className={"text-2xl leading-none"} />}
+          prefixElement={<Icon icon={"SvgTelegram"} className={"text-2xl leading-none plausible-event-name=4-JoinTelegram"} />}
         />
       </div>
 
