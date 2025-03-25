@@ -185,29 +185,45 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
   let sortedProjects = [...projectsWithSummaries];
 
   if (sortBy) {
+    // Get deposit stats if needed for sorting by real deposits
+    let depositStats: Record<string, { totalDepositedInUsd: number, participantsCount: number }> = {};
+    if (sortBy === 'raised' || sortBy === 'participants') {
+      const stats = await SaleResultsService.getDepositStats(db, sortDirection);
+      depositStats = stats.reduce((acc, stat) => {
+        acc[stat.projectId] = {
+          totalDepositedInUsd: stat.totalDepositedInUsd,
+          participantsCount: stat.participantsCount
+        };
+        return acc;
+      }, {} as Record<string, { totalDepositedInUsd: number, participantsCount: number }>);
+      console.log('depositStats', depositStats)
+    }
+
     sortedProjects.sort((a, b) => {
       const multiplier = sortDirection === 'asc' ? 1 : -1;
 
       switch (sortBy) {
         case 'commitments':
-          // Sort by commitments respecting sortDirection
+          // Sort by commitments (investment intentions) for drafts picks
           const commitmentsA = a.investmentIntentSummary?.sum || 0;
           const commitmentsB = b.investmentIntentSummary?.sum || 0;
           return (commitmentsA - commitmentsB) * multiplier;
-        case 'raised':
-          // Sort by raised respecting sortDirection
-          const raisedA = Number(a.saleResults.totalAmountRaised?.amountInUsd) || 0;
-          const raisedB = Number(b.saleResults.totalAmountRaised?.amountInUsd) || 0;
-          return (raisedA - raisedB) * multiplier;
+        case 'raised': {
+          // Sort by actual raised funds (deposits)
+          const statA = depositStats[a.id] || { totalDepositedInUsd: 0 };
+          const statB = depositStats[b.id] || { totalDepositedInUsd: 0 };
+          return (statA.totalDepositedInUsd - statB.totalDepositedInUsd) * multiplier;
+        }
+        case 'participants': {
+          // Sort by actual participant count (unique depositors)
+          const statA = depositStats[a.id] || { participantsCount: 0 };
+          const statB = depositStats[b.id] || { participantsCount: 0 };
+          return (statA.participantsCount - statB.participantsCount) * multiplier;
+        }
         case 'sector':
           const sectorA = a.json?.info?.sector || '';
           const sectorB = b.json?.info?.sector || '';
           return sectorA.localeCompare(sectorB) * multiplier;        
-        case 'participants':
-          // Sort by participants respecting sortDirection
-          const countA = a.investmentIntentSummary?.count || 0;
-          const countB = b.investmentIntentSummary?.count || 0;
-          return (countA - countB) * multiplier;
         case 'name':
           // Handle possibly missing title
           const titleA = a.json?.info?.title || '';
