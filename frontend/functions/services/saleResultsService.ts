@@ -34,66 +34,50 @@ const getDepositParticipants = async (db: DrizzleD1Database): Promise<Map<string
 };
 
 /**
- * Gets the total deposited amount in USD per project
+ * Gets the total deposited amount in USD per project by directly extracting tokenInUSD values from JSON
  * @param db - D1Database instance
  * @returns Promise<Map<string, number>> - Map of project IDs to USD amounts
  */
 const getDepositAmount = async (db: DrizzleD1Database): Promise<Map<string, number>> => {
   try {
-    // Fetch total deposited amounts by project
-    const depositAmountsQuery = await db
+    // Query the deposit records and extract tokenInUSD values directly from JSON
+    const depositQuery = await db
       .select({
         projectId: depositTable.projectId,
-        totalDeposited: sql`SUM(${depositTable.amountDeposited})`.as('total_deposited')
+        // Use SQL.raw to extract and clean the tokenInUSD value from JSON
+        tokenInUSD: sql`
+          COALESCE(
+            CAST(
+              REPLACE(
+                REPLACE(
+                  JSON_EXTRACT(${depositTable.json}, '$.tokensCalculation.lpPosition.tokenInUSD'),
+                  '$', ''
+                ),
+                ',', ''
+              ) AS REAL
+            ),
+            0
+          )
+        `.as('token_in_usd')
       })
       .from(depositTable)
-      .groupBy(depositTable.projectId)
       .all();
     
-    // Load project data to get token price information
-    const projectIds = depositAmountsQuery.map(row => row.projectId);
-    const projectsQuery = await db
-      .select()
-      .from(projectTable)
-      .where(inArray(projectTable.id, projectIds))
-      .all();
-    
-    // Create map of project ID to token price info
-    type PriceInfo = { price: number; decimals: number };
-    const projectPrices = new Map<string, PriceInfo>();
-    
-    for (const project of projectsQuery) {
-      try {
-        const tokenPrice = project.json?.config?.raisedTokenData?.fixedTokenPriceInUsd || 0;
-        const decimals = project.json?.config?.raisedTokenData?.decimals || 0;
-        projectPrices.set(project.id, {
-          price: Number(tokenPrice),
-          decimals: Number(decimals)
-        });
-      } catch (e) {
-        console.error(`Error extracting price for project ${project.id}:`, e);
-        projectPrices.set(project.id, { price: 0, decimals: 0 });
-      }
-    }
-    
-    // Calculate USD values for each project
+    // Sum up the values by project ID
     const depositsByProject = new Map<string, number>();
-    for (const row of depositAmountsQuery) {
+    
+    for (const row of depositQuery) {
       const projectId = row.projectId;
-      const totalTokens = Number(row.totalDeposited);
-      const priceInfo = projectPrices.get(projectId) || { price: 0, decimals: 0 };
+      const tokenInUSD = Number(row.tokenInUSD) || 0;
       
-      // Convert tokens to USD using price and decimals
-      const totalInUsd = priceInfo.decimals > 0 
-        ? (totalTokens / (10 ** priceInfo.decimals)) * priceInfo.price
-        : totalTokens * priceInfo.price;
-      
-      depositsByProject.set(projectId, totalInUsd);
+      // Add to existing total or initialize
+      const currentTotal = depositsByProject.get(projectId) || 0;
+      depositsByProject.set(projectId, currentTotal + tokenInUSD);
     }
     
     return depositsByProject;
   } catch (error) {
-    console.error('Error in getDepositAmount:', error);
+    console.error('Error in getDepositAmount2:', error);
     return new Map();
   }
 };
