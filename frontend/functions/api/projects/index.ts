@@ -32,7 +32,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     const { data: requestData, error } = requestSchema.safeParse(requestDataObject)
 
-    if (!requestData || error) 
+    if (!requestData || error)
       return jsonResponse({ message: 'Bad request!', error }, 400)
 
     const projects = await getProjectsFromDB(db, requestData)
@@ -78,28 +78,28 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       .from(projectTable)
       .where(whereConditions)
       .all();
-    
+
     // Filter projects based on completion status
     const filteredProjectIds = allProjects
       .filter(project => {
         const timeline = project.json?.info?.timeline || [];
         const saleClosesEvent = timeline.find((event: any) => event.id === 'SALE_CLOSES');
-        
+
         if (completionStatus === 'completed') {
           // Project is completed if it has a SALE_CLOSES event with a date in the past
-          return saleClosesEvent?.date && 
-                 typeof saleClosesEvent.date === 'string' && 
-                 isDateInPast(saleClosesEvent.date);
+          return saleClosesEvent?.date &&
+            typeof saleClosesEvent.date === 'string' &&
+            isDateInPast(saleClosesEvent.date);
         } else {
           // Project is active if it has no SALE_CLOSES event or the date is in the future/null/empty
-          return !saleClosesEvent || 
-                 !saleClosesEvent.date || 
-                 typeof saleClosesEvent.date !== 'string' || 
-                 isDateInFutureOrInvalid(saleClosesEvent.date);
+          return !saleClosesEvent ||
+            !saleClosesEvent.date ||
+            typeof saleClosesEvent.date !== 'string' ||
+            isDateInFutureOrInvalid(saleClosesEvent.date);
         }
       })
       .map(project => project.id);
-    
+
     // Add condition to filter by the IDs we found
     if (filteredProjectIds.length > 0) {
       whereConditions = and(
@@ -148,43 +148,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
     `
   ) as { project_id: string, sum: number, avg: number, count: number }[];
 
-  // Get sale results for all projects using SaleResultsService
-  const saleResultsPromises = projectIds.map(async (projectId) => {
-    try {
-      const saleResults = await SaleResultsService.getSaleResults({ db, projectId });
-      return { projectId, saleResults };
-    } catch (error) {
-      console.error(`Error fetching sale results for ${projectId}:`, error);
-      return { projectId, saleResults: null };
-    }
-  });
-
-  const saleResultsArray = await Promise.all(saleResultsPromises);
-  const saleResultsMap = saleResultsArray.reduce((acc, { projectId, saleResults }) => {
-    if (saleResults) {
-      acc[projectId] = saleResults;
-    }
-    return acc;
-  }, {} as Record<string, any>);
-
-  // Map projects to return format with investment intent summaries and sale results
-  const projectsWithSummaries = projectsResult.map(project => {
-    const summary = investmentIntentSummaries.find(summary => summary.project_id === project.id) ||
-      { project_id: project.id, sum: 0, avg: 0, count: 0 };
-
-    const saleResults = saleResultsMap[project.id] || null;
-
-    return {
-      ...project,
-      investmentIntentSummary: summary,
-      saleResults
-    };
-  });
-
-  // Apply sorting based on the requested sort criteria
-  let sortedProjects = [...projectsWithSummaries];
-  
-  // Get deposit stats if needed for sorting by real deposits
+  // Get deposit stats directly using the optimized methods
   let depositStats: Record<string, { totalDepositedInUsd: number, participantsCount: number }> = {};
   // Get deposit amounts and participant counts separately
   const depositAmounts = await SaleResultsService.getDepositAmount(db);
@@ -200,7 +164,28 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       participantsCount: participantCounts.get(projectId) || 0
     };
   });
-  
+
+  // Map projects to return format with investment intent summaries and deposit stats
+  const projectsWithSummaries = projectsResult.map(project => {
+    const summary = investmentIntentSummaries.find(summary => summary.project_id === project.id) ||
+      { project_id: project.id, sum: 0, avg: 0, count: 0 };
+
+    // Include deposit stats directly
+    const projectDepositStats = depositStats[project.id] || { 
+      totalDepositedInUsd: 0, 
+      participantsCount: 0 
+    };
+
+    return {
+      ...project,
+      investmentIntentSummary: summary,
+      depositStats: projectDepositStats
+    };
+  });
+
+  // Apply sorting based on the requested sort criteria
+  let sortedProjects = [...projectsWithSummaries];
+
   if (sortBy) {
 
     sortedProjects.sort((a, b) => {
@@ -227,7 +212,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
         case 'sector':
           const sectorA = a.json?.info?.sector || '';
           const sectorB = b.json?.info?.sector || '';
-          return sectorA.localeCompare(sectorB) * multiplier;        
+          return sectorA.localeCompare(sectorB) * multiplier;
         case 'name':
           // Handle possibly missing title
           const titleA = a.json?.info?.title || '';
@@ -278,7 +263,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
       return {
         ...project.json,
         investmentIntentSummary: investmentSummary,
-        saleResults: project.saleResults,
+        depositStats: project.depositStats
       };
     });
 

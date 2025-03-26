@@ -14,6 +14,10 @@ export type ExpandedProject = ProjectModel & {
     currentEvent?: ExpandedTimelineEventType
   }
   saleResults?: SaleResults
+  depositStats?: {
+    totalDepositedInUsd: number
+    participantsCount: number
+  }
 }
 
 export type EventTypeId = ExpandedTimelineEventType["id"]

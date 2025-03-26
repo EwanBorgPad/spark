@@ -64,22 +64,6 @@ export const CompletedLaunchPoolTable = ({ projectStatus, projectType }: Props) 
     return sortDirection === 'asc' ? '↑' : '↓'
   }
 
-  const getAmountRaised = (proj: ExpandedProject) => {
-    if (proj.saleResults?.totalAmountRaised?.amountInUsd) {
-      return formatCurrencyAmount(Number(proj.saleResults.totalAmountRaised.amountInUsd), { withDollarSign: true })
-    }
-    // Fallback to the existing data if sale results are not available
-    return formatCurrencyAmount(proj.investmentIntentSummary?.sum ?? 0, { withDollarSign: true })
-  }
-
-  const getParticipantsCount = (proj: ExpandedProject) => {
-    if (proj.saleResults?.participantsCount) {
-      return proj.saleResults.participantsCount
-    }
-    // Fallback to the existing data if sale results are not available
-    return proj.investmentIntentSummary?.count ?? 0
-  }
-
   if (!completedProjects?.length && !isTableLoading) return null
 
   return (
@@ -171,9 +155,13 @@ export const CompletedLaunchPoolTable = ({ projectStatus, projectType }: Props) 
                 </TableCell>
                 <TableCell isCategory={true}>{formatDateForProject(new Date(proj.info.timeline?.find(t => t.id === "REWARD_DISTRIBUTION")?.date || 0))}</TableCell>
                 <TableCell isCategory={true}>{proj.info?.sector || "—"}</TableCell>
-                <TableCell isCategory={true}>{getAmountRaised(proj)}</TableCell>
+                <TableCell isCategory={true}>
+                  {proj.depositStats ? formatCurrencyAmount(Number(proj.depositStats.totalDepositedInUsd), { withDollarSign: true }) : 0}
+                </TableCell>
                 <TableCell isCategory={true}>{formatFdv(proj.config.fdv)}</TableCell>
-                <TableCell isCategory={true} className="md:hidden">{getParticipantsCount(proj)}</TableCell>
+                <TableCell isCategory={true} className="md:hidden">
+                  {proj.depositStats ? proj.depositStats.participantsCount : 0}
+                </TableCell>
                 {/* <TableCell isCategory={true}>{formatCurrencyAmount(proj.investmentIntentSummary?.sum ?? 0, { withDollarSign: true })}</TableCell> */}
                 <TableCell isCategory={false} className="text-center">
                   <Link
