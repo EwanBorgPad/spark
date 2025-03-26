@@ -35,7 +35,7 @@ const roleOptions: { label: string; id: AnalystRoleEnum }[] = [
   },
 ]
 
-const BecomeAnAnalystModal = ({ onClose }: Props) => {
+const BecomeAnalystModal = ({ onClose }: Props) => {
   const navigate = useNavigate()
   const [redirectionUrl, setRedirectionUrl] = usePersistedState("bp_redirectionUrl")
   const { projectData } = useProjectDataContext()
@@ -131,12 +131,12 @@ const BecomeAnAnalystModal = ({ onClose }: Props) => {
     <SimpleModal
       showCloseBtn
       onClose={onClose}
-      className="relative w-full max-w-[700px] bg-default px-[40px]"
+      className="relative w-full max-w-[700px] bg-default "
       headerClass="bg-default"
     >
       <div
         className={twMerge(
-          "flex w-full flex-col items-center pb-6",
+          "flex w-full flex-col items-center px-[40px] pb-6",
           isAnalysisSubmittedSuccessfully && "animate-slide-exit-left",
         )}
       >
@@ -270,4 +270,4 @@ const BecomeAnAnalystModal = ({ onClose }: Props) => {
   )
 }
 
-export default BecomeAnAnalystModal
+export default BecomeAnalystModal

@@ -96,7 +96,9 @@ const DraftPickPage = () => {
           </div>
         </div>
 
-        <Analysts isFullWidth={true} />
+        <section className="flex w-full justify-center">
+          <Analysts isFullWidth={true} />
+        </section>
 
         <BasicTokenInfo isDraftPick={true} />
 
