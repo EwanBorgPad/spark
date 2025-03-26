@@ -9,7 +9,7 @@ import { ExpandedProject, processProjects } from "@/utils/projects-helper"
 import { getProjectRoute } from "@/utils/routes"
 import { Icon } from "../Icon/Icon"
 import { GetProjectsResponse, ProjectModel } from "shared/models"
-import { formatCurrencyAmount } from "shared/utils/format"
+import { formatCurrencyCompact } from "shared/utils/format"
 import { backendApi } from "@/data/backendApi.ts"
 import { formatDateForProject } from "@/utils/date-helpers"
 import { TableHeader } from "./TableHeader"
@@ -156,7 +156,7 @@ export const CompletedLaunchPoolTable = ({ projectStatus, projectType }: Props) 
                 <TableCell isCategory={true}>{formatDateForProject(new Date(proj.info.timeline?.find(t => t.id === "REWARD_DISTRIBUTION")?.date || 0))}</TableCell>
                 <TableCell isCategory={true}>{proj.info?.sector || "—"}</TableCell>
                 <TableCell isCategory={true}>
-                  {proj.depositStats ? formatCurrencyAmount(Number(proj.depositStats.totalDepositedInUsd), { withDollarSign: true }) : 0}
+                  {proj.depositStats ? formatCurrencyCompact(Number(proj.depositStats.totalDepositedInUsd)) : 0}
                 </TableCell>
                 <TableCell isCategory={true}>{formatFdv(proj.config.fdv)}</TableCell>
                 <TableCell isCategory={true} className="md:hidden">

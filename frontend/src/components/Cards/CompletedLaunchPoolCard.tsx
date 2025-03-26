@@ -11,7 +11,7 @@ import { ExpandedProject, processProjects } from "@/utils/projects-helper"
 import { getProjectRoute } from "@/utils/routes"
 import { Icon } from "../Icon/Icon"
 import { GetProjectsResponse, ProjectModel } from "shared/models"
-import { formatCurrencyAmount, formatCurrencyCompact } from "shared/utils/format"
+import { formatCurrencyCompact } from "shared/utils/format"
 import { formatDateForProject } from "@/utils/date-helpers"
 import { createDetailRow, ProjectDetailRows } from "../Tables/ProjectDetailsRows"
 import { SortDropdown } from "../Dropdown/SortDropdown"
@@ -192,9 +192,9 @@ export const CompletedLaunchPoolCard = ({ projectStatus, projectType }: Props) =
                     project={project}
                     rows={[
                       createDetailRow("SvgCalendarFill", "Date", project.info.timeline?.find((t) => t.id === "SALE_CLOSES")?.date ? formatDateForProject(new Date(project.info.timeline?.find((t) => t.id === "SALE_CLOSES")?.date || 0)) : "TBC"),
-                      createDetailRow("SvgChartLine", "FDV", formatCurrencyCompact(project?.config.fdv)),
-                      createDetailRow("SvgWalletFilled", "Raised", formatCurrencyAmount(project?.saleResults?.totalAmountRaised?.amountInUsd)),
-                      createDetailRow("SvgTwoAvatars", "Participants", project?.saleResults?.participantsCount ?? 0),
+                      createDetailRow("SvgChartLine", "FDV", formatCurrencyCompact(project?.config?.fdv ?? 0)),
+                      createDetailRow("SvgWalletFilled", "Raised", formatCurrencyCompact(Number(project.depositStats?.totalDepositedInUsd || 0))),
+                      createDetailRow("SvgTwoAvatars", "Participants", project.depositStats?.participantsCount ?? 0),
                       createDetailRow("SvgChartLine", "Sector", project.info?.sector ?? "N/A"),
                     ]}
                   />
