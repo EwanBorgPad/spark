@@ -68,7 +68,12 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const analysisList = await AnalystService.getListOfAnalysisByProjectId({ db, projectId: projectId })
     console.log(analysisList);
 
-    return jsonResponse({ analysisList }, 200)
+    const sumImpressions = analysisList.reduce((accumulator, currentValue) => accumulator + currentValue.analysis.impressions, 0)
+    
+    const sumLikes = analysisList.reduce((accumulator, currentValue) => accumulator + currentValue.analysis.likes, 0)
+    const analystCount = new Set(analysisList.map(item => item.analyst.id)).size;
+
+    return jsonResponse({ analysisList, sumImpressions, sumLikes, analystCount }, 200)
   } catch (e) {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)

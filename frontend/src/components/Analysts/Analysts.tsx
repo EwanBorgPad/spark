@@ -90,15 +90,15 @@ const Analysts = ({ isFullWidth }: Props) => {
               <div className="flex w-full gap-4">
                 <div className="flex flex-1 flex-col">
                   <span className="text-sm text-fg-tertiary">Analysts</span>
-                  <span className="text-fg-primary">{133}</span>
+                  <span className="text-fg-primary">{data.analystCount}</span>
                 </div>
                 <div className="flex flex-1 flex-col">
                   <span className="text-sm text-fg-tertiary">Impressions</span>
-                  <span className="text-fg-primary">{formatNumber(123113)}</span>
+                  <span className="text-fg-primary">{formatNumber(data.sumImpressions)}</span>
                 </div>
                 <div className="flex flex-1 flex-col">
                   <span className="text-sm text-fg-tertiary">Likes</span>
-                  <span className="text-fg-primary">{333}</span>
+                  <span className="text-fg-primary">{data.sumLikes}</span>
                 </div>
               </div>
               <div className="flex w-full flex-wrap items-end gap-4">

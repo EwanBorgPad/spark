@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/d1"
 import { Analysis, analysisTable, Analyst, analystTable } from "../../shared/drizzle-schema"
 import { GetMeTwitterResponse } from "../../shared/types/api-types"
-import { eq, inArray } from "drizzle-orm"
+import { eq } from "drizzle-orm"
 import { AnalystSchemaType, NewAnalysisSchemaType } from "../../shared/schemas/analysis-schema"
 
 type CreateNewAnalystArgs = {
@@ -24,6 +24,7 @@ type PostNewAnalysisArgs = {
   db: D1Database,
   analysis: NewAnalysisSchemaType
 }
+
 
 
 const findAnalystByTwitterAccount = async ({ db: d1, twitterId }: FindAnalystByTwitterId): Promise<Analyst | null> => {
@@ -87,7 +88,10 @@ const postNewAnalysis = async ({db: d1, analysis}: PostNewAnalysisArgs): Promise
     twitterId: analysis.twitterId,
     analystRole: analysis.analystRole,
     projectId: analysis.projectId,
-    articleUrl: analysis.articleUrl
+    articleUrl: analysis.articleUrl,
+    impressions: 0,
+    likes: 0,
+    isApproved: false
   }
   
   const [ result ] = await db.insert(analysisTable).values(newAnalysis).returning()

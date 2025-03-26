@@ -146,6 +146,9 @@ CREATE TABLE analysis (
     project_id TEXT NOT NULL,
     article_url TEXT NOT NULL,
     analyst_role TEXT NOT NULL,
+    isApproved INTEGER NOT NULL DEFAULT 0,
+    impressions INTEGER NOT NULL DEFAULT 0,
+    likes INTEGER NOT NULL DEFAULT 0,
     FOREIGN KEY (analyst_id) REFERENCES analyst(id) ON DELETE CASCADE,
     FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
 );
