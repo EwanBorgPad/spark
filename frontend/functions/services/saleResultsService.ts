@@ -77,7 +77,7 @@ const getDepositAmount = async (db: DrizzleD1Database): Promise<Map<string, numb
     
     return depositsByProject;
   } catch (error) {
-    console.error('Error in getDepositAmount2:', error);
+    console.error('Error in getDepositAmount:', error);
     return new Map();
   }
 };
