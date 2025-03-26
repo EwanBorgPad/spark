@@ -161,6 +161,9 @@ export const analysisTable = sqliteTable("analysis", {
   twitterId: text("twitter_id").notNull(),
   projectId: text("project_id").notNull(),
   articleUrl: text("article_url").notNull(),
+  status: integer("status").notNull().default(0), // 0 = pending, 1 = active
+  impressions: integer("impressions").notNull().default(0),
+  likes: integer("likes").notNull().default(0),
   analystRole: text("analyst_role").$type<AnalystRoleEnum>().notNull(),
 })
 
