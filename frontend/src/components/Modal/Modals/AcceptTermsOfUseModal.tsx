@@ -111,6 +111,7 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
                 isLoading={isPending}
                 btnText={t("accept.terms.of.use.quest.modal.button")}
                 onClick={() => acceptTermsOfUse(address)}
+                className="plausible-event-name=1-AcceptTermsOfUse"
               />
             )}
           </div>

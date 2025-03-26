@@ -167,7 +167,7 @@ const ProvideInvestmentIntentBtn = () => {
 
   return (
     <div className="mt-2 flex justify-start">
-      <Button color="secondary" size="xs" className="rounded-lg px-3" onClick={
+      <Button color="secondary" size="xs" className="rounded-lg px-3 plausible-event-name=2-ProvideInvestmentIntent" onClick={
         () => {
           window.safary?.track({
             eventType: "investment-intent",
