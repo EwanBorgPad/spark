@@ -2,6 +2,7 @@ import AnalysisTable from "@/components/Tables/AnalysisTable"
 import { SimpleModal } from "../SimpleModal"
 import { GetListOfAnalysisResponse } from "shared/schemas/analysis-schema"
 import AnalysisCard from "@/components/Tables/AnalysisCard"
+import { useProjectDataContext } from "@/hooks/useProjectData"
 
 type Props = {
   onClose: () => void
@@ -9,6 +10,8 @@ type Props = {
 }
 
 const ProjectAnalysisModal = ({ onClose, analysisList }: Props) => {
+  const { projectData } = useProjectDataContext()
+
   return (
     <SimpleModal
       showCloseBtn
@@ -25,7 +28,7 @@ const ProjectAnalysisModal = ({ onClose, analysisList }: Props) => {
         </span>
 
         {/* desktop component */}
-        <AnalysisTable list={analysisList} />
+        {projectData?.id && <AnalysisTable projectId={projectData.id} />}
 
         {/* mobile component */}
         <div className="flex w-full flex-col gap-4 md:hidden">

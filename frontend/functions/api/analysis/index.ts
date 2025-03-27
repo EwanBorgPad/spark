@@ -1,6 +1,6 @@
 import { AnalystService } from "../../services/analystService"
 import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
-import { postNewAnalysisSchema } from "../../../shared/schemas/analysis-schema"
+import { AnalysisSortBy, AnalysisSortDirection, postNewAnalysisSchema } from "../../../shared/schemas/analysis-schema"
 
 import { z } from 'zod'
 
@@ -61,8 +61,10 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const { searchParams } = new URL(ctx.request.url)
     const projectId = searchParams.get("projectId")
     const isApproved = searchParams.get("isApproved")
+    const sortBy = searchParams.get("sortBy") as AnalysisSortBy
+    const sortDirection = searchParams.get("sortDirection") as AnalysisSortDirection
 
-    const analysisList = await AnalystService.getListOfAnalysis({ db, projectId: projectId, isApproved })
+    const analysisList = await AnalystService.getListOfAnalysis({ db, projectId: projectId, isApproved, sortDirection, sortBy })
     console.log(analysisList);
 
     const sumImpressions = analysisList.reduce((accumulator, currentValue) => accumulator + currentValue.analysis.impressions, 0)

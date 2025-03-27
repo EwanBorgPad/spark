@@ -43,3 +43,5 @@ export const updateOrRemoveAnalysisSchema = z.object({
 })
 export type UpdateOrRemoveAnalysisSchemaRequest = Required<z.infer<typeof updateOrRemoveAnalysisSchema>>
 
+export type AnalysisSortDirection = "asc" | "desc"
+export type AnalysisSortBy = "projectId" | "impressions" | "likes" | "analystRole"

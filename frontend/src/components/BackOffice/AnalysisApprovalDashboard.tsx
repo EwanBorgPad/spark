@@ -1,5 +1,5 @@
 import React from "react"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { backendApi, UpdateAnalysisApproval } from "@/data/backendApi"
 import { toast } from "react-toastify"
 import { useWalletContext } from "@/hooks/useWalletContext"
@@ -9,11 +9,6 @@ const AnalysisApprovalDashboard = () => {
   const queryClient = useQueryClient()
   const { address, signMessage } = useWalletContext()
 
-  const { data, isLoading } = useQuery({
-    queryFn: () => backendApi.getAnalysisList({ isApproved: false }),
-    queryKey: ["getAnalysisList", `isApproved=false`],
-    refetchOnWindowFocus: false,
-  })
   // API request - postNewAnalysis
   const { mutate: updateAnalysisStatus } = useMutation({
     mutationFn: async (args: UpdateAnalysisApproval) => backendApi.updateAnalysisApproval(args),
@@ -38,14 +33,13 @@ const AnalysisApprovalDashboard = () => {
   }
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-lg border border-bd-primary p-4">
+    <div className="flex w-full flex-col gap-4 rounded-xl border border-bd-primary p-4">
       <h1 className="text-xl">Analysis for Approval</h1>
-      {!isLoading &&
-        (data?.analysisList.length ? (
-          <ApproveAnalysisTable list={data?.analysisList} onUpdateStatusSubmit={onUpdateStatusSubmit} />
-        ) : (
-          <span className="text-fg-secondary">No analyses for approval yet.</span>
-        ))}
+      <span className="text-xs text-fg-secondary">
+        Note: <em className="underline">Impressions</em> & <em className="underline">Likes</em> stats are real time.
+        They are fetched periodically.
+      </span>
+      <ApproveAnalysisTable onUpdateStatusSubmit={onUpdateStatusSubmit} />
     </div>
   )
 }

@@ -14,6 +14,8 @@ import {
   TokenAmountModel,
 } from "../../shared/models.ts"
 import {
+  AnalysisSortBy,
+  AnalysisSortDirection,
   analystSchema,
   GetListOfAnalysisResponse,
   NewAnalysisSchemaType,
@@ -540,15 +542,24 @@ const updateAnalysisApproval = async ({ analysisId, ...rest }: UpdateAnalysisApp
   })
   if (!response.ok) throw new Error("Analysis update error!")
 }
+export type GetListOfAnalysisRequest = {
+  projectId?: string
+  isApproved?: string
+  sortDirection?: AnalysisSortDirection
+  sortBy?: AnalysisSortBy
+}
 const getAnalysisList = async ({
   projectId,
   isApproved,
-}: {
-  projectId?: string
-  isApproved?: boolean
-}): Promise<GetListOfAnalysisResponse> => {
+  sortBy,
+  sortDirection,
+}: GetListOfAnalysisRequest): Promise<GetListOfAnalysisResponse> => {
   const url = new URL(GET_ANALYSIS_LIST, window.location.href)
-  if (projectId) url.searchParams.set("projectId", projectId)
+
+  // search params
+  projectId && url.searchParams.set("projectId", projectId)
+  sortBy && url.searchParams.set("sortBy", sortBy)
+  sortDirection && url.searchParams.set("sortDirection", sortDirection)
   if (typeof isApproved === "boolean") {
     url.searchParams.set("isApproved", String(isApproved))
   }

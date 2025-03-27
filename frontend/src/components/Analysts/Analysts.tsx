@@ -30,8 +30,9 @@ const Analysts = ({ isFullWidth }: Props) => {
   const projectId = projectData?.id ?? ""
 
   const { data, isLoading } = useQuery({
-    queryFn: () => backendApi.getAnalysisList({ projectId, isApproved: true }),
-    queryKey: ["getAnalysisList", projectId],
+    queryFn: () =>
+      backendApi.getAnalysisList({ projectId, isApproved: "true", sortBy: "impressions", sortDirection: undefined }),
+    queryKey: ["getAnalysisList", "isApproved=true", "impressions", projectId],
     enabled: Boolean(projectId),
     refetchOnWindowFocus: false,
   })

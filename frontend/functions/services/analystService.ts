@@ -1,8 +1,8 @@
 import { drizzle, DrizzleD1Database } from "drizzle-orm/d1"
 import { Analysis, analysisTable, Analyst, analystTable } from "../../shared/drizzle-schema"
 import { GetMeTwitterResponse } from "../../shared/types/api-types"
-import { and, eq } from "drizzle-orm"
-import { AnalystSchemaType, NewAnalysisSchemaType } from "../../shared/schemas/analysis-schema"
+import { and, eq, asc, desc } from "drizzle-orm"
+import { AnalysisSortBy, AnalysisSortDirection, AnalystSchemaType, NewAnalysisSchemaType } from "../../shared/schemas/analysis-schema"
 
 type CreateNewAnalystArgs = {
   db: D1Database
@@ -10,11 +10,6 @@ type CreateNewAnalystArgs = {
 type FindAnalystByTwitterId = {
   db: D1Database,
   twitterId: string
-}
-type GetListOfAnalysisArgs = {
-  db: D1Database,
-  projectId?: string,
-  isApproved?: string
 }
 type UpdateAnalystByTwitterId = {
   db: D1Database,
@@ -31,8 +26,13 @@ type UpdateAnalysisArgs = {
 }
 type AnalysisTableColumns = typeof analysisTable.$inferSelect;
 
-
-
+type GetListOfAnalysisArgs = {
+  db: D1Database,
+  projectId?: string,
+  isApproved?: string
+  sortDirection?: AnalysisSortDirection
+  sortBy: AnalysisSortBy
+}
 
 const findAnalystByTwitterAccount = async ({ db: d1, twitterId }: FindAnalystByTwitterId): Promise<Analyst | null> => {
   const db = drizzle(d1, { logger: true })
@@ -48,9 +48,31 @@ const findAnalystByTwitterAccount = async ({ db: d1, twitterId }: FindAnalystByT
 
   return analyst
 }
-const getListOfAnalysis = async ({ db: d1, projectId, isApproved }: GetListOfAnalysisArgs): Promise<{analysis: Analysis, analyst: Analyst}[]> => {
+
+const getSortColumn = (column: AnalysisSortBy) => {
+  switch (column) {
+    case "projectId":
+      return analysisTable.projectId;
+    case "impressions":
+      return analysisTable.impressions;
+    case "likes":
+      return analysisTable.likes;
+    case "analystRole":
+      return analysisTable.analystRole;
+    default:
+      throw new Error("Invalid sort column");
+  }
+};
+
+const getListOfAnalysis = async ({ db: d1, projectId, isApproved, sortDirection, sortBy  }: GetListOfAnalysisArgs): Promise<{analysis: Analysis, analyst: Analyst}[]> => {
   const db = drizzle(d1, { logger: true })
 
+  let orderByConditions
+  if (sortBy) {
+    orderByConditions = sortDirection && sortDirection === "asc" ? asc(getSortColumn(sortBy as AnalysisSortBy)) : desc(getSortColumn(sortBy as AnalysisSortBy))
+  } else {
+    orderByConditions = asc(getSortColumn("projectId"))
+  }
   let whereConditions;
   if (isApproved) {
     const isApprovedBoolean = isApproved === "true"
@@ -74,6 +96,7 @@ const getListOfAnalysis = async ({ db: d1, projectId, isApproved }: GetListOfAna
     .from(analysisTable)
     .leftJoin(analystTable, eq(analystTable.id, analysisTable.analystId))
     .where(whereConditions)
+    .orderBy(orderByConditions)
     .all();
 
   return result
