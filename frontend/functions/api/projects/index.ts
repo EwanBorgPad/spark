@@ -61,17 +61,20 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
     projectType ? sql`json -> 'info' ->> 'projectType' = ${projectType}` : undefined,
   )
 
-  // Handle completion status filtering using direct Drizzle ORM conditions
-  if (completionStatus !== 'all') {
-    // First get all projects that meet the base conditions
-    const allProjects = await db
-      .select()
-      .from(projectTable)
-      .where(whereConditions)
-      .all();
+  // Fetch all projects with base conditions first to avoid multiple queries
+  const allProjects = await db
+    .select()
+    .from(projectTable)
+    .where(whereConditions)
+    .all();
 
+  // This will track our total count for pagination
+  let filteredProjects = allProjects;
+  
+  // Handle completion status filtering
+  if (completionStatus !== 'all') {
     // Filter projects based on completion status
-    const filteredProjectIds = allProjects
+    filteredProjects = allProjects
       .filter(project => {
         const timeline = project.json?.info?.timeline || [];
         const saleClosesEvent = timeline.find((event: any) => event.id === 'SALE_CLOSES');
@@ -88,10 +91,11 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
             typeof saleClosesEvent.date !== 'string' ||
             isDateInFutureOrInvalid(saleClosesEvent.date);
         }
-      })
-      .map(project => project.id);
+      });
+    
+    const filteredProjectIds = filteredProjects.map(project => project.id);
 
-    // Add condition to filter by the IDs we found
+    // Update where conditions for subsequent queries
     if (filteredProjectIds.length > 0) {
       whereConditions = and(
         whereConditions,
@@ -106,23 +110,12 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
     }
   }
 
-  const countQuery = db
-    .select({ count: count() })
-    .from(projectTable)
-    .where(whereConditions)
-  const countResult = (await countQuery.get()).count
-  const total = countResult || 0
-  const totalPages = Math.ceil(total / limit)
-
-  // Get all projects first so we can get the investment intent summaries
-  const projectsResult = await db
-    .select()
-    .from(projectTable)
-    .where(whereConditions)
-    .all()
+  // Calculate pagination values directly from our filtered projects
+  const total = filteredProjects.length;
+  const totalPages = Math.ceil(total / limit);
 
   // Get project IDs for investment intent query
-  const projectIds = projectsResult.map(project => project.id)
+  const projectIds = filteredProjects.map(project => project.id);
 
   // Get investment intent summaries for all projects
   const investmentIntentSummaries = await db.all(
@@ -157,7 +150,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
   });
 
   // Map projects to return format with investment intent summaries and deposit stats
-  const projectsWithSummaries = projectsResult.map(project => {
+  const projectsWithSummaries = filteredProjects.map(project => {
     const summary = investmentIntentSummaries.find(summary => summary.project_id === project.id) ||
       { project_id: project.id, sum: 0, avg: 0, count: 0 };
 
@@ -178,7 +171,6 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
   let sortedProjects = [...projectsWithSummaries];
 
   if (sortBy) {
-
     sortedProjects.sort((a, b) => {
       const multiplier = sortDirection === 'asc' ? 1 : -1;
 
