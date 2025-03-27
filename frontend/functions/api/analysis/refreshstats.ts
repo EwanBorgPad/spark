@@ -3,13 +3,13 @@ import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 import { drizzle, DrizzleD1Database } from "drizzle-orm/d1"
 import { eq } from "drizzle-orm"
 import { TweetScoutTweetResponse } from '../../../shared/types/api-types'
+import { isApiKeyValid } from '../../services/apiKeyService'
 
 type ENV = {
   DB: D1Database
+  TWEET_SCOUT_API_KEY: string
 }
 type AnalysisTableColumns = typeof analysisTable.$inferSelect;
-
-const apiKey = '8edd14a4-1506-4882-a23f-a5ddb7196ee7';
 
 type FetchResult = {
   impressions: number;
@@ -20,12 +20,14 @@ type FetchResult = {
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
   try {
+    console.log("Refreshing X stats for articles initiated.");
     // authorize request
-    // if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
-    //   return jsonResponse(null, 401)
-    // }
-    console.log("HIT !!!");
+    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
+      return jsonResponse(null, 401)
+    }
     try {
+      const tweetScoutApiKey = ctx.env.TWEET_SCOUT_API_KEY
+      if (!tweetScoutApiKey) throw new Error("Missing api key for Tweet Scout!")
 
       const allAnalyses = await db.select().from(analysisTable).where(eq(analysisTable.isApproved, true))
 
@@ -40,7 +42,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
             method: "POST",
             headers: {
               Accept: "application/json",
-              ApiKey: apiKey,
+              ApiKey: tweetScoutApiKey,
               "Content-Type": "application/json",
             },
             body,
