@@ -6,6 +6,7 @@ import { drizzle, DrizzleD1Database } from "drizzle-orm/d1"
 import { z } from 'zod'
 import { isApiKeyValid } from '../../services/apiKeyService'
 import { SaleResultsService } from "../../services/saleResultsService"
+import { isDateInPast, isDateInFutureOrInvalid } from "../../../shared/utils/compareDates"
 
 
 const requestSchema = z.object({
@@ -52,7 +53,6 @@ type GetProjectsFromDbArgs = z.infer<typeof requestSchema>
 const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbArgs): Promise<GetProjectsResponse | null> => {
   const { projectType, completionStatus, sortBy, sortDirection, page, limit } = args
   const offset = (page - 1) * limit
-  const now = new Date().toISOString();
 
   // Base where conditions that apply to all queries
   let whereConditions = and(
@@ -60,15 +60,6 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
     not(like(projectTable.id, 'hidden%')),
     projectType ? sql`json -> 'info' ->> 'projectType' = ${projectType}` : undefined,
   )
-
-  // Helper function to safely compare ISO date strings
-  const isDateInPast = (dateStr: string): boolean => {
-    return dateStr !== '' && dateStr.localeCompare(now) < 0;
-  };
-
-  const isDateInFutureOrInvalid = (dateStr: string): boolean => {
-    return dateStr === '' || dateStr.localeCompare(now) >= 0;
-  };
 
   // Handle completion status filtering using direct Drizzle ORM conditions
   if (completionStatus !== 'all') {
