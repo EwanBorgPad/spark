@@ -9,8 +9,9 @@ import { UpdateAnalysisApproval } from "@/data/backendApi"
 
 type Props = {
   list: GetListOfAnalysisResponse["analysisList"] | undefined
+  onUpdateStatusSubmit?: (args: Pick<UpdateAnalysisApproval, "action" | "analysisId">) => void
 }
-type SortField = "analyst" | "role" | "impressions" | "likes"
+type SortField = "analyst" | "role" | "impressions" | "likes" | "project"
 
 const rolesObj: Record<AnalystRoleEnum, string> = {
   TEAM_MEMBER: "Team Member",
@@ -18,7 +19,7 @@ const rolesObj: Record<AnalystRoleEnum, string> = {
   FREE_WRITER: "Free Writer",
 }
 
-const AnalysisTable = ({ list }: Props) => {
+const ApproveAnalysisTable = ({ list, onUpdateStatusSubmit }: Props) => {
   const [sortField, setSortField] = useState<SortField | null>(null)
   const [sortDirection, setSortDirection] = useState<"desc" | "asc">("desc")
 
@@ -46,6 +47,7 @@ const AnalysisTable = ({ list }: Props) => {
                 <TableHeader className="max-w-[260px]" onClick={() => handleSort("analyst")}>
                   Analyst {getSortIcon("analyst")}
                 </TableHeader>
+                <TableHeader onClick={() => handleSort("project")}>Project {getSortIcon("project")}</TableHeader>
                 <TableHeader onClick={() => handleSort("role")}>Role {getSortIcon("role")}</TableHeader>
                 <TableHeader className="min-w-[102px]" onClick={() => handleSort("impressions")}>
                   Impressions {getSortIcon("impressions")}
@@ -54,6 +56,11 @@ const AnalysisTable = ({ list }: Props) => {
                 <TableHeader className="hover:cursor-default hover:bg-default" onClick={() => {}}>
                   {" "}
                 </TableHeader>
+                {onUpdateStatusSubmit && (
+                  <TableHeader className="hover:cursor-default hover:bg-default" onClick={() => {}}>
+                    {" "}
+                  </TableHeader>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-bd-secondary/5 pb-10">
@@ -71,6 +78,9 @@ const AnalysisTable = ({ list }: Props) => {
                         </span>
                       </div>
                     </div>
+                  </TableCell>
+                  <TableCell className="py-0">
+                    <span className="text-fg-secondary">{analysis.analysis.projectId}</span>
                   </TableCell>
                   <TableCell className="py-0">
                     <span className="text-fg-secondary">{rolesObj[analysis.analysis.analystRole]}</span>
@@ -92,6 +102,25 @@ const AnalysisTable = ({ list }: Props) => {
                       />
                     </a>
                   </TableCell>
+                  {onUpdateStatusSubmit && (
+                    <TableCell className="py-0">
+                      <div className="flex gap-2">
+                        <Button
+                          prefixElement={<Icon icon="SvgCircledCheckmark" />}
+                          btnText="Approve"
+                          size="xs"
+                          color="primary"
+                          onClick={() => onUpdateStatusSubmit({ analysisId: analysis.analysis.id, action: "approve" })}
+                        />
+                        <Button.Icon
+                          icon="SvgX"
+                          size="xs"
+                          color="danger"
+                          onClick={() => onUpdateStatusSubmit({ analysisId: analysis.analysis.id, action: "decline" })}
+                        />
+                      </div>
+                    </TableCell>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -102,4 +131,4 @@ const AnalysisTable = ({ list }: Props) => {
   )
 }
 
-export default AnalysisTable
+export default ApproveAnalysisTable

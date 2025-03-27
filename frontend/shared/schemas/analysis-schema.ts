@@ -32,3 +32,14 @@ export type GetListOfAnalysisResponse = {
   sumLikes: number
   analystCount: number
 }
+
+export const updateOrRemoveAnalysisSchema = z.object({
+  isApproved: z.boolean(),
+  auth: z.object({
+    address: z.string(),
+    message: z.string(),
+    signature: z.array(z.number().int()),
+  }),
+})
+export type UpdateOrRemoveAnalysisSchemaRequest = Required<z.infer<typeof updateOrRemoveAnalysisSchema>>
+

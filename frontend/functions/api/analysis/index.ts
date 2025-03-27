@@ -60,12 +60,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   try {
     const { searchParams } = new URL(ctx.request.url)
     const projectId = searchParams.get("projectId")
+    const isApproved = searchParams.get("isApproved")
 
-    if (!projectId) {
-      return jsonResponse("projectId missing!", 400)
-    }
-
-    const analysisList = await AnalystService.getListOfAnalysisByProjectId({ db, projectId: projectId })
+    const analysisList = await AnalystService.getListOfAnalysis({ db, projectId: projectId, isApproved })
     console.log(analysisList);
 
     const sumImpressions = analysisList.reduce((accumulator, currentValue) => accumulator + currentValue.analysis.impressions, 0)

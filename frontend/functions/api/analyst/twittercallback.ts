@@ -41,21 +41,23 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     console.log("🚀 ~ accessToken:", accessToken)
 
     // get me
-    const userResponse = await fetch(TWITTER_API_GET_ME_URL, {
+    const twitterUserResponse = await fetch(TWITTER_API_GET_ME_URL, {
       headers: {
         "Authorization": `Bearer ${accessToken}`,
       },
     })
-    console.log("🚀 ~ userResponse:", userResponse)
-    if (!userResponse.ok) {
+    console.log("🚀 ~ twitterUserResponse:", twitterUserResponse)
+    if (!twitterUserResponse.ok) {
       throw new Error("Get Me Response Failed!")
     }
 
-    const userResponseBody = await userResponse.json<GetMeTwitterResponse>()
-    console.log("🚀 ~ userResponseBody:", userResponseBody)
+    const twitterUserResponseBody = await twitterUserResponse.json<GetMeTwitterResponse>()
+    console.log("🚀 ~ twitterUserResponseBody:", twitterUserResponseBody)
 
-    // database business
-    const twitterId = userResponseBody.data.id
+    const twitterId = twitterUserResponseBody.data.id
+    const twitterAvatar = twitterUserResponseBody.data.profile_image_url
+    const twitterUsername = twitterUserResponseBody.data.username
+    const twitterName = twitterUserResponseBody.data.name
 
     // check if the analyst is stored in the db
     const existingAnalyst = await AnalystService.findAnalystByTwitterAccount({ db, twitterId })
@@ -64,7 +66,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
 
     if (!existingAnalyst) {
       console.log("User not found in db, inserting...")
-      const newAnalyst = await AnalystService.createNewAnalyst({db, ...userResponseBody.data })
+      const newAnalyst = await AnalystService.createNewAnalyst({db, ...twitterUserResponseBody.data })
       console.log("User inserted into db.")
 
       return jsonResponse({analyst: newAnalyst}, {
@@ -78,9 +80,12 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
 
       const updatedAnalyst = await AnalystService.updateAnalyst({
         db, 
-        analyst:existingAnalyst, 
+        analyst: existingAnalyst, 
         updates: {
-          twitterId: twitterId
+          twitterId,
+          twitterAvatar,
+          twitterName,
+          twitterUsername
         }
       })
 

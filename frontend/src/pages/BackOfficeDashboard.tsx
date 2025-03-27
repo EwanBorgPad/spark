@@ -5,6 +5,7 @@ import { Icon } from "@/components/Icon/Icon"
 import UpdateProjectJson from "@/components/BackOffice/UpdateProjectJson"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { ConnectButton } from "@/components/Header/ConnectButton"
+import AnalysisApprovalDashboard from "@/components/BackOffice/AnalysisApprovalDashboard"
 
 const BACK_OFFICE_FEATURES = ["UPDATE_PROJECT_AFTER_SALE", "UPDATE_JSON_FILE"] as const
 type BackOfficeFeatureType = (typeof BACK_OFFICE_FEATURES)[number]
@@ -32,7 +33,7 @@ const BackOfficeDashboard = () => {
       )}
 
       {isWalletConnected ? (
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col gap-4">
           {/* Content Area */}
           {!renderedFeature ? (
             <div className="flex w-full flex-col gap-6">
@@ -62,6 +63,7 @@ const BackOfficeDashboard = () => {
             </div>
           )}
           {renderFeature()}
+          {!renderedFeature && <AnalysisApprovalDashboard />}
         </div>
       ) : (
         <div className="flex justify-center">

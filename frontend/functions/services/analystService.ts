@@ -1,7 +1,7 @@
-import { drizzle } from "drizzle-orm/d1"
+import { drizzle, DrizzleD1Database } from "drizzle-orm/d1"
 import { Analysis, analysisTable, Analyst, analystTable } from "../../shared/drizzle-schema"
 import { GetMeTwitterResponse } from "../../shared/types/api-types"
-import { eq } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
 import { AnalystSchemaType, NewAnalysisSchemaType } from "../../shared/schemas/analysis-schema"
 
 type CreateNewAnalystArgs = {
@@ -11,9 +11,10 @@ type FindAnalystByTwitterId = {
   db: D1Database,
   twitterId: string
 }
-type GetListOfAnalysisByProjectIdArgs = {
+type GetListOfAnalysisArgs = {
   db: D1Database,
-  projectId: string
+  projectId?: string,
+  isApproved?: string
 }
 type UpdateAnalystByTwitterId = {
   db: D1Database,
@@ -24,6 +25,12 @@ type PostNewAnalysisArgs = {
   db: D1Database,
   analysis: NewAnalysisSchemaType
 }
+type UpdateAnalysisArgs = {
+  db: DrizzleD1Database, 
+  analysisId: string
+}
+type AnalysisTableColumns = typeof analysisTable.$inferSelect;
+
 
 
 
@@ -41,8 +48,23 @@ const findAnalystByTwitterAccount = async ({ db: d1, twitterId }: FindAnalystByT
 
   return analyst
 }
-const getListOfAnalysisByProjectId = async ({ db: d1, projectId }: GetListOfAnalysisByProjectIdArgs): Promise<{analysis: Analysis, analyst: Analyst}[]> => {
+const getListOfAnalysis = async ({ db: d1, projectId, isApproved }: GetListOfAnalysisArgs): Promise<{analysis: Analysis, analyst: Analyst}[]> => {
   const db = drizzle(d1, { logger: true })
+
+  let whereConditions;
+  if (isApproved) {
+    const isApprovedBoolean = isApproved === "true"
+    whereConditions = and(
+      whereConditions,
+      eq(analysisTable.isApproved, isApprovedBoolean)
+    );
+  }
+  if (projectId) {
+    whereConditions = and(
+      whereConditions,
+      eq(analysisTable.projectId, projectId)
+    );
+  }
 
   const result = await db
     .select({
@@ -51,7 +73,7 @@ const getListOfAnalysisByProjectId = async ({ db: d1, projectId }: GetListOfAnal
     })
     .from(analysisTable)
     .leftJoin(analystTable, eq(analystTable.id, analysisTable.analystId))
-    .where(eq(analysisTable.projectId, projectId))
+    .where(whereConditions)
     .all();
 
   return result
@@ -100,12 +122,29 @@ const postNewAnalysis = async ({db: d1, analysis}: PostNewAnalysisArgs): Promise
   return result; // Return new data row for later update
 }
 
+// Function to approve an analysis
+const approveAnalysis = async ({ db, analysisId }: UpdateAnalysisArgs) => {
+  await db
+    .update(analysisTable)
+    .set({ isApproved: true } as Partial<AnalysisTableColumns>) // Sets to 1 in SQLite
+    .where(eq(analysisTable.id, analysisId));
+}
+
+// Function to decline an analysis
+const declineAnalysis = async ({ db, analysisId }: UpdateAnalysisArgs) => {
+  await db
+    .delete(analysisTable)
+    .where(eq(analysisTable.id, analysisId));
+}
+
 export const AnalystService = {
     createNewAnalyst,
     updateAnalyst,
     findAnalystByTwitterAccount,
     postNewAnalysis,
-    getListOfAnalysisByProjectId
+    getListOfAnalysis,
+    approveAnalysis,
+    declineAnalysis
 }
 
 function uuidv4() {

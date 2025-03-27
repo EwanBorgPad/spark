@@ -47,8 +47,8 @@ const UPDATE_JSON = API_BASE_URL + "/projects/update-json"
 const POST_CREATE_EMAIL = API_BASE_URL + "/createemail"
 const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
 const GET_ANALYST_URL = API_BASE_URL + "/analyst"
-const POST_ANALYSIS = API_BASE_URL + "/analyst/analysis"
-const GET_ANALYSIS_LIST = API_BASE_URL + "/analyst/analysis"
+const POST_ANALYSIS = API_BASE_URL + "/analysis"
+const GET_ANALYSIS_LIST = API_BASE_URL + "/analysis"
 
 const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
   const response = await fetch(...args)
@@ -518,9 +518,40 @@ const postNewAnalysis = async ({ newAnalysis }: { newAnalysis: NewAnalysisSchema
   if (!response.ok) throw new Error(json.message)
   return json
 }
-const getAnalysisList = async ({ projectId }: { projectId: string }): Promise<GetListOfAnalysisResponse> => {
+
+export type UpdateAnalysisApproval = {
+  analysisId: string
+  action: "decline" | "approve"
+  auth: {
+    address: string
+    message: string
+    signature: number[]
+  }
+}
+const updateAnalysisApproval = async ({ analysisId, ...rest }: UpdateAnalysisApproval): Promise<void> => {
+  const url = new URL(`${POST_ANALYSIS}/${analysisId}`, window.location.href)
+  const request = JSON.stringify({ isApproved: rest.action === "approve", ...rest })
+  const response = await fetch(url, {
+    method: "POST",
+    body: request,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  if (!response.ok) throw new Error("Analysis update error!")
+}
+const getAnalysisList = async ({
+  projectId,
+  isApproved,
+}: {
+  projectId?: string
+  isApproved?: boolean
+}): Promise<GetListOfAnalysisResponse> => {
   const url = new URL(GET_ANALYSIS_LIST, window.location.href)
-  url.searchParams.set("projectId", projectId)
+  if (projectId) url.searchParams.set("projectId", projectId)
+  if (typeof isApproved === "boolean") {
+    url.searchParams.set("isApproved", String(isApproved))
+  }
 
   const response = await fetch(url)
   const json = await response.json()
@@ -555,4 +586,5 @@ export const backendApi = {
   getAnalyst,
   postNewAnalysis,
   getAnalysisList,
+  updateAnalysisApproval,
 }
