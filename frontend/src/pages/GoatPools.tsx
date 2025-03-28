@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { backendApi } from "@/data/backendApi"
 import { useQuery } from "@tanstack/react-query"
 import { ScrollRestoration } from "react-router-dom"
@@ -12,15 +12,19 @@ import goatPoolsLogo from "@/assets/launchPools/goat-pools-logo.png"
 
 import { GetProjectsResponse } from "shared/models"
 import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
-import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
+import { ExpandedProject, processProjects } from "@/utils/projects-helper"
 import Img from "@/components/Image/Img"
 import { useTranslation } from "react-i18next"
+import { CompletedLaunchPoolTable } from "@/components/Tables/CompletedLaunchPoolTable"
+import { CompletedLaunchPoolCard } from "@/components/Cards/CompletedLaunchPoolCard"
+import { useWindowSize } from "@/hooks/useWindowSize"
 
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
 const GoatPools = () => {
-  const [phases, setPhases] = useState<ExpandedProject[][]>([])
+  const [activeProjects, setActiveProjects] = useState<ExpandedProject[]>([])
   const { t } = useTranslation()
+  const { isMobile } = useWindowSize()
 
   const { data, isLoading } = useQuery<GetProjectsResponse>({
     queryFn: () =>
@@ -28,16 +32,18 @@ const GoatPools = () => {
         page: 1,
         limit: 999,
         projectType: "goat",
+        completionStatus: "active",
+        sortBy: "date",
+        sortDirection: "asc",
       }),
-    queryKey: ["getProjects", "goat"],
+    queryKey: ["getProjects", "goat", "active", "date", "asc"],
   })
 
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
 
   useEffect(() => {
     if (!data?.projects) return
-    const sortedProjects = sortProjectsPerStatus(data.projects)
-    setPhases(sortedProjects)
+    setActiveProjects(processProjects(data.projects))
   }, [data?.projects])
 
   return (
@@ -76,11 +82,26 @@ const GoatPools = () => {
         <div className="mt-[64px] flex w-full max-w-[1080px] flex-col items-center">
           <ul className="grid grid-cols-1 place-content-center justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {!isLoading
-              ? phases?.map((phase) =>
-                  phase?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />),
-                )
+              ? activeProjects?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />)
               : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
           </ul>
+        </div>
+      </section>
+
+      <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
+        <div className="flex w-full max-w-[1080px] flex-col items-center">
+          <h3 className="mb-8 text-center text-[32px] font-semibold leading-[120%] md:w-full">
+            {"Completed Goat Pools"}
+          </h3>
+          {isMobile ? (
+            <div className="flex flex-col items-center gap-6">
+              <ul className="grid grid-cols-1 place-items-center justify-center gap-6 w-full max-w-[344px] mx-auto">
+                <CompletedLaunchPoolCard projectStatus="completed" projectType="goat" />
+              </ul>
+            </div>
+          ) : (
+            <CompletedLaunchPoolTable projectStatus="completed" projectType="goat"/>
+          )}
         </div>
       </section>
 

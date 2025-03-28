@@ -10,9 +10,9 @@ import draftPicksBackground from "@/assets/launchPools/draft-picks-background.pn
 
 import Img from "@/components/Image/Img"
 import { Icon } from "@/components/Icon/Icon"
-import { GetProjectsResponse } from "shared/models"
+import { GetProjectsResponse, ProjectModel } from "shared/models"
 import { ProjectPoolCard } from "@/components/Cards/ProjectPoolCard"
-import { ExpandedProject, sortProjectsPerStatus } from "@/utils/projects-helper"
+import { ExpandedProject } from "@/utils/projects-helper"
 import { twMerge } from "tailwind-merge"
 
 const displayLogos = [blitzPoolsLogo, goatPoolsLogo]
@@ -20,24 +20,25 @@ const displayLogos = [blitzPoolsLogo, goatPoolsLogo]
 const DraftPicks = () => {
   const [phases, setPhases] = useState<ExpandedProject[][]>([])
 
-  const { data, isLoading } = useQuery<GetProjectsResponse>({
+  // Fetch projects
+  const { data, isLoading, refetch } = useQuery<GetProjectsResponse>({
     queryFn: () =>
       backendApi.getProjects({
         page: 1,
         limit: 999,
         projectType: "draft-pick",
-        sortByCommitments: "desc",
+        completionStatus: "all",
+        sortBy: "commitments",
+        sortDirection: "desc",
       }),
-    queryKey: ["getProjects", "draft-pick", "sortByCommitments"],
+    queryKey: ["getProjects", "draft-pick", "all", "commitments", "desc"],
   })
 
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
 
   useEffect(() => {
-    if (!data?.projects) return
-    
-    // When using sortByCommitments, we should preserve the backend sorting instead of re-sorting by status
-    setPhases([data.projects as ExpandedProject[]])
+    if (!data?.projects) return;
+    setPhases([data.projects as ExpandedProject[]]);
   }, [data?.projects])
 
   return (

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import fallbackImg from "../../assets/fallback1.png"
 
-type ImgSizes = "4" | "5" | "6" | "10" | "20" | "custom"
+type ImgSizes = "4" | "5" | "6" | "8" | "10" | "20" | "custom"
 
 type Props = {
   src: string | undefined
@@ -20,6 +20,7 @@ const avatarSize: Record<ImgSizes, string> = {
   "4": "size-4",
   "5": "size-5",
   "6": "size-6",
+  "8": "size-8",
   "10": "size-10",
   "20": "size-20",
   custom: "",
