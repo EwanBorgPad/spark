@@ -45,8 +45,9 @@ const SEND_DEPOSIT_TRANSACTION = API_BASE_URL + "/senddeposittransaction"
 const SEND_CLAIM_TRANSACTION = API_BASE_URL + "/sendclaimtransaction"
 const POST_AFTER_SALE_UPDATE = API_BASE_URL + "/projects/after-sale-update"
 const UPDATE_JSON = API_BASE_URL + "/projects/update-json"
-
 const POST_CREATE_EMAIL = API_BASE_URL + "/createemail"
+
+// analysis & analyst
 const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
 const GET_ANALYST_URL = API_BASE_URL + "/analyst"
 const POST_ANALYSIS = API_BASE_URL + "/analysis"

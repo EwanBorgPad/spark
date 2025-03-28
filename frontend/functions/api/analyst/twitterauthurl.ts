@@ -2,26 +2,29 @@
 import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 
 const TWITTER_OAUTH2_BASE_PATH = "https://twitter.com/i/oauth2/authorize"
-const TWITTER_ANALYST_CALLBACK_URL = "http://localhost:8788/api/analyst/twittercallback"
+// const TWITTER_ANALYST_CALLBACK_URL = "http://localhost:8788/api/analyst/twittercallback"
 // const TWITTER_ANALYST_CALLBACK_URL = "https://borgpad.com/api/analyst/twittercallback"
 
 type ENV = {
   TWITTER_CLIENT_ID: string
-  TWITTER_CALLBACK_URL: string
+  TWITTER_ANALYST_CALLBACK_URL: string
   VITE_ENVIRONMENT_TYPE: string
   DB: D1Database
 }
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
   try {
-    const url = ctx.request.url
-    const projectPath = new URL(url).searchParams.get("projectPath")
+    const callbackUrl = ctx.env?.TWITTER_ANALYST_CALLBACK_URL
+    const twitterClientId = ctx.env?.TWITTER_CLIENT_ID
+    if (!callbackUrl || !twitterClientId) {
+      throw new Error("Misconfigured path, variable missing!")
+    }
 
     const state = Math.random().toString(36).substring(7);
     const params = new URLSearchParams({
         'response_type': 'code',
-        'client_id': ctx.env.TWITTER_CLIENT_ID,
-        'redirect_uri': TWITTER_ANALYST_CALLBACK_URL,
+        'client_id': twitterClientId,
+        'redirect_uri': callbackUrl,
         'scope': 'users.read tweet.read offline.access',
         'state': state,
         'code_challenge': 'challenge',
