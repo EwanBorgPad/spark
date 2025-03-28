@@ -131,23 +131,23 @@ const BecomeAnalystModal = ({ onClose }: Props) => {
     <SimpleModal
       showCloseBtn
       onClose={onClose}
-      className="relative w-full max-w-[700px] bg-default "
+      className="relative w-full max-w-[700px] bg-default"
       headerClass="bg-default"
     >
       <div
         className={twMerge(
-          "flex w-full flex-col items-center px-[40px] pb-6",
+          "flex w-full flex-col items-center px-4 pb-6 md:px-[40px]",
           isAnalysisSubmittedSuccessfully && "animate-slide-exit-left",
         )}
       >
-        <h1 className="pb-3 text-center text-xl font-semibold text-fg-primary">
+        <h1 className="pb-3 text-center text-2xl font-semibold text-fg-primary">
           <span>Share your insights.</span>
           <br></br>
           <span>Help the community make informed decisions.</span>
         </h1>
-        <span className="pb-12 text-fg-secondary">All analyses are considered personal opinions (NFA)</span>
+        <span className="pb-12 text-center text-fg-secondary">All analyses are considered personal opinions (NFA)</span>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-form-steps gap-x-[20px] gap-y-8 pb-[60px]">
+        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-form-steps gap-x-[20px] gap-y-8">
           <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-secondary p-1.5 text-fg-secondary">
             {analyst?.twitterAvatar ? (
               <>
@@ -163,7 +163,7 @@ const BecomeAnalystModal = ({ onClose }: Props) => {
             <div className="absolute left-[15px] top-8 h-[152px] w-[2px] bg-secondary"></div>
           </div>
           <div className="flex w-full flex-col items-start">
-            <div className="flex min-h-8 w-full items-center justify-between">
+            <div className="flex min-h-8 w-full flex-col items-start justify-between gap-2 md:flex-row md:items-center">
               <span className="font-semibold text-fg-primary">Connect your X account</span>
               {analyst?.twitterId && analystId ? (
                 <Button
@@ -202,7 +202,8 @@ const BecomeAnalystModal = ({ onClose }: Props) => {
                   value={value}
                   onChange={onChange}
                   options={roleOptions}
-                  inputClassName="bg-default text-fg-primary"
+                  containerClassName="max-w-[420px]"
+                  inputClassName="bg-default text-fg-primary w-full"
                   error={error?.message}
                 />
               )}
@@ -226,15 +227,16 @@ const BecomeAnalystModal = ({ onClose }: Props) => {
                 <TextField
                   value={value}
                   onChange={onChange}
-                  inputClassName="bg-default text-fg-primary"
+                  inputClassName="bg-default text-fg-primary w-full"
+                  containerClassName="max-w-[420px]"
                   placeholder="Paste Article URL here..."
                   error={error?.message}
                 />
               )}
             />
           </div>
-          <div />
-          <div className="flex flex-col items-center gap-3">
+          <div className="hidden md:flex" />
+          <div className={"col-span-2 mt-7 flex flex-col items-center gap-3 md:col-span-1"}>
             <Button
               isLoading={isPending}
               type="submit"
@@ -242,7 +244,9 @@ const BecomeAnalystModal = ({ onClose }: Props) => {
               className="w-full"
               // disabled={!isValid}
             />
-            <span className="text-sm text-fg-tertiary">Our team will review your application within 24hrs</span>
+            <span className="text-center text-sm text-fg-tertiary">
+              Our team will review your application within 24hrs
+            </span>
           </div>
         </form>
       </div>

@@ -7,7 +7,7 @@ import { and, eq } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/d1"
 import { updateOrRemoveAnalysisSchema, UpdateOrRemoveAnalysisSchemaRequest } from "../../../shared/schemas/analysis-schema"
 import { AnalystService } from "../../services/analystService"
-import { isAdmin } from "../../services/authService"
+import { checkAdminAuthorization, isAdminReturnValue } from "../../services/authService"
 
 type ENV = {
   DB: D1Database
@@ -27,15 +27,21 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     if (!success) return jsonResponse({ message: "Invalid request!", error }, 400)
 
     // check if user is admin
-    isAdmin({ctx, auth: data.auth as AdminAuthFields })
+    const authResult: isAdminReturnValue = checkAdminAuthorization({ctx, auth: data.auth as AdminAuthFields })
+    if (!authResult.isAdmin) {
+      const { error: authError } = authResult as { error: { code: number; message: string }, isAdmin: false }
+      await reportError(db, new Error(authError.message))
+      return jsonResponse(null, authError.code)
+    }
     
     // check if analysisId is present
     const url = ctx.request.url
     const analysisId = extractAnalysisId(url)
-    console.log(analysisId);
     if (!analysisId) {
       return jsonResponse({ message: "Please provide id query param" }, 400)
     }
+
+    // check if analysis exists
     const existingAnalysis = await db
       .select()
       .from(analysisTable)

@@ -11,7 +11,7 @@ type ENV = {
 }
 
 /**
- * Post request handler - submits a new analysis'
+ * Post request handler - submits a new analysis
  * @param ctx
  */
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
@@ -30,7 +30,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     /////////////////////////////////////
 
     const existingAnalyst = await AnalystService.findAnalystByTwitterAccount({ db, twitterId: data.twitterId })
-    console.log({ existingAnalyst })
+    console.log("existingAnalyst: ", existingAnalyst.id)
 
     if (!existingAnalyst) {
       console.log("Analyst not found in db, inserting...")
@@ -65,7 +65,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const sortDirection = searchParams.get("sortDirection") as AnalysisSortDirection
 
     const analysisList = await AnalystService.getListOfAnalysis({ db, projectId: projectId, isApproved, sortDirection, sortBy })
-    console.log(analysisList);
+    console.log("number of found analyses: ", analysisList.length);
 
     const sumImpressions = analysisList.reduce((accumulator, currentValue) => accumulator + currentValue.analysis.impressions, 0)
     

@@ -12,10 +12,6 @@ const AnalysisApprovalDashboard = () => {
   // API request - postNewAnalysis
   const { mutate: updateAnalysisStatus } = useMutation({
     mutationFn: async (args: UpdateAnalysisApproval) => backendApi.updateAnalysisApproval(args),
-    onSuccess: async (_, _variables) => {
-      toast.success(`Analysis ${_variables.action}d!`, { theme: "colored" })
-      queryClient.invalidateQueries({ queryKey: ["getAnalysisList", `isApproved=false`] })
-    },
     onError: (error) => {
       toast.error(error.message)
     },
@@ -24,12 +20,21 @@ const AnalysisApprovalDashboard = () => {
   const onUpdateStatusSubmit = async ({
     action,
     analysisId,
-  }: Pick<UpdateAnalysisApproval, "analysisId" | "action">) => {
+    queryKey,
+  }: Pick<UpdateAnalysisApproval, "analysisId" | "action"> & { queryKey: string[] }) => {
     const message = "I confirm I am an admin by signing this message."
     const signature = Array.from(await signMessage(message))
     const auth = { address, message, signature }
 
-    updateAnalysisStatus({ auth, action, analysisId })
+    updateAnalysisStatus(
+      { auth, action, analysisId },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey })
+          toast.success(`Analysis ${action}d!`, { theme: "colored" })
+        },
+      },
+    )
   }
 
   return (

@@ -16,7 +16,17 @@ type IsAdminArgs = {
     ctx: EventContext<ENV, any, Record<string, unknown>>
 }
 
-export const isAdmin = async ({auth, ctx}: IsAdminArgs) => {
+export type isAdminReturnValue = {
+  isAdmin: true
+} | {
+  isAdmin: false,
+  error: {
+    code: number,
+    message: string
+  }
+}
+
+export const checkAdminAuthorization = ({auth, ctx}: IsAdminArgs):isAdminReturnValue => {
     //// auth
     const { address, message, signature } = auth
     const db = ctx.env.DB
@@ -27,9 +37,9 @@ export const isAdmin = async ({auth, ctx}: IsAdminArgs) => {
       new Uint8Array(signature),
       new PublicKey(address).toBytes(),
     )
+    console.log("isVerified: ", isVerified);
     if (!isVerified) {
-      await reportError(db, new Error(`Invalid signature (after-sale-update)! publicKey: ${address}, message: ${message}, signature: ${signature}`))
-      return jsonResponse(null, 401)
+     return { isAdmin: false, error: {code: 401, message:`Invalid signature (after-sale-update)! publicKey: ${address}, message: ${message}, signature: ${signature}`}} 
     }
 
     // auth - confirm address is admin address
@@ -37,10 +47,14 @@ export const isAdmin = async ({auth, ctx}: IsAdminArgs) => {
     if (!ADMIN_ADDRESSES) throw new Error('Misconfigured env! ADMIN_ADDRESSES is missing')
 
     const adminAddresses = ADMIN_ADDRESSES.split(',')
+    console.log("adminAddresses: ", adminAddresses);
+
     const isAdminConfirmed = adminAddresses.includes(address)
     if (!isAdminConfirmed) {
-      await reportError(db, new Error(`Non-admin tried accessing admin functionality! address=(${address})`))
-      return jsonResponse(null, 401)
+      return {isAdmin: false, error: {
+        code: 401, 
+        message: `Non-admin tried accessing admin functionality! address=(${address})`
+      }}
     }
-    return true
+    return { isAdmin: true }
 }

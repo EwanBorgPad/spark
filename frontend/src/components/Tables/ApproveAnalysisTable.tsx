@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query"
 import Text from "@/components/Text"
 
 type Props = {
-  onUpdateStatusSubmit?: (args: Pick<UpdateAnalysisApproval, "action" | "analysisId">) => void
+  onUpdateStatusSubmit?: (args: Pick<UpdateAnalysisApproval, "action" | "analysisId"> & { queryKey: string[] }) => void
 }
 
 const rolesObj: Record<AnalystRoleEnum, string> = {
@@ -20,17 +20,19 @@ const rolesObj: Record<AnalystRoleEnum, string> = {
 }
 
 const ApproveAnalysisTable = ({ onUpdateStatusSubmit }: Props) => {
-  const [sortBy, setSortBy] = useState<AnalysisSortBy | null>(null)
-  const [sortDirection, setSortDirection] = useState<"desc" | "asc" | null>(null)
+  const [sortBy, setSortBy] = useState<AnalysisSortBy>("impressions")
+  const [sortDirection, setSortDirection] = useState<"desc" | "asc">("desc")
+
+  const queryKey = ["getAnalysisList", "isApproved=false", sortBy, sortDirection]
 
   const { data, isLoading } = useQuery({
     queryFn: () =>
       backendApi.getAnalysisList({
         isApproved: "false",
-        sortBy: sortBy ?? undefined,
-        sortDirection: sortDirection ?? undefined,
+        sortBy,
+        sortDirection,
       }),
-    queryKey: ["getAnalysisList", "isApproved=false", sortBy, sortDirection],
+    queryKey,
     refetchOnWindowFocus: false,
   })
 
@@ -49,7 +51,7 @@ const ApproveAnalysisTable = ({ onUpdateStatusSubmit }: Props) => {
   }
 
   return (
-    <div className="relative col-span-full hidden w-full flex-col rounded-lg bg-transparent md:flex">
+    <div className="relative col-span-full flex w-full flex-col rounded-lg bg-transparent">
       <div className="overflow-x-auto">
         <div className="overflow-y-auto pr-2">
           {!isLoading ? (
@@ -60,24 +62,20 @@ const ApproveAnalysisTable = ({ onUpdateStatusSubmit }: Props) => {
                     <TableHeader>
                       <div className="w-[220px] pl-12">Analyst</div>
                     </TableHeader>
-                    <TableHeader onClick={() => handleSort("projectId")}>
+                    <TableHeader onClick={() => handleSort("projectId")} className="text-nowrap">
                       ProjectId {getSortIcon("projectId")}
                     </TableHeader>
-                    <TableHeader onClick={() => handleSort("analystRole")}>
+                    <TableHeader onClick={() => handleSort("analystRole")} className="text-nowrap">
                       Role {getSortIcon("analystRole")}
                     </TableHeader>
-                    <TableHeader className="min-w-[102px]" onClick={() => handleSort("impressions")}>
+                    <TableHeader className="min-w-[102px] text-nowrap" onClick={() => handleSort("impressions")}>
                       Impressions {getSortIcon("impressions")}
                     </TableHeader>
-                    <TableHeader onClick={() => handleSort("likes")}>Likes {getSortIcon("likes")}</TableHeader>
-                    <TableHeader className="hover:cursor-default hover:bg-default" onClick={() => {}}>
-                      {" "}
+                    <TableHeader onClick={() => handleSort("likes")} className="text-nowrap">
+                      Likes {getSortIcon("likes")}
                     </TableHeader>
-                    {onUpdateStatusSubmit && (
-                      <TableHeader className="hover:cursor-default hover:bg-default" onClick={() => {}}>
-                        {" "}
-                      </TableHeader>
-                    )}
+                    <TableHeader className="hover:cursor-default hover:bg-default"> </TableHeader>
+                    <TableHeader className="hover:cursor-default hover:bg-default"> </TableHeader>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-bd-secondary/5 pb-10">
@@ -127,13 +125,17 @@ const ApproveAnalysisTable = ({ onUpdateStatusSubmit }: Props) => {
                               btnText="Approve"
                               size="xs"
                               color="primary"
-                              onClick={() => onUpdateStatusSubmit({ analysisId: item.analysis.id, action: "approve" })}
+                              onClick={() =>
+                                onUpdateStatusSubmit({ analysisId: item.analysis.id, action: "approve", queryKey })
+                              }
                             />
                             <Button.Icon
                               icon="SvgX"
                               size="xs"
                               color="danger"
-                              onClick={() => onUpdateStatusSubmit({ analysisId: item.analysis.id, action: "decline" })}
+                              onClick={() =>
+                                onUpdateStatusSubmit({ analysisId: item.analysis.id, action: "decline", queryKey })
+                              }
                             />
                           </div>
                         </TableCell>
