@@ -18,3 +18,6 @@ export const formatDateForSnapshot = (date: Date) => {
 export const formatDateAndMonth = (date: Date) => {
   return format(date, "do MMMM")
 }
+export const formatDateForProject = (date: Date) => {
+  return format(date, "MMM do, yyyy")
+}

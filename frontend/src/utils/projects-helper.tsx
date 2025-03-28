@@ -2,19 +2,74 @@ import { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import { formatDateMonthDateHours } from "./date-helpers"
 import { expandTimelineDataInfo } from "./timeline-helper"
 import { getCurrentTgeEvent } from "./getCurrentTgeEvent"
-import { GetProjectsProjectResponse, ProjectModel } from "shared/models"
+import { GetProjectsProjectResponse, ProjectModel, InvestmentIntentSummary, SaleResults } from "shared/models"
 import i18n from "@/i18n/i18n"
 
-export type ExpandedProject = GetProjectsProjectResponse & {
+export type ExpandedProject = ProjectModel & {
+  investmentIntentSummary?: InvestmentIntentSummary
   additionalData: {
-    currentEvent: ExpandedTimelineEventType
-    endMessage: string
     badgeClassName: string
+    endMessage: string
     badgeLabel: string
+    currentEvent?: ExpandedTimelineEventType
+  }
+  saleResults?: SaleResults
+  depositStats?: {
+    totalDepositedInUsd: number
+    participantsCount: number
   }
 }
 
 export type EventTypeId = ExpandedTimelineEventType["id"]
+
+/**
+ * Processes an array of projects to add additionalData including timeline information
+ * @param projects Array of projects from the API
+ * @returns Array of ExpandedProject objects with additionalData
+ */
+export const processProjects = (projects: GetProjectsProjectResponse[]): ExpandedProject[] => {
+  return projects.map(project => {
+    // Process timeline data if available
+    if (project.info.timeline && project.info.timeline.length > 0) {
+      const expandedTimeline = expandTimelineDataInfo(project.info.timeline);
+      const currentEvent = getCurrentTgeEvent(expandedTimeline);
+      
+      // Generate badge, label, and message data based on the current event
+      const eventData = generateAdditionalEventData(currentEvent, project) || {
+        badgeClassName: "",
+        endMessage: "",
+        badgeLabel: ""
+      };
+      
+      return {
+        ...project,
+        additionalData: {
+          currentEvent,
+          ...eventData
+        }
+      };
+    }
+    
+    // If no timeline, create default additionalData
+    return {
+      ...project,
+      additionalData: {
+        currentEvent: {
+          label: "",
+          id: "UPCOMING",
+          idRank: 1,
+          date: null,
+          nextEventDate: null,
+          displayedTime: "",
+          wasEventBeforeCurrentMoment: false
+        },
+        badgeClassName: "",
+        endMessage: "",
+        badgeLabel: ""
+      }
+    };
+  });
+};
 
 export const generateAdditionalEventData = (tgeEvent: ExpandedTimelineEventType, project: ProjectModel) => {
   const fallbackText = i18n.t("launch_pools.at_tbd")
@@ -84,86 +139,4 @@ export const generateAdditionalEventData = (tgeEvent: ExpandedTimelineEventType,
       }
     }
   }
-}
-
-const sortByReferencedDate = (projects: ExpandedProject[], config: SortPhaseConfigType) => {
-  if (!projects.length) return []
-  const sortedProjects = [...projects].sort((a, b) => {
-    const dateA = a.additionalData.currentEvent[config.referencedDate]
-    const dateB = b.additionalData.currentEvent[config.referencedDate]
-
-    // Handle `null` or `undefined` dates
-    if (!dateA) return 1 // `a` goes to the end
-    if (!dateB) return -1 // `b` goes to the end
-
-    // Compare valid dates
-    const timeA = new Date(dateA).getTime()
-    const timeB = new Date(dateB).getTime()
-    return timeA - timeB
-  })
-  if (config.order === "descending") {
-    return [...sortedProjects].reverse()
-  } else return sortedProjects
-}
-
-type SortPhaseConfigType = {
-  referencedDate: keyof Pick<ExpandedTimelineEventType, "date" | "nextEventDate">
-  order: "ascending" | "descending"
-  customSort?: string[]
-}
-
-const sortConfig: Record<EventTypeId, SortPhaseConfigType> = {
-  REGISTRATION_OPENS: { referencedDate: "nextEventDate", order: "ascending" },
-  SALE_OPENS: { referencedDate: "nextEventDate", order: "ascending" },
-  UPCOMING: {
-    referencedDate: "nextEventDate",
-    order: "ascending",
-    customSort: ["ambient-network", "intercellar", "fitchin"],
-  },
-  SALE_CLOSES: { referencedDate: "nextEventDate", order: "ascending" },
-  REWARD_DISTRIBUTION: { referencedDate: "nextEventDate", order: "descending" },
-  DISTRIBUTION_OVER: { referencedDate: "nextEventDate", order: "ascending" },
-}
-
-const sortProjectsByPhases = (expandedProjects: ExpandedProject[]) => {
-  const entriesArray = Object.entries(sortConfig) as [EventTypeId, SortPhaseConfigType][]
-  return entriesArray.map((event) => {
-    const eventId = event[0]
-    const eventConfig = event[1]
-    const projectsInPhase = expandedProjects.filter((project) => project.additionalData.currentEvent.id === eventId)
-    if (eventConfig.customSort) {
-      const customArrayStart = [...eventConfig.customSort]
-        .map((orderId) => {
-          return projectsInPhase.find((item) => item.id === orderId)
-        })
-        .filter((project) => !!project)
-      const remainingProjects = projectsInPhase.filter((item) => !eventConfig.customSort?.includes(item.id))
-      const restOfArray = sortByReferencedDate(remainingProjects, eventConfig)
-      const customArray = [...customArrayStart, ...restOfArray]
-
-      return sortByReferencedDate(customArray, eventConfig)
-    } else {
-      return sortByReferencedDate(projectsInPhase, eventConfig)
-    }
-  })
-}
-
-export const sortProjectsPerStatus = (projects: GetProjectsProjectResponse[]): ExpandedProject[][] => {
-  const expandedProjects = projects.map((project) => {
-    const expandedTimeline = expandTimelineDataInfo(project.info.timeline)
-    const currentEvent = getCurrentTgeEvent(expandedTimeline)
-
-    const { endMessage, badgeClassName, badgeLabel } = generateAdditionalEventData(currentEvent, project)
-    const additionalData = {
-      currentEvent,
-      endMessage,
-      badgeClassName,
-      badgeLabel,
-    }
-
-    return { additionalData, ...project }
-  })
-
-  const sortedProjects = sortProjectsByPhases(expandedProjects)
-  return sortedProjects
 }
