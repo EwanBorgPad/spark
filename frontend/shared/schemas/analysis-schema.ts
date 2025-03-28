@@ -45,3 +45,8 @@ export type UpdateOrRemoveAnalysisSchemaRequest = Required<z.infer<typeof update
 
 export type AnalysisSortDirection = "asc" | "desc"
 export type AnalysisSortBy = "projectId" | "impressions" | "likes" | "analystRole"
+export const analystRolesObj: Record<AnalystRoleEnum, string> = {
+  TEAM_MEMBER: "Team Member",
+  SPONSORED_ANALYST: "Sponsored Analyst",
+  FREE_WRITER: "Free Writer",
+}

@@ -8,7 +8,6 @@ import { Icon } from "../Icon/Icon"
 import Text from "@/components/Text"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi"
-import { useProjectDataContext } from "@/hooks/useProjectData"
 
 type Props = {
   projectId: string
@@ -28,7 +27,7 @@ const AnalysisTable = ({ projectId }: Props) => {
     queryFn: () =>
       backendApi.getAnalysisList({
         projectId,
-        isApproved: "true",
+        isApproved: true,
         sortBy,
         sortDirection,
       }),

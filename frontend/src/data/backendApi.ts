@@ -545,7 +545,7 @@ const updateAnalysisApproval = async ({ analysisId, ...rest }: UpdateAnalysisApp
 }
 export type GetListOfAnalysisRequest = {
   projectId?: string
-  isApproved?: string
+  isApproved?: boolean
   sortDirection?: AnalysisSortDirection
   sortBy?: AnalysisSortBy
 }

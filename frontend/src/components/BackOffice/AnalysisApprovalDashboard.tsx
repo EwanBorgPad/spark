@@ -41,7 +41,7 @@ const AnalysisApprovalDashboard = () => {
     <div className="flex w-full flex-col gap-4 rounded-xl border border-bd-primary p-4">
       <h1 className="text-xl">Analysis for Approval</h1>
       <span className="text-xs text-fg-secondary">
-        Note: <em className="underline">Impressions</em> & <em className="underline">Likes</em> stats are real time.
+        Note: <em className="underline">Impressions</em> & <em className="underline">Likes</em> stats are NOT real time.
         They are fetched periodically.
       </span>
       <ApproveAnalysisTable onUpdateStatusSubmit={onUpdateStatusSubmit} />

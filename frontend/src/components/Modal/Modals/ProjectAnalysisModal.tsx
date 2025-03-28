@@ -32,7 +32,7 @@ const ProjectAnalysisModal = ({ onClose, analysisList }: Props) => {
 
         {/* mobile component */}
         <div className="flex w-full flex-col gap-4 md:hidden">
-          {analysisList?.map((item) => <AnalysisCard key={item.analysis.id} analysis={item} />)}
+          {analysisList?.map((item) => <AnalysisCard key={item.analysis.id} card={item} />)}
         </div>
       </div>
     </SimpleModal>

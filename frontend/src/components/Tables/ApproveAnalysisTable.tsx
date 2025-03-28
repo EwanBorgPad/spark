@@ -28,7 +28,7 @@ const ApproveAnalysisTable = ({ onUpdateStatusSubmit }: Props) => {
   const { data, isLoading } = useQuery({
     queryFn: () =>
       backendApi.getAnalysisList({
-        isApproved: "false",
+        isApproved: false,
         sortBy,
         sortDirection,
       }),
