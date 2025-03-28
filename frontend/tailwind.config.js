@@ -54,7 +54,7 @@ export default {
         // border colors
         bd: {
           primary: "#333741",
-          secondary: "#ffffff0f",
+          secondary: "#1F242F",
           "brand-secondary": "#496537",
           subtle: "#1F242F",
           emphasis: "#0C111D",
@@ -99,7 +99,6 @@ export default {
         "curator-socials": "128px, 24px, 328px, 32px",
         "bo-timeline": "160px minmax(320px, 1fr)",
         "min-max": "30px 1fr",
-        "form-steps": "32px minmax(220px, 400px)",
       },
       lineHeight: {
         11: "44px",
@@ -214,14 +213,6 @@ export default {
           "86%": { opacity: 0.5 },
           "100%": { opacity: 0 },
         },
-        "slide-exit-left": {
-          "0%": { opacity: 1, transform: "translateX(0%)" },
-          "100%": { opacity: 0, transform: "translateX(-10%)" },
-        },
-        "slide-entrance-left": {
-          "0%": { opacity: 0, transform: "translateX(10%)" },
-          "100%": { opacity: 1, transform: "translateX(0%)" },
-        },
       },
       animation: {
         "opacity-in": "opacity-in 0.6s ease-in-out forwards",
@@ -242,8 +233,6 @@ export default {
         "slide-in-from-left": "slide-in-from-left 0.5s 1 ease-in-out ",
         "rotate-border": "rotate-border 6s linear infinite",
         "looped-video": "looped-video 7.04s ease-in-out infinite",
-        "slide-exit-left": "slide-exit-left 0.5s ease-in-out forwards",
-        "slide-entrance-left": "slide-entrance-left 0.5s ease-in-out forwards",
       },
     },
   },
