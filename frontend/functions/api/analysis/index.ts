@@ -8,6 +8,7 @@ import { z } from 'zod'
 type ENV = {
   DB: D1Database
   VITE_ENVIRONMENT_TYPE: string
+  TWEET_SCOUT_API_KEY: string
 }
 
 /**
@@ -38,8 +39,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
     console.log(`Found an existing Analyst with an id - ${existingAnalyst.id}`);
 
+    const tweetMetrics = await AnalystService.fetchTweetMetrics({ ctx, articleUrl: data.articleUrl })
+    console.log("🚀 ~ tweetMetrics:", tweetMetrics)
+
     await AnalystService.postNewAnalysis({
-        db, analysis: data
+        db, analysis: {...data, ...tweetMetrics}
     })
 
     return jsonResponse({

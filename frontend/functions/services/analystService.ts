@@ -1,6 +1,6 @@
 import { drizzle, DrizzleD1Database } from "drizzle-orm/d1"
 import { Analysis, analysisTable, Analyst, analystTable } from "../../shared/drizzle-schema"
-import { GetMeTwitterResponse } from "../../shared/types/api-types"
+import { GetMeTwitterResponse, TweetScoutTweetResponse } from "../../shared/types/api-types"
 import { and, eq, asc, desc } from "drizzle-orm"
 import { AnalysisSortBy, AnalysisSortDirection, AnalystSchemaType, NewAnalysisSchemaType } from "../../shared/schemas/analysis-schema"
 
@@ -18,7 +18,7 @@ type UpdateAnalystByTwitterId = {
 }
 type PostNewAnalysisArgs = {
   db: D1Database,
-  analysis: NewAnalysisSchemaType
+  analysis: NewAnalysisSchemaType & { impressions: number, likes: number}
 }
 type UpdateAnalysisArgs = {
   db: DrizzleD1Database, 
@@ -134,8 +134,8 @@ const postNewAnalysis = async ({db: d1, analysis}: PostNewAnalysisArgs): Promise
     analystRole: analysis.analystRole,
     projectId: analysis.projectId,
     articleUrl: analysis.articleUrl,
-    impressions: 0,
-    likes: 0,
+    impressions: analysis.impressions ?? 0,
+    likes: analysis.likes ?? 0,
     isApproved: false
   }
   
@@ -143,6 +143,44 @@ const postNewAnalysis = async ({db: d1, analysis}: PostNewAnalysisArgs): Promise
   console.log("Created new analysis - ", result.id)
 
   return result; // Return new data row for later update
+}
+
+
+type ENV = {
+  DB: D1Database
+  TWEET_SCOUT_API_KEY: string
+}
+type FetchTweetMetricsArgs = {
+  ctx: EventContext<ENV, any, Record<string, unknown>>,
+  articleUrl: string,
+}
+const fetchTweetMetrics = async ({ ctx, articleUrl }: FetchTweetMetricsArgs) => {
+  console.log("fetching tweet metrics");
+  const tweetScoutApiKey = ctx.env.TWEET_SCOUT_API_KEY
+  if (!tweetScoutApiKey) throw new Error("Missing api key for Tweet Scout!")
+
+  const body = JSON.stringify({ tweet_link: articleUrl });
+
+  const response = await fetch("https://api.tweetscout.io/v2/tweet-info", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      ApiKey: tweetScoutApiKey,
+      "Content-Type": "application/json",
+    },
+    body,
+  });
+
+  if (!response.ok) {
+    console.log(`Error fetching metrics for ${articleUrl}: ${response.statusText}`);
+    throw new Error(`Failed to fetch tweet metrics for ${articleUrl}`);
+  }
+  const data = (await response.json()) as TweetScoutTweetResponse;
+  
+  return {
+    impressions: data.view_count,
+    likes: data.favorite_count,
+  };
 }
 
 // Function to approve an analysis
@@ -167,7 +205,8 @@ export const AnalystService = {
     postNewAnalysis,
     getListOfAnalysis,
     approveAnalysis,
-    declineAnalysis
+    declineAnalysis,
+    fetchTweetMetrics
 }
 
 function uuidv4() {

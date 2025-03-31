@@ -151,7 +151,7 @@ type SignInWithCodeResponse = {
 const getHeaderLocationBasePath = (url: URL) => {
   console.log("🚀 ~ url.origin: ", url.origin);
   if (url.origin === "http://localhost:8788") {
-    return "https://localhost:5173"
+    return "http://localhost:5173"
   } else {
     return url.origin
   }
