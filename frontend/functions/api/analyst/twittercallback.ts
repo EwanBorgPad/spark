@@ -29,6 +29,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     }
 
     const redirectUri = new URL(url)
+    console.log(redirectUri);
     redirectUri.searchParams.delete("state")
     redirectUri.searchParams.delete("code")
 
@@ -64,6 +65,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     const existingAnalyst = await AnalystService.findAnalystByTwitterAccount({ db, twitterId })
 
     console.log({ existingAnalyst })
+    const locationBasePath = getHeaderLocationBasePath(redirectUri)
 
     if (!existingAnalyst) {
       console.log("User not found in db, inserting...")
@@ -73,7 +75,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({analyst: newAnalyst}, {
         statusCode: 302,
         headers: { 
-          "Location": `http://localhost:5173/draft-picks/null?analystId=${newAnalyst.id}`
+          "Location": `${locationBasePath}/draft-picks/null?analystId=${newAnalyst.id}`
         }
       })
     } else {
@@ -94,7 +96,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ analyst: updatedAnalyst }, {
         statusCode: 302,
         headers: { 
-          "Location": `http://localhost:5173/draft-picks/null?analystId=${existingAnalyst.id}`
+          "Location": `${locationBasePath}/draft-picks/null?analystId=${existingAnalyst.id}`
         }
       })
     }
@@ -147,3 +149,11 @@ type SignInWithCodeResponse = {
   error_description?: string
 }
 
+const getHeaderLocationBasePath = (url: URL) => {
+  console.log("🚀 ~ url.origin: ", url.origin);
+  if (url.origin === "http://localhost:8788") {
+    return "https://localhost:5173"
+  } else {
+    return url.origin
+  }
+}
