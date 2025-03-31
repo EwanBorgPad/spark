@@ -54,7 +54,7 @@ const AnalysisTable = ({ projectId }: Props) => {
   return (
     <div className="relative col-span-full hidden w-full flex-col rounded-lg bg-transparent md:flex">
       <div className="overflow-x-auto">
-        <div className="max-h-[500px] overflow-y-auto pr-2">
+        <div className="h-[500px] overflow-y-auto pr-2">
           {!isLoading ? (
             list.length ? (
               <table className="w-full divide-y divide-bd-secondary/15">
@@ -144,7 +144,7 @@ const TableSkeleton = () => {
         </tr>
       </thead>
       <tbody className="divide-y divide-bd-secondary/5 pb-10">
-        {[1, 2, 3, 4, 5, 6].map((item) => (
+        {[1, 2, 3, 4, 5].map((item) => (
           <tr className="h-[64px]" key={item}>
             <TableCell className="py-0">
               <div className="flex w-[220px] flex-row items-center gap-4">

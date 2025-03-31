@@ -51,7 +51,7 @@ const RegistrationOpensPhase = ({ eventData, timeline }: RegistrationOpensPhaseP
 
   return (
     <div className="flex w-full flex-col items-center px-4">
-      <div className="flex w-full max-w-[764px] flex-col items-center gap-[52px]">
+      <div className="flex w-full max-w-[792px] flex-col items-center gap-[52px]">
         <Timeline timelineEvents={timeline} />
 
         {!isUserEligible && (
