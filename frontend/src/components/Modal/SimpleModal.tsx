@@ -89,7 +89,7 @@ export function CloseButton({
       icon="SvgClose"
       color="plain"
       className={twMerge(
-        "rounded-md px-2 py-0.5 align-top text-2xl leading-none text-white hover:bg-tertiary",
+        "w-[30px] rounded-md px-2 py-0.5 align-top text-2xl leading-none text-white hover:bg-tertiary",
         className,
       )}
       onClick={onClose}

@@ -236,7 +236,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
   const raisedTokenInputValue = watch("raisedTokenInputValue")
 
   const isInputMaxAmount = +raisedTokenInputValue === maxRaisedTokenInput
-  const maxAmountString = `Use Max Allowed: ${formatCurrencyAmount(+maxRaisedTokenInput, { customDecimals: 0 })} ${projectData?.config.raisedTokenData.ticker}`
+  const maxAmountString = `Use Max: ${formatCurrencyAmount(+maxRaisedTokenInput, { customDecimals: 0 })} ${projectData?.config.raisedTokenData.ticker}`
 
   const scrollToWhitelistRequirements = () => {
     const top = eligibilitySectionRef.current?.getBoundingClientRect().top ?? 0
@@ -283,7 +283,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
                 <Text text={projectData?.config.raisedTokenData.ticker} isLoading={isLoading} />
               </div>
             </div>
-            <div className="flex w-full flex-row justify-between">
+            <div className="flex w-full flex-row items-end justify-between md:items-center">
               {!userInvestedMaxAmount && !isDepositStatusLoading && (
                 <div className="flex items-center gap-2 text-xs leading-tight text-fg-tertiary/60">
                   {/* <span className={twMerge("text-nowrap", isInputMaxAmount ? "font-bold text-white" : "")}>Max: </span>{" "} */}
@@ -302,13 +302,14 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
                 </div>
               )}
               {balance !== null && (
-                <div className="flex w-full flex-[1] flex-col items-end justify-end gap-1">
-                  <p className="flex gap-1 text-left text-xs opacity-50">
-                    <span className="pr-1">{t("tge.balance")}:</span>
-                    <span className="">{formatCurrencyAmount(Number(balance?.uiAmountString))}</span>
-                    <span>{` ${projectData?.config.raisedTokenData.ticker}`}</span>
-                  </p>
-                  <div className="flex items-center gap-2"></div>
+                <div className="flex w-full flex-[1] flex-col items-end justify-center md:justify-end ">
+                  <div className="flex flex-col items-end gap-1 text-left text-xs opacity-50 md:flex-row md:items-center">
+                    <span>{t("tge.balance")}</span>
+                    <p>
+                      <span className="">{formatCurrencyAmount(Number(balance?.uiAmountString))}</span>
+                      <span>{` ${projectData?.config.raisedTokenData.ticker}`}</span>
+                    </p>
+                  </div>
                 </div>
               )}
             </div>

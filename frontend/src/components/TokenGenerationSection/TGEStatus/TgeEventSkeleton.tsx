@@ -10,7 +10,7 @@ const TgeEventSkeleton = () => {
   const { t } = useTranslation()
   return (
     <div className="flex w-full max-w-[764px] flex-col items-center gap-[52px]">
-      <section className="max-w-screen flex w-full flex-col gap-[25px] px-4 lg:max-w-[792px]">
+      <section className="max-w-screen flex w-full max-w-[792px] flex-col gap-[25px] px-4">
         <div className="flex w-full flex-wrap justify-between gap-6">
           <div className="flex flex-1 flex-col gap-2">
             <span className="text-sm text-fg-tertiary">{t("total_investment_interest")}</span>
@@ -27,7 +27,7 @@ const TgeEventSkeleton = () => {
         </div>
       </section>
 
-      <section className={"group w-full lg:max-w-[792px]"}>
+      <section className={"group w-full max-w-[792px]"}>
         <a className="data-room w-full" target="_blank" rel="noreferrer" href={"#"}>
           <div className="z-[1] flex flex-col">
             <Text text={""} className="font-medium" isLoading={isLoading} />
@@ -37,7 +37,7 @@ const TgeEventSkeleton = () => {
         </a>
       </section>
 
-      <section className="w-full lg:max-w-[792px]">
+      <section className="w-full max-w-[792px]">
         <h2 className="w-full pb-3 text-left text-base">Timeline</h2>
         <div className="flex h-[116px] w-full flex-col justify-between gap-4 rounded-lg border border-bd-secondary bg-secondary/50 px-4 py-5 lg:flex-row"></div>
       </section>

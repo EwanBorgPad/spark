@@ -13,6 +13,14 @@ import {
   SaleResultsResponse,
   TokenAmountModel,
 } from "../../shared/models.ts"
+import {
+  AnalysisSortBy,
+  AnalysisSortDirection,
+  analystSchema,
+  GetListOfAnalysisResponse,
+  NewAnalysisSchemaType,
+} from "../../shared/schemas/analysis-schema.ts"
+import { Analyst, Analysis } from "../../shared/drizzle-schema.ts"
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
 import { eligibilityStatusCacheBust, investmentIntentSummaryCacheBust } from "@/utils/cache-helper.ts"
 
@@ -37,8 +45,13 @@ const SEND_DEPOSIT_TRANSACTION = API_BASE_URL + "/senddeposittransaction"
 const SEND_CLAIM_TRANSACTION = API_BASE_URL + "/sendclaimtransaction"
 const POST_AFTER_SALE_UPDATE = API_BASE_URL + "/projects/after-sale-update"
 const UPDATE_JSON = API_BASE_URL + "/projects/update-json"
-
 const POST_CREATE_EMAIL = API_BASE_URL + "/createemail"
+
+// analysis & analyst
+const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
+const GET_ANALYST_URL = API_BASE_URL + "/analyst"
+const POST_ANALYSIS = API_BASE_URL + "/analysis"
+const GET_ANALYSIS_LIST = API_BASE_URL + "/analysis"
 
 const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
   const response = await fetch(...args)
@@ -482,6 +495,94 @@ const postCreateEmail = async (args: CreateEmailArgs): Promise<void> => {
   })
 }
 
+const getTwitterAuthUrl = async (): Promise<{ twitterAuthUrl: string }> => {
+  const url = new URL(GET_TWITTER_AUTH_URL, window.location.href)
+
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  const json = await response.json()
+  return json
+}
+const getAnalyst = async ({ analystId }: { analystId: string }): Promise<Analyst> => {
+  const url = new URL(`${GET_ANALYST_URL}/${analystId}`, window.location.href)
+
+  const response = await fetch(url)
+  const json = await response.json()
+  try {
+    const parsedJson = analystSchema.parse(json)
+    return parsedJson
+  } catch (e) {
+    console.error("GET /analysts/[id] validation error!")
+    throw e
+  }
+}
+const postNewAnalysis = async ({ newAnalysis }: { newAnalysis: NewAnalysisSchemaType }): Promise<Analysis> => {
+  const url = new URL(POST_ANALYSIS, window.location.href)
+  const request = JSON.stringify(newAnalysis)
+  const response = await fetch(url, {
+    method: "POST",
+    body: request,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
+export type UpdateAnalysisApproval = {
+  analysisId: string
+  action: "decline" | "approve"
+  auth: {
+    address: string
+    message: string
+    signature: number[]
+  }
+}
+const updateAnalysisApproval = async ({ analysisId, ...rest }: UpdateAnalysisApproval): Promise<void> => {
+  const url = new URL(`${POST_ANALYSIS}/${analysisId}`, window.location.href)
+  const request = JSON.stringify({ isApproved: rest.action === "approve", ...rest })
+  const response = await fetch(url, {
+    method: "POST",
+    body: request,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  if (!response.ok) throw new Error("Analysis update error!")
+}
+export type GetListOfAnalysisRequest = {
+  projectId?: string
+  isApproved?: boolean
+  sortDirection?: AnalysisSortDirection
+  sortBy?: AnalysisSortBy
+}
+const getAnalysisList = async ({
+  projectId,
+  isApproved,
+  sortBy,
+  sortDirection,
+}: GetListOfAnalysisRequest): Promise<GetListOfAnalysisResponse> => {
+  const url = new URL(GET_ANALYSIS_LIST, window.location.href)
+
+  // search params
+  projectId && url.searchParams.set("projectId", projectId)
+  sortBy && url.searchParams.set("sortBy", sortBy)
+  sortDirection && url.searchParams.set("sortDirection", sortDirection)
+  if (typeof isApproved === "boolean") {
+    url.searchParams.set("isApproved", String(isApproved))
+  }
+
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json
+}
+
 export const backendApi = {
   getProject,
   getProjects,
@@ -505,4 +606,9 @@ export const backendApi = {
   postAfterSaleUpdate,
   updateJson,
   postCreateEmail,
+  getTwitterAuthUrl,
+  getAnalyst,
+  postNewAnalysis,
+  getAnalysisList,
+  updateAnalysisApproval,
 }

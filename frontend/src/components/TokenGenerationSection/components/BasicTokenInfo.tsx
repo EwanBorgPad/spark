@@ -34,9 +34,9 @@ const BasicTokenInfo = ({ isDraftPick }: Props) => {
   const targetVesting = projectData?.info?.targetVesting || projectData?.info.tokenGenerationEventDate || "TBD"
 
   return (
-    <section className="max-w-screen flex w-full flex-col gap-[25px] md:px-4 lg:max-w-[792px]">
-      <div className="flex w-full flex-wrap justify-between gap-6">
-        <div className="flex min-w-[118px] flex-1 flex-col gap-2">
+    <section className="max-w-screen flex w-full flex-col items-center gap-[25px]">
+      <div className="flex w-full max-w-[792px] flex-col flex-wrap justify-between gap-3 divide-bd-secondary rounded-lg border border-bd-secondary bg-default py-3 md:flex-row md:gap-6 md:divide-x-[1px] md:px-0 md:py-0">
+        <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
           <span className="text-nowrap text-sm text-fg-tertiary">{t("total_investment_interest")}</span>
           <Text
             as="span"
@@ -46,23 +46,23 @@ const BasicTokenInfo = ({ isDraftPick }: Props) => {
           />
         </div>
         {isDraftPick ? (
-          <div className="flex min-w-[118px] flex-1 flex-col gap-2">
+          <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
             <span className="text-sm text-fg-tertiary">Target Vesting</span>
             <Text text={targetVesting} isLoading={isLoading} className="text-nowrap text-base text-fg-primary" />
           </div>
         ) : (
-          <div className="flex min-w-[118px] flex-1 flex-col gap-2">
+          <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
             <span className="text-sm text-fg-tertiary">TGE</span>
             <Text text={tgeDate} isLoading={isLoading} className="text-nowrap text-base text-fg-primary" />
           </div>
         )}
         {isDraftPick ? (
-          <div className="flex min-w-[118px] flex-1 flex-col gap-2">
+          <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
             <span className="text-sm text-fg-tertiary">Target FDV</span>
             <Text text={targetFdv} isLoading={isLoading} className="text-base text-fg-primary" />
           </div>
         ) : (
-          <div className="flex min-w-[118px] flex-1 flex-col gap-2">
+          <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
             <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
             <Text text={fdv} isLoading={isLoading} className="text-base text-fg-primary" />
           </div>
