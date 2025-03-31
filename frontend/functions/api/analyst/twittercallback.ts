@@ -12,6 +12,7 @@ type ENV = {
 }
 export const onRequest: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
+  console.log(ctx.request);
   try {
     const url = ctx.request.url
 
