@@ -28,16 +28,21 @@ type SortOption = {
 }
 
 type Props = {
-  projectStatus: "completed" | "active" | "all"
-  projectType: "blitz" | "goat"
+  projects?: ExpandedProject[]
+  isLoading?: boolean
+  onSort: (field: SortField) => void
+  sortField: SortField
+  sortDirection: SortDirection
 }
 
-export const CompletedLaunchPoolCard = ({ projectStatus, projectType }: Props) => {
+export const CompletedLaunchPoolCard = ({ 
+  projects, 
+  isLoading,
+  onSort,
+  sortField,
+  sortDirection 
+}: Props) => {
   const { t } = useTranslation()
-  const [sortField, setSortField] = useState<SortField>('date')
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
-  const [completedProjects, setCompletedProjects] = useState<ExpandedProject[]>([])
-  const [sortOption, setSortOption] = useState<string>("date-desc")
 
   const sortOptions: SortOption[] = [
     { value: "name-asc", label: "Sort by Name, A to Z", field: 'name', direction: 'asc' },
@@ -48,37 +53,16 @@ export const CompletedLaunchPoolCard = ({ projectStatus, projectType }: Props) =
     { value: "raised-desc", label: "Sort by Raised, High to Low", field: 'raised', direction: 'desc' },
   ]
 
-  const { data: completedData, isLoading } = useQuery<GetProjectsResponse>({
-    queryFn: () =>
-      backendApi.getProjects({
-        page: 1,
-        limit: 999,
-        projectType: projectType,
-        completionStatus: projectStatus,
-        sortBy: sortField,
-        sortDirection: sortDirection,
-      }),
-    queryKey: ["getProjects", "blitz", projectStatus, sortField, sortDirection],
-  })
-
-  useEffect(() => {
-    if (completedData?.projects) {
-      setCompletedProjects(processProjects(completedData.projects))
-    }
-  }, [completedData?.projects])
-
-  // Update sort field and direction when sortOption changes
-  useEffect(() => {
-    const selectedOption = sortOptions.find(option => option.value === sortOption);
-    if (selectedOption) {
-      setSortField(selectedOption.field);
-      setSortDirection(selectedOption.direction);
-    }
-  }, [sortOption]);
-
   const handleSortChange = (newSortOption: string) => {
-    setSortOption(newSortOption);
+    const option = sortOptions.find(opt => opt.value === newSortOption)
+    if (option) {
+      onSort(option.field)
+    }
   }
+
+  const currentSortOption = sortOptions.find(
+    opt => opt.field === sortField && opt.direction === sortDirection
+  )?.value || "date-desc"
 
   // Show skeleton items when loading
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
@@ -89,7 +73,7 @@ export const CompletedLaunchPoolCard = ({ projectStatus, projectType }: Props) =
         <div className="w-full max-w-[344px] mx-auto mb-4">
           <SortDropdown
             options={sortOptions}
-            selected={sortOption}
+            selected={currentSortOption}
             onChange={handleSortChange}
             placeholder="Sort by Date, Newest first"
           />
@@ -126,13 +110,13 @@ export const CompletedLaunchPoolCard = ({ projectStatus, projectType }: Props) =
     );
   }
 
-  if (!completedProjects?.length) {
+  if (!projects?.length) {
     return (
       <div className="w-full text-center py-4">
         <div className="w-full max-w-[344px] mx-auto mb-4">
           <SortDropdown
             options={sortOptions}
-            selected={sortOption}
+            selected={currentSortOption}
             onChange={handleSortChange}
             placeholder="Sort by Date, Newest first"
           />
@@ -147,13 +131,13 @@ export const CompletedLaunchPoolCard = ({ projectStatus, projectType }: Props) =
       <div className="w-full max-w-[344px] mx-auto mb-4">
         <SortDropdown
           options={sortOptions}
-          selected={sortOption}
+          selected={currentSortOption}
           onChange={handleSortChange}
           placeholder="Sort by Date, Newest first"
         />
       </div>
 
-      {completedProjects.map((project) => {
+      {projects.map((project) => {
         const projectUrl = getProjectRoute(project as ProjectModel);
         const isRewardDistribution = project?.additionalData?.currentEvent?.id === "REWARD_DISTRIBUTION";
 

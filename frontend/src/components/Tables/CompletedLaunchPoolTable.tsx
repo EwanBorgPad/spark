@@ -16,55 +16,31 @@ import { TableHeader } from "./TableHeader"
 import { TableCell } from "./TableCell"
 
 type Props = {
-  projectStatus: "completed" | "active" | "all"
-  projectType: "blitz" | "goat"
+  projects?: ExpandedProject[]
+  isLoading?: boolean
+  onSort: (field: SortField) => void
+  sortField: SortField
+  sortDirection: SortDirection
 }
 
 type SortField = 'name' | 'date' | 'raised' | 'fdv' | 'participants' | 'commitments' | 'sector'
 type SortDirection = 'asc' | 'desc'
 
-export const CompletedLaunchPoolTable = ({ projectStatus, projectType }: Props) => {
+export const CompletedLaunchPoolTable = ({ 
+  projects, 
+  isLoading,
+  onSort,
+  sortField,
+  sortDirection 
+}: Props) => {
   const { t } = useTranslation()
-  const [sortField, setSortField] = useState<SortField>('date')
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
-  const [completedProjects, setCompletedProjects] = useState<ExpandedProject[]>([])
-
-  const { data: completedData, isLoading: isTableLoading } = useQuery<GetProjectsResponse>({
-    queryFn: () =>
-      backendApi.getProjects({
-        page: 1,
-        limit: 999,
-        projectType: projectType,
-        completionStatus: projectStatus,
-        sortBy: sortField,
-        sortDirection: sortDirection,
-      }),
-    queryKey: ["getProjects", projectType, projectStatus, sortField, sortDirection],
-  })
-
-  const skeletonItems = Array.from({ length: 5 }, (_, i) => i)
-
-  useEffect(() => {
-    if (completedData?.projects) {
-      setCompletedProjects(processProjects(completedData.projects))
-    }
-  }, [completedData?.projects])
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortField(field)
-      setSortDirection('asc')
-    }
-  }
 
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) return '↓'
     return sortDirection === 'asc' ? '↑' : '↓'
   }
 
-  if (!completedProjects?.length && !isTableLoading) return null
+  if (!projects?.length && !isLoading) return null
 
   return (
     <div className="relative flex w-full col-span-full flex-col overflow-hidden rounded-lg border-[1px] border-bd-secondary/30 bg-transparent">
@@ -75,22 +51,22 @@ export const CompletedLaunchPoolTable = ({ projectStatus, projectType }: Props) 
               <TableHeader className="w-[1%] text-center">
                 {" "}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('name')}>
+              <TableHeader onClick={() => onSort('name')}>
                 Project {getSortIcon('name')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('date')}>
+              <TableHeader onClick={() => onSort('date')}>
                 Date {getSortIcon('date')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('sector')}>
+              <TableHeader onClick={() => onSort('sector')}>
                 Category {getSortIcon('sector')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('raised')}>
+              <TableHeader onClick={() => onSort('raised')}>
                 Raised {getSortIcon('raised')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('fdv')}>
+              <TableHeader onClick={() => onSort('fdv')}>
                 FDV {getSortIcon('fdv')}
               </TableHeader>
-              <TableHeader onClick={() => handleSort('participants')} className="md:hidden">
+              <TableHeader onClick={() => onSort('participants')} className="md:hidden">
                 Participants {getSortIcon('participants')}
               </TableHeader>
               {/* <TableHeader onClick={() => handleSort('rewards')} className="w-[10%]">
@@ -102,10 +78,10 @@ export const CompletedLaunchPoolTable = ({ projectStatus, projectType }: Props) 
             </tr>
           </thead>
           <tbody className="divide-y divide-bd-secondary/20">
-            {isTableLoading ? (
+            {isLoading ? (
               // Display skeleton rows when loading
-              skeletonItems.map((item) => (
-                <tr key={`skeleton-${item}`} className="animate-pulse">
+              Array.from({ length: 5 }, (_, i) => (
+                <tr key={`skeleton-${i}`} className="animate-pulse">
                   <TableCell className="px-4 flex items-center">
                     <div className="w-8 h-8 rounded-full bg-bd-secondary/30"></div>
                   </TableCell>
@@ -132,7 +108,7 @@ export const CompletedLaunchPoolTable = ({ projectStatus, projectType }: Props) 
                   </TableCell>
                 </tr>
               ))
-            ) : completedProjects?.map((proj, index) => (
+            ) : projects?.map((proj, index) => (
               <tr
                 key={proj.id}
                 onClick={() => window.location.href = getProjectRoute(proj as ProjectModel)}
@@ -141,7 +117,7 @@ export const CompletedLaunchPoolTable = ({ projectStatus, projectType }: Props) 
                 <TableCell className="px-4 flex items-center">
                   <Img
                     src={proj.info.logoUrl}
-                    isFetchingLink={isTableLoading}
+                    isFetchingLink={isLoading}
                     imgClassName="scale-[102%]"
                     isRounded={true}
                     size="8"

@@ -17,33 +17,87 @@ import { ExpandedProject, processProjects } from "@/utils/projects-helper"
 import { CompletedLaunchPoolTable } from "@/components/Tables/CompletedLaunchPoolTable"
 import { CompletedLaunchPoolCard } from "@/components/Cards/CompletedLaunchPoolCard"
 import { useWindowSize } from "@/hooks/useWindowSize"
+import Pagination from "@/components/Pagination/Pagination"
 
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
+type SortField = 'name' | 'date' | 'raised' | 'fdv' | 'participants' | 'commitments' | 'sector'
+type SortDirection = 'asc' | 'desc'
+
 const BlitzPools = () => {
   const [activeProjects, setActiveProjects] = useState<ExpandedProject[]>([])
+  const [completedProjects, setCompletedProjects] = useState<ExpandedProject[]>([])
+  const [currentActivePage, setCurrentActivePage] = useState(1)
+  const [currentCompletedPage, setCurrentCompletedPage] = useState(1)
+  const [totalActivePages, setTotalActivePages] = useState(1)
+  const [totalCompletedPages, setTotalCompletedPages] = useState(1)
+  const [completedSortField, setCompletedSortField] = useState<SortField>('date')
+  const [completedSortDirection, setCompletedSortDirection] = useState<SortDirection>('desc')
   const { t } = useTranslation()
   const { isMobile } = useWindowSize()
 
-  const { data, isLoading } = useQuery<GetProjectsResponse>({
+  const { data: activeData, isLoading: isActiveLoading } = useQuery<GetProjectsResponse>({
     queryFn: () =>
       backendApi.getProjects({
-        page: 1,
-        limit: 999,
+        page: currentActivePage,
+        limit: isMobile ? 3 : 9,
         projectType: "blitz",
         completionStatus: "active",
         sortBy: "date",
         sortDirection: "asc",
       }),
-    queryKey: ["getProjects", "blitz", "active", "date", "asc"],
+    queryKey: ["getProjects", "blitz", "active", "date", "asc", currentActivePage, isMobile],
+  })
+
+  const { data: completedData, isLoading: isCompletedLoading } = useQuery<GetProjectsResponse>({
+    queryFn: () =>
+      backendApi.getProjects({
+        page: currentCompletedPage,
+        limit: isMobile ? 3 : 10,
+        projectType: "blitz",
+        completionStatus: "completed",
+        sortBy: completedSortField,
+        sortDirection: completedSortDirection,
+      }),
+    queryKey: ["getProjects", "blitz", "completed", completedSortField, completedSortDirection, currentCompletedPage, isMobile],
   })
 
   const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
 
   useEffect(() => {
-    if (!data?.projects) return
-    setActiveProjects(processProjects(data.projects))
-  }, [data?.projects])
+    if (activeData?.pagination) {
+      setTotalActivePages(activeData.pagination.totalPages)
+    }
+    if (completedData?.pagination) {
+      setTotalCompletedPages(completedData.pagination.totalPages)
+    }
+  }, [activeData?.pagination, completedData?.pagination])
+
+  useEffect(() => {
+    if (!activeData?.projects) return
+    setActiveProjects(processProjects(activeData.projects))
+  }, [activeData?.projects])
+
+  useEffect(() => {
+    if (!completedData?.projects) return
+    setCompletedProjects(processProjects(completedData.projects))
+  }, [completedData?.projects])
+
+  const handleActivePageClick = (pageNum: number) => {
+    setCurrentActivePage(pageNum)
+  }
+  const handleCompletedPageClick = (pageNum: number) => {
+    setCurrentCompletedPage(pageNum)
+  }
+
+  const handleCompletedSort = (field: SortField) => {
+    if (completedSortField === field) {
+      setCompletedSortDirection(completedSortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setCompletedSortField(field)
+      setCompletedSortDirection('asc')
+    }
+  }
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full select-none flex-col items-center bg-transparent pt-[48px] md:pt-[68px]">
@@ -91,11 +145,12 @@ const BlitzPools = () => {
       <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
         <div className="flex w-full max-w-[1080px] flex-col items-center">
           <ul className="grid grid-cols-1 place-content-center justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {!isLoading
+            {!isActiveLoading
               ? activeProjects?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />)
               : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
           </ul>
         </div>
+        <Pagination totalPages={totalActivePages} currentPage={currentActivePage} onPageClick={handleActivePageClick} />
       </section>
 
       <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
@@ -106,15 +161,43 @@ const BlitzPools = () => {
           {isMobile ? (
             <div className="flex flex-col items-center gap-6">
               <ul className="grid grid-cols-1 place-items-center justify-center gap-6 w-full max-w-[344px] mx-auto">
-                <CompletedLaunchPoolCard projectStatus="completed" projectType="blitz" />
+                {!isCompletedLoading ? (
+                  <CompletedLaunchPoolCard
+                    projects={completedProjects}
+                    onSort={handleCompletedSort}
+                    sortField={completedSortField}
+                    sortDirection={completedSortDirection}
+                  />
+                ) : (
+                  <CompletedLaunchPoolCard
+                    isLoading={true}
+                    onSort={handleCompletedSort}
+                    sortField={completedSortField}
+                    sortDirection={completedSortDirection}
+                  />
+                )}
               </ul>
             </div>
           ) : (
-            <CompletedLaunchPoolTable projectStatus="completed" projectType="blitz"/>
+            !isCompletedLoading ? (
+              <CompletedLaunchPoolTable
+                projects={completedProjects}
+                onSort={handleCompletedSort}
+                sortField={completedSortField}
+                sortDirection={completedSortDirection}
+              />
+            ) : (
+              <CompletedLaunchPoolTable
+                isLoading={true}
+                onSort={handleCompletedSort}
+                sortField={completedSortField}
+                sortDirection={completedSortDirection}
+              />
+            )
           )}
         </div>
+        <Pagination totalPages={totalCompletedPages} currentPage={currentCompletedPage} onPageClick={handleCompletedPageClick} />
       </section>
-
       <ScrollRestoration />
     </main>
   )
