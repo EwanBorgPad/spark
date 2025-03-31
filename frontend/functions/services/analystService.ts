@@ -113,7 +113,7 @@ const createNewAnalyst = async ({db: d1, ...getMeData}: CreateNewAnalystArgs): P
   const db = drizzle(d1, { logger: true })
   
   const result = await db.insert(analystTable).values(newAnalyst).returning()
-  console.log("🚀 ~ createNewAnalyst ~ result:", result[0])
+  console.log("Created new analyst - ", result[0].id)
 
   return result[0]; // Return new data row for later update
 }
@@ -121,7 +121,7 @@ const updateAnalyst = async ({db: d1, analyst, updates}: UpdateAnalystByTwitterI
   const db = drizzle(d1, { logger: true })
   
   const result = await db.update(analystTable).set(updates).where(eq(analystTable.id, analyst.id)).returning()
-  console.log("🚀 ~ updateAnalyst ~ result[0]:", result[0])
+  console.log("Updated analyst - ", result[0].id)
 
   return result[0]; // Return new data row for later update
 }
@@ -140,7 +140,7 @@ const postNewAnalysis = async ({db: d1, analysis}: PostNewAnalysisArgs): Promise
   }
   
   const [ result ] = await db.insert(analysisTable).values(newAnalysis).returning()
-  console.log("🚀 ~ postNewAnalysis ~ result:", result)
+  console.log("Created new analysis - ", result.id)
 
   return result; // Return new data row for later update
 }

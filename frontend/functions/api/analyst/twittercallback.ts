@@ -127,7 +127,6 @@ async function signInWithCode({
 
   const bearerToken = btoa(`${clientId}:${clientSecret}`)
   console.log("🚀 ~ twitterAuthUrl:", twitterAuthUrl)
-  console.log("🚀 ~ Authorization:", `Basic ${bearerToken}`)
 
   const authRes = await fetch(twitterAuthUrl, {
     method: "post",
@@ -137,7 +136,7 @@ async function signInWithCode({
   },
   })
   const authResponse = await authRes.json<SignInWithCodeResponse>()
-  console.log("🚀 ~ authResponse:", authResponse)
+
   if (authResponse?.error) throw new Error ("signInWithCode failed")
 
   return authResponse["access_token"]
