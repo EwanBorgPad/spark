@@ -191,6 +191,18 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
           ...quest,
           isCompleted: false,
         })
+      } else if (quest.type === 'PROVIDE_INVESTMENT_INTENT') {
+        const providedInvestmentIntentForProject = Boolean(user.json.investmentIntent?.[projectId])
+        tierQuestsWithCompletion.push({
+          ...quest,
+          isCompleted: providedInvestmentIntentForProject,
+        })
+      }  else if (quest.type === 'PROVIDE_EMAIL') {
+        const providedEmailForProject = Boolean(user.json.emailData?.providedAt)
+        tierQuestsWithCompletion.push({
+          ...quest,
+          isCompleted: providedEmailForProject,
+        })
       } else {
         throw new Error(`Unknown tier quest type (${quest.type})!`)
       }
