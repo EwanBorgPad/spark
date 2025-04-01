@@ -256,7 +256,7 @@ export const TierWrapper = ({
             isCompliant ? (
               <span className="text-sm text-fg-success-primary">Eligible</span>
             ) : (
-              <span className="text-sm text-fg-error-primary">Not Eligible - Accept ToU</span>
+              <span className="text-sm text-fg-error-primary">Not Eligible - Finish Step 2</span>
             )
           ) : (
             <span className="text-sm text-fg-error-primary">Not Eligible</span>
