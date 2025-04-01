@@ -167,8 +167,11 @@ const ProvideInvestmentIntentBtn = () => {
 
   return (
     <div className="mt-2 flex justify-start">
-      <Button color="secondary" size="xs" className="rounded-lg px-3 plausible-event-name=2-ProvideInvestmentIntent" onClick={
-        () => {
+      <Button
+        color="secondary"
+        size="xs"
+        className="plausible-event-name=2-ProvideInvestmentIntent rounded-lg px-3"
+        onClick={() => {
           window.safary?.track({
             eventType: "investment-intent",
             eventName: "2-provide investment intent",
@@ -178,7 +181,8 @@ const ProvideInvestmentIntentBtn = () => {
             },
           })
           setShowModal(!showModal)
-        }}>
+        }}
+      >
         {t("investment.intent.quest.button")}
       </Button>
       {showModal && <ProvideInvestmentIntentModal onClose={() => setShowModal(false)} />}
@@ -192,12 +196,7 @@ const ProvideEmailBtn = () => {
 
   return (
     <div className="mt-2 flex justify-start">
-      <Button 
-        color="secondary" 
-        size="xs" 
-        className="rounded-lg px-3" 
-        onClick={() => setShowModal(!showModal)}
-      >
+      <Button color="secondary" size="xs" className="rounded-lg px-3" onClick={() => setShowModal(!showModal)}>
         {t("email.provide.button")}
       </Button>
       {showModal && <ProvideEmailModal onClose={() => setShowModal(false)} />}
@@ -218,10 +217,12 @@ export function sortByCompletionStatus<T extends { isCompleted: boolean }>(arr: 
 export const TierWrapper = ({
   children,
   tier,
+  isCompliant,
 }: {
   children: ReactNode
   tier: Pick<ProjectModel["info"]["tiers"][number], "id" | "label" | "description" | "benefits"> &
     Partial<Pick<EligibilityStatus["tiers"][number], "isCompleted">>
+  isCompliant?: boolean
 }) => {
   const { t } = useTranslation()
 
@@ -238,20 +239,25 @@ export const TierWrapper = ({
     return startTimeDescription + investmentCapDescription
   }
   const description = getDescription(tier)
+  const isEligible = isCompliant && tier?.isCompleted
 
   return (
     <div
       key={tier.id}
       className={twMerge(
         "relative flex flex-col gap-2 rounded-lg border-[1px] border-bd-secondary bg-default p-4",
-        tier?.isCompleted && "border-bd-success-primary",
+        isEligible && "border-bd-success-primary",
       )}
     >
       <div className="flex flex-col gap-1">
         <div className="flex w-full items-center justify-between">
           <span>{tier.label}</span>
           {tier?.isCompleted ? (
-            <span className="text-sm text-fg-success-primary">Eligible</span>
+            isCompliant ? (
+              <span className="text-sm text-fg-success-primary">Eligible</span>
+            ) : (
+              <span className="text-sm text-fg-error-primary">Not Eligible - Accept ToU</span>
+            )
           ) : (
             <span className="text-sm text-fg-error-primary">Not Eligible</span>
           )}

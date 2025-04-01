@@ -155,11 +155,13 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
         )
       })
     } else {
+      const isCompliant = isWalletConnected && !!eligibilityStatus?.isCompliant
+
       return eligibilityStatus.tiers.map((tier) => {
         const tierQuests = sortByCompletionStatus(tier.quests)
 
         return (
-          <TierWrapper key={tier.id} tier={tier}>
+          <TierWrapper key={tier.id} tier={tier} isCompliant={isCompliant}>
             {tierQuests.map((quest) => (
               <QuestComponent key={quest.type} quest={quest} />
             ))}
