@@ -149,8 +149,8 @@ const NoAnalystsYet = ({
       <div className={twMerge("flex flex-col items-center gap-2 ", isFullWidth && "md:flex-row md:gap-4")}>
         <Icon icon="SvgChartLine" className="text-2xl text-fg-secondary" />
         <div className={twMerge("flex flex-col items-center gap-1", isFullWidth && "md:items-start")}>
-          <span className="text-center text-base text-fg-primary">No analyses yet</span>
-          <span className="text-center text-sm text-fg-secondary">
+          <span className="text-center text-base text-fg-primary md:text-left">No analyses yet</span>
+          <span className="text-center text-sm text-fg-secondary md:text-left">
             CT&apos;s fresh thoughts about <br className={twMerge(isFullWidth && "md:hidden")}></br>this project will
             appear here
           </span>
@@ -159,7 +159,7 @@ const NoAnalystsYet = ({
       <Button
         btnText="Become an Analyst"
         color="tertiary"
-        className="h-[36px] w-full max-w-[354px] rounded-lg py-2 text-sm"
+        className={twMerge("h-[36px] w-full rounded-lg py-2 text-sm", isFullWidth && "max-w-[220px]")}
         onClick={openBecomeAnalystModal}
       />
     </div>
