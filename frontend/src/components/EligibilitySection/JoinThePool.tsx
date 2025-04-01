@@ -147,7 +147,7 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
       return projectData.info.tiers.map((tier) => {
         // tier container
         return (
-          <TierWrapper key={tier.id} tier={tier}>
+          <TierWrapper key={tier.id} tier={tier} tierWithCompletion={null}>
             {tier.quests.map((quest) => (
               <QuestComponent key={quest.type} quest={{ ...quest, ...restOfQuest }} />
             ))}
@@ -161,7 +161,7 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
         const tierQuests = sortByCompletionStatus(tier.quests)
 
         return (
-          <TierWrapper key={tier.id} tier={tier} isCompliant={isCompliant}>
+          <TierWrapper key={tier.id} tier={tier} isCompliant={isCompliant} tierWithCompletion={tier}>
             {tierQuests.map((quest) => (
               <QuestComponent key={quest.type} quest={quest} />
             ))}
@@ -214,8 +214,13 @@ const DEFAULT_COMPLIANCES: EligibilityStatus["compliances"] = [
   },
   {
     type: "PROVIDE_INVESTMENT_INTENT",
-    isOptional: true,
     isCompleted: false,
+    isOptional: true,
+  },
+  {
+    type: "PROVIDE_EMAIL",
+    isCompleted: false,
+    isOptional: true,
   },
 ]
 

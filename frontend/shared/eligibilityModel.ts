@@ -64,6 +64,12 @@ const ProvideEmailQuestSchema = BaseQuestSchema.extend({
   type: z.literal('PROVIDE_EMAIL'),
 })
 /**
+ * Requires the User to provide their email.
+ */
+const AllListedCompliancesSchema = BaseQuestSchema.extend({
+  type: z.literal('ALL_LISTED_COMPLIANCES'),
+})
+/**
  * Quests that the User does in order to become eligible.
  * Quests names should be in imperative, like HOLD_TOKEN, FOLLOW_ON_X, not in passive like HOLDS, FOLLOWS.
  * Previously had DONT_RESIDE_IN_US, but that is now part of compliance, not quests anymore.
@@ -76,6 +82,7 @@ const QuestSchema = z.discriminatedUnion("type", [
   WhitelistQuestSchema,
   ReferralQuestSchema,
   ProvideEmailQuestSchema,
+  AllListedCompliancesSchema,
 ])
 export type Quest = z.infer<typeof QuestSchema>
 /**
@@ -95,6 +102,7 @@ const QuestWithCompletionSchema = z.union([
   ReferralQuestSchema.merge(CompletionSchema),
   WhitelistQuestSchema.merge(CompletionSchema),
   ProvideEmailQuestSchema.merge(CompletionSchema),
+  AllListedCompliancesSchema.merge(CompletionSchema),
 ])
 export type QuestWithCompletion = z.infer<typeof QuestWithCompletionSchema>
 export type QuestType = z.infer<typeof QuestSchema>['type']
