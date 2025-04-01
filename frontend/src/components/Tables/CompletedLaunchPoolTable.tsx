@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import { twMerge } from "tailwind-merge"
 import { useTranslation } from "react-i18next"
-import { useState, useMemo, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import Img from "../Image/Img"
@@ -14,26 +14,61 @@ import { backendApi } from "@/data/backendApi.ts"
 import { formatDateForProject } from "@/utils/date-helpers"
 import { TableHeader } from "./TableHeader"
 import { TableCell } from "./TableCell"
-
-type Props = {
-  projects?: ExpandedProject[]
-  isLoading?: boolean
-  onSort: (field: SortField) => void
-  sortField: SortField
-  sortDirection: SortDirection
-}
+import { useWindowSize } from "@/hooks/useWindowSize"
+import Pagination from "../Pagination/Pagination"
 
 type SortField = 'name' | 'date' | 'raised' | 'fdv' | 'participants' | 'commitments' | 'sector'
 type SortDirection = 'asc' | 'desc'
 
-export const CompletedLaunchPoolTable = ({ 
-  projects, 
-  isLoading,
-  onSort,
-  sortField,
-  sortDirection 
-}: Props) => {
+type Props = {
+  projectType: "goat" | "blitz"
+}
+
+export const CompletedLaunchPoolTable = ({ projectType }: Props) => {
   const { t } = useTranslation()
+  const { isMobile } = useWindowSize()
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [projects, setProjects] = useState<ExpandedProject[]>([])
+  const [sortField, setSortField] = useState<SortField>('date')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
+
+  const { data, isLoading } = useQuery<GetProjectsResponse>({
+    queryFn: () =>
+      backendApi.getProjects({
+        page: currentPage,
+        limit: isMobile ? 3 : 10,
+        projectType,
+        completionStatus: "completed",
+        sortBy: sortField,
+        sortDirection: sortDirection,
+      }),
+    queryKey: ["getProjects", projectType, "completed", sortField, sortDirection, currentPage, isMobile],
+  })
+
+  useEffect(() => {
+    if (data?.pagination) {
+      setTotalPages(data.pagination.totalPages)
+    }
+  }, [data?.pagination])
+
+  useEffect(() => {
+    if (!data?.projects) return
+    setProjects(processProjects(data.projects))
+  }, [data?.projects])
+
+  const handlePageClick = (pageNum: number) => {
+    setCurrentPage(pageNum)
+  }
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortDirection('asc')
+    }
+  }
 
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) return '↓'
@@ -51,27 +86,24 @@ export const CompletedLaunchPoolTable = ({
               <TableHeader className="w-[1%] text-center">
                 {" "}
               </TableHeader>
-              <TableHeader onClick={() => onSort('name')}>
+              <TableHeader onClick={() => handleSort('name')}>
                 Project {getSortIcon('name')}
               </TableHeader>
-              <TableHeader onClick={() => onSort('date')}>
+              <TableHeader onClick={() => handleSort('date')}>
                 Date {getSortIcon('date')}
               </TableHeader>
-              <TableHeader onClick={() => onSort('sector')}>
+              <TableHeader onClick={() => handleSort('sector')}>
                 Category {getSortIcon('sector')}
               </TableHeader>
-              <TableHeader onClick={() => onSort('raised')}>
+              <TableHeader onClick={() => handleSort('raised')}>
                 Raised {getSortIcon('raised')}
               </TableHeader>
-              <TableHeader onClick={() => onSort('fdv')}>
+              <TableHeader onClick={() => handleSort('fdv')}>
                 FDV {getSortIcon('fdv')}
               </TableHeader>
-              <TableHeader onClick={() => onSort('participants')} className="md:hidden">
+              <TableHeader onClick={() => handleSort('participants')} className="md:hidden">
                 Participants {getSortIcon('participants')}
               </TableHeader>
-              {/* <TableHeader onClick={() => handleSort('rewards')} className="w-[10%]">
-                Rewards Given {getSortIcon('rewards')}
-              </TableHeader> */}
               <TableHeader className="w-[2%] text-center">
                 {" "}
               </TableHeader>
@@ -138,7 +170,6 @@ export const CompletedLaunchPoolTable = ({
                 <TableCell isCategory={true} className="md:hidden">
                   {proj.depositStats ? proj.depositStats.participantsCount : 0}
                 </TableCell>
-                {/* <TableCell isCategory={true}>{formatCurrencyAmount(proj.investmentIntentSummary?.sum ?? 0, { withDollarSign: true })}</TableCell> */}
                 <TableCell isCategory={false} className="text-center">
                   <Link
                     to={getProjectRoute(proj as ProjectModel)}
@@ -153,6 +184,7 @@ export const CompletedLaunchPoolTable = ({
           </tbody>
         </table>
       </div>
+      <Pagination totalPages={totalPages} currentPage={currentPage} onPageClick={handlePageClick} />
     </div>
   )
 }

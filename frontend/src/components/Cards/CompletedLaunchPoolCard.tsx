@@ -16,6 +16,8 @@ import { formatDateForProject } from "@/utils/date-helpers"
 import { createDetailRow, ProjectDetailRows } from "../Tables/ProjectDetailsRows"
 import { SortDropdown } from "../Dropdown/SortDropdown"
 import { backendApi } from "@/data/backendApi"
+import { useWindowSize } from "@/hooks/useWindowSize"
+import Pagination from "../Pagination/Pagination"
 
 type SortField = 'name' | 'date' | 'raised' | 'fdv' | 'participants' | 'commitments' | 'sector'
 type SortDirection = 'asc' | 'desc'
@@ -28,21 +30,17 @@ type SortOption = {
 }
 
 type Props = {
-  projects?: ExpandedProject[]
-  isLoading?: boolean
-  onSort: (field: SortField) => void
-  sortField: SortField
-  sortDirection: SortDirection
+  projectType: "goat" | "blitz"
 }
 
-export const CompletedLaunchPoolCard = ({ 
-  projects, 
-  isLoading,
-  onSort,
-  sortField,
-  sortDirection 
-}: Props) => {
+export const CompletedLaunchPoolCard = ({ projectType }: Props) => {
   const { t } = useTranslation()
+  const { isMobile } = useWindowSize()
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [projects, setProjects] = useState<ExpandedProject[]>([])
+  const [sortField, setSortField] = useState<SortField>('date')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
 
   const sortOptions: SortOption[] = [
     { value: "name-asc", label: "Sort by Name, A to Z", field: 'name', direction: 'asc' },
@@ -53,10 +51,39 @@ export const CompletedLaunchPoolCard = ({
     { value: "raised-desc", label: "Sort by Raised, High to Low", field: 'raised', direction: 'desc' },
   ]
 
+  const { data, isLoading } = useQuery<GetProjectsResponse>({
+    queryFn: () =>
+      backendApi.getProjects({
+        page: currentPage,
+        limit: isMobile ? 3 : 10,
+        projectType,
+        completionStatus: "completed",
+        sortBy: sortField,
+        sortDirection: sortDirection,
+      }),
+    queryKey: ["getProjects", projectType, "completed", sortField, sortDirection, currentPage, isMobile],
+  })
+
+  useEffect(() => {
+    if (data?.pagination) {
+      setTotalPages(data.pagination.totalPages)
+    }
+  }, [data?.pagination])
+
+  useEffect(() => {
+    if (!data?.projects) return
+    setProjects(processProjects(data.projects))
+  }, [data?.projects])
+
+  const handlePageClick = (pageNum: number) => {
+    setCurrentPage(pageNum)
+  }
+
   const handleSortChange = (newSortOption: string) => {
     const option = sortOptions.find(opt => opt.value === newSortOption)
     if (option) {
-      onSort(option.field)
+      setSortField(option.field)
+      setSortDirection(option.direction)
     }
   }
 
@@ -198,6 +225,7 @@ export const CompletedLaunchPoolCard = ({
           </li>
         );
       })}
+      <Pagination totalPages={totalPages} currentPage={currentPage} onPageClick={handlePageClick} />
     </div>
   );
 }
