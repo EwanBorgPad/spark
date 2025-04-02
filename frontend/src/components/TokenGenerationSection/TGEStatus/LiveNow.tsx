@@ -71,7 +71,7 @@ const LiveNow = ({ timeline }: LiveNowProps) => {
       if (!tier.benefits.startDate) return false
       return isAfter(tier.benefits.startDate, new Date()) || tier.benefits.startDate.getTime() === new Date().getTime()
     })
-    setNextTier(nextTier || null) // cause a re-render of THIS component and its CHILD components
+    setNextTier(nextTier || null) // cause a re-render of THIS component and its CHILD components. This will re-evaluate value of the current and the next tier.
   }
 
   return (
