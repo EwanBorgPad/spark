@@ -86,8 +86,8 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
                     rows={[
                       createDetailRow("SvgChartLine", "Valuation (FDV)", formatCurrencyCompact(project?.config.fdv), project?.info.projectType === "blitz" ? "text-brand-blitz" : "text-fg-brand-primary"),
                       createDetailRow("SvgChartLine", "Sector", project?.info?.sector ?? "N/A"),
-                      createDetailRow("SvgTwoAvatars", "Participants", project?.saleResults?.participantsCount ?? 0),
-                      createDetailRow("SvgWalletFilled", "Total Raised", formatCurrencyAmount(project?.saleResults?.totalAmountRaised?.amountInUsd)),
+                      createDetailRow("SvgTwoAvatars", "Participants", project?.depositStats?.participantsCount ?? 0),
+                      createDetailRow("SvgWalletFilled", "Total Raised", formatCurrencyCompact(Number(project?.depositStats?.totalDepositedInUsd || 0))),
                       createDetailRow("SvgCalendarFill", "Sale Ends", project?.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date ? formatDateForProject(new Date(project?.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date || 0)) : "TBC")
                     ]}
                   />
