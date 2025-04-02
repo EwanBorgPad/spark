@@ -9,9 +9,8 @@ import raydiumLogo from "@/assets/launchPools/raydium-logo.png"
 import goatPoolsLogo from "@/assets/launchPools/goat-pools-logo.png"
 
 import Img from "@/components/Image/Img"
-import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
-import { CompletedLaunchPoolTable } from "@/components/Tables/CompletedLaunchPoolTable"
-import { CompletedLaunchPoolCard } from "@/components/Cards/CompletedLaunchPoolCard"
+import { ActiveProjects } from "@/components/Projects/ActiveProjects"
+import { CompletedProjects } from "@/components/Projects/CompletedProjects"
 import { useWindowSize } from "@/hooks/useWindowSize"
 
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
@@ -56,7 +55,9 @@ const GoatPools = () => {
 
       <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
         <div className="flex w-full max-w-[1080px] flex-col items-center">
-          <LaunchPoolCard projectType="goat" />
+          <ul className="grid grid-cols-1 place-content-center justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <ActiveProjects projectType="goat" />
+          </ul>
         </div>
       </section>
 
@@ -65,15 +66,7 @@ const GoatPools = () => {
           <h3 className="mb-8 text-center text-[32px] font-semibold leading-[120%] md:w-full">
             {"Completed Goat Pools"}
           </h3>
-          {isMobile ? (
-            <div className="flex flex-col items-center gap-6">
-              <ul className="grid grid-cols-1 place-items-center justify-center gap-6 w-full max-w-[344px] mx-auto">
-                <CompletedLaunchPoolCard projectType="goat" />
-              </ul>
-            </div>
-          ) : (
-            <CompletedLaunchPoolTable projectType="goat" />
-          )}
+          <CompletedProjects projectType="goat" />
         </div>
       </section>
       <ScrollRestoration />

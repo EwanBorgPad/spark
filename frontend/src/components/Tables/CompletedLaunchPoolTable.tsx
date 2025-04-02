@@ -2,71 +2,57 @@ import { Link } from "react-router-dom"
 import { twMerge } from "tailwind-merge"
 import { useTranslation } from "react-i18next"
 import { useState, useEffect } from "react"
-import { useQuery } from "@tanstack/react-query"
 
 import Img from "../Image/Img"
+import Text from "@/components/Text"
 import { ExpandedProject, processProjects } from "@/utils/projects-helper"
 import { getProjectRoute } from "@/utils/routes"
 import { Icon } from "../Icon/Icon"
 import { GetProjectsResponse, ProjectModel } from "shared/models"
 import { formatCurrencyCompact } from "shared/utils/format"
-import { backendApi } from "@/data/backendApi.ts"
 import { formatDateForProject } from "@/utils/date-helpers"
 import { TableHeader } from "./TableHeader"
 import { TableCell } from "./TableCell"
 import { useWindowSize } from "@/hooks/useWindowSize"
-import Pagination from "../Pagination/Pagination"
 
 type SortField = 'name' | 'date' | 'raised' | 'fdv' | 'participants' | 'commitments' | 'sector'
 type SortDirection = 'asc' | 'desc'
 
 type Props = {
   projectType: "goat" | "blitz"
+  isLoading?: boolean
+  projects?: ExpandedProject[]
+  currentPage?: number
+  totalPages?: number
+  onPageClick?: (pageNum: number) => void
+  onSortChange?: (field: SortField, direction: SortDirection) => void
+  sortField?: SortField
+  sortDirection?: SortDirection
 }
 
-export const CompletedLaunchPoolTable = ({ projectType }: Props) => {
+export const CompletedLaunchPoolTable = ({
+  projectType,
+  isLoading,
+  projects = [],
+  currentPage = 1,
+  totalPages = 1,
+  onPageClick,
+  onSortChange,
+  sortField = 'date',
+  sortDirection = 'desc'
+}: Props) => {
   const { t } = useTranslation()
   const { isMobile } = useWindowSize()
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [projects, setProjects] = useState<ExpandedProject[]>([])
-  const [sortField, setSortField] = useState<SortField>('date')
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
 
-  const { data, isLoading } = useQuery<GetProjectsResponse>({
-    queryFn: () =>
-      backendApi.getProjects({
-        page: currentPage,
-        limit: isMobile ? 3 : 10,
-        projectType,
-        completionStatus: "completed",
-        sortBy: sortField,
-        sortDirection: sortDirection,
-      }),
-    queryKey: ["getProjects", projectType, "completed", sortField, sortDirection, currentPage, isMobile],
-  })
-
-  useEffect(() => {
-    if (data?.pagination) {
-      setTotalPages(data.pagination.totalPages)
-    }
-  }, [data?.pagination])
-
-  useEffect(() => {
-    if (!data?.projects) return
-    setProjects(processProjects(data.projects))
-  }, [data?.projects])
-
-  const handlePageClick = (pageNum: number) => {
-    setCurrentPage(pageNum)
-  }
+  const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortField(field)
-      setSortDirection('asc')
+    if (onSortChange) {
+      if (sortField === field) {
+        onSortChange(field, sortDirection === 'asc' ? 'desc' : 'asc')
+      } else {
+        onSortChange(field, 'asc')
+      }
     }
   }
 
@@ -111,8 +97,7 @@ export const CompletedLaunchPoolTable = ({ projectType }: Props) => {
           </thead>
           <tbody className="divide-y divide-bd-secondary/20">
             {isLoading ? (
-              // Display skeleton rows when loading
-              Array.from({ length: 5 }, (_, i) => (
+              skeletonItems.map((i) => (
                 <tr key={`skeleton-${i}`} className="animate-pulse">
                   <TableCell className="px-4 flex items-center">
                     <div className="w-8 h-8 rounded-full bg-bd-secondary/30"></div>
@@ -140,7 +125,7 @@ export const CompletedLaunchPoolTable = ({ projectType }: Props) => {
                   </TableCell>
                 </tr>
               ))
-            ) : projects?.map((proj, index) => (
+            ) : projects?.map((proj) => (
               <tr
                 key={proj.id}
                 onClick={() => window.location.href = getProjectRoute(proj as ProjectModel)}
@@ -149,7 +134,6 @@ export const CompletedLaunchPoolTable = ({ projectType }: Props) => {
                 <TableCell className="px-4 flex items-center">
                   <Img
                     src={proj.info.logoUrl}
-                    isFetchingLink={isLoading}
                     imgClassName="scale-[102%]"
                     isRounded={true}
                     size="8"
@@ -157,18 +141,34 @@ export const CompletedLaunchPoolTable = ({ projectType }: Props) => {
                 </TableCell>
                 <TableCell isCategory={false}>
                   <div className="flex items-center gap-1">
-                    <span className="text-white">{proj.info?.title || "—"}</span>
+                    <Text text={proj.info?.title || "—"} />
                     <Icon icon="SvgShare" className="w-5 h-5 opacity-50" />
                   </div>
                 </TableCell>
-                <TableCell isCategory={true}>{formatDateForProject(new Date(proj.info.timeline?.find(t => t.id === "REWARD_DISTRIBUTION")?.date || 0))}</TableCell>
-                <TableCell isCategory={true}>{proj.info?.sector || "—"}</TableCell>
                 <TableCell isCategory={true}>
-                  {proj.depositStats ? formatCurrencyCompact(Number(proj.depositStats.totalDepositedInUsd)) : 0}
+                  <Text
+                    text={proj.info.timeline?.find((t) => t.id === "SALE_CLOSES")?.date
+                      ? formatDateForProject(new Date(proj.info.timeline?.find((t) => t.id === "SALE_CLOSES")?.date || 0))
+                      : "TBC"}
+                  />
                 </TableCell>
-                <TableCell isCategory={true}>{formatFdv(proj.config.fdv)}</TableCell>
+                <TableCell isCategory={true}>
+                  <Text text={proj.info?.sector ?? "N/A"} />
+                </TableCell>
+                <TableCell isCategory={true}>
+                  <Text
+                    text={formatCurrencyCompact(Number(proj.depositStats?.totalDepositedInUsd || 0))}
+                  />
+                </TableCell>
+                <TableCell isCategory={true}>
+                  <Text
+                    text={formatCurrencyCompact(proj?.config?.fdv ?? 0)}
+                  />
+                </TableCell>
                 <TableCell isCategory={true} className="md:hidden">
-                  {proj.depositStats ? proj.depositStats.participantsCount : 0}
+                  <Text
+                    text={proj.depositStats?.participantsCount ?? 0}
+                  />
                 </TableCell>
                 <TableCell isCategory={false} className="text-center">
                   <Link
@@ -184,11 +184,6 @@ export const CompletedLaunchPoolTable = ({ projectType }: Props) => {
           </tbody>
         </table>
       </div>
-      <Pagination totalPages={totalPages} currentPage={currentPage} onPageClick={handlePageClick} />
     </div>
-  )
-}
-
-const formatFdv = (fdv?: number): string => {
-  return fdv ? `$${(fdv / 1000000).toFixed(1)}M` : "—"
+  );
 }

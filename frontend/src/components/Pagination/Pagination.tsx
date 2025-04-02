@@ -76,7 +76,7 @@ const Pagination = ({ totalPages, currentPage, onPageClick }: Props) => {
           color="tertiary"
           btnText={!isMobile ? "Previous" : ""}
           textClassName="text-m font-medium"
-          className="absolute left-0 w-8 h-8 p-0 rounded-none md:w-auto md:h-auto md:px-4 md:py-2 md:rounded-lg"
+          className="absolute left-4 w-8 h-8 p-0 rounded md:w-auto md:h-auto md:px-4 md:py-2 md:rounded-lg"
           prefixElement={<Icon icon="SvgArrowLeft" className="text-fg-secondary" />}
         />
       )}
@@ -89,7 +89,7 @@ const Pagination = ({ totalPages, currentPage, onPageClick }: Props) => {
           color="tertiary"
           btnText={!isMobile ? "Next" : ""}
           textClassName="text-m font-medium"
-          className="absolute right-0 w-8 h-8 p-0 rounded-none md:w-auto md:h-auto md:px-4 md:py-2 md:rounded-lg"
+          className="absolute right-4 w-8 h-8 p-0 rounded md:w-auto md:h-auto md:px-4 md:py-2 md:rounded-lg"
           suffixElement={<Icon icon="SvgArrowRight" className="text-fg-secondary" />}
         />
       )}
