@@ -18,11 +18,12 @@ const LiveNowCountdown = ({ project }: { project: ProjectModel | undefined }) =>
       if (!tier.benefits.startDate) return false
       return isAfter(tier.benefits.startDate, new Date())
     })
-    if (nextTier)
+    if (nextTier) {
       return {
         countdownEvent: nextTier.benefits.startDate,
         labelAboveTimer: `Tier ${nextTier.label} opens in ${nextTier.benefits.startDate && formatDateForTimer(nextTier.benefits.startDate)}`,
       }
+    }
     return {
       countdownEvent: saleClosesPhaseStartDate,
       labelAboveTimer: saleClosesPhaseStartDate ? `Sale closes in ${formatDateForTimer(saleClosesPhaseStartDate)}` : "",
