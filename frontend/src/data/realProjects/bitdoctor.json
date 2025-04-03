@@ -3,16 +3,14 @@
   "config": {
     "cluster": "mainnet",
     "lpPositionToBeBurned": true,
-    "raiseTargetInUsd": 200000,
+    "raiseTargetInUsd": 50000,
     "fdv": 5000000,
-    "targetFdv": "$5M",
-    "targetVesting": "6 months linear",
     "marketCap": 0,
     "totalTokensForLiquidityPool": 0,
-    "totalTokensForRewardDistribution": 40000000,
-    "rewardsDistributionTimeInMonths": 6,
-    "finalSnapshotTimestamp": null,
-    "lbpWalletAddress": null,
+    "totalTokensForRewardDistribution": 10000000,
+    "rewardsDistributionTimeInMonths": 1,
+    "finalSnapshotTimestamp": "2025-04-03T14:00:00.000Z",
+    "lbpWalletAddress": "CTbwxhuo3Y4X65M5XjfD9LzTjWqU3D5EC65e6mZtwu6w",
     "raisedTokenData": {
       "iconUrl": "https://files.borgpad.com/usdc-logo.png",
       "ticker": "USDC",
@@ -27,6 +25,13 @@
       "mintAddress": null,
       "decimals": 0,
       "fixedTokenPriceInUsd": 0.005
+    },
+    "nftConfig": {
+      "name": "BitDoctor Liquidity Provider",
+      "symbol": "bpBITDOCTOR",
+      "description": "You enabled BitDoctor to launch via BorgPad. This NFT is your proof, hold it to claim your rewards.",
+      "imageUrl": "https://files.borgpad.com/bitdoctor/nft-metadata/image.png",
+      "collection": "4r3NFTQvwu8DMQDeyv5BjsNEuZj1gdoeWP1wjhxHU5qX"
     }
   },
   "info": {
@@ -34,7 +39,6 @@
     "tweetUrl": null,
     "tokenContractUrl": null,
     "poolContractUrl": null,
-
     "projectType": "blitz",
     "title": "BitDoctor",
     "subtitle": "AI Doctor that streamlines health data, clinical trials, medical advice and diagnostic services with AI & DePIN",
@@ -42,7 +46,7 @@
     "thumbnailUrl": "https://files.borgpad.com/images/bitdoctor/bitdoctor-thumbnail.png",
     "origin": "web3",
     "sector": "AI / DeSci",
-    "tokenGenerationEventDate": "March 19",
+    "tokenGenerationEventDate": "April 3rd, 2025",
     "chain": {
       "name": "Solana",
       "iconUrl": "https://files.borgpad.com/images/zkagi/solana-small.jpg"
@@ -94,57 +98,58 @@
     "timeline": [
       {
         "id": "REGISTRATION_OPENS",
-        "label": "Registration Opens",
-        "date": "2025-03-07T10:00:00.000Z"
+        "date": "2025-03-10T10:00:00.000Z",
+        "label": "Registration Opens"
       },
       {
         "id": "SALE_OPENS",
-        "label": "Sale Opens",
-        "date": "2025-03-19T15:00:00.000Z"
+        "date": "2025-04-03T14:00:00.000Z",
+        "label": "Sale Opens"
       },
       {
         "id": "SALE_CLOSES",
-        "label": "Sale Closes",
-        "date": "2025-03-19T10:59:00.000Z"
+        "date": "2025-04-03T18:00:00.000Z",
+        "label": "Sale Closes"
       },
       {
         "id": "REWARD_DISTRIBUTION",
-        "label": "Reward Distribution",
-        "fallbackText": "Once Sold Out",
-        "date": null
+        "date": "2025-04-03T19:00:00.000Z",
+        "label": "Reward Distribution"
       },
       {
         "id": "DISTRIBUTION_OVER",
-        "label": "Distribution Over",
-        "date": "2025-08-19T12:00:00.000Z"
+        "date": "2025-04-03T19:00:00.000Z",
+        "label": "Distribution Over"
       }
     ],
     "tiers": [
       {
         "id": "tier10",
         "label": "Borgers Club",
+        "questsOperator": "AND",
         "quests": [
           {
             "type": "HOLD_TOKEN",
+            "tokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z",
             "tokenName": "BORG",
-            "tokenAmount": "1000",
-            "tokenMintAddress": "3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z"
+            "tokenAmount": "1000"
           }
         ],
         "benefits": {
-          "startDate": null,
-          "minInvestment": "100",
-          "maxInvestment": "1500"
+          "startDate": "2025-04-03T14:00:00.000Z",
+          "minInvestment": "0",
+          "maxInvestment": "2500"
         }
       },
       {
         "id": "tier99",
         "label": "Public Sale",
+        "questsOperator": "AND",
         "quests": [],
         "benefits": {
-          "startDate": null,
-          "minInvestment": "10",
-          "maxInvestment": "1000"
+          "startDate": "2025-04-03T14:15:00.000Z",
+          "minInvestment": "0",
+          "maxInvestment": "1500"
         }
       }
     ]
