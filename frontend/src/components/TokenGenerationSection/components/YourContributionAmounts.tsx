@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { backendApi } from "@/data/backendApi"
 import { formatCurrencyAmount } from "../../../../shared/utils/format.ts"
+import { getRewardDistributionMessage } from "@/utils/reward-helper"
 
 const YourContributionAmounts = () => {
   const { t } = useTranslation()
@@ -28,9 +29,7 @@ const YourContributionAmounts = () => {
 
   if (!projectData || !userPositions?.hasUserInvested) return <></>
 
-
-  const numberOfMonths = projectData.config.rewardsDistributionTimeInMonths
-  const remainingMonths = projectData.config.rewardsDistributionTimeInMonths - 1
+  const rewardDistributionLabel = getRewardDistributionMessage(projectData)
 
   return (
     <div className="w-full bg-transparent">
@@ -54,8 +53,8 @@ const YourContributionAmounts = () => {
           </div>
           <div className="flex flex-col items-center gap-1.5">
             <div className="flex h-fit items-center justify-center gap-1.5 rounded-full text-xs font-medium text-fg-tertiary ">
-              <Icon icon="SvgChartLine" className="text-base text-white" />
-              <span>{t("tge.linearly_paid_out", { numberOfMonths, remainingMonths })}</span>
+              <Icon icon="SvgChartLine" className="text-base" />
+              <span>{rewardDistributionLabel}</span>
             </div>
             <span className="text-xs font-medium text-fg-tertiary">🔒 LP position permanently locked </span>
             <span className="text-xs font-medium text-fg-tertiary">🔥 All LP fees burned</span>
