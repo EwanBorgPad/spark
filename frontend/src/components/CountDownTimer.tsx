@@ -82,7 +82,7 @@ const CountDownTimer = ({
     >
       <span className={twMerge("text-sm font-light text-fg-primary/60", labelClass)}>{labelAboveTimer}</span>
       {isEventFinished ? (
-        <span className="text-xl text-fg-primary/60">{t("tge.distribution_ended")}</span>
+        <span className="text-xl text-fg-primary/60"> </span>
       ) : (
         <div className={twMerge("flex items-start text-2xl normal-nums", timerClass)}>
           <div className="flex w-[33px] flex-col items-center">
