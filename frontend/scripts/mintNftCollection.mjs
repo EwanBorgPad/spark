@@ -2,8 +2,13 @@ import { Keypair, Connection, clusterApiUrl } from "@solana/web3.js";
 import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
 import bs58 from "bs58";
 
+import dotenv from 'dotenv';
+dotenv.config(); // Load environment variables
+
 // Replace this with your base58-encoded private key string from Phantom
-const privateKeyString = "";
+// const privateKeyString = process.env.WALLET_PRIVATE_KEY;
+const privateKeyString = process.env.STAGE_PRIVATE_KEY;
+// const privateKeyString = process.env.PROD_PRIVATE_KEY;
 
 // Convert base58 string to Uint8Array
 const privateKeyUint8Array = bs58.decode(privateKeyString);
@@ -19,11 +24,22 @@ const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
 
 // Define metadata for the collection NFT
 const collectionMetadata = {
-  name: "LJUS COLL",
-  symbol: "COLL",
-  uri: "https://example.com/collection-metadata.json", // Add your collection metadata JSON URL
+  name: "AIDD Liquidity Provider",
+  symbol: "bpAIDDBITDOCTOR",
+  uri: "https://files.borgpad.com/bitdoctor/nft-metadata/collection-metadata.json", // Add your collection metadata JSON URL
   sellerFeeBasisPoints: 500, // 5% royalties
 };
+
+// Check and enforce name and symbol length constraints
+const nameLength = (collectionMetadata.name).length;
+const symbolLength = (collectionMetadata.symbol).length;
+
+console.log(nameLength);
+console.log(symbolLength);
+
+if (nameLength > 32 || symbolLength > 10) {
+  throw new Error("Name or symbol length exceeds the allowed limits.");
+}
 
 // Define metadata for individual NFTs
 const nftMetadataList = [
