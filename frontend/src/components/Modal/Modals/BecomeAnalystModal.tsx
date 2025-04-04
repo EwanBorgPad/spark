@@ -37,7 +37,7 @@ const roleOptions: { label: string; id: AnalystRoleEnum }[] = [
 
 const BecomeAnalystModal = ({ onClose }: Props) => {
   const navigate = useNavigate()
-  const [redirectionUrl, setRedirectionUrl] = usePersistedState("bp_redirectionUrl")
+  const [_, setRedirectionUrl] = usePersistedState("bp_redirectionUrl")
   const { projectData } = useProjectDataContext()
   const [searchParams, setSearchParams] = useSearchParams()
   const [analystId, setAnalystId] = useState<string>("")
@@ -113,7 +113,7 @@ const BecomeAnalystModal = ({ onClose }: Props) => {
   }, [searchParams])
 
   useEffect(() => {
-    if (!analystId) return
+    if (!analystId || analystId === "null") return
     fetchAnalyst()
   }, [analystId, fetchAnalyst])
 
