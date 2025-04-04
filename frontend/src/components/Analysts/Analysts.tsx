@@ -49,9 +49,16 @@ const Analysts = ({ isFullWidth }: Props) => {
     setSearchParams(searchParams)
   }
   const openBecomeAnalystModal = useCallback(() => {
+    // cover an edge case
+    const analystId = searchParams.get("analystId")
+    if (analystId === "null") {
+      searchParams.delete("analystId")
+      setSearchParams(searchParams)
+    }
+    // modal
     setShowBecomeAnalystModal(true)
     addParam(OPEN_ANALYST_MODAL_PARAM, "true")
-  }, [addParam])
+  }, [addParam, searchParams, setSearchParams])
 
   const closeBecomeAnalystModal = () => {
     setShowBecomeAnalystModal(false)
