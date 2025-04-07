@@ -69,9 +69,13 @@ const Analysts = () => {
   useEffect(() => {
     if (!redirectionUrl) return
     const analystIdSearchParam = searchParams.get("analystId")
-    const redirectionWithAnalystId = `${redirectionUrl}&analystId=${analystIdSearchParam}`
+    let newUrl = redirectionUrl
+    if (analystIdSearchParam || analystIdSearchParam !== "null") {
+      const redirectionWithAnalystId = redirectionUrl + `&analystId=${analystIdSearchParam}`
+      newUrl = redirectionWithAnalystId
+    }
     setRedirectionUrl("")
-    window.location.href = redirectionWithAnalystId
+    window.location.href = newUrl
   }, [redirectionUrl, searchParams, setRedirectionUrl])
 
   return (
