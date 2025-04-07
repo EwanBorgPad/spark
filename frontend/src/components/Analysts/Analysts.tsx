@@ -15,19 +15,16 @@ import { Icon } from "../Icon/Icon"
 const numOfSkeletonItems = 12
 const skeletonLoaderArray = Array.from({ length: numOfSkeletonItems }, (_, i) => `Item ${i + 1}`)
 
-type Props = {
-  isFullWidth?: boolean
-}
-
 const OPEN_ANALYST_MODAL_PARAM = "openAnalystModal"
 
-const Analysts = ({ isFullWidth }: Props) => {
+const Analysts = () => {
   const [showBecomeAnalystModal, setShowBecomeAnalystModal] = useState(false)
   const [showProjectAnalysisModal, setShowProjectAnalysisModal] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
   const { projectData } = useProjectDataContext()
   const [redirectionUrl, setRedirectionUrl] = usePersistedState("bp_redirectionUrl")
   const projectId = projectData?.id ?? ""
+  const isCuratorSet = projectData?.info.curator.fullName && projectData?.info.curator.avatarUrl
 
   const { data, isLoading } = useQuery({
     queryFn: () =>
@@ -94,7 +91,7 @@ const Analysts = ({ isFullWidth }: Props) => {
                 <Img size="6" isRounded key={item.analysis.id} src={item.analyst.twitterAvatar} />
               ))}
             </div>
-            <div className={twMerge("flex w-full flex-col gap-4", isFullWidth ? "md:flex-row" : "")}>
+            <div className={twMerge("flex w-full flex-col gap-4", !isCuratorSet ? "md:flex-row" : "")}>
               <div className="flex w-full gap-4">
                 <div className="flex flex-1 flex-col">
                   <span className="text-sm text-fg-tertiary">Analysts</span>
@@ -126,7 +123,7 @@ const Analysts = ({ isFullWidth }: Props) => {
             </div>
           </>
         ) : (
-          <NoAnalystsYet isFullWidth={!!isFullWidth} openBecomeAnalystModal={openBecomeAnalystModal} />
+          <NoAnalystsYet isFullWidth={!isCuratorSet} openBecomeAnalystModal={openBecomeAnalystModal} />
         )}
       </div>
       {showBecomeAnalystModal && <BecomeAnAnalystModal onClose={closeBecomeAnalystModal} />}

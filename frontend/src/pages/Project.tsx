@@ -14,6 +14,7 @@ import { twMerge } from "tailwind-merge"
 import Analysts from "@/components/Analysts/Analysts"
 import DataRoom from "@/components/LaunchPool/DataRoom"
 import BasicTokenInfo from "@/components/TokenGenerationSection/components/BasicTokenInfo"
+import DealComingFrom from "@/components/LaunchPool/DealComingFrom"
 
 const Project = () => {
   const { projectData, isLoading } = useProjectDataContext()
@@ -116,43 +117,12 @@ const Project = () => {
           )}
         </div>
 
-        <div className="flex w-full max-w-[792px] flex-col gap-4">
-          {/* Deal curated by: */}
-          <div className="flex w-full flex-col gap-4 md:max-w-[792px] md:flex-row">
-            <div className="flex w-full flex-[1] flex-col gap-3">
-              <h4 className="text-sm font-normal">Deal coming from</h4>
-
-              <div className="flex h-full flex-row items-start gap-4 rounded-lg border border-bd-secondary bg-default px-4 py-3 md:flex-col md:justify-between">
-                <Img src={projectData?.info.curator.avatarUrl} size="10" isFetchingLink={isLoading} isRounded />
-                <div className="flex w-full flex-col gap-4">
-                  <div className="flex min-w-[120px] flex-col">
-                    <Text
-                      text={projectData?.info.curator.fullName}
-                      className="text-base md:text-lg"
-                      isLoading={isLoading}
-                    />
-                    <Text
-                      text={projectData?.info.curator.position}
-                      className="text-sm text-fg-secondary"
-                      isLoading={isLoading}
-                    />
-                  </div>
-                  <div className="ml-[-56px] flex w-full flex-wrap gap-3 md:ml-0">
-                    {projectData?.info.curator.socials.map((social) => (
-                      <ExternalLink.Icon2
-                        className="min-w-[76px] max-w-[112px] flex-[1]"
-                        key={social.iconType}
-                        externalLink={social}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <Analysts />
-          </div>
-          <BasicTokenInfo />
+        <div className="flex w-full flex-col gap-4 md:max-w-[792px] md:flex-row">
+          <DealComingFrom />
+          <Analysts />
         </div>
+
+        <BasicTokenInfo isDraftPick={true} />
       </section>
 
       <TokenGenerationSection expandedTimeline={expandedTimeline} />
