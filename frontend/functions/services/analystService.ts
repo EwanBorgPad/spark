@@ -136,7 +136,7 @@ const postNewAnalysis = async ({db: d1, analysis}: PostNewAnalysisArgs): Promise
     articleUrl: analysis.articleUrl,
     impressions: analysis.impressions ?? 0,
     likes: analysis.likes ?? 0,
-    isApproved: false
+    isApproved: analysis.isApproved || false
   }
   
   const [ result ] = await db.insert(analysisTable).values(newAnalysis).returning()
@@ -182,6 +182,35 @@ const fetchTweetMetrics = async ({ ctx, articleUrl }: FetchTweetMetricsArgs) => 
     likes: data.favorite_count,
   };
 }
+const fetchTweetInfo = async ({ ctx, articleUrl }: FetchTweetMetricsArgs) => {
+  console.log("fetching tweet metrics");
+  const tweetScoutApiKey = ctx.env.TWEET_SCOUT_API_KEY
+  if (!tweetScoutApiKey) throw new Error("Missing api key for Tweet Scout!")
+
+  const body = JSON.stringify({ tweet_link: articleUrl });
+
+  const response = await fetch("https://api.tweetscout.io/v2/tweet-info", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      ApiKey: tweetScoutApiKey,
+      "Content-Type": "application/json",
+    },
+    body,
+  });
+
+  if (!response.ok) {
+    console.log(`Error fetching metrics for ${articleUrl}: ${response.statusText}`);
+    throw new Error(`Failed to fetch tweet metrics for ${articleUrl}`);
+  }
+  const data = (await response.json()) as TweetScoutTweetResponse;
+  
+  return {
+    user: data.user,
+    impressions: data.view_count,
+    likes: data.favorite_count,
+  };
+}
 
 // Function to approve an analysis
 const approveAnalysis = async ({ db, analysisId }: UpdateAnalysisArgs) => {
@@ -206,7 +235,8 @@ export const AnalystService = {
     getListOfAnalysis,
     approveAnalysis,
     declineAnalysis,
-    fetchTweetMetrics
+    fetchTweetMetrics,
+    fetchTweetInfo
 }
 
 function uuidv4() {

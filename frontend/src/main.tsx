@@ -29,7 +29,7 @@ import LandingPage from "./pages/LandingPage"
 import BlitzPools from "./pages/BlitzPools"
 import RedirectToGoatPools from "./components/LaunchPool/RedirectToGoatPools"
 import { ROUTES } from "./utils/routes"
-import BackOffice from './pages/BackOffice2'
+// import BackOffice from './pages/BackOffice2'
 import DraftPicks from "./pages/DraftPicks"
 import DraftPickPage from "./pages/DraftPickPage"
 import BackOfficeDashboard from "./pages/BackOfficeDashboard"
@@ -62,10 +62,6 @@ const router = createBrowserRouter([
         element: <LandingPage />,
       },
       // @backOffice
-      {
-        path: "/back-office",
-        element: <BackOffice />,
-      },
       {
         path: ROUTES.BACK_OFFICE,
         element: <BackOfficeDashboard />,

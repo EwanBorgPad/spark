@@ -13,12 +13,20 @@ type SelectorProps = {
   selected: string
   onChange: (value: string) => void
   placeholder?: string
-
+  error?: string
   baseColor?: string
   accentColor?: string
 }
 
-export function DropdownSelector({ options, selected, onChange, placeholder, baseColor, accentColor }: SelectorProps) {
+export function DropdownSelector({
+  options,
+  selected,
+  onChange,
+  placeholder,
+  baseColor,
+  accentColor,
+  error,
+}: SelectorProps) {
   const [isOpen, setIsOpen] = useState(false)
   const ref = useRef<HTMLDivElement | null>(null)
 
@@ -26,10 +34,10 @@ export function DropdownSelector({ options, selected, onChange, placeholder, bas
 
   const selectedLabel = options.find((opt) => opt.value === selected)?.label || placeholder || "Select an option"
 
-  baseColor ??= 'gray-200'
-  accentColor ??= 'gray-600'
-  baseColor = 'bg-' + baseColor
-  accentColor = 'hover:bg-' + accentColor
+  baseColor ??= "gray-200"
+  accentColor ??= "gray-600"
+  baseColor = "bg-" + baseColor
+  accentColor = "hover:bg-" + accentColor
 
   return (
     <div ref={ref} className="relative z-[10] w-64">
@@ -40,7 +48,9 @@ export function DropdownSelector({ options, selected, onChange, placeholder, bas
           "rounded-lg border px-4 py-2 shadow-md",
           baseColor,
           accentColor,
+          error && "ring-1 ring-bd-danger focus:ring-bd-danger",
         )}
+        type="button"
       >
         {selectedLabel}
         <Icon
@@ -51,7 +61,7 @@ export function DropdownSelector({ options, selected, onChange, placeholder, bas
       {isOpen && (
         <ul
           className={twMerge(
-            "absolute left-0 right-0 mt-1 max-h-[400px] overflow-y-scroll rounded-lg border shadow-lg",
+            "absolute left-0 right-0 mt-1 max-h-[300px] overflow-y-scroll rounded-lg border shadow-lg",
             baseColor,
             "transition-transform ease-in-out",
             isOpen && "animate-top-down",
@@ -71,6 +81,8 @@ export function DropdownSelector({ options, selected, onChange, placeholder, bas
           ))}
         </ul>
       )}
+
+      {error && <span className="-mt-1 text-xs text-fg-error-primary">{error}</span>}
     </div>
   )
 }
