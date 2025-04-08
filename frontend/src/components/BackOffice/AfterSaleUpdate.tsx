@@ -91,7 +91,7 @@ const AfterSaleUpdate = () => {
 
   return (
     <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[100px] font-normal text-fg-primary lg:py-[20px]">
-      <h1>Update Project</h1>
+      <h1 className="text-center text-2xl font-semibold">Update Project</h1>
       <DropdownSelector
         baseColor="secondary"
         accentColor="tertiary"

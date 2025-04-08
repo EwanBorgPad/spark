@@ -33,6 +33,7 @@ const COUNTRIES_BLACKLIST: string[] = [
   "YE", // Yemen
   "ZW"  // Zimbabwe
 ]
+const BLACKLISTED_REGIONS: string[] = ['UA-43', 'UA-40', 'UA-14', 'UA-09']
 
 type ENV = {
   DB: D1Database
@@ -67,10 +68,13 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const existingUser = await UserService.findUserByAddress({ db, address })
 
     const countryOfOrigin = ctx.request.cf?.country ?? 'UnknownCountry'
+    const regionOfOrigin = ctx.request.cf?.regionCode
+    console.log(ctx.request.cf);
 
     if (COUNTRIES_BLACKLIST.includes(countryOfOrigin)) {
-      const message = `Access denied for country (${countryOfOrigin}) per countries blacklist.`
-      await reportError(db, new Error(message))
+      const message = `Access currently denied for country ${countryOfOrigin}.`
+      const dbErrorMessage = `Access currently denied for country ${countryOfOrigin}-${regionOfOrigin}.`
+      await reportError(db, new Error(dbErrorMessage))
       return jsonResponse({ message }, 403)
     }
 

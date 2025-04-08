@@ -28,7 +28,7 @@ const BackOfficeDashboard = () => {
     <div className="relative flex min-h-[70vh] w-full max-w-[1400px] flex-col gap-6 px-20 py-4 pt-[86px]">
       {/* Header */}
       {!renderedFeature && (
-        <header className="flex w-full items-center justify-between p-4 shadow">
+        <header className="flex w-full items-center justify-between p-4 pt-5 shadow">
           <h1 className="w-full text-center text-2xl font-semibold">Back Office Dashboard</h1>
         </header>
       )}
@@ -56,8 +56,8 @@ const BackOfficeDashboard = () => {
           ) : (
             <div className="absolute left-[10%] top-[100px] z-[11]">
               <Button
-                btnText="BACK"
-                color="secondary"
+                btnText="Back"
+                color="tertiary"
                 onClick={() => setRenderedFeature(null)}
                 prefixElement={<Icon icon="SvgArrowLeft" />}
               />
