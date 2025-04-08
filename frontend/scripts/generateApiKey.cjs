@@ -24,4 +24,4 @@ function generateApiKeys(keyNames) {
 }
 
 
-generateApiKeys(["local_refresh_stats"])
+generateApiKeys([])

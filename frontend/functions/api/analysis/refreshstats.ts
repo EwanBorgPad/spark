@@ -1,4 +1,4 @@
-import { analysisTable } from '../../../shared/drizzle-schema'
+import { Analysis, analysisTable } from '../../../shared/drizzle-schema'
 import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 import { drizzle, DrizzleD1Database } from "drizzle-orm/d1"
 import { eq } from "drizzle-orm"
@@ -29,10 +29,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       const tweetScoutApiKey = ctx.env.TWEET_SCOUT_API_KEY
       if (!tweetScoutApiKey) throw new Error("Missing api key for Tweet Scout!")
 
-      const allAnalyses = await db.select().from(analysisTable).where(eq(analysisTable.isApproved, true))
-
       // Fetch a single tweet's metrics from Tweet Scout API.
-      const fetchTweetMetrics = async (analysis: typeof allAnalyses[number]): Promise<FetchResult> => {
+      const fetchTweetMetrics = async (analysis: Analysis): Promise<FetchResult> => {
         console.log(`Fetching metrics for articleUrl: ${analysis.articleUrl}`);
 
         const body = JSON.stringify({ tweet_link: analysis.articleUrl });
@@ -74,6 +72,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
         const allAnalyses = await db.select().from(analysisTable).all();
         console.log(`Total articles to process: ${allAnalyses.length}`);
+        if (!allAnalyses) {
+          return []
+        }
 
         const batchSize = 20; // Maximum requests per second
         const delayBetweenBatches = 1000; // 1 second delay between batches
@@ -102,7 +103,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
         return results;
       };
       const results: FetchResult[]  = await fetchMetricsInBatches()
-      if (!results) throw new Error ('no results')
+      if (!results || !results.length) {
+        return jsonResponse({ message: "No results" }, 404)
+      }
 
       await updateRowsInBatch({updates: results, db})
 
