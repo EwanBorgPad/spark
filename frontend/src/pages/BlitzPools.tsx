@@ -1,8 +1,5 @@
-import { useEffect, useState, useMemo, useRef } from "react"
-import { backendApi } from "@/data/backendApi"
-import { useTranslation } from "react-i18next"
-import { useQuery } from "@tanstack/react-query"
 import { ScrollRestoration } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 import orcaLogo from "@/assets/launchPools/orca-logo.png"
 import jupiterLogo from "@/assets/launchPools/jupiter-logo.png"
@@ -11,39 +8,15 @@ import swissborgLogo from "@/assets/launchPools/swissborg-logo.png"
 import blitzPoolsLogo from "@/assets/launchPools/blitz-pools-logo.png"
 
 import Img from "@/components/Image/Img"
-import { GetProjectsResponse } from "shared/models"
-import { LaunchPoolCard } from "@/components/Cards/LaunchPoolCard"
-import { ExpandedProject, processProjects } from "@/utils/projects-helper"
-import { CompletedLaunchPoolTable } from "@/components/Tables/CompletedLaunchPoolTable"
-import { CompletedLaunchPoolCard } from "@/components/Cards/CompletedLaunchPoolCard"
+import { ActiveProjects } from "@/components/Projects/ActiveProjects"
+import { CompletedProjects } from "@/components/Projects/CompletedProjects"
 import { useWindowSize } from "@/hooks/useWindowSize"
 
 const displayLogos = [swissborgLogo, jupiterLogo, orcaLogo, raydiumLogo]
 
 const BlitzPools = () => {
-  const [activeProjects, setActiveProjects] = useState<ExpandedProject[]>([])
   const { t } = useTranslation()
   const { isMobile } = useWindowSize()
-
-  const { data, isLoading } = useQuery<GetProjectsResponse>({
-    queryFn: () =>
-      backendApi.getProjects({
-        page: 1,
-        limit: 999,
-        projectType: "blitz",
-        completionStatus: "active",
-        sortBy: "date",
-        sortDirection: "asc",
-      }),
-    queryKey: ["getProjects", "blitz", "active", "date", "asc"],
-  })
-
-  const skeletonItems = Array.from({ length: 3 }, (_, i) => i)
-
-  useEffect(() => {
-    if (!data?.projects) return
-    setActiveProjects(processProjects(data.projects))
-  }, [data?.projects])
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full select-none flex-col items-center bg-transparent pt-[48px] md:pt-[68px]">
@@ -91,9 +64,7 @@ const BlitzPools = () => {
       <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
         <div className="flex w-full max-w-[1080px] flex-col items-center">
           <ul className="grid grid-cols-1 place-content-center justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {!isLoading
-              ? activeProjects?.map((project) => <LaunchPoolCard project={project} key={"LaunchPoolCard_" + project.id} />)
-              : skeletonItems.map((item) => <LaunchPoolCard key={item} isLoading project={null} />)}
+            <ActiveProjects projectType="blitz" />
           </ul>
         </div>
       </section>
@@ -103,18 +74,9 @@ const BlitzPools = () => {
           <h3 className="mb-8 text-center text-[28px] font-semibold leading-[120%] md:w-full md:text-[30px] lg:text-[32px]">
             {"Completed Blitz Pools"}
           </h3>
-          {isMobile ? (
-            <div className="flex flex-col items-center gap-6">
-              <ul className="grid grid-cols-1 place-items-center justify-center gap-6 w-full max-w-[344px] mx-auto">
-                <CompletedLaunchPoolCard projectStatus="completed" projectType="blitz" />
-              </ul>
-            </div>
-          ) : (
-            <CompletedLaunchPoolTable projectStatus="completed" projectType="blitz"/>
-          )}
+          <CompletedProjects projectType="blitz" />
         </div>
       </section>
-
       <ScrollRestoration />
     </main>
   )

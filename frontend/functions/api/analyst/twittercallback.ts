@@ -23,8 +23,12 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
 
 
     if (!code || !state ) {
+      const locationBasePath = getHeaderLocationBasePath(new URL(url))
       return new Response(JSON.stringify({ message: "Code, state or project url is missing!" }), {
-        status: 400,
+        status: 302,
+        headers: { 
+          "Location": `${locationBasePath}/draft-picks/null`
+        }
       })
     }
 
@@ -70,6 +74,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     if (!existingAnalyst) {
       console.log("User not found in db, inserting...")
       const newAnalyst = await AnalystService.createNewAnalyst({db, ...twitterUserResponseBody.data })
+      console.log("🚀 ~ newAnalyst:", newAnalyst)
       console.log("User inserted into db.")
 
       return jsonResponse({analyst: newAnalyst}, {
@@ -91,12 +96,13 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
           twitterUsername
         }
       })
+      console.log("🚀 ~ updatedAnalyst:", updatedAnalyst)
 
       console.log("✅ User twitter id updated, returning updated version of analyst.")
       return jsonResponse({ analyst: updatedAnalyst }, {
         statusCode: 302,
         headers: { 
-          "Location": `${locationBasePath}/draft-picks/null?analystId=${existingAnalyst.id}`
+          "Location": `${locationBasePath}/draft-picks/null?analystId=${updatedAnalyst.id}`
         }
       })
     }

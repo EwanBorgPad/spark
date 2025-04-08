@@ -13,6 +13,7 @@ import { VouchYourSupport } from "@/components/EligibilitySection/JoinThePool"
 import DataRoom from "@/components/LaunchPool/DataRoom"
 import BasicTokenInfo from "@/components/TokenGenerationSection/components/BasicTokenInfo"
 import Analysts from "@/components/Analysts/Analysts"
+import DealComingFrom from "@/components/LaunchPool/DealComingFrom"
 
 const DraftPickPage = () => {
   const { projectData, isLoading } = useProjectDataContext()
@@ -96,32 +97,12 @@ const DraftPickPage = () => {
           </div>
         </div>
 
-        <section className="flex w-full justify-center">
-          <Analysts isFullWidth={true} />
-        </section>
+        <div className="flex w-full flex-col gap-4 md:max-w-[792px] md:flex-row">
+          <DealComingFrom />
+          <Analysts />
+        </div>
 
         <BasicTokenInfo isDraftPick={true} />
-
-        {/* Deal curated by: */}
-        {/* <div className="flex w-full flex-col gap-3 lg:max-w-[760px]">
-          <h4 className="text-sm font-normal">Deal coming from</h4>
-          <div className="w-full rounded-lg bg-gradient-to-r from-brand-primary/50 to-brand-secondary/15 p-[1px]">
-            <div className="flex h-full w-full flex-col items-start justify-between gap-4 rounded-[7px] bg-gradient-to-br from-brand-dimmed-1 via-brand-dimmed-2 via-50% to-brand-dimmed-2 px-4 py-3 lg:flex-row lg:items-center lg:bg-gradient-to-r">
-              <div className="flex items-center gap-4">
-                <Img src={projectData?.info.curator.avatarUrl} size="10" isFetchingLink={isLoading} isRounded />
-                <div className="flex min-w-[120px] flex-col">
-                  <Text text={projectData?.info.curator.fullName} isLoading={isLoading} />
-                  <Text text={projectData?.info.curator.position} isLoading={isLoading} />
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {projectData?.info.curator.socials.map((social) => (
-                  <ExternalLink key={social.iconType} externalLink={social} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div> */}
       </section>
 
       <VouchYourSupport />

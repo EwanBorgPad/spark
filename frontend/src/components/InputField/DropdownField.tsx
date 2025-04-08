@@ -7,6 +7,7 @@ import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick"
 type DropdownFieldProps = HTMLProps<"input"> & {
   containerClassName?: HTMLProps["className"]
   inputClassName?: HTMLProps["className"]
+  dropdownClassName?: HTMLProps["className"]
   error?: string
   label?: string
   value: OptionType["id"] | undefined
@@ -21,6 +22,7 @@ type OptionType = {
 
 export const DropdownField = ({
   containerClassName: _containerClassName,
+  dropdownClassName,
   inputClassName,
   error,
   label,
@@ -45,8 +47,7 @@ export const DropdownField = ({
     inputClassName,
   )
 
-  const selectedItemLabel =
-    options.find((item) => item.id === value)?.label ?? ""
+  const selectedItemLabel = options.find((item) => item.id === value)?.label ?? ""
 
   return (
     <div className={containerClassName}>
@@ -71,7 +72,12 @@ export const DropdownField = ({
           className={twMerge("absolute right-2 select-none transition-transform", dropdownOpened && "rotate-180")}
         />
         {dropdownOpened && (
-          <div className="absolute left-0 top-11 z-[101] flex max-h-[400px] w-full  flex-col overflow-y-scroll rounded-lg bg-secondary py-1.5 shadow shadow-slate-400/20">
+          <div
+            className={twMerge(
+              "absolute left-0 top-11 z-[101] flex max-h-[400px] w-full  flex-col overflow-y-scroll rounded-lg bg-secondary py-1.5 shadow shadow-slate-400/20",
+              dropdownClassName,
+            )}
+          >
             {options.map((option) => (
               <div
                 key={option.id}

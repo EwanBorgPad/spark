@@ -24,6 +24,4 @@ function generateApiKeys(keyNames) {
 }
 
 
-generateApiKeys([
-
-])
+generateApiKeys([])

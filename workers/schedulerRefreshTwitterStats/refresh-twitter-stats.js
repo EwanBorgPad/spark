@@ -2,16 +2,16 @@
 export default {
     async scheduled(event, env, ctx) {
       try {
-        const { ADMIN_API_KEY, REFRESH_TWITTER_STATS } = env
+        const { ADMIN_API_KEY, REFRESH_TWITTER_STATS_URL } = env
   
-        if (!ADMIN_API_KEY || !REFRESH_TWITTER_STATS) throw new Error('Misconfigured env!')
+        if (!ADMIN_API_KEY || !REFRESH_TWITTER_STATS_URL) throw new Error('Misconfigured env!')
   
         console.log(`Refetching twitter stats. (${new Date().toISOString()})`)
         
-        const response = await fetch(REFRESH_TWITTER_STATS, {
-          method: 'POST',
-          headers: { 'Authorization': ADMIN_API_KEY },
-        })
+        const response = await fetch(REFRESH_TWITTER_STATS_URL, {
+          method: "GET",
+          headers: { Authorization: ADMIN_API_KEY },
+        });
 
         if (!response.ok) {
           throw new Error(await response.text())

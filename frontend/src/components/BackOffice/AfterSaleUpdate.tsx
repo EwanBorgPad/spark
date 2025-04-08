@@ -29,23 +29,20 @@ const formDefaultValues: FormType = {
 type FormType = z.infer<typeof formSchema>
 
 // component
-const BackOffice = () => {
+const AfterSaleUpdate = () => {
   const { address, signMessage, isWalletConnected } = useWalletContext()
 
   const { data, refetch } = useQuery<GetProjectsResponse>({
     queryFn: () => backendApi.getProjects({ page: 1, limit: 999 }),
     queryKey: ["getProjects", "all"],
   })
-  const [selectedProjectId, setSelectedProjectId] = useState('')
+  const [selectedProjectId, setSelectedProjectId] = useState("")
 
-  const dropdownOptions = data 
-    ? data.projects.map(project => ({ label: project.info.title, value: project.id })) 
-    : []
-  const selectedProject = data && selectedProjectId 
-    && data.projects.find(project => project.id === selectedProjectId)
+  const dropdownOptions = data ? data.projects.map((project) => ({ label: project.info.title, value: project.id })) : []
+  const selectedProject = data && selectedProjectId && data.projects.find((project) => project.id === selectedProjectId)
 
   const {
-    handleSubmit, 
+    handleSubmit,
     control,
     reset,
     formState: { isDirty },
@@ -58,22 +55,24 @@ const BackOffice = () => {
   // create project - api
   const { mutate: postAfterSaleUpdate, isPending } = useMutation({
     mutationFn: async (payload: PostAfterSaleUpdateArgs) => backendApi.postAfterSaleUpdate(payload),
-    onSuccess: async (_, _variables) => { 
-      toast.success("Project updated!") 
+    onSuccess: async (_, _variables) => {
+      toast.success("Project updated!")
       await refetch()
       if (selectedProject) reset(selectedProject.info)
     },
-    onError: (error) => { toast.error(error.message) },
+    onError: (error) => {
+      toast.error(error.message)
+    },
   })
 
   useEffect(() => {
     if (selectedProject) {
       // manually resetting fields because of nullability
       reset({
-        claimUrl: selectedProject.info.claimUrl ?? '',
-        tweetUrl: selectedProject.info.tweetUrl ?? '',
-        tokenContractUrl: selectedProject.info.tokenContractUrl ?? '',
-        poolContractUrl: selectedProject.info.poolContractUrl ?? '',
+        claimUrl: selectedProject.info.claimUrl ?? "",
+        tweetUrl: selectedProject.info.tweetUrl ?? "",
+        tokenContractUrl: selectedProject.info.tokenContractUrl ?? "",
+        poolContractUrl: selectedProject.info.poolContractUrl ?? "",
       })
     }
   }, [selectedProject, reset])
@@ -92,7 +91,7 @@ const BackOffice = () => {
 
   return (
     <main className="z-[10] flex w-full max-w-full flex-col items-center gap-10 overflow-y-hidden py-[100px] font-normal text-fg-primary lg:py-[20px]">
-      <h1>Update Project</h1>
+      <h1 className="text-center text-2xl font-semibold">Update Project</h1>
       <DropdownSelector
         baseColor="secondary"
         accentColor="tertiary"
@@ -177,4 +176,4 @@ const BackOffice = () => {
   )
 }
 
-export default BackOffice
+export default AfterSaleUpdate

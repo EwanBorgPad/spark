@@ -54,8 +54,10 @@ const Rewards = () => {
 
   const rewardDistributionDate =
     projectData?.info.timeline.find((item) => item.id === "REWARD_DISTRIBUTION")?.date || null
-
-  const btnText = `Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount)} ${ticker}`
+  const isNan = myRewardsResponse.rewards.claimableAmount.uiAmount === "NaN"
+  const btnText = isNan
+    ? "Claim"
+    : `Claim ${formatCurrencyAmount(myRewardsResponse.rewards.claimableAmount.uiAmount)} ${ticker}`
 
   const claimUrl = projectData?.info.claimUrl
 
@@ -73,28 +75,25 @@ const Rewards = () => {
       </div>
       <TgeWrapper label={t("sale_over.monthly_payout")}>
         {nextScheduledPayment ? (
-          <>
-            <CountDownTimer
-              labelAboveTimer={`Next Payment: ${formatDateForTimer(new Date(nextScheduledPayment.date))}`}
-              endOfEvent={new Date(nextScheduledPayment.date)}
-            />
-            <div className="w-full px-4 pb-6">
-              {nextScheduledPayment &&
-                (claimUrl ? (
-                  <a href={claimUrl} target="_blank" rel="noopener noreferrer">
-                    <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
-                  </a>
-                ) : (
-                  <Button btnText={btnText} size="lg" disabled={true} className="w-full py-3 font-normal" />
-                ))}
-            </div>
-          </>
+          <CountDownTimer
+            labelAboveTimer={`Next Payment: ${formatDateForTimer(new Date(nextScheduledPayment.date))}`}
+            endOfEvent={new Date(nextScheduledPayment.date)}
+          />
         ) : (
           <div className="flex items-center justify-center gap-2 px-4 pb-6 pt-12">
             <Icon icon="SvgCircledCheckmark" className="text-lg text-brand-primary" />
-            <span>{t("reward_distribution.all_rewards_claimed")}</span>
+            <span>All previous payments are available for claim.</span>
           </div>
         )}
+        <div className="w-full px-4 pb-6">
+          {claimUrl ? (
+            <a href={claimUrl} target="_blank" rel="noopener noreferrer">
+              <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
+            </a>
+          ) : (
+            <Button btnText={btnText} size="lg" disabled={true} className="w-full py-3 font-normal" />
+          )}
+        </div>
 
         {/* Uncomment when claimed data per user is ready */}
         {/* {myRewardsResponse?.rewards.hasRewardsDistributionStarted && (
