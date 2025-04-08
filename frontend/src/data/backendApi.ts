@@ -63,7 +63,8 @@ const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> =
   }
 
   if (!response.ok) {
-    throw new Error("Something went wrong...")
+    const responseBody = (await response.json()) as { message?: string }
+    throw new Error(responseBody?.message || "Something went wrong...")
   }
 }
 

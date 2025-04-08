@@ -37,7 +37,9 @@ window.Buffer = Buffer
 
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    onError: (error) => toast.error(error.message, { theme: "colored" }), // catch all useQuery errors
+    onError: (error) => {
+      toast.error(error.message, { theme: "colored" })
+    }, // catch all useQuery errors
   }),
   defaultOptions: {
     queries: {
