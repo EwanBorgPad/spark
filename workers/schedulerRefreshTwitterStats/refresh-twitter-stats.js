@@ -9,9 +9,9 @@ export default {
         console.log(`Refetching twitter stats. (${new Date().toISOString()})`)
         
         const response = await fetch(REFRESH_TWITTER_STATS_URL, {
-          method: 'POST',
-          headers: { 'Authorization': ADMIN_API_KEY },
-        })
+          method: "GET",
+          headers: { Authorization: ADMIN_API_KEY },
+        });
 
         if (!response.ok) {
           throw new Error(await response.text())
