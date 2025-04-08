@@ -25,7 +25,7 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     if (!code || !state ) {
       const locationBasePath = getHeaderLocationBasePath(new URL(url))
       return new Response(JSON.stringify({ message: "Code, state or project url is missing!" }), {
-        status: 400,
+        status: 302,
         headers: { 
           "Location": `${locationBasePath}/draft-picks/null`
         }

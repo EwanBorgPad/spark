@@ -16,6 +16,7 @@ import {
 import {
   AnalysisSortBy,
   AnalysisSortDirection,
+  AnalystRoleEnum,
   analystSchema,
   GetListOfAnalysisResponse,
   NewAnalysisSchemaType,
@@ -52,6 +53,7 @@ const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
 const GET_ANALYST_URL = API_BASE_URL + "/analyst"
 const POST_ANALYSIS = API_BASE_URL + "/analysis"
 const GET_ANALYSIS_LIST = API_BASE_URL + "/analysis"
+const MANUALLY_ADD_ANALYSIS = API_BASE_URL + "/analysis/manuallyadd"
 
 const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
   const response = await fetch(...args)
@@ -228,9 +230,9 @@ const getProjects = async ({
   page: number
   limit: number
   projectType?: ProjectModel["info"]["projectType"]
-  completionStatus?: 'completed' | 'active' | 'all'
-  sortBy?: 'name' | 'date' | 'raised' | 'fdv' | 'participants' | 'commitments' | 'sector'
-  sortDirection?: 'asc' | 'desc'
+  completionStatus?: "completed" | "active" | "all"
+  sortBy?: "name" | "date" | "raised" | "fdv" | "participants" | "commitments" | "sector"
+  sortDirection?: "asc" | "desc"
   cacheBuster?: string // Optional cache busting parameter
 }): Promise<GetProjectsResponse> => {
   const url = new URL(GET_PROJECT_API_URL, window.location.href)
@@ -583,6 +585,32 @@ const getAnalysisList = async ({
   return json
 }
 
+type ManuallyAddAnalysisArgs = {
+  projectId: string
+  articleUrl: string
+  analystRole: AnalystRoleEnum
+  auth: {
+    address: string
+    message: string
+    signature: number[]
+  }
+}
+
+const manuallyAddAnalysis = async (args: ManuallyAddAnalysisArgs): Promise<Analysis> => {
+  const url = new URL(MANUALLY_ADD_ANALYSIS, window.location.href)
+  const request = JSON.stringify(args)
+  const response = await fetch(url, {
+    method: "POST",
+    body: request,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
 export const backendApi = {
   getProject,
   getProjects,
@@ -611,4 +639,5 @@ export const backendApi = {
   postNewAnalysis,
   getAnalysisList,
   updateAnalysisApproval,
+  manuallyAddAnalysis,
 }

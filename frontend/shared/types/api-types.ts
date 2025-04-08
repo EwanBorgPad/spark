@@ -19,7 +19,7 @@ type Entity = {
   type: string
 }
 
-type User = {
+export type TweetScoutUser = {
   avatar: string
   can_dm: boolean
   created_at: string
@@ -45,6 +45,6 @@ export type TweetScoutTweetResponse = {
   quote_count: number
   reply_count: number
   retweet_count: number
-  user: User
+  user: TweetScoutUser
   view_count: number
 }

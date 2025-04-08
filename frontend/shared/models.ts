@@ -326,3 +326,9 @@ export type DepositStatus = {
   maxAmountAllowed: TokenAmountModel
   startTime: Date
 }
+
+export type AdminAuthFields = {
+  address: string
+  message: string
+  signature: number[]
+}
