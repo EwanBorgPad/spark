@@ -126,7 +126,7 @@
 
   "investment.intent.quest.heading": "Express Your Investment Interest",
   "investment.intent.quest.button": "Enter Amount",
-  "investment.intent.quest.description": "Let us know how much you would like to invest",
+  "investment.intent.quest.description": "Let us know how much are you interested to invest during TGE",
   "investment.intent.quest.placeholder": "Enter amount in USDC (e.g. 500)",
   "investment.intent.quest.modal.button": "Confirm Interest",
   "investment.intent.quest.message": "I acknowledge that I plan to invest {{ amount }} in {{ projectId }}",
@@ -150,7 +150,7 @@
   "referral.message": "I acknowledge that I have been referred to {{ projectId }} by {{ twitterHandle }}",
 
   "email.provide.heading": "Provide your email",
-  "email.provide.description": "Your email will not be sold—it will only be used to communicate updates about your investments and upcoming opportunities.",
+  "email.provide.description": "Your email will not be sold — it will only be used to communicate updates about your investments and upcoming opportunities.",
   "email.provide.button": "Provide Email",
   "email.register.placeholder": "Enter your email",
   "email.provide.message": "I acknowledge that I plan to provide my email",

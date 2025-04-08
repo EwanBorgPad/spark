@@ -19,8 +19,9 @@ import { useParams } from "react-router-dom"
 type QuestComponentProps = {
   quest: QuestWithCompletion
   autoCheck?: boolean
+  isCompliance?: boolean
 }
-export const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
+export const QuestComponent = ({ quest, autoCheck, isCompliance }: QuestComponentProps) => {
   const { isWalletConnected } = useWalletContext()
   const { t } = useTranslation()
 
@@ -89,6 +90,8 @@ export const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
 
   if (!typeData) return <></>
 
+  const isRequired = isCompliance && !quest?.isOptional
+
   return (
     <div
       className={twMerge(
@@ -96,7 +99,10 @@ export const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
       )}
     >
       <div className="flex w-full items-center justify-between">
-        <span className={twMerge("font-medium", isCompleted && "opacity-50")}>{typeData.label}</span>
+        <span className={twMerge("font-medium", isCompleted && "opacity-50")}>
+          {typeData.label}
+          {isRequired && " (Required)"}
+        </span>
         <Icon
           icon={isCompleted ? "SvgRoundCheckmark" : "SvgEmptyCircle"}
           className={twMerge("text-xl", isCompleted ? "text-fg-success-primary" : "")}
@@ -230,6 +236,7 @@ export const TierWrapper = ({
   tierWithCompletion: TierWithCompletion | null
   isCompliant?: boolean
 }) => {
+  const { isWalletConnected } = useWalletContext()
   const { t } = useTranslation()
 
   const getDescription = (
@@ -247,6 +254,7 @@ export const TierWrapper = ({
   const description = getDescription(tier)
 
   const getNotEligibleMessage = () => {
+    if (!isWalletConnected) return ""
     const allCompliancesQuest = tier.quests.find((quest) => quest.type === "ALL_LISTED_COMPLIANCES")
     const areAllCompliancesRequired = Boolean(allCompliancesQuest)
     if (!areAllCompliancesRequired) {
@@ -260,7 +268,7 @@ export const TierWrapper = ({
     if (!tierWithCompletion) return "Not Eligible"
 
     const areAllCompliancesCompleted = tierWithCompletion.quests.find((quest) => quest.isCompleted)
-    if (!areAllCompliancesCompleted) return "Not Eligible - Finish Step 2"
+    if (!areAllCompliancesCompleted) return "Not Eligible - Finish Entire Step 2"
     return "Not Eligible"
   }
 

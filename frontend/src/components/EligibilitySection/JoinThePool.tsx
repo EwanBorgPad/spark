@@ -67,7 +67,7 @@ const ConnectWalletStep = () => {
 
       <div className="flex w-full max-w-[432px] items-center justify-between">
         <div className="flex w-full flex-col items-start">
-          <span className="text-base md:text-lg">Connect Wallet</span>
+          <span className="text-base md:text-lg">Step 1: Connect Wallet</span>
         </div>
         {!isWalletConnected && <ConnectButton />}
       </div>
@@ -106,11 +106,11 @@ const EligibilityCompliancesSection = ({
       <SideElements number={2} isCompleted={isCompliant} hasVerticalElement={!isLastStep} />
 
       <div id="compliancesContainer" className="flex w-full max-w-[432px] flex-col gap-2 rounded-lg">
-        <span className="text-base md:text-lg">{`Accept ToU ${isDraftPicks ? "& Express your Interest" : ""}`}</span>
+        <span className="text-base md:text-lg">Step 2: Provide Basic Info</span>
         {!isLoading
           ? complianceQuests
-            ? complianceQuests?.map((quest) => <QuestComponent key={quest.type} quest={quest} />)
-            : DEFAULT_COMPLIANCES.map((quest) => <QuestComponent key={quest.type} quest={quest} />)
+            ? complianceQuests?.map((quest) => <QuestComponent key={quest.type} quest={quest} isCompliance />)
+            : DEFAULT_COMPLIANCES.map((quest) => <QuestComponent key={quest.type} quest={quest} isCompliance />)
           : skeletonCompliances.map((quest) => <Skeleton.Compliance key={quest} />)}
       </div>
     </section>
@@ -175,11 +175,11 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
 
   return (
     <section id="tiersSection" className={twMerge("relative flex w-full items-start gap-2 md:gap-5", className)}>
-      <SideElements number={3} isCompleted={isConfirmed} hasVerticalElement={false} className="mt-0.5" />
+      <SideElements number={3} isCompleted={isConfirmed} hasVerticalElement={false} className="mt-[-2px]" />
       <div className="flex w-full max-w-[432px] flex-col">
         <div id="tiersHeading" className="flex w-full flex-col items-start gap-3 pb-4">
           <div className="flex w-full items-center justify-between">
-            <span className="text-base md:text-lg">Whitelist for the desired tier</span>
+            <span className="text-base md:text-lg">Step 3: Whitelist for the desired tier</span>
             {/* a badge that displays highest whitelisted tier */}
             {/* {eligibilityStatus && (
               <Badge.Confirmation
