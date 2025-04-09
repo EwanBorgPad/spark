@@ -268,7 +268,7 @@ export const TierWrapper = ({
     if (!tierWithCompletion) return "Not Eligible"
 
     const areAllCompliancesCompleted = tierWithCompletion.quests.find((quest) => quest.isCompleted)
-    if (!areAllCompliancesCompleted) return "Not Eligible - Finish Entire Step 2"
+    if (!areAllCompliancesCompleted) return "Not Eligible - Finish Step 2"
     return "Not Eligible"
   }
 

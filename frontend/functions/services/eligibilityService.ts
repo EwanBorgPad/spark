@@ -197,7 +197,7 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
         const providedInvestmentIntentForProject = Boolean(user.json.investmentIntent?.[projectId])
         const providedEmailForProject = Boolean(user.json.emailData?.providedAt)
 
-        const areAllCompliancesCompleted = hasAcceptedTermsOfUse &&providedInvestmentIntentForProject && providedEmailForProject
+        const areAllCompliancesCompleted = hasAcceptedTermsOfUse && providedInvestmentIntentForProject && providedEmailForProject
         
         tierQuestsWithCompletion.push({
           ...quest,
