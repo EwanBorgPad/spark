@@ -257,19 +257,15 @@ export const TierWrapper = ({
     if (!isWalletConnected) return ""
     const allCompliancesQuest = tier.quests.find((quest) => quest.type === "ALL_LISTED_COMPLIANCES")
     const areAllCompliancesRequired = Boolean(allCompliancesQuest)
-    if (!areAllCompliancesRequired) {
-      if (isCompliant) {
-        return "Not Eligible"
-      } else {
-        // public tier
-        return "Not Eligible - Accept ToU"
-      }
+    if (areAllCompliancesRequired) {
+      if (!tierWithCompletion) return "Not Eligible"
+      const areAllCompliancesCompleted = tierWithCompletion.quests.find(
+        (quest) => quest.type === "ALL_LISTED_COMPLIANCES" && quest.isCompleted,
+      )
+      if (areAllCompliancesRequired && !areAllCompliancesCompleted) return "Not Eligible - Finish Step 2"
+      return "Not Eligible"
     }
-    if (!tierWithCompletion) return "Not Eligible"
-
-    const areAllCompliancesCompleted = tierWithCompletion.quests.find((quest) => quest.isCompleted)
-    if (!areAllCompliancesCompleted) return "Not Eligible - Finish Step 2"
-    return "Not Eligible"
+    return "Not Eligible - Accept ToU"
   }
 
   const isEligible = isCompliant && tierWithCompletion?.isCompleted

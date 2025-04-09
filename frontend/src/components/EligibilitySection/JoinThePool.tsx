@@ -67,7 +67,7 @@ const ConnectWalletStep = () => {
 
       <div className="flex w-full max-w-[432px] items-center justify-between">
         <div className="flex w-full flex-col items-start">
-          <span className="text-base md:text-lg">Connect Wallet</span>
+          <span className="text-base md:text-lg">Step 1: Connect Wallet</span>
         </div>
         {!isWalletConnected && <ConnectButton />}
       </div>
@@ -106,7 +106,7 @@ const EligibilityCompliancesSection = ({
       <SideElements number={2} isCompleted={isCompliant} hasVerticalElement={!isLastStep} />
 
       <div id="compliancesContainer" className="flex w-full max-w-[432px] flex-col gap-2 rounded-lg">
-        <span className="text-base md:text-lg">Provide Basic Info</span>
+        <span className="text-base md:text-lg">Step 2: Register</span>
         {!isLoading
           ? complianceQuests
             ? complianceQuests?.map((quest) => <QuestComponent key={quest.type} quest={quest} isCompliance />)
@@ -179,7 +179,7 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
       <div className="flex w-full max-w-[432px] flex-col">
         <div id="tiersHeading" className="flex w-full flex-col items-start gap-3 pb-4">
           <div className="flex w-full items-center justify-between">
-            <span className="text-base md:text-lg">Whitelist for the desired tier</span>
+            <span className="text-base md:text-lg">Step 3: Whitelist for the desired tier</span>
           </div>
           {!eligibilityStatus?.isCompliant && isWalletConnected && (
             <div className={twMerge("text-fg-primary")}>
