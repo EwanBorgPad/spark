@@ -32,11 +32,7 @@ const SaleOverResults = () => {
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="w-fit text-sm text-fg-tertiary">{t("sale_over.total_amount_raised")}</span>
         <Text
-          text={
-            projectId === "moemate"
-              ? "$375,000"
-              : formatCurrencyAmount(Number(saleData?.totalAmountRaised.amountInUsd), { withDollarSign: true })
-          }
+          text={formatCurrencyAmount(Number(saleData?.totalAmountRaised.amountInUsd), { withDollarSign: true })}
           isLoading={isLoading}
           className="w-fit text-base leading-7 text-fg-primary"
         />
