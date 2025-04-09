@@ -106,11 +106,11 @@ const EligibilityCompliancesSection = ({
       <SideElements number={2} isCompleted={isCompliant} hasVerticalElement={!isLastStep} />
 
       <div id="compliancesContainer" className="flex w-full max-w-[432px] flex-col gap-2 rounded-lg">
-        <span className="text-base md:text-lg">{`Accept ToU ${isDraftPicks ? "& Express your Interest" : ""}`}</span>
+        <span className="text-base md:text-lg">Provide Basic Info</span>
         {!isLoading
           ? complianceQuests
-            ? complianceQuests?.map((quest) => <QuestComponent key={quest.type} quest={quest} />)
-            : DEFAULT_COMPLIANCES.map((quest) => <QuestComponent key={quest.type} quest={quest} />)
+            ? complianceQuests?.map((quest) => <QuestComponent key={quest.type} quest={quest} isCompliance />)
+            : DEFAULT_COMPLIANCES.map((quest) => <QuestComponent key={quest.type} quest={quest} isCompliance />)
           : skeletonCompliances.map((quest) => <Skeleton.Compliance key={quest} />)}
       </div>
     </section>
@@ -147,7 +147,7 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
       return projectData.info.tiers.map((tier) => {
         // tier container
         return (
-          <TierWrapper key={tier.id} tier={tier}>
+          <TierWrapper key={tier.id} tier={tier} tierWithCompletion={null}>
             {tier.quests.map((quest) => (
               <QuestComponent key={quest.type} quest={{ ...quest, ...restOfQuest }} />
             ))}
@@ -161,7 +161,7 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
         const tierQuests = sortByCompletionStatus(tier.quests)
 
         return (
-          <TierWrapper key={tier.id} tier={tier} isCompliant={isCompliant}>
+          <TierWrapper key={tier.id} tier={tier} isCompliant={isCompliant} tierWithCompletion={tier}>
             {tierQuests.map((quest) => (
               <QuestComponent key={quest.type} quest={quest} />
             ))}
@@ -175,18 +175,11 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
 
   return (
     <section id="tiersSection" className={twMerge("relative flex w-full items-start gap-2 md:gap-5", className)}>
-      <SideElements number={3} isCompleted={isConfirmed} hasVerticalElement={false} className="mt-0.5" />
+      <SideElements number={3} isCompleted={isConfirmed} hasVerticalElement={false} className="mt-[-2px]" />
       <div className="flex w-full max-w-[432px] flex-col">
         <div id="tiersHeading" className="flex w-full flex-col items-start gap-3 pb-4">
           <div className="flex w-full items-center justify-between">
             <span className="text-base md:text-lg">Whitelist for the desired tier</span>
-            {/* a badge that displays highest whitelisted tier */}
-            {/* {eligibilityStatus && (
-              <Badge.Confirmation
-                label={eligibilityStatus.eligibilityTier?.label}
-                isConfirmed={eligibilityStatus.eligibilityTier !== null}
-              />
-            )} */}
           </div>
           {!eligibilityStatus?.isCompliant && isWalletConnected && (
             <div className={twMerge("text-fg-primary")}>
@@ -214,8 +207,13 @@ const DEFAULT_COMPLIANCES: EligibilityStatus["compliances"] = [
   },
   {
     type: "PROVIDE_INVESTMENT_INTENT",
-    isOptional: true,
     isCompleted: false,
+    isOptional: true,
+  },
+  {
+    type: "PROVIDE_EMAIL",
+    isCompleted: false,
+    isOptional: true,
   },
 ]
 

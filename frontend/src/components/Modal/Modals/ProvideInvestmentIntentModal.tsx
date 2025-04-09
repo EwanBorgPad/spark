@@ -117,12 +117,12 @@ export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentInten
       headerClass={twMerge("bg-default", showJoinCommunityCta && "pt-8 grid-cols-1 px-4 md:px-8")}
     >
       {!showJoinCommunityCta ? (
-        <div className="flex w-full max-w-[460px] flex-col items-center justify-center max-sm:h-full">
+        <div className="flex w-full  flex-col items-center justify-center max-sm:h-full">
           {/* Body */}
           <div className={twMerge("flex w-full grow flex-col justify-start gap-4 px-4 pb-8 pt-3 md:px-10")}>
             <div>
               <p className="text-left text-base text-fg-tertiary md:text-center">
-                {t("investment.intent.quest.description")}
+                <span>{t("investment.intent.quest.description")}</span>
               </p>
               <CurrencyInputField
                 maxLength={12}

@@ -1,6 +1,6 @@
 import { ReactNode, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { EligibilityStatus, QuestWithCompletion } from "shared/eligibilityModel"
+import { EligibilityStatus, QuestWithCompletion, TierType, TierWithCompletion } from "shared/eligibilityModel"
 import EnterReferralCode from "./EnterReferralCode"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "../Icon/Icon"
@@ -19,8 +19,9 @@ import { useParams } from "react-router-dom"
 type QuestComponentProps = {
   quest: QuestWithCompletion
   autoCheck?: boolean
+  isCompliance?: boolean
 }
-export const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
+export const QuestComponent = ({ quest, autoCheck, isCompliance }: QuestComponentProps) => {
   const { isWalletConnected } = useWalletContext()
   const { t } = useTranslation()
 
@@ -31,7 +32,7 @@ export const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
     label: string
     description: string
     additionalElement?: ReactNode
-  } => {
+  } | null => {
     if (type === "ACCEPT_TERMS_OF_USE")
       return {
         label: t("accept.terms.of.use.quest.heading"),
@@ -81,8 +82,15 @@ export const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
         // TODO @productionPush
         additionalElement: <EnterReferralCode />,
       }
+
+    // we are not displaying anything for this type; non-eligibility message will take care of UX
+    if (type === "ALL_LISTED_COMPLIANCES") return null
     else throw new Error("Unknown type")
   })()
+
+  if (!typeData) return <></>
+
+  const isRequired = isCompliance && !quest?.isOptional
 
   return (
     <div
@@ -91,7 +99,10 @@ export const QuestComponent = ({ quest, autoCheck }: QuestComponentProps) => {
       )}
     >
       <div className="flex w-full items-center justify-between">
-        <span className={twMerge("font-medium", isCompleted && "opacity-50")}>{typeData.label}</span>
+        <span className={twMerge("font-medium", isCompleted && "opacity-50")}>
+          {typeData.label}
+          {isRequired && " (Required)"}
+        </span>
         <Icon
           icon={isCompleted ? "SvgRoundCheckmark" : "SvgEmptyCircle"}
           className={twMerge("text-xl", isCompleted ? "text-fg-success-primary" : "")}
@@ -218,12 +229,14 @@ export const TierWrapper = ({
   children,
   tier,
   isCompliant,
+  tierWithCompletion,
 }: {
   children: ReactNode
-  tier: Pick<ProjectModel["info"]["tiers"][number], "id" | "label" | "description" | "benefits"> &
-    Partial<Pick<EligibilityStatus["tiers"][number], "isCompleted">>
+  tier: ProjectModel["info"]["tiers"][number]
+  tierWithCompletion: TierWithCompletion | null
   isCompliant?: boolean
 }) => {
+  const { isWalletConnected } = useWalletContext()
   const { t } = useTranslation()
 
   const getDescription = (
@@ -239,7 +252,27 @@ export const TierWrapper = ({
     return startTimeDescription + investmentCapDescription
   }
   const description = getDescription(tier)
-  const isEligible = isCompliant && tier?.isCompleted
+
+  const getNotEligibleMessage = () => {
+    if (!isWalletConnected) return ""
+    const allCompliancesQuest = tier.quests.find((quest) => quest.type === "ALL_LISTED_COMPLIANCES")
+    const areAllCompliancesRequired = Boolean(allCompliancesQuest)
+    if (!areAllCompliancesRequired) {
+      if (isCompliant) {
+        return "Not Eligible"
+      } else {
+        // public tier
+        return "Not Eligible - Accept ToU"
+      }
+    }
+    if (!tierWithCompletion) return "Not Eligible"
+
+    const areAllCompliancesCompleted = tierWithCompletion.quests.find((quest) => quest.isCompleted)
+    if (!areAllCompliancesCompleted) return "Not Eligible - Finish Step 2"
+    return "Not Eligible"
+  }
+
+  const isEligible = isCompliant && tierWithCompletion?.isCompleted
 
   return (
     <div
@@ -252,14 +285,10 @@ export const TierWrapper = ({
       <div className="flex flex-col gap-1">
         <div className="flex w-full items-center justify-between">
           <span>{tier.label}</span>
-          {tier?.isCompleted ? (
-            isCompliant ? (
-              <span className="text-sm text-fg-success-primary">Eligible</span>
-            ) : (
-              <span className="text-sm text-fg-error-primary">Not Eligible - Finish Step 2</span>
-            )
+          {isEligible ? (
+            <span className="text-sm text-fg-success-primary">Eligible</span>
           ) : (
-            <span className="text-sm text-fg-error-primary">Not Eligible</span>
+            <span className="text-sm text-fg-error-primary">{getNotEligibleMessage()}</span>
           )}
         </div>
         {description && <span className="text-xs text-fg-secondary">{description}</span>}

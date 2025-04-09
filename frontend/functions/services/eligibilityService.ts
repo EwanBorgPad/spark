@@ -27,6 +27,7 @@ const getCompliances = (project:ProjectModel):Quest[] => {
     },
     {
       type: 'PROVIDE_EMAIL',
+      isOptional: !isDraftPick,
     }
   ]
 }
@@ -191,17 +192,16 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
           ...quest,
           isCompleted: false,
         })
-      } else if (quest.type === 'PROVIDE_INVESTMENT_INTENT') {
+      } else if (quest.type === 'ALL_LISTED_COMPLIANCES') {
+        const hasAcceptedTermsOfUse = Boolean(user.json.termsOfUse?.acceptedAt)
         const providedInvestmentIntentForProject = Boolean(user.json.investmentIntent?.[projectId])
-        tierQuestsWithCompletion.push({
-          ...quest,
-          isCompleted: providedInvestmentIntentForProject,
-        })
-      }  else if (quest.type === 'PROVIDE_EMAIL') {
         const providedEmailForProject = Boolean(user.json.emailData?.providedAt)
+
+        const areAllCompliancesCompleted = hasAcceptedTermsOfUse && providedInvestmentIntentForProject && providedEmailForProject
+        
         tierQuestsWithCompletion.push({
           ...quest,
-          isCompleted: providedEmailForProject,
+          isCompleted: areAllCompliancesCompleted,
         })
       } else {
         throw new Error(`Unknown tier quest type (${quest.type})!`)
