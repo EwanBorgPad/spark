@@ -234,32 +234,45 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         console.log("Adding accountChanged event listener to Phantom")
         phantom.on("accountChanged", handlePhantomAccountChanged)
         
-        // Alternative approach: Check for account changes periodically
-        let lastKnownAddress = address
-        console.log("Starting polling for Phantom account changes, initial address:", lastKnownAddress)
+        // Add event listeners for page visibility and focus changes
+        const handleVisibilityChange = () => {
+          if (document.visibilityState === 'visible') {
+            console.log("Page became visible, checking Phantom account")
+            if (phantom.publicKey) {
+              const currentAddress = phantom.publicKey.toString()
+              console.log("Current Phantom address on visibility change:", currentAddress)
+              if (currentAddress !== address) {
+                console.log(`Account changed from ${address} to ${currentAddress} (detected via visibility change)`)
+                setAddress(currentAddress)
+              }
+            }
+          }
+        }
         
-        const checkAccountInterval = setInterval(() => {
+        const handleFocusChange = () => {
+          console.log("Window focused, checking Phantom account")
           if (phantom.publicKey) {
             const currentAddress = phantom.publicKey.toString()
-            console.log("Polling check - Current address:", currentAddress, "Last known address:", lastKnownAddress)
-            
-            if (currentAddress !== lastKnownAddress) {
-              console.log(`Account changed from ${lastKnownAddress} to ${currentAddress} (detected via polling)`)
+            console.log("Current Phantom address on focus change:", currentAddress)
+            if (currentAddress !== address) {
+              console.log(`Account changed from ${address} to ${currentAddress} (detected via focus change)`)
               setAddress(currentAddress)
-              lastKnownAddress = currentAddress
             }
-          } else {
-            console.log("Polling check - No publicKey available")
           }
-        }, 1000) // Check every second
+        }
+        
+        // Add event listeners
+        document.addEventListener('visibilitychange', handleVisibilityChange)
+        window.addEventListener('focus', handleFocusChange)
         
         // Add cleanup functions
         cleanupFunctions.push(() => {
-          console.log("Cleaning up Phantom event listeners and interval")
+          console.log("Cleaning up Phantom event listeners")
           phantom.removeListener("connect", handleConnect)
           phantom.removeListener("disconnect", handleDisconnect)
           phantom.removeListener("accountChanged", handlePhantomAccountChanged)
-          clearInterval(checkAccountInterval)
+          document.removeEventListener('visibilitychange', handleVisibilityChange)
+          window.removeEventListener('focus', handleFocusChange)
         })
         
         // SIMPLIFIED APPROACH: Use a direct method to detect account changes
@@ -288,14 +301,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         
         // Check the account immediately
         checkCurrentAccount()
-        
-        // Set up a more frequent interval for direct checks
-        const directCheckInterval = setInterval(checkCurrentAccount, 2000) // Check every 2 seconds
-        
-        cleanupFunctions.push(() => {
-          console.log("Cleaning up direct account check interval")
-          clearInterval(directCheckInterval)
-        })
         
         // Try to use the Phantom provider's connect method with a callback
         console.log("Setting up Phantom connect with callback")
