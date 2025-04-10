@@ -5,6 +5,7 @@ import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import { formatCurrencyAmount } from "shared/utils/format"
 import { backendApi } from "@/data/backendApi.ts"
 import Text from "@/components/Text"
+import { SaleResultsResponse } from "shared/models"
 
 const SaleOverResults = () => {
   const { t } = useTranslation()
@@ -23,8 +24,14 @@ const SaleOverResults = () => {
     staleTime: 30 * 1000,
   })
 
+  const getSelloutPercentage = (saleData: SaleResultsResponse | null | undefined, projectId: string | undefined) => {
+    if (!saleData || !projectId) return ""
+    if (projectId === "moemate") return "Sold Out"
+    return Number(saleData?.sellOutPercentage).toFixed(0) + "%"
+  }
+
   const isLoading = isLoadingProject || isLoadingSaleResults
-  const selloutPercentage = saleData ? Number(saleData?.sellOutPercentage).toFixed(0) + "%" : ""
+  const selloutPercentage = getSelloutPercentage(saleData, projectId)
 
   return (
     <div className="flex w-full max-w-[760px] flex-wrap gap-x-4 gap-y-5 rounded-lg border-[1px] border-bd-primary bg-secondary px-4 py-4 lg:px-5">
@@ -81,3 +88,4 @@ const SaleOverResults = () => {
 }
 
 export default SaleOverResults
+
