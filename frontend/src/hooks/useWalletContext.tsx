@@ -128,6 +128,321 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     checkLedgerConnection()
   }, [address, walletProvider])
 
+  // Set up wallet event listeners
+  useEffect(() => {
+    if (!walletProvider) return
+
+    console.log(`Setting up event listeners for ${walletProvider}`)
+
+    // Handle connect event
+    const handleConnect = (publicKey: any) => {
+      console.log("Wallet connected:", publicKey)
+      if (publicKey) {
+        // Handle different formats of publicKey based on wallet provider
+        let address = ""
+        if (walletProvider === "BACKPACK") {
+          // Backpack returns an object with a publicKey property
+          if (typeof publicKey === 'object' && publicKey.publicKey) {
+            address = publicKey.publicKey
+          } else {
+            address = typeof publicKey === 'string' ? publicKey : publicKey.toString()
+          }
+        } else {
+          // For Phantom and Solflare
+          address = publicKey.toString()
+        }
+        
+        console.log("Setting address to:", address)
+        setAddress(address)
+        setWalletState("CONNECTED")
+        // toast.info("Wallet connected")
+      }
+    }
+
+    // Handle disconnect event
+    const handleDisconnect = () => {
+      console.log("Wallet disconnected")
+      setAddress("")
+      setWalletState("NOT_CONNECTED")
+      setWalletProvider("")
+      toast.info("Wallet disconnected")
+    }
+
+    // Set up event listeners based on the wallet provider
+    let cleanupFunctions: (() => void)[] = []
+
+    if (walletProvider === "PHANTOM") {
+      // @ts-expect-error no typings
+      const phantom = window?.phantom?.solana
+      console.log("Phantom provider:", phantom)
+      console.log("Phantom provider details:", {
+        isConnected: phantom?.isConnected,
+        publicKey: phantom?.publicKey?.toString(),
+        _events: phantom?._events,
+        _eventsCount: phantom?._eventsCount
+      })
+      
+      if (phantom) {
+        // Add event listeners directly to the Phantom provider
+        console.log("Adding connect event listener to Phantom")
+        phantom.on("connect", (publicKey: any) => {
+          console.log("Phantom connect event triggered with:", publicKey)
+          handleConnect(publicKey)
+        })
+        
+        console.log("Adding disconnect event listener to Phantom")
+        phantom.on("disconnect", () => {
+          console.log("Phantom disconnect event triggered")
+          handleDisconnect()
+        })
+        
+        // Use the exact approach from the Phantom documentation
+        const handlePhantomAccountChanged = (publicKey: any) => {
+          console.log("Phantom accountChanged event received:", publicKey)
+          console.log("Phantom accountChanged event type:", typeof publicKey)
+          console.log("Phantom accountChanged event properties:", Object.keys(publicKey || {}))
+          
+          if (publicKey) {
+            // Set new public key and continue as usual
+            try {
+              const address = publicKey.toBase58()
+              console.log(`Switched to account ${address}`)
+              setAddress(address)
+              // toast.info(`Wallet account changed to ${truncateAddress(address)}`)
+            } catch (error) {
+              console.error("Error calling toBase58():", error)
+              // Fallback to toString() if toBase58() fails
+              try {
+                const address = publicKey.toString()
+                console.log(`Switched to account (fallback) ${address}`)
+                setAddress(address)
+              } catch (error) {
+                console.error("Error calling toString():", error)
+                console.log("Raw publicKey value:", publicKey)
+              }
+            }
+          } else {
+            // Attempt to reconnect to Phantom
+            console.log("No public key provided, attempting to reconnect")
+            phantom.connect().catch((error: Error) => {
+              console.error("Failed to reconnect to Phantom:", error)
+            })
+          }
+        }
+        
+        // Try multiple approaches to detect account changes
+        console.log("Adding accountChanged event listener to Phantom")
+        phantom.on("accountChanged", handlePhantomAccountChanged)
+        
+        // Alternative approach: Check for account changes periodically
+        let lastKnownAddress = address
+        console.log("Starting polling for Phantom account changes, initial address:", lastKnownAddress)
+        
+        const checkAccountInterval = setInterval(() => {
+          if (phantom.publicKey) {
+            const currentAddress = phantom.publicKey.toString()
+            console.log("Polling check - Current address:", currentAddress, "Last known address:", lastKnownAddress)
+            
+            if (currentAddress !== lastKnownAddress) {
+              console.log(`Account changed from ${lastKnownAddress} to ${currentAddress} (detected via polling)`)
+              setAddress(currentAddress)
+              lastKnownAddress = currentAddress
+            }
+          } else {
+            console.log("Polling check - No publicKey available")
+          }
+        }, 1000) // Check every second
+        
+        // Add cleanup functions
+        cleanupFunctions.push(() => {
+          console.log("Cleaning up Phantom event listeners and interval")
+          phantom.removeListener("connect", handleConnect)
+          phantom.removeListener("disconnect", handleDisconnect)
+          phantom.removeListener("accountChanged", handlePhantomAccountChanged)
+          clearInterval(checkAccountInterval)
+        })
+        
+        // SIMPLIFIED APPROACH: Use a direct method to detect account changes
+        console.log("Setting up direct account change detection for Phantom")
+        
+        // Create a function to check the current account
+        const checkCurrentAccount = async () => {
+          try {
+            // Try to get the current account directly
+            const currentAccount = await phantom.connect({ onlyIfTrusted: true })
+            console.log("Direct account check result:", currentAccount)
+            
+            if (currentAccount && currentAccount.publicKey) {
+              const newAddress = currentAccount.publicKey.toString()
+              console.log(`Direct account check: Current address is ${newAddress}`)
+              
+              if (newAddress !== address) {
+                console.log(`Account changed from ${address} to ${newAddress} (detected via direct check)`)
+                setAddress(newAddress)
+              }
+            }
+          } catch (error) {
+            console.log("Direct account check error (expected if not trusted):", error)
+          }
+        }
+        
+        // Check the account immediately
+        checkCurrentAccount()
+        
+        // Set up a more frequent interval for direct checks
+        const directCheckInterval = setInterval(checkCurrentAccount, 2000) // Check every 2 seconds
+        
+        cleanupFunctions.push(() => {
+          console.log("Cleaning up direct account check interval")
+          clearInterval(directCheckInterval)
+        })
+        
+        // Try to use the Phantom provider's connect method with a callback
+        console.log("Setting up Phantom connect with callback")
+        const originalConnect = phantom.connect
+        phantom.connect = function(...args: any[]) {
+          console.log("Phantom connect called with args:", args)
+          return originalConnect.apply(this, args).then((result: any) => {
+            console.log("Phantom connect result:", result)
+            if (result && result.publicKey) {
+              const newAddress = result.publicKey.toString()
+              console.log(`Phantom connect: Setting address to ${newAddress}`)
+              setAddress(newAddress)
+            }
+            return result
+          })
+        }
+        
+        cleanupFunctions.push(() => {
+          console.log("Restoring original Phantom connect method")
+          phantom.connect = originalConnect
+        })
+      } else {
+        console.error("Phantom provider not found!")
+      }
+    } else if (walletProvider === "BACKPACK") {
+      // @ts-expect-error no typings
+      const backpack = window?.backpack
+      console.log("Backpack provider:", backpack)
+      
+      if (backpack) {
+        // Add event listeners to the Backpack provider
+        backpack.on("connect", handleConnect)
+        backpack.on("disconnect", handleDisconnect)
+        
+        // Handle account change event for Backpack
+        const handleBackpackAccountChanged = (publicKey: any) => {
+          console.log("Backpack accountChanged event received:", publicKey)
+          if (publicKey) {
+            // Handle Backpack's specific format
+            let address = ""
+            if (typeof publicKey === 'object' && publicKey.publicKey) {
+              address = publicKey.publicKey
+            } else {
+              address = typeof publicKey === 'string' ? publicKey : publicKey.toString()
+            }
+            
+            console.log(`Account changed to ${address}`)
+            setAddress(address)
+            // toast.info(`Wallet account changed to ${truncateAddress(address)}`)
+          } else {
+            // Attempt to reconnect
+            console.log("No public key provided, attempting to reconnect")
+            backpack.connect().catch((error: Error) => {
+              console.error("Failed to reconnect to Backpack:", error)
+            })
+          }
+        }
+        
+        backpack.on("accountChanged", handleBackpackAccountChanged)
+        
+        // Add cleanup functions
+        cleanupFunctions.push(() => {
+          backpack.removeListener("connect", handleConnect)
+          backpack.removeListener("disconnect", handleDisconnect)
+          backpack.removeListener("accountChanged", handleBackpackAccountChanged)
+        })
+      }
+    } else if (walletProvider === "SOLFLARE") {
+      // @ts-expect-error no typings
+      const solflare = window?.solflare
+      console.log("Solflare provider:", solflare)
+      
+      if (solflare) {
+        // Add event listeners to the Solflare provider
+        solflare.on("connect", handleConnect)
+        solflare.on("disconnect", handleDisconnect)
+        
+        // Handle account change event for Solflare
+        const handleSolflareAccountChanged = (publicKey: any) => {
+          console.log("Solflare accountChanged event received:", publicKey)
+          if (publicKey) {
+            const address = publicKey.toString()
+            console.log(`Account changed to ${address}`)
+            setAddress(address)
+            // toast.info(`Wallet account changed to ${truncateAddress(address)}`)
+          } else {
+            // Attempt to reconnect
+            console.log("No public key provided, attempting to reconnect")
+            solflare.connect().catch((error: Error) => {
+              console.error("Failed to reconnect to Solflare:", error)
+            })
+          }
+        }
+        
+        solflare.on("accountChanged", handleSolflareAccountChanged)
+        
+        // Add cleanup functions
+        cleanupFunctions.push(() => {
+          solflare.removeListener("connect", handleConnect)
+          solflare.removeListener("disconnect", handleDisconnect)
+          solflare.removeListener("accountChanged", handleSolflareAccountChanged)
+        })
+      }
+    }
+
+    // Clean up event listeners when component unmounts or wallet changes
+    return () => {
+      console.log("Cleaning up event listeners")
+      cleanupFunctions.forEach(cleanup => cleanup())
+    }
+  }, [walletProvider, setAddress, setWalletProvider, setWalletState, address])
+
+  // Try to eagerly connect on page load if we have a stored wallet provider
+  useEffect(() => {
+    if (!walletProvider || walletState !== "NOT_CONNECTED") return
+
+    const eagerConnect = async () => {
+      try {
+        let provider: any = null
+        if (walletProvider === "PHANTOM") {
+          // @ts-expect-error no typings
+          provider = window?.phantom?.solana
+        } else if (walletProvider === "BACKPACK") {
+          // @ts-expect-error no typings
+          provider = window?.backpack
+        } else if (walletProvider === "SOLFLARE") {
+          // @ts-expect-error no typings
+          provider = window?.solflare
+        }
+
+        if (!provider) return
+
+        // Try to connect without prompting the user
+        const resp = await provider.connect({ onlyIfTrusted: true })
+        if (resp?.publicKey) {
+          console.log("Eagerly connected to wallet:", resp.publicKey.toString())
+          setAddress(resp.publicKey.toString())
+          setWalletState("CONNECTED")
+        }
+      } catch (error) {
+        console.log("Eager connection failed, user will need to connect manually")
+      }
+    }
+
+    eagerConnect()
+  }, [walletProvider, walletState, setAddress, setWalletState])
+
   //// not hooks
   async function signInWithPhantom() {
     await signInWith({
