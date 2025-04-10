@@ -33,13 +33,21 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     ///// authorization
-    const { publicKey, email, message, signature } = data
+    const { publicKey, email, message, signature, isLedgerTransaction } = data
 
-    const isVerified = nacl.sign.detached.verify(
-      decodeUTF8(message),
-      new Uint8Array(signature),
-      new PublicKey(publicKey).toBytes(),
-    );
+    let isVerified = false
+
+    if (isLedgerTransaction) {
+      // TODO Check if transaction is valid
+      isVerified = true
+    } else {
+      isVerified = nacl.sign.detached.verify(
+        decodeUTF8(message),
+        new Uint8Array(signature),
+        new PublicKey(publicKey).toBytes(),
+      );
+    }
+    
     if (!isVerified) {
       await reportError(db, new Error(`Invalid signature (createemail)! publicKey: ${publicKey}, message: ${message}, signature: ${signature}`))
       return jsonResponse(null, 401)

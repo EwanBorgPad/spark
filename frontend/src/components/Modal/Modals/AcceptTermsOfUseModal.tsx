@@ -11,13 +11,17 @@ import { useState } from "react"
 import { toast } from "react-toastify"
 import { useParams } from "react-router-dom"
 import { eligibilityStatusCacheBust } from "@/utils/cache-helper"
+import { Transaction, SystemProgram, PublicKey, Connection, TransactionInstruction } from "@solana/web3.js"
+
+// Use a public RPC endpoint
+const RPC_ENDPOINT = "https://solana-mainnet.g.alchemy.com/v2/demo"
 
 type AcceptTermsOfUseModalProps = {
   onClose: () => void
 }
 const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
   const { t } = useTranslation()
-  const { address, signMessage } = useWalletContext()
+  const { address, signMessage, signTransaction, walletProvider, isConnectedWithLedger } = useWalletContext()
   const { projectId } = useParams()
   const queryClient = useQueryClient()
 
@@ -28,13 +32,58 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
   } = useMutation({
     mutationFn: async (address: string) => {
       const message = t("accept.terms.of.use.quest.message")
-      const signature = await signMessage(message)
+      let signature: Uint8Array
+      let isLedgerTransaction = false
+
+      if (isConnectedWithLedger) {
+        // For Ledger users, create and sign an on-chain transaction
+        const connection = new Connection(RPC_ENDPOINT)
+        const recentBlockhash = await connection.getLatestBlockhash()
+        
+        // Create a transaction that includes the message as a memo
+        const transaction = new Transaction()
+        
+        // Add a transfer instruction (zero amount) to make the transaction valid
+        transaction.add(
+          SystemProgram.transfer({
+            fromPubkey: new PublicKey(address),
+            toPubkey: new PublicKey(address),
+            lamports: 0,
+          })
+        )
+        
+        // Add the message as a memo instruction
+        // This ensures the message is included in the transaction
+        transaction.add(
+          new Transaction().add(
+            new TransactionInstruction({
+              keys: [],
+              programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
+              data: Buffer.from(message),
+            })
+          )
+        )
+        
+        transaction.recentBlockhash = recentBlockhash.blockhash
+        transaction.feePayer = new PublicKey(address)
+        
+        if (!walletProvider) throw new Error("No wallet provider selected")
+        const signedTx = await signTransaction(transaction, walletProvider)
+        if (!signedTx) throw new Error("Failed to sign transaction")
+        
+        signature = signedTx.signatures[0].signature!
+        isLedgerTransaction = true
+        
+      } else {
+        signature = await signMessage(message)
+      }
 
       const data = {
         publicKey: address,
         // TODO no nonce or expiration, possibly a security concern
         message,
         signature: Array.from(signature),
+        isLedgerTransaction,
       }
 
       await backendApi.postAcceptTermsOfUse(data)

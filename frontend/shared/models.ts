@@ -225,6 +225,7 @@ export const AcceptTermsRequestSchema = z.object({
   publicKey: z.string(),
   message: z.string(),
   signature: z.array(z.number().int()),
+  isLedgerTransaction: z.boolean().optional().default(false),
 })
 export type AcceptTermsRequest = z.infer<typeof AcceptTermsRequestSchema>
 
@@ -234,6 +235,7 @@ export const InvestmentIntentRequestSchema = z.object({
   amount: z.string(),
   message: z.string(),
   signature: z.array(z.number().int()),
+  isLedgerTransaction: z.boolean().optional().default(false),
 })
 export type InvestmentIntentRequest = z.infer<typeof InvestmentIntentRequestSchema>
 
@@ -249,6 +251,7 @@ export const CreateEmailRequestSchema = z.object({
   publicKey: z.string(),
   message: z.string(),
   signature: z.array(z.number().int()),
+  isLedgerTransaction: z.boolean().optional().default(false),
 })
 export type CreateEmailRequest = z.infer<typeof CreateEmailRequestSchema>
 

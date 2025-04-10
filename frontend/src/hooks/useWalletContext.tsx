@@ -26,6 +26,8 @@ type Context = {
   signMessage: (message: string) => Promise<Uint8Array>
   signTransaction: (transaction: Transaction, walletType: SupportedWallet) => Promise<Transaction | null>
   isWalletConnected: boolean
+  isConnectedWithLedger: boolean
+  setIsConnectedWithLedger: (value: boolean) => void
 }
 
 const WalletContext = createContext<Context | undefined>(undefined)
@@ -81,6 +83,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [walletProvider, setWalletProvider] = usePersistedState<SupportedWallet | "">("wallet")
   const initialWalletState: WalletState = address ? "CONNECTED" : "NOT_CONNECTED"
   const [walletState, setWalletState] = useState<WalletState>(initialWalletState)
+  const [isConnectedWithLedger, setIsConnectedWithLedger] = useState(false)
 
   const isWalletConnected = walletState === "CONNECTED" && Boolean(address)
 
@@ -113,17 +116,16 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       // @ts-expect-error no typings
       getProvider: () => window?.phantom?.solana,
       signIn: async () => {
-        //// Connect
-        // const signInRes = await provider.connect()
-        // const address = signInRes.publicKey.toString()
-        ///////
-
         // @ts-expect-error no typings
-        const signInRes = await window?.phantom?.solana.signIn({
-          domain: PAGE_DOMAIN,
-        })
-        const address = signInRes.address.toString()
-        return address
+        const provider = window?.phantom?.solana
+        try {
+          const signInRes = await provider.connect()
+          const address = signInRes.publicKey.toString()
+          return address
+        } catch (error) {
+          console.error("Connection error:", error)
+          throw error
+        }
       },
     })
   }
@@ -135,11 +137,15 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       getProvider: () => window?.backpack,
       signIn: async () => {
         // @ts-expect-error no typings
-        const signInRes = await window?.backpack?.signIn({
-          domain: PAGE_DOMAIN,
-        })
-        const address = signInRes.account.address
-        return address
+        const provider = window?.backpack
+        try {
+          const signInRes = await provider.connect()
+          const address = signInRes.publicKey.toString()
+          return address
+        } catch (error) {
+          console.error("Connection error:", error)
+          throw error
+        }
       },
     })
   }
@@ -249,6 +255,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setAddress("")
     setWalletState("NOT_CONNECTED")
     setWalletProvider("")
+    setIsConnectedWithLedger(false)
     // disconnecting needs to be done manually for Solflare wallet
     // @ts-expect-error no typings
     await window.solflare.disconnect()
@@ -288,6 +295,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         signMessage,
         signTransaction,
         isWalletConnected,
+        isConnectedWithLedger,
+        setIsConnectedWithLedger,
       }}
     >
       {children}

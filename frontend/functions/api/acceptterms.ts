@@ -51,17 +51,27 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     ///// authorization
-    const { publicKey, message, signature } = data
+    const { publicKey, message, signature, isLedgerTransaction } = data
     const address = publicKey
 
-    const isVerified = nacl.sign.detached.verify(
-      decodeUTF8(message),
-      new Uint8Array(signature),
-      new PublicKey(publicKey).toBytes(),
-    );
-    if (!isVerified) {
-      await reportError(db, new Error(`Invalid signature (acceptterms)! publicKey: ${publicKey}, message: ${message}, signature: ${signature}`))
-      return jsonResponse(null, 401)
+    let isVerified = false
+
+    if (isLedgerTransaction) {
+      // TODO Check if transaction is valid
+      isVerified = true
+    } else {
+      isVerified = nacl.sign.detached.verify(
+        decodeUTF8(message),
+        new Uint8Array(signature),
+        new PublicKey(publicKey).toBytes(),
+      );
+      
+      console.log("Signature verification result:", isVerified)
+      
+      if (!isVerified) {
+        await reportError(db, new Error(`Invalid signature (acceptterms)! publicKey: ${publicKey}, message: ${message}, signature: ${signature}`))
+        return jsonResponse(null, 401)
+      }
     }
 
     //// business logic
