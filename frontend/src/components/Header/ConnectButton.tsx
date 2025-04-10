@@ -30,7 +30,10 @@ export const ConnectButton = ({
 
   const [showModal, setShowModal] = useState(false)
   const [showNoWallet, setShowNoWallet] = useState(false)
-  const [isUsingLedger, setIsUsingLedger] = useState(false)
+  const [isUsingLedger, setIsUsingLedger] = useState(() => {
+    const storedValue = localStorage.getItem("isUsingLedger")
+    return storedValue === "true"
+  })
 
   useEffect(() => {
     if (walletState === "CONNECTED") {
@@ -40,6 +43,8 @@ export const ConnectButton = ({
 
   useEffect(() => {
     setIsConnectedWithLedger(isUsingLedger)
+    localStorage.setItem("isUsingLedger", isUsingLedger.toString())
+    console.log("Stored Ledger preference in localStorage:", isUsingLedger)
   }, [isUsingLedger, setIsConnectedWithLedger])
 
   const btnText =

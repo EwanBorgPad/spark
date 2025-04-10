@@ -109,6 +109,25 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoConnect, setSearchParams])
 
+  // Check if user is connected with Ledger after page reload
+  useEffect(() => {
+    if (!address || !walletProvider) return
+
+    const checkLedgerConnection = async () => {
+      try {
+        const storedLedgerPreference = localStorage.getItem("isUsingLedger")
+        if (storedLedgerPreference === "true") {
+          setIsConnectedWithLedger(true)
+          return
+        }
+      } catch (error) {
+        console.error("Error checking Ledger connection:", error)
+      }
+    }
+
+    checkLedgerConnection()
+  }, [address, walletProvider])
+
   //// not hooks
   async function signInWithPhantom() {
     await signInWith({
