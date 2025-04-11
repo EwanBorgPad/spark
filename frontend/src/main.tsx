@@ -4,11 +4,7 @@ mockDate()
 
 import React from "react"
 import ReactDOM from "react-dom/client"
-import {
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query"
+import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
 
 import App from "./App"
@@ -33,13 +29,13 @@ import { ROUTES } from "./utils/routes"
 import DraftPicks from "./pages/DraftPicks"
 import DraftPickPage from "./pages/DraftPickPage"
 import BackOfficeDashboard from "./pages/BackOfficeDashboard"
+import { AuthProvider } from "./hooks/useAuthContext"
+import ProtectedRoute from "./components/BackOffice/ProtectedRoute"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    onError: (error) => {
-      toast.error(error.message, { theme: "colored" })
-    }, // catch all useQuery errors
+    onError: (error) => toast.error(error.message, { theme: "colored" }), // catch all useQuery errors
   }),
   defaultOptions: {
     queries: {
@@ -66,7 +62,13 @@ const router = createBrowserRouter([
       // @backOffice
       {
         path: ROUTES.BACK_OFFICE,
-        element: <BackOfficeDashboard />,
+        element: (
+          <AuthProvider>
+            <ProtectedRoute>
+              <BackOfficeDashboard />
+            </ProtectedRoute>
+          </AuthProvider>
+        ),
       },
       // {
       //   path: "/angel-staking",
@@ -150,7 +152,7 @@ const router = createBrowserRouter([
 ])
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>,
+  // <React.StrictMode>
+  <RouterProvider router={router} />,
+  // </React.StrictMode>,
 )

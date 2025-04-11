@@ -11,6 +11,7 @@ import { backendApi } from "@/data/backendApi"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import ProjectAnalysisModal from "../Modal/Modals/ProjectAnalysisModal"
 import { Icon } from "../Icon/Icon"
+import { BP_JWT_TOKEN } from "@/utils/constants"
 
 const numOfSkeletonItems = 12
 const skeletonLoaderArray = Array.from({ length: numOfSkeletonItems }, (_, i) => `Item ${i + 1}`)
@@ -60,6 +61,7 @@ const Analysts = () => {
   const closeBecomeAnalystModal = () => {
     setShowBecomeAnalystModal(false)
     removeParam(OPEN_ANALYST_MODAL_PARAM)
+    localStorage.removeItem(BP_JWT_TOKEN)
   }
 
   useEffect(() => {
@@ -68,11 +70,11 @@ const Analysts = () => {
   }, [openBecomeAnalystModal, searchParams])
   useEffect(() => {
     if (!redirectionUrl) return
-    const analystIdSearchParam = searchParams.get("analystId")
+    const sessionIdSearchParam = searchParams.get("sessionId")
     let newUrl = redirectionUrl
-    if (analystIdSearchParam || analystIdSearchParam !== "null") {
-      const redirectionWithAnalystId = redirectionUrl + `&analystId=${analystIdSearchParam}`
-      newUrl = redirectionWithAnalystId
+    if (sessionIdSearchParam || sessionIdSearchParam !== "null") {
+      const redirectionWithSessionId = redirectionUrl + `&sessionId=${sessionIdSearchParam}`
+      newUrl = redirectionWithSessionId
     }
     setRedirectionUrl("")
     window.location.href = newUrl
