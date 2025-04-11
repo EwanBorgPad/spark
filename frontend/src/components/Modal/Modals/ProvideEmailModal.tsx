@@ -35,19 +35,15 @@ const ProvideEmailModal = ({ onClose }: ProvideEmailModalProps) => {
     mutationFn: async (address: string) => {
       if (!address || !email || !projectId) return
       const message = t("email.provide.message", { email })
-
       let signature: Uint8Array
       let isLedgerTransaction = false
 
       if (isConnectedWithLedger) {
-        // For Ledger users, create and sign an on-chain transaction
         const connection = new Connection(RPC_ENDPOINT)
         const recentBlockhash = await connection.getLatestBlockhash()
-        
-        // Create a transaction that includes the message as a memo
+
         const transaction = new Transaction()
-        
-        // Add a transfer instruction (zero amount) to make the transaction valid
+
         transaction.add(
           SystemProgram.transfer({
             fromPubkey: new PublicKey(address),
@@ -55,7 +51,7 @@ const ProvideEmailModal = ({ onClose }: ProvideEmailModalProps) => {
             lamports: 0,
           })
         )
-        
+
         // Add the message as a memo instruction
         // This ensures the message is included in the transaction
         transaction.add(
@@ -65,17 +61,22 @@ const ProvideEmailModal = ({ onClose }: ProvideEmailModalProps) => {
             data: Buffer.from(message),
           })
         )
-        
+
         transaction.recentBlockhash = recentBlockhash.blockhash
         transaction.feePayer = new PublicKey(address)
-        
-        // Use the current wallet provider (Phantom, Backpack, or Solflare) with Ledger
+
         if (!walletProvider) throw new Error("No wallet provider selected")
         const signedTx = await signTransaction(transaction, walletProvider)
         if (!signedTx) throw new Error("Failed to sign transaction")
-        
+
         signature = signedTx.signatures[0].signature!
         isLedgerTransaction = true
+        
+        // ✅ SEND TRANSACTION
+        const txId = await connection.sendRawTransaction(signedTx.serialize(), {
+          skipPreflight: false,
+          preflightCommitment: "confirmed",
+        })
       } else {
         signature = await signMessage(message)
       }
