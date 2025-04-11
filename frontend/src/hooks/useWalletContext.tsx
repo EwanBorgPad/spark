@@ -167,6 +167,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     // Set up event listeners based on the wallet provider
     let cleanupFunctions: (() => void)[] = []
 
+    // PHANTOM WALLET CHECKER
     if (walletProvider === "PHANTOM") {
       // @ts-expect-error no typings
       const phantom = window?.phantom?.solana
@@ -180,63 +181,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         phantom.on("disconnect", () => {
           handleDisconnect()
         })
-        
-        // Handle account change event for Phantom
-        const handlePhantomAccountChanged = (publicKey: any) => {
-          if (publicKey) {
-            // Set new public key and continue as usual
-            try {
-              const address = publicKey.toBase58()
-              setAddress(address)
-              // Reset Ledger connection status when wallet changes
-              setIsConnectedWithLedger(false)
-              // Update localStorage
-              localStorage.setItem("isUsingLedger", "false")
-              // toast.info(`Wallet account changed to ${truncateAddress(address)}`)
-            } catch (error) {
-              console.error("Error calling toBase58():", error)
-              // Fallback to toString() if toBase58() fails
-              try {
-                const address = publicKey.toString()
-                setAddress(address)
-                // Reset Ledger connection status when wallet changes
-                setIsConnectedWithLedger(false)
-                // Update localStorage
-                localStorage.setItem("isUsingLedger", "false")
-              } catch (error) {
-                console.error("Error calling toString():", error)
-                console.log("Raw publicKey value:", publicKey)
-              }
-            }
-          } else {
-            // Attempt to reconnect to Phantom
-            console.log("No public key provided, attempting to reconnect")
-            phantom.connect().catch((error: Error) => {
-              console.error("Failed to reconnect to Phantom:", error)
-            })
-          }
-        }
-        
-        // Try multiple approaches to detect account changes
-        phantom.on("accountChanged", handlePhantomAccountChanged)
-        
-        // Add event listeners for page visibility and focus changes
-        const handleVisibilityChange = () => {
-          if (document.visibilityState === 'visible') {
-            if (phantom.publicKey) {
-              const currentAddress = phantom.publicKey.toString()
-              if (currentAddress !== address) {
-                setAddress(currentAddress)
-                // Reset Ledger connection status when wallet changes
-                setIsConnectedWithLedger(false)
-                // Update localStorage
-                localStorage.setItem("isUsingLedger", "false")
-              }
-            }
-            // Also check current account when page becomes visible
-            checkCurrentAccount()
-          }
-        }
         
         const handleFocusChange = () => {
           if (phantom.publicKey) {
@@ -254,15 +198,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         }
         
         // Add event listeners
-        document.addEventListener('visibilitychange', handleVisibilityChange)
         window.addEventListener('focus', handleFocusChange)
         
         // Add cleanup functions
         cleanupFunctions.push(() => {
           phantom.removeListener("connect", handleConnect)
           phantom.removeListener("disconnect", handleDisconnect)
-          phantom.removeListener("accountChanged", handlePhantomAccountChanged)
-          document.removeEventListener('visibilitychange', handleVisibilityChange)
           window.removeEventListener('focus', handleFocusChange)
         })
         
@@ -286,25 +227,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         
         // Check the account immediately
         checkCurrentAccount()
-        
-        // Try to use the Phantom provider's connect method with a callback
-        const originalConnect = phantom.connect
-        phantom.connect = function(...args: any[]) {
-          return originalConnect.apply(this, args).then((result: any) => {
-            if (result && result.publicKey) {
-              const newAddress = result.publicKey.toString()
-              setAddress(newAddress)
-            }
-            return result
-          })
-        }
-        
-        cleanupFunctions.push(() => {
-          phantom.connect = originalConnect
-        })
       } else {
         console.error("Phantom provider not found!")
       }
+    // BACKPACK WALLET CHECKER
     } else if (walletProvider === "BACKPACK") {
       // @ts-expect-error no typings
       const backpack = window?.backpack
@@ -350,6 +276,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           backpack.removeListener("accountChanged", handleBackpackAccountChanged)
         })
       }
+    // SOLFLARE WALLET CHECKER
     } else if (walletProvider === "SOLFLARE") {
       // @ts-expect-error no typings
       const solflare = window?.solflare
