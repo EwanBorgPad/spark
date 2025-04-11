@@ -2,7 +2,7 @@
 import { mockDate } from "@/utils/mockDate.ts"
 mockDate()
 
-import React from "react"
+import React, { lazy } from "react"
 import ReactDOM from "react-dom/client"
 import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
@@ -28,7 +28,7 @@ import { ROUTES } from "./utils/routes"
 // import BackOffice from './pages/BackOffice2'
 import DraftPicks from "./pages/DraftPicks"
 import DraftPickPage from "./pages/DraftPickPage"
-import BackOfficeDashboard from "./pages/BackOfficeDashboard"
+// import BackOfficeDashboard from "./pages/BackOfficeDashboard"
 import { AuthProvider } from "./hooks/useAuthContext"
 import ProtectedRoute from "./components/BackOffice/ProtectedRoute"
 window.Buffer = Buffer
@@ -43,6 +43,8 @@ const queryClient = new QueryClient({
     },
   },
 })
+
+const BackOfficeDashboard = lazy(() => import("./pages/BackOfficeDashboard"))
 
 const router = createBrowserRouter([
   {
