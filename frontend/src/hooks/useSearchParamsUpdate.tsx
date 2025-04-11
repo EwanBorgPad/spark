@@ -18,6 +18,7 @@ export const useSearchParamsUpdate = () => {
     const searchParamItem = searchParams.get(key)
     if (searchParamItem === "null") {
       removeParam(key)
+      return true
     }
     console.log(`search param ${key} was 'null' so it was removed.`);
   }
@@ -26,5 +27,6 @@ export const useSearchParamsUpdate = () => {
     addParam,
     removeParam,
     getParam,
+    removeParamIfNull,
   }
 }

@@ -24,9 +24,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         return jsonResponse({ message: "Unauthorized!" }, authError.code)
     }
 
-    /////////////////////////////
-    ///// return jwt token //////
-    /////////////////////////////
+    // @TODO if we want to protect api request with jwt validation this is the place where we can return jwt as a 'HttpOnly' cookie
 
     return jsonResponse({ message: "Authorized!" }, 200)
   } catch (e) {
