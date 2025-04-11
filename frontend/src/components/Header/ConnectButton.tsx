@@ -99,7 +99,7 @@ export const ConnectButton = ({
                   <WalletProvider icon={"SvgBackpack"} label={"Backpack"} onClick={signInWithBackpack} />
                   <WalletProvider icon={"SvgSolflare"} label={"Solflare"} onClick={signInWithSolflare} />
                 </div>
-                <div className="mt-4">
+                <div className="mt-4 flex justify-center">
                   <CheckboxField
                     inputClassName="text-white!"
                     label={
