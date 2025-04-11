@@ -181,7 +181,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           handleDisconnect()
         })
         
-        // Use the exact approach from the Phantom documentation
+        // Handle account change event for Phantom
         const handlePhantomAccountChanged = (publicKey: any) => {
           if (publicKey) {
             // Set new public key and continue as usual
@@ -190,6 +190,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
               setAddress(address)
               // Reset Ledger connection status when wallet changes
               setIsConnectedWithLedger(false)
+              // Update localStorage
+              localStorage.setItem("isUsingLedger", "false")
               // toast.info(`Wallet account changed to ${truncateAddress(address)}`)
             } catch (error) {
               console.error("Error calling toBase58():", error)
@@ -199,6 +201,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
                 setAddress(address)
                 // Reset Ledger connection status when wallet changes
                 setIsConnectedWithLedger(false)
+                // Update localStorage
+                localStorage.setItem("isUsingLedger", "false")
               } catch (error) {
                 console.error("Error calling toString():", error)
                 console.log("Raw publicKey value:", publicKey)
@@ -225,6 +229,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
                 setAddress(currentAddress)
                 // Reset Ledger connection status when wallet changes
                 setIsConnectedWithLedger(false)
+                // Update localStorage
+                localStorage.setItem("isUsingLedger", "false")
               }
             }
             // Also check current account when page becomes visible
@@ -239,6 +245,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
               setAddress(currentAddress)
               // Reset Ledger connection status when wallet changes
               setIsConnectedWithLedger(false)
+              // Update localStorage
+              localStorage.setItem("isUsingLedger", "false")
             }
           }
           // Also check current account when window gets focus
@@ -321,6 +329,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             setAddress(address)
             // Reset Ledger connection status when wallet changes
             setIsConnectedWithLedger(false)
+            // Update localStorage
+            localStorage.setItem("isUsingLedger", "false")
             // toast.info(`Wallet account changed to ${truncateAddress(address)}`)
           } else {
             // Attempt to reconnect
@@ -356,6 +366,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             setAddress(address)
             // Reset Ledger connection status when wallet changes
             setIsConnectedWithLedger(false)
+            // Update localStorage
+            localStorage.setItem("isUsingLedger", "false")
             // toast.info(`Wallet account changed to ${truncateAddress(address)}`)
           } else {
             // Attempt to reconnect
@@ -564,6 +576,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setWalletState("NOT_CONNECTED")
     setWalletProvider("")
     setIsConnectedWithLedger(false)
+    // Update localStorage
+    localStorage.setItem("isUsingLedger", "false")
     // disconnecting needs to be done manually for Solflare wallet
     // @ts-expect-error no typings
     await window.solflare.disconnect()
