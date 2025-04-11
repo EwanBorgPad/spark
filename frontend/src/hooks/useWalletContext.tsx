@@ -227,6 +227,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
                 setIsConnectedWithLedger(false)
               }
             }
+            // Also check current account when page becomes visible
+            checkCurrentAccount()
           }
         }
         
@@ -239,6 +241,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
               setIsConnectedWithLedger(false)
             }
           }
+          // Also check current account when window gets focus
+          checkCurrentAccount()
         }
         
         // Add event listeners
