@@ -8,12 +8,7 @@ import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-qu
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
 
 import App from "./App"
-import Project from "./pages/Project"
-import NotFound from "./pages/NotFound"
-import TermsOfUse from "./pages/TermsOfUse"
-import GoatPools from "./pages/GoatPools"
 import { WalletProvider } from "@/hooks/useWalletContext"
-import TermsAndConditions from "./pages/TermsAndConditions"
 import { ProjectDataProvider } from "./hooks/useProjectData"
 import SomethingWentWrong from "./components/SomethingWentWrong"
 
@@ -21,13 +16,9 @@ import "./index.css"
 
 import { Buffer } from "buffer"
 import { toast } from "react-toastify"
-import LandingPage from "./pages/LandingPage"
-import BlitzPools from "./pages/BlitzPools"
 import RedirectToGoatPools from "./components/LaunchPool/RedirectToGoatPools"
 import { ROUTES } from "./utils/routes"
 // import BackOffice from './pages/BackOffice2'
-import DraftPicks from "./pages/DraftPicks"
-import DraftPickPage from "./pages/DraftPickPage"
 // import BackOfficeDashboard from "./pages/BackOfficeDashboard"
 import { AuthProvider } from "./hooks/useAuthContext"
 import ProtectedRoute from "./components/BackOffice/ProtectedRoute"
@@ -45,6 +36,15 @@ const queryClient = new QueryClient({
 })
 
 const BackOfficeDashboard = lazy(() => import("./pages/BackOfficeDashboard"))
+const LandingPage = lazy(() => import("./pages/LandingPage"))
+const Project = lazy(() => import("./pages/Project"))
+const DraftPickPage = lazy(() => import("./pages/DraftPickPage"))
+const DraftPicks = lazy(() => import("./pages/DraftPicks"))
+const BlitzPools = lazy(() => import("./pages/BlitzPools"))
+const GoatPools = lazy(() => import("./pages/GoatPools"))
+const TermsOfUse = lazy(() => import("./pages/TermsOfUse"))
+const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"))
+const NotFound = lazy(() => import("./pages/NotFound"))
 
 const router = createBrowserRouter([
   {
