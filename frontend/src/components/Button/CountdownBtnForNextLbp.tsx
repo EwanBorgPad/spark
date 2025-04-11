@@ -26,7 +26,7 @@ const CountdownBtnForNextLbp = ({ projectId }: { projectId: string }) => {
         <div className="animated-conic-gradient absolute z-[-1] animate-rotate-border" />
         <div className="z-[10] flex h-[40px] items-center justify-between gap-2 rounded-xl bg-[#16231e] p-3">
           <div className="flex items-center gap-2">
-            <Img src={projectData?.config.launchedTokenData.iconUrl} size="6" isFetchingLink={isLoading} isRounded />
+            <Img src={projectData?.info?.logoUrl} size="6" isFetchingLink={isLoading} isRounded />
             <Text text={projectData?.info.title} isLoading={isLoading} className="text-nowrap text-sm" />
             <span className="font-thin opacity-40">|</span>
             {saleOpensDate ? (
