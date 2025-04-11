@@ -11,10 +11,7 @@ import { useState } from "react"
 import { toast } from "react-toastify"
 import { useParams } from "react-router-dom"
 import { eligibilityStatusCacheBust } from "@/utils/cache-helper"
-import { Transaction, SystemProgram, PublicKey, Connection, TransactionInstruction } from "@solana/web3.js"
-
-// Use a public RPC endpoint
-const RPC_ENDPOINT = "https://solana-mainnet.g.alchemy.com/v2/demo"
+import { sendTransaction } from "../../../../shared/solana/sendTransaction"
 
 type AcceptTermsOfUseModalProps = {
   onClose: () => void
@@ -36,42 +33,9 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
       let isLedgerTransaction = false
 
       if (isConnectedWithLedger) {
-        const connection = new Connection(RPC_ENDPOINT)
-        const recentBlockhash = await connection.getLatestBlockhash()
-
-        const transaction = new Transaction()
-
-        transaction.add(
-          SystemProgram.transfer({
-            fromPubkey: new PublicKey(address),
-            toPubkey: new PublicKey(address),
-            lamports: 0,
-          })
-        )
-
-        transaction.add(
-          new TransactionInstruction({
-            keys: [],
-            programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
-            data: Buffer.from(message),
-          })
-        )
-
-        transaction.recentBlockhash = recentBlockhash.blockhash
-        transaction.feePayer = new PublicKey(address)
-
         if (!walletProvider) throw new Error("No wallet provider selected")
-        const signedTx = await signTransaction(transaction, walletProvider)
-        if (!signedTx) throw new Error("Failed to sign transaction")
-
-        signature = signedTx.signatures[0].signature!
-        isLedgerTransaction = true
-
-        // ✅ SEND TRANSACTION
-        const txId = await connection.sendRawTransaction(signedTx.serialize(), {
-          skipPreflight: false,
-          preflightCommitment: "confirmed",
-        })
+          signature = await sendTransaction(message, address, signTransaction, walletProvider)
+          isLedgerTransaction = true
       } else {
         signature = await signMessage(message)
       }

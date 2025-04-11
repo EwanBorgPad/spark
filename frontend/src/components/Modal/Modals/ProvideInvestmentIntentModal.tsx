@@ -17,10 +17,7 @@ import { Icon } from "@/components/Icon/Icon.tsx"
 import Img from "@/components/Image/Img.tsx"
 import telegramBorgpadOGs from "@/assets/telegram-borgpad-ogs.jpg"
 import { BORGPAD_TELEGRAM_URL } from "@/utils/constants.ts"
-import { Transaction, SystemProgram, PublicKey, Connection, TransactionInstruction } from "@solana/web3.js"
-
-// Use a public RPC endpoint
-const RPC_ENDPOINT = "https://solana-mainnet.g.alchemy.com/v2/demo"
+import { sendTransaction } from "../../../../shared/solana/sendTransaction"
 
 type ProvideInvestmentIntentModalProps = {
   onClose: () => void
@@ -83,43 +80,9 @@ export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentInten
       let isLedgerTransaction = false
 
       if (isConnectedWithLedger) {
-        const connection = new Connection(RPC_ENDPOINT)
-        const recentBlockhash = await connection.getLatestBlockhash()
-
-        const transaction = new Transaction()
-
-        transaction.add(
-          SystemProgram.transfer({
-            fromPubkey: new PublicKey(address),
-            toPubkey: new PublicKey(address),
-            lamports: 0,
-          })
-        )
-
-        transaction.add(
-          new TransactionInstruction({
-            keys: [],
-            programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
-            data: Buffer.from(message),
-          })
-        )
-
-        transaction.recentBlockhash = recentBlockhash.blockhash
-        transaction.feePayer = new PublicKey(address)
-
-        // Use the current wallet provider (Phantom, Backpack, or Solflare) with Ledger
         if (!walletProvider) throw new Error("No wallet provider selected")
-        const signedTx = await signTransaction(transaction, walletProvider)
-        if (!signedTx) throw new Error("Failed to sign transaction")
-
-        signature = signedTx.signatures[0].signature!
-        isLedgerTransaction = true
-
-        // ✅ SEND TRANSACTION
-        const txId = await connection.sendRawTransaction(signedTx.serialize(), {
-          skipPreflight: false,
-          preflightCommitment: "confirmed",
-        })
+          signature = await sendTransaction(message, address, signTransaction, walletProvider)
+          isLedgerTransaction = true
       } else {
         signature = await signMessage(message)
       }

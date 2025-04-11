@@ -11,10 +11,7 @@ import { useParams } from "react-router-dom"
 import { Badge } from "@/components/Badge/Badge"
 import { toast } from "react-toastify"
 import { eligibilityStatusCacheBust } from "@/utils/cache-helper"
-import { Transaction, SystemProgram, PublicKey, Connection, TransactionInstruction } from "@solana/web3.js"
-
-// Use a public RPC endpoint
-const RPC_ENDPOINT = "https://solana-mainnet.g.alchemy.com/v2/demo"
+import { sendTransaction } from "../../../../shared/solana/sendTransaction"
 
 type ProvideEmailModalProps = {
   onClose: () => void
@@ -25,7 +22,6 @@ const ProvideEmailModal = ({ onClose }: ProvideEmailModalProps) => {
   const { address, signMessage, signTransaction, walletProvider, isConnectedWithLedger } = useWalletContext()
   const { projectId } = useParams()
   const queryClient = useQueryClient()
-
 
   const {
     mutate: updateEmail,
@@ -39,44 +35,9 @@ const ProvideEmailModal = ({ onClose }: ProvideEmailModalProps) => {
       let isLedgerTransaction = false
 
       if (isConnectedWithLedger) {
-        const connection = new Connection(RPC_ENDPOINT)
-        const recentBlockhash = await connection.getLatestBlockhash()
-
-        const transaction = new Transaction()
-
-        transaction.add(
-          SystemProgram.transfer({
-            fromPubkey: new PublicKey(address),
-            toPubkey: new PublicKey(address),
-            lamports: 0,
-          })
-        )
-
-        // Add the message as a memo instruction
-        // This ensures the message is included in the transaction
-        transaction.add(
-          new TransactionInstruction({
-            keys: [],
-            programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
-            data: Buffer.from(message),
-          })
-        )
-
-        transaction.recentBlockhash = recentBlockhash.blockhash
-        transaction.feePayer = new PublicKey(address)
-
         if (!walletProvider) throw new Error("No wallet provider selected")
-        const signedTx = await signTransaction(transaction, walletProvider)
-        if (!signedTx) throw new Error("Failed to sign transaction")
-
-        signature = signedTx.signatures[0].signature!
+        signature = await sendTransaction(message, address, signTransaction, walletProvider)
         isLedgerTransaction = true
-        
-        // ✅ SEND TRANSACTION
-        const txId = await connection.sendRawTransaction(signedTx.serialize(), {
-          skipPreflight: false,
-          preflightCommitment: "confirmed",
-        })
       } else {
         signature = await signMessage(message)
       }
