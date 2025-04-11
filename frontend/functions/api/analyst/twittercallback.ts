@@ -108,8 +108,8 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     const locationBasePath = getHeaderLocationBasePath(redirectUri)
     
     // Store the data in KV with a 10-second expiration
-    const kvStore = ctx.env.AUTH_SESSION_DEVELOP;
-    // const kvStore = ctx.env.VITE_ENVIRONMENT_TYPE === 'develop' ? ctx.env.AUTH_SESSIONS_STAGE : ctx.env.AUTH_SESSIONS_PRODUCTION;
+    // const kvStore = ctx.env.AUTH_SESSION_DEVELOP;
+    const kvStore = ctx.env.VITE_ENVIRONMENT_TYPE === 'develop' ? ctx.env.AUTH_SESSIONS_STAGE : ctx.env.AUTH_SESSIONS_PRODUCTION;
     await kvStore.put(sessionId, JSON.stringify({ analyst }), {
       expirationTtl: 60,
     });
