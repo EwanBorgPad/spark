@@ -12,6 +12,7 @@ export const useSearchParamsUpdate = () => {
   }
   const removeParam = (key: string) => {
     searchParams.delete(key)
+    console.log(searchParams)
     setSearchParams(searchParams)
   }
   const removeParamIfNull = (key: string) => {

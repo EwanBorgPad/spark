@@ -43,16 +43,20 @@ const Analysts = () => {
 
   const closeBecomeAnalystModal = () => {
     setShowBecomeAnalystModal(false)
-    removeParam(OPEN_ANALYST_MODAL_PARAM)
+    // removeParam(OPEN_ANALYST_MODAL_PARAM)
+    localStorage.removeItem(OPEN_ANALYST_MODAL_PARAM)
     localStorage.removeItem(BP_JWT_TOKEN)
   }
 
   useEffect(() => {
+    console.log("===== MARKER 1 =====")
     if (!getParam(OPEN_ANALYST_MODAL_PARAM)) return
     openBecomeAnalystModal()
-  }, [getParam, openBecomeAnalystModal])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
+    console.log("===== MARKER 2 =====")
     if (!redirectionUrl) return
     removeParamIfNull("sessionId")
     const sessionIdSearchParam = getParam("sessionId")
@@ -63,7 +67,8 @@ const Analysts = () => {
     }
     setRedirectionUrl("")
     window.location.href = newUrl
-  }, [getParam, redirectionUrl, removeParamIfNull, setRedirectionUrl])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [redirectionUrl])
 
   return (
     <div className="flex w-full max-w-[792px] flex-[1] flex-col items-start gap-3 self-stretch">

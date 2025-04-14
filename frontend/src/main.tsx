@@ -2,7 +2,7 @@
 import { mockDate } from "@/utils/mockDate.ts"
 mockDate()
 
-import React, { lazy } from "react"
+import React, { lazy, Suspense } from "react"
 import ReactDOM from "react-dom/client"
 import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
@@ -84,14 +84,20 @@ const router = createBrowserRouter([
           {
             path: ":projectId",
             element: (
-              <ProjectDataProvider>
-                <Project />
-              </ProjectDataProvider>
+              <Suspense>
+                <ProjectDataProvider>
+                  <Project />
+                </ProjectDataProvider>
+              </Suspense>
             ),
           },
           {
             path: "",
-            element: <GoatPools />,
+            element: (
+              <Suspense>
+                <GoatPools />
+              </Suspense>
+            ),
           },
         ],
       },
@@ -103,14 +109,20 @@ const router = createBrowserRouter([
           {
             path: ":projectId",
             element: (
-              <ProjectDataProvider>
-                <Project />
-              </ProjectDataProvider>
+              <Suspense>
+                <ProjectDataProvider>
+                  <Project />
+                </ProjectDataProvider>
+              </Suspense>
             ),
           },
           {
             path: "",
-            element: <BlitzPools />,
+            element: (
+              <Suspense>
+                <BlitzPools />
+              </Suspense>
+            ),
           },
         ],
       },
@@ -122,14 +134,20 @@ const router = createBrowserRouter([
           {
             path: ":projectId",
             element: (
-              <ProjectDataProvider>
-                <DraftPickPage />
-              </ProjectDataProvider>
+              <Suspense>
+                <ProjectDataProvider>
+                  <DraftPickPage />
+                </ProjectDataProvider>
+              </Suspense>
             ),
           },
           {
             path: "",
-            element: <DraftPicks />,
+            element: (
+              <Suspense>
+                <DraftPicks />
+              </Suspense>
+            ),
           },
         ],
       },
