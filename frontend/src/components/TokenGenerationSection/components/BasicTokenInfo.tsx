@@ -56,17 +56,10 @@ const BasicTokenInfo = ({ isDraftPick }: Props) => {
             <Text text={tgeDate} isLoading={isLoading} className="text-nowrap text-base text-fg-primary" />
           </div>
         )}
-        {isDraftPick ? (
-          <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
-            <span className="text-sm text-fg-tertiary">Target FDV</span>
-            <Text text={targetFdv} isLoading={isLoading} className="text-base text-fg-primary" />
-          </div>
-        ) : (
-          <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
-            <span className="text-sm text-fg-tertiary">{t("fdv")}</span>
-            <Text text={fdv} isLoading={isLoading} className="text-base text-fg-primary" />
-          </div>
-        )}
+        <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
+          <span className="text-sm text-fg-tertiary">Target FDV</span>
+          <Text text={targetFdv} isLoading={isLoading} className="text-base text-fg-primary" />
+        </div>
       </div>
     </section>
   )

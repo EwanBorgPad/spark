@@ -55,7 +55,7 @@ const GoatPools = () => {
 
       <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 py-[60px] md:py-[80px]">
         <div className="flex w-full max-w-[1080px] flex-col items-center">
-          <ul className="grid grid-cols-1 place-content-center justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid w-full grid-cols-1 place-content-center justify-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <ActiveProjects projectType="goat" />
           </ul>
         </div>

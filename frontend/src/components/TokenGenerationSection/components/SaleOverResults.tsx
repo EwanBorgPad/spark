@@ -5,6 +5,7 @@ import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import { formatCurrencyAmount } from "shared/utils/format"
 import { backendApi } from "@/data/backendApi.ts"
 import Text from "@/components/Text"
+import { SaleResultsResponse } from "shared/models"
 
 const SaleOverResults = () => {
   const { t } = useTranslation()
@@ -23,20 +24,21 @@ const SaleOverResults = () => {
     staleTime: 30 * 1000,
   })
 
+  const getSelloutPercentage = (saleData: SaleResultsResponse | null | undefined, projectId: string | undefined) => {
+    if (!saleData || !projectId) return ""
+    if (projectId === "moemate") return "Sold Out"
+    return Number(saleData?.sellOutPercentage).toFixed(0) + "%"
+  }
+
   const isLoading = isLoadingProject || isLoadingSaleResults
-  const selloutPercentage =
-    saleData && Number(saleData.sellOutPercentage) > 100 ? "100%" : Number(saleData?.sellOutPercentage).toFixed(1) + "%"
+  const selloutPercentage = getSelloutPercentage(saleData, projectId)
 
   return (
     <div className="flex w-full max-w-[760px] flex-wrap gap-x-4 gap-y-5 rounded-lg border-[1px] border-bd-primary bg-secondary px-4 py-4 lg:px-5">
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="w-fit text-sm text-fg-tertiary">{t("sale_over.total_amount_raised")}</span>
         <Text
-          text={
-            projectId === "moemate"
-              ? "$375,000"
-              : formatCurrencyAmount(Number(saleData?.totalAmountRaised.amountInUsd), { withDollarSign: true })
-          }
+          text={formatCurrencyAmount(Number(saleData?.totalAmountRaised.amountInUsd), { withDollarSign: true })}
           isLoading={isLoading}
           className="w-fit text-base leading-7 text-fg-primary"
         />
@@ -44,7 +46,7 @@ const SaleOverResults = () => {
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("sale_over.sell_out_percentage")}</span>
         <span className="text-base leading-7 text-fg-primary"></span>
-        <Text text={"100%"} className="text-base leading-7 text-fg-primary" isLoading={isLoading} />
+        <Text text={selloutPercentage} className="text-base leading-7 text-fg-primary" isLoading={isLoading} />
       </div>
       <div className="flex min-w-[167px] flex-1 basis-[26%] flex-col gap-1">
         <span className="text-sm text-fg-tertiary">{t("sale_over.participants")}</span>
@@ -86,3 +88,4 @@ const SaleOverResults = () => {
 }
 
 export default SaleOverResults
+

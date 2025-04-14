@@ -24,9 +24,9 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
     badgeClassName: "",
     endMessage: "",
     badgeLabel: "",
-    currentEvent: undefined as ExpandedTimelineEventType | undefined
+    currentEvent: undefined as ExpandedTimelineEventType | undefined,
   }
-  
+
   const additionalData = project?.additionalData || defaultAdditionalData
   const badgeClassName = additionalData.badgeClassName || ""
   const endMessage = additionalData.endMessage || ""
@@ -44,10 +44,10 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
   return (
     <>
       {!isRewardDistribution && (
-        <li className="relative flex w-full min-w-[315px] max-w-[344px] flex-col overflow-hidden rounded-lg border-[1px] border-bd-secondary/30 bg-default">
+        <li className="relative flex w-full min-w-[315px] max-w-[344px] flex-1 grow flex-col overflow-hidden rounded-lg border-[1px] border-bd-secondary/30 bg-default">
           <Img
             src={project?.info?.thumbnailUrl || project?.info?.logoUrl}
-            customClass="h-[189px] rounded-none"
+            customClass={twMerge("h-[189px] rounded-none", isLoading ? "opacity-20" : "")}
             showFallback
             isFetchingLink={isLoading}
           />
@@ -74,9 +74,22 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
                   <ProjectDetailRows
                     project={project}
                     rows={[
-                      createDetailRow("SvgChartLine", "Valuation (FDV)", formatCurrencyCompact(project?.config.fdv), project?.info.projectType === "blitz" ? "text-brand-blitz" : "text-fg-brand-primary"),
+                      createDetailRow(
+                        "SvgChartLine",
+                        "Valuation (FDV)",
+                        formatCurrencyCompact(project?.config.fdv),
+                        project?.info.projectType === "blitz" ? "text-brand-blitz" : "text-fg-brand-primary",
+                      ),
                       createDetailRow("SvgChartLine", "Sector", project?.info?.sector ?? "N/A"),
-                      createDetailRow("SvgCalendarFill", "Whitelisting Ends", project?.info.timeline?.find(t => t.id === "SALE_OPENS")?.date ? formatDateForProject(new Date(project?.info.timeline?.find(t => t.id === "SALE_OPENS")?.date || 0)) : "TBC")
+                      createDetailRow(
+                        "SvgCalendarFill",
+                        "Sale Opens",
+                        project?.info.timeline?.find((t) => t.id === "SALE_OPENS")?.date
+                          ? formatDateForProject(
+                              new Date(project?.info.timeline?.find((t) => t.id === "SALE_OPENS")?.date || 0),
+                            )
+                          : "TBC",
+                      ),
                     ]}
                   />
                 )}
@@ -84,11 +97,28 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
                   <ProjectDetailRows
                     project={project}
                     rows={[
-                      createDetailRow("SvgChartLine", "Valuation (FDV)", formatCurrencyCompact(project?.config.fdv), project?.info.projectType === "blitz" ? "text-brand-blitz" : "text-fg-brand-primary"),
+                      createDetailRow(
+                        "SvgChartLine",
+                        "Valuation (FDV)",
+                        formatCurrencyCompact(project?.config.fdv),
+                        project?.info.projectType === "blitz" ? "text-brand-blitz" : "text-fg-brand-primary",
+                      ),
                       createDetailRow("SvgChartLine", "Sector", project?.info?.sector ?? "N/A"),
                       createDetailRow("SvgTwoAvatars", "Participants", project?.depositStats?.participantsCount ?? 0),
-                      createDetailRow("SvgWalletFilled", "Total Raised", formatCurrencyCompact(Number(project?.depositStats?.totalDepositedInUsd || 0))),
-                      createDetailRow("SvgCalendarFill", "Sale Ends", project?.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date ? formatDateForProject(new Date(project?.info.timeline?.find(t => t.id === "SALE_CLOSES")?.date || 0)) : "TBC")
+                      createDetailRow(
+                        "SvgWalletFilled",
+                        "Total Raised",
+                        formatCurrencyCompact(Number(project?.depositStats?.totalDepositedInUsd || 0)),
+                      ),
+                      createDetailRow(
+                        "SvgCalendarFill",
+                        "Sale Ends",
+                        project?.info.timeline?.find((t) => t.id === "SALE_CLOSES")?.date
+                          ? formatDateForProject(
+                              new Date(project?.info.timeline?.find((t) => t.id === "SALE_CLOSES")?.date || 0),
+                            )
+                          : "TBC",
+                      ),
                     ]}
                   />
                 )}
@@ -125,13 +155,7 @@ type DetailRow = {
   valueClassName?: string
 }
 
-const ProjectDetailRows = ({
-  project,
-  rows
-}: {
-  project: ExpandedProject | null
-  rows: DetailRow[]
-}) => {
+const ProjectDetailRows = ({ project, rows }: { project: ExpandedProject | null; rows: DetailRow[] }) => {
   if (!project) return null
 
   return (
@@ -140,17 +164,15 @@ const ProjectDetailRows = ({
         <div
           key={`${row.icon}-${index}`}
           className={twMerge(
-            "flex items-center justify-between p-2 rounded-lg",
-            index % 2 === 0 ? "bg-secondary" : "bg-transparent"
+            "flex items-center justify-between gap-2 rounded-lg p-2",
+            index % 2 === 0 ? "bg-secondary" : "bg-transparent",
           )}
         >
           <div className="flex items-center gap-2">
             <Icon icon={row.icon} />
             <span className="text-fg-secondary">{row.label}</span>
           </div>
-          <span className={twMerge("text-fg-secondary", row.valueClassName)}>
-            {row.value}
-          </span>
+          <span className={twMerge("text-fg-secondary", row.valueClassName)}>{row.value}</span>
         </div>
       ))}
     </>
@@ -161,7 +183,7 @@ const createDetailRow = (
   icon: AvailableIcons,
   label: string,
   value: string | number,
-  valueClassName?: string
+  valueClassName?: string,
 ): DetailRow => {
   return { icon, label, value, valueClassName }
 }

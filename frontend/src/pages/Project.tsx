@@ -122,7 +122,7 @@ const Project = () => {
           <Analysts />
         </div>
 
-        <BasicTokenInfo isDraftPick={true} />
+        <BasicTokenInfo isDraftPick={false} />
       </section>
 
       <TokenGenerationSection expandedTimeline={expandedTimeline} />

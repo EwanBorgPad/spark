@@ -25,102 +25,96 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
       return jsonResponse(null, 401)
     }
-    try {
-      const tweetScoutApiKey = ctx.env.TWEET_SCOUT_API_KEY
-      if (!tweetScoutApiKey) throw new Error("Missing api key for Tweet Scout!")
 
-      // Fetch a single tweet's metrics from Tweet Scout API.
-      const fetchTweetMetrics = async (analysis: Analysis): Promise<FetchResult> => {
-        console.log(`Fetching metrics for articleUrl: ${analysis.articleUrl}`);
+    const tweetScoutApiKey = ctx.env.TWEET_SCOUT_API_KEY
+    if (!tweetScoutApiKey) throw new Error("Missing api key for Tweet Scout!")
 
-        const body = JSON.stringify({ tweet_link: analysis.articleUrl });
+    // Fetch a single tweet's metrics from Tweet Scout API.
+    const fetchTweetMetrics = async (analysis: Analysis): Promise<FetchResult> => {
+      console.log(`Fetching metrics for articleUrl: ${analysis.articleUrl}`);
 
-        try {
-          const response = await fetch("https://api.tweetscout.io/v2/tweet-info", {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              ApiKey: tweetScoutApiKey,
-              "Content-Type": "application/json",
-            },
-            body,
-          });
+      const body = JSON.stringify({ tweet_link: analysis.articleUrl });
 
-          console.log(`Received response for: ${analysis.articleUrl} with status: ${response.status}`);
+      try {
+        const response = await fetch("https://api.tweetscout.io/v2/tweet-info", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            ApiKey: tweetScoutApiKey,
+            "Content-Type": "application/json",
+          },
+          body,
+        });
 
-          if (!response.ok) {
-            console.log(`Error fetching metrics for ${analysis.articleUrl}: ${response.statusText}`);
-            throw new Error(`Failed to fetch tweet metrics for ${analysis.articleUrl}`);
-          }
+        console.log(`Received response for: ${analysis.articleUrl} with status: ${response.status}`);
 
-          const data = (await response.json()) as TweetScoutTweetResponse;
-
-          return {
-            impressions: data.view_count,
-            likes: data.favorite_count,
-            analysisId: analysis.id
-          };
-        } catch (error) {
-          console.error(`Error processing ${analysis.articleUrl}:`, error);
-          return { impressions: 0, likes: 0, analysisId: analysis.id }; // Return default values if an error occurs
-        }
-      };
-
-      // Main function that fetches data in batches
-      const fetchMetricsInBatches = async (): Promise<FetchResult[]> => {
-        console.log("Fetching all article stats from Tweet Scout...");
-
-        const allAnalyses = await db.select().from(analysisTable).all();
-        console.log(`Total articles to process: ${allAnalyses.length}`);
-        if (!allAnalyses) {
-          return []
+        if (!response.ok) {
+          console.log(`Error fetching metrics for ${analysis.articleUrl}: ${response.statusText}`);
+          throw new Error(`Failed to fetch tweet metrics for ${analysis.articleUrl}`);
         }
 
-        const batchSize = 20; // Maximum requests per second
-        const delayBetweenBatches = 1000; // 1 second delay between batches
-        let results: FetchResult[] = [];
+        const data = (await response.json()) as TweetScoutTweetResponse;
 
-        for (let i = 0; i < allAnalyses.length; i += batchSize) {
-          const batch = allAnalyses.slice(i, i + batchSize);
-          console.log(`Processing batch ${i / batchSize + 1}/${Math.ceil(allAnalyses.length / batchSize)} with ${batch.length} requests...`);
+        return {
+          impressions: data.view_count,
+          likes: data.favorite_count,
+          analysisId: analysis.id
+        };
+      } catch (error) {
+        console.error(`Error processing ${analysis.articleUrl}:`, error);
+        return { impressions: 0, likes: 0, analysisId: analysis.id }; // Return default values if an error occurs
+      }
+    };
 
-          try {
-            const batchResults = await Promise.all(batch.map(fetchTweetMetrics));
-            console.log(`Batch ${i / batchSize + 1} completed. Merging results...`);
-            results = results.concat(batchResults);
-          } catch (batchError) {
-            console.error(`Error in batch ${i / batchSize + 1}:`, batchError);
-          }
+    // Main function that fetches data in batches
+    const fetchMetricsInBatches = async (): Promise<FetchResult[]> => {
+      console.log("Fetching all article stats from Tweet Scout...");
 
-          if (i + batchSize < allAnalyses.length) {
-            console.log(`Waiting ${delayBetweenBatches / 1000} seconds before next batch...`);
-            await new Promise((resolve) => setTimeout(resolve, delayBetweenBatches));
-          }
-        }
-
-        console.log("All batches completed. Final results:", results);
-        if (!results.length) return []
-        return results;
-      };
-      const results: FetchResult[]  = await fetchMetricsInBatches()
-      if (!results || !results.length) {
-        return jsonResponse({ message: "No results" }, 404)
+      const allAnalyses = await db.select().from(analysisTable).all();
+      console.log(`Total articles to process: ${allAnalyses.length}`);
+      if (!allAnalyses) {
+        return []
       }
 
-      await updateRowsInBatch({updates: results, db})
+      const batchSize = 20; // Maximum requests per second
+      const delayBetweenBatches = 1000; // 1 second delay between batches
+      let results: FetchResult[] = [];
 
-      console.log("🚀 ~ refreshImpressionsAndLikes ~ results:", results)
-      return jsonResponse(null, 200)
-    } catch (e) {
-      return jsonResponse({
-        message: 'Something went wrong...',
-        error: e.message,
-      }, 500)
+      for (let i = 0; i < allAnalyses.length; i += batchSize) {
+        const batch = allAnalyses.slice(i, i + batchSize);
+        console.log(`Processing batch ${i / batchSize + 1}/${Math.ceil(allAnalyses.length / batchSize)} with ${batch.length} requests...`);
+
+        try {
+          const batchResults = await Promise.all(batch.map(fetchTweetMetrics));
+          console.log(`Batch ${i / batchSize + 1} completed. Merging results...`);
+          results = results.concat(batchResults);
+        } catch (batchError) {
+          console.error(`Error in batch ${i / batchSize + 1}:`, batchError);
+        }
+
+        if (i + batchSize < allAnalyses.length) {
+          console.log(`Waiting ${delayBetweenBatches / 1000} seconds before next batch...`);
+          await new Promise((resolve) => setTimeout(resolve, delayBetweenBatches));
+        }
+      }
+
+      console.log("All batches completed. Final results:", results);
+      if (!results.length) return []
+      return results;
+    };
+    const results: FetchResult[]  = await fetchMetricsInBatches()
+    if (!results || !results.length) {
+      return jsonResponse({ message: "No results" }, 404)
     }
+
+    await updateRowsInBatch({updates: results, db})
+
+    console.log("🚀 ~ refreshImpressionsAndLikes ~ results:", results)
+    return jsonResponse(null, 200)
     
   } catch (e) {
     await reportError(db, e)
-    return jsonResponse({ message: "Something went wrong..." }, 500)
+    return jsonResponse({ message: e?.message || "Something went wrong..." }, 500)
   }
 }
 
