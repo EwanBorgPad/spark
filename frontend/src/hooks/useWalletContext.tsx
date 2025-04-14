@@ -21,6 +21,9 @@ type Context = {
   signInWithPhantom: () => void
   signInWithBackpack: () => void
   signInWithSolflare: () => void
+  connectWithPhantom: () => void
+  connectWithBackpack: () => void
+  connectWithSolflare: () => void
   signOut: () => void
   truncatedAddress: string
   signMessage: (message: string) => Promise<Uint8Array>
@@ -94,11 +97,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (autoConnect === null) return
 
     if (autoConnect.toUpperCase() === "PHANTOM") {
-      signInWithPhantom()
+      connectWithPhantom()
     } else if (autoConnect.toUpperCase() === "BACKPACK") {
-      signInWithBackpack()
+      connectWithBackpack()
     } else if (autoConnect.toUpperCase() === "SOLFLARE") {
-      signInWithSolflare()
+      connectWithSolflare()
     }
 
     setSearchParams((searchParams) => {
@@ -353,7 +356,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }, [walletProvider, walletState, setAddress, setWalletState])
 
   //// not hooks
-  async function signInWithPhantom() {
+  async function connectWithPhantom() {
+    console.log("connectWithPhantom")
     await signInWith({
       wallet: "PHANTOM",
       // @ts-expect-error no typings
@@ -373,7 +377,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     })
   }
 
-  async function signInWithBackpack() {
+  async function connectWithBackpack() {
     await signInWith({
       wallet: "BACKPACK",
       // @ts-expect-error no typings
@@ -389,6 +393,56 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           console.error("Connection error:", error)
           throw error
         }
+      },
+    })
+  }
+
+  async function connectWithSolflare() {
+    await signInWith({
+      wallet: "SOLFLARE",
+      // @ts-expect-error no typings
+      getProvider: () => window?.solflare,
+      signIn: async () => {
+        // @ts-expect-error no typings
+        const connected = await window?.solflare?.connect({
+          domain: PAGE_DOMAIN,
+        })
+        if (!connected) throw new Error("Connection failed!")
+        // @ts-expect-error no typings
+        const address = window.solflare.publicKey.toString()
+        return address
+      },
+    })
+  }
+
+  async function signInWithPhantom() {
+    await signInWith({
+      wallet: "PHANTOM",
+      // @ts-expect-error no typings
+      getProvider: () => window?.phantom?.solana,
+      signIn: async () => {
+        // @ts-expect-error no typings
+        const signInRes = await window?.phantom?.solana.signIn({
+          domain: PAGE_DOMAIN,
+        })
+        const address = signInRes.address.toString()
+        return address
+      },
+    })
+  }
+
+  async function signInWithBackpack() {
+    await signInWith({
+      wallet: "BACKPACK",
+      // @ts-expect-error no typings
+      getProvider: () => window?.backpack,
+      signIn: async () => {
+        // @ts-expect-error no typings
+        const signInRes = await window?.backpack?.signIn({
+          domain: PAGE_DOMAIN,
+        })
+        const address = signInRes.account.address
+        return address
       },
     })
   }
@@ -535,6 +589,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         signInWithPhantom,
         signInWithBackpack,
         signInWithSolflare,
+        connectWithPhantom,
+        connectWithBackpack,
+        connectWithSolflare,
         signOut,
         truncatedAddress,
         signMessage,

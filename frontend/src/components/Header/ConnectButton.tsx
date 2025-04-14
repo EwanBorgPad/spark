@@ -25,7 +25,7 @@ export const ConnectButton = ({
   color,
   isLoading = false,
 }: ConnectButtonProps) => {
-  const { walletState, truncatedAddress, signInWithPhantom, signInWithBackpack, signInWithSolflare, signOut, setIsConnectedWithLedger } =
+  const { walletState, truncatedAddress, connectWithPhantom, connectWithBackpack, connectWithSolflare, signOut, setIsConnectedWithLedger } =
     useWalletContext()
 
   const [showModal, setShowModal] = useState(false)
@@ -95,9 +95,9 @@ export const ConnectButton = ({
                     "gap-4 md:gap-3",
                   )}
                 >
-                  <WalletProvider icon={"SvgPhantom"} label={"Phantom"} onClick={signInWithPhantom} />
-                  <WalletProvider icon={"SvgBackpack"} label={"Backpack"} onClick={signInWithBackpack} />
-                  <WalletProvider icon={"SvgSolflare"} label={"Solflare"} onClick={signInWithSolflare} />
+                  <WalletProvider icon={"SvgPhantom"} label={"Phantom"} onClick={connectWithPhantom} />
+                  <WalletProvider icon={"SvgBackpack"} label={"Backpack"} onClick={connectWithBackpack} />
+                  <WalletProvider icon={"SvgSolflare"} label={"Solflare"} onClick={connectWithSolflare} />
                 </div>
                 <div className="mt-4 flex justify-center">
                   <CheckboxField
