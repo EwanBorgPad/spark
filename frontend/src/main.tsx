@@ -22,6 +22,12 @@ import { ROUTES } from "./utils/routes"
 // import BackOfficeDashboard from "./pages/BackOfficeDashboard"
 import { AuthProvider } from "./hooks/useAuthContext"
 import ProtectedRoute from "./components/BackOffice/ProtectedRoute"
+import LandingPage from "./pages/LandingPage"
+import Project from "./pages/Project"
+import GoatPools from "./pages/GoatPools"
+import BlitzPools from "./pages/BlitzPools"
+import DraftPickPage from "./pages/DraftPickPage"
+import DraftPicks from "./pages/DraftPicks"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -36,12 +42,6 @@ const queryClient = new QueryClient({
 })
 
 const BackOfficeDashboard = lazy(() => import("./pages/BackOfficeDashboard"))
-const LandingPage = lazy(() => import("./pages/LandingPage"))
-const Project = lazy(() => import("./pages/Project"))
-const DraftPickPage = lazy(() => import("./pages/DraftPickPage"))
-const DraftPicks = lazy(() => import("./pages/DraftPicks"))
-const BlitzPools = lazy(() => import("./pages/BlitzPools"))
-const GoatPools = lazy(() => import("./pages/GoatPools"))
 const TermsOfUse = lazy(() => import("./pages/TermsOfUse"))
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"))
 const NotFound = lazy(() => import("./pages/NotFound"))
@@ -84,20 +84,14 @@ const router = createBrowserRouter([
           {
             path: ":projectId",
             element: (
-              <Suspense>
-                <ProjectDataProvider>
-                  <Project />
-                </ProjectDataProvider>
-              </Suspense>
+              <ProjectDataProvider>
+                <Project />
+              </ProjectDataProvider>
             ),
           },
           {
             path: "",
-            element: (
-              <Suspense>
-                <GoatPools />
-              </Suspense>
-            ),
+            element: <GoatPools />,
           },
         ],
       },
@@ -109,20 +103,14 @@ const router = createBrowserRouter([
           {
             path: ":projectId",
             element: (
-              <Suspense>
-                <ProjectDataProvider>
-                  <Project />
-                </ProjectDataProvider>
-              </Suspense>
+              <ProjectDataProvider>
+                <Project />
+              </ProjectDataProvider>
             ),
           },
           {
             path: "",
-            element: (
-              <Suspense>
-                <BlitzPools />
-              </Suspense>
-            ),
+            element: <BlitzPools />,
           },
         ],
       },
@@ -134,20 +122,14 @@ const router = createBrowserRouter([
           {
             path: ":projectId",
             element: (
-              <Suspense>
-                <ProjectDataProvider>
-                  <DraftPickPage />
-                </ProjectDataProvider>
-              </Suspense>
+              <ProjectDataProvider>
+                <DraftPickPage />
+              </ProjectDataProvider>
             ),
           },
           {
             path: "",
-            element: (
-              <Suspense>
-                <DraftPicks />
-              </Suspense>
-            ),
+            element: <DraftPicks />,
           },
         ],
       },
