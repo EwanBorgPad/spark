@@ -43,8 +43,7 @@ const Analysts = () => {
 
   const closeBecomeAnalystModal = () => {
     setShowBecomeAnalystModal(false)
-    // removeParam(OPEN_ANALYST_MODAL_PARAM)
-    localStorage.removeItem(OPEN_ANALYST_MODAL_PARAM)
+    removeParam(OPEN_ANALYST_MODAL_PARAM)
     localStorage.removeItem(BP_JWT_TOKEN)
   }
 
