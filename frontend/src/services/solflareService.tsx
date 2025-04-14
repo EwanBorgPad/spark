@@ -44,8 +44,13 @@ export async function connectSolflare(): Promise<string> {
   }
   
   try {
-    const signInRes = await provider.connect()
-    const address = signInRes.publicKey.toString()
+    await provider.connect()
+    
+    if (!provider.publicKey) {
+      throw new Error("Failed to get public key from Solflare")
+    }
+    
+    const address = provider.publicKey.toString()
     return address
   } catch (error) {
     console.error("Solflare connection error:", error)
