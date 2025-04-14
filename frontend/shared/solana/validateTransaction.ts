@@ -41,10 +41,10 @@ export async function validateTransaction(
     const firstAccount = transaction.transaction.message.accountKeys[0]
     const senderPublicKey = firstAccount.pubkey.toString()
 
-    console.log("Message extrait de la transaction:", extractedMessage)
-    console.log("Message attendu:", message)
-    console.log("Adresse de l'expéditeur (string):", senderPublicKey)
-    console.log("Adresse attendue:", publicKey)
+    console.log("Extracted message from the transaction:", extractedMessage)
+    console.log("Expected message:", message)
+    console.log("Sender's address (string):", senderPublicKey)
+    console.log("Expected address:", publicKey)
 
     const isVerified = extractedMessage === message && senderPublicKey === publicKey
 

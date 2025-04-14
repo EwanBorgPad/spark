@@ -114,14 +114,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (!address || !walletProvider) return
 
     const checkLedgerConnection = async () => {
-      try {
-        const storedLedgerPreference = localStorage.getItem("isUsingLedger")
-        if (storedLedgerPreference === "true") {
-          setIsConnectedWithLedger(true)
-          return
-        }
-      } catch (error) {
-        console.error("Error checking Ledger connection:", error)
+      const storedLedgerPreference = localStorage.getItem("isUsingLedger")
+      if (storedLedgerPreference === "true") {
+        setIsConnectedWithLedger(true)
+        return
       }
     }
 
@@ -134,7 +130,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
 
     // Handle connect event
-    const handleConnect = (publicKey: any) => {
+    const handleConnect = (publicKey: string | { publicKey: string }) => {
       if (publicKey) {
         // Handle different formats of publicKey based on wallet provider
         let address = ""
@@ -149,7 +145,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           // For Phantom and Solflare
           address = publicKey.toString()
         }
-        
+
         setAddress(address)
         setWalletState("CONNECTED")
         // toast.info("Wallet connected")
@@ -165,23 +161,23 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
 
     // Set up event listeners based on the wallet provider
-    let cleanupFunctions: (() => void)[] = []
+    const cleanupFunctions: (() => void)[] = []
 
     // PHANTOM WALLET CHECKER
     if (walletProvider === "PHANTOM") {
       // @ts-expect-error no typings
       const phantom = window?.phantom?.solana
-      
+
       if (phantom) {
         // Add event listeners directly to the Phantom provider
         phantom.on("connect", (publicKey: any) => {
           handleConnect(publicKey)
         })
-        
+
         phantom.on("disconnect", () => {
           handleDisconnect()
         })
-        
+
         const handleFocusChange = () => {
           if (phantom.publicKey) {
             const currentAddress = phantom.publicKey.toString()
@@ -196,26 +192,26 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           // Also check current account when window gets focus
           checkCurrentAccount()
         }
-        
+
         // Add event listeners
         window.addEventListener('focus', handleFocusChange)
-        
+
         // Add cleanup functions
         cleanupFunctions.push(() => {
           phantom.removeListener("connect", handleConnect)
           phantom.removeListener("disconnect", handleDisconnect)
           window.removeEventListener('focus', handleFocusChange)
         })
-        
+
         // Create a function to check the current account
         const checkCurrentAccount = async () => {
           try {
             // Try to get the current account directly
             const currentAccount = await phantom.connect({ onlyIfTrusted: true })
-            
+
             if (currentAccount && currentAccount.publicKey) {
               const newAddress = currentAccount.publicKey.toString()
-              
+
               if (newAddress !== address) {
                 setAddress(newAddress)
               }
@@ -224,22 +220,22 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             console.log("Direct account check error (expected if not trusted):", error)
           }
         }
-        
+
         // Check the account immediately
         checkCurrentAccount()
       } else {
         console.error("Phantom provider not found!")
       }
-    // BACKPACK WALLET CHECKER
+      // BACKPACK WALLET CHECKER
     } else if (walletProvider === "BACKPACK") {
       // @ts-expect-error no typings
       const backpack = window?.backpack
-      
+
       if (backpack) {
         // Add event listeners to the Backpack provider
         backpack.on("connect", handleConnect)
         backpack.on("disconnect", handleDisconnect)
-        
+
         // Handle account change event for Backpack
         const handleBackpackAccountChanged = (publicKey: any) => {
           if (publicKey) {
@@ -250,7 +246,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             } else {
               address = typeof publicKey === 'string' ? publicKey : publicKey.toString()
             }
-            
+
             console.log(`Account changed to ${address}`)
             setAddress(address)
             // Reset Ledger connection status when wallet changes
@@ -266,9 +262,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             })
           }
         }
-        
+
         backpack.on("accountChanged", handleBackpackAccountChanged)
-        
+
         // Add cleanup functions
         cleanupFunctions.push(() => {
           backpack.removeListener("connect", handleConnect)
@@ -276,7 +272,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           backpack.removeListener("accountChanged", handleBackpackAccountChanged)
         })
       }
-    // SOLFLARE WALLET CHECKER
+      // SOLFLARE WALLET CHECKER
     } else if (walletProvider === "SOLFLARE") {
       // @ts-expect-error no typings
       const solflare = window?.solflare
@@ -284,7 +280,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         // Add event listeners to the Solflare provider
         solflare.on("connect", handleConnect)
         solflare.on("disconnect", handleDisconnect)
-        
+
         // Handle account change event for Solflare
         const handleSolflareAccountChanged = (publicKey: any) => {
           console.log("Solflare accountChanged event received:", publicKey)
@@ -304,9 +300,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             })
           }
         }
-        
+
         solflare.on("accountChanged", handleSolflareAccountChanged)
-        
+
         // Add cleanup functions
         cleanupFunctions.push(() => {
           solflare.removeListener("connect", handleConnect)
