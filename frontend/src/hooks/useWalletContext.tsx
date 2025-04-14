@@ -4,10 +4,29 @@ import { isMobile } from "@/utils/isMobile.ts"
 import { useSearchParams } from "react-router-dom"
 import { PublicKey, Transaction } from "@solana/web3.js"
 import { toast } from "react-toastify"
+import { 
+  connectPhantom, 
+  signInPhantom, 
+  setupPhantomWalletListeners,
+  signTransactionWithPhantom,
+  signMessageWithPhantom
+} from "@/services/phantomService"
+import { 
+  connectBackpack, 
+  signInBackpack, 
+  setupBackpackWalletListeners,
+  signTransactionWithBackpack,
+  signMessageWithBackpack
+} from "@/services/backpackService"
+import { 
+  connectSolflare, 
+  signInSolflare, 
+  setupSolflareWalletListeners,
+  signTransactionWithSolflare,
+  signMessageWithSolflare
+} from "@/services/solflareService"
 
 const AUTO_CONNECT_PARAM_KEY = "autoConnect"
-const PAGE_URL = window.location.origin
-const PAGE_DOMAIN = window.location.host
 
 export type WalletState = "NOT_CONNECTED" | "CONNECTING" | "CONNECTED"
 
@@ -56,6 +75,9 @@ export type Provider = {
   signTransaction: (transacton: Transaction) => Promise<Transaction>
   publicKey: PublicKey
   isConnected: boolean
+  on: (event: string, callback: (publicKey: PublicKey | { publicKey: string } | string) => void) => void
+  removeListener: (event: string, callback: (publicKey: PublicKey | { publicKey: string } | string) => void) => void
+  disconnect: () => Promise<void>
 }
 
 export type signTransactionArgs = {
@@ -65,18 +87,8 @@ export type signTransactionArgs = {
   tokenMintAddress: PublicKey
 }
 
-type SignInWithArgs = {
-  wallet: SupportedWallet
-  getProvider: () => Provider
-  /**
-   * SignIn (or connect, tbd) and return the address
-   */
-  signIn: () => Promise<string>
-}
-
 /**
  * Provides wallet connectivity functionality for the app.
- * Question: Should we use SignIn or Connect functionality, what's the difference?
  * @param children
  * @constructor
  */
@@ -131,22 +143,21 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!walletProvider) return
 
-
     // Handle connect event
-    const handleConnect = (publicKey: string | { publicKey: string }) => {
+    const handleConnect = (publicKey: PublicKey | { publicKey: string } | string) => {
       if (publicKey) {
         // Handle different formats of publicKey based on wallet provider
         let address = ""
         if (walletProvider === "BACKPACK") {
           // Backpack returns an object with a publicKey property
-          if (typeof publicKey === 'object' && publicKey.publicKey) {
-            address = publicKey.publicKey
+          if (typeof publicKey === 'object' && publicKey !== null && 'publicKey' in publicKey) {
+            address = (publicKey as { publicKey: string }).publicKey
           } else {
-            address = typeof publicKey === 'string' ? publicKey : publicKey.toString()
+            address = typeof publicKey === 'string' ? publicKey : String(publicKey)
           }
         } else {
           // For Phantom and Solflare
-          address = publicKey.toString()
+          address = String(publicKey)
         }
 
         setAddress(address)
@@ -163,385 +174,163 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       toast.info("Wallet disconnected")
     }
 
+    // Handle account change event
+    const handleAccountChange = (newAddress: string) => {
+      if (newAddress !== address) {
+        setAddress(newAddress)
+        // Reset Ledger connection status when wallet changes
+        setIsConnectedWithLedger(false)
+        // Update localStorage
+        localStorage.setItem("isUsingLedger", "false")
+      }
+    }
+
     // Set up event listeners based on the wallet provider
-    const cleanupFunctions: (() => void)[] = []
+    let cleanup: () => void = () => {}
 
-    // PHANTOM WALLET CHECKER
     if (walletProvider === "PHANTOM") {
-      // @ts-expect-error no typings
-      const phantom = window?.phantom?.solana
-
-      if (phantom) {
-        // Add event listeners directly to the Phantom provider
-        phantom.on("connect", (publicKey: any) => {
-          handleConnect(publicKey)
-        })
-
-        phantom.on("disconnect", () => {
-          handleDisconnect()
-        })
-
-        const handleFocusChange = () => {
-          if (phantom.publicKey) {
-            const currentAddress = phantom.publicKey.toString()
-            if (currentAddress !== address) {
-              setAddress(currentAddress)
-              // Reset Ledger connection status when wallet changes
-              setIsConnectedWithLedger(false)
-              // Update localStorage
-              localStorage.setItem("isUsingLedger", "false")
-            }
-          }
-          // Also check current account when window gets focus
-          checkCurrentAccount()
-        }
-
-        // Add event listeners
-        window.addEventListener('focus', handleFocusChange)
-
-        // Add cleanup functions
-        cleanupFunctions.push(() => {
-          phantom.removeListener("connect", handleConnect)
-          phantom.removeListener("disconnect", handleDisconnect)
-          window.removeEventListener('focus', handleFocusChange)
-        })
-
-        // Create a function to check the current account
-        const checkCurrentAccount = async () => {
-          try {
-            // Try to get the current account directly
-            const currentAccount = await phantom.connect({ onlyIfTrusted: true })
-
-            if (currentAccount && currentAccount.publicKey) {
-              const newAddress = currentAccount.publicKey.toString()
-
-              if (newAddress !== address) {
-                setAddress(newAddress)
-              }
-            }
-          } catch (error) {
-            console.log("Direct account check error (expected if not trusted):", error)
-          }
-        }
-
-        // Check the account immediately
-        checkCurrentAccount()
-      } else {
-        console.error("Phantom provider not found!")
-      }
-      // BACKPACK WALLET CHECKER
+      cleanup = setupPhantomWalletListeners({
+        onConnect: handleConnect,
+        onDisconnect: handleDisconnect,
+        onAccountChange: handleAccountChange
+      })
     } else if (walletProvider === "BACKPACK") {
-      // @ts-expect-error no typings
-      const backpack = window?.backpack
-
-      if (backpack) {
-        // Add event listeners to the Backpack provider
-        backpack.on("connect", handleConnect)
-        backpack.on("disconnect", handleDisconnect)
-
-        // Handle account change event for Backpack
-        const handleBackpackAccountChanged = (publicKey: any) => {
-          if (publicKey) {
-            // Handle Backpack's specific format
-            let address = ""
-            if (typeof publicKey === 'object' && publicKey.publicKey) {
-              address = publicKey.publicKey
-            } else {
-              address = typeof publicKey === 'string' ? publicKey : publicKey.toString()
-            }
-
-            console.log(`Account changed to ${address}`)
-            setAddress(address)
-            // Reset Ledger connection status when wallet changes
-            setIsConnectedWithLedger(false)
-            // Update localStorage
-            localStorage.setItem("isUsingLedger", "false")
-            // toast.info(`Wallet account changed to ${truncateAddress(address)}`)
-          } else {
-            // Attempt to reconnect
-            console.log("No public key provided, attempting to reconnect")
-            backpack.connect().catch((error: Error) => {
-              console.error("Failed to reconnect to Backpack:", error)
-            })
-          }
-        }
-
-        backpack.on("accountChanged", handleBackpackAccountChanged)
-
-        // Add cleanup functions
-        cleanupFunctions.push(() => {
-          backpack.removeListener("connect", handleConnect)
-          backpack.removeListener("disconnect", handleDisconnect)
-          backpack.removeListener("accountChanged", handleBackpackAccountChanged)
-        })
-      }
-      // SOLFLARE WALLET CHECKER
+      cleanup = setupBackpackWalletListeners({
+        onConnect: handleConnect,
+        onDisconnect: handleDisconnect,
+        onAccountChange: handleAccountChange
+      })
     } else if (walletProvider === "SOLFLARE") {
-      // @ts-expect-error no typings
-      const solflare = window?.solflare
-      if (solflare) {
-        // Add event listeners to the Solflare provider
-        solflare.on("connect", handleConnect)
-        solflare.on("disconnect", handleDisconnect)
-
-        // Handle account change event for Solflare
-        const handleSolflareAccountChanged = (publicKey: any) => {
-          console.log("Solflare accountChanged event received:", publicKey)
-          if (publicKey) {
-            const address = publicKey.toString()
-            setAddress(address)
-            // Reset Ledger connection status when wallet changes
-            setIsConnectedWithLedger(false)
-            // Update localStorage
-            localStorage.setItem("isUsingLedger", "false")
-            // toast.info(`Wallet account changed to ${truncateAddress(address)}`)
-          } else {
-            // Attempt to reconnect
-            console.log("No public key provided, attempting to reconnect")
-            solflare.connect().catch((error: Error) => {
-              console.error("Failed to reconnect to Solflare:", error)
-            })
-          }
-        }
-
-        solflare.on("accountChanged", handleSolflareAccountChanged)
-
-        // Add cleanup functions
-        cleanupFunctions.push(() => {
-          solflare.removeListener("connect", handleConnect)
-          solflare.removeListener("disconnect", handleDisconnect)
-          solflare.removeListener("accountChanged", handleSolflareAccountChanged)
-        })
-      }
+      cleanup = setupSolflareWalletListeners({
+        onConnect: handleConnect,
+        onDisconnect: handleDisconnect,
+        onAccountChange: handleAccountChange
+      })
     }
 
     // Clean up event listeners when component unmounts or wallet changes
     return () => {
-      cleanupFunctions.forEach(cleanup => cleanup())
+      cleanup()
     }
   }, [walletProvider, setAddress, setWalletProvider, setWalletState, address])
 
-  // Try to eagerly connect on page load if we have a stored wallet provider
-  useEffect(() => {
-    if (!walletProvider || walletState !== "NOT_CONNECTED") return
-
-    const eagerConnect = async () => {
-      try {
-        let provider: any = null
-        if (walletProvider === "PHANTOM") {
-          // @ts-expect-error no typings
-          provider = window?.phantom?.solana
-        } else if (walletProvider === "BACKPACK") {
-          // @ts-expect-error no typings
-          provider = window?.backpack
-        } else if (walletProvider === "SOLFLARE") {
-          // @ts-expect-error no typings
-          provider = window?.solflare
-        }
-
-        if (!provider) return
-
-        // Try to connect without prompting the user
-        const resp = await provider.connect({ onlyIfTrusted: true })
-        if (resp?.publicKey) {
-          setAddress(resp.publicKey.toString())
-          setWalletState("CONNECTED")
-        }
-      } catch (error) {
-        console.log("Eager connection failed, user will need to connect manually")
-      }
-    }
-
-    eagerConnect()
-  }, [walletProvider, walletState, setAddress, setWalletState])
-
   //// not hooks
   async function connectWithPhantom() {
-    console.log("connectWithPhantom")
-    await signInWith({
-      wallet: "PHANTOM",
-      // @ts-expect-error no typings
-      getProvider: () => window?.phantom?.solana,
-      signIn: async () => {
-        // @ts-expect-error no typings
-        const provider = window?.phantom?.solana
-        try {
-          const signInRes = await provider.connect()
-          const address = signInRes.publicKey.toString()
-          return address
-        } catch (error) {
-          console.error("Connection error:", error)
-          throw error
-        }
-      },
-    })
+    try {
+      setWalletState("CONNECTING")
+      const address = await connectPhantom()
+      setAddress(address)
+      setWalletState("CONNECTED")
+      setWalletProvider("PHANTOM")
+    } catch (e) {
+      setWalletState("NOT_CONNECTED")
+      handleConnectionError(e)
+    }
   }
 
   async function connectWithBackpack() {
-    await signInWith({
-      wallet: "BACKPACK",
-      // @ts-expect-error no typings
-      getProvider: () => window?.backpack,
-      signIn: async () => {
-        // @ts-expect-error no typings
-        const provider = window?.backpack
-        try {
-          const signInRes = await provider.connect()
-          const address = signInRes.publicKey.toString()
-          return address
-        } catch (error) {
-          console.error("Connection error:", error)
-          throw error
-        }
-      },
-    })
+    try {
+      setWalletState("CONNECTING")
+      const address = await connectBackpack()
+      setAddress(address)
+      setWalletState("CONNECTED")
+      setWalletProvider("BACKPACK")
+    } catch (e) {
+      setWalletState("NOT_CONNECTED")
+      handleConnectionError(e)
+    }
   }
 
   async function connectWithSolflare() {
-    await signInWith({
-      wallet: "SOLFLARE",
-      // @ts-expect-error no typings
-      getProvider: () => window?.solflare,
-      signIn: async () => {
-        // @ts-expect-error no typings
-        const connected = await window?.solflare?.connect({
-          domain: PAGE_DOMAIN,
-        })
-        if (!connected) throw new Error("Connection failed!")
-        // @ts-expect-error no typings
-        const address = window.solflare.publicKey.toString()
-        return address
-      },
-    })
+    try {
+      setWalletState("CONNECTING")
+      const address = await connectSolflare()
+      setAddress(address)
+      setWalletState("CONNECTED")
+      setWalletProvider("SOLFLARE")
+    } catch (e) {
+      setWalletState("NOT_CONNECTED")
+      handleConnectionError(e)
+    }
   }
 
   async function signInWithPhantom() {
-    await signInWith({
-      wallet: "PHANTOM",
-      // @ts-expect-error no typings
-      getProvider: () => window?.phantom?.solana,
-      signIn: async () => {
-        // @ts-expect-error no typings
-        const signInRes = await window?.phantom?.solana.signIn({
-          domain: PAGE_DOMAIN,
-        })
-        const address = signInRes.address.toString()
-        return address
-      },
-    })
+    try {
+      setWalletState("CONNECTING")
+      const address = await signInPhantom()
+      setAddress(address)
+      setWalletState("CONNECTED")
+      setWalletProvider("PHANTOM")
+    } catch (e) {
+      setWalletState("NOT_CONNECTED")
+      handleConnectionError(e)
+    }
   }
 
   async function signInWithBackpack() {
-    await signInWith({
-      wallet: "BACKPACK",
-      // @ts-expect-error no typings
-      getProvider: () => window?.backpack,
-      signIn: async () => {
-        // @ts-expect-error no typings
-        const signInRes = await window?.backpack?.signIn({
-          domain: PAGE_DOMAIN,
-        })
-        const address = signInRes.account.address
-        return address
-      },
-    })
+    try {
+      setWalletState("CONNECTING")
+      const address = await signInBackpack()
+      setAddress(address)
+      setWalletState("CONNECTED")
+      setWalletProvider("BACKPACK")
+    } catch (e) {
+      setWalletState("NOT_CONNECTED")
+      handleConnectionError(e)
+    }
   }
 
   async function signInWithSolflare() {
-    await signInWith({
-      wallet: "SOLFLARE",
-      // @ts-expect-error no typings
-      getProvider: () => window?.solflare,
-      signIn: async () => {
-        // @ts-expect-error no typings
-        const connected = await window?.solflare?.connect({
-          domain: PAGE_DOMAIN,
-        })
-        if (!connected) throw new Error("Connection failed!")
-        // @ts-expect-error no typings
-        const address = window.solflare.publicKey.toString()
-        return address
-      },
-    })
-  }
-
-  async function signInWith({ wallet, getProvider, signIn }: SignInWithArgs) {
-    const provider = getProvider()
-
-    const isExtensionDetected = Boolean(provider)
-
-    if (!isExtensionDetected) {
-      if (isMobile()) {
-        const url = `${PAGE_URL}/?autoConnect=${wallet}`
-        const encodedUrl = encodeURIComponent(url)
-        const encodedPageUrl = encodeURIComponent(PAGE_URL)
-        if (wallet === "SOLFLARE") {
-          const deepLink = `https://${wallet}.com/ul/v1/browse/${encodedUrl}?ref=${encodedPageUrl}`
-          window.location.href = deepLink
-        } else {
-          const deepLink = `https://${wallet}.app/ul/browse/${encodedUrl}?ref=${encodedPageUrl}`
-          window.location.href = deepLink
-        }
-        return
-      } else {
-        const message = `${wallet} not detected!`
-        // temp solution, throw error until we define how to handle this gracefully
-        alert(message)
-        throw new Error(message)
-      }
-    }
-
-    setWalletState("CONNECTING")
-
-    // initiate connection
     try {
-      const address = await signIn()
-
-      // connection accepted
+      setWalletState("CONNECTING")
+      const address = await signInSolflare()
       setAddress(address)
       setWalletState("CONNECTED")
-      setWalletProvider(wallet)
+      setWalletProvider("SOLFLARE")
     } catch (e) {
       setWalletState("NOT_CONNECTED")
-
-      if (e instanceof Error && e.message === "User rejected the request.") {
-        // connection declined
-        alert("Sign in declined by user!")
-      } else {
-        // rethrow
-        throw e
-      }
+      handleConnectionError(e)
     }
   }
+
+  function handleConnectionError(e: unknown) {
+    if (e instanceof Error && e.message === "User rejected the request.") {
+      // connection declined
+      alert("Sign in declined by user!")
+    } else {
+      // rethrow
+      throw e
+    }
+  }
+
   async function signTransaction(transaction: Transaction, walletType: SupportedWallet): Promise<Transaction | null> {
-    let provider
     try {
       if (walletType === "BACKPACK") {
         // @ts-expect-error no typing
-        provider = window?.backpack
+        const provider = window?.backpack
         if (!provider.isConnected) {
           toast("Wallet session timed out, please sign in again")
           await signInWithBackpack()
         }
+        return await signTransactionWithBackpack(transaction)
       } else if (walletType === "PHANTOM") {
         // @ts-expect-error no typing
-        provider = window?.phantom.solana
+        const provider = window?.phantom.solana
         if (!provider.isConnected) {
           toast("Wallet session timed out, please sign in again")
           await signInWithPhantom()
         }
+        return await signTransactionWithPhantom(transaction)
       } else if (walletType === "SOLFLARE") {
         // @ts-expect-error no typing
-        provider = window?.solflare
+        const provider = window?.solflare
         if (!provider.isConnected) {
           toast("Wallet session timed out, please sign in again")
           await signInWithSolflare()
         }
+        return await signTransactionWithSolflare(transaction)
       }
-      if (!provider) throw new Error("Provider not found!")
-      const signedTx = await provider.signTransaction(transaction)
-
-      return signedTx
+      throw new Error("Provider not found!")
     } catch (error) {
       console.error(error)
       return null
@@ -562,17 +351,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   async function signMessage(message: string) {
     if (walletProvider === "PHANTOM") {
-      // @ts-expect-error no typing
-      const signature = await window.solana.signMessage(Buffer.from(message))
-      return signature.signature
+      return await signMessageWithPhantom(message)
     } else if (walletProvider === "BACKPACK") {
-      // @ts-expect-error no typing
-      const signature = await window.backpack.signMessage(Buffer.from(message))
-      return signature.signature
+      return await signMessageWithBackpack(message)
     } else if (walletProvider === "SOLFLARE") {
-      // @ts-expect-error no typing
-      const signature = await window.solflare.signMessage(Buffer.from(message))
-      return signature.signature
+      return await signMessageWithSolflare(message)
     } else {
       throw new Error(`Unknown wallet provider: ${walletProvider} !`)
     }
