@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [address, checkIfUserIsAdmin, navigate, signMessage])
 
   useEffect(() => {
-    if (!isSignedIn) {
+    if (!isSignedIn && isWalletConnected) {
       checkIfUserIsAdminHandler()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
