@@ -15,6 +15,8 @@ import { AnalystRoleEnum, NewAnalysisSchemaType, postNewAnalysisSchema } from "s
 import { toast } from "react-toastify"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import { twMerge } from "tailwind-merge"
+import { BP_JWT_TOKEN } from "@/utils/constants"
+import { useSearchParamsUpdate } from "@/hooks/useSearchParamsUpdate"
 
 type Props = {
   onClose: () => void
@@ -38,10 +40,11 @@ const roleOptions: { label: string; id: AnalystRoleEnum }[] = [
 const BecomeAnalystModal = ({ onClose }: Props) => {
   const navigate = useNavigate()
   const [_, setRedirectionUrl] = usePersistedState("bp_redirectionUrl")
+  const [__, setJwtToken] = usePersistedState(BP_JWT_TOKEN)
   const { projectData } = useProjectDataContext()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [analystId, setAnalystId] = useState<string>("")
+  const [sessionId, setSessionId] = useState<string>("")
   const queryClient = useQueryClient()
+  const { removeParam, getParam, removeParamIfNull } = useSearchParamsUpdate()
 
   // configure and manage form
   const {
@@ -63,18 +66,12 @@ const BecomeAnalystModal = ({ onClose }: Props) => {
     isSuccess: isAnalysisSubmittedSuccessfully,
   } = useMutation({
     mutationFn: async (payload: NewAnalysisSchemaType) => backendApi.postNewAnalysis({ newAnalysis: payload }),
-    onSuccess: async (_, _variables) => {
-      toast.success("New Analysis submitted successfully!", { theme: "colored" })
-    },
-    onError: (error) => {
-      toast.error(error.message)
-    },
+    onSuccess: async (_, _variables) => toast.success("New Analysis submitted successfully!", { theme: "colored" }),
+    onError: (error) => toast.error(error.message),
   })
 
   // On submit handler
-  const onSubmit: SubmitHandler<NewAnalysisSchemaType> = async (formData) => {
-    postNewAnalysis(formData)
-  }
+  const onSubmit: SubmitHandler<NewAnalysisSchemaType> = async (formData) => postNewAnalysis(formData)
 
   // fetch X (twitter) auth url
   const { data: authData, refetch: fetchTwitterAuthUrl } = useQuery({
@@ -84,46 +81,54 @@ const BecomeAnalystModal = ({ onClose }: Props) => {
     staleTime: 30 * 60 * 1000,
   })
 
-  // fetch Analyst as per id
-  const { data: analyst, refetch: fetchAnalyst } = useQuery({
-    queryFn: () => backendApi.getAnalyst({ analystId }),
-    queryKey: ["getTwitterAuthUrl", analystId],
-    enabled: false,
+  // fetch Analyst and token via sessionId
+  const { data: session } = useQuery({
+    queryFn: async () =>
+      backendApi.getSession(sessionId).then((result) => {
+        removeParam("sessionId")
+        return result
+      }),
+    queryKey: ["fetchSession", sessionId],
+    enabled: Boolean(sessionId) && sessionId !== "null",
     staleTime: 30 * 60 * 1000,
   })
+  const analyst = session?.analyst
 
-  const disconnectAnalyst = () => {
-    const updatedParams = new URLSearchParams(searchParams) // Clone current params
-    updatedParams.delete("analystId") // Modify the clone
-    setSearchParams(updatedParams) // Pass the updated object
-    queryClient.setQueryData(["getAnalyst", analystId], undefined)
-    setAnalystId("")
+  const disconnectAnalystHandler = () => {
+    queryClient.setQueryData(["fetchSession", sessionId], undefined)
+    setSessionId("")
+    setJwtToken("")
   }
 
+  // open X (twitter) Authorization window
   useEffect(() => {
     if (!authData?.twitterAuthUrl) return
     setRedirectionUrl(window.location.href)
     window.open(authData.twitterAuthUrl, "_self")
   }, [navigate, authData, setRedirectionUrl])
 
+  // check sessionId
   useEffect(() => {
-    const analystIdSearchParam = searchParams.get("analystId")
-    if (!analystIdSearchParam) return
-    setAnalystId(analystIdSearchParam)
-  }, [searchParams])
+    const sessionIdSearchParam = getParam("sessionId")
+    if (!sessionIdSearchParam) return
+    if (sessionIdSearchParam === "null") {
+      removeParamIfNull("sessionId")
+      return
+    }
+    setSessionId(sessionIdSearchParam)
+  }, [getParam, removeParamIfNull])
 
   useEffect(() => {
-    if (!analystId || analystId === "null") return
-    fetchAnalyst()
-  }, [analystId, fetchAnalyst])
-
-  useEffect(() => {
-    if (!analyst?.id) return
+    if (!session) return
+    const token = session.token
+    const analyst = session.analyst
+    setJwtToken(token) // set to local storage
     setValue("analystId", analyst.id, { shouldValidate: true, shouldDirty: true })
     setValue("twitterId", analyst.twitterId, { shouldValidate: true, shouldDirty: true })
     if (!projectData?.id) return
     setValue("projectId", projectData.id, { shouldValidate: true, shouldDirty: true })
-  }, [analyst?.id, analyst?.twitterId, projectData?.id, setValue])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectData?.id, session, setValue])
 
   const formValues = watch()
 
@@ -165,12 +170,12 @@ const BecomeAnalystModal = ({ onClose }: Props) => {
           <div className="flex w-full flex-col items-start">
             <div className="flex min-h-8 w-full flex-col items-start justify-between gap-2 md:flex-row md:items-center">
               <span className="font-semibold text-fg-primary">Connect your X account</span>
-              {analyst?.twitterId && analystId ? (
+              {analyst?.twitterId ? (
                 <Button
                   btnText="Disconnect"
                   color="tertiary"
                   className="h-fit rounded-lg py-1"
-                  onClick={disconnectAnalyst}
+                  onClick={disconnectAnalystHandler}
                 />
               ) : (
                 <Button

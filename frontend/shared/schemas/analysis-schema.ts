@@ -2,7 +2,7 @@ import { z } from "zod"
 import { idSchema } from "../models"
 import { Analyst, Analysis } from "shared/drizzle-schema"
 
-const authSchema = z.object({
+export const authSchema = z.object({
   address: z.string(),
   message: z.string(),
   signature: z.array(z.number().int()),

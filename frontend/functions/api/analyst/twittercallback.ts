@@ -1,6 +1,7 @@
 import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 import { AnalystService } from "../../services/analystService"
 import { GetMeTwitterResponse } from "../../../shared/types/api-types"
+import { Analyst } from "../../../shared/drizzle-schema"
 
 const TWITTER_API_OAUTH2_TOKEN_URL = "https://api.twitter.com/2/oauth2/token"
 const TWITTER_API_GET_ME_URL = "https://api.twitter.com/2/users/me?user.fields=profile_image_url"
@@ -9,6 +10,10 @@ type ENV = {
   TWITTER_CLIENT_ID: string
   TWITTER_CLIENT_SECRET: string
   DB: D1Database
+  AUTH_SESSIONS_STAGE: KVNamespace;
+  AUTH_SESSIONS_PRODUCTION: KVNamespace;
+  AUTH_SESSION_DEVELOP: KVNamespace;
+  VITE_ENVIRONMENT_TYPE: string
 }
 export const onRequest: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
@@ -69,24 +74,20 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
     const existingAnalyst = await AnalystService.findAnalystByTwitterAccount({ db, twitterId })
 
     console.log({ existingAnalyst })
-    const locationBasePath = getHeaderLocationBasePath(redirectUri)
+
+    let analyst: Analyst;
 
     if (!existingAnalyst) {
       console.log("User not found in db, inserting...")
-      const newAnalyst = await AnalystService.createNewAnalyst({db, ...twitterUserResponseBody.data })
-      console.log("🚀 ~ newAnalyst:", newAnalyst)
+      analyst = await AnalystService.createNewAnalyst({db, ...twitterUserResponseBody.data }) as Analyst
+      console.log("🚀 ~ newAnalyst:", analyst)
       console.log("User inserted into db.")
 
-      return jsonResponse({analyst: newAnalyst}, {
-        statusCode: 302,
-        headers: { 
-          "Location": `${locationBasePath}/draft-picks/null?analystId=${newAnalyst.id}`
-        }
-      })
+      
     } else {
       console.log("User found in db, updating twitter id...")
 
-      const updatedAnalyst = await AnalystService.updateAnalyst({
+      analyst = await AnalystService.updateAnalyst({
         db, 
         analyst: existingAnalyst, 
         updates: {
@@ -96,16 +97,31 @@ export const onRequest: PagesFunction<ENV> = async (ctx) => {
           twitterUsername
         }
       })
-      console.log("🚀 ~ updatedAnalyst:", updatedAnalyst)
+      console.log("🚀 ~ updatedAnalyst:", analyst)
 
       console.log("✅ User twitter id updated, returning updated version of analyst.")
-      return jsonResponse({ analyst: updatedAnalyst }, {
-        statusCode: 302,
-        headers: { 
-          "Location": `${locationBasePath}/draft-picks/null?analystId=${updatedAnalyst.id}`
-        }
-      })
     }
+
+    // Generate a unique session ID
+    const sessionId = crypto.randomUUID();
+
+    const locationBasePath = getHeaderLocationBasePath(redirectUri)
+    
+    // Store the data in KV with a 10-second expiration
+    // const kvStore = ctx.env.AUTH_SESSION_DEVELOP;
+    const kvStore = ctx.env.VITE_ENVIRONMENT_TYPE === 'develop' ? ctx.env.AUTH_SESSIONS_STAGE : ctx.env.AUTH_SESSIONS_PRODUCTION;
+    await kvStore.put(sessionId, JSON.stringify({ analyst }), {
+      expirationTtl: 60,
+    });
+
+    return jsonResponse(null, {
+      statusCode: 302,
+      headers: { 
+        "Location": `${locationBasePath}/draft-picks/null?sessionId=${sessionId}`,
+        "Cache-Control": "no-store"
+      }
+    })
+
   } catch (e) {
     await reportError(db, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)

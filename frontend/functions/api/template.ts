@@ -4,7 +4,7 @@ import { drizzle } from "drizzle-orm/d1"
 type ENV = {
   DB: D1Database
 }
-const onRequestMETHOD: PagesFunction<ENV> = async (ctx) => {
+export const onRequestMETHOD: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
   try {
     // do stuff

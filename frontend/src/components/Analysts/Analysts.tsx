@@ -11,6 +11,8 @@ import { backendApi } from "@/data/backendApi"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import ProjectAnalysisModal from "../Modal/Modals/ProjectAnalysisModal"
 import { Icon } from "../Icon/Icon"
+import { BP_JWT_TOKEN } from "@/utils/constants"
+import { useSearchParamsUpdate } from "@/hooks/useSearchParamsUpdate"
 
 const numOfSkeletonItems = 12
 const skeletonLoaderArray = Array.from({ length: numOfSkeletonItems }, (_, i) => `Item ${i + 1}`)
@@ -20,7 +22,7 @@ const OPEN_ANALYST_MODAL_PARAM = "openAnalystModal"
 const Analysts = () => {
   const [showBecomeAnalystModal, setShowBecomeAnalystModal] = useState(false)
   const [showProjectAnalysisModal, setShowProjectAnalysisModal] = useState(false)
-  const [searchParams, setSearchParams] = useSearchParams()
+  const { addParam, removeParam, getParam, removeParamIfNull } = useSearchParamsUpdate()
   const { projectData } = useProjectDataContext()
   const [redirectionUrl, setRedirectionUrl] = usePersistedState("bp_redirectionUrl")
   const projectId = projectData?.id ?? ""
@@ -34,49 +36,36 @@ const Analysts = () => {
     refetchOnWindowFocus: false,
   })
 
-  const addParam = useCallback(
-    (key: string, value: string) => {
-      searchParams.set(key, value)
-      setSearchParams(searchParams)
-    },
-    [searchParams, setSearchParams],
-  )
-  const removeParam = (key: string) => {
-    searchParams.delete(key)
-    setSearchParams(searchParams)
-  }
   const openBecomeAnalystModal = useCallback(() => {
-    // cover an edge case
-    const analystId = searchParams.get("analystId")
-    if (analystId === "null") {
-      searchParams.delete("analystId")
-      setSearchParams(searchParams)
-    }
-    // modal
     setShowBecomeAnalystModal(true)
     addParam(OPEN_ANALYST_MODAL_PARAM, "true")
-  }, [addParam, searchParams, setSearchParams])
+  }, [addParam])
 
   const closeBecomeAnalystModal = () => {
     setShowBecomeAnalystModal(false)
     removeParam(OPEN_ANALYST_MODAL_PARAM)
+    localStorage.removeItem(BP_JWT_TOKEN)
   }
 
   useEffect(() => {
-    if (!searchParams.get(OPEN_ANALYST_MODAL_PARAM)) return
+    if (!getParam(OPEN_ANALYST_MODAL_PARAM)) return
     openBecomeAnalystModal()
-  }, [openBecomeAnalystModal, searchParams])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   useEffect(() => {
     if (!redirectionUrl) return
-    const analystIdSearchParam = searchParams.get("analystId")
+    removeParamIfNull("sessionId")
+    const sessionIdSearchParam = getParam("sessionId")
     let newUrl = redirectionUrl
-    if (analystIdSearchParam || analystIdSearchParam !== "null") {
-      const redirectionWithAnalystId = redirectionUrl + `&analystId=${analystIdSearchParam}`
-      newUrl = redirectionWithAnalystId
+    if (sessionIdSearchParam) {
+      const redirectionWithSessionId = redirectionUrl + `&sessionId=${sessionIdSearchParam}`
+      newUrl = redirectionWithSessionId
     }
     setRedirectionUrl("")
     window.location.href = newUrl
-  }, [redirectionUrl, searchParams, setRedirectionUrl])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [redirectionUrl])
 
   return (
     <div className="flex w-full max-w-[792px] flex-[1] flex-col items-start gap-3 self-stretch">

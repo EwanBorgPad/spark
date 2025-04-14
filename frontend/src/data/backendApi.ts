@@ -1,5 +1,6 @@
 import {
   AcceptTermsRequest,
+  AdminAuthFields,
   CreateEmailRequest,
   DepositStatus,
   GetExchangeResponse,
@@ -24,6 +25,7 @@ import {
 import { Analyst, Analysis } from "../../shared/drizzle-schema.ts"
 import { EligibilityStatus } from "../../shared/eligibilityModel.ts"
 import { eligibilityStatusCacheBust, investmentIntentSummaryCacheBust } from "@/utils/cache-helper.ts"
+import { BP_JWT_TOKEN } from "@/utils/constants.ts"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? `${window.location.origin}/api`
 const GET_ELIGIBILITY_STATUS_API = API_BASE_URL + "/eligibilitystatus"
@@ -47,6 +49,8 @@ const SEND_CLAIM_TRANSACTION = API_BASE_URL + "/sendclaimtransaction"
 const POST_AFTER_SALE_UPDATE = API_BASE_URL + "/projects/after-sale-update"
 const UPDATE_JSON = API_BASE_URL + "/projects/update-json"
 const POST_CREATE_EMAIL = API_BASE_URL + "/createemail"
+const GET_SESSION = API_BASE_URL + "/session"
+const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
 
 // analysis & analyst
 const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
@@ -525,14 +529,19 @@ const getAnalyst = async ({ analystId }: { analystId: string }): Promise<Analyst
 const postNewAnalysis = async ({ newAnalysis }: { newAnalysis: NewAnalysisSchemaType }): Promise<Analysis> => {
   const url = new URL(POST_ANALYSIS, window.location.href)
   const request = JSON.stringify(newAnalysis)
+  const token = localStorage.getItem(BP_JWT_TOKEN)
+  if (!token) throw new Error("Missing token!")
+
   const response = await fetch(url, {
     method: "POST",
     body: request,
     headers: {
       "Content-Type": "application/json",
+      Authorization: token,
     },
   })
   const json = await response.json()
+  localStorage.removeItem(BP_JWT_TOKEN)
   if (!response.ok) throw new Error(json.message)
   return json
 }
@@ -612,6 +621,36 @@ const manuallyAddAnalysis = async (args: ManuallyAddAnalysisArgs): Promise<Analy
   return json
 }
 
+const getSession = async (sessionId: string): Promise<{ analyst: Analyst; token: string }> => {
+  const url = new URL(GET_SESSION, window.location.href)
+  url.searchParams.set("sessionId", sessionId)
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
+const isAdmin = async (auth: AdminAuthFields): Promise<void> => {
+  const url = new URL(IS_ADMIN_URL, window.location.href)
+
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(auth),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
 export const backendApi = {
   getProject,
   getProjects,
@@ -641,4 +680,6 @@ export const backendApi = {
   getAnalysisList,
   updateAnalysisApproval,
   manuallyAddAnalysis,
+  getSession,
+  isAdmin,
 }

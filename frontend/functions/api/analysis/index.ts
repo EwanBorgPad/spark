@@ -1,14 +1,19 @@
 import { AnalystService } from "../../services/analystService"
 import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 import { AnalysisSortBy, AnalysisSortDirection, postNewAnalysisSchema } from "../../../shared/schemas/analysis-schema"
-
-import { z } from 'zod'
-
+import jwt from "@tsndr/cloudflare-worker-jwt"
 
 type ENV = {
   DB: D1Database
   VITE_ENVIRONMENT_TYPE: string
   TWEET_SCOUT_API_KEY: string
+  JWT_SECRET: string
+}
+
+type JwtPayloadType = {
+  sub: string,
+  name: string,
+  exp: number
 }
 
 /**
@@ -18,26 +23,47 @@ type ENV = {
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
   try {
-    //// validate request
+
+    ///////////////////////////
+    //// validate request /////
+    ///////////////////////////
+
     const requestJson = await ctx.request.json()
     const { error, data } = postNewAnalysisSchema.safeParse(requestJson)
-
-    if (error) {
-      return jsonResponse(null, 400)
-    }
+    if (error) return jsonResponse(null, 400)
 
     /////////////////////////////////////
-    // TODO - add jwt token validation //
+    /////// jwt token validation ////////
     /////////////////////////////////////
+
+    const jwtToken = ctx.request.headers.get("Authorization")
+    if (!jwtToken) return jsonResponse({message: "Unauthorized!"},401)
+    const verifiedToken = await jwt.verify(jwtToken, ctx.env.JWT_SECRET)
+
+    // Abort if token isn't valid
+    if (!verifiedToken) return jsonResponse({ message: "Unauthorized!" },401)
+
+    // Access token payload
+    const { payload } = verifiedToken as { payload: JwtPayloadType }
+    if (payload.sub !== data.analystId) return jsonResponse({ message: "Unauthorized!" },401)
+      
+    ///////////////////////////
+    //// validate analyst /////
+    ///////////////////////////
 
     const existingAnalyst = await AnalystService.findAnalystByTwitterAccount({ db, twitterId: data.twitterId })
     console.log("existingAnalyst: ", existingAnalyst.id)
 
     if (!existingAnalyst) {
-      console.log("Analyst not found in db, inserting...")
+      console.log("Analyst not found in db!")
       return jsonResponse({ message: "Analyst not found" }, 404)
     }
     console.log(`Found an existing Analyst with an id - ${existingAnalyst.id}`);
+
+
+    /////////////////////////////
+    //////// happy flow /////////
+    /////////////////////////////
 
     const tweetMetrics = await AnalystService.fetchTweetMetrics({ ctx, articleUrl: data.articleUrl })
     console.log("🚀 ~ tweetMetrics:", tweetMetrics)
