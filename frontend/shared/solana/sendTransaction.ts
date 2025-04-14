@@ -2,12 +2,8 @@ import { Transaction, SystemProgram, PublicKey, Connection, TransactionInstructi
 import { Buffer } from "buffer"
 
 // Use a public RPC endpoint
-const RPC_ENDPOINT1 = "https://go.getblock.io/4136d34f90a6488b84214ae26f0ed5f4"
-const RPC_ENDPOINT2 = "https://solana-rpc.publicnode.com"
-const RPC_ENDPOINT3 = "https://api.blockeden.xyz/solana/67nCBdZQSH9z3YqDDjdm"
-const RPC_ENDPOINT4 = "https://solana.drpc.org/"
-const RPC_ENDPOINT5 = "https://endpoints.omniatech.io/v1/sol/mainnet/public"
-const RPC_ENDPOINT6 = "https://solana.api.onfinality.io/public"
+const RPC_ENDPOINT1 = "https://solana-rpc.publicnode.com"
+const RPC_ENDPOINT2 = "https://go.getblock.io/4136d34f90a6488b84214ae26f0ed5f4"
 
 /**
  * Creates and sends a transaction with a memo instruction containing the message
@@ -23,7 +19,7 @@ export async function sendTransaction(
   signTransaction: (transaction: Transaction, walletType: "PHANTOM" | "BACKPACK" | "SOLFLARE") => Promise<Transaction | null>,
   walletProvider: "PHANTOM" | "BACKPACK" | "SOLFLARE"
 ): Promise<Uint8Array> {
-  const endpoints = [RPC_ENDPOINT1, RPC_ENDPOINT2, RPC_ENDPOINT3, RPC_ENDPOINT4, RPC_ENDPOINT5, RPC_ENDPOINT6]
+  const endpoints = [RPC_ENDPOINT1, RPC_ENDPOINT2]
   let lastError = null
   
   for (const endpoint of endpoints) {
