@@ -2,7 +2,12 @@ import { Transaction, SystemProgram, PublicKey, Connection, TransactionInstructi
 import { Buffer } from "buffer"
 
 // Use a public RPC endpoint
-const RPC_ENDPOINT = "https://solana-mainnet.g.alchemy.com/v2/demo"
+const RPC_ENDPOINT1 = "https://go.getblock.io/4136d34f90a6488b84214ae26f0ed5f4"
+const RPC_ENDPOINT2 = "https://solana-rpc.publicnode.com"
+const RPC_ENDPOINT3 = "https://api.blockeden.xyz/solana/67nCBdZQSH9z3YqDDjdm"
+const RPC_ENDPOINT4 = "https://solana.drpc.org/"
+const RPC_ENDPOINT5 = "https://endpoints.omniatech.io/v1/sol/mainnet/public"
+const RPC_ENDPOINT6 = "https://solana.api.onfinality.io/public"
 
 /**
  * Creates and sends a transaction with a memo instruction containing the message
@@ -18,42 +23,57 @@ export async function sendTransaction(
   signTransaction: (transaction: Transaction, walletType: "PHANTOM" | "BACKPACK" | "SOLFLARE") => Promise<Transaction | null>,
   walletProvider: "PHANTOM" | "BACKPACK" | "SOLFLARE"
 ): Promise<Uint8Array> {
-  const connection = new Connection(RPC_ENDPOINT)
-  const recentBlockhash = await connection.getLatestBlockhash()
+  const endpoints = [RPC_ENDPOINT1, RPC_ENDPOINT2, RPC_ENDPOINT3, RPC_ENDPOINT4, RPC_ENDPOINT5, RPC_ENDPOINT6]
+  let lastError = null
+  
+  for (const endpoint of endpoints) {
+    try {
+      const connection = new Connection(endpoint)
+      const recentBlockhash = await connection.getLatestBlockhash()
 
-  const transaction = new Transaction()
+      const transaction = new Transaction()
 
-  // Add a zero-lamport transfer to the same address (required for some wallets)
-  transaction.add(
-    SystemProgram.transfer({
-      fromPubkey: new PublicKey(address),
-      toPubkey: new PublicKey(address),
-      lamports: 0,
-    })
-  )
+      // Add a zero-lamport transfer to the same address (required for some wallets)
+      transaction.add(
+        SystemProgram.transfer({
+          fromPubkey: new PublicKey(address),
+          toPubkey: new PublicKey(address),
+          lamports: 0,
+        })
+      )
 
-  // Add the message as a memo instruction
-  transaction.add(
-    new TransactionInstruction({
-      keys: [],
-      programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
-      data: Buffer.from(message),
-    })
-  )
+      // Add the message as a memo instruction
+      transaction.add(
+        new TransactionInstruction({
+          keys: [],
+          programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
+          data: Buffer.from(message),
+        })
+      )
 
-  transaction.recentBlockhash = recentBlockhash.blockhash
-  transaction.feePayer = new PublicKey(address)
+      transaction.recentBlockhash = recentBlockhash.blockhash
+      transaction.feePayer = new PublicKey(address)
 
-  // Sign the transaction
-  const signedTx = await signTransaction(transaction, walletProvider)
-  if (!signedTx) throw new Error("Failed to sign transaction")
+      // Sign the transaction
+      const signedTx = await signTransaction(transaction, walletProvider)
+      if (!signedTx) throw new Error("Failed to sign transaction")
 
-  // Send the transaction
-  const txId = await connection.sendRawTransaction(signedTx.serialize(), {
-    skipPreflight: false,
-    preflightCommitment: "confirmed",
-  })
+      // Send the transaction
+      const txId = await connection.sendRawTransaction(signedTx.serialize(), {
+        skipPreflight: false,
+        preflightCommitment: "confirmed",
+      })
 
-  // Return the signature
-  return signedTx.signatures[0].signature!
+      // Return the signature
+      return signedTx.signatures[0].signature!
+    } catch (err) {
+      console.error(`❌ Error with endpoint ${endpoint}:`, err)
+      lastError = err
+      // Continue to the next endpoint
+    }
+  }
+  
+  // If we get here, all endpoints failed
+  console.error("❌ All RPC endpoints failed")
+  throw lastError || new Error("All RPC endpoints failed")
 }

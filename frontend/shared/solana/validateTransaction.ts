@@ -2,7 +2,12 @@ import { Connection, PublicKey } from "@solana/web3.js"
 import bs58 from "bs58"
 
 // Use a public RPC endpoint
-const RPC_ENDPOINT = "https://solana-mainnet.g.alchemy.com/v2/demo"
+const RPC_ENDPOINT1 = "https://go.getblock.io/4136d34f90a6488b84214ae26f0ed5f4"
+const RPC_ENDPOINT2 = "https://solana-rpc.publicnode.com"
+const RPC_ENDPOINT3 = "https://api.blockeden.xyz/solana/67nCBdZQSH9z3YqDDjdm"
+const RPC_ENDPOINT4 = "https://solana.drpc.org/"
+const RPC_ENDPOINT5 = "https://endpoints.omniatech.io/v1/sol/mainnet/public"
+const RPC_ENDPOINT6 = "https://solana.api.onfinality.io/public"
 
 /**
  * Validates a transaction by checking if the message and sender match the expected values
@@ -17,46 +22,56 @@ export async function validateTransaction(
   signature: Uint8Array
 ): Promise<boolean> {
   const signatureBase58 = bs58.encode(signature)
+  const endpoints = [RPC_ENDPOINT1, RPC_ENDPOINT2, RPC_ENDPOINT3, RPC_ENDPOINT4, RPC_ENDPOINT5, RPC_ENDPOINT6]
+  
+  let lastError = null
+  
+  for (const endpoint of endpoints) {
+    try {
+      const connection = new Connection(endpoint)
+      const transaction = await waitForTransaction(connection, signatureBase58)
 
-  try {
-    const connection = new Connection(RPC_ENDPOINT)
-    const transaction = await waitForTransaction(connection, signatureBase58)
-
-    if (!transaction || !transaction.meta || !transaction.meta.logMessages) {
-      console.log("❌ Transaction not found or invalid")
-      throw new Error("Transaction not found or invalid")
-    }
-
-    const logMessages = transaction.meta.logMessages
-    const memoLog = logMessages.find(log => log.includes('Program log: Memo'))
-    let extractedMessage: string | null = null
-
-    if (memoLog) {
-      const matches = memoLog.match(/"([^"]*)"/)
-      if (matches && matches[1]) {
-        extractedMessage = matches[1]
+      if (!transaction || !transaction.meta || !transaction.meta.logMessages) {
+        console.log("❌ Transaction not found or invalid")
+        continue
       }
+
+      const logMessages = transaction.meta.logMessages
+      const memoLog = logMessages.find(log => log.includes('Program log: Memo'))
+      let extractedMessage: string | null = null
+
+      if (memoLog) {
+        const matches = memoLog.match(/"([^"]*)"/)
+        if (matches && matches[1]) {
+          extractedMessage = matches[1]
+        }
+      }
+
+      const firstAccount = transaction.transaction.message.accountKeys[0]
+      const senderPublicKey = firstAccount.pubkey.toString()
+
+      console.log("Extracted message from the transaction:", extractedMessage)
+      console.log("Expected message:", message)
+      console.log("Sender's address (string):", senderPublicKey)
+      console.log("Expected address:", publicKey)
+
+      const isVerified = extractedMessage === message && senderPublicKey === publicKey
+
+      if (!isVerified) {
+        throw new Error("Transaction validation failed")
+      }
+
+      return isVerified
+    } catch (err) {
+      console.error(`❌ Error with endpoint ${endpoint}:`, err)
+      lastError = err
+      // Continue to the next endpoint
     }
-
-    const firstAccount = transaction.transaction.message.accountKeys[0]
-    const senderPublicKey = firstAccount.pubkey.toString()
-
-    console.log("Extracted message from the transaction:", extractedMessage)
-    console.log("Expected message:", message)
-    console.log("Sender's address (string):", senderPublicKey)
-    console.log("Expected address:", publicKey)
-
-    const isVerified = extractedMessage === message && senderPublicKey === publicKey
-
-    if (!isVerified) {
-      throw new Error("Transaction validation failed")
-    }
-
-    return isVerified
-  } catch (err) {
-    console.error("❌ Error during transaction verification:", err)
-    throw err
   }
+  
+  // If we get here, all endpoints failed
+  console.error("❌ All RPC endpoints failed")
+  throw lastError || new Error("All RPC endpoints failed")
 }
 
 async function waitForTransaction(connection: Connection, signatureBase58: string, timeout = 30000) {
