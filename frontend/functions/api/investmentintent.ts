@@ -4,6 +4,7 @@ import { PublicKey } from "@solana/web3.js"
 import nacl from "tweetnacl"
 import { decodeUTF8 } from "tweetnacl-util"
 import { UserService } from "../services/userService"
+import { validateTransaction } from "../../shared/solana/validateTransaction"
 
 
 type ENV = {
@@ -21,13 +22,27 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     ///// authorization
-    const { publicKey, projectId, amount, message, signature } = data
+    const { publicKey, projectId, amount, message, signature, isLedgerTransaction } = data
 
-    const isVerified = nacl.sign.detached.verify(
-      decodeUTF8(message),
-      new Uint8Array(signature),
-      new PublicKey(publicKey).toBytes(),
-    );
+    let isVerified = false
+
+    if (isLedgerTransaction) {
+      try {
+        isVerified = await validateTransaction(message, publicKey, new Uint8Array(signature))
+      } catch (err) {
+        console.error("❌ Error during transaction verification:", err)
+        return jsonResponse(null, 500)
+      }
+    } else {
+      isVerified = nacl.sign.detached.verify(
+        decodeUTF8(message),
+        new Uint8Array(signature),
+        new PublicKey(publicKey).toBytes(),
+      );
+      
+      console.log("Signature verification result:", isVerified)
+    }
+    
     if (!isVerified) {
       await reportError(db, new Error(`Invalid signature (investmentintent)! publicKey: ${publicKey}, message: ${message}, signature: ${signature}`))
       return jsonResponse(null, 401)

@@ -17,13 +17,14 @@ import { Icon } from "@/components/Icon/Icon.tsx"
 import Img from "@/components/Image/Img.tsx"
 import telegramBorgpadOGs from "@/assets/telegram-borgpad-ogs.jpg"
 import { BORGPAD_TELEGRAM_URL } from "@/utils/constants.ts"
+import { sendTransaction } from "../../../../shared/solana/sendTransaction"
 
 type ProvideInvestmentIntentModalProps = {
   onClose: () => void
 }
 export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentIntentModalProps) => {
   const { t } = useTranslation()
-  const { address, signMessage } = useWalletContext()
+  const { address, signMessage, signTransaction, walletProvider, isConnectedWithLedger } = useWalletContext()
   const { projectData } = useProjectDataContext()
   const { projectId } = useParams()
   const queryClient = useQueryClient()
@@ -75,7 +76,16 @@ export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentInten
         projectId,
       })
 
-      const signature = await signMessage(message)
+      let signature: Uint8Array
+      let isLedgerTransaction = false
+
+      if (isConnectedWithLedger) {
+        if (!walletProvider) throw new Error("No wallet provider selected")
+          signature = await sendTransaction(message, address, signTransaction, walletProvider)
+          isLedgerTransaction = true
+      } else {
+        signature = await signMessage(message)
+      }
 
       const data: InvestmentIntentRequest = {
         // TODO no nonce or expiration, possibly a security concern
@@ -84,6 +94,7 @@ export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentInten
         amount: String(amount),
         message,
         signature: Array.from(signature),
+        isLedgerTransaction,
       }
 
       await backendApi.postInvestmentIntent(data)

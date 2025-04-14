@@ -11,13 +11,14 @@ import { useState } from "react"
 import { toast } from "react-toastify"
 import { useParams } from "react-router-dom"
 import { eligibilityStatusCacheBust } from "@/utils/cache-helper"
+import { sendTransaction } from "../../../../shared/solana/sendTransaction"
 
 type AcceptTermsOfUseModalProps = {
   onClose: () => void
 }
 const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
   const { t } = useTranslation()
-  const { address, signMessage } = useWalletContext()
+  const { address, signMessage, signTransaction, walletProvider, isConnectedWithLedger } = useWalletContext()
   const { projectId } = useParams()
   const queryClient = useQueryClient()
 
@@ -28,13 +29,23 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
   } = useMutation({
     mutationFn: async (address: string) => {
       const message = t("accept.terms.of.use.quest.message")
-      const signature = await signMessage(message)
+      let signature: Uint8Array
+      let isLedgerTransaction = false
+
+      if (isConnectedWithLedger) {
+        if (!walletProvider) throw new Error("No wallet provider selected")
+          signature = await sendTransaction(message, address, signTransaction, walletProvider)
+          isLedgerTransaction = true
+      } else {
+        signature = await signMessage(message)
+      }
 
       const data = {
         publicKey: address,
         // TODO no nonce or expiration, possibly a security concern
         message,
         signature: Array.from(signature),
+        isLedgerTransaction,
       }
 
       await backendApi.postAcceptTermsOfUse(data)
