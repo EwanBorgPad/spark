@@ -48,14 +48,12 @@ const Analysts = () => {
   }
 
   useEffect(() => {
-    console.log("===== MARKER 1 =====")
     if (!getParam(OPEN_ANALYST_MODAL_PARAM)) return
     openBecomeAnalystModal()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    console.log("===== MARKER 2 =====")
     if (!redirectionUrl) return
     removeParamIfNull("sessionId")
     const sessionIdSearchParam = getParam("sessionId")
