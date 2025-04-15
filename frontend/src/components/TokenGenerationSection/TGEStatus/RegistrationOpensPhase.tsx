@@ -13,6 +13,7 @@ import { useWalletContext } from "@/hooks/useWalletContext"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/backendApi"
 import { useParams } from "react-router-dom"
+import Banner from "@/components/Projects/Banner"
 
 type RegistrationOpensPhaseProps = {
   eventData: ExpandedTimelineEventType
@@ -52,7 +53,10 @@ const RegistrationOpensPhase = ({ eventData, timeline }: RegistrationOpensPhaseP
   return (
     <div className="flex w-full flex-col items-center px-4">
       <div className="flex w-full max-w-[792px] flex-col items-center gap-[52px]">
-        <Timeline timelineEvents={timeline} />
+        <div className="flex w-full flex-col gap-4">
+          <Timeline timelineEvents={timeline} />
+          <Banner />
+        </div>
 
         {!isUserEligible && (
           <div className="relative flex w-full justify-center pb-8">
