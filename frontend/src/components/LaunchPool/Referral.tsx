@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge"
 import { Icon } from "../Icon/Icon"
 import { Button } from "../Button/Button"
 import { useProjectDataContext } from "@/hooks/useProjectData"
-import ReferralModal from "../Modal/Modals/ReferralModal"
+import ReferralHowItWorksModal from "../Modal/Modals/ReferralHowItWorksModal"
 
 type Props = {
   className?: string
@@ -28,7 +28,7 @@ const Referral = ({ className }: Props) => {
         />
       </div>
 
-      {showModal && <ReferralModal onClose={() => setShowModal(false)} />}
+      {showModal && <ReferralHowItWorksModal onClose={() => setShowModal(false)} />}
     </>
   )
 }
