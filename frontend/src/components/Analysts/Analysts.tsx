@@ -108,7 +108,7 @@ const Analysts = () => {
                 />
                 <Button
                   btnText="Become an Analyst"
-                  color="plain"
+                  color="tertiary"
                   className="h-fit flex-[1] rounded-lg py-2 text-sm"
                   onClick={openBecomeAnalystModal}
                 />
