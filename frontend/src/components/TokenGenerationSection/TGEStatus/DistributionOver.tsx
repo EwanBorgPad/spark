@@ -22,7 +22,7 @@ const DistributionOver = ({ eventData, timeline }: DistributionOverProps) => {
 
   return (
     <div className="flex w-full justify-center px-4">
-      <div className="flex w-full max-w-[760px] flex-col items-center">
+      <div className="flex w-full max-w-[792px] flex-col items-center">
         <Timeline timelineEvents={timeline} />
 
         <div className="relative mt-[52px] flex w-full flex-col items-center gap-10 px-4 pb-10">

@@ -68,7 +68,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
 
   return (
     <div key="sale-over" className="flex w-full flex-col items-center justify-center px-4">
-      <div className="flex w-full max-w-[760px] flex-col items-center">
+      <div className="flex w-full max-w-[792px] flex-col items-center">
         <Timeline timelineEvents={timeline} />
 
         <div className="mt-[52px] flex w-full flex-col items-center gap-9">
