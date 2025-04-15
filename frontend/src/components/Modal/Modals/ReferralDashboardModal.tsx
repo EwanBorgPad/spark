@@ -4,10 +4,45 @@ import { Button } from "../../Button/Button"
 import { SimpleModal } from "../SimpleModal"
 import { Icon } from "../../Icon/Icon"
 import ReferralHowItWorksModal from "./ReferralHowItWorksModal"
+import ReferralsTable from "../../Tables/ReferralsTable"
+import LeaderboardTable from "@/components/Tables/LeaderboardTable"
 
 type Props = {
   onClose: () => void
 }
+
+const mockLeaderboardData = [
+  {
+    id: "1",
+    position: 1,
+    user: {
+      name: "User One",
+      username: "user1",
+    },
+    tickets: 100,
+    prize: "$1,000"
+  },
+  {
+    id: "2",
+    position: 2,
+    user: {
+      name: "User Two",
+      username: "user2",
+    },
+    tickets: 80,
+    prize: "$800"
+  },
+  {
+    id: "3",
+    position: 3,
+    user: {
+      name: "User Three",
+      username: "user3",
+    },
+    tickets: 50,
+    prize: "$500"
+  }
+]
 
 const ReferralDashboardModal = ({ onClose }: Props) => {
   const [copied, setCopied] = useState(false)
@@ -85,24 +120,6 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
     );
   }
 
-  const TableHeader = ({ children }: { children: React.ReactNode }) => (
-    <div className="flex items-center gap-2 px-4 py-3 border-b border-bd-primary">
-      {children}
-    </div>
-  )
-
-  const TableRow = ({ children }: { children: React.ReactNode }) => (
-    <div className="flex items-center gap-2 px-4 py-3 border-b border-bd-primary/20">
-      {children}
-    </div>
-  )
-
-  const TableCell = ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <div className={twMerge("text-sm text-fg-primary", className)}>
-      {children}
-    </div>
-  )
-
   return (
     <SimpleModal
       showCloseBtn
@@ -154,7 +171,7 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
         <div className="flex md:hidden w-full mb-4">
           <button
             className={twMerge(
-              "flex-1 py-2 text-sm font-medium border-b-2 transition-colors",
+              "flex-1 py-2 text-sm font-vcr border-b-2 transition-colors uppercase",
               activeTab === 'referrals' 
                 ? "border-brand-primary text-brand-primary" 
                 : "border-transparent text-fg-secondary"
@@ -165,7 +182,7 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
           </button>
           <button
             className={twMerge(
-              "flex-1 py-2 text-sm font-medium border-b-2 transition-colors",
+              "flex-1 py-2 text-sm font-vcr border-b-2 transition-colors uppercase",
               activeTab === 'leaderboard' 
                 ? "border-brand-primary text-brand-primary" 
                 : "border-transparent text-fg-secondary"
@@ -177,94 +194,40 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
         </div>
 
         {/* Desktop Layout */}
-        <div className="hidden md:flex w-full gap-4">
+        <div className="hidden md:flex w-full gap-6">
           {/* Referrals Table */}
-          <div className="w-[418px] h-[536px] bg-secondary rounded-lg overflow-hidden">
-            <div className="p-4 border-b border-bd-primary">
-              <h3 className="text-lg font-medium text-white">Referrals</h3>
+          <div className="w-[418px] h-[536px] bg-default rounded-lg overflow-hidden bg-secondary">
+            <div className="p-4">
+              <h3 className="text-lg font-vcr text-white uppercase">Referrals</h3>
             </div>
             <div className="overflow-y-auto h-[calc(536px-64px)]">
-              <TableHeader>
-                <TableCell className="w-16">Pos.</TableCell>
-                <TableCell className="flex-1">User</TableCell>
-                <TableCell className="w-24">Tickets</TableCell>
-                <TableCell className="w-24">Prize</TableCell>
-              </TableHeader>
-              <TableRow>
-                <TableCell className="w-16">1</TableCell>
-                <TableCell className="flex-1">@user1</TableCell>
-                <TableCell className="w-24">150</TableCell>
-                <TableCell className="w-24">$1,500</TableCell>
-              </TableRow>
-              {/* Add more rows as needed */}
+              <ReferralsTable />
             </div>
           </div>
 
           {/* Leaderboard Table */}
-          <div className="w-[418px] h-[536px] bg-secondary rounded-lg overflow-hidden">
-            <div className="p-4 border-b border-bd-primary">
-              <h3 className="text-lg font-medium text-white">Leaderboard</h3>
+          <div className="w-[418px] h-[536px] bg-default rounded-lg overflow-hidden bg-secondary">
+            <div className="p-4">
+              <h3 className="text-lg font-vcr text-white uppercase">Leaderboard</h3>
             </div>
             <div className="overflow-y-auto h-[calc(536px-64px)]">
-              <TableHeader>
-                <TableCell className="flex-1">User</TableCell>
-                <TableCell className="w-24">Connected</TableCell>
-                <TableCell className="w-24">Invested</TableCell>
-                <TableCell className="w-24">Tickets</TableCell>
-              </TableHeader>
-              <TableRow>
-                <TableCell className="flex-1">@user1</TableCell>
-                <TableCell className="w-24">5</TableCell>
-                <TableCell className="w-24">$1,000</TableCell>
-                <TableCell className="w-24">100</TableCell>
-              </TableRow>
-              {/* Add more rows as needed */}
+              <LeaderboardTable />
             </div>
           </div>
         </div>
 
         {/* Mobile Tables */}
-        <div className="md:hidden w-full">
+        <div className="md:hidden w-full mt-4">
           {activeTab === 'referrals' ? (
-            <div className="bg-secondary rounded-lg overflow-hidden">
-              <div className="p-4 border-b border-bd-primary">
-                <h3 className="text-lg font-medium text-white">Referrals</h3>
-              </div>
-              <div className="overflow-y-auto max-h-[400px]">
-                <TableHeader>
-                  <TableCell className="w-16">Pos.</TableCell>
-                  <TableCell className="flex-1">User</TableCell>
-                  <TableCell className="w-24">Tickets</TableCell>
-                  <TableCell className="w-24">Prize</TableCell>
-                </TableHeader>
-                <TableRow>
-                  <TableCell className="w-16">1</TableCell>
-                  <TableCell className="flex-1">@user1</TableCell>
-                  <TableCell className="w-24">150</TableCell>
-                  <TableCell className="w-24">$1,500</TableCell>
-                </TableRow>
-                {/* Add more rows as needed */}
+            <div className="bg-default rounded-lg overflow-hidden">
+              <div className="w-full">
+                <ReferralsTable />
               </div>
             </div>
           ) : (
-            <div className="bg-secondary rounded-lg overflow-hidden">
-              <div className="p-4 border-b border-bd-primary">
-                <h3 className="text-lg font-medium text-white">Leaderboard</h3>
-              </div>
-              <div className="overflow-y-auto max-h-[400px]">
-                <TableHeader>
-                  <TableCell className="flex-1">User</TableCell>
-                  <TableCell className="w-24">Connected</TableCell>
-                  <TableCell className="w-24">Invested</TableCell>
-                  <TableCell className="w-24">Tickets</TableCell>
-                </TableHeader>
-                <TableRow>
-                  <TableCell className="flex-1">@user1</TableCell>
-                  <TableCell className="w-24">5</TableCell>
-                  <TableCell className="w-24">$1,000</TableCell>
-                  <TableCell className="w-24">100</TableCell>
-                </TableRow>
-                {/* Add more rows as needed */}
+            <div className="bg-default rounded-lg overflow-hidden">
+              <div className="w-full">
+                <LeaderboardTable />
               </div>
             </div>
           )}
