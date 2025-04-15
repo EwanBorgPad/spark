@@ -24,7 +24,7 @@ const Banner = () => {
           backgroundImage: `linear-gradient(to right, ${backgroundGradient.leftHex}, ${backgroundGradient.rightHex})`,
         }}
       >
-        <span className="text-base font-semibold text-fg-primary">{label}</span>
+        <span className="z-[3] max-w-[65%] text-base font-semibold text-fg-primary md:max-w-full">{label}</span>
         {cta && (
           <a
             href={cta.url}
@@ -35,7 +35,7 @@ const Banner = () => {
             {cta.label}
           </a>
         )}
-        {imageUrl && <Img src={imageUrl} customClass="absolute right-0 top-0 h-full rounded-[7px]" />}
+        {imageUrl && <Img src={imageUrl} customClass="absolute z-[2] right-0 top-0 h-full rounded-[7px]" />}
       </div>
     </div>
   )
