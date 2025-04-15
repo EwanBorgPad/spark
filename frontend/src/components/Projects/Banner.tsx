@@ -19,18 +19,23 @@ const Banner = () => {
       }}
     >
       <div
-        className="relative flex h-full w-full flex-col items-start rounded-[7px] p-4 justify-center"
+        className="relative flex h-full w-full flex-col items-start justify-center rounded-[7px] p-4"
         style={{
           backgroundImage: `linear-gradient(to right, ${backgroundGradient.leftHex}, ${backgroundGradient.rightHex})`,
         }}
       >
         <span className="text-base font-semibold text-fg-primary">{label}</span>
         {cta && (
-          <a href={cta.url} target="_blank" rel="noreferrer" className="text-sm text-fg-secondary underline font-normal">
+          <a
+            href={cta.url}
+            target="_blank"
+            rel="noreferrer"
+            className="text-sm font-normal text-fg-secondary underline"
+          >
             {cta.label}
           </a>
         )}
-        <Img src={imageUrl} customClass="absolute right-0 top-0 h-full rounded-[7px]" />
+        {imageUrl && <Img src={imageUrl} customClass="absolute right-0 top-0 h-full rounded-[7px]" />}
       </div>
     </div>
   )

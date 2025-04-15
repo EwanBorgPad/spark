@@ -97,12 +97,14 @@ const nftConfigSchema = z.object({
   collection: z.string(),
 })
 const bannerSchema = z.object({
-  imageUrl: z.string(),
+  imageUrl: z.string().optional(),
   label: z.string(),
-  cta: z.object({
-    label: z.string(),
-    url: urlSchema(),
-  }),
+  cta: z
+    .object({
+      label: z.string(),
+      url: urlSchema(),
+    })
+    .optional(),
   borderGradient: z.object({
     leftHex: z.string(),
     rightHex: z.string(),
