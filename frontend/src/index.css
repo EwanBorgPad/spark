@@ -1,6 +1,14 @@
 @import "./style/inputSlider.css";
 @import url('https://fonts.googleapis.com/css2?family=Sulphur+Point:wght@300;400;700&display=swap');
 
+@font-face {
+  font-family: 'VCR OSD Mono';
+  src: url('/VCROSDMono.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -226,4 +234,9 @@ input[type="checkbox"] {
 .prize-card-bronze::before {
   background: linear-gradient(to top, rgba(211, 129, 96, 0.5), rgba(211, 129, 96, 0.15));
   padding: 1px;
+}
+
+/* Classes utilitaires */
+.font-vcr {
+  font-family: 'VCR OSD Mono', monospace;
 }
