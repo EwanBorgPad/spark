@@ -12,6 +12,7 @@ import Img from "@/components/Image/Img"
 import { useParams } from "react-router-dom"
 import Text from "@/components/Text"
 import { Button } from "@/components/Button/Button"
+import Banner from "@/components/Projects/Banner"
 
 const WhitelistingContent = () => {
   const { t } = useTranslation()
@@ -35,7 +36,9 @@ const WhitelistingContent = () => {
   })
   const raisedTokenPriceInUsd = Number(data?.currentPrice) || null
   const launchedTokenPriceInUsd = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0
-  const launchedTokenPriceInRaisedToken = !raisedTokenPriceInUsd ? null : launchedTokenPriceInUsd / raisedTokenPriceInUsd
+  const launchedTokenPriceInRaisedToken = !raisedTokenPriceInUsd
+    ? null
+    : launchedTokenPriceInUsd / raisedTokenPriceInUsd
 
   const { projectId } = useParams()
   const { data: investmentSummaryData } = useQuery({
@@ -68,6 +71,8 @@ const WhitelistingContent = () => {
           tokenPriceInUSD={launchedTokenPriceInUsd}
         />
       </div>
+
+      <Banner type="COMPACT" />
 
       <div className="flex w-full flex-col">
         <div className="flex w-full items-center justify-between py-3">

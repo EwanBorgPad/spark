@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next"
 
-import BasicTokenInfo from "@/components/TokenGenerationSection/components/BasicTokenInfo"
 import Timeline, { ExpandedTimelineEventType } from "@/components/Timeline/Timeline"
 import WhitelistingContent from "../components/WhitelistingContent"
 import CountDownTimer from "@/components/CountDownTimer"
@@ -55,7 +54,7 @@ const RegistrationOpensPhase = ({ eventData, timeline }: RegistrationOpensPhaseP
       <div className="flex w-full max-w-[792px] flex-col items-center gap-[52px]">
         <div className="flex w-full flex-col gap-4">
           <Timeline timelineEvents={timeline} />
-          <Banner />
+          <Banner type="WIDE" />
         </div>
 
         {!isUserEligible && (
