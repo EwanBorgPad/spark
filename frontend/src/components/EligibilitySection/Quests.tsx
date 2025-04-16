@@ -15,6 +15,7 @@ import ProvideEmailModal from "../Modal/Modals/ProvideEmailModal"
 import { ProjectModel } from "shared/models"
 import { formatDateForTimer } from "@/utils/date-helpers"
 import { useParams } from "react-router-dom"
+import ProvideReferralCodeModal from "../Modal/Modals/ProvideReferralCodeModal"
 
 type QuestComponentProps = {
   quest: QuestWithCompletion
@@ -50,6 +51,12 @@ export const QuestComponent = ({ quest, autoCheck, isCompliance }: QuestComponen
         label: t("email.provide.heading"),
         description: "",
         additionalElement: <ProvideEmailBtn />,
+      }
+    if (type === "PROVIDE_REFERRAL_CODE")
+      return {
+        label: t("referral.provide.heading"),
+        description: "",
+        additionalElement: <ProvideReferralCodeBtn />,
       }
 
     if (type === "FOLLOW_ON_TWITTER")
@@ -211,6 +218,20 @@ const ProvideEmailBtn = () => {
         {t("email.provide.button")}
       </Button>
       {showModal && <ProvideEmailModal onClose={() => setShowModal(false)} />}
+    </div>
+  )
+}
+
+const ProvideReferralCodeBtn = () => {
+  const { t } = useTranslation()
+  const [showModal, setShowModal] = useState(false)
+
+  return (
+    <div className="mt-2 flex justify-start">
+      <Button color="secondary" size="xs" className="rounded-lg px-3" onClick={() => setShowModal(!showModal)}>
+        {t("referral.provide.button")}
+      </Button>
+      {showModal && <ProvideReferralCodeModal onClose={() => setShowModal(false)} />}
     </div>
   )
 }

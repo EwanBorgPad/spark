@@ -28,6 +28,10 @@ const getCompliances = (project:ProjectModel):Quest[] => {
     {
       type: 'PROVIDE_EMAIL',
       isOptional: !isDraftPick,
+    },
+    {
+      type: 'PROVIDE_REFERRAL_CODE',
+      isOptional: !isDraftPick,
     }
   ]
 }
@@ -97,6 +101,12 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
         isCompleted: providedReferralForProject,
       })
     } else if (quest.type === 'PROVIDE_EMAIL') {
+      const providedEmailForProject = Boolean(user.json.emailData?.providedAt)
+      compliancesWithCompletion.push({
+        ...quest,
+        isCompleted: providedEmailForProject,
+      })  
+    } else if (quest.type === 'PROVIDE_REFERRAL_CODE') {
       const providedEmailForProject = Boolean(user.json.emailData?.providedAt)
       compliancesWithCompletion.push({
         ...quest,

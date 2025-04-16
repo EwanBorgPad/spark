@@ -215,6 +215,11 @@ const DEFAULT_COMPLIANCES: EligibilityStatus["compliances"] = [
     isCompleted: false,
     isOptional: true,
   },
+  {
+    type: "PROVIDE_REFERRAL_CODE",
+    isCompleted: false,
+    isOptional: true,
+  }
 ]
 
 const SideElements = ({
