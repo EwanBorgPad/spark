@@ -94,12 +94,6 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
         ...quest,
         isCompleted: providedInvestmentIntentForProject,
       })
-    } else if (quest.type === 'REFERRAL') {
-      const providedReferralForProject = Boolean(user.json.referral?.[projectId])
-      compliancesWithCompletion.push({
-        ...quest,
-        isCompleted: providedReferralForProject,
-      })
     } else if (quest.type === 'PROVIDE_EMAIL') {
       const providedEmailForProject = Boolean(user.json.emailData?.providedAt)
       compliancesWithCompletion.push({

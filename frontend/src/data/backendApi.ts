@@ -31,7 +31,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? `${window.location.ori
 const GET_ELIGIBILITY_STATUS_API = API_BASE_URL + "/eligibilitystatus"
 const POST_ACCEPT_TERMS_OF_USE_API = API_BASE_URL + "/acceptterms"
 const POST_INVESTMENT_INTENT_API = API_BASE_URL + "/investmentintent"
-const POST_REFERRAL_API = API_BASE_URL + "/referral"
 const GET_PROJECT_API_URL = API_BASE_URL + "/projects" // + '?id=id'
 const POST_PROJECT_API_URL = API_BASE_URL + "/projects"
 const GET_EXCHANGE_API_URL = API_BASE_URL + "/exchange"
@@ -192,22 +191,7 @@ const postInvestmentIntent = async (args: PostInvestmentIntentArgs): Promise<voi
     method: "post",
   })
 }
-type PostReferralArgs = {
-  referrerTwitterHandle: string
-  projectId: string
 
-  publicKey: string
-  message: string
-  signature: number[]
-}
-const postReferral = async (args: PostReferralArgs): Promise<void> => {
-  const url = new URL(POST_REFERRAL_API, window.location.href)
-
-  await failFastFetch(url, {
-    body: JSON.stringify(args),
-    method: "post",
-  })
-}
 
 const getProject = async ({ projectId }: { projectId: string }): Promise<ProjectModel> => {
   const url = new URL(`${GET_PROJECT_API_URL}/${projectId}`, window.location.href)
@@ -659,7 +643,8 @@ export const backendApi = {
   getPresignedUrl,
   postAcceptTermsOfUse,
   postInvestmentIntent,
-  postReferral,
+  postReferralCode,
+  getReferralCode,
   uploadFileToBucket,
   getEligibilityStatus,
   getInvestmentIntentSummary,

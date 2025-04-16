@@ -82,13 +82,6 @@ export const QuestComponent = ({ quest, autoCheck, isCompliance }: QuestComponen
         // TODO @productionPush
         // additionalElement: <HoldTokenBtn tokenName={quest.tokenName} />,
       }
-    if (type === "REFERRAL")
-      return {
-        label: "Were you referred by someone? (optional)",
-        description: "Let us know who sent you to help us recognize community contributors",
-        // TODO @productionPush
-        additionalElement: <EnterReferralCode />,
-      }
 
     // we are not displaying anything for this type; non-eligibility message will take care of UX
     if (type === "ALL_LISTED_COMPLIANCES") return null
