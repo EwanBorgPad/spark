@@ -1,15 +1,25 @@
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import React from "react"
 import Img from "../Image/Img"
+import { BannerType } from "shared/models"
+import { twMerge } from "tailwind-merge"
 
-const Banner = () => {
+type Props = {
+  type: BannerType
+}
+const Banner = ({ type }: Props) => {
   const { projectData, isLoading } = useProjectDataContext()
 
   if (!projectData?.info.banner) return null
 
+  const jsonBannerType = projectData?.info.banner?.type
+  if (jsonBannerType !== type) return null
+
   if (isLoading) return <BannerSkeleton />
 
   const { imageUrl, backgroundGradient, borderGradient, cta, label } = projectData.info.banner
+
+  const isCompactType = projectData.info.banner.type === "COMPACT"
 
   return (
     <div
@@ -19,12 +29,19 @@ const Banner = () => {
       }}
     >
       <div
-        className="relative flex h-full w-full flex-col items-start justify-center rounded-[7px] p-4"
+        className="relative flex h-full w-full flex-col items-start justify-center rounded-[7px] p-3 md:p-4"
         style={{
           backgroundImage: `linear-gradient(to right, ${backgroundGradient.leftHex}, ${backgroundGradient.rightHex})`,
         }}
       >
-        <span className="z-[3] max-w-[65%] text-base font-semibold text-fg-primary md:max-w-full">{label}</span>
+        <span
+          className={twMerge(
+            "z-[3] max-w-[65%] text-sm font-semibold text-fg-primary md:max-w-full md:text-base",
+            isCompactType ? "md:max-w-[65%]" : "",
+          )}
+        >
+          {label}
+        </span>
         {cta && (
           <a
             href={cta.url}

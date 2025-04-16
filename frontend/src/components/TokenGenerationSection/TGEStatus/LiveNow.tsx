@@ -80,7 +80,7 @@ const LiveNow = ({ timeline }: LiveNowProps) => {
       <div className="flex w-full max-w-[792px] flex-col items-center gap-8">
         <div className="flex w-full flex-col gap-4">
           <Timeline timelineEvents={timeline} />
-          <Banner />
+          <Banner type="WIDE" />
         </div>
 
         {!isUserEligible && (

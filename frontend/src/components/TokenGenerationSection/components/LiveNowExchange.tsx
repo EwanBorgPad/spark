@@ -23,6 +23,7 @@ import { twMerge } from "tailwind-merge"
 import DisabledContainer from "./DisabledContainer.tsx"
 import Img from "@/components/Image/Img.tsx"
 import Text from "@/components/Text.tsx"
+import Banner from "@/components/Projects/Banner.tsx"
 
 type FormInputs = {
   raisedTokenInputValue: string
@@ -313,6 +314,7 @@ const LiveNowExchange = ({ eligibilitySectionRef, scrollToEligibilitySection }: 
                 </div>
               )}
             </div>
+            <Banner type="COMPACT" />
           </div>
           <div className="absolute -bottom-3.5 left-0 right-0 z-10 ml-auto mr-auto h-7 w-7 rounded-full border border-bd-primary bg-secondary p-[5px] text-brand-primary">
             <Icon icon="SvgArrowDown" className="text-base" />
