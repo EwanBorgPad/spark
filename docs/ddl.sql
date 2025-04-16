@@ -79,7 +79,7 @@ CREATE TABLE eligibility_status_snapshot (
     created_at DATE NOT NULL,
     eligibility_status JSONB NOT NULL,
     PRIMARY KEY (address, project_id)
-)
+);
 
 -- migration: exchange_cache
 CREATE TABLE exchange_cache (
@@ -155,3 +155,16 @@ CREATE TABLE analysis (
 
 CREATE INDEX idx_analysis_project_id ON analysis(project_id);
 ---- end
+
+CREATE TABLE referral (
+    id TEXT NOT NULL PRIMARY KEY,
+    project_id TEXT NOT NULL,
+    referrer_by TEXT NOT NULL,
+    address TEXT NOT NULL,
+    invested_dollar_value REAL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
+    FOREIGN KEY (referrer_by) REFERENCES user(address) ON DELETE CASCADE,
+    FOREIGN KEY (address) REFERENCES user(address) ON DELETE CASCADE,
+    UNIQUE (project_id, address)
+);

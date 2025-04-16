@@ -101,16 +101,16 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
         isCompleted: providedEmailForProject,
       })  
     } else if (quest.type === 'PROVIDE_REFERRAL_CODE') {
-      const providedEmailForProject = Boolean(user.json.emailData?.providedAt)
+      const providedReferralCodeForProject = Boolean(user.json.referralCode?.[projectId])
       compliancesWithCompletion.push({
         ...quest,
-        isCompleted: providedEmailForProject,
+        isCompleted: providedReferralCodeForProject,
       })  
     } else {
       throw new Error(`Unknown compliance type (${quest.type})!`)
     }
   }
-  console.log(compliancesWithCompletion);
+  console.log("compliancesWithCompletion", compliancesWithCompletion);
 
 
   const collections: string[] = project.json.info.tiers

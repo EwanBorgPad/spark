@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { twMerge } from "tailwind-merge"
 import { Button } from "../../Button/Button"
 import { SimpleModal } from "../SimpleModal"
@@ -6,54 +6,93 @@ import { Icon } from "../../Icon/Icon"
 import ReferralHowItWorksModal from "./ReferralHowItWorksModal"
 import ReferralsTable from "../../Tables/ReferralsTable"
 import LeaderboardTable from "@/components/Tables/LeaderboardTable"
+import { useWalletContext } from "@/hooks/useWalletContext"
+import { backendApi } from "@/data/backendApi"
+import { useQuery } from "@tanstack/react-query"
+import { useNavigate, useParams } from "react-router-dom"
+import { ConnectButton } from "@/components/Header/ConnectButton"
+import { useProjectDataContext } from "@/hooks/useProjectData"
 
 type Props = {
   onClose: () => void
 }
 
-const mockLeaderboardData = [
-  {
-    id: "1",
-    position: 1,
-    user: {
-      name: "User One",
-      username: "user1",
-    },
-    tickets: 100,
-    prize: "$1,000"
-  },
-  {
-    id: "2",
-    position: 2,
-    user: {
-      name: "User Two",
-      username: "user2",
-    },
-    tickets: 80,
-    prize: "$800"
-  },
-  {
-    id: "3",
-    position: 3,
-    user: {
-      name: "User Three",
-      username: "user3",
-    },
-    tickets: 50,
-    prize: "$500"
-  }
-]
-
 const ReferralDashboardModal = ({ onClose }: Props) => {
   const [copied, setCopied] = useState(false)
   const [showHowItWorks, setShowHowItWorks] = useState(false)
   const [activeTab, setActiveTab] = useState<'referrals' | 'leaderboard'>('referrals')
-  const referralCode = "j21a891l"
+  const { address, isWalletConnected, walletState } = useWalletContext()
+  const { projectId } = useParams()
+  const { projectData } = useProjectDataContext()
+  const projectType = projectData?.info.projectType || "goat"
+  const navigate = useNavigate()
+  const wasWalletConnected = useRef(isWalletConnected)
+
+  // Fetch user's referral code
+  const { data: referralData } = useQuery({
+    queryKey: ["getReferralCode", address],
+    queryFn: () => backendApi.getReferralCode({ address: address || "" }),
+    enabled: !!address,
+  })
+
+  const referralCode = referralData?.code || ""
+
+  // Monitor wallet connection state changes
+  useEffect(() => {
+    // If user just connected (was disconnected, now connected)
+    if (!wasWalletConnected.current && isWalletConnected) {
+      // Reopen the modal
+      onClose()
+      setTimeout(() => {
+        // Small delay to ensure previous modal is closed
+        const event = new CustomEvent('openReferralDashboard')
+        window.dispatchEvent(event)
+      }, 100)
+    }
+
+    // Update reference for next comparison
+    wasWalletConnected.current = isWalletConnected
+  }, [isWalletConnected, onClose])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(referralCode)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleConnectWallet = () => {
+    // Trigger wallet connection modal
+    const event = new CustomEvent('openWalletModal')
+    window.dispatchEvent(event)
+  }
+
+  const scrollToJoinThePool = () => {
+    // Wait for navigation to complete
+    setTimeout(() => {
+      // Find element with ID "complianceHeading" containing "Join the Launch Pool"
+      const joinThePoolElement = document.getElementById('complianceHeading')
+      if (joinThePoolElement) {
+        // Scroll to element
+        joinThePoolElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      } else {
+        // If element not found, try finding by text
+        const headings = document.querySelectorAll('h2')
+        for (const heading of headings) {
+          if (heading.textContent?.includes('Join the Launch Pool')) {
+            heading.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            break
+          }
+        }
+      }
+    }, 500) // Delay to ensure page has loaded
+  }
+
+  const handleSignToU = () => {
+    onClose()
+    // Navigate to the project page with the "Join the Launch Pool" section
+    navigate(`/${projectType}-pools/${projectId}`)
+    // Scroll to "Join the Launch Pool" section
+    scrollToJoinThePool()
   }
 
   if (showHowItWorks) {
@@ -68,6 +107,9 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
     subtitle,
     onValueClick,
     isTicket,
+    showConnectButton,
+    showSignToUButton,
+    onSignToUClick,
   }: {
     title: string;
     icon?: "SvgTrophy" | "SvgMedal" | "SvgCircledCheckmark" | "SvgTicket";
@@ -75,18 +117,21 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
     subtitle: string;
     onValueClick?: () => void;
     isTicket?: boolean;
+    showConnectButton?: boolean;
+    showSignToUButton?: boolean;
+    onSignToUClick?: () => void;
   }) => {
     return (
       <div className="flex flex-col max-w-[165.5px] h-[114px] md:max-w-[201px] md:min-w-[170px] md:h-[118px] rounded-lg bg-secondary p-4">
         <span className="font-vcr text-fg-secondary text-sm md:text-lg font-normal mb-2 uppercase">
           {title}
         </span>
-        
+
         <div className="flex items-center gap-2 mb-1">
           {icon && (
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/20">
-              <Icon 
-                icon={icon} 
+              <Icon
+                icon={icon}
                 className={twMerge(
                   "text-base text-brand-primary",
                   isTicket && "-rotate-[35deg]"
@@ -95,7 +140,7 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
             </div>
           )}
           {value && (
-            <span 
+            <span
               className={twMerge(
                 "text-base md:text-xl font-medium text-white",
                 onValueClick && "cursor-pointer transition-colors"
@@ -107,15 +152,29 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
           )}
         </div>
 
-        <span 
-          className={twMerge(
-            "text-xs text-fg-primary/70 mt-auto",
-            onValueClick && "cursor-pointer underline transition-colors"
-          )}
-          onClick={onValueClick}
-        >
-          {subtitle}
-        </span>
+        {showConnectButton ? (
+          <div className="mt-auto">
+            <ConnectButton size="xs" />
+          </div>
+        ) : showSignToUButton ? (
+          <div className="mt-auto">
+            <Button 
+              btnText="Sign ToU" 
+              size="xs" 
+              onClick={onSignToUClick}
+            />
+          </div>
+        ) : (
+          <span
+            className={twMerge(
+              "text-xs text-fg-primary/70 mt-auto",
+              onValueClick && "cursor-pointer underline transition-colors"
+            )}
+            onClick={onValueClick}
+          >
+            {subtitle}
+          </span>
+        )}
       </div>
     );
   }
@@ -143,21 +202,38 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
           <ReferralCard
             title="Your Rewards"
             icon="SvgTrophy"
-            value="2,500"
-            subtitle=""
+            value={isWalletConnected ? "2,500" : ""}
+            subtitle={isWalletConnected ? "" : "Connect Wallet"}
+            onValueClick={isWalletConnected ? undefined : handleConnectWallet}
+            showConnectButton={!isWalletConnected}
           />
           <ReferralCard
             title="referral code"
-            value={referralCode}
-            subtitle={copied ? "Copied!" : "Copy"}
-            onValueClick={handleCopy}
+            value={isWalletConnected ? (referralCode || "") : ""}
+            subtitle={
+              !isWalletConnected
+                ? "Connect Wallet"
+                : isWalletConnected && !referralCode
+                  ? "Sign ToU"
+                  : copied ? "Copied!" : "Copy"
+            }
+            onValueClick={
+              !isWalletConnected
+                ? handleConnectWallet
+                : handleCopy
+            }
+            showConnectButton={!isWalletConnected}
+            showSignToUButton={isWalletConnected && !referralCode}
+            onSignToUClick={handleSignToU}
           />
           <ReferralCard
             title="Your Tickets"
             icon="SvgTicket"
-            value="25"
-            subtitle="Total issued: 2,000"
+            value={isWalletConnected ? "25" : ""}
+            subtitle={isWalletConnected ? "Total issued: 2,000" : "Connect Wallet"}
             isTicket
+            onValueClick={isWalletConnected ? undefined : handleConnectWallet}
+            showConnectButton={!isWalletConnected}
           />
           <ReferralCard
             title="Reward Pool"
@@ -172,8 +248,8 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
           <button
             className={twMerge(
               "flex-1 py-2 text-sm font-vcr border-b-2 transition-colors uppercase",
-              activeTab === 'referrals' 
-                ? "border-brand-primary text-brand-primary" 
+              activeTab === 'referrals'
+                ? "border-brand-primary text-brand-primary"
                 : "border-transparent text-fg-secondary"
             )}
             onClick={() => setActiveTab('referrals')}
@@ -183,8 +259,8 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
           <button
             className={twMerge(
               "flex-1 py-2 text-sm font-vcr border-b-2 transition-colors uppercase",
-              activeTab === 'leaderboard' 
-                ? "border-brand-primary text-brand-primary" 
+              activeTab === 'leaderboard'
+                ? "border-brand-primary text-brand-primary"
                 : "border-transparent text-fg-secondary"
             )}
             onClick={() => setActiveTab('leaderboard')}
@@ -201,7 +277,23 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
               <h3 className="text-lg font-vcr text-white uppercase">Referrals</h3>
             </div>
             <div className="overflow-y-auto h-[calc(536px-64px)]">
-              <ReferralsTable />
+              {!isWalletConnected ? (
+                <div className="flex flex-col items-center justify-center h-full p-4">
+                  <span className="text-fg-secondary mb-4 text-center">Connect your wallet to see your referrals</span>
+                  <ConnectButton size="md" />
+                </div>
+              ) : !referralCode ? (
+                <div className="flex flex-col items-center justify-center h-full p-4">
+                  <span className="text-fg-secondary mb-4 text-center">Sign Terms of Use to see your referrals</span>
+                  <Button 
+                    btnText="Sign ToU" 
+                    size="md" 
+                    onClick={handleSignToU}
+                  />
+                </div>
+              ) : (
+                <ReferralsTable />
+              )}
             </div>
           </div>
 
@@ -221,7 +313,23 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
           {activeTab === 'referrals' ? (
             <div className="bg-default rounded-lg overflow-hidden">
               <div className="w-full">
-                <ReferralsTable />
+                {!isWalletConnected ? (
+                  <div className="flex flex-col items-center justify-center p-8">
+                    <span className="text-fg-secondary mb-4 text-center">Connect your wallet to see your referrals</span>
+                    <ConnectButton size="md" />
+                  </div>
+                ) : !referralCode ? (
+                  <div className="flex flex-col items-center justify-center p-8">
+                    <span className="text-fg-secondary mb-4 text-center">Sign Terms of Use to see your referrals</span>
+                    <Button 
+                      btnText="Sign ToU" 
+                      size="md" 
+                      onClick={handleSignToU}
+                    />
+                  </div>
+                ) : (
+                  <ReferralsTable />
+                )}
               </div>
             </div>
           ) : (

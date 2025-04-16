@@ -50,6 +50,8 @@ const UPDATE_JSON = API_BASE_URL + "/projects/update-json"
 const POST_CREATE_EMAIL = API_BASE_URL + "/createemail"
 const GET_SESSION = API_BASE_URL + "/session"
 const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
+const POST_REFERRAL_CODE = API_BASE_URL + "/referralcode"
+const GET_REFERRAL_CODE = API_BASE_URL + "/referralcode"
 
 // analysis & analyst
 const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
@@ -632,6 +634,38 @@ const isAdmin = async (auth: AdminAuthFields): Promise<void> => {
   })
   const json = await response.json()
   if (!response.ok) throw new Error(json.message)
+  return json
+}
+
+type PostReferralCodeArgs = {
+  referrerTwitterHandle: string
+  projectId: string
+  publicKey: string
+  message: string
+  signature: number[]
+  isLedgerTransaction: boolean
+}
+
+const postReferralCode = async (args: PostReferralCodeArgs): Promise<void> => {
+  const url = new URL(POST_REFERRAL_CODE, window.location.href)
+
+  await failFastFetch(url, {
+    body: JSON.stringify(args),
+    method: "post",
+  })
+}
+
+type GetReferralCodeArgs = {
+  address: string
+}
+
+const getReferralCode = async ({ address }: GetReferralCodeArgs): Promise<{ code: string }> => {
+  const url = new URL(GET_REFERRAL_CODE, window.location.href)
+  url.searchParams.set("address", address)
+
+  const response = await fetch(url)
+  const json = await response.json()
+
   return json
 }
 

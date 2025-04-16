@@ -51,7 +51,7 @@ const ProvideReferralCodeModal = ({ onClose }: ProvideReferralCodeModalProps) =>
         isLedgerTransaction,
       }
 
-      await backendApi.postReferral(data)
+      await backendApi.postReferralCode(data)
     },
     onSuccess: () => {
       eligibilityStatusCacheBust.invokeCacheBusting()

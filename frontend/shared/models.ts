@@ -50,6 +50,14 @@ export type UserModelJson = {
     providedAt: Date
     acceptedTextSigned: string
   }
+  referralCode?: Record<
+  ProjectId,
+  {
+    code: string
+    message: string
+    signature: number[]
+  }
+>
 }
 /**
  * Represents url type
@@ -335,3 +343,14 @@ export type AdminAuthFields = {
   message: string
   signature: number[]
 }
+
+export const ReferralCodeRequestSchema = z.object({
+  publicKey: z.string(),
+  projectId: z.string(),
+  referrerTwitterHandle: z.string(),
+  message: z.string(),
+  signature: z.array(z.number()),
+  isLedgerTransaction: z.boolean().optional(),
+})
+
+export type ReferralCodeRequest = z.infer<typeof ReferralCodeRequestSchema>

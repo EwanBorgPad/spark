@@ -1,7 +1,6 @@
 import { ReactNode, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { EligibilityStatus, QuestWithCompletion, TierType, TierWithCompletion } from "shared/eligibilityModel"
-import EnterReferralCode from "./EnterReferralCode"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "../Icon/Icon"
 import { useWalletContext } from "@/hooks/useWalletContext"
@@ -11,11 +10,11 @@ import { ExternalLink } from "../Button/ExternalLink"
 import AcceptTermsOfUseModal from "../Modal/Modals/AcceptTermsOfUseModal"
 import { ProvideInvestmentIntentModal } from "../Modal/Modals/ProvideInvestmentIntentModal"
 import ProvideEmailModal from "../Modal/Modals/ProvideEmailModal"
+import ProvideReferralCodeModal from "../Modal/Modals/ProvideReferralCodeModal"
 
 import { ProjectModel } from "shared/models"
 import { formatDateForTimer } from "@/utils/date-helpers"
 import { useParams } from "react-router-dom"
-import ProvideReferralCodeModal from "../Modal/Modals/ProvideReferralCodeModal"
 
 type QuestComponentProps = {
   quest: QuestWithCompletion
