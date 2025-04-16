@@ -12,6 +12,9 @@ import { useQuery } from "@tanstack/react-query"
 import { useNavigate, useParams } from "react-router-dom"
 import { ConnectButton } from "@/components/Header/ConnectButton"
 import { useProjectDataContext } from "@/hooks/useProjectData"
+import { formatCurrencyAmount } from "shared/utils/format"
+import SimpleCountDownTimer from "@/components/SimpleCountDownTimer"
+
 
 type Props = {
   onClose: () => void
@@ -28,6 +31,10 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
   const navigate = useNavigate()
   const wasWalletConnected = useRef(isWalletConnected)
 
+  // Find the SALE_CLOSES event date from the timeline
+  const saleClosesEvent = projectData?.info.timeline.find(event => event.id === "SALE_CLOSES")
+  const saleClosesDate = saleClosesEvent?.date || new Date(Date.now() + 24 * 60 * 60 * 1000) // Fallback to 24h from now if not found
+
   // Fetch user's referral code
   const { data: referralData } = useQuery({
     queryKey: ["getReferralCode", address],
@@ -36,23 +43,6 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
   })
 
   const referralCode = referralData?.code || ""
-
-  // Monitor wallet connection state changes
-  useEffect(() => {
-    // If user just connected (was disconnected, now connected)
-    if (!wasWalletConnected.current && isWalletConnected) {
-      // Reopen the modal
-      onClose()
-      setTimeout(() => {
-        // Small delay to ensure previous modal is closed
-        const event = new CustomEvent('openReferralDashboard')
-        window.dispatchEvent(event)
-      }, 100)
-    }
-
-    // Update reference for next comparison
-    wasWalletConnected.current = isWalletConnected
-  }, [isWalletConnected, onClose])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(referralCode)
@@ -114,7 +104,7 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
     title: string;
     icon?: "SvgTrophy" | "SvgMedal" | "SvgCircledCheckmark" | "SvgTicket";
     value?: string;
-    subtitle: string;
+    subtitle?: string;
     onValueClick?: () => void;
     isTicket?: boolean;
     showConnectButton?: boolean;
@@ -192,20 +182,22 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
     >
       <div className="flex max-h-[90vh] w-full flex-col items-center overflow-y-auto px-4 pb-[40px] md:max-h-[90vh] md:overflow-y-hidden md:px-[40px] md:pb-6">
         <span className="mb-3 text-center text-2xl font-semibold text-white">
-          Invite Friends, get $SOLID
+          Invite Friends, {projectData?.config.launchedTokenData.ticker}
         </span>
         <span className="mb-[36px] text-center text-base font-normal text-fg-primary">
-          Raffle happens & leaderboard closes in <span className="text-brand-primary">1d : 20h : 24m : 45s</span>
+          Raffle happens & leaderboard closes in <SimpleCountDownTimer 
+            endOfEvent={saleClosesDate} 
+            labelAboveTimer="" 
+            className="!h-auto !bg-transparent !pt-0" 
+            timerClass="text-brand-primary"
+          />
         </span>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <ReferralCard
             title="Your Rewards"
             icon="SvgTrophy"
-            value={isWalletConnected ? "2,500" : ""}
-            subtitle={isWalletConnected ? "" : "Connect Wallet"}
-            onValueClick={isWalletConnected ? undefined : handleConnectWallet}
-            showConnectButton={!isWalletConnected}
+            value={isWalletConnected ? "2,500" : "0"}
           />
           <ReferralCard
             title="referral code"
@@ -229,16 +221,14 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
           <ReferralCard
             title="Your Tickets"
             icon="SvgTicket"
-            value={isWalletConnected ? "25" : ""}
-            subtitle={isWalletConnected ? "Total issued: 2,000" : "Connect Wallet"}
+            value={isWalletConnected ? "25" : "0"}
+            subtitle="Total issued: 2,000"
             isTicket
-            onValueClick={isWalletConnected ? undefined : handleConnectWallet}
-            showConnectButton={!isWalletConnected}
           />
           <ReferralCard
             title="Reward Pool"
             icon="SvgTrophy"
-            value="10,000,000"
+            value={formatCurrencyAmount(projectData?.config?.raiseTargetInUsd?.toString() || "10,000,000")}
             subtitle=""
           />
         </div>
