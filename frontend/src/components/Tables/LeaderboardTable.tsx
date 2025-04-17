@@ -6,15 +6,8 @@ import Text from "@/components/Text"
 import Img from "../Image/Img"
 
 type LeaderboardData = {
-  id: string
-  position: number
-  user: {
-    name: string
-    username: string
-    avatar?: string
-  }
-  tickets: number
-  prize: string
+  referrer_by: string;
+  total_invested: number; // or string, depending on your data type
 }
 
 type Props = {
@@ -32,7 +25,7 @@ const LeaderboardTable = ({ data = [], isLoading = false }: Props) => {
             <table className="w-full divide-y divide-bd-secondary/15">
               <thead className="sticky top-0 z-10">
                 <tr className="max-h-[24px]">
-                  <TableHeader className="px-2 w-[15%]"> {/* Added padding to the left */}
+                  <TableHeader className="px-3 w-[15%]"> {/* Added padding to the left */}
                     Pos. 
                   </TableHeader>
                   <TableHeader className="px-0.5 w-[35%]">
@@ -54,28 +47,27 @@ const LeaderboardTable = ({ data = [], isLoading = false }: Props) => {
               {data.length ? (
                 <tbody className="divide-y divide-bd-secondary/5 pb-10">
                   {data.map((item) => (
-                    <tr className="h-[64px]" key={item.id}>
-                      <TableCell className="py-0">
-                        <span className="text-xs text-fg-primary">#{item.position}</span>
+                    <tr className="h-[64px]" key={item.referrer_by}>
+                      <TableCell className="px-5">
+                        <span className="text-xs text-fg-primary">{data.indexOf(item) + 1}</span>
                       </TableCell>
                       <TableCell className="py-0">
                         <div className="flex w-full flex-row items-center gap-2">
-                          <Img size="6" src={item.user.avatar} isRounded />
                           <div className="flex flex-col flex-nowrap items-start">
                             <span className="truncate text-xs font-semibold text-fg-primary">
-                              {item.user.name}
+                              {item.referrer_by}
                             </span>
                             <span className="truncate text-xs font-normal text-fg-tertiary">
-                              @{item.user.username}
+                              @{item.referrer_by}
                             </span>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="py-0">
-                        <span className="text-xs text-fg-primary">{item.tickets.toLocaleString()}</span>
+                        <span className="text-xs text-fg-primary">{item.total_invested*100}</span>
                       </TableCell>
                       <TableCell className="py-0">
-                        <span className="text-xs text-fg-primary">{item.prize}</span>
+                        <span className="text-xs text-fg-primary">{item.total_invested}</span>
                       </TableCell>
                     </tr>
                   ))}

@@ -38,11 +38,20 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
   // Fetch user's referral code
   const { data: referralData } = useQuery({
     queryKey: ["getReferralCode", address],
-    queryFn: () => backendApi.getReferralCode({ address: address || "" }),
+    queryFn: () => backendApi.getReferralCode({ address: address || "" , projectId: projectId || ""}),
     enabled: !!address,
   })
 
   const referralCode = referralData?.code || ""
+  const totalTickets = referralData?.totalTickets || []
+  const firstTotalInvested = totalTickets[0]?.total_invested || 0; // Fallback to 0 if no tickets
+  const ticketPerAmountInvested = 100;
+  const totalRewards = firstTotalInvested * ticketPerAmountInvested;
+
+  const leaderboardReferrals = referralData?.leaderboardReferrals || []
+  const referralsTable = referralData?.referralsTable || []
+
+  const totalTicketsDistributed = referralData?.totalTicketsDistributed || []
 
   const handleCopy = () => {
     navigator.clipboard.writeText(referralCode)
@@ -197,7 +206,7 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
           <ReferralCard
             title="Your Rewards"
             icon="SvgTrophy"
-            value={isWalletConnected ? "2,500" : "0"}
+            value={isWalletConnected ? String(totalRewards) : "0"}
           />
           <ReferralCard
             title="referral code"
@@ -221,8 +230,8 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
           <ReferralCard
             title="Your Tickets"
             icon="SvgTicket"
-            value={isWalletConnected ? "25" : "0"}
-            subtitle="Total issued: 2,000"
+            value={isWalletConnected ? String(firstTotalInvested) : "0"}
+            subtitle={`Total issued: ${totalTicketsDistributed[0]?.total_invested || 0}`}
             isTicket
           />
           <ReferralCard
@@ -282,7 +291,7 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
                   />
                 </div>
               ) : (
-                <ReferralsTable />
+                <ReferralsTable data={referralsTable} />
               )}
             </div>
           </div>
@@ -293,7 +302,7 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
               <h3 className="text-lg font-vcr text-white uppercase">Leaderboard</h3>
             </div>
             <div className="overflow-y-auto h-[calc(536px-64px)]">
-              <LeaderboardTable />
+              <LeaderboardTable data={leaderboardReferrals} />
             </div>
           </div>
         </div>
@@ -318,14 +327,14 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
                     />
                   </div>
                 ) : (
-                  <ReferralsTable />
+                  <ReferralsTable data={referralsTable} />
                 )}
               </div>
             </div>
           ) : (
             <div className="bg-default rounded-lg overflow-hidden">
               <div className="w-full">
-                <LeaderboardTable />
+                <LeaderboardTable data={leaderboardReferrals} />
               </div>
             </div>
           )}

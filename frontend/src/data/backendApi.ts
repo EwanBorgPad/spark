@@ -656,12 +656,44 @@ const postReferralCode = async (args: PostReferralCodeArgs): Promise<void> => {
 }
 
 type GetReferralCodeArgs = {
-  address: string
+  address: string,
+  projectId: string
 }
 
-const getReferralCode = async ({ address }: GetReferralCodeArgs): Promise<{ code: string }> => {
+type LeaderboardReferral = {
+  referrer_by: string;
+  total_invested: number; // or string, depending on your data type
+};
+
+type Referral = {
+  referrer_by: string;
+  address: string;
+  invested_dollar_value: number; // or string
+};
+
+type TotalTicket = {
+  referrer_by: string;
+  total_invested: number; // or string
+};
+
+type TotalTicketsDistributed = {
+  referrer_by: string;
+  total_invested: number; // or string
+};
+
+const getReferralCode = async ({
+  address,
+  projectId,
+}: GetReferralCodeArgs): Promise<{
+  code: string;
+  leaderboardReferrals: LeaderboardReferral[];
+  referralsTable: Referral[];
+  totalTickets: TotalTicket[];
+  totalTicketsDistributed: TotalTicketsDistributed[];
+}> => {
   const url = new URL(GET_REFERRAL_CODE, window.location.href)
   url.searchParams.set("address", address)
+  url.searchParams.set("projectId", projectId)
 
   const response = await fetch(url)
   const json = await response.json()

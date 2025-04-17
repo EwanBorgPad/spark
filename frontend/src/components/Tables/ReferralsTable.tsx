@@ -6,15 +6,9 @@ import Text from "@/components/Text"
 import Img from "../Image/Img"
 
 type ReferralData = {
-  id: string
-  user: {
-    name: string
-    username: string
-    avatar?: string
-  }
-  tickets: number
-  connected?: number
-  invested?: string
+  referrer_by: string;
+  address: string;
+  invested_dollar_value: number; // or string
 }
 
 type Props = {
@@ -31,7 +25,7 @@ const ReferralsTable = ({ data = [], isLoading = false }: Props) => {
             <table className="w-full divide-y divide-bd-secondary/15">
               <thead className="sticky top-0 z-10">
                 <tr className="max-h-[24px]">
-                  <TableHeader className="px-0.5 w-[25%]">
+                  <TableHeader className="px-2 w-[25%]">
                     <span className="w-full pl-2">User</span>
                   </TableHeader>
                   <TableHeader className="px-0.5 w-[25%]">
@@ -53,28 +47,24 @@ const ReferralsTable = ({ data = [], isLoading = false }: Props) => {
               {data.length ? (
                 <tbody className="divide-y divide-bd-secondary/5 pb-10">
                   {data.map((item) => (
-                    <tr className="h-[64px]" key={item.id}>
+                    <tr className="h-[64px]" key={item.address}>
                       <TableCell className="py-0">
                         <div className="flex w-full flex-row items-center gap-2">
-                          <Img size="6" src={item.user.avatar} isRounded />
                           <div className="flex flex-col flex-nowrap items-start">
-                            <span className="truncate text-xs font-semibold text-fg-primary">
-                              {item.user.name}
-                            </span>
-                            <span className="truncate text-xs font-normal text-fg-tertiary">
-                              @{item.user.username}
+                            <span className="truncate text-xs font-semibold text-fg-primary px-2">
+                              {item.address}
                             </span>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="py-0">
-                        <span className="text-xs text-fg-primary">{item.connected?.toLocaleString()}</span>
+                        <span className="text-xs text-fg-primary">Yes</span>
                       </TableCell>
                       <TableCell className="py-0">
-                        <span className="text-xs text-fg-primary">{item.invested}</span>
+                        <span className="text-xs text-fg-primary">{item.invested_dollar_value}</span>
                       </TableCell>
                       <TableCell className="py-0">
-                        <span className="text-xs text-fg-primary">{item.tickets.toLocaleString()}</span>
+                        <span className="text-xs text-fg-primary">{item.invested_dollar_value*100}</span>
                       </TableCell>
                     </tr>
                   ))}
