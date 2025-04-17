@@ -117,6 +117,10 @@ const bannerSchema = z.object({
     rightHex: z.string(),
   }),
 })
+const preRaisedSchema = z.object({
+  label: z.string(),
+  amount: z.number(),
+})
 
 export type NftConfigType = z.infer<typeof nftConfigSchema>
 
@@ -182,6 +186,7 @@ export const projectSchema = z.object({
     targetVesting: z.string().min(1).optional(),
     chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
     banner: bannerSchema.optional(),
+    preRaised: preRaisedSchema.optional(),
 
     dataRoom: z.object({ backgroundImgUrl: urlSchema().optional(), url: urlSchema() }),
     liquidityPool: z.object({
