@@ -83,6 +83,7 @@ export default {
         geist: ["Geist", "Arial", "sans-serif"],
         "geist-mono": ["GeistMono", "monospace"],
         "sulphur-point": ["Sulphur Point", "sans-serif"],
+        vcr: ["VCR OSD Mono", "monospace"],
       },
       boxShadow: {
         underline: "0px 2px 0px 0px rgba(188,254,143,1)",

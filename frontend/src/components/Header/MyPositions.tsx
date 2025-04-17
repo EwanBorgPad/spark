@@ -4,13 +4,31 @@ import { twMerge } from "tailwind-merge"
 import { SupportedWallet, useWalletContext } from "@/hooks/useWalletContext"
 import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick"
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard"
+import { MyPositionTabId } from "@/@types/frontend"
+import MyPositionsTab from "./MyPositionsTab"
 
 type Props = {
   onClose: () => void
   excludeOnClickOutside: MutableRefObject<HTMLDivElement | null>[]
 }
+const tabs: { id: MyPositionTabId; label: string }[] = [
+  {
+    label: "POOLS",
+    id: "POOLS",
+  },
+  {
+    label: "DRAFT PICKS",
+    id: "DRAFT_PICKS",
+  },
+  {
+    label: "REFERRALS",
+    id: "REFERRALS",
+  },
+]
+
 const MyPositions = ({ onClose, excludeOnClickOutside }: Props) => {
   const { address, truncatedAddress, signOut, walletProvider } = useWalletContext()
+  const [activeTab, setActiveTab] = useState<MyPositionTabId>("POOLS")
 
   const dropdownMenuRef = useRef<HTMLDivElement | null>(null)
   useCheckOutsideClick(dropdownMenuRef, onClose, excludeOnClickOutside)
@@ -29,9 +47,9 @@ const MyPositions = ({ onClose, excludeOnClickOutside }: Props) => {
     <div
       ref={dropdownMenuRef}
       className={twMerge(
-        "absolute right-0 top-12 w-[343px] p-4",
+        "absolute right-0 top-12 w-[420px] p-4",
         "rounded-xl border border-bd-primary bg-default",
-        "flex flex-col",
+        "flex flex-col gap-4",
         "animate-top-down transition-transform ease-out",
       )}
     >
@@ -52,16 +70,49 @@ const MyPositions = ({ onClose, excludeOnClickOutside }: Props) => {
           <DropdownMenuButton icon={"SvgLogOut"} tooltipText={"Disconnect"} onClick={signOut} />
         </div>
       </div>
-      <div className="flex w-full">
-        <span className="p-y-2 flex-1 border-b-4 border-fg-brand-secondary text-sm">Pools</span>
-        <span className="p-y-2 flex-1 border-b-4 border-fg-brand-secondary text-sm">Draft Picks</span>
-        <span className="p-y-2 flex-1 border-b-4 border-fg-brand-secondary text-sm">Referrals</span>
+      <div className="mb-4 flex w-full">
+        {tabs.map((tab) => (
+          <MyPositionTabButton key={tab.id} tab={tab} activeTab={activeTab} setActiveTab={setActiveTab} />
+        ))}
       </div>
+      <MyPositionsTab activeTab={activeTab} />
     </div>
   )
 }
-
 export default MyPositions
+
+type MyPositionTabButtonProps = {
+  activeTab: MyPositionTabId
+  setActiveTab: (tab: MyPositionTabId) => void
+  tab: {
+    id: MyPositionTabId
+    label: string
+  }
+}
+const MyPositionTabButton = ({ setActiveTab, activeTab, tab }: MyPositionTabButtonProps) => {
+  const isTabActive = activeTab === tab.id
+  return (
+    <div
+      onClick={() => setActiveTab(tab.id)}
+      className={twMerge("hover:tabs-text-shadow group relative flex-1 cursor-pointer py-2 text-center text-sm")}
+    >
+      <span
+        className={twMerge(
+          "group-hover:tabs-text-shadow font-vcr text-fg-tertiary group-hover:text-fg-brand-primary",
+          isTabActive && "tabs-text-shadow text-fg-brand-primary",
+        )}
+      >
+        {tab.label}
+      </span>
+      <div
+        className={twMerge(
+          "absolute bottom-0 h-0.5 w-full scale-x-0 transition-transform ",
+          isTabActive && "tabs-bottom-border scale-x-100 bg-fg-brand-primary",
+        )}
+      ></div>
+    </div>
+  )
+}
 
 type DropdownMenuButtonProps = {
   icon: AvailableIcons
