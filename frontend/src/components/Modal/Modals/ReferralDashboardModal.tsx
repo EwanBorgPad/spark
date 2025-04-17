@@ -14,6 +14,7 @@ import { ConnectButton } from "@/components/Header/ConnectButton"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import { formatCurrencyAmount } from "shared/utils/format"
 import SimpleCountDownTimer from "@/components/SimpleCountDownTimer"
+import Img from "@/components/Image/Img"
 
 
 type Props = {
@@ -129,7 +130,15 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
         </span>
 
         <div className="flex items-center gap-2 mb-1">
-          {icon && (
+          {title === "Reward Pool" || title === "Your Rewards" ? (
+            <Img
+              src={projectData?.info.logoUrl}
+              isFetchingLink={false}
+              imgClassName="scale-[102%]"
+              isRounded={true}
+              size="4"
+            />
+          ) : icon && (
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/20">
               <Icon
                 icon={icon}
