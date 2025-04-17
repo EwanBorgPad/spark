@@ -63,11 +63,19 @@ const ProvideReferralCodeModal = ({ onClose }: ProvideReferralCodeModalProps) =>
     onError: (error) => toast.error(error.message, { theme: "colored" }),
   })
 
+  const { data: referralData } = useQuery({
+    queryKey: ["getReferralCode", address],
+    queryFn: () => backendApi.getReferralCode({ address: address || "" , projectId: projectId || ""}),
+    enabled: !!address,
+  })
+
+  const UsereferralCode = referralData?.code || ""
+
   const [referralCode, setReferralCode] = useState<string | null>(null)
 
 
   function isValidReferralCode(referralCode: string): boolean {
-    return referralCode.length > 0
+    return referralCode.length > 0 && UsereferralCode!==referralCode
   }
 
   return (
