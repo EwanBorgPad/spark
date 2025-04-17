@@ -4,13 +4,20 @@ import { SimpleModal } from "../SimpleModal"
 import { useState } from "react"
 import ReferralDashboardModal from "./ReferralDashboardModal"
 import { Icon } from "../../Icon/Icon"
+import { useProjectDataContext } from "@/hooks/useProjectData"
+import { formatCurrencyAmount } from "../../../../shared/utils/format"
+import Img from "@/components/Image/Img"
+
 
 type Props = {
   onClose: () => void
 }
 
 const ReferralHowItWorksModal = ({ onClose }: Props) => {
+  const { projectData } = useProjectDataContext()
   const [showDashboard, setShowDashboard] = useState(false)
+
+  const prizeAmount = projectData?.config?.raiseTargetInUsd || 0
 
   if (showDashboard) {
     return <ReferralDashboardModal onClose={onClose} />
@@ -29,35 +36,42 @@ const ReferralHowItWorksModal = ({ onClose }: Props) => {
   )
 
   // Function to create a prize card
-  const PrizeCard = ({ 
-    icon, 
+  const PrizeCard = ({
     colorIcon,
-    title, 
-    subtitle, 
+    title,
+    subtitle,
     amount,
     type
-  }: { 
-    icon: "SvgTrophy" | "SvgMedal" | "SvgCircledCheckmark"; 
+  }: {
     colorIcon: string;
-    title: string | React.ReactNode; 
-    subtitle: string; 
+    title: string | React.ReactNode;
+    subtitle: string;
     amount: string;
     type: "grand" | "gold" | "silver" | "bronze";
   }) => {
     return (
-      <div 
+      <div
         className={`flex h-[88px] md:h-[68px] w-full max-w-[343px] md:max-w-[430px] lg:min-w-[430px] items-center justify-between rounded-lg p-3 prize-card-gradient prize-card-${type} ${type === 'grand' ? 'bg-grand-prize' : ''}`}
       >
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary/20">
-            <Icon icon={icon} className={`text-xl`} style={{ color: colorIcon }} />
+            <Icon icon="SvgTrophy" className={`text-xl`} style={{ color: colorIcon }} />
           </div>
           <div className="flex flex-col max-w-[163px] md:max-w-[1000px]">
             <p className="font-medium text-white">{title}</p>
             <p className="text-sm text-fg-primary/70">{subtitle}</p>
           </div>
         </div>
-        <p className={`font-medium`} style={{ color: colorIcon }}>{amount}</p>
+        <div className="flex gap-2 items-center">
+          <Img
+            src={projectData?.info.logoUrl}
+            isFetchingLink={false}
+            imgClassName="scale-[102%]"
+            isRounded={true}
+            size="5"
+          />
+          <p className={`font-medium`} style={{ color: colorIcon }}>{amount}</p>
+        </div>
       </div>
     );
   }
@@ -124,12 +138,11 @@ const ReferralHowItWorksModal = ({ onClose }: Props) => {
             Prize Pool
           </span>
           <span className="mb-[24px] text-center text-base font-normal text-fg-secondary">
-            Total: 10,000,000 $SOLID
+            Total: {formatCurrencyAmount(prizeAmount)} {projectData?.config.launchedTokenData.ticker}
           </span>
 
           <div className="flex flex-col gap-3">
-            <PrizeCard 
-              icon="SvgTrophy"
+            <PrizeCard
               colorIcon="#ACFF73"
               title={
                 <>
@@ -137,12 +150,11 @@ const ReferralHowItWorksModal = ({ onClose }: Props) => {
                 </>
               }
               subtitle="Raffle & 1st ranking place"
-              amount="2,500,000"
+              amount={formatCurrencyAmount(prizeAmount * 0.4)}
               type="grand"
             />
-            
-            <PrizeCard 
-              icon="SvgTrophy"
+
+            <PrizeCard
               colorIcon="#F2BF7E"
               title={
                 <>
@@ -150,12 +162,11 @@ const ReferralHowItWorksModal = ({ onClose }: Props) => {
                 </>
               }
               subtitle="Raffle & 2nd-3rd ranking places"
-              amount="500,000"
+              amount={formatCurrencyAmount(prizeAmount * 0.3)}
               type="gold"
             />
-            
-            <PrizeCard 
-              icon="SvgTrophy"
+
+            <PrizeCard
               colorIcon="#E1E7EF"
               title={
                 <>
@@ -163,12 +174,11 @@ const ReferralHowItWorksModal = ({ onClose }: Props) => {
                 </>
               }
               subtitle="Raffle & 4th-6th ranking places"
-              amount="400,000"
+              amount={formatCurrencyAmount(prizeAmount * 0.2)}
               type="silver"
             />
-            
-            <PrizeCard 
-              icon="SvgTrophy"
+
+            <PrizeCard
               colorIcon="#D38160"
               title={
                 <>
@@ -176,7 +186,7 @@ const ReferralHowItWorksModal = ({ onClose }: Props) => {
                 </>
               }
               subtitle="Raffle & 7th-10th ranking places"
-              amount="100,000"
+              amount={formatCurrencyAmount(prizeAmount * 0.1)}
               type="bronze"
             />
           </div>

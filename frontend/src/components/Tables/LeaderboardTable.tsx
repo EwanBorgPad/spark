@@ -10,12 +10,20 @@ type LeaderboardData = {
   total_invested: number; // or string, depending on your data type
 }
 
+type TotalTicketsDistributed = {
+  referrer_by: string;
+  total_invested: number; // or string
+};
+
 type Props = {
   data?: LeaderboardData[]
+  prizeAmount?: number
+  totalTicketsDistributed?:TotalTicketsDistributed[]
   isLoading?: boolean
 }
 
-const LeaderboardTable = ({ data = [], isLoading = false }: Props) => {
+const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[], isLoading = false }: Props) => {
+  const totalInvest = totalTicketsDistributed[0]?.total_invested
 
   return (
     <div className="w-full">
@@ -67,7 +75,7 @@ const LeaderboardTable = ({ data = [], isLoading = false }: Props) => {
                         <span className="text-xs text-fg-primary">{item.total_invested*100}</span>
                       </TableCell>
                       <TableCell className="py-0">
-                        <span className="text-xs text-fg-primary">{item.total_invested}</span>
+                        <span className="text-xs text-fg-primary">{item.total_invested/totalInvest*prizeAmount}</span>
                       </TableCell>
                     </tr>
                   ))}

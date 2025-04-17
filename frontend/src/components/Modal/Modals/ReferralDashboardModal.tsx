@@ -35,10 +35,12 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
   const saleClosesEvent = projectData?.info.timeline.find(event => event.id === "SALE_CLOSES")
   const saleClosesDate = saleClosesEvent?.date || new Date(Date.now() + 24 * 60 * 60 * 1000) // Fallback to 24h from now if not found
 
+  const prizeAmount = projectData?.config?.raiseTargetInUsd
+
   // Fetch user's referral code
   const { data: referralData } = useQuery({
     queryKey: ["getReferralCode", address],
-    queryFn: () => backendApi.getReferralCode({ address: address || "" , projectId: projectId || ""}),
+    queryFn: () => backendApi.getReferralCode({ address: address || "", projectId: projectId || "" }),
     enabled: !!address,
   })
 
@@ -157,9 +159,9 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
           </div>
         ) : showSignToUButton ? (
           <div className="mt-auto">
-            <Button 
-              btnText="Sign ToU" 
-              size="xs" 
+            <Button
+              btnText="Sign ToU"
+              size="xs"
               onClick={onSignToUClick}
             />
           </div>
@@ -194,10 +196,10 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
           Invite Friends, {projectData?.config.launchedTokenData.ticker}
         </span>
         <span className="mb-[36px] text-center text-base font-normal text-fg-primary">
-          Raffle happens & leaderboard closes in <SimpleCountDownTimer 
-            endOfEvent={saleClosesDate} 
-            labelAboveTimer="" 
-            className="!h-auto !bg-transparent !pt-0" 
+          Raffle happens & leaderboard closes in <SimpleCountDownTimer
+            endOfEvent={saleClosesDate}
+            labelAboveTimer=""
+            className="!h-auto !bg-transparent !pt-0"
             timerClass="text-brand-primary"
           />
         </span>
@@ -237,7 +239,7 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
           <ReferralCard
             title="Reward Pool"
             icon="SvgTrophy"
-            value={formatCurrencyAmount(projectData?.config?.raiseTargetInUsd?.toString() || "10,000,000")}
+            value={formatCurrencyAmount(prizeAmount)}
             subtitle=""
           />
         </div>
@@ -284,9 +286,9 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
               ) : !referralCode ? (
                 <div className="flex flex-col items-center justify-center h-full p-4">
                   <span className="text-fg-secondary mb-4 text-center">Sign Terms of Use to see your referrals</span>
-                  <Button 
-                    btnText="Sign ToU" 
-                    size="md" 
+                  <Button
+                    btnText="Sign ToU"
+                    size="md"
                     onClick={handleSignToU}
                   />
                 </div>
@@ -302,7 +304,7 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
               <h3 className="text-lg font-vcr text-white uppercase">Leaderboard</h3>
             </div>
             <div className="overflow-y-auto h-[calc(536px-64px)]">
-              <LeaderboardTable data={leaderboardReferrals} />
+              <LeaderboardTable data={leaderboardReferrals} prizeAmount={prizeAmount} totalTicketsDistributed={totalTicketsDistributed} />
             </div>
           </div>
         </div>
@@ -320,9 +322,9 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
                 ) : !referralCode ? (
                   <div className="flex flex-col items-center justify-center p-8">
                     <span className="text-fg-secondary mb-4 text-center">Sign Terms of Use to see your referrals</span>
-                    <Button 
-                      btnText="Sign ToU" 
-                      size="md" 
+                    <Button
+                      btnText="Sign ToU"
+                      size="md"
                       onClick={handleSignToU}
                     />
                   </div>
