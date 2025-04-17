@@ -138,19 +138,72 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     }
 
     // Get the referral code for the user
-    let code = "";
-    
-    // If projectId is provided, try to get the code from the user's JSON
-    if (projectId && existingUser.json && existingUser.json.referralCode && existingUser.json.referralCode[projectId]) {
-      code = existingUser.json.referralCode[projectId].code;
-    } else {
-      // Fallback to generating a code if not found in JSON
-      code = getReferralCode(address);
-    }
+    let code = getReferralCode(address);
 
-    return jsonResponse({ code }, 200)
+    // Order all the referrals for the leaderboard by invested_dollar_value grouped by referrer_by
+    const leaderboardReferrals = await db
+      .prepare(`
+        SELECT SUBSTR(referrer_by, 1, 4) AS referrer_by, SUM(invested_dollar_value) AS total_invested
+        FROM referral
+        WHERE project_id = ?
+        GROUP BY referrer_by
+        ORDER BY total_invested DESC
+      `)
+      .bind(projectId)
+      .all();
+
+    console.log("leaderboardReferrals", leaderboardReferrals.results);
+
+    // Get all the referrals with the same address for referrer_by
+    const referralsTable = await db
+    .prepare(`
+      SELECT referrer_by, SUBSTR(address, 1, 4) AS address, invested_dollar_value
+      FROM referral
+      WHERE project_id = ? AND referrer_by = ?
+      GROUP BY address
+      ORDER BY invested_dollar_value DESC
+    `)
+    .bind(projectId, address)
+    .all();
+
+    console.log("referralsTable", referralsTable.results);
+
+    // Get the sum of invested_dollar_value for the same address for referrer_by
+    const totalTickets = await db
+    .prepare(`
+      SELECT referrer_by, SUM(invested_dollar_value) AS total_invested
+      FROM referral
+      WHERE project_id = ? AND referrer_by = ?
+      GROUP BY address
+      ORDER BY total_invested DESC
+    `)
+    .bind(projectId, address)
+    .all();
+
+    console.log("totalTickets", totalTickets.results);
+
+    // Get the sum of invested_dollar_value for the same address for referrer_by
+    const totalTicketsDistributed = await db
+    .prepare(`
+      SELECT SUM(invested_dollar_value) AS total_invested
+      FROM referral
+      WHERE project_id = ?
+    `)
+    .bind(projectId)
+    .all();
+
+    console.log("totalTicketsDistributed", totalTicketsDistributed.results);
+
+    return jsonResponse(
+      { 
+        code, 
+        leaderboardReferrals: leaderboardReferrals.results, 
+        referralsTable: referralsTable.results, 
+        totalTickets: totalTickets.results,
+        totalTicketsDistributed: totalTicketsDistributed.results
+      }, 200);
   } catch (e) {
-    await reportError(db, e)
-    return jsonResponse({ message: "Something went wrong..." }, 500)
+    await reportError(db, e);
+    return jsonResponse({ message: "Something went wrong..." }, 500);
   }
 }

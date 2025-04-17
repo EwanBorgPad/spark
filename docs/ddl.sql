@@ -161,7 +161,7 @@ CREATE TABLE referral (
     project_id TEXT NOT NULL,
     referrer_by TEXT NOT NULL,
     address TEXT NOT NULL,
-    invested_dollar_value REAL,
+    invested_dollar_value INTEGER,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
     FOREIGN KEY (referrer_by) REFERENCES user(address) ON DELETE CASCADE,

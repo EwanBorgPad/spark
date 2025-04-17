@@ -169,3 +169,13 @@ export const analysisTable = sqliteTable("analysis", {
 
 // Types for analyst_article table
 export type Analysis = InferSelectModel<typeof analysisTable>
+
+export const referralTable = sqliteTable("referral", {
+  id: text("id").primaryKey(), // Unique identifier for the referral
+  project_id: text("project_id").notNull(), // Foreign key to the project
+  referrer_by: text("referrer_by").notNull(), // Address of the referrer
+  address: text("address").notNull(), // Address of the referred user
+  invested_dollar_value: integer("invested_dollar_value").notNull().default(0), // Amount invested by the referred user
+})
+
+export type Referral = InferSelectModel<typeof analysisTable>
