@@ -47,7 +47,8 @@ const ReferralDashboardModal = ({ onClose }: Props) => {
 
   const referralCode = referralData?.code || ""
   const totalTickets = referralData?.totalTickets || []
-  const firstTotalInvested = totalTickets[0]?.total_invested || 0; // Fallback to 0 if no tickets
+  const firstTotalInvested = totalTickets.reduce((sum, ticket) => sum + (ticket?.total_invested || 0), 0); // Sum of all total_invested values
+  
   const ticketPerAmountInvested = 100;
   const totalRewards = firstTotalInvested * ticketPerAmountInvested;
 
