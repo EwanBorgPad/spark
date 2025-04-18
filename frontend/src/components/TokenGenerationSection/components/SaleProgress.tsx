@@ -41,7 +41,7 @@ const SaleProgress = () => {
         <div className="flex w-full items-end justify-between gap-4">
           <span className="text-base">{t("lp_sale_progress")}</span>
           <div className="flex flex-col items-end">
-            <Text text={selloutPercentage || "0%"} className="text-sm text-fg-tertiary" isLoading={isLoading} />
+            {/* <Text text={selloutPercentage || "0%"} className="text-sm text-fg-tertiary" isLoading={isLoading} /> */}
             <Text text={`${amountRaisedInUsd}/${raiseTargetInUsd}`} isLoading={isLoading} />
           </div>
         </div>
