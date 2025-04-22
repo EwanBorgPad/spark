@@ -76,15 +76,15 @@ const SimpleCountDownTimer = ({
   return (
     <div
       className={twMerge(
-        "flex h-[120px] w-full flex-col items-center rounded-t-xl bg-[radial-gradient(50%_65%_at_50%_0%,rgba(188,254,143,0.15)_0%,rgba(0,0,0,0.0)_100%)] pt-8",
+        "flex h-[120px] w-full flex-col items-center rounded-t-xl pt-8",
         className,
       )}
     >
-      <span className={twMerge("text-sm font-light text-fg-primary/60", labelClass)}>{labelAboveTimer}</span>
+      <span className={twMerge("text-base font-light text-fg-primary/60", labelClass)}>{labelAboveTimer}</span>
       {isEventFinished ? (
-        <span className="text-xl text-fg-primary/60"> </span>
+        <span className="text-base text-fg-primary/60"> </span>
       ) : (
-        <span className={twMerge("text-2xl normal-nums", timerClass)}>
+        <span className={twMerge("text-base normal-nums", timerClass)}>
           {`${days}d : ${hours}h : ${minutes}m : ${seconds}s`}
         </span>
       )}
