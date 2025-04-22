@@ -35,7 +35,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     ///// authorization
-    const { publicKey, message, signature, isLedgerTransaction, projectId, referrerTwitterHandle } = data
+    const { publicKey, message, signature, isLedgerTransaction, projectId, referralCode } = data
 
     let isVerified = false
 
@@ -78,7 +78,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     // Find referrer by referral code
-    const referrerAddress = await getAddressByReferralCode(db, referrerTwitterHandle);
+    const referrerAddress = await getAddressByReferralCode(db, referralCode);
 
     if (!referrerAddress) {
       return jsonResponse({ message: "Referrer not found" }, 404)
@@ -101,7 +101,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     
     // Add or update the referral code for this project
     userJson.referralCode[projectId] = {
-      code: referrerTwitterHandle,
+      code: referralCode,
       message: message,
       signature: signature
     };

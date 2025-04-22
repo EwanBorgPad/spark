@@ -44,7 +44,7 @@ const ProvideReferralCodeModal = ({ onClose, initialReferralCode }: ProvideRefer
       }
 
       const data = {
-        referrerTwitterHandle: referralCode,
+        referralCode: referralCode,
         projectId,
         publicKey: address,
         message,

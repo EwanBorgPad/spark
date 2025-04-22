@@ -39,7 +39,7 @@ export type UserModelJson = {
   referral?: Record<
     ProjectId,
     {
-      referrerTwitterHandle: string
+      referralCode: string
       createdAt: string
       message: string
       signature: number[]
@@ -347,7 +347,7 @@ export type AdminAuthFields = {
 export const ReferralCodeRequestSchema = z.object({
   publicKey: z.string(),
   projectId: z.string(),
-  referrerTwitterHandle: z.string(),
+  referralCode: z.string(),
   message: z.string(),
   signature: z.array(z.number()),
   isLedgerTransaction: z.boolean().optional(),

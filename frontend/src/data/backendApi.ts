@@ -638,7 +638,7 @@ const isAdmin = async (auth: AdminAuthFields): Promise<void> => {
 }
 
 type PostReferralCodeArgs = {
-  referrerTwitterHandle: string
+  referralCode: string
   projectId: string
   publicKey: string
   message: string
