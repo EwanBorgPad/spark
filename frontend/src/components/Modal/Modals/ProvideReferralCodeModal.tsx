@@ -15,9 +15,10 @@ import { sendTransaction } from "../../../../shared/solana/sendTransaction"
 
 type ProvideReferralCodeModalProps = {
   onClose: () => void
+  initialReferralCode?: string
 }
 
-const ProvideReferralCodeModal = ({ onClose }: ProvideReferralCodeModalProps) => {
+const ProvideReferralCodeModal = ({ onClose, initialReferralCode }: ProvideReferralCodeModalProps) => {
   const { t } = useTranslation()
   const { address, signMessage, signTransaction, walletProvider, isConnectedWithLedger } = useWalletContext()
   const { projectId } = useParams()
@@ -71,7 +72,7 @@ const ProvideReferralCodeModal = ({ onClose }: ProvideReferralCodeModalProps) =>
 
   const UsereferralCode = referralData?.code || ""
 
-  const [referralCode, setReferralCode] = useState<string | null>(null)
+  const [referralCode, setReferralCode] = useState<string | null>(initialReferralCode || null)
 
 
   function isValidReferralCode(referralCode: string): boolean {

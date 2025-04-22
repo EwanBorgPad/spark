@@ -4,8 +4,8 @@ import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 import { backendApi } from "@/data/backendApi.ts"
 import { Badge } from "../Badge/Badge"
 import { twMerge } from "tailwind-merge"
-import { RefObject, useRef } from "react"
-import { useParams } from "react-router-dom"
+import { RefObject, useRef, useEffect, useState } from "react"
+import { useParams, useSearchParams, useNavigate } from "react-router-dom"
 import { FinalSnapshotTaken } from "@/components/EligibilitySection/FinalSnapshotTaken.tsx"
 import { QuestComponent, sortByCompletionStatus, TierWrapper } from "./Quests.tsx"
 import { Skeleton, TierSkeletonContainer } from "./EligibilitySkeletons.tsx"
@@ -14,6 +14,9 @@ import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import { ConnectButton } from "../Header/ConnectButton.tsx"
 import Divider from "../Divider.tsx"
 import { Icon } from "../Icon/Icon.tsx"
+import { SimpleModal } from "../Modal/SimpleModal"
+import ProvideReferralCodeModal from "../Modal/Modals/ProvideReferralCodeModal"
+import { Button } from "../Button/Button"
 
 type Props = {
   className?: string
@@ -23,6 +26,64 @@ type Props = {
 export const JoinThePool = () => {
   const eligibilityRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const { address, isWalletConnected } = useWalletContext()
+  const { projectId } = useParams()
+  const [showReferralModal, setShowReferralModal] = useState(false)
+  const [showAlreadyUsedModal, setShowAlreadyUsedModal] = useState(false)
+  const referralCodeFromUrl = searchParams.get('referral')
+
+  // Query to check if the user already has a referral code
+  const { data: eligibilityStatus } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getEligibilityStatus({ address, projectId })
+    },
+    queryKey: ["getEligibilityStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
+
+  // Function to remove referral code from URL
+  const removeReferralFromUrl = () => {
+    if (referralCodeFromUrl) {
+      // Create a new URL without the referral parameter
+      const url = new URL(window.location.href)
+      url.searchParams.delete('referral')
+      
+      // Update the URL without refreshing the page
+      navigate(`${url.pathname}${url.search}`, { replace: true })
+    }
+  }
+
+  // Check for referral code in URL and display modal if needed
+  useEffect(() => {
+    if (!referralCodeFromUrl || !isWalletConnected || !eligibilityStatus) return
+
+    // Check if user has already provided a referral code
+    const hasProvidedReferralCode = eligibilityStatus.compliances?.some(
+      compliance => compliance.type === "PROVIDE_REFERRAL_CODE" && compliance.isCompleted
+    )
+
+    if (hasProvidedReferralCode) {
+      setShowAlreadyUsedModal(true)
+      removeReferralFromUrl() // Remove from URL since it's already used
+    } else {
+      setShowReferralModal(true)
+    }
+  }, [referralCodeFromUrl, isWalletConnected, eligibilityStatus])
+
+  // Function to handle when referral modal is closed
+  const handleReferralModalClose = () => {
+    setShowReferralModal(false)
+    removeReferralFromUrl() // Remove referral from URL when modal is closed
+  }
+
+  // Function to handle when "already used" modal is closed
+  const handleAlreadyUsedModalClose = () => {
+    setShowAlreadyUsedModal(false)
+    removeReferralFromUrl() // Remove referral from URL when modal is closed
+  }
 
   return (
     <div ref={eligibilityRef} className="flex w-full max-w-[536px] flex-col items-center gap-[36px] pt-10">
@@ -33,6 +94,30 @@ export const JoinThePool = () => {
       <ConnectWalletStep />
       <EligibilityCompliancesSection />
       <EligibilityTiersSection parentRef={eligibilityRef} />
+
+      {/* Modal for already used referral code */}
+      {showAlreadyUsedModal && (
+        <SimpleModal 
+          showCloseBtn={true} 
+          onClose={handleAlreadyUsedModalClose}
+          title="Referral Code Already Used"
+        >
+          <div className="flex w-full max-w-[460px] flex-col items-center justify-center px-4 py-6 md:px-10">
+            <p className="text-center text-base text-fg-tertiary mb-4">
+              You have already provided a referral code for this project. Please try with another wallet if you want to use a different referral code.
+            </p>
+            <Button btnText="Close" onClick={handleAlreadyUsedModalClose} />
+          </div>
+        </SimpleModal>
+      )}
+
+      {/* Referral Modal with prefilled code */}
+      {showReferralModal && (
+        <ProvideReferralCodeModal 
+          onClose={handleReferralModalClose} 
+          initialReferralCode={referralCodeFromUrl || ""}
+        />
+      )}
     </div>
   )
 }
