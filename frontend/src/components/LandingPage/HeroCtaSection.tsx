@@ -4,7 +4,7 @@ import CountdownBtnForNextLbp from "../Button/CountdownBtnForNextLbp"
 const HeroCtaSection = () => {
   return (
     <div className="z-[2] flex w-full flex-col justify-center gap-6 md:items-center">
-      <CountdownBtnForNextLbp projectId="ambient" />
+      <CountdownBtnForNextLbp projectId="ambient-network" />
 
       <div className="flex flex-col items-center gap-3">
         <span className="text-left text-sm text-fg-secondary md:text-center">
