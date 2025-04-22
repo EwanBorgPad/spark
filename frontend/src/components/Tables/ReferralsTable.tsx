@@ -47,9 +47,9 @@ const ReferralsTable = ({ data = [], isLoading = false }: Props) => {
               {data.length ? (
                 <tbody className="divide-y divide-bd-secondary/5 pb-10">
                   {data.map((item) => (
-                    <tr className="h-[64px]" key={item.address}>
-                      <TableCell className="py-0">
-                        <div className="flex w-full flex-row items-center gap-2">
+                    <tr className="h-[36px] min-h-[36px] max-h-[36px]" key={item.address}>
+                      <TableCell className="py-[2px]">
+                        <div className="flex w-full flex-row items-center gap-1">
                           <div className="flex flex-col flex-nowrap items-start">
                             <span className="truncate text-xs font-semibold text-fg-primary px-2">
                               {item.address}
@@ -57,13 +57,13 @@ const ReferralsTable = ({ data = [], isLoading = false }: Props) => {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="py-0">
+                      <TableCell className="py-[2px]">
                         <span className="text-xs text-fg-success-primary">Yes</span>
                       </TableCell>
-                      <TableCell className="py-0">
+                      <TableCell className="py-[2px]">
                         <span className="text-xs text-fg-primary">{item.invested_dollar_value}</span>
                       </TableCell>
-                      <TableCell className="py-0">
+                      <TableCell className="py-[2px]">
                         <span className="text-xs text-fg-primary">{item.invested_dollar_value*100}</span>
                       </TableCell>
                     </tr>
@@ -112,9 +112,9 @@ const TableSkeleton = () => {
       </thead>
       <tbody className="divide-y divide-bd-secondary/5 pb-10">
         {[1, 2, 3, 4, 5].map((item) => (
-          <tr className="h-[64px]" key={item}>
-            <TableCell className="py-0">
-              <div className="flex w-[220px] flex-row items-center gap-4">
+          <tr className="h-[36px] min-h-[36px] max-h-[36px]" key={item}>
+            <TableCell className="py-[2px]">
+              <div className="flex w-[220px] flex-row items-center gap-2">
                 <Img size="8" src={""} isFetchingLink isRounded />
                 <div className="flex flex-col flex-nowrap items-start">
                   <Text isLoading className="w-[60px] opacity-50" />
@@ -122,13 +122,13 @@ const TableSkeleton = () => {
                 </div>
               </div>
             </TableCell>
-            <TableCell className="py-0">
+            <TableCell className="py-[2px]">
               <Text isLoading className="w-[80px] opacity-50" />
             </TableCell>
-            <TableCell className="py-0">
+            <TableCell className="py-[2px]">
               <Text isLoading className="w-[80px] opacity-50" />
             </TableCell>
-            <TableCell className="py-0">
+            <TableCell className="py-[2px]">
               <Text isLoading className="w-[80px] opacity-50" />
             </TableCell>
           </tr>

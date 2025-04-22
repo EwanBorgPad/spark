@@ -4,6 +4,8 @@ import { TableHeader } from "./TableHeader"
 import { Icon } from "../Icon/Icon"
 import Text from "@/components/Text"
 import Img from "../Image/Img"
+import { useWalletContext } from "@/hooks/useWalletContext"
+import { twMerge } from "tailwind-merge"
 
 type LeaderboardData = {
   referrer_by: string;
@@ -24,6 +26,7 @@ type Props = {
 
 const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[], isLoading = false }: Props) => {
   const totalInvest = totalTicketsDistributed[0]?.total_invested
+  const { address } = useWalletContext()
 
   return (
     <div className="w-full">
@@ -54,31 +57,41 @@ const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[]
               </thead>
               {data.length ? (
                 <tbody className="divide-y divide-bd-secondary/5 pb-10">
-                  {data.map((item) => (
-                    <tr className="h-[64px]" key={item.referrer_by}>
-                      <TableCell className="px-5">
-                        <span className="text-xs text-fg-primary">{data.indexOf(item) + 1}</span>
-                      </TableCell>
-                      <TableCell className="py-0">
-                        <div className="flex w-full flex-row items-center gap-2">
-                          <div className="flex flex-col flex-nowrap items-start">
-                            <span className="truncate text-xs font-semibold text-fg-primary">
-                              {item.referrer_by}
-                            </span>
-                            <span className="truncate text-xs font-normal text-fg-tertiary">
-                              @{item.referrer_by}
-                            </span>
+                  {data.map((item) => {
+                    const isCurrentUser = address && item.referrer_by === address?.substring(0, 4);
+                    return (
+                      <tr 
+                        className={twMerge(
+                          "h-[36px] min-h-[36px] max-h-[36px]",
+                        )} 
+                        key={item.referrer_by}
+                      >
+                        <TableCell className="px-5 py-[2px]">
+                          <span className="text-xs text-fg-primary">{data.indexOf(item) + 1}</span>
+                        </TableCell>
+                        <TableCell className="py-[2px]">
+                          <div className="flex w-full flex-row items-center gap-1">
+                            <div className="flex flex-col flex-nowrap items-start">
+                              <span className={twMerge(
+                                "truncate text-xs font-semibold text-fg-primary",
+                                isCurrentUser && "font-bold"
+                              )}>
+                                {isCurrentUser ? "You" : item.referrer_by}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-0">
-                        <span className="text-xs text-fg-primary">{item.total_invested*100}</span>
-                      </TableCell>
-                      <TableCell className="py-0">
-                        <span className="text-xs text-fg-primary">{item.total_invested/totalInvest*prizeAmount}</span>
-                      </TableCell>
-                    </tr>
-                  ))}
+                        </TableCell>
+                        <TableCell className="py-[2px]">
+                          <span className="text-xs text-fg-primary">{item.total_invested*100}</span>
+                        </TableCell>
+                        <TableCell className="py-[2px]">
+                          <span className="text-xs text-fg-primary">
+                            {totalInvest === 0 ? 0 : item.total_invested/totalInvest*prizeAmount}
+                          </span>
+                        </TableCell>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               ) : (
                 <tbody>
@@ -123,11 +136,11 @@ const TableSkeleton = () => {
       </thead>
       <tbody className="divide-y divide-bd-secondary/5 pb-10">
         {[1, 2, 3, 4, 5].map((item) => (
-          <tr className="h-[64px]" key={item}>
-            <TableCell className="py-0">
+          <tr className="h-[36px] min-h-[36px] max-h-[36px]" key={item}>
+            <TableCell className="py-[2px]">
               <Text isLoading className="w-[40px] opacity-50" />
             </TableCell>
-            <TableCell className="py-0">
+            <TableCell className="py-[2px]">
               <div className="flex w-[220px] flex-row items-center gap-4">
                 <Img size="8" src={""} isFetchingLink isRounded />
                 <div className="flex flex-col flex-nowrap items-start">
@@ -136,10 +149,10 @@ const TableSkeleton = () => {
                 </div>
               </div>
             </TableCell>
-            <TableCell className="py-0">
+            <TableCell className="py-[2px]">
               <Text isLoading className="w-[80px] opacity-50" />
             </TableCell>
-            <TableCell className="py-0">
+            <TableCell className="py-[2px]">
               <Text isLoading className="w-[80px] opacity-50" />
             </TableCell>
           </tr>
