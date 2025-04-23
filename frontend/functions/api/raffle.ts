@@ -5,7 +5,6 @@ type ENV = {
   DB: D1Database
 }
 
-// Add this handler for OPTIONS requests
 export const onRequestOptions: PagesFunction = async () => {
   return new Response(null, {
     status: 204,
@@ -17,8 +16,6 @@ export const onRequestOptions: PagesFunction = async () => {
   })
 }
 
-
-// Add type definitions for project configuration
 type ReferralDistribution = {
   totalAmountDistributed: number;
   ranking: Record<string, number>;
@@ -32,11 +29,9 @@ type ProjectConfig = {
   };
 }
 
-// New endpoint to select raffle winners
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
   try {
-    // Validate API key with write permissions
     if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
       return jsonResponse({ message: "Unauthorized" }, 401);
     }
@@ -56,7 +51,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         return jsonResponse({ message: "Empty request body" }, 400);
       }
       projectConfig = JSON.parse(body) as ProjectConfig;
-      console.log("Received project config:", JSON.stringify(projectConfig, null, 2));
     } catch (error) {
       console.error('JSON parsing error:', error);
       return jsonResponse({ 
@@ -66,16 +60,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       }, 400);
     }
     
-    // Extract referralDistribution from the correct location in the object
-    // Support both direct and nested structure
     let referralDistribution = projectConfig.referralDistribution;
-    
-    // If referralDistribution is not at the top level, check inside config
     if (!referralDistribution && projectConfig.config) {
       referralDistribution = projectConfig.config.referralDistribution;
     }
 
-    // Validate required fields
     if (!referralDistribution || !referralDistribution.totalAmountDistributed) {
       return jsonResponse({ 
         message: "Invalid project configuration", 
@@ -91,14 +80,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       }, 400);
     }
     
-    // Determine number of raffle winners needed
     const raffleWinnerCount = Object.keys(referralDistribution.raffle).length;
-    
-    // Get top ranking positions to exclude them from raffle
     const rankingPositions = Object.keys(referralDistribution.ranking || {}).length;
     
-    // Get all users who referred others, with their total invested amounts
-    // Excluding those who are already in the top ranking positions
     const eligibleReferrers = await db
       .prepare(`
         SELECT referrer_by, SUM(invested_dollar_value) AS total_invested
@@ -118,25 +102,17 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       }, 200);
     }
     
-    // Weighted random selection algorithm
-    // The higher the investment, the higher chance to win
     const selectRaffleWinners = (eligibleUsers: any[], count: number) => {
-      // Clone the array to avoid modifying the original
       const users = [...eligibleUsers];
       const winners = [];
-      
-      // Calculate total investment across all eligible users
       const totalInvestment = users.reduce((sum, user) => sum + user.total_invested, 0);
       
-      // Select winners based on weighted probability
       for (let i = 0; i < count && users.length > 0; i++) {
-        // Generate a random point in the total investment
         const randomPoint = Math.random() * totalInvestment;
         
         let currentSum = 0;
         let selectedIndex = -1;
         
-        // Find which user this point belongs to based on their investment
         for (let j = 0; j < users.length; j++) {
           currentSum += users[j].total_invested;
           if (randomPoint <= currentSum) {
@@ -160,7 +136,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return winners;
     };
     
-    // Select raffle winners
     const raffleWinners = selectRaffleWinners(eligibleReferrers.results, raffleWinnerCount);
     
     return jsonResponse({ 

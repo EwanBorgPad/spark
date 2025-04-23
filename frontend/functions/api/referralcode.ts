@@ -59,7 +59,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse(null, 401)
     }
 
-    /// business logic
     // check if the user is stored in the db
     const existingUser = await UserService.findUserByAddress({ db, address: publicKey })
 
@@ -77,14 +76,12 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: "Referral already exists for this project" }, 400)
     }
 
-    // Find referrer by referral code
     const referrerAddress = await getAddressByReferralCode(db, referralCode);
 
     if (!referrerAddress) {
       return jsonResponse({ message: "Referrer not found" }, 404)
     }
 
-    // Create new referral
     const referralId = uuidv4()
     await db
       .prepare("INSERT INTO referral (id, project_id, referrer_by, address, invested_dollar_value) VALUES (?, ?, ?, ?, ?)")
@@ -106,7 +103,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       signature: signature
     };
     
-    // Update the user in the database
     await db
       .prepare("UPDATE user SET json = ? WHERE address = ?")
       .bind(JSON.stringify(userJson), publicKey)

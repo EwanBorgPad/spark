@@ -663,23 +663,23 @@ type GetReferralCodeArgs = {
 
 type LeaderboardReferral = {
   referrer_by: string;
-  total_invested: number; // or string, depending on your data type
+  total_invested: number;
 };
 
 type Referral = {
   referrer_by: string;
   address: string;
-  invested_dollar_value: number; // or string
+  invested_dollar_value: number;
 };
 
 type TotalTicket = {
   referrer_by: string;
-  total_invested: number; // or string
+  total_invested: number;
 };
 
 type TotalTicketsDistributed = {
   referrer_by: string;
-  total_invested: number; // or string
+  total_invested: number;
 };
 
 const getReferralCode = async ({

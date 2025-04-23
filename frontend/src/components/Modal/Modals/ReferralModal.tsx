@@ -20,7 +20,6 @@ type Props = {
 }
 
 const ReferralModal = ({ onClose }: Props) => {
-  // Set up all the existing state and hooks from ReferralDashboardModal
   const [codeCopied, setCodeCopied] = useState(false)
   const [linkCopied, setLinkCopied] = useState(false)
   const [activeTab, setActiveTab] = useState<'referrals' | 'leaderboard'>('referrals')
@@ -35,20 +34,17 @@ const ReferralModal = ({ onClose }: Props) => {
   // Check if user has seen How It Works before
   const [hasSeenHowItWorks, setHasSeenHowItWorks] = useState(localStorage.getItem(`hasSeenReferralHowItWorks_${projectId}`) === 'true')
   
-  // Find the SALE_CLOSES event date from the timeline
   const saleClosesEvent = projectData?.info.timeline.find(event => event.id === "SALE_CLOSES")
   const saleClosesDate = saleClosesEvent?.date || new Date(Date.now() + 24 * 60 * 60 * 1000) // Fallback to 24h from now if not found
 
   const prizeAmount = projectData?.config?.referralDistribution?.totalAmountDistributed
   
 
-  // Fetch user's referral code
   const { data: referralData } = useQuery({
     queryKey: ["getReferralCode", address],
     queryFn: () => backendApi.getReferralCode({ address: address || "", projectId: projectId || "" }),
     enabled: !!address,
   })
-  // Fetch leaderbord
   const { data: leaderboardData } = useQuery({
     queryKey: ["getLeaderboard", address],
     queryFn: () => backendApi.getLeaderboard({ projectId: projectId || "" }),
@@ -73,7 +69,6 @@ const ReferralModal = ({ onClose }: Props) => {
       return { value: "0", isRaffle: false };
     }
 
-    // Find user's position in leaderboard
     const userPosition = leaderboardReferrals.findIndex(item => 
       item.referrer_by === address.substring(0, 4)
     );
@@ -88,7 +83,6 @@ const ReferralModal = ({ onClose }: Props) => {
 
     // Check if user is in ranking positions
     if (position in referralDistribution.ranking) {
-      // User is in top positions, calculate prize from ranking percentage
       const rankingPercent = referralDistribution.ranking[position];
       return { 
         value: formatCurrencyAmount(prizeAmount ? prizeAmount * rankingPercent : 0),
@@ -130,7 +124,6 @@ const ReferralModal = ({ onClose }: Props) => {
     }
   }, [hasSeenHowItWorks, projectId])
   
-  // Function to continue from How It Works to Dashboard
   const showDashboard = () => {
     setHasSeenHowItWorks(true)
   }
@@ -147,21 +140,16 @@ const ReferralModal = ({ onClose }: Props) => {
   }
 
   const handleConnectWallet = () => {
-    // Trigger wallet connection modal
     const event = new CustomEvent('openWalletModal')
     window.dispatchEvent(event)
   }
 
   const scrollToJoinThePool = () => {
-    // Wait for navigation to complete
     setTimeout(() => {
-      // Find element with ID "complianceHeading" containing "Join the Launch Pool"
       const joinThePoolElement = document.getElementById('complianceHeading')
       if (joinThePoolElement) {
-        // Scroll to element
         joinThePoolElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
       } else {
-        // Find by text
         const headings = document.querySelectorAll('h2')
         for (const heading of headings) {
           if (heading.textContent?.includes('Join the Launch Pool')) {
@@ -170,18 +158,15 @@ const ReferralModal = ({ onClose }: Props) => {
           }
         }
       }
-    }, 500) // Delay to ensure page has loaded
+    }, 500)
   }
 
   const handleSignToU = () => {
     onClose()
-    // Navigate to the project page with the "Join the Launch Pool" section
     navigate(`/${projectType}-pools/${projectId}`)
-    // Scroll to "Join the Launch Pool" section
     scrollToJoinThePool()
   }
 
-  // Function to create a referral card
   const ReferralCard = ({
     title,
     icon,
@@ -284,7 +269,6 @@ const ReferralModal = ({ onClose }: Props) => {
     );
   }
 
-  // Function to create a numbered row for How It Works
   const NumberedRow = ({ number, text }: { number: number; text: string | React.ReactNode }) => (
     <div className="flex gap-4">
       <div className="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-fg-secondary">
@@ -296,7 +280,6 @@ const ReferralModal = ({ onClose }: Props) => {
     </div>
   )
 
-  // Function to create a prize card for How It Works
   const PrizeCard = ({
     colorIcon,
     title,
@@ -337,7 +320,6 @@ const ReferralModal = ({ onClose }: Props) => {
     );
   }
 
-  // Return either How It Works or Dashboard based on state
   if (!hasSeenHowItWorks) {
     // Render the HowItWorks section
     return (
@@ -479,7 +461,7 @@ const ReferralModal = ({ onClose }: Props) => {
       headerClass="bg-default"
       actionButton={{
         text: "How does it work?",
-        onClick: () => setHasSeenHowItWorks(false) // Allow going back to How It Works
+        onClick: () => setHasSeenHowItWorks(false)
       }}
     >
       <div className="flex max-h-[90vh] w-full flex-col items-center overflow-y-auto px-4 pb-[40px] md:max-h-[90vh] md:overflow-y-hidden md:px-[40px] md:pb-6">
@@ -541,7 +523,7 @@ const ReferralModal = ({ onClose }: Props) => {
           <ReferralCard
             title="Your Tickets"
             icon="SvgTicket"
-            value={isWalletConnected ? String(firstTotalInvested * ticketPerAmountInvested) : "0"}
+            value={isWalletConnected ? String(totalRewards) : "0"}
             subtitle1={`Total issued: ${totalTicketsDistributed[0]?.total_invested * ticketPerAmountInvested || 0}`}
             isTicket
           />

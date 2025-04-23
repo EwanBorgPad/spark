@@ -1,7 +1,4 @@
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils";
-import { UserService } from "../services/userService"
-
-import { getReferralCode } from "../services/referralService";
 
 type ENV = {
   DB: D1Database

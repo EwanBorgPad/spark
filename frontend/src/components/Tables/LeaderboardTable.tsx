@@ -1,7 +1,5 @@
-import React from "react"
 import { TableCell } from "./TableCell"
 import { TableHeader } from "./TableHeader"
-import { Icon } from "../Icon/Icon"
 import Text from "@/components/Text"
 import Img from "../Image/Img"
 import { useWalletContext } from "@/hooks/useWalletContext"

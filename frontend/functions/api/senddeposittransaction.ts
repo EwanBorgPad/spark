@@ -11,7 +11,7 @@ import { exchangeService } from "../services/exchangeService"
 import { Buffer } from "buffer"
 import * as bs58 from "bs58"
 import { SaleResultsService } from "../services/saleResultsService"
-import { projectTable, Referral, referralTable } from "../../shared/drizzle-schema"
+import { projectTable, referralTable } from "../../shared/drizzle-schema"
 import { and, eq, sql } from "drizzle-orm"
 
 

@@ -44,19 +44,14 @@ export const JoinThePool = () => {
     enabled: Boolean(address) && Boolean(projectId),
   })
 
-  // Function to remove referral code from URL
   const removeReferralFromUrl = () => {
     if (referralCodeFromUrl) {
-      // Create a new URL without the referral parameter
       const url = new URL(window.location.href)
       url.searchParams.delete('referral')
-      
-      // Update the URL without refreshing the page
       navigate(`${url.pathname}${url.search}`, { replace: true })
     }
   }
 
-  // Check for referral code in URL and display modal if needed
   useEffect(() => {
     if (!referralCodeFromUrl || !isWalletConnected || !eligibilityStatus) return
 
@@ -67,22 +62,20 @@ export const JoinThePool = () => {
 
     if (hasProvidedReferralCode) {
       setShowAlreadyUsedModal(true)
-      removeReferralFromUrl() // Remove from URL since it's already used
+      removeReferralFromUrl()
     } else {
       setShowReferralModal(true)
     }
   }, [referralCodeFromUrl, isWalletConnected, eligibilityStatus])
 
-  // Function to handle when referral modal is closed
   const handleReferralModalClose = () => {
     setShowReferralModal(false)
-    removeReferralFromUrl() // Remove referral from URL when modal is closed
+    removeReferralFromUrl()
   }
 
-  // Function to handle when "already used" modal is closed
   const handleAlreadyUsedModalClose = () => {
     setShowAlreadyUsedModal(false)
-    removeReferralFromUrl() // Remove referral from URL when modal is closed
+    removeReferralFromUrl()
   }
 
   return (
