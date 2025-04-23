@@ -140,20 +140,6 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     // Get the referral code for the user
     let code = getReferralCode(address);
 
-    // Order all the referrals for the leaderboard by invested_dollar_value grouped by referrer_by
-    const leaderboardReferrals = await db
-      .prepare(`
-        SELECT SUBSTR(referrer_by, 1, 4) AS referrer_by, SUM(invested_dollar_value) AS total_invested
-        FROM referral
-        WHERE project_id = ?
-        GROUP BY referrer_by
-        ORDER BY total_invested DESC
-      `)
-      .bind(projectId)
-      .all();
-
-    console.log("leaderboardReferrals", leaderboardReferrals.results);
-
     // Get all the referrals with the same address for referrer_by
     const referralsTable = await db
     .prepare(`
@@ -182,25 +168,11 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
     console.log("totalTickets", totalTickets.results);
 
-    // Get the sum of invested_dollar_value for the same address for referrer_by
-    const totalTicketsDistributed = await db
-    .prepare(`
-      SELECT SUM(invested_dollar_value) AS total_invested
-      FROM referral
-      WHERE project_id = ?
-    `)
-    .bind(projectId)
-    .all();
-
-    console.log("totalTicketsDistributed", totalTicketsDistributed.results);
-
     return jsonResponse(
       { 
         code, 
-        leaderboardReferrals: leaderboardReferrals.results, 
         referralsTable: referralsTable.results, 
         totalTickets: totalTickets.results,
-        totalTicketsDistributed: totalTicketsDistributed.results
       }, 200);
   } catch (e) {
     await reportError(db, e);

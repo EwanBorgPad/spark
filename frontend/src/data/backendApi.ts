@@ -52,6 +52,7 @@ const GET_SESSION = API_BASE_URL + "/session"
 const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
 const POST_REFERRAL_CODE = API_BASE_URL + "/referralcode"
 const GET_REFERRAL_CODE = API_BASE_URL + "/referralcode"
+const GET_LEADERBOARD = API_BASE_URL + "/referralleaderboard"
 
 // analysis & analyst
 const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
@@ -686,13 +687,30 @@ const getReferralCode = async ({
   projectId,
 }: GetReferralCodeArgs): Promise<{
   code: string;
-  leaderboardReferrals: LeaderboardReferral[];
   referralsTable: Referral[];
   totalTickets: TotalTicket[];
-  totalTicketsDistributed: TotalTicketsDistributed[];
 }> => {
   const url = new URL(GET_REFERRAL_CODE, window.location.href)
   url.searchParams.set("address", address)
+  url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json
+}
+
+type GetLeaderboardArgs = {
+  projectId: string
+}
+
+const getLeaderboard = async ({
+  projectId,
+}: GetLeaderboardArgs): Promise<{
+  leaderboardReferrals: LeaderboardReferral[];
+  totalTicketsDistributed: TotalTicketsDistributed[];
+}> => {
+  const url = new URL(GET_LEADERBOARD, window.location.href)
   url.searchParams.set("projectId", projectId)
 
   const response = await fetch(url)
@@ -716,6 +734,7 @@ export const backendApi = {
   getInvestmentIntentSummary,
   getDeposits,
   getDepositStatus,
+  getLeaderboard,
   getMyRewards,
   getSaleResults,
   postCreateDepositTx,

@@ -47,6 +47,11 @@ const ReferralModal = ({ onClose }: Props) => {
     queryFn: () => backendApi.getReferralCode({ address: address || "", projectId: projectId || "" }),
     enabled: !!address,
   })
+  // Fetch leaderbord
+  const { data: leaderboardData } = useQuery({
+    queryKey: ["getLeaderboard", address],
+    queryFn: () => backendApi.getLeaderboard({ projectId: projectId || "" }),
+  })
 
   const referralCode = referralData?.code || ""
   const baseUrl = window.location.origin
@@ -57,9 +62,9 @@ const ReferralModal = ({ onClose }: Props) => {
   const ticketPerAmountInvested = 100
   const totalRewards = firstTotalInvested * ticketPerAmountInvested
 
-  const leaderboardReferrals = referralData?.leaderboardReferrals || []
+  const leaderboardReferrals = leaderboardData?.leaderboardReferrals || []
   const referralsTable = referralData?.referralsTable || []
-  const totalTicketsDistributed = referralData?.totalTicketsDistributed || []
+  const totalTicketsDistributed = leaderboardData?.totalTicketsDistributed || []
 
   // Handle window resize to update isMobile state
   useEffect(() => {
