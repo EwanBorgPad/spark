@@ -248,7 +248,7 @@ async function extractTransactionData(txId: string, heliusApiKey: string, cluste
     const userWalletAddress = dataObject.feePayer
     const tokenTransfers = dataObject.tokenTransfers
     const splTokenTransfer = tokenTransfers.find(transfer => transfer.tokenStandard === 'Fungible')
-    const nftTransfer = tokenTransfers.find(transfer => transfer.tokenStandard === 'NonFungible')
+    const nftTransfer = tokenTransfers.find(transfer => transfer.tokenStandard === 'NonFungible' || transfer.tokenStandard === 'ProgrammableNonFungible')
     // the following parsing logic can be found in helius api link above
     const tokenAddress = splTokenTransfer.mint
     const nftAddress = nftTransfer.mint
