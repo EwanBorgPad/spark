@@ -51,6 +51,7 @@ const UPDATE_JSON = API_BASE_URL + "/projects/update-json"
 const POST_CREATE_EMAIL = API_BASE_URL + "/createemail"
 const GET_SESSION = API_BASE_URL + "/session"
 const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
+const CHECK_TOKEN_ACCOUNT = API_BASE_URL + "/admin/checktokenaccount"
 
 // analysis & analyst
 const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
@@ -651,6 +652,28 @@ const isAdmin = async (auth: AdminAuthFields): Promise<void> => {
   return json
 }
 
+type CheckTokenAccountArgs = {
+  walletAddress: string; 
+  tokenMint: string; 
+  projectId?: string 
+}
+
+const checkTokenAccount = async ({ 
+  walletAddress, 
+  tokenMint, 
+  projectId 
+}: CheckTokenAccountArgs): Promise<{ exists: boolean; tokenAccountInfo: Record<string, unknown> | null }> => {
+  const url = new URL(CHECK_TOKEN_ACCOUNT, window.location.href)
+
+  url.searchParams.set("walletAddress", walletAddress)
+  url.searchParams.set("tokenMint", tokenMint)
+  if (projectId) url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url)
+  if (!response.ok) throw new Error("Failed to check token account")
+  return await response.json()
+}
+
 export const backendApi = {
   getProject,
   getProjects,
@@ -682,4 +705,5 @@ export const backendApi = {
   manuallyAddAnalysis,
   getSession,
   isAdmin,
+  checkTokenAccount,
 }
