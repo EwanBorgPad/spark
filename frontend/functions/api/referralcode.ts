@@ -10,6 +10,7 @@ import { getReferralCode, getAddressByReferralCode } from "../services/referralS
 
 type ENV = {
   DB: D1Database
+  REFERRAL_SECRET_KEY: string
 }
 
 // Add this handler for OPTIONS requests
@@ -76,7 +77,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ message: "Referral already exists for this project" }, 400)
     }
 
-    const referrerAddress = await getAddressByReferralCode(db, referralCode);
+    const referrerAddress = await getAddressByReferralCode(db, referralCode, ctx.env);
 
     if (!referrerAddress) {
       return jsonResponse({ message: "Referrer not found" }, 404)
@@ -134,7 +135,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     }
 
     // Get the referral code for the user
-    let code = getReferralCode(address);
+    let code = getReferralCode(address, ctx.env);
 
     // Get all the referrals with the same address for referrer_by
     const referralsTable = await db
