@@ -6,6 +6,8 @@ import Text from "@/components/Text"
 import Img from "../Image/Img"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { twMerge } from "tailwind-merge"
+import { useProjectDataContext } from "@/hooks/useProjectData"
+import { formatCurrencyAmount } from "shared/utils/format"
 
 type LeaderboardData = {
   referrer_by: string;
@@ -27,6 +29,15 @@ type Props = {
 const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[], isLoading = false }: Props) => {
   const totalInvest = totalTicketsDistributed[0]?.total_invested
   const { address } = useWalletContext()
+  const { projectData } = useProjectDataContext()
+  
+  // Color mapping for different positions
+  const positionColors = {
+    "1": "text-[#ACFF73]", // 1st - green
+    "2": "text-[#F2BF7E]", // 2nd - gold
+    "3": "text-[#E1E7EF]", // 3rd - silver
+    "default": "text-[#D38160]" // other top positions - bronze
+  }
 
   return (
     <div className="w-full">
@@ -36,7 +47,7 @@ const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[]
             <table className="w-full divide-y divide-bd-secondary/15">
               <thead className="sticky top-0 z-10">
                 <tr className="max-h-[24px]">
-                  <TableHeader className="px-3 w-[15%]"> {/* Added padding to the left */}
+                  <TableHeader className="px-3 w-[15%]">
                     Pos. 
                   </TableHeader>
                   <TableHeader className="px-0.5 w-[35%]">
@@ -57,17 +68,30 @@ const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[]
               </thead>
               {data.length ? (
                 <tbody className="divide-y divide-bd-secondary/5 pb-10">
-                  {data.map((item) => {
+                  {data.map((item, index) => {
                     const isCurrentUser = address && item.referrer_by === address?.substring(0, 4);
+                    const position = (index + 1).toString();
+                    
+                    // Check if this position is part of the ranking in the configuration
+                    const isInRanking = projectData?.config.referralDistribution?.ranking && 
+                                      position in projectData.config.referralDistribution.ranking;
+                    
+                    // Get the appropriate color for this position
+                    let textColorClass = "";
+                    if (isInRanking) {
+                      textColorClass = positionColors[position as keyof typeof positionColors] || positionColors.default;
+                    } else {
+                      // Apply bronze color to all other positions
+                      textColorClass = positionColors.default;
+                    }
+                    
                     return (
                       <tr 
-                        className={twMerge(
-                          "h-[36px] min-h-[36px] max-h-[36px]",
-                        )} 
+                        className="h-[36px] min-h-[36px] max-h-[36px]"
                         key={item.referrer_by}
                       >
                         <TableCell className="px-5 py-[2px]">
-                          <span className="text-xs text-fg-primary">{data.indexOf(item) + 1}</span>
+                          <span className={`text-xs ${textColorClass}`}>{position}</span>
                         </TableCell>
                         <TableCell className="py-[2px]">
                           <div className="flex w-full flex-row items-center gap-1">
@@ -85,8 +109,24 @@ const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[]
                           <span className="text-xs text-fg-primary">{item.total_invested*100}</span>
                         </TableCell>
                         <TableCell className="py-[2px]">
-                          <span className="text-xs text-fg-primary">
-                            {totalInvest === 0 ? 0 : item.total_invested/totalInvest*prizeAmount}
+                          <span className={`text-xs ${textColorClass}`}>
+                            {(() => {
+                              // For ranking positions, use the percentage defined in the configuration
+                              if (isInRanking && projectData?.config.referralDistribution?.ranking) {
+                                const rankingPercent = projectData.config.referralDistribution.ranking[position];
+                                return prizeAmount ? formatCurrencyAmount(prizeAmount * rankingPercent) : 0;
+                              } 
+                              // For non-ranking positions, show the raffle prize (if available)
+                              else if (projectData?.config.referralDistribution?.raffle) {
+                                // Calculate average raffle prize (total raffle amount / number of raffle winners)
+                                const raffleValues = Object.values(projectData.config.referralDistribution.raffle);
+                                const totalRafflePercent = raffleValues.reduce((sum, percent) => sum + percent, 0);
+                                const raffleWinners = Object.keys(projectData.config.referralDistribution.raffle).length;
+                                const avgRafflePercent = raffleWinners > 0 ? totalRafflePercent / raffleWinners : 0;
+                                return prizeAmount ? formatCurrencyAmount(prizeAmount * avgRafflePercent) : 0;
+                              }
+                              return 0;
+                            })()}
                           </span>
                         </TableCell>
                       </tr>

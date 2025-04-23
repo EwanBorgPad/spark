@@ -65,7 +65,7 @@ const Project = () => {
           </div>
           {/* right side */}
           <div className="relative flex flex-col items-start gap-3 md:items-end">
-            <Referral />
+            {projectData?.config.referralDistribution && <Referral />}
             <DataRoom />
             <div className="flex items-start gap-2">
               {projectData?.info.projectLinks.map((link, index) => (

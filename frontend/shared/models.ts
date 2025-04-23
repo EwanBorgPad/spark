@@ -51,13 +51,13 @@ export type UserModelJson = {
     acceptedTextSigned: string
   }
   referralCode?: Record<
-  ProjectId,
-  {
-    code: string
-    message: string
-    signature: number[]
-  }
->
+    ProjectId,
+    {
+      code: string
+      message: string
+      signature: number[]
+    }
+  >
 }
 /**
  * Represents url type
@@ -143,6 +143,13 @@ export const projectSchema = z.object({
     raisedTokenData: TokenDataSchema,
     launchedTokenData: TokenDataSchema,
     nftConfig: nftConfigSchema.optional(),
+    referralDistribution: z
+      .object({
+        totalAmountDistributed: z.number().int().positive(),
+        ranking: z.record(z.string(), z.number().min(0).max(1)),
+        raffle: z.record(z.string(), z.number().min(0).max(1)),
+      })
+      .optional(),
   }),
   info: z.object({
     /// following 4 fields are typically added AFTER the sale

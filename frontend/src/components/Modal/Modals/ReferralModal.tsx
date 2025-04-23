@@ -39,7 +39,8 @@ const ReferralModal = ({ onClose }: Props) => {
   const saleClosesEvent = projectData?.info.timeline.find(event => event.id === "SALE_CLOSES")
   const saleClosesDate = saleClosesEvent?.date || new Date(Date.now() + 24 * 60 * 60 * 1000) // Fallback to 24h from now if not found
 
-  const prizeAmount = projectData?.config?.raiseTargetInUsd
+  const prizeAmount = projectData?.config?.referralDistribution?.totalAmountDistributed
+  
 
   // Fetch user's referral code
   const { data: referralData } = useQuery({
@@ -367,11 +368,11 @@ const ReferralModal = ({ onClose }: Props) => {
                 colorIcon="#ACFF73"
                 title={
                   <>
-                    <span className="text-fg-secondary">2x </span> Grand Prize
+                    <span className="text-fg-secondary">1x </span> Grand Prize
                   </>
                 }
-                subtitle="Raffle & 1st ranking place"
-                amount={formatCurrencyAmount(prizeAmount ? prizeAmount * 0.4 : 0)}
+                subtitle="1st ranking place"
+                amount={formatCurrencyAmount(prizeAmount ? prizeAmount * (projectData?.config.referralDistribution?.ranking["1"] || 0.3) : 0)}
                 type="grand"
               />
 
@@ -379,11 +380,11 @@ const ReferralModal = ({ onClose }: Props) => {
                 colorIcon="#F2BF7E"
                 title={
                   <>
-                    <span className="text-fg-secondary">4x </span> Gold Prize
+                    <span className="text-fg-secondary">1x </span> Gold Prize
                   </>
                 }
-                subtitle="Raffle & 2nd-3rd ranking places"
-                amount={formatCurrencyAmount(prizeAmount ? prizeAmount * 0.3 : 0)}
+                subtitle="2nd ranking place"
+                amount={formatCurrencyAmount(prizeAmount ? prizeAmount * (projectData?.config.referralDistribution?.ranking["2"] || 0.2) : 0)}
                 type="gold"
               />
 
@@ -391,11 +392,11 @@ const ReferralModal = ({ onClose }: Props) => {
                 colorIcon="#E1E7EF"
                 title={
                   <>
-                    <span className="text-fg-secondary">6x </span> Silver Prize
+                    <span className="text-fg-secondary">1x </span> Silver Prize
                   </>
                 }
-                subtitle="Raffle & 4th-6th ranking places"
-                amount={formatCurrencyAmount(prizeAmount ? prizeAmount * 0.2 : 0)}
+                subtitle="3rd ranking place"
+                amount={formatCurrencyAmount(prizeAmount ? prizeAmount * (projectData?.config.referralDistribution?.ranking["3"] || 0.1) : 0)}
                 type="silver"
               />
 
@@ -403,11 +404,12 @@ const ReferralModal = ({ onClose }: Props) => {
                 colorIcon="#D38160"
                 title={
                   <>
-                    <span className="text-fg-secondary">8x </span> Bronze Prize
+                    <span className="text-fg-secondary">{Object.keys(projectData?.config.referralDistribution?.raffle || {}).length}x </span> Bronze Prize
                   </>
                 }
-                subtitle="Raffle & 7th-10th ranking places"
-                amount={formatCurrencyAmount(prizeAmount ? prizeAmount * 0.1 : 0)}
+                subtitle="Raffle winners"
+                amount={formatCurrencyAmount(prizeAmount ? 
+                  prizeAmount * Object.values(projectData?.config.referralDistribution?.raffle || {}).reduce((a, b) => a + (b || 0), 0) / Object.keys(projectData?.config.referralDistribution?.raffle || {}).length : 0)}
                 type="bronze"
               />
             </div>
