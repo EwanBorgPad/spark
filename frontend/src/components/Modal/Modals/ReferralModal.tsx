@@ -67,6 +67,48 @@ const ReferralModal = ({ onClose }: Props) => {
   const referralsTable = referralData?.referralsTable || []
   const totalTicketsDistributed = leaderboardData?.totalTicketsDistributed || []
 
+  // Calculate user's potential prize based on leaderboard position
+  const calculateUserPrize = () => {
+    if (!isWalletConnected || !address || !projectData?.config.referralDistribution) {
+      return { value: "0", isRaffle: false };
+    }
+
+    // Find user's position in leaderboard
+    const userPosition = leaderboardReferrals.findIndex(item => 
+      item.referrer_by === address.substring(0, 4)
+    );
+
+    // Not in leaderboard
+    if (userPosition === -1) {
+      return { value: "0", isRaffle: false };
+    }
+
+    const position = (userPosition + 1).toString();
+    const referralDistribution = projectData.config.referralDistribution;
+
+    // Check if user is in ranking positions
+    if (position in referralDistribution.ranking) {
+      // User is in top positions, calculate prize from ranking percentage
+      const rankingPercent = referralDistribution.ranking[position];
+      return { 
+        value: formatCurrencyAmount(prizeAmount ? prizeAmount * rankingPercent : 0),
+        isRaffle: false
+      };
+    } else {
+      // User might win raffle prize
+      const raffleValues = Object.values(referralDistribution.raffle || {});
+      if (raffleValues.length > 0) {
+        const avgRafflePercent = raffleValues.reduce((sum, percent) => sum + percent, 0) / raffleValues.length;
+        return { 
+          value: formatCurrencyAmount(prizeAmount ? prizeAmount * avgRafflePercent : 0),
+          isRaffle: true
+        };
+      }
+    }
+
+    return { value: "0", isRaffle: false };
+  };
+
   // Handle window resize to update isMobile state
   useEffect(() => {
     const handleResize = () => {
@@ -458,7 +500,8 @@ const ReferralModal = ({ onClose }: Props) => {
           <ReferralCard
             title="Your Rewards"
             icon="SvgTrophy"
-            value={isWalletConnected ? String(totalRewards) : "0"}
+            value={calculateUserPrize().value}
+            subtitle1={calculateUserPrize().isRaffle ? "Depending on the raffle" : ""}
           />
           <ReferralCard
             title="referral code"
@@ -498,8 +541,8 @@ const ReferralModal = ({ onClose }: Props) => {
           <ReferralCard
             title="Your Tickets"
             icon="SvgTicket"
-            value={isWalletConnected ? String(firstTotalInvested) : "0"}
-            subtitle1={`Total issued: ${totalTicketsDistributed[0]?.total_invested || 0}`}
+            value={isWalletConnected ? String(firstTotalInvested * ticketPerAmountInvested) : "0"}
+            subtitle1={`Total issued: ${totalTicketsDistributed[0]?.total_invested * ticketPerAmountInvested || 0}`}
             isTicket
           />
           <ReferralCard
