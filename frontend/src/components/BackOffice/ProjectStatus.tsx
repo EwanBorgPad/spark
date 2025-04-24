@@ -383,31 +383,7 @@ const UpdateProjectJson = () => {
         toast.success(
           <div>
             <p>NFT collection created successfully!</p>
-            {result.warning && (
-              <p className="text-yellow-400 font-medium mt-1 mb-1">
-                Note: {result.warning}
-              </p>
-            )}
-            <p>
-              Transaction: <a 
-                href={`https://solscan.io/tx/${result.transactionSignature}${cluster === "devnet" ? "?cluster=devnet" : ""}`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="underline"
-              >
-                {result.transactionSignature.slice(0, 8)}...{result.transactionSignature.slice(-8)}
-              </a>
-            </p>
-            <p>
-              Collection: <a 
-                href={`https://solscan.io/token/${result.collectionAddress}${cluster === "devnet" ? "?cluster=devnet" : ""}`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="underline"
-              >
-                {result.collectionAddress.slice(0, 8)}...{result.collectionAddress.slice(-8)}
-              </a>
-            </p>
+            <p>DON&apos;T FORGET TO UPDATE THE PROJECT</p>
           </div>,
           { theme: "colored" }
         )
