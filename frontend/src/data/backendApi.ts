@@ -655,7 +655,7 @@ const isAdmin = async (auth: AdminAuthFields): Promise<void> => {
 type CheckTokenAccountArgs = {
   walletAddress: string; 
   tokenMint: string; 
-  projectId?: string 
+  projectId: string;
 }
 
 const checkTokenAccount = async ({ 
@@ -667,7 +667,7 @@ const checkTokenAccount = async ({
 
   url.searchParams.set("walletAddress", walletAddress)
   url.searchParams.set("tokenMint", tokenMint)
-  if (projectId) url.searchParams.set("projectId", projectId)
+  url.searchParams.set("projectId", projectId)
 
   const response = await fetch(url)
   if (!response.ok) throw new Error("Failed to check token account")

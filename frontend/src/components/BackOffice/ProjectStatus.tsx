@@ -225,6 +225,7 @@ const UpdateProjectJson = () => {
       const response = await backendApi.checkTokenAccount({
         walletAddress,
         tokenMint,
+        projectId,
       })
       
       setCheckingStatus(prev => ({ ...prev, usdcTokenAccount: false }))
