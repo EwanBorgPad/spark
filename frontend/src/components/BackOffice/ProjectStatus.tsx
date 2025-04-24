@@ -75,7 +75,7 @@ const UpdateProjectJson = () => {
     // Filter projects that have a SALE_OPENS event in the future
     return data.projects
       .filter(project => {
-        const saleOpensEvent = project.info.timeline.find(event => event.id === "SALE_OPENS")
+        const saleOpensEvent = project.info.timeline.find(event => event.id === "SALE_CLOSES")
         
         return saleOpensEvent && 
                saleOpensEvent.date && 
@@ -84,7 +84,7 @@ const UpdateProjectJson = () => {
       .sort((a, b) => {
         const aDate = new Date(a.info.timeline.find(event => event.id === "SALE_OPENS")?.date || 0)
         const bDate = new Date(b.info.timeline.find(event => event.id === "SALE_OPENS")?.date || 0)
-        return aDate.getTime() - bDate.getTime()
+        return bDate.getTime() - aDate.getTime()
       })
   }, [data])
 
@@ -210,6 +210,7 @@ const UpdateProjectJson = () => {
       // Call backend API to check if token account exists for the LBP wallet
       const tokenMint = selectedProjectData.config.raisedTokenData.mintAddress
       const walletAddress = selectedProjectData.config.lbpWalletAddress
+      const projectId = selectedProjectData.id
       console.log("walletAddress", walletAddress)
       
       console.log("Checking token account for:", { tokenMint, walletAddress })
@@ -416,7 +417,18 @@ const UpdateProjectJson = () => {
             <div className="flex justify-between">
               <span className="font-medium">Sale Opens:</span>
               <span>
-                {formatDate(nextProjectToGoLive.info.timeline.find(event => event.id === "SALE_OPENS")?.date || null)}
+                {(() => {
+                  const saleOpensDate = nextProjectToGoLive.info.timeline.find(event => event.id === "SALE_OPENS")?.date;
+                  if (!saleOpensDate) return "N/A";
+                  const now = new Date()
+                  return new Date(saleOpensDate) < now ? "LIVE" : formatDate(saleOpensDate);
+                })()}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-medium">Cluster:</span>
+              <span>
+                {nextProjectToGoLive.config.cluster || "Not set"}
               </span>
             </div>
             <div className="flex justify-between">
