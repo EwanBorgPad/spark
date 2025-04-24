@@ -137,6 +137,7 @@ const UpdateProjectJson = () => {
       usdcTokenAccount: null,
       nftMetadataFiles: null,
       nftConfigSet: null,
+      nftCollectionMinted: null,
       tiersHaveStartDates: null,
     })
   }
@@ -321,6 +322,15 @@ const UpdateProjectJson = () => {
     console.log("nftConfig", nftConfig)
     
     // Check if nftConfig exists and if collection is defined and not empty
+    return !!nftConfig
+  }
+
+  const checkNftCollectionMinted = () => {
+    if (!selectedProjectData) return false
+    const nftConfig = selectedProjectData.config.nftConfig
+    console.log("nftCollection", nftConfig?.collection)
+    
+    // Check if nftConfig exists and if collection is defined and not empty
     return !!nftConfig && 
            !!nftConfig.collection && 
            nftConfig.collection.trim() !== ""
@@ -406,6 +416,12 @@ const UpdateProjectJson = () => {
     // Check NFT config
     const nftConfigSet = checkNftConfigSet()
     setStatusResults(prev => ({ ...prev, nftConfigSet }))
+
+    // Check NFT collection
+    const nftCollectionMinted = checkNftCollectionMinted()
+    setStatusResults(prev => ({ ...prev, nftCollectionMinted }))
+
+    checkNftCollectionMinted
 
     // Check tiers have start dates
     const tiersHaveStartDates = checkTiersHaveStartDates()
@@ -543,7 +559,18 @@ const UpdateProjectJson = () => {
               </div>
               {statusResults.nftMetadataFiles === false && (
                 <span className="text-sm text-red-400">
-                  Missing files at https://files.borgpad.com/{selectedProjectData.id}/nft-metadata/
+                  Missing files at <a 
+                    href={selectedProjectData.config.cluster === "devnet" 
+                      ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`
+                      : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    {selectedProjectData.config.cluster === "devnet" 
+                      ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`
+                      : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`}
+                  </a>
                 </span>
               )}
             </div>
@@ -553,7 +580,14 @@ const UpdateProjectJson = () => {
                 <StatusIcon isValid={statusResults.nftConfigSet} />
                 <span>NFT Config Set</span>
               </div>
-              {statusResults.nftConfigSet === false && (
+            </div>
+
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <StatusIcon isValid={statusResults.nftCollectionMinted} />
+                <span>NFT Collection Minted ?</span>
+              </div>
+              {statusResults.nftCollectionMinted === false && (
                 <Button 
                   btnText="Create Collection" 
                   size="sm"

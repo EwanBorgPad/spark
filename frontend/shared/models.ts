@@ -94,7 +94,7 @@ const nftConfigSchema = z.object({
   symbol: z.string(),
   description: z.string(),
   imageUrl: z.string(),
-  collection: z.string(),
+  collection: z.string().optional(),
 })
 export const bannerTypeSchema = z.enum(["WIDE", "COMPACT"])
 export type BannerType = z.infer<typeof bannerTypeSchema>
