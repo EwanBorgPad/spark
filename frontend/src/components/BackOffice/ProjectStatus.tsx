@@ -594,11 +594,11 @@ const UpdateProjectJson = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <StatusIcon isValid={statusResults.nftMetadataFiles} isLoading={checkingStatus.nftMetadataFiles} />
-                <span>NFT Metadata Files Available</span>
+                <span>Collection Metadata JSON Available</span>
               </div>
               {statusResults.nftMetadataFiles === false && (
-                <span className="text-sm text-red-400">
-                  Missing files at <a 
+                <div className="text-sm text-red-400">
+                  <a 
                     href={selectedProjectData.config.cluster === "devnet" 
                       ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`
                       : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`}
@@ -606,11 +606,49 @@ const UpdateProjectJson = () => {
                     rel="noopener noreferrer"
                     className="underline"
                   >
-                    {selectedProjectData.config.cluster === "devnet" 
-                      ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`
-                      : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`}
+                    Missing files
                   </a>
-                </span>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <StatusIcon isValid={statusResults.nftMetadataFiles} isLoading={checkingStatus.nftMetadataFiles} />
+                <span>NFT Image Available</span>
+              </div>
+              {statusResults.nftMetadataFiles === false && (
+                <div className="text-sm text-red-400">
+                  <a 
+                    href={selectedProjectData.config.cluster === "devnet" 
+                      ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/image.png`
+                      : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/image.png`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Missing files
+                  </a>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <StatusIcon isValid={statusResults.nftMetadataFiles} isLoading={checkingStatus.nftMetadataFiles} />
+                <span>Collection JSON Available</span>
+              </div>
+              {statusResults.nftMetadataFiles === false && (
+                <div className="text-sm text-red-400">
+                  <a 
+                    href={selectedProjectData.config.cluster === "devnet" 
+                      ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/metadata.json`
+                      : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/metadata.json`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Missing files
+                  </a>
+                </div>
               )}
             </div>
             
