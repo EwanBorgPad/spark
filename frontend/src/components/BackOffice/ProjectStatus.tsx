@@ -120,7 +120,8 @@ const UpdateProjectJson = () => {
 
   const refreshData = async () => {
     await refetch()
-    toast.success("Data refreshed", { theme: "colored" })
+    selectProject(nextProjectToGoLive.id)
+    toast.success("Data refreshed -> Click on Select This Project", { theme: "colored" })
   }
 
   const selectProject = (projectId: string) => {
