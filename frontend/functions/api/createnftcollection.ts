@@ -5,13 +5,17 @@ import { drizzle } from "drizzle-orm/d1"
 import { projectTable } from "../../shared/drizzle-schema"
 import { eq } from "drizzle-orm"
 import bs58 from "bs58"
-import { verify } from "@noble/ed25519"
+import { checkAdminAuthorization, isAdminReturnValue } from "../services/authService"
+import { AdminAuthFields } from "../../shared/models"
+import { authSchema } from "../../shared/schemas/analysis-schema"
 
 type ENV = {
     DB: D1Database
     STAGE_PRIVATE_KEY: string
     PROD_PRIVATE_KEY: string
     SOLANA_RPC_URL: string
+    ADMIN_ADDRESSES: string
+    VITE_ENVIRONMENT_TYPE: "develop" | "production"
 }
 
 type CreateNftCollectionRequest = {
@@ -46,20 +50,24 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             }, 400)
         }
 
-        // Verify signature
-        const signatureValid = await verifySignature(auth)
-        if (!signatureValid) {
+        // Parse and validate auth data
+        const { error, data } = authSchema.safeParse(auth)
+        if (error) {
             return jsonResponse({
-                message: 'Invalid signature'
-            }, 401)
+                message: 'Invalid auth data format'
+            }, 400)
         }
 
-        // Check if user is admin
-        const isAdmin = await checkIsAdmin(db, auth.address)
-        if (!isAdmin) {
-            return jsonResponse({
-                message: 'Unauthorized: Only admins can create NFT collections'
-            }, 403)
+        // Check if user is admin using the auth service
+        const authResult: isAdminReturnValue = checkAdminAuthorization({ 
+            ctx, 
+            auth: data as AdminAuthFields 
+        })
+        
+        if (!authResult.isAdmin) {
+            const { error: authError } = authResult as { error: { code: number; message: string }, isAdmin: false }
+            await reportError(db, new Error(authError.message))
+            return jsonResponse({ message: "Unauthorized! Only admins can create NFT collections." }, authError.code)
         }
 
         // Load project
@@ -134,35 +142,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             message: `Error creating NFT collection: ${e instanceof Error ? e.message : String(e)}`
         }, 500)
     }
-}
-
-async function verifySignature(auth: CreateNftCollectionRequest['auth']): Promise<boolean> {
-    try {
-        const { address, message, signature } = auth
-
-        // Convert the signature array to Uint8Array
-        const signatureUint8 = new Uint8Array(signature)
-
-        // Convert address string to PublicKey and get its byte representation
-        const publicKey = new PublicKey(address)
-        const publicKeyBytes = publicKey.toBytes()
-
-        // Convert message to UTF-8 encoded bytes
-        const messageBytes = new TextEncoder().encode(message)
-
-        // Verify the signature using ed25519
-        return await verify(signatureUint8, messageBytes, publicKeyBytes)
-    } catch (error) {
-        console.error("Signature verification error:", error)
-        return false
-    }
-}
-
-async function checkIsAdmin(db: any, address: string): Promise<boolean> {
-    // Implement admin check logic here
-    // For example, check against a list of admin addresses in the database
-    // For now, return true to allow testing
-    return true
 }
 
 async function createNftCollection({
@@ -348,13 +327,18 @@ async function createNftCollection({
 }
 
 // CORS headers
-export const onRequestOptions: PagesFunction<ENV> = async () => {
-    return new Response(null, {
-        status: 204,
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        },
-    })
+export const onRequestOptions: PagesFunction<ENV> = async (ctx) => {
+    try {
+        if (ctx.env.VITE_ENVIRONMENT_TYPE !== "develop") return
+        return new Response(null, {
+            status: 204,
+            headers: {
+                'Access-Control-Allow-Origin': 'http://localhost:5173',
+                'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            },
+        })
+    } catch (error) {
+        return jsonResponse({ message: error }, 500)
+    }
 }
