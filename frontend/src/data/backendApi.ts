@@ -52,6 +52,7 @@ const POST_CREATE_EMAIL = API_BASE_URL + "/createemail"
 const GET_SESSION = API_BASE_URL + "/session"
 const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
 const CHECK_TOKEN_ACCOUNT = API_BASE_URL + "/admin/checktokenaccount"
+const CREATE_NFT_COLLECTION = API_BASE_URL + "/createnftcollection"
 
 // analysis & analyst
 const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
@@ -674,6 +675,49 @@ const checkTokenAccount = async ({
   return await response.json()
 }
 
+// Add new API for creating NFT collections
+type CreateNftCollectionArgs = {
+  projectId: string;
+  auth: {
+    address: string;
+    message: string;
+    signature: number[];
+  };
+  nftConfig: {
+    name: string;
+    symbol: string;
+    description: string;
+    imageUrl: string;
+    collection: string;
+  };
+  cluster?: "mainnet" | "devnet";
+}
+
+type CreateNftCollectionResponse = {
+  collectionAddress: string;
+  transactionSignature: string;
+  warning?: string;
+}
+
+const createNftCollection = async (args: CreateNftCollectionArgs): Promise<CreateNftCollectionResponse> => {
+  const url = new URL(CREATE_NFT_COLLECTION, window.location.href)
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(args),
+  })
+  
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.message || 'Failed to create NFT collection')
+  }
+  
+  return await response.json()
+}
+
 export const backendApi = {
   getProject,
   getProjects,
@@ -706,4 +750,5 @@ export const backendApi = {
   getSession,
   isAdmin,
   checkTokenAccount,
+  createNftCollection,
 }

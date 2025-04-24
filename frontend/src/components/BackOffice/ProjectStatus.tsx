@@ -45,6 +45,8 @@ const UpdateProjectJson = () => {
     tiersHaveStartDates: null,
   })
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0)
+  const [lastNftTxSignature, setLastNftTxSignature] = useState<string | null>(null)
+  const [isCreatingCollection, setIsCreatingCollection] = useState(false)
 
   const { data, refetch, isLoading: isLoadingProjects } = useQuery<GetProjectsResponse>({
     queryFn: () => backendApi.getProjects({ page: 1, limit: 999 }),
@@ -189,7 +191,7 @@ const UpdateProjectJson = () => {
         hour: "2-digit",
         minute: "2-digit",
       })
-    } catch (error) {
+    } catch (_error) {
       return "Invalid date"
     }
   }
@@ -319,8 +321,6 @@ const UpdateProjectJson = () => {
   const checkNftConfigSet = () => {
     if (!selectedProjectData) return false
     const nftConfig = selectedProjectData.config.nftConfig
-    console.log("nftConfig", nftConfig)
-    
     // Check if nftConfig exists and if collection is defined and not empty
     return !!nftConfig
   }
@@ -328,8 +328,6 @@ const UpdateProjectJson = () => {
   const checkNftCollectionMinted = () => {
     if (!selectedProjectData) return false
     const nftConfig = selectedProjectData.config.nftConfig
-    console.log("nftCollection", nftConfig?.collection)
-    
     // Check if nftConfig exists and if collection is defined and not empty
     return !!nftConfig && 
            !!nftConfig.collection && 
@@ -340,45 +338,88 @@ const UpdateProjectJson = () => {
     if (!selectedProjectData || !isWalletConnected) return
 
     try {
+      setIsCreatingCollection(true)
       const message = "I confirm I am an admin by signing this message."
       const signature = Array.from(await signMessage(message))
       const auth = { address, message, signature }
 
       const projectId = selectedProjectData.id
-      const ticker = selectedProjectData.config.launchedTokenData.ticker
+      const nftConfig = selectedProjectData.config.nftConfig
+      
+      // Get the cluster from the project config
+      const cluster = selectedProjectData.config.cluster || "mainnet";
 
-      const response = await backendApi.createNftCollection({
+      // Use backendApi.createNftCollection instead of direct import
+      const result = await backendApi.createNftCollection({
         projectId,
         auth,
         nftConfig: {
-          name: `${ticker} Liquidity Provider`,
-          symbol: `bp${ticker}`,
-          description: `You enabled ${selectedProjectData.info.title} to launch via BorgPad. This NFT is your proof, hold it to claim your rewards.`,
-          imageUrl: `https://files.borgpad.com/${projectId}/nft-metadata/image.png`,
-          collection: "" // This will be filled by the backend
-        }
+          name: `${nftConfig?.name}`,
+          symbol: `${nftConfig?.symbol}`,
+          description: `${nftConfig?.description}`,
+          imageUrl: `${nftConfig?.imageUrl}`,
+          collection: ""  // This will be filled by the backend
+        },
+        cluster: cluster as "mainnet" | "devnet"
       })
 
+      // Save the transaction signature for display
+      setLastNftTxSignature(result.transactionSignature)
+
       // Update the project with the new collection address
-      if (response.collectionAddress) {
+      if (result.collectionAddress) {
         const updatedProject = { ...selectedProjectData }
         updatedProject.config.nftConfig = {
-          name: `${ticker} Liquidity Provider`,
-          symbol: `bp${ticker}`,
-          description: `You enabled ${selectedProjectData.info.title} to launch via BorgPad. This NFT is your proof, hold it to claim your rewards.`,
-          imageUrl: `https://files.borgpad.com/${projectId}/nft-metadata/image.png`,
-          collection: response.collectionAddress
+          name: `${nftConfig?.name}`,
+          symbol: `${nftConfig?.symbol}`,
+          description: `${nftConfig?.description}`,
+          imageUrl: `${nftConfig?.imageUrl}`,
+          collection: result.collectionAddress
         }
 
         setValue("project", updatedProject as ProjectModel, { shouldDirty: true })
-        toast.success("NFT collection created successfully", { theme: "colored" })
+        
+        // Show success message with transaction link and warning if applicable
+        toast.success(
+          <div>
+            <p>NFT collection created successfully!</p>
+            {result.warning && (
+              <p className="text-yellow-400 font-medium mt-1 mb-1">
+                Note: {result.warning}
+              </p>
+            )}
+            <p>
+              Transaction: <a 
+                href={`https://solscan.io/tx/${result.transactionSignature}${cluster === "devnet" ? "?cluster=devnet" : ""}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                {result.transactionSignature.slice(0, 8)}...{result.transactionSignature.slice(-8)}
+              </a>
+            </p>
+            <p>
+              Collection: <a 
+                href={`https://solscan.io/token/${result.collectionAddress}${cluster === "devnet" ? "?cluster=devnet" : ""}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                {result.collectionAddress.slice(0, 8)}...{result.collectionAddress.slice(-8)}
+              </a>
+            </p>
+          </div>,
+          { theme: "colored" }
+        )
 
         // Re-check status
-        setStatusResults(prev => ({ ...prev, nftConfigSet: true }))
+        setStatusResults(prev => ({ ...prev, nftCollectionMinted: true }))
       }
     } catch (error) {
       console.error("Error creating NFT collection:", error)
       toast.error("Failed to create NFT collection: " + (error as Error).message, { theme: "colored" })
+    } finally {
+      setIsCreatingCollection(false)
     }
   }
 
@@ -387,8 +428,6 @@ const UpdateProjectJson = () => {
     
     const tiers = selectedProjectData.info.tiers
     if (!tiers || tiers.length === 0) return false
-    
-    console.log("Checking tiers:", tiers)
     
     // Check that all tiers have benefits and benefits.startDate is set
     return tiers.every(tier => 
@@ -486,14 +525,38 @@ const UpdateProjectJson = () => {
             </div>
             <div className="flex justify-between">
               <span className="font-medium">LBP Wallet:</span>
-              <span className="truncate max-w-[250px]">
-                {nextProjectToGoLive.config.lbpWalletAddress || "Not set"}
+              <span className="truncate">
+                {nextProjectToGoLive.config.lbpWalletAddress ? (
+                  <>
+                    <a 
+                      href={`https://solscan.io/account/${nextProjectToGoLive.config.lbpWalletAddress}?cluster=${nextProjectToGoLive.config.cluster || 'devnet'}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300"
+                    >
+                      {nextProjectToGoLive.config.lbpWalletAddress}
+                    </a>
+                  </>
+                ) : (
+                  "Not set"
+                )}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="font-medium">NFT Collection:</span>
-              <span className="truncate max-w-[250px]">
-                {nextProjectToGoLive.config.nftConfig?.collection || "Not set"}
+              <span className="truncate">
+                {nextProjectToGoLive.config.nftConfig?.collection ? (
+                  <a 
+                    href={`https://solscan.io/token/${nextProjectToGoLive.config.nftConfig.collection}?cluster=${nextProjectToGoLive.config.cluster || 'devnet'}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-300"
+                  >
+                    {nextProjectToGoLive.config.nftConfig.collection}
+                  </a>
+                ) : (
+                  "Not set"
+                )}
               </span>
             </div>
             <Button 
@@ -589,11 +652,31 @@ const UpdateProjectJson = () => {
               </div>
               {statusResults.nftCollectionMinted === false && (
                 <Button 
-                  btnText="Create Collection" 
+                  btnText={isCreatingCollection ? "Creating..." : "Create Collection"}
                   size="sm"
                   onClick={createCollectionAddress}
-                  disabled={!isWalletConnected}
+                  disabled={!isWalletConnected || isCreatingCollection}
+                  isLoading={isCreatingCollection}
                 />
+              )}
+              {statusResults.nftCollectionMinted === true && selectedProjectData?.config.nftConfig?.collection && (
+                <div className="flex items-center space-x-3">
+                  <a 
+                    href={`https://solscan.io/token/${selectedProjectData.config.nftConfig.collection}${selectedProjectData.config.cluster === "devnet" ? "?cluster=devnet" : ""}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-300 text-sm underline"
+                  >
+                    View on Solscan
+                  </a>
+                  <Button 
+                    btnText={isCreatingCollection ? "Creating..." : "Create New"}
+                    size="sm"
+                    onClick={createCollectionAddress}
+                    disabled={!isWalletConnected || isCreatingCollection}
+                    isLoading={isCreatingCollection}
+                  />
+                </div>
               )}
             </div>
             
@@ -606,6 +689,61 @@ const UpdateProjectJson = () => {
                 <span className="text-sm text-red-400">Please set startDate for all tiers</span>
               )}
             </div>
+
+            {selectedProjectData.config.nftConfig?.collection && (
+              <div className="mt-6 pt-4 border-t border-bd-secondary">
+                <h3 className="text-lg font-medium mb-3">NFT Collection Information</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Collection Address:</span>
+                    <a 
+                      href={`https://solscan.io/token/${selectedProjectData.config.nftConfig.collection}${selectedProjectData.config.cluster === "devnet" ? "?cluster=devnet" : ""}`}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 text-sm break-all max-w-[350px]"
+                    >
+                      {selectedProjectData.config.nftConfig.collection}
+                    </a>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Network:</span>
+                    <span className="text-sm capitalize">{selectedProjectData.config.cluster || "mainnet"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Name:</span>
+                    <span className="text-sm font-medium">{selectedProjectData.config.nftConfig.name}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Symbol:</span>
+                    <span className="text-sm">{selectedProjectData.config.nftConfig.symbol}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Solscan:</span>
+                    <a 
+                      href={`https://solscan.io/token/${selectedProjectData.config.nftConfig.collection}${selectedProjectData.config.cluster === "devnet" ? "?cluster=devnet" : ""}`}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 text-sm"
+                    >
+                      View on Solscan
+                    </a>
+                  </div>
+                  {lastNftTxSignature && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Last Transaction:</span>
+                      <a 
+                        href={`https://solscan.io/tx/${lastNftTxSignature}${selectedProjectData.config.cluster === "devnet" ? "?cluster=devnet" : ""}`}
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-400 hover:text-blue-300 text-sm"
+                      >
+                        {lastNftTxSignature.slice(0, 8)}...{lastNftTxSignature.slice(-8)}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
