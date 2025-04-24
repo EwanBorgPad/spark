@@ -10,6 +10,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Button } from "../Button/Button"
+import { sendTokenTo } from "../../../shared/solana/sendTokenTo"
 
 // schema & types
 const formSchema = z.object({
@@ -34,7 +35,7 @@ const StatusIcon = ({ isValid, isLoading }: { isValid: boolean | null; isLoading
 }
 
 const UpdateProjectJson = () => {
-  const { address, signMessage, isWalletConnected, sendTransaction } = useWalletContext()
+  const { address, signMessage, signTransaction, walletProvider, isWalletConnected } = useWalletContext()
   const [checkingStatus, setCheckingStatus] = useState<Record<string, boolean>>({})
   const [statusResults, setStatusResults] = useState<Record<string, boolean | null>>({
     lbpWalletSet: null,
@@ -194,8 +195,6 @@ const UpdateProjectJson = () => {
 
   const checkLbpWalletSet = () => {
     if (!selectedProjectData) return false
-    console.log("lbpWalletAddress", selectedProjectData.config.lbpWalletAddress)
-    // Check if it's null, undefined, empty string or any falsy value
     return selectedProjectData.config.lbpWalletAddress !== null && 
            selectedProjectData.config.lbpWalletAddress !== undefined && 
            selectedProjectData.config.lbpWalletAddress !== ""
@@ -211,9 +210,6 @@ const UpdateProjectJson = () => {
       const tokenMint = selectedProjectData.config.raisedTokenData.mintAddress
       const walletAddress = selectedProjectData.config.lbpWalletAddress
       const projectId = selectedProjectData.id
-      console.log("walletAddress", walletAddress)
-      
-      console.log("Checking token account for:", { tokenMint, walletAddress })
       
       // Return false if tokenMint is null
       if (!tokenMint) {
@@ -242,18 +238,59 @@ const UpdateProjectJson = () => {
     if (!selectedProjectData?.config.lbpWalletAddress || !isWalletConnected) return
     
     try {
-      const transaction = await backendApi.createTokenAccountTransaction({
+      // Ensure lbpWalletAddress is not null with a type assertion
+      const lbpAddress = selectedProjectData.config.lbpWalletAddress as string;
+      
+      // Handle potential null tokenMint
+      const tokenMint = selectedProjectData.config.raisedTokenData.mintAddress;
+      if (!tokenMint) {
+        throw new Error("Token mint address is null");
+      }
+      
+      // Ensure wallet provider is valid
+      if (!walletProvider) {
+        throw new Error("No wallet provider selected");
+      }
+      
+      // Get the cluster from the project config
+      const cluster = selectedProjectData.config.cluster || "mainnet";
+      
+      // Get the transaction for creating the token account and sending a minimum amount
+      const signature = await sendTokenTo({
         walletAddress: address,
-        destAddress: selectedProjectData.config.lbpWalletAddress,
-        tokenMint: selectedProjectData.config.raisedTokenData.mintAddress // Use the project's raisedTokenData mintAddress
+        destAddress: lbpAddress,
+        tokenMint: tokenMint,
+        amount: 1000000, // We're sending 1 USDC (1000000 = 1 USDC with 6 decimals)
+        decimals: 6,
+        signTransaction,
+        walletProvider: walletProvider as "PHANTOM" | "BACKPACK" | "SOLFLARE",
+        cluster: cluster as "mainnet" | "devnet"
       })
       
-      await sendTransaction(transaction)
-      toast.success("Token account created successfully", { theme: "colored" })
+      // Show success message with signature and link to Solscan
+      toast.success(
+        <div>
+          <p>Token account created successfully!</p>
+          <p>
+            Transaction: <a 
+              href={`https://solscan.io/tx/${signature}${cluster === "devnet" ? "?cluster=devnet" : ""}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              {signature.slice(0, 8)}...{signature.slice(-8)}
+            </a>
+          </p>
+        </div>, 
+        { theme: "colored" }
+      );
       
-      // Re-check status
-      const result = await checkUsdcTokenAccount()
-      setStatusResults(prev => ({ ...prev, usdcTokenAccount: result }))
+      // Re-check status after a short delay to allow the transaction to confirm
+      setTimeout(async () => {
+        const result = await checkUsdcTokenAccount();
+        setStatusResults(prev => ({ ...prev, usdcTokenAccount: result }));
+      }, 2000);
+      
     } catch (error) {
       console.error("Error creating token account:", error)
       toast.error("Failed to create token account: " + (error as Error).message, { theme: "colored" })
