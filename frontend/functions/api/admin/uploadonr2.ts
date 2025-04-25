@@ -7,7 +7,8 @@ type ENV = {
   DB: D1Database
   ADMIN_ADDRESSES: string
   R2_BUCKET_NAME: string
-  BUCKET: R2Bucket  // Direct bucket binding
+  BUCKET?: R2Bucket  // Make BUCKET optional
+  R2?: R2Bucket      // Add R2 binding as optional
 }
 
 // Create an auth schema as it's not exported from models
@@ -88,26 +89,29 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const filePath = `${projectId}/${folder}/${fileName}`
     console.log(`Target file path: ${filePath}`);
     
-    // Check if the bucket is available
-    if (!ctx.env.BUCKET) {
-      console.warn("BUCKET binding not available");
+    // Try to get bucket from either BUCKET or R2 binding
+    const bucket = ctx.env.BUCKET || ctx.env.R2;
+    
+    // Check if any bucket is available
+    if (!bucket) {
+      console.warn("No R2 bucket binding available (tried both BUCKET and R2)");
       return jsonResponse({
-        message: 'No BUCKET binding available in the environment',
+        message: 'No R2 bucket binding available in the environment',
         success: false
       }, 500)
     }
     
     try {
-      // Upload file to R2 using BUCKET binding
-      await ctx.env.BUCKET.put(filePath, fileBuffer, {
+      // Upload file to R2 using the available bucket binding
+      await bucket.put(filePath, fileBuffer, {
         httpMetadata: {
           contentType: contentType
         }
       });
-      console.log("File uploaded successfully to BUCKET!");
+      console.log("File uploaded successfully to R2 bucket!");
     } catch (error) {
-      console.error("Error during BUCKET put operation:", error);
-      throw new Error(`BUCKET upload failed: ${error instanceof Error ? error.message : String(error)}`);
+      console.error("Error during R2 put operation:", error);
+      throw new Error(`R2 upload failed: ${error instanceof Error ? error.message : String(error)}`);
     }
 
     // Determine the correct domain based on the provided cluster parameter
@@ -127,9 +131,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     })
   } catch (e) {
     await reportError(db, e)
-    console.error("Error uploading file to BUCKET:", e)
+    console.error("Error uploading file to R2:", e)
     return jsonResponse({
-      message: `Error uploading file to BUCKET: ${e instanceof Error ? e.message : String(e)}`
+      message: `Error uploading file to R2: ${e instanceof Error ? e.message : String(e)}`
     }, 500)
   }
 }
