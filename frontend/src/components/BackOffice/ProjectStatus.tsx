@@ -349,11 +349,10 @@ const UpdateProjectJson = () => {
       // For JSON files, try multiple methods
       const checkJsonWithFetch = async (url: string, description: string) => {
         try {
-          // Try with fetch first
+          // Simple fetch without problematic headers
           const response = await fetch(url, { 
             method: 'GET',
-            cache: 'no-store',
-            headers: { 'Cache-Control': 'no-cache' }
+            cache: 'no-store'
           });
           console.log(`${description} check with fetch:`, response.ok);
           return response.ok;
@@ -454,20 +453,40 @@ const UpdateProjectJson = () => {
       const projectId = selectedProjectData.id
       const nftConfig = selectedProjectData.config.nftConfig
 
+      if (!nftConfig) {
+        throw new Error("NFT config is not set. Please set up NFT config first.");
+      }
+
       // Get the cluster from the project config
       const cluster = selectedProjectData.config.cluster || "mainnet";
 
-      // Use backendApi.createNftCollection instead of direct import
+      // Ensure all fields are strings
+      const safeNftConfig = {
+        name: String(nftConfig.name || ""),
+        symbol: String(nftConfig.symbol || ""),
+        description: String(nftConfig.description || ""),
+        imageUrl: String(nftConfig.imageUrl || ""),
+        collection: ""  // This will be filled by the backend
+      };
+
+      // Check values
+      if (!safeNftConfig.name) {
+        throw new Error("NFT name is required");
+      }
+      if (!safeNftConfig.symbol) {
+        throw new Error("NFT symbol is required");
+      }
+      if (!safeNftConfig.imageUrl) {
+        throw new Error("NFT image URL is required");
+      }
+
+      console.log("Creating NFT collection with config:", safeNftConfig);
+
+      // Use backendApi.createNftCollection with properly formatted data
       const result = await backendApi.createNftCollection({
         projectId,
         auth,
-        nftConfig: {
-          name: `${nftConfig?.name}`,
-          symbol: `${nftConfig?.symbol}`,
-          description: `${nftConfig?.description}`,
-          imageUrl: `${nftConfig?.imageUrl}`,
-          collection: ""  // This will be filled by the backend
-        },
+        nftConfig: safeNftConfig,
         cluster: cluster as "mainnet" | "devnet"
       })
 
@@ -478,10 +497,10 @@ const UpdateProjectJson = () => {
       if (result.collectionAddress) {
         const updatedProject = { ...selectedProjectData }
         updatedProject.config.nftConfig = {
-          name: `${nftConfig?.name}`,
-          symbol: `${nftConfig?.symbol}`,
-          description: `${nftConfig?.description}`,
-          imageUrl: `${nftConfig?.imageUrl}`,
+          name: safeNftConfig.name,
+          symbol: safeNftConfig.symbol,
+          description: safeNftConfig.description,
+          imageUrl: safeNftConfig.imageUrl,
           collection: result.collectionAddress
         }
 
