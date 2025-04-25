@@ -1135,10 +1135,10 @@ const UpdateProjectJson = () => {
 
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
-                <StatusIcon isValid={statusResults.nftMetadataFiles} isLoading={checkingStatus.nftMetadataFiles} />
+                <StatusIcon isValid={uploadedFiles.collectionMetadata} isLoading={checkingStatus.nftMetadataFiles} />
                 <span>Collection Metadata JSON Available</span>
               </div>
-              {statusResults.nftMetadataFiles === false ? (
+              {!uploadedFiles.collectionMetadata ? (
                 <div className="flex space-x-2 items-center">
                   <div className="text-sm text-red-400">
                     <a
@@ -1149,7 +1149,7 @@ const UpdateProjectJson = () => {
                       rel="noopener noreferrer"
                       className="underline"
                     >
-                      Missing files
+                      Missing file
                     </a>
                   </div>
                   <Button
@@ -1179,10 +1179,10 @@ const UpdateProjectJson = () => {
 
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
-                <StatusIcon isValid={statusResults.nftMetadataFiles} isLoading={checkingStatus.nftMetadataFiles} />
+                <StatusIcon isValid={uploadedFiles.image} isLoading={checkingStatus.nftMetadataFiles} />
                 <span>NFT Image Available</span>
               </div>
-              {statusResults.nftMetadataFiles === false ? (
+              {!uploadedFiles.image ? (
                 <div className="flex space-x-2 items-center">
                   <div className="text-sm text-red-400">
                     <a
@@ -1193,7 +1193,7 @@ const UpdateProjectJson = () => {
                       rel="noopener noreferrer"
                       className="underline"
                     >
-                      Missing files
+                      Missing file
                     </a>
                   </div>
                   <Button
@@ -1222,10 +1222,10 @@ const UpdateProjectJson = () => {
             </div>
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
-                <StatusIcon isValid={statusResults.nftMetadataFiles} isLoading={checkingStatus.nftMetadataFiles} />
-                <span>Collection JSON Available</span>
+                <StatusIcon isValid={uploadedFiles.metadata} isLoading={checkingStatus.nftMetadataFiles} />
+                <span>NFT Metadata JSON Available</span>
               </div>
-              {statusResults.nftMetadataFiles === false ? (
+              {!uploadedFiles.metadata ? (
                 <div className="flex space-x-2 items-center">
                   <div className="text-sm text-red-400">
                     <a
@@ -1236,7 +1236,7 @@ const UpdateProjectJson = () => {
                       rel="noopener noreferrer"
                       className="underline"
                     >
-                      Missing files
+                      Missing file
                     </a>
                   </div>
                   <Button
