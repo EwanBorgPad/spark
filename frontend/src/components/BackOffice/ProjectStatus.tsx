@@ -346,27 +346,62 @@ const UpdateProjectJson = () => {
       
       console.log("Checking files:", collectionMetadataUrl, nftMetadataUrl, imageUrl);
       
-      // Use Promise.all to check all files in parallel
-      const [collectionResponse, metadataResponse, imageResponse] = await Promise.all([
-        fetch(collectionMetadataUrl, { method: 'HEAD' }).catch(() => ({ ok: false })),
-        fetch(nftMetadataUrl, { method: 'HEAD' }).catch(() => ({ ok: false })),
-        fetch(imageUrl, { method: 'HEAD' }).catch(() => ({ ok: false }))
+      // For JSON files, use regular fetch with no-cache
+      const collectionPromise = fetch(collectionMetadataUrl, { 
+        method: 'GET',
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      })
+      .then(response => response.ok)
+      .catch(err => {
+        console.log("Collection metadata check error:", err);
+        return false;
+      });
+      
+      const metadataPromise = fetch(nftMetadataUrl, { 
+        method: 'GET',
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      })
+      .then(response => response.ok)
+      .catch(err => {
+        console.log("NFT metadata check error:", err);
+        return false;
+      });
+      
+      // For images, use Image loading
+      const imagePromise = new Promise<boolean>((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => {
+          console.log("Image check error - file not found");
+          resolve(false);
+        };
+        // Add timestamp to bypass cache
+        img.src = `${imageUrl}?t=${Date.now()}`;
+      });
+      
+      // Wait for all checks to complete
+      const [collectionExists, metadataExists, imageExists] = await Promise.all([
+        collectionPromise,
+        metadataPromise,
+        imagePromise
       ]);
       
       // Update uploaded files status based on responses
       setUploadedFiles({
-        collectionMetadata: collectionResponse.ok,
-        metadata: metadataResponse.ok,
-        image: imageResponse.ok
+        collectionMetadata: collectionExists,
+        metadata: metadataExists,
+        image: imageExists
       });
       
-      const allFilesExist = collectionResponse.ok && metadataResponse.ok && imageResponse.ok;
+      const allFilesExist = collectionExists && metadataExists && imageExists;
       
       // Log results for debugging
       console.log("File check results:", {
-        collectionMetadata: collectionResponse.ok,
-        metadata: metadataResponse.ok,
-        image: imageResponse.ok,
+        collectionMetadata: collectionExists,
+        metadata: metadataExists,
+        image: imageExists,
         allFilesExist
       });
       
