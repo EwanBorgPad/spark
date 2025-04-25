@@ -3,7 +3,7 @@
 // READ THIS BEFORE USING SCRIPT /////////////////////////////////////////
 // Only latest "main" and "stage" deployment will not be removed. ////////
 // Also, Cloudflare requires latest LIVE deployments of branches to be  //
-// removed MANUALLY. ///////////////////////////////////////////////////// 
+// removed MANUALLY. /////////////////////////////////////////////////////
 // Cleans max 25 deployments per script execution. ///////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -32,6 +32,11 @@ async function getDeployments(page) {
     headers,
   })
   const data = await response.json()
+  if (!data.ok) {
+    console.log("no data")
+    return null
+  }
+  console.log(data.result)
   return data.result
 }
 
@@ -49,6 +54,7 @@ async function deleteDeployment(deploymentId) {
 // Main function to clean up old deployments
 async function cleanDeployments(page) {
   const deployments = await getDeployments(page)
+  console.log(deployments.length)
   if (!deployments) {
     console.log("no deployments fetched, something might be wrong")
     return
@@ -95,4 +101,4 @@ async function cleanDeployments(page) {
 }
 
 // Run the cleanup script
-cleanDeployments(1).catch(console.error)
+cleanDeployments(2).catch(console.error)
