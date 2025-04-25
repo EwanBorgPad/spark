@@ -346,46 +346,70 @@ const UpdateProjectJson = () => {
       
       console.log("Checking files:", collectionMetadataUrl, nftMetadataUrl, imageUrl);
       
-      // For JSON files, use regular fetch with no-cache
-      const collectionPromise = fetch(collectionMetadataUrl, { 
-        method: 'GET',
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache' }
-      })
-      .then(response => response.ok)
-      .catch(err => {
-        console.log("Collection metadata check error:", err);
-        return false;
-      });
+      // Use XMLHttpRequest for checking - more reliable across file types
+      const checkFile = (url: string) => {
+        return new Promise<boolean>((resolve) => {
+          const xhr = new XMLHttpRequest();
+          
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              console.log(`File exists (${url}):`, true);
+              resolve(true);
+            } else {
+              console.log(`File exists (${url}):`, false, "Status:", xhr.status);
+              resolve(false);
+            }
+          };
+          
+          xhr.onerror = () => {
+            console.log(`File check error (${url}):`);
+            resolve(false);
+          };
+          
+          // Add a cache-busting parameter
+          const cacheBuster = `?t=${Date.now()}`;
+          xhr.open('GET', url + cacheBuster);
+          
+          // For JSON files, we can accept JSON response
+          if (url.endsWith('.json')) {
+            xhr.setRequestHeader('Accept', 'application/json');
+          }
+          
+          // For images, use a HEAD request to avoid loading the entire image
+          if (url.endsWith('.png') || url.endsWith('.jpg') || url.endsWith('.jpeg')) {
+            xhr.open('HEAD', url + cacheBuster);
+          }
+          
+          xhr.send();
+        });
+      };
       
-      const metadataPromise = fetch(nftMetadataUrl, { 
-        method: 'GET',
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache' }
-      })
-      .then(response => response.ok)
-      .catch(err => {
-        console.log("NFT metadata check error:", err);
-        return false;
-      });
+      // Try both methods for image checking since HEAD might be unreliable
+      const checkImage = async (url: string) => {
+        // Try XMLHttpRequest first
+        const xhrResult = await checkFile(url);
+        if (xhrResult) return true;
+        
+        // If that fails, try Image loading as fallback
+        return new Promise<boolean>((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            console.log(`Image exists via Image load (${url}):`, true);
+            resolve(true);
+          };
+          img.onerror = () => {
+            console.log(`Image exists via Image load (${url}):`, false);
+            resolve(false);
+          };
+          img.src = `${url}?t=${Date.now()}`;
+        });
+      };
       
-      // For images, use Image loading
-      const imagePromise = new Promise<boolean>((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve(true);
-        img.onerror = () => {
-          console.log("Image check error - file not found");
-          resolve(false);
-        };
-        // Add timestamp to bypass cache
-        img.src = `${imageUrl}?t=${Date.now()}`;
-      });
-      
-      // Wait for all checks to complete
+      // Check all files
       const [collectionExists, metadataExists, imageExists] = await Promise.all([
-        collectionPromise,
-        metadataPromise,
-        imagePromise
+        checkFile(collectionMetadataUrl),
+        checkFile(nftMetadataUrl),
+        checkImage(imageUrl)
       ]);
       
       // Update uploaded files status based on responses
