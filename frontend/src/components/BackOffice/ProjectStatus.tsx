@@ -346,30 +346,36 @@ const UpdateProjectJson = () => {
       
       console.log("Checking files:", collectionMetadataUrl, nftMetadataUrl, imageUrl);
       
-      // For JSON files, use regular fetch with no-cache
-      const collectionPromise = fetch(collectionMetadataUrl, { 
-        method: 'GET',
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache' }
-      })
-      .then(response => response.ok)
-      .catch(err => {
-        console.log("Collection metadata check error:", err);
-        return false;
-      });
+      // For JSON files, try multiple methods
+      const checkJsonWithFetch = async (url: string, description: string) => {
+        try {
+          // Try with fetch first
+          const response = await fetch(url, { 
+            method: 'GET',
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache' }
+          });
+          console.log(`${description} check with fetch:`, response.ok);
+          return response.ok;
+        } catch (err) {
+          console.log(`${description} check error with fetch:`, err);
+          return false;
+        }
+      };
       
-      const metadataPromise = fetch(nftMetadataUrl, { 
-        method: 'GET',
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache' }
-      })
-      .then(response => response.ok)
-      .catch(err => {
-        console.log("NFT metadata check error:", err);
-        return false;
-      });
+      // For collection metadata
+      const collectionPromise = checkJsonWithFetch(
+        collectionMetadataUrl + `?nocache=${Date.now()}`, 
+        "Collection metadata"
+      );
       
-      // For images, use Image loading
+      // For NFT metadata
+      const metadataPromise = checkJsonWithFetch(
+        nftMetadataUrl + `?nocache=${Date.now()}`, 
+        "NFT metadata"
+      );
+      
+      // For images, use Image loading (keep this as is)
       const imagePromise = new Promise<boolean>((resolve) => {
         const img = new Image();
         img.onload = () => resolve(true);
@@ -387,6 +393,12 @@ const UpdateProjectJson = () => {
         metadataPromise,
         imagePromise
       ]);
+      
+      // Log direct URLs for manual verification if needed
+      console.log("Direct URLs for verification:");
+      console.log("- Collection metadata:", collectionMetadataUrl);
+      console.log("- NFT metadata:", nftMetadataUrl);
+      console.log("- Image:", imageUrl);
       
       // Update uploaded files status based on responses
       setUploadedFiles({
