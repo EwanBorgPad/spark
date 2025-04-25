@@ -319,7 +319,13 @@ const UpdateProjectJson = () => {
     if (hasMetadataFiles) {
       toast.success("All NFT files verified successfully!", { theme: "colored" })
     } else {
-      toast.error("Some NFT files are still missing. Please check the paths below.", { theme: "colored" })
+      // More specific error message about which files are missing
+      const missingFiles = [];
+      if (!uploadedFiles.collectionMetadata) missingFiles.push("collection-metadata.json");
+      if (!uploadedFiles.metadata) missingFiles.push("metadata.json");
+      if (!uploadedFiles.image) missingFiles.push("image.png");
+      
+      toast.error(`Some NFT files are missing: ${missingFiles.join(", ")}`, { theme: "colored" })
     }
   }
 
@@ -331,11 +337,41 @@ const UpdateProjectJson = () => {
       const projectId = selectedProjectData.id
       const isDevnet = selectedProjectData.config.cluster === "devnet";
       const baseDomain = isDevnet ? 'files.staging.borgpad.com' : 'files.borgpad.com';
-      const metadataUrl = `https://${baseDomain}/${projectId}/nft-metadata/collection-metadata.json`
-
-      const response = await fetch(metadataUrl, { method: 'HEAD' })
+      const baseUrl = `https://${baseDomain}/${projectId}/nft-metadata/`;
+      
+      // Check all three required files
+      const collectionMetadataUrl = `${baseUrl}collection-metadata.json`;
+      const nftMetadataUrl = `${baseUrl}metadata.json`;
+      const imageUrl = `${baseUrl}image.png`;
+      
+      console.log("Checking files:", collectionMetadataUrl, nftMetadataUrl, imageUrl);
+      
+      // Use Promise.all to check all files in parallel
+      const [collectionResponse, metadataResponse, imageResponse] = await Promise.all([
+        fetch(collectionMetadataUrl, { method: 'HEAD' }).catch(() => ({ ok: false })),
+        fetch(nftMetadataUrl, { method: 'HEAD' }).catch(() => ({ ok: false })),
+        fetch(imageUrl, { method: 'HEAD' }).catch(() => ({ ok: false }))
+      ]);
+      
+      // Update uploaded files status based on responses
+      setUploadedFiles({
+        collectionMetadata: collectionResponse.ok,
+        metadata: metadataResponse.ok,
+        image: imageResponse.ok
+      });
+      
+      const allFilesExist = collectionResponse.ok && metadataResponse.ok && imageResponse.ok;
+      
+      // Log results for debugging
+      console.log("File check results:", {
+        collectionMetadata: collectionResponse.ok,
+        metadata: metadataResponse.ok,
+        image: imageResponse.ok,
+        allFilesExist
+      });
+      
       setCheckingStatus(prev => ({ ...prev, nftMetadataFiles: false }))
-      return response.ok
+      return allFilesExist;
     } catch (error) {
       setCheckingStatus(prev => ({ ...prev, nftMetadataFiles: false }))
       console.error("Error checking NFT metadata files:", error)
