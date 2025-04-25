@@ -36,10 +36,12 @@ const SaleProgress = () => {
   return (
     <div className="flex w-full max-w-[432px] flex-col">
       <div className="flex w-full flex-col gap-3 rounded-xl bg-secondary px-4 py-3">
-        <div className="flex w-full items-center justify-between gap-4">
+        <PreSaleMessage />
+
+        <div className="flex w-full items-end justify-between gap-4">
           <span className="text-base">{t("lp_sale_progress")}</span>
           <div className="flex flex-col items-end">
-            <Text text={selloutPercentage} className="text-sm text-fg-tertiary" isLoading={isLoading} />
+            {/* <Text text={selloutPercentage || "0%"} className="text-sm text-fg-tertiary" isLoading={isLoading} /> */}
             <Text text={`${amountRaisedInUsd}/${raiseTargetInUsd}`} isLoading={isLoading} />
           </div>
         </div>
@@ -55,3 +57,24 @@ const SaleProgress = () => {
 }
 
 export default SaleProgress
+
+const PreSaleMessage = () => {
+  const { projectData, isLoading } = useProjectDataContext()
+
+  const preRaised = projectData?.info.preRaised
+
+  if (!preRaised) return null
+  return (
+    <div className="flex w-full justify-between gap-2">
+      <Text text={preRaised?.label} className="text-sm text-fg-tertiary" isLoading={isLoading} />
+      <Text
+        text={formatCurrencyAmount(preRaised?.amount, {
+          withDollarSign: true,
+          customDecimals: 0,
+        })}
+        className="text-sm text-fg-tertiary"
+        isLoading={isLoading}
+      />
+    </div>
+  )
+}

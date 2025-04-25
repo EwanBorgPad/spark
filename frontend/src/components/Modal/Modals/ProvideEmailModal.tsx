@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom"
 import { Badge } from "@/components/Badge/Badge"
 import { toast } from "react-toastify"
 import { eligibilityStatusCacheBust } from "@/utils/cache-helper"
+import { sendTransaction } from "../../../../shared/solana/sendTransaction"
 
 type ProvideEmailModalProps = {
   onClose: () => void
@@ -18,10 +19,9 @@ type ProvideEmailModalProps = {
 
 const ProvideEmailModal = ({ onClose }: ProvideEmailModalProps) => {
   const { t } = useTranslation()
-  const { address, signMessage } = useWalletContext()
+  const { address, signMessage, signTransaction, walletProvider, isConnectedWithLedger } = useWalletContext()
   const { projectId } = useParams()
   const queryClient = useQueryClient()
-
 
   const {
     mutate: updateEmail,
@@ -31,8 +31,16 @@ const ProvideEmailModal = ({ onClose }: ProvideEmailModalProps) => {
     mutationFn: async (address: string) => {
       if (!address || !email || !projectId) return
       const message = t("email.provide.message", { email })
+      let signature: Uint8Array
+      let isLedgerTransaction = false
 
-      const signature = await signMessage(message)
+      if (isConnectedWithLedger) {
+        if (!walletProvider) throw new Error("No wallet provider selected")
+        signature = await sendTransaction(message, address, signTransaction, walletProvider)
+        isLedgerTransaction = true
+      } else {
+        signature = await signMessage(message)
+      }
 
       const data = {
         email,
@@ -40,6 +48,7 @@ const ProvideEmailModal = ({ onClose }: ProvideEmailModalProps) => {
         // TODO no nonce or expiration, possibly a security concern
         message,
         signature: Array.from(signature),
+        isLedgerTransaction,
       }
 
       await backendApi.postCreateEmail(data)

@@ -4,6 +4,7 @@ import { SimpleModal } from "@/components/Modal/SimpleModal.tsx"
 import { useEffect, useState } from "react"
 import { AvailableIcons, Icon } from "@/components/Icon/Icon.tsx"
 import { twMerge } from "tailwind-merge"
+import CheckboxField from "@/components/InputField/CheckboxField.tsx"
 
 type ConnectButtonProps = {
   btnClassName?: string
@@ -24,17 +25,27 @@ export const ConnectButton = ({
   color,
   isLoading = false,
 }: ConnectButtonProps) => {
-  const { walletState, truncatedAddress, signInWithPhantom, signInWithBackpack, signInWithSolflare, signOut } =
+  const { walletState, truncatedAddress, connectWithPhantom, connectWithBackpack, connectWithSolflare, signOut, setIsConnectedWithLedger } =
     useWalletContext()
 
   const [showModal, setShowModal] = useState(false)
   const [showNoWallet, setShowNoWallet] = useState(false)
+  const [isUsingLedger, setIsUsingLedger] = useState(() => {
+    const storedValue = localStorage.getItem("isUsingLedger")
+    return storedValue === "true"
+  })
 
   useEffect(() => {
     if (walletState === "CONNECTED") {
       setShowModal(false)
     }
   }, [walletState, showModal])
+
+  useEffect(() => {
+    setIsConnectedWithLedger(isUsingLedger)
+    localStorage.setItem("isUsingLedger", isUsingLedger.toString())
+    console.log("Stored Ledger preference in localStorage:", isUsingLedger)
+  }, [isUsingLedger, setIsConnectedWithLedger])
 
   const btnText =
     walletState === "NOT_CONNECTED"
@@ -82,12 +93,23 @@ export const ConnectButton = ({
                   className={twMerge(
                     "flex w-full flex-col items-center justify-center lg:flex-row",
                     "gap-4 md:gap-3",
-                    // 'p-4 lg:flex-row lg:gap-6 lg:p-[56px] lg:pb-[40px]',
                   )}
                 >
-                  <WalletProvider icon={"SvgPhantom"} label={"Phantom"} onClick={signInWithPhantom} />
-                  <WalletProvider icon={"SvgBackpack"} label={"Backpack"} onClick={signInWithBackpack} />
-                  <WalletProvider icon={"SvgSolflare"} label={"Solflare"} onClick={signInWithSolflare} />
+                  <WalletProvider icon={"SvgPhantom"} label={"Phantom"} onClick={connectWithPhantom} />
+                  <WalletProvider icon={"SvgBackpack"} label={"Backpack"} onClick={connectWithBackpack} />
+                  <WalletProvider icon={"SvgSolflare"} label={"Solflare"} onClick={connectWithSolflare} />
+                </div>
+                <div className="mt-4 flex justify-center">
+                  <CheckboxField
+                    inputClassName="text-white!"
+                    label={
+                      <p className="text-fg-secondary">
+                        I am using a Ledger hardware wallet
+                      </p>
+                    }
+                    value={isUsingLedger}
+                    onChange={setIsUsingLedger}
+                  />
                 </div>
                 <div className="mb-8 mt-4 lg:mt-5">
                   <p

@@ -5,6 +5,7 @@ import { decodeUTF8 } from "tweetnacl-util"
 import { AcceptTermsRequestSchema, UserModelJson } from "../../shared/models"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { UserService } from "../services/userService"
+import { validateTransaction } from "../../shared/solana/validateTransaction"
 
 /**
  * Countries that are not allowed to participate.
@@ -51,17 +52,31 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     ///// authorization
-    const { publicKey, message, signature } = data
+    const { publicKey, message, signature, isLedgerTransaction } = data
     const address = publicKey
 
-    const isVerified = nacl.sign.detached.verify(
-      decodeUTF8(message),
-      new Uint8Array(signature),
-      new PublicKey(publicKey).toBytes(),
-    );
-    if (!isVerified) {
-      await reportError(db, new Error(`Invalid signature (acceptterms)! publicKey: ${publicKey}, message: ${message}, signature: ${signature}`))
-      return jsonResponse(null, 401)
+    let isVerified = false
+
+    if (isLedgerTransaction) {
+      try {
+        isVerified = await validateTransaction(message, publicKey, new Uint8Array(signature))
+      } catch (err) {
+        console.error("❌ Error during transaction verification:", err)
+        return jsonResponse(null, 500)
+      }
+    } else {
+      isVerified = nacl.sign.detached.verify(
+        decodeUTF8(message),
+        new Uint8Array(signature),
+        new PublicKey(publicKey).toBytes(),
+      );
+      
+      console.log("Signature verification result:", isVerified)
+      
+      if (!isVerified) {
+        await reportError(db, new Error(`Invalid signature (acceptterms)! publicKey: ${publicKey}, message: ${message}, signature: ${signature}`))
+        return jsonResponse(null, 401)
+      }
     }
 
     //// business logic

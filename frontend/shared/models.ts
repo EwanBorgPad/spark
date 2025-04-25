@@ -96,6 +96,31 @@ const nftConfigSchema = z.object({
   imageUrl: z.string(),
   collection: z.string(),
 })
+export const bannerTypeSchema = z.enum(["WIDE", "COMPACT"])
+export type BannerType = z.infer<typeof bannerTypeSchema>
+const bannerSchema = z.object({
+  type: bannerTypeSchema,
+  imageUrl: z.string().optional(),
+  label: z.string(),
+  cta: z
+    .object({
+      label: z.string(),
+      url: urlSchema(),
+    })
+    .optional(),
+  borderGradient: z.object({
+    leftHex: z.string(),
+    rightHex: z.string(),
+  }),
+  backgroundGradient: z.object({
+    leftHex: z.string(),
+    rightHex: z.string(),
+  }),
+})
+const preRaisedSchema = z.object({
+  label: z.string(),
+  amount: z.number(),
+})
 
 export type NftConfigType = z.infer<typeof nftConfigSchema>
 
@@ -160,6 +185,8 @@ export const projectSchema = z.object({
     targetFdv: z.string().min(1).optional(),
     targetVesting: z.string().min(1).optional(),
     chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
+    banner: bannerSchema.optional(),
+    preRaised: preRaisedSchema.optional(),
 
     dataRoom: z.object({ backgroundImgUrl: urlSchema().optional(), url: urlSchema() }),
     liquidityPool: z.object({
@@ -225,6 +252,7 @@ export const AcceptTermsRequestSchema = z.object({
   publicKey: z.string(),
   message: z.string(),
   signature: z.array(z.number().int()),
+  isLedgerTransaction: z.boolean().optional().default(false),
 })
 export type AcceptTermsRequest = z.infer<typeof AcceptTermsRequestSchema>
 
@@ -234,6 +262,7 @@ export const InvestmentIntentRequestSchema = z.object({
   amount: z.string(),
   message: z.string(),
   signature: z.array(z.number().int()),
+  isLedgerTransaction: z.boolean().optional().default(false),
 })
 export type InvestmentIntentRequest = z.infer<typeof InvestmentIntentRequestSchema>
 
@@ -249,6 +278,7 @@ export const CreateEmailRequestSchema = z.object({
   publicKey: z.string(),
   message: z.string(),
   signature: z.array(z.number().int()),
+  isLedgerTransaction: z.boolean().optional().default(false),
 })
 export type CreateEmailRequest = z.infer<typeof CreateEmailRequestSchema>
 

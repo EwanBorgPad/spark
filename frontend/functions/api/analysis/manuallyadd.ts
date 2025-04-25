@@ -37,7 +37,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       const { error: authError } = authResult as { error: { code: number; message: string }, isAdmin: false }
       await reportError(db, new Error(authError.message))
       return jsonResponse({message: "Unauthorized!"}, authError.code)
-  }
+    }
 
     /////////////////////////////////////
     // TODO - add jwt token validation //

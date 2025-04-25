@@ -20,7 +20,7 @@
   "market_cap": "Market Cap",
   "fdv": "FDV",
   "liquidity_pool": "Liquidity Pool",
-  "lp_sale_progress": "LP Sale Progress",
+  "lp_sale_progress": "LP Last Sale Progress",
   "total_investment_interest": "Total Commitment",
   "average_commitment_from_users": "Average Commitment ${{ avg }} from {{ count }} users.",
 

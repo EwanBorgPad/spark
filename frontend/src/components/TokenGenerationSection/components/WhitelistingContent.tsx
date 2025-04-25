@@ -12,6 +12,7 @@ import Img from "@/components/Image/Img"
 import { useParams } from "react-router-dom"
 import Text from "@/components/Text"
 import { Button } from "@/components/Button/Button"
+import Banner from "@/components/Projects/Banner"
 
 const WhitelistingContent = () => {
   const { t } = useTranslation()
@@ -21,6 +22,7 @@ const WhitelistingContent = () => {
   const raiseTarget = projectData?.config.raiseTargetInUsd
     ? formatCurrencyAmount(projectData?.config.raiseTargetInUsd, { withDollarSign: true, customDecimals: 0 })
     : ""
+  const preRaised = projectData?.info.preRaised
 
   const baseCurrency = projectData?.config.raisedTokenData.coinGeckoName
   const targetCurrency = "usd"
@@ -35,7 +37,9 @@ const WhitelistingContent = () => {
   })
   const raisedTokenPriceInUsd = Number(data?.currentPrice) || null
   const launchedTokenPriceInUsd = projectData?.config.launchedTokenData.fixedTokenPriceInUsd || 0
-  const launchedTokenPriceInRaisedToken = !raisedTokenPriceInUsd ? null : launchedTokenPriceInUsd / raisedTokenPriceInUsd
+  const launchedTokenPriceInRaisedToken = !raisedTokenPriceInUsd
+    ? null
+    : launchedTokenPriceInUsd / raisedTokenPriceInUsd
 
   const { projectId } = useParams()
   const { data: investmentSummaryData } = useQuery({
@@ -69,11 +73,26 @@ const WhitelistingContent = () => {
         />
       </div>
 
+      <Banner type="COMPACT" />
+
       <div className="flex w-full flex-col">
-        <div className="flex w-full items-center justify-between py-3">
-          <span>{t("tge.raise_target")}</span>
-          <div className="flex gap-2">
+        <div className="flex w-full grid-cols-2 items-center justify-between py-3">
+          <div className="flex flex-col items-start">
+            <span>{t("tge.raise_target")}</span>
+            {preRaised && <span className="text-gray-400">{preRaised.label}</span>}
+          </div>
+          <div className="flex flex-col justify-end">
             <Text text={raiseTarget} isLoading={isLoading} />
+            {preRaised && (
+              <Text
+                text={formatCurrencyAmount(preRaised?.amount, {
+                  withDollarSign: true,
+                  customDecimals: 0,
+                })}
+                className="text-gray-400"
+                isLoading={isLoading}
+              />
+            )}
           </div>
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
