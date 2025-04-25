@@ -374,23 +374,52 @@ const UpdateProjectJson = () => {
         });
       };
       
-      // Always use Image object for image checking
-      const checkImageFile = (url: string) => {
+      // Basic XMLHttpRequest HEAD request for image - used in the dual approach
+      const checkFileHead = (url: string) => {
         return new Promise<boolean>((resolve) => {
-          console.log("Starting image check for:", url);
-          const img = new Image();
+          const xhr = new XMLHttpRequest();
           
-          img.onload = () => {
-            console.log(`Image exists (${url}):`, true);
-            resolve(true);
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              console.log(`File exists via HEAD (${url}):`, true);
+              resolve(true);
+            } else {
+              console.log(`File exists via HEAD (${url}):`, false, "Status:", xhr.status);
+              resolve(false);
+            }
           };
           
-          img.onerror = () => {
-            console.log(`Image exists (${url}):`, false);
+          xhr.onerror = () => {
+            console.log(`File check error via HEAD (${url})`);
             resolve(false);
           };
           
-          // Add a timestamp to bypass caching
+          // Add a cache-busting parameter
+          const cacheBuster = `?t=${Date.now()}`;
+          xhr.open('HEAD', url + cacheBuster);
+          xhr.send();
+        });
+      };
+      
+      // Try both methods for image checking since HEAD might be unreliable
+      const checkImage = async (url: string) => {
+        // Try XMLHttpRequest HEAD first
+        const xhrResult = await checkFileHead(url);
+        if (xhrResult) return true;
+        
+        console.log("HEAD request failed, trying Image load method");
+        
+        // If HEAD fails, try Image loading as fallback
+        return new Promise<boolean>((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            console.log(`Image exists via Image load (${url}):`, true);
+            resolve(true);
+          };
+          img.onerror = () => {
+            console.log(`Image exists via Image load (${url}):`, false);
+            resolve(false);
+          };
           img.src = `${url}?t=${Date.now()}`;
         });
       };
@@ -399,7 +428,7 @@ const UpdateProjectJson = () => {
       const [collectionExists, metadataExists, imageExists] = await Promise.all([
         checkJsonFile(collectionMetadataUrl),
         checkJsonFile(nftMetadataUrl),
-        checkImageFile(imageUrl)
+        checkImage(imageUrl)
       ]);
       
       // For debugging, try to directly open the image to verify it exists
