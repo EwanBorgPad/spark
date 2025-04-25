@@ -346,71 +346,64 @@ const UpdateProjectJson = () => {
       
       console.log("Checking files:", collectionMetadataUrl, nftMetadataUrl, imageUrl);
       
-      // Use XMLHttpRequest for checking - more reliable across file types
-      const checkFile = (url: string) => {
+      // Simple XHR check for JSON files
+      const checkJsonFile = (url: string) => {
         return new Promise<boolean>((resolve) => {
           const xhr = new XMLHttpRequest();
           
           xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
-              console.log(`File exists (${url}):`, true);
+              console.log(`JSON file exists (${url}):`, true);
               resolve(true);
             } else {
-              console.log(`File exists (${url}):`, false, "Status:", xhr.status);
+              console.log(`JSON file exists (${url}):`, false, "Status:", xhr.status);
               resolve(false);
             }
           };
           
           xhr.onerror = () => {
-            console.log(`File check error (${url}):`);
+            console.log(`JSON file check error (${url})`);
             resolve(false);
           };
           
           // Add a cache-busting parameter
           const cacheBuster = `?t=${Date.now()}`;
           xhr.open('GET', url + cacheBuster);
-          
-          // For JSON files, we can accept JSON response
-          if (url.endsWith('.json')) {
-            xhr.setRequestHeader('Accept', 'application/json');
-          }
-          
-          // For images, use a HEAD request to avoid loading the entire image
-          if (url.endsWith('.png') || url.endsWith('.jpg') || url.endsWith('.jpeg')) {
-            xhr.open('HEAD', url + cacheBuster);
-          }
-          
+          xhr.setRequestHeader('Accept', 'application/json');
           xhr.send();
         });
       };
       
-      // Try both methods for image checking since HEAD might be unreliable
-      const checkImage = async (url: string) => {
-        // Try XMLHttpRequest first
-        const xhrResult = await checkFile(url);
-        if (xhrResult) return true;
-        
-        // If that fails, try Image loading as fallback
+      // Always use Image object for image checking
+      const checkImageFile = (url: string) => {
         return new Promise<boolean>((resolve) => {
+          console.log("Starting image check for:", url);
           const img = new Image();
+          
           img.onload = () => {
-            console.log(`Image exists via Image load (${url}):`, true);
+            console.log(`Image exists (${url}):`, true);
             resolve(true);
           };
+          
           img.onerror = () => {
-            console.log(`Image exists via Image load (${url}):`, false);
+            console.log(`Image exists (${url}):`, false);
             resolve(false);
           };
+          
+          // Add a timestamp to bypass caching
           img.src = `${url}?t=${Date.now()}`;
         });
       };
       
-      // Check all files
+      // Check all three files in parallel
       const [collectionExists, metadataExists, imageExists] = await Promise.all([
-        checkFile(collectionMetadataUrl),
-        checkFile(nftMetadataUrl),
-        checkImage(imageUrl)
+        checkJsonFile(collectionMetadataUrl),
+        checkJsonFile(nftMetadataUrl),
+        checkImageFile(imageUrl)
       ]);
+      
+      // For debugging, try to directly open the image to verify it exists
+      console.log("Direct image verification - please check if this URL works in your browser:", imageUrl);
       
       // Update uploaded files status based on responses
       setUploadedFiles({
