@@ -330,10 +330,8 @@ const UpdateProjectJson = () => {
       setCheckingStatus(prev => ({ ...prev, nftMetadataFiles: true }))
       const projectId = selectedProjectData.id
       const isDevnet = selectedProjectData.config.cluster === "devnet";
-      const baseUrl = isDevnet 
-        ? `https://files.staging.borgpad.com/` 
-        : `https://files.borgpad.com/`;
-      const metadataUrl = `${baseUrl}${projectId}/nft-metadata/collection-metadata.json`
+      const baseDomain = isDevnet ? 'files.staging.borgpad.com' : 'files.borgpad.com';
+      const metadataUrl = `https://${baseDomain}/${projectId}/nft-metadata/collection-metadata.json`
 
       const response = await fetch(metadataUrl, { method: 'HEAD' })
       setCheckingStatus(prev => ({ ...prev, nftMetadataFiles: false }))
@@ -477,12 +475,12 @@ const UpdateProjectJson = () => {
     try {
       // Create NFT config if it doesn't exist
       const updatedProject = { ...selectedProjectData }
-      
+
       // Construct the image URL based on the cluster
-      const baseUrl = selectedProjectData.config.cluster === "devnet" 
-        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/`
-        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/`;
-        
+      const isDevnet = selectedProjectData.config.cluster === "devnet";
+      const baseDomain = isDevnet ? 'files.staging.borgpad.com' : 'files.borgpad.com';
+      const baseUrl = `https://${baseDomain}/${selectedProjectData.id}/nft-metadata/`;
+
       const imageUrl = baseUrl + "image.png";
       const ticker = selectedProjectData.config.launchedTokenData.ticker || "TOKEN";
       const projectTitle = selectedProjectData.info.title || "Project";
@@ -506,7 +504,7 @@ const UpdateProjectJson = () => {
       // Update the form value
       setValue("project", updatedProject as ProjectModel, { shouldDirty: true })
       setNftImageUrl(imageUrl)
-      
+
       toast.info("NFT config updated - don't forget to save changes!", { theme: "colored" })
 
       // Re-run checks
@@ -570,6 +568,9 @@ const UpdateProjectJson = () => {
       const signature = Array.from(await signMessage(message));
       const auth = { address, message, signature };
 
+      // Get the cluster from the project config
+      const cluster = selectedProjectData.config.cluster || "mainnet";
+
       // Upload using direct R2 upload
       const response = await backendApi.uploadOnR2({
         projectId: selectedProjectData.id,
@@ -578,6 +579,7 @@ const UpdateProjectJson = () => {
         fileName: "collection-metadata.json",
         contentType: "application/json",
         folder: "nft-metadata",
+        cluster: cluster as "mainnet" | "devnet",
       });
 
       toast.success("Collection metadata JSON uploaded successfully", { theme: "colored" });
@@ -620,6 +622,9 @@ const UpdateProjectJson = () => {
       const signature = Array.from(await signMessage(message));
       const auth = { address, message, signature };
 
+      // Get the cluster from the project config
+      const cluster = selectedProjectData.config.cluster || "mainnet";
+
       // Upload using direct R2 upload
       const response = await backendApi.uploadOnR2({
         projectId: selectedProjectData.id,
@@ -628,6 +633,7 @@ const UpdateProjectJson = () => {
         fileName: "metadata.json",
         contentType: "application/json",
         folder: "nft-metadata",
+        cluster: cluster as "mainnet" | "devnet",
       });
 
       toast.success("NFT metadata JSON uploaded successfully", { theme: "colored" });
@@ -651,31 +657,34 @@ const UpdateProjectJson = () => {
         toast.error("No file selected", { theme: "colored" });
         return;
       }
-      
+
       // Check file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         toast.error("File too large. Maximum size is 5MB", { theme: "colored" });
         return;
       }
-      
+
       // Convert to base64
       const base64 = await new Promise<string | ArrayBuffer | null>((resolve) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onloadend = () => resolve(reader.result);
       });
-      
+
       if (!base64 || typeof base64 !== 'string') {
         throw new Error('Failed to convert image to base64');
       }
-      
+
       toast.info("Uploading image...", { theme: "colored" });
-      
+
       // Get auth signature
       const message = "I confirm I am an admin by signing this message.";
       const signature = Array.from(await signMessage(message));
       const auth = { address, message, signature };
-      
+
+      // Get the cluster from the project config
+      const cluster = selectedProjectData.config.cluster || "mainnet";
+
       // Upload using direct R2 upload
       const response = await backendApi.uploadOnR2({
         projectId: selectedProjectData.id,
@@ -684,26 +693,27 @@ const UpdateProjectJson = () => {
         fileName: "image.png",
         contentType: file.type,
         folder: "nft-metadata",
+        cluster: cluster as "mainnet" | "devnet",
       });
-      
+
       toast.success("NFT image uploaded successfully", { theme: "colored" });
       setUploadedFiles(prev => ({ ...prev, image: true }));
-      
+
       // Update the NFT config with the uploaded image URL
-      const baseUrl = selectedProjectData.config.cluster === "devnet" 
-        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/`
-        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/`;
-        
+      const isDevnet = selectedProjectData.config.cluster === "devnet";
+      const baseDomain = isDevnet ? 'files.staging.borgpad.com' : 'files.borgpad.com';
+      const baseUrl = `https://${baseDomain}/${selectedProjectData.id}/nft-metadata/`;
+
       const imageUrl = baseUrl + "image.png";
-      
+
       // Clone the project data for modification
       const updatedProject = { ...selectedProjectData };
-      
+
       // If NFT config doesn't exist, create it using the template
       if (!updatedProject.config.nftConfig) {
         const ticker = updatedProject.config.launchedTokenData.ticker || "TOKEN";
         const projectTitle = updatedProject.info.title || "Project";
-        
+
         updatedProject.config.nftConfig = {
           name: `${ticker} Liquidity Provider`,
           symbol: `bp${ticker}`,
@@ -711,18 +721,18 @@ const UpdateProjectJson = () => {
           imageUrl: imageUrl,
           collection: ""
         };
-        
+
         toast.success("NFT config created from template!", { theme: "colored" });
       } else {
         // If NFT config exists, just update the image URL
         updatedProject.config.nftConfig.imageUrl = imageUrl;
       }
-      
+
       // Update the form value
       setValue("project", updatedProject as ProjectModel, { shouldDirty: true });
       setNftImageUrl(imageUrl);
       toast.info("NFT config updated - don't forget to save changes!", { theme: "colored" });
-      
+
       // Verify files after upload
       setTimeout(() => verifyNftFiles(), 1000);
     } catch (error: unknown) {
@@ -743,12 +753,12 @@ const UpdateProjectJson = () => {
     if (!showMetadataModal || !selectedProjectData || !modalType) return null;
 
     const nftConfig = selectedProjectData.config.nftConfig;
-    
+
     // Generate file paths based on project and cluster
-    const baseUrl = selectedProjectData.config.cluster === "devnet" 
-      ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/`
-      : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/`;
-      
+    const isDevnet = selectedProjectData.config.cluster === "devnet";
+    const baseDomain = isDevnet ? 'files.staging.borgpad.com' : 'files.borgpad.com';
+    const baseUrl = `https://${baseDomain}/${selectedProjectData.id}/nft-metadata/`;
+
     const collectionMetadataUrl = baseUrl + "collection-metadata.json";
     const nftMetadataUrl = baseUrl + "metadata.json";
     const imageUrl = baseUrl + "image.png";
@@ -815,12 +825,12 @@ const UpdateProjectJson = () => {
           <div className="text-sm bg-gray-900 border border-gray-700 p-4 rounded-md mb-4 text-white">
             <p className="mb-2">Select an image file from your computer to upload.</p>
             <p className="text-yellow-400 mb-4">Image will be uploaded as {'image.png'} regardless of original filename.</p>
-            
+
             {!nftConfig && (
               <div className="mb-4 p-3 bg-blue-900/50 border border-blue-700 rounded-md">
                 <p className="text-blue-300 font-medium mb-1">NFT config will be auto-created with this template:</p>
                 <pre className="text-xs overflow-x-auto whitespace-pre-wrap text-blue-200">
-{`{
+                  {`{
   "name": "${selectedProjectData.config.launchedTokenData.ticker || 'TOKEN'} Liquidity Provider",
   "symbol": "bp${selectedProjectData.config.launchedTokenData.ticker || 'TOKEN'}",
   "description": "You enabled ${selectedProjectData.info.title || 'Project'} to launch via BorgPad. This NFT is your proof, hold it to claim your rewards.",
@@ -830,7 +840,7 @@ const UpdateProjectJson = () => {
                 </pre>
               </div>
             )}
-            
+
             {nftConfig?.imageUrl && (
               <div className="mt-4">
                 <p className="text-sm mb-2">Current image URL:</p>
@@ -840,12 +850,12 @@ const UpdateProjectJson = () => {
               </div>
             )}
           </div>
-          
+
           {nftConfig?.imageUrl && (
             <div className="flex justify-center mb-4 p-4 bg-gray-900 border border-gray-700 rounded-md">
-              <img 
-                src={nftConfig.imageUrl} 
-                alt="Current NFT Preview" 
+              <img
+                src={nftConfig.imageUrl}
+                alt="Current NFT Preview"
                 className="max-h-48 object-contain rounded shadow-lg"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = 'none';
@@ -853,7 +863,7 @@ const UpdateProjectJson = () => {
               />
             </div>
           )}
-          
+
           <input
             type="file"
             ref={fileInputRef}
@@ -868,10 +878,10 @@ const UpdateProjectJson = () => {
               }
             }}
           />
-          
+
           <div className="flex justify-center mt-4">
-            <Button 
-              btnText={nftConfig ? "Select Image File" : "Select Image & Create NFT Config"} 
+            <Button
+              btnText={nftConfig ? "Select Image File" : "Select Image & Create NFT Config"}
               size="md"
               onClick={() => fileInputRef.current?.click()}
               disabled={!isWalletConnected}
@@ -1078,8 +1088,8 @@ const UpdateProjectJson = () => {
                 <span>NFT Config Set</span>
               </div>
               {!statusResults.nftConfigSet && (
-                <Button 
-                  btnText="Create Nft Config" 
+                <Button
+                  btnText="Create Nft Config"
                   size="sm"
                   onClick={updateNftConfig}
                   disabled={!isWalletConnected}
@@ -1096,9 +1106,9 @@ const UpdateProjectJson = () => {
                 <div className="flex space-x-2 items-center">
                   <div className="text-sm text-red-400">
                     <a
-                      href={selectedProjectData.config.cluster === "devnet"
-                        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`
-                        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`}
+                      href={`https://${selectedProjectData.config.cluster === "devnet" 
+                        ? 'files.staging.borgpad.com' 
+                        : 'files.borgpad.com'}/${selectedProjectData.id}/nft-metadata/collection-metadata.json`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline"
@@ -1120,9 +1130,9 @@ const UpdateProjectJson = () => {
                     size="sm"
                     color="secondary"
                     onClick={() => {
-                      const baseUrl = selectedProjectData.config.cluster === "devnet"
-                        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/`
-                        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/`;
+                      const isDevnet = selectedProjectData.config.cluster === "devnet";
+                      const baseDomain = isDevnet ? 'files.staging.borgpad.com' : 'files.borgpad.com';
+                      const baseUrl = `https://${baseDomain}/${selectedProjectData.id}/nft-metadata/`;
 
                       window.open(baseUrl + "collection-metadata.json", "_blank");
                     }}
@@ -1140,9 +1150,9 @@ const UpdateProjectJson = () => {
                 <div className="flex space-x-2 items-center">
                   <div className="text-sm text-red-400">
                     <a
-                      href={selectedProjectData.config.cluster === "devnet"
-                        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/image.png`
-                        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/image.png`}
+                      href={`https://${selectedProjectData.config.cluster === "devnet" 
+                        ? 'files.staging.borgpad.com' 
+                        : 'files.borgpad.com'}/${selectedProjectData.id}/nft-metadata/image.png`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline"
@@ -1164,9 +1174,9 @@ const UpdateProjectJson = () => {
                     size="sm"
                     color="secondary"
                     onClick={() => {
-                      const imageUrl = selectedProjectData.config.cluster === "devnet"
-                        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/image.png`
-                        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/image.png`;
+                      const isDevnet = selectedProjectData.config.cluster === "devnet";
+                      const baseDomain = isDevnet ? 'files.staging.borgpad.com' : 'files.borgpad.com';
+                      const imageUrl = `https://${baseDomain}/${selectedProjectData.id}/nft-metadata/image.png`;
 
                       window.open(imageUrl, "_blank");
                     }}
@@ -1183,9 +1193,9 @@ const UpdateProjectJson = () => {
                 <div className="flex space-x-2 items-center">
                   <div className="text-sm text-red-400">
                     <a
-                      href={selectedProjectData.config.cluster === "devnet"
-                        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/metadata.json`
-                        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/metadata.json`}
+                      href={`https://${selectedProjectData.config.cluster === "devnet" 
+                        ? 'files.staging.borgpad.com' 
+                        : 'files.borgpad.com'}/${selectedProjectData.id}/nft-metadata/metadata.json`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline"
@@ -1207,9 +1217,9 @@ const UpdateProjectJson = () => {
                     size="sm"
                     color="secondary"
                     onClick={() => {
-                      const metadataUrl = selectedProjectData.config.cluster === "devnet"
-                        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/metadata.json`
-                        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/metadata.json`;
+                      const isDevnet = selectedProjectData.config.cluster === "devnet";
+                      const baseDomain = isDevnet ? 'files.staging.borgpad.com' : 'files.borgpad.com';
+                      const metadataUrl = `https://${baseDomain}/${selectedProjectData.id}/nft-metadata/metadata.json`;
 
                       window.open(metadataUrl, "_blank");
                     }}

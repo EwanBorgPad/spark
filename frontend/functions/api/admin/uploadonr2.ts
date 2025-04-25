@@ -7,8 +7,7 @@ type ENV = {
   DB: D1Database
   ADMIN_ADDRESSES: string
   R2_BUCKET_NAME: string
-  BUCKET: R2Bucket
-  R2_PUBLIC_URL_BASE_PATH: string
+  BUCKET: R2Bucket  // Direct bucket binding
 }
 
 // Create an auth schema as it's not exported from models
@@ -25,6 +24,7 @@ type UploadOnR2Request = {
   fileName: string
   contentType: string
   folder?: string  // Optional folder path within the project directory
+  cluster?: "mainnet" | "devnet"  // Add cluster parameter
 }
 
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
@@ -36,9 +36,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     
     // Parse request
     const request = await ctx.request.json() as UploadOnR2Request
-    const { auth, projectId, fileData, fileName, contentType, folder = 'nft-metadata' } = request
+    const { auth, projectId, fileData, fileName, contentType, folder = 'nft-metadata', cluster = 'mainnet' } = request
 
-    console.log(`Attempting to upload file: ${fileName} to folder: ${projectId}/${folder}`);
+    console.log(`Attempting to upload file: ${fileName} to folder: ${projectId}/${folder}, cluster: ${cluster}`);
 
     // Validate request
     if (!projectId || !auth || !fileData || !fileName || !contentType) {
@@ -88,46 +88,36 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const filePath = `${projectId}/${folder}/${fileName}`
     console.log(`Target file path: ${filePath}`);
     
-    // Check if R2 bucket is available
+    // Check if the bucket is available
     if (!ctx.env.BUCKET) {
-      console.warn("BUCKET binding is undefined. Available bindings:", Object.keys(ctx.env));
-      
-      // In development without R2, we'll fake a successful response
-      // Construct public URL
-      const publicUrl = new URL(ctx.env.R2_PUBLIC_URL_BASE_PATH || 'https://files.borgpad.com')
-      publicUrl.pathname = filePath
-      
+      console.warn("BUCKET binding not available");
       return jsonResponse({
-        message: 'Development mode: File upload simulated successfully (BUCKET binding not available)',
-        publicUrl: publicUrl.href,
-        devMode: true
-      })
+        message: 'No BUCKET binding available in the environment',
+        success: false
+      }, 500)
     }
     
-    // Log bucket info
-    console.log("R2 bucket binding found. Attempting to upload...");
-    
     try {
-      // Upload file to R2 (only if bucket is available)
+      // Upload file to R2 using BUCKET binding
       await ctx.env.BUCKET.put(filePath, fileBuffer, {
         httpMetadata: {
           contentType: contentType
         }
       });
-      console.log("File uploaded successfully to R2!");
+      console.log("File uploaded successfully to BUCKET!");
     } catch (error) {
-      console.error("Error during R2 put operation:", error);
-      throw new Error(`R2 upload failed: ${error instanceof Error ? error.message : String(error)}`);
+      console.error("Error during BUCKET put operation:", error);
+      throw new Error(`BUCKET upload failed: ${error instanceof Error ? error.message : String(error)}`);
     }
 
-    // Construct public URL
-    const publicUrl = new URL(ctx.env.R2_PUBLIC_URL_BASE_PATH || 'https://files.borgpad.com')
-    publicUrl.pathname = filePath
-    console.log(`File URL: ${publicUrl.href}`);
+    // Determine the correct domain based on the provided cluster parameter
+    const bucketDomain = cluster === "devnet" ? 'files.staging.borgpad.com' : 'files.borgpad.com';
+    const publicUrl = `https://${bucketDomain}/${filePath}`;
+    console.log(`File URL: ${publicUrl}`);
 
     return jsonResponse({
       message: 'File uploaded successfully',
-      publicUrl: publicUrl.href
+      publicUrl: publicUrl
     }, {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -137,9 +127,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     })
   } catch (e) {
     await reportError(db, e)
-    console.error("Error uploading file to R2:", e)
+    console.error("Error uploading file to BUCKET:", e)
     return jsonResponse({
-      message: `Error uploading file to R2: ${e instanceof Error ? e.message : String(e)}`
+      message: `Error uploading file to BUCKET: ${e instanceof Error ? e.message : String(e)}`
     }, 500)
   }
 }

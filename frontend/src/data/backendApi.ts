@@ -731,6 +731,7 @@ type UploadOnR2Args = {
   fileName: string;
   contentType: string;
   folder?: string;  // Optional folder path within the project directory
+  cluster?: "mainnet" | "devnet";  // Add cluster parameter
 };
 
 type UploadOnR2Response = {
