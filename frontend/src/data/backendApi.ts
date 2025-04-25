@@ -53,6 +53,7 @@ const GET_SESSION = API_BASE_URL + "/session"
 const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
 const CHECK_TOKEN_ACCOUNT = API_BASE_URL + "/admin/checktokenaccount"
 const CREATE_NFT_COLLECTION = API_BASE_URL + "/createnftcollection"
+const UPLOAD_ON_R2 = API_BASE_URL + "/admin/uploadonr2"
 
 // analysis & analyst
 const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
@@ -718,6 +719,44 @@ const createNftCollection = async (args: CreateNftCollectionArgs): Promise<Creat
   return await response.json()
 }
 
+// Add new API for uploading files directly to R2
+type UploadOnR2Args = {
+  projectId: string;
+  auth: {
+    address: string;
+    message: string;
+    signature: number[];
+  };
+  fileData: string;  // Base64 encoded file data
+  fileName: string;
+  contentType: string;
+  folder?: string;  // Optional folder path within the project directory
+};
+
+type UploadOnR2Response = {
+  message: string;
+  publicUrl: string;
+};
+
+const uploadOnR2 = async (args: UploadOnR2Args): Promise<UploadOnR2Response> => {
+  const url = new URL(UPLOAD_ON_R2, window.location.href)
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(args),
+  })
+  
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.message || 'Failed to upload file to R2')
+  }
+  
+  return await response.json()
+}
+
 export const backendApi = {
   getProject,
   getProjects,
@@ -751,4 +790,5 @@ export const backendApi = {
   isAdmin,
   checkTokenAccount,
   createNftCollection,
+  uploadOnR2,
 }

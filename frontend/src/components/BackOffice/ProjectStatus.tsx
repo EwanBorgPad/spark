@@ -47,6 +47,15 @@ const UpdateProjectJson = () => {
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0)
   const [lastNftTxSignature, setLastNftTxSignature] = useState<string | null>(null)
   const [isCreatingCollection, setIsCreatingCollection] = useState(false)
+  const [uploadedFiles, setUploadedFiles] = useState({
+    collectionMetadata: false,
+    metadata: false,
+    image: false
+  })
+  const [nftImageUrl, setNftImageUrl] = useState<string | null>(null)
+  const [showMetadataModal, setShowMetadataModal] = useState(false)
+  const [modalType, setModalType] = useState<'collection' | 'nft' | 'image' | null>(null)
+  const [fileInputRef, setFileInputRef] = useState<React.RefObject<HTMLInputElement>>(React.createRef());
 
   const { data, refetch, isLoading: isLoadingProjects } = useQuery<GetProjectsResponse>({
     queryFn: () => backendApi.getProjects({ page: 1, limit: 999 }),
@@ -72,17 +81,17 @@ const UpdateProjectJson = () => {
 
   const upcomingProjects = useMemo(() => {
     if (!data?.projects) return []
-    
+
     const now = new Date()
-    
+
     // Filter projects that have a SALE_OPENS event in the future
     return data.projects
       .filter(project => {
         const saleOpensEvent = project.info.timeline.find(event => event.id === "SALE_CLOSES")
-        
-        return saleOpensEvent && 
-               saleOpensEvent.date && 
-               new Date(saleOpensEvent.date) > now
+
+        return saleOpensEvent &&
+          saleOpensEvent.date &&
+          new Date(saleOpensEvent.date) > now
       })
       .sort((a, b) => {
         const aDate = new Date(a.info.timeline.find(event => event.id === "SALE_OPENS")?.date || 0)
@@ -99,7 +108,7 @@ const UpdateProjectJson = () => {
     if (currentProjectIndex > 0) {
       const newIndex = currentProjectIndex - 1;
       setCurrentProjectIndex(newIndex);
-      
+
       // Also select the project in the form
       const projectToSelect = upcomingProjects[newIndex];
       if (projectToSelect) {
@@ -112,7 +121,7 @@ const UpdateProjectJson = () => {
     if (currentProjectIndex < upcomingProjects.length - 1) {
       const newIndex = currentProjectIndex + 1;
       setCurrentProjectIndex(newIndex);
-      
+
       // Also select the project in the form
       const projectToSelect = upcomingProjects[newIndex];
       if (projectToSelect) {
@@ -132,7 +141,7 @@ const UpdateProjectJson = () => {
     const selectedProject = data.projects.find((project) => project.id === projectId)
     if (!selectedProject) return
     setValue("project", selectedProject, { shouldDirty: false, shouldTouch: false, shouldValidate: false })
-    
+
     // Reset status checks when selecting a new project
     setStatusResults({
       lbpWalletSet: null,
@@ -198,36 +207,36 @@ const UpdateProjectJson = () => {
 
   const checkLbpWalletSet = () => {
     if (!selectedProjectData) return false
-    return selectedProjectData.config.lbpWalletAddress !== null && 
-           selectedProjectData.config.lbpWalletAddress !== undefined && 
-           selectedProjectData.config.lbpWalletAddress !== ""
+    return selectedProjectData.config.lbpWalletAddress !== null &&
+      selectedProjectData.config.lbpWalletAddress !== undefined &&
+      selectedProjectData.config.lbpWalletAddress !== ""
   }
 
   const checkUsdcTokenAccount = async () => {
     if (!selectedProjectData?.config.lbpWalletAddress) return false
-    
+
     try {
       setCheckingStatus(prev => ({ ...prev, usdcTokenAccount: true }))
-      
+
       // Call backend API to check if token account exists for the LBP wallet
       const tokenMint = selectedProjectData.config.raisedTokenData.mintAddress
       const walletAddress = selectedProjectData.config.lbpWalletAddress
       const projectId = selectedProjectData.id
-      
+
       // Return false if tokenMint is null
       if (!tokenMint) {
         console.error("Token mint address is null")
         setCheckingStatus(prev => ({ ...prev, usdcTokenAccount: false }))
         return false
       }
-      
+
       // This assumes you will implement a checkTokenAccount endpoint in your backend
       const response = await backendApi.checkTokenAccount({
         walletAddress,
         tokenMint,
         projectId,
       })
-      
+
       setCheckingStatus(prev => ({ ...prev, usdcTokenAccount: false }))
       return response.exists
     } catch (error) {
@@ -239,25 +248,25 @@ const UpdateProjectJson = () => {
 
   const createUsdcTokenAccount = async () => {
     if (!selectedProjectData?.config.lbpWalletAddress || !isWalletConnected) return
-    
+
     try {
       // Ensure lbpWalletAddress is not null with a type assertion
       const lbpAddress = selectedProjectData.config.lbpWalletAddress as string;
-      
+
       // Handle potential null tokenMint
       const tokenMint = selectedProjectData.config.raisedTokenData.mintAddress;
       if (!tokenMint) {
         throw new Error("Token mint address is null");
       }
-      
+
       // Ensure wallet provider is valid
       if (!walletProvider) {
         throw new Error("No wallet provider selected");
       }
-      
+
       // Get the cluster from the project config
       const cluster = selectedProjectData.config.cluster || "mainnet";
-      
+
       // Get the transaction for creating the token account and sending a minimum amount
       const signature = await sendTokenTo({
         walletAddress: address,
@@ -269,34 +278,48 @@ const UpdateProjectJson = () => {
         walletProvider: walletProvider as "PHANTOM" | "BACKPACK" | "SOLFLARE",
         cluster: cluster as "mainnet" | "devnet"
       })
-      
+
       // Show success message with signature and link to Solscan
       toast.success(
         <div>
           <p>Token account created successfully!</p>
           <p>
-            Transaction: <a 
-              href={`https://solscan.io/tx/${signature}${cluster === "devnet" ? "?cluster=devnet" : ""}`} 
-              target="_blank" 
+            Transaction: <a
+              href={`https://solscan.io/tx/${signature}${cluster === "devnet" ? "?cluster=devnet" : ""}`}
+              target="_blank"
               rel="noopener noreferrer"
               className="underline"
             >
               {signature.slice(0, 8)}...{signature.slice(-8)}
             </a>
           </p>
-        </div>, 
+        </div>,
         { theme: "colored" }
       );
-      
+
       // Re-check status after a short delay to allow the transaction to confirm
       setTimeout(async () => {
         const result = await checkUsdcTokenAccount();
         setStatusResults(prev => ({ ...prev, usdcTokenAccount: result }));
       }, 2000);
-      
+
     } catch (error) {
       console.error("Error creating token account:", error)
       toast.error("Failed to create token account: " + (error as Error).message, { theme: "colored" })
+    }
+  }
+
+  // Add this function to manually verify the NFT files
+  const verifyNftFiles = async () => {
+    if (!selectedProjectData) return
+
+    const hasMetadataFiles = await checkNftMetadataFiles()
+    setStatusResults(prev => ({ ...prev, nftMetadataFiles: hasMetadataFiles }))
+
+    if (hasMetadataFiles) {
+      toast.success("All NFT files verified successfully!", { theme: "colored" })
+    } else {
+      toast.error("Some NFT files are still missing. Please check the paths below.", { theme: "colored" })
     }
   }
 
@@ -306,7 +329,11 @@ const UpdateProjectJson = () => {
     try {
       setCheckingStatus(prev => ({ ...prev, nftMetadataFiles: true }))
       const projectId = selectedProjectData.id
-      const metadataUrl = `https://files.borgpad.com/${projectId}/nft-metadata/collection-metadata.json`
+      const isDevnet = selectedProjectData.config.cluster === "devnet";
+      const baseUrl = isDevnet 
+        ? `https://files.staging.borgpad.com/` 
+        : `https://files.borgpad.com/`;
+      const metadataUrl = `${baseUrl}${projectId}/nft-metadata/collection-metadata.json`
 
       const response = await fetch(metadataUrl, { method: 'HEAD' })
       setCheckingStatus(prev => ({ ...prev, nftMetadataFiles: false }))
@@ -329,9 +356,9 @@ const UpdateProjectJson = () => {
     if (!selectedProjectData) return false
     const nftConfig = selectedProjectData.config.nftConfig
     // Check if nftConfig exists and if collection is defined and not empty
-    return !!nftConfig && 
-           !!nftConfig.collection && 
-           nftConfig.collection.trim() !== ""
+    return !!nftConfig &&
+      !!nftConfig.collection &&
+      nftConfig.collection.trim() !== ""
   }
 
   const createCollectionAddress = async () => {
@@ -345,7 +372,7 @@ const UpdateProjectJson = () => {
 
       const projectId = selectedProjectData.id
       const nftConfig = selectedProjectData.config.nftConfig
-      
+
       // Get the cluster from the project config
       const cluster = selectedProjectData.config.cluster || "mainnet";
 
@@ -378,7 +405,7 @@ const UpdateProjectJson = () => {
         }
 
         setValue("project", updatedProject as ProjectModel, { shouldDirty: true })
-        
+
         // Show success message with transaction link and warning if applicable
         toast.success(
           <div>
@@ -401,14 +428,14 @@ const UpdateProjectJson = () => {
 
   const checkTiersHaveStartDates = () => {
     if (!selectedProjectData) return false
-    
+
     const tiers = selectedProjectData.info.tiers
     if (!tiers || tiers.length === 0) return false
-    
+
     // Check that all tiers have benefits and benefits.startDate is set
-    return tiers.every(tier => 
-      tier.benefits && 
-      tier.benefits.startDate !== null && 
+    return tiers.every(tier =>
+      tier.benefits &&
+      tier.benefits.startDate !== null &&
       tier.benefits.startDate !== undefined
     )
   }
@@ -443,23 +470,477 @@ const UpdateProjectJson = () => {
     setStatusResults(prev => ({ ...prev, tiersHaveStartDates }))
   }
 
+  // New function to update NFT config after uploads
+  const updateNftConfig = () => {
+    if (!selectedProjectData) return
+
+    try {
+      // Create NFT config if it doesn't exist
+      const updatedProject = { ...selectedProjectData }
+      
+      // Construct the image URL based on the cluster
+      const baseUrl = selectedProjectData.config.cluster === "devnet" 
+        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/`
+        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/`;
+        
+      const imageUrl = baseUrl + "image.png";
+      const ticker = selectedProjectData.config.launchedTokenData.ticker || "TOKEN";
+      const projectTitle = selectedProjectData.info.title || "Project";
+
+      if (!updatedProject.config.nftConfig) {
+        updatedProject.config.nftConfig = {
+          name: `${ticker} Liquidity Provider`,
+          symbol: `bp${ticker}`,
+          description: `You enabled ${projectTitle} to launch via BorgPad. This NFT is your proof, hold it to claim your rewards.`,
+          imageUrl: imageUrl,
+          collection: ""
+        }
+      } else {
+        // Update the existing config
+        updatedProject.config.nftConfig.name = `${ticker} Liquidity Provider`;
+        updatedProject.config.nftConfig.symbol = `bp${ticker}`;
+        updatedProject.config.nftConfig.description = `You enabled ${projectTitle} to launch via BorgPad. This NFT is your proof, hold it to claim your rewards.`;
+        updatedProject.config.nftConfig.imageUrl = imageUrl;
+      }
+
+      // Update the form value
+      setValue("project", updatedProject as ProjectModel, { shouldDirty: true })
+      setNftImageUrl(imageUrl)
+      
+      toast.info("NFT config updated - don't forget to save changes!", { theme: "colored" })
+
+      // Re-run checks
+      runAllChecks()
+    } catch (error) {
+      console.error("Error updating NFT config:", error)
+      toast.error("Failed to update NFT config", { theme: "colored" })
+    }
+  }
+
+  // Generate collection metadata JSON from NFT config
+  const generateCollectionMetadata = (nftConfig: ProjectModel['config']['nftConfig']) => {
+    if (!nftConfig) return null;
+
+    return {
+      name: nftConfig.name,
+      symbol: nftConfig.symbol,
+      description: nftConfig.description,
+      image: nftConfig.imageUrl,
+      isCollection: true
+    };
+  };
+
+  // Generate NFT metadata JSON from NFT config
+  const generateNftMetadata = (nftConfig: ProjectModel['config']['nftConfig']) => {
+    if (!nftConfig) return null;
+
+    return {
+      name: nftConfig.name,
+      symbol: nftConfig.symbol,
+      description: nftConfig.description,
+      image: nftConfig.imageUrl
+    };
+  };
+
+  // Upload collection metadata JSON
+  const uploadCollectionMetadataJson = async () => {
+    if (!selectedProjectData || !isWalletConnected) return;
+
+    try {
+      const nftConfig = selectedProjectData.config.nftConfig;
+
+      if (!nftConfig) {
+        toast.error("NFT config not set. Please set up NFT config first.", { theme: "colored" });
+        return;
+      }
+
+      // Generate metadata JSON
+      const metadataJson = generateCollectionMetadata(nftConfig);
+      if (!metadataJson) {
+        toast.error("Could not generate metadata JSON", { theme: "colored" });
+        return;
+      }
+
+      // Convert to JSON string and then to base64
+      const jsonString = JSON.stringify(metadataJson, null, 2);
+      const fileData = btoa(jsonString);
+
+      // Get auth signature
+      const message = "I confirm I am an admin by signing this message.";
+      const signature = Array.from(await signMessage(message));
+      const auth = { address, message, signature };
+
+      // Upload using direct R2 upload
+      const response = await backendApi.uploadOnR2({
+        projectId: selectedProjectData.id,
+        auth,
+        fileData,
+        fileName: "collection-metadata.json",
+        contentType: "application/json",
+        folder: "nft-metadata",
+      });
+
+      toast.success("Collection metadata JSON uploaded successfully", { theme: "colored" });
+      setUploadedFiles(prev => ({ ...prev, collectionMetadata: true }));
+
+      // Verify files after upload
+      setTimeout(() => verifyNftFiles(), 1000);
+    } catch (error: unknown) {
+      console.error("Error uploading collection metadata:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Upload failed: ${errorMessage}`, { theme: "colored" });
+    }
+  };
+
+  // Upload NFT metadata JSON
+  const uploadNftMetadataJson = async () => {
+    if (!selectedProjectData || !isWalletConnected) return;
+
+    try {
+      const nftConfig = selectedProjectData.config.nftConfig;
+
+      if (!nftConfig) {
+        toast.error("NFT config not set. Please set up NFT config first.", { theme: "colored" });
+        return;
+      }
+
+      // Generate metadata JSON
+      const metadataJson = generateNftMetadata(nftConfig);
+      if (!metadataJson) {
+        toast.error("Could not generate metadata JSON", { theme: "colored" });
+        return;
+      }
+
+      // Convert to JSON string and then to base64
+      const jsonString = JSON.stringify(metadataJson, null, 2);
+      const fileData = btoa(jsonString);
+
+      // Get auth signature
+      const message = "I confirm I am an admin by signing this message.";
+      const signature = Array.from(await signMessage(message));
+      const auth = { address, message, signature };
+
+      // Upload using direct R2 upload
+      const response = await backendApi.uploadOnR2({
+        projectId: selectedProjectData.id,
+        auth,
+        fileData,
+        fileName: "metadata.json",
+        contentType: "application/json",
+        folder: "nft-metadata",
+      });
+
+      toast.success("NFT metadata JSON uploaded successfully", { theme: "colored" });
+      setUploadedFiles(prev => ({ ...prev, metadata: true }));
+
+      // Verify files after upload
+      setTimeout(() => verifyNftFiles(), 1000);
+    } catch (error: unknown) {
+      console.error("Error uploading NFT metadata:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Upload failed: ${errorMessage}`, { theme: "colored" });
+    }
+  };
+
+  // Create a new function for local file upload
+  const uploadLocalImage = async (file: File) => {
+    if (!selectedProjectData || !isWalletConnected) return;
+
+    try {
+      if (!file) {
+        toast.error("No file selected", { theme: "colored" });
+        return;
+      }
+      
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File too large. Maximum size is 5MB", { theme: "colored" });
+        return;
+      }
+      
+      // Convert to base64
+      const base64 = await new Promise<string | ArrayBuffer | null>((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = () => resolve(reader.result);
+      });
+      
+      if (!base64 || typeof base64 !== 'string') {
+        throw new Error('Failed to convert image to base64');
+      }
+      
+      toast.info("Uploading image...", { theme: "colored" });
+      
+      // Get auth signature
+      const message = "I confirm I am an admin by signing this message.";
+      const signature = Array.from(await signMessage(message));
+      const auth = { address, message, signature };
+      
+      // Upload using direct R2 upload
+      const response = await backendApi.uploadOnR2({
+        projectId: selectedProjectData.id,
+        auth,
+        fileData: base64,
+        fileName: "image.png",
+        contentType: file.type,
+        folder: "nft-metadata",
+      });
+      
+      toast.success("NFT image uploaded successfully", { theme: "colored" });
+      setUploadedFiles(prev => ({ ...prev, image: true }));
+      
+      // Update the NFT config with the uploaded image URL
+      const baseUrl = selectedProjectData.config.cluster === "devnet" 
+        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/`
+        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/`;
+        
+      const imageUrl = baseUrl + "image.png";
+      
+      // Clone the project data for modification
+      const updatedProject = { ...selectedProjectData };
+      
+      // If NFT config doesn't exist, create it using the template
+      if (!updatedProject.config.nftConfig) {
+        const ticker = updatedProject.config.launchedTokenData.ticker || "TOKEN";
+        const projectTitle = updatedProject.info.title || "Project";
+        
+        updatedProject.config.nftConfig = {
+          name: `${ticker} Liquidity Provider`,
+          symbol: `bp${ticker}`,
+          description: `You enabled ${projectTitle} to launch via BorgPad. This NFT is your proof, hold it to claim your rewards.`,
+          imageUrl: imageUrl,
+          collection: ""
+        };
+        
+        toast.success("NFT config created from template!", { theme: "colored" });
+      } else {
+        // If NFT config exists, just update the image URL
+        updatedProject.config.nftConfig.imageUrl = imageUrl;
+      }
+      
+      // Update the form value
+      setValue("project", updatedProject as ProjectModel, { shouldDirty: true });
+      setNftImageUrl(imageUrl);
+      toast.info("NFT config updated - don't forget to save changes!", { theme: "colored" });
+      
+      // Verify files after upload
+      setTimeout(() => verifyNftFiles(), 1000);
+    } catch (error: unknown) {
+      console.error("Error uploading image:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Upload failed: ${errorMessage}`, { theme: "colored" });
+    }
+  };
+
+  // Add function to open the modal
+  const openMetadataModal = (type: 'collection' | 'nft' | 'image') => {
+    setModalType(type);
+    setShowMetadataModal(true);
+  };
+
+  // Add modal component for the metadata preview
+  const MetadataModal = () => {
+    if (!showMetadataModal || !selectedProjectData || !modalType) return null;
+
+    const nftConfig = selectedProjectData.config.nftConfig;
+    
+    // Generate file paths based on project and cluster
+    const baseUrl = selectedProjectData.config.cluster === "devnet" 
+      ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/`
+      : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/`;
+      
+    const collectionMetadataUrl = baseUrl + "collection-metadata.json";
+    const nftMetadataUrl = baseUrl + "metadata.json";
+    const imageUrl = baseUrl + "image.png";
+
+    const closeModal = () => {
+      setShowMetadataModal(false);
+      setModalType(null);
+    };
+
+    // Properly type the uploadAction variable
+    let content: React.ReactNode = null;
+    let uploadAction: (() => Promise<void>) | null = null;
+    let title = '';
+
+    if (modalType === 'collection') {
+      title = 'Collection Metadata JSON';
+      uploadAction = uploadCollectionMetadataJson;
+      content = (
+        <div>
+          <div className="text-sm mb-4 bg-gray-800 p-3 rounded-md">
+            <p className="mb-2 text-yellow-300">File will be uploaded to:</p>
+            <code className="text-green-300 break-all">{collectionMetadataUrl}</code>
+          </div>
+          <div className="text-sm bg-gray-900 border border-gray-700 p-4 rounded-md font-mono overflow-x-auto whitespace-pre text-green-400">
+            {`{
+  "name": "${nftConfig?.name || 'Name not set'}",
+  "symbol": "${nftConfig?.symbol || 'Symbol not set'}",
+  "description": "${nftConfig?.description || 'Description not set'}",
+  "image": "${nftConfig?.imageUrl || 'Image URL not set'}",
+  "isCollection": true
+}`}
+          </div>
+        </div>
+      );
+    } else if (modalType === 'nft') {
+      title = 'NFT Metadata JSON';
+      uploadAction = uploadNftMetadataJson;
+      content = (
+        <div>
+          <div className="text-sm mb-4 bg-gray-800 p-3 rounded-md">
+            <p className="mb-2 text-yellow-300">File will be uploaded to:</p>
+            <code className="text-green-300 break-all">{nftMetadataUrl}</code>
+          </div>
+          <div className="text-sm bg-gray-900 border border-gray-700 p-4 rounded-md font-mono overflow-x-auto whitespace-pre text-green-400">
+            {`{
+  "name": "${nftConfig?.name || 'Name not set'}",
+  "symbol": "${nftConfig?.symbol || 'Symbol not set'}",
+  "description": "${nftConfig?.description || 'Description not set'}",
+  "image": "${nftConfig?.imageUrl || 'Image URL not set'}"
+}`}
+          </div>
+        </div>
+      );
+    } else if (modalType === 'image') {
+      title = 'NFT Image Upload';
+      // We'll replace uploadAction with a file input handled in the modal
+      uploadAction = null; // We'll trigger the upload when file is selected
+      content = (
+        <div>
+          <div className="text-sm mb-4 bg-gray-800 p-3 rounded-md">
+            <p className="mb-2 text-yellow-300">Image will be uploaded to:</p>
+            <code className="text-green-300 break-all">{imageUrl}</code>
+          </div>
+          <div className="text-sm bg-gray-900 border border-gray-700 p-4 rounded-md mb-4 text-white">
+            <p className="mb-2">Select an image file from your computer to upload.</p>
+            <p className="text-yellow-400 mb-4">Image will be uploaded as {'image.png'} regardless of original filename.</p>
+            
+            {!nftConfig && (
+              <div className="mb-4 p-3 bg-blue-900/50 border border-blue-700 rounded-md">
+                <p className="text-blue-300 font-medium mb-1">NFT config will be auto-created with this template:</p>
+                <pre className="text-xs overflow-x-auto whitespace-pre-wrap text-blue-200">
+{`{
+  "name": "${selectedProjectData.config.launchedTokenData.ticker || 'TOKEN'} Liquidity Provider",
+  "symbol": "bp${selectedProjectData.config.launchedTokenData.ticker || 'TOKEN'}",
+  "description": "You enabled ${selectedProjectData.info.title || 'Project'} to launch via BorgPad. This NFT is your proof, hold it to claim your rewards.",
+  "imageUrl": "${imageUrl}",
+  "collection": ""
+}`}
+                </pre>
+              </div>
+            )}
+            
+            {nftConfig?.imageUrl && (
+              <div className="mt-4">
+                <p className="text-sm mb-2">Current image URL:</p>
+                <div className="break-all font-mono text-green-400">
+                  {nftConfig.imageUrl}
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {nftConfig?.imageUrl && (
+            <div className="flex justify-center mb-4 p-4 bg-gray-900 border border-gray-700 rounded-md">
+              <img 
+                src={nftConfig.imageUrl} 
+                alt="Current NFT Preview" 
+                className="max-h-48 object-contain rounded shadow-lg"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+          
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                uploadLocalImage(file).then(() => {
+                  closeModal();
+                });
+              }
+            }}
+          />
+          
+          <div className="flex justify-center mt-4">
+            <Button 
+              btnText={nftConfig ? "Select Image File" : "Select Image & Create NFT Config"} 
+              size="md"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={!isWalletConnected}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+        <div className="bg-black border border-bd-secondary p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold text-white">{title}</h3>
+            <button
+              className="text-fg-secondary hover:text-white"
+              onClick={closeModal}
+            >
+              ✕
+            </button>
+          </div>
+
+          {content}
+
+          <div className="flex justify-end mt-6 space-x-3">
+            <Button
+              btnText="Cancel"
+              color="secondary"
+              size="sm"
+              onClick={closeModal}
+            />
+            {uploadAction && (
+              <Button
+                btnText={modalType === 'collection'
+                  ? 'Upload Collection Metadata'
+                  : modalType === 'nft'
+                    ? 'Upload NFT Metadata'
+                    : 'Upload Image'}
+                size="sm"
+                onClick={() => {
+                  uploadAction();
+                  closeModal();
+                }}
+                disabled={!isWalletConnected || !nftConfig}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <main className="z-[10] flex h-full w-full max-w-full flex-col items-center gap-10 py-[100px] font-normal text-fg-primary lg:py-[20px]">
       <div className="flex w-full max-w-3xl justify-between items-center">
         <h1 className="text-center text-2xl font-semibold mx-auto">Project Status</h1>
-        <Button 
-          btnText={isLoadingProjects ? "Refreshing..." : "Refresh Data"} 
+        <Button
+          btnText={isLoadingProjects ? "Refreshing..." : "Refresh Data"}
           size="sm"
           onClick={refreshData}
           disabled={isLoadingProjects}
           className="ml-4"
         />
       </div>
-      
+
       {nextProjectToGoLive && (
         <div className="w-full max-w-3xl bg-bg-secondary p-4 mb-4 rounded-lg border border-bd-secondary">
           <div className="flex justify-between items-center mb-2">
-            <button 
+            <button
               className={`p-2 rounded text-xl ${currentProjectIndex === 0 ? 'text-gray-500 cursor-not-allowed' : 'text-white hover:bg-bg-tertiary'}`}
               onClick={goToPreviousProject}
               disabled={currentProjectIndex === 0}
@@ -469,7 +950,7 @@ const UpdateProjectJson = () => {
             <h2 className="text-xl font-medium">
               {`Upcoming Project ${currentProjectIndex + 1}/${upcomingProjects.length}`}
             </h2>
-            <button 
+            <button
               className={`p-2 rounded text-xl ${currentProjectIndex >= upcomingProjects.length - 1 ? 'text-gray-500 cursor-not-allowed' : 'text-white hover:bg-bg-tertiary'}`}
               onClick={goToNextProject}
               disabled={currentProjectIndex >= upcomingProjects.length - 1}
@@ -504,7 +985,7 @@ const UpdateProjectJson = () => {
               <span className="truncate">
                 {nextProjectToGoLive.config.lbpWalletAddress ? (
                   <>
-                    <a 
+                    <a
                       href={`https://solscan.io/account/${nextProjectToGoLive.config.lbpWalletAddress}?cluster=${nextProjectToGoLive.config.cluster || 'devnet'}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -522,7 +1003,7 @@ const UpdateProjectJson = () => {
               <span className="font-medium">NFT Collection:</span>
               <span className="truncate">
                 {nextProjectToGoLive.config.nftConfig?.collection ? (
-                  <a 
+                  <a
                     href={`https://solscan.io/token/${nextProjectToGoLive.config.nftConfig.collection}?cluster=${nextProjectToGoLive.config.cluster || 'devnet'}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -535,9 +1016,9 @@ const UpdateProjectJson = () => {
                 )}
               </span>
             </div>
-            <Button 
-              btnText="Select This Project" 
-              size="sm" 
+            <Button
+              btnText="Select This Project"
+              size="sm"
               className="mt-2"
               onClick={() => selectProject(nextProjectToGoLive.id)}
             />
@@ -552,19 +1033,19 @@ const UpdateProjectJson = () => {
         selected={selectedProjectData?.id || ""}
         options={dropdownOptions}
       />
-      
+
       {selectedProjectData && (
         <div className="w-full max-w-3xl bg-bg-secondary p-4 mb-4 rounded-lg border border-bd-secondary">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-medium">Project Readiness Checklist</h2>
-            <Button 
-              btnText="Run Checks" 
+            <Button
+              btnText="Run Checks"
               size="sm"
               onClick={runAllChecks}
               disabled={!isWalletConnected}
             />
           </div>
-          
+
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
@@ -575,59 +1056,121 @@ const UpdateProjectJson = () => {
                 <span className="text-sm text-red-400">Please set LBP wallet address in project config</span>
               )}
             </div>
-            
+
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <StatusIcon isValid={statusResults.usdcTokenAccount} isLoading={checkingStatus.usdcTokenAccount} />
                 <span>USDC Token Account Created</span>
               </div>
               {statusResults.usdcTokenAccount === false && statusResults.lbpWalletSet && (
-                <Button 
-                  btnText="Create USDC Account" 
+                <Button
+                  btnText="Create USDC Account"
                   size="sm"
                   onClick={createUsdcTokenAccount}
                   disabled={!isWalletConnected}
                 />
               )}
             </div>
-            
+
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <StatusIcon isValid={statusResults.nftConfigSet} />
+                <span>NFT Config Set</span>
+              </div>
+              {!statusResults.nftConfigSet && (
+                <Button 
+                  btnText="Create Nft Config" 
+                  size="sm"
+                  onClick={updateNftConfig}
+                  disabled={!isWalletConnected}
+                />
+              )}
+            </div>
+
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <StatusIcon isValid={statusResults.nftMetadataFiles} isLoading={checkingStatus.nftMetadataFiles} />
                 <span>Collection Metadata JSON Available</span>
               </div>
-              {statusResults.nftMetadataFiles === false && (
-                <div className="text-sm text-red-400">
-                  <a 
-                    href={selectedProjectData.config.cluster === "devnet" 
-                      ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`
-                      : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    Missing files
-                  </a>
+              {statusResults.nftMetadataFiles === false ? (
+                <div className="flex space-x-2 items-center">
+                  <div className="text-sm text-red-400">
+                    <a
+                      href={selectedProjectData.config.cluster === "devnet"
+                        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`
+                        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/collection-metadata.json`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      Missing files
+                    </a>
+                  </div>
+                  <Button
+                    btnText="Upload Collection Metadata"
+                    size="sm"
+                    onClick={() => openMetadataModal('collection')}
+                    disabled={!isWalletConnected || !selectedProjectData.config.nftConfig}
+                  />
+                </div>
+              ) : (
+                <div className="flex space-x-2 items-center">
+                  <Button
+                    btnText="View Files"
+                    size="sm"
+                    color="secondary"
+                    onClick={() => {
+                      const baseUrl = selectedProjectData.config.cluster === "devnet"
+                        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/`
+                        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/`;
+
+                      window.open(baseUrl + "collection-metadata.json", "_blank");
+                    }}
+                  />
                 </div>
               )}
             </div>
+
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <StatusIcon isValid={statusResults.nftMetadataFiles} isLoading={checkingStatus.nftMetadataFiles} />
                 <span>NFT Image Available</span>
               </div>
-              {statusResults.nftMetadataFiles === false && (
-                <div className="text-sm text-red-400">
-                  <a 
-                    href={selectedProjectData.config.cluster === "devnet" 
-                      ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/image.png`
-                      : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/image.png`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    Missing files
-                  </a>
+              {statusResults.nftMetadataFiles === false ? (
+                <div className="flex space-x-2 items-center">
+                  <div className="text-sm text-red-400">
+                    <a
+                      href={selectedProjectData.config.cluster === "devnet"
+                        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/image.png`
+                        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/image.png`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      Missing files
+                    </a>
+                  </div>
+                  <Button
+                    btnText="Upload Image"
+                    size="sm"
+                    onClick={() => openMetadataModal('image')}
+                    disabled={!isWalletConnected}
+                  />
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  <Button
+                    btnText="View Image"
+                    size="sm"
+                    color="secondary"
+                    onClick={() => {
+                      const imageUrl = selectedProjectData.config.cluster === "devnet"
+                        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/image.png`
+                        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/image.png`;
+
+                      window.open(imageUrl, "_blank");
+                    }}
+                  />
                 </div>
               )}
             </div>
@@ -636,27 +1179,43 @@ const UpdateProjectJson = () => {
                 <StatusIcon isValid={statusResults.nftMetadataFiles} isLoading={checkingStatus.nftMetadataFiles} />
                 <span>Collection JSON Available</span>
               </div>
-              {statusResults.nftMetadataFiles === false && (
-                <div className="text-sm text-red-400">
-                  <a 
-                    href={selectedProjectData.config.cluster === "devnet" 
-                      ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/metadata.json`
-                      : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/metadata.json`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    Missing files
-                  </a>
+              {statusResults.nftMetadataFiles === false ? (
+                <div className="flex space-x-2 items-center">
+                  <div className="text-sm text-red-400">
+                    <a
+                      href={selectedProjectData.config.cluster === "devnet"
+                        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/metadata.json`
+                        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/metadata.json`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      Missing files
+                    </a>
+                  </div>
+                  <Button
+                    btnText="Upload NFT Metadata"
+                    size="sm"
+                    onClick={() => openMetadataModal('nft')}
+                    disabled={!isWalletConnected || !selectedProjectData.config.nftConfig}
+                  />
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  <Button
+                    btnText="View Metadata"
+                    size="sm"
+                    color="secondary"
+                    onClick={() => {
+                      const metadataUrl = selectedProjectData.config.cluster === "devnet"
+                        ? `https://files.staging.borgpad.com/${selectedProjectData.id}/nft-metadata/metadata.json`
+                        : `https://files.borgpad.com/${selectedProjectData.id}/nft-metadata/metadata.json`;
+
+                      window.open(metadataUrl, "_blank");
+                    }}
+                  />
                 </div>
               )}
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-2">
-                <StatusIcon isValid={statusResults.nftConfigSet} />
-                <span>NFT Config Set</span>
-              </div>
             </div>
 
             <div className="flex justify-between items-center">
@@ -665,7 +1224,7 @@ const UpdateProjectJson = () => {
                 <span>NFT Collection Minted ?</span>
               </div>
               {statusResults.nftCollectionMinted === false && (
-                <Button 
+                <Button
                   btnText={isCreatingCollection ? "Creating..." : "Create Collection"}
                   size="sm"
                   onClick={createCollectionAddress}
@@ -675,7 +1234,7 @@ const UpdateProjectJson = () => {
               )}
               {statusResults.nftCollectionMinted === true && selectedProjectData?.config.nftConfig?.collection && (
                 <div className="flex items-center space-x-3">
-                  <a 
+                  <a
                     href={`https://solscan.io/token/${selectedProjectData.config.nftConfig.collection}${selectedProjectData.config.cluster === "devnet" ? "?cluster=devnet" : ""}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -683,7 +1242,7 @@ const UpdateProjectJson = () => {
                   >
                     View on Solscan
                   </a>
-                  <Button 
+                  <Button
                     btnText={isCreatingCollection ? "Creating..." : "Create New"}
                     size="sm"
                     onClick={createCollectionAddress}
@@ -693,7 +1252,7 @@ const UpdateProjectJson = () => {
                 </div>
               )}
             </div>
-            
+
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <StatusIcon isValid={statusResults.tiersHaveStartDates} />
@@ -710,9 +1269,9 @@ const UpdateProjectJson = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Collection Address:</span>
-                    <a 
+                    <a
                       href={`https://solscan.io/token/${selectedProjectData.config.nftConfig.collection}${selectedProjectData.config.cluster === "devnet" ? "?cluster=devnet" : ""}`}
-                      target="_blank" 
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-400 hover:text-blue-300 text-sm break-all max-w-[350px]"
                     >
@@ -733,9 +1292,9 @@ const UpdateProjectJson = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Solscan:</span>
-                    <a 
+                    <a
                       href={`https://solscan.io/token/${selectedProjectData.config.nftConfig.collection}${selectedProjectData.config.cluster === "devnet" ? "?cluster=devnet" : ""}`}
-                      target="_blank" 
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-400 hover:text-blue-300 text-sm"
                     >
@@ -745,9 +1304,9 @@ const UpdateProjectJson = () => {
                   {lastNftTxSignature && (
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Last Transaction:</span>
-                      <a 
+                      <a
                         href={`https://solscan.io/tx/${lastNftTxSignature}${selectedProjectData.config.cluster === "devnet" ? "?cluster=devnet" : ""}`}
-                        target="_blank" 
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-400 hover:text-blue-300 text-sm"
                       >
@@ -761,7 +1320,7 @@ const UpdateProjectJson = () => {
           </div>
         </div>
       )}
-      
+
       <form className="flex w-full justify-center" onSubmit={handleSubmit(onSubmit)}>
         {selectedProjectData && (
           <div className="flex-[5]">
@@ -808,6 +1367,7 @@ const UpdateProjectJson = () => {
           </div>
         )}
       </form>
+      {showMetadataModal && <MetadataModal />}
     </main>
   )
 }
