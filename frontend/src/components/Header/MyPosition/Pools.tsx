@@ -27,20 +27,31 @@ const Pools = () => {
         withDollarSign: true,
         customDecimals: 2,
       })
-    : 0
+    : "0.0"
+  const isLoadingOrThereIsValue = isLoading || (!isLoading && !!data?.investments.length)
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <div className="flex flex-col items-start gap-1">
-        <span className="text-sm text-fg-tertiary">Total Invested</span>
-        <Text isLoading={isLoading} className="text-4xl font-semibold text-fg-primary" text={totalInvestmentsValue} />
-      </div>
-      <div className="flex max-h-[500px] w-full flex-col items-start gap-1 overflow-y-auto">
-        <span className="text-sm text-fg-tertiary">Investments</span>
-        {isLoading
-          ? skeletonItems.map((item) => <InvestedAsset isLoading={isLoading} key={item} />)
-          : investments?.map((investment) => <InvestedAsset key={investment.projectId} investment={investment} />)}
-      </div>
+      {isLoadingOrThereIsValue ? (
+        <>
+          <div className="flex flex-col items-start gap-1">
+            <span className="text-sm text-fg-tertiary">Total Invested</span>
+            <Text
+              isLoading={isLoading}
+              className="text-4xl font-semibold text-fg-primary"
+              text={totalInvestmentsValue}
+            />
+          </div>
+          <div className="flex max-h-[500px] w-full flex-col items-start gap-1 overflow-y-auto">
+            <span className="text-sm text-fg-tertiary">{"Investments"}</span>
+            {isLoading
+              ? skeletonItems.map((item) => <InvestedAsset isLoading={isLoading} key={item} />)
+              : investments?.map((investment) => <InvestedAsset key={investment.projectId} investment={investment} />)}
+          </div>
+        </>
+      ) : (
+        <span className="text-sm text-fg-tertiary">{"No investments so far."}</span>
+      )}
     </div>
   )
 }

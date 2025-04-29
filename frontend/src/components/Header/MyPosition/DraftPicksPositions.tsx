@@ -21,26 +21,37 @@ const DraftPicksPositions = () => {
   })
   const totalInterestExpressedValue = data?.totalCommitments
     ? formatCurrencyAmount(data.totalCommitments, {
-      withDollarSign: true,
-      customDecimals: 2,
-    })
-    : 0
+        withDollarSign: true,
+        customDecimals: 2,
+      })
+    : "0.0"
+  const isLoadingOrThereIsValue = isLoading || (!isLoading && !!data?.commitments.length)
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <div className="flex flex-col items-start gap-1">
-        <span className="text-sm text-fg-tertiary">Total Interest Expressed</span>
-        <Text isLoading={isLoading} className="text-4xl font-semibold text-fg-primary" text={totalInterestExpressedValue} />
+      {isLoadingOrThereIsValue ? (
+        <>
+          <div className="flex flex-col items-start gap-1">
+            <span className="text-sm text-fg-tertiary">Total Interest Expressed</span>
+            <Text
+              isLoading={isLoading}
+              className="text-4xl font-semibold text-fg-primary"
+              text={totalInterestExpressedValue}
+            />
+          </div>
+          <div className="flex max-h-[500px] w-full flex-col items-start gap-1 overflow-y-auto">
+            <span className="text-sm text-fg-tertiary">{"Projects committed to"}</span>
 
-      </div>
-      <div className="flex max-h-[500px] w-full flex-col items-start overflow-y-auto gap-1">
-        <span className="text-sm text-fg-tertiary">Projects committed to</span>
-        {isLoading
-          ? skeletonItems.map((item) => <ProjectItem isLoading={isLoading} key={item} />)
-          : data?.commitments?.map((commitment) => (
-            <ProjectItem key={commitment.projectId} commitment={commitment} />
-          ))}
-      </div>
+            {isLoading
+              ? skeletonItems.map((item) => <ProjectItem isLoading={isLoading} key={item} />)
+              : data?.commitments?.map((commitment) => (
+                  <ProjectItem key={commitment.projectId} commitment={commitment} />
+                ))}
+          </div>
+        </>
+      ) : (
+        <span className="text-sm text-fg-tertiary">No commitments so far.</span>
+      )}
     </div>
   )
 }
