@@ -102,4 +102,4 @@ async function cleanDeployments(page) {
 }
 
 // Run the cleanup script
-cleanDeployments(2).catch(console.error)
+cleanDeployments(1).catch(console.error)
