@@ -6,8 +6,9 @@ type DropdownMenuButtonProps = {
   icon: AvailableIcons
   tooltipText: string
   onClick?: () => void
+  iconClass?: string
 }
-const DropdownMenuButton = ({ icon, onClick, tooltipText }: DropdownMenuButtonProps) => {
+const DropdownMenuButton = ({ icon, onClick, tooltipText, iconClass }: DropdownMenuButtonProps) => {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false)
 
   const classes = twMerge(
@@ -26,7 +27,7 @@ const DropdownMenuButton = ({ icon, onClick, tooltipText }: DropdownMenuButtonPr
       className={classes}
       onClick={onClick}
     >
-      <Icon icon={icon} />
+      <Icon icon={icon} className={iconClass} />
       {isTooltipVisible && <Tooltip className={tooltipClasses} text={tooltipText} />}
     </div>
   )
@@ -42,7 +43,7 @@ const Tooltip = ({ className, text }: TooltipProps) => {
   const classes = twMerge(
     "absolute top-9 -right-0 px-2 py-1",
     "bg-black border border-bd-secondary",
-    "whitespace-nowrap",
+    "whitespace-nowrap text-fg-primary",
     "rounded-lg",
     "z-10",
     className,

@@ -8,6 +8,7 @@ import { MyPositionTabId } from "@/@types/frontend"
 import Pools from "./MyPosition/Pools"
 import MyPositionTabButton from "./MyPosition/MyPositionTabButton"
 import DropdownMenuButton from "./MyPosition/DropdownMenuButton"
+import DraftPicksTab from "./MyPosition/DraftPicksPositions"
 
 type Props = {
   onClose: () => void
@@ -22,15 +23,15 @@ const tabsOptions: { id: MyPositionTabId; label: string }[] = [
     label: "DRAFT PICKS",
     id: "DRAFT_PICKS",
   },
-  {
-    label: "REFERRALS",
-    id: "REFERRALS",
-  },
+  // {
+  //   label: "REFERRALS",
+  //   id: "REFERRALS",
+  // },
 ]
 const displayTabs: Record<MyPositionTabId, JSX.Element> = {
   POOLS: <Pools />,
-  DRAFT_PICKS: <span>draft picks</span>,
-  REFERRALS: <span>referrals</span>,
+  DRAFT_PICKS: <DraftPicksTab />,
+  // REFERRALS: <span>referrals</span>,
 }
 
 const MyPositions = ({ onClose, excludeOnClickOutside }: Props) => {
@@ -53,12 +54,7 @@ const MyPositions = ({ onClose, excludeOnClickOutside }: Props) => {
   return (
     <div
       ref={dropdownMenuRef}
-      className={twMerge(
-        "absolute right-0 top-12 w-[420px] p-6",
-        "rounded-xl border border-bd-primary bg-default",
-        "flex flex-col gap-4",
-        "animate-top-down transition-transform ease-out",
-      )}
+      className={twMerge("w-[420px] p-6", "rounded-xl border border-bd-primary bg-default", "flex flex-col gap-4", "")}
     >
       <div className="flex w-full items-center justify-between gap-2">
         {/* left side */}
@@ -73,8 +69,13 @@ const MyPositions = ({ onClose, excludeOnClickOutside }: Props) => {
             tooltipText={isCopied ? "Copied!" : "Copy Wallet Address"}
             onClick={() => copyToClipboard(address)}
           />
-          <DropdownMenuButton icon={"SvgShare"} tooltipText={"Share"} onClick={() => alert("Not implemented!")} />
-          <DropdownMenuButton icon={"SvgLogOut"} tooltipText={"Disconnect"} onClick={signOut} />
+          {/* <DropdownMenuButton icon={"SvgShare"} tooltipText={"Share"} onClick={() => alert("Not implemented!")} /> */}
+          <DropdownMenuButton
+            icon={"SvgLogOut"}
+            tooltipText={"Disconnect"}
+            onClick={signOut}
+            iconClass="text-fg-error-primary"
+          />
         </div>
       </div>
       <div className="mb-4 flex w-full">

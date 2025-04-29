@@ -27,7 +27,9 @@ const headers = {
 // Function to get all deployments
 async function getDeployments(page) {
   console.log("fetching next batch of deployments")
-  const response = await fetch(CLOUDFLARE_API_URL + `?page=${page}`, {
+  const url = CLOUDFLARE_API_URL + `?page=${page}`
+  console.log("GET ", url)
+  const response = await fetch(url, {
     method: "GET",
     headers,
   })
@@ -36,7 +38,6 @@ async function getDeployments(page) {
     console.log("no data")
     return null
   }
-  console.log(data.result)
   return data.result
 }
 

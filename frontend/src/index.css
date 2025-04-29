@@ -16,7 +16,7 @@
   }
   @font-face {
     font-family: 'VCR OSD Mono';
-    src: url('../public/VCROSDMono.woff2') format('woff2');
+    src: url('/VCROSDMono.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
     font-display: swap; /* Improves performance by allowing text to render while font loads */

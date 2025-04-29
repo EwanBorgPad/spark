@@ -1,1 +1,1 @@
-export type MyPositionTabId = "POOLS" | "DRAFT_PICKS" | "REFERRALS"
+export type MyPositionTabId = "POOLS" | "DRAFT_PICKS" // @TODO - add REFERRALS
