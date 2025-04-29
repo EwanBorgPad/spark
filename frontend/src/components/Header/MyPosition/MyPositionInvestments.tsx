@@ -24,9 +24,9 @@ const Pools = () => {
   const investments = data?.investments
   const totalInvestmentsValue = data?.sumInvestments
     ? formatCurrencyAmount(data.sumInvestments, {
-        withDollarSign: true,
-        customDecimals: 2,
-      })
+      withDollarSign: true,
+      customDecimals: 2,
+    })
     : "0.0"
   const isLoadingOrThereIsValue = isLoading || (!isLoading && !!data?.investments.length)
 

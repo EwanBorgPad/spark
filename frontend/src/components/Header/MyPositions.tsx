@@ -5,10 +5,10 @@ import { SupportedWallet, useWalletContext } from "@/hooks/useWalletContext"
 import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick"
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard"
 import { MyPositionTabId } from "@/@types/frontend"
-import Pools from "./MyPosition/Pools"
+import MyPositionInvestments from "./MyPosition/MyPositionInvestments"
 import MyPositionTabButton from "./MyPosition/MyPositionTabButton"
 import DropdownMenuButton from "./MyPosition/DropdownMenuButton"
-import DraftPicksTab from "./MyPosition/DraftPicksPositions"
+import MyPositionCommitments from "./MyPosition/MyPositionCommitments"
 
 type Props = {
   onClose: () => void
@@ -29,8 +29,8 @@ const tabsOptions: { id: MyPositionTabId; label: string }[] = [
   // },
 ]
 const displayTabs: Record<MyPositionTabId, JSX.Element> = {
-  POOLS: <Pools />,
-  DRAFT_PICKS: <DraftPicksTab />,
+  POOLS: <MyPositionInvestments />,
+  DRAFT_PICKS: <MyPositionCommitments />,
   // REFERRALS: <span>referrals</span>,
 }
 

@@ -71,75 +71,47 @@ const getUserDepositsByProjects = async (db: DrizzleD1Database, userAddress: str
 
 const getUserCommitments = async (db: DrizzleD1Database, userAddress: string):  Promise<GetUserCommitmentsResponse | undefined>=> {
   try {
-    // const joinedQuery = await db
-    //   .select({
-    //     projectId: sql<string>`key`.as('project_id'),
-    //     amount: sql<number>`CAST(json_extract(value, '$.amount') AS REAL)`.as('amount'),
-    //   })
-    //   .from(
-    //     sql`(SELECT json_each.key, json_each.value
-    //          FROM user, json_each(user.json, '$.investmentIntent')
-    //          WHERE user.address = ${userAddress})`
-    //   )
-    //   .all();
-
-    // if (joinedQuery.length === 0) return {commitments: [], sumCommitments: 0}
-
-    // const projectIds = joinedQuery.map(item => item.projectId)
-    // const projectQueryResults = await db
-    //   .select({
-    //       details: projectTable.json
-    //   })
-    //   .from(projectTable)
-    //   .where(inArray(projectTable.id, projectIds))
-    //   .all()
-
     const commitmentsResult = await db
-  .select({
-    commitments: sql<
-      { projectId: string; amount: number; project: any }[]
-    >`json_group_array(
-        json_object(
-          'projectId', json_data.key,
-          'amount', CAST(json_extract(json_data.value, '$.amount') AS REAL),
-          'project', json_data.project_json
-        )
-      )`.as('commitments'),
-    totalCommitments: sql<number>`SUM(CAST(json_extract(json_data.value, '$.amount') AS REAL))`.as(
-      'totalCommitments'
-    ),
-  })
-  .from(
-    sql`(
-      WITH json_data AS (
-        SELECT json_each.key, json_each.value
-        FROM user, json_each(user.json, '$.investmentIntent')
-        WHERE user.address = ${userAddress}
+      .select({
+        commitments: sql<
+          { projectId: string; amount: number; project: any }[]
+        >`json_group_array(
+            json_object(
+              'projectId', json_data.key,
+              'amount', CAST(json_extract(json_data.value, '$.amount') AS REAL),
+              'project', json_data.project_json
+            )
+          )`.as('commitments'),
+        totalCommitments: sql<number>`SUM(CAST(json_extract(json_data.value, '$.amount') AS REAL))`.as(
+          'totalCommitments'
+        ),
+      })
+      .from(
+        sql`(
+          WITH json_data AS (
+            SELECT json_each.key, json_each.value
+            FROM user, json_each(user.json, '$.investmentIntent')
+            WHERE user.address = ${userAddress}
+          )
+          SELECT json_data.key, json_data.value, project.json AS project_json
+          FROM json_data
+          INNER JOIN project ON json_data.key = project.id
+        ) AS json_data`
       )
-      SELECT json_data.key, json_data.value, project.json AS project_json
-      FROM json_data
-      INNER JOIN project ON json_data.key = project.id
-    ) AS json_data`
-  )
 
-  const parsedCommitments = commitmentsResult[0].commitments
-  ? JSON.parse(commitmentsResult[0].commitments as unknown as string)
-  : []
-  const parsedCommitmentsWithParsedProjects = parsedCommitments.map(commitment => {return ({...commitment, project: JSON.parse(commitment.project) })})
+    const parsedCommitments = commitmentsResult[0].commitments
+    ? JSON.parse(commitmentsResult[0].commitments as unknown as string)
+    : []
+    const parsedCommitmentsWithParsedProjects = parsedCommitments.map(commitment => {return ({...commitment, project: JSON.parse(commitment.project) })})
 
-  const result = {
-    commitments: parsedCommitmentsWithParsedProjects,
-    totalCommitments: commitmentsResult[0].totalCommitments,
-  };
+    const result = {
+      commitments: parsedCommitmentsWithParsedProjects,
+      totalCommitments: commitmentsResult[0].totalCommitments,
+    };
 
-  console.log(result);
-
-
-    // const sum = joinedQuery.reduce((acc, curr)=> {return acc + curr.amount}, 0)
-    // const result = { sumCommitments: sum, commitments: joinedQuery }
     return result
   } catch (error) {
-    console.error('Error in getUserDepositsByProjects:', error);
+    console.error('Error in getUserCommitments:', error);
     throw new Error('Something went wrong!')
   }
 }
