@@ -1,9 +1,10 @@
-import { Analysis, analysisTable } from '../../../shared/drizzle-schema'
+import { Analysis, analysisTable, projectTable } from '../../../shared/drizzle-schema'
 import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 import { drizzle, DrizzleD1Database } from "drizzle-orm/d1"
-import { eq } from "drizzle-orm"
+import { eq, inArray } from "drizzle-orm"
 import { TweetScoutTweetResponse } from '../../../shared/types/api-types'
 import { isApiKeyValid } from '../../services/apiKeyService'
+import { isAfter } from 'date-fns'
 
 type ENV = {
   DB: D1Database
@@ -32,10 +33,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     // Fetch a single tweet's metrics from Tweet Scout API.
     const fetchTweetMetrics = async (analysis: Analysis): Promise<FetchResult> => {
       console.log(`Fetching metrics for articleUrl: ${analysis.articleUrl}`);
-
-      const body = JSON.stringify({ tweet_link: analysis.articleUrl });
-
-      try {
+      try {  
+        const body = JSON.stringify({ tweet_link: analysis.articleUrl });
+        
         const response = await fetch("https://api.tweetscout.io/v2/tweet-info", {
           method: "POST",
           headers: {
@@ -70,7 +70,14 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const fetchMetricsInBatches = async (): Promise<FetchResult[]> => {
       console.log("Fetching all article stats from Tweet Scout...");
 
-      const allAnalyses = await db.select().from(analysisTable).all();
+      const activeProjectIds = await getActiveProjectIds(db)
+      if (!activeProjectIds || !activeProjectIds.length) {
+        console.log("no active projects with analysis!"); 
+        return []
+      }
+
+      const allAnalyses = await db.select().from(analysisTable).where(inArray(analysisTable.projectId, activeProjectIds)).all();
+
       console.log(`Total articles to process: ${allAnalyses.length}`);
       if (!allAnalyses) {
         return []
@@ -149,3 +156,29 @@ const updateRowsInBatch = async ({ updates, db }: UpdateRowsInBatchArgs) => {
   }
   console.log('update complete');
 };
+
+const getActiveProjectIds = async (db: DrizzleD1Database) => {
+  const allProjectIds = (await db
+    .selectDistinct({projectId: analysisTable.projectId}).from(analysisTable).all())
+    .map(item => item.projectId);
+  console.log("allProjectIds: ",allProjectIds);
+  
+  const projectsStillActive = await db
+    .select().from(projectTable)
+    .where(inArray(projectTable.id,allProjectIds))
+    .all()
+  console.log("projectsStillActive: ",projectsStillActive);
+
+  const activeProjectIds = projectsStillActive
+    .filter(project => {
+      const saleOverDate = project.json.info.timeline.find(phase => phase.id === "SALE_CLOSES")?.date
+      if (!saleOverDate) return true
+      if (isAfter(saleOverDate, new Date())) return true
+      return false
+    })
+    .map(project => project.id)
+  console.log("activeProjectIds: ",activeProjectIds);
+
+
+  return activeProjectIds
+}
