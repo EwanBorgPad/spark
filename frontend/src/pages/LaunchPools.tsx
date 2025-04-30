@@ -65,7 +65,7 @@ const LaunchPools = () => {
       <section className="z-[11] flex w-full flex-col items-center gap-4 bg-transparent px-4 pb-[60px] md:pb-[80px]">
         <div className="flex w-full max-w-[1080px] flex-col items-center">
           <h3 className="mb-8 text-center text-[32px] font-semibold leading-[120%] md:w-full">
-            {"Completed Goat Pools"}
+            {"Completed Launch Pools"}
           </h3>
           <CompletedProjects projectType="launch-pool" />
         </div>
