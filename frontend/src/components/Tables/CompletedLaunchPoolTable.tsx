@@ -19,7 +19,7 @@ type SortField = 'name' | 'date' | 'raised' | 'fdv' | 'participants' | 'commitme
 type SortDirection = 'asc' | 'desc'
 
 type Props = {
-  projectType: "goat" | "blitz"
+  projectType: ProjectModel["info"]["projectType"]
   isLoading?: boolean
   projects?: ExpandedProject[]
   currentPage?: number

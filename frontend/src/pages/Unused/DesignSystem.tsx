@@ -1,5 +1,5 @@
-import { Button } from "../components/Button/Button"
-import { Icon } from "../components/Icon/Icon"
+import { Button } from "../../components/Button/Button"
+import { Icon } from "../../components/Icon/Icon"
 
 const DesignSystem = () => {
   return (

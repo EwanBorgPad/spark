@@ -3,6 +3,7 @@ import { ProjectModel } from "shared/models"
 export enum ROUTES {
   LANDING_PAGE = "/",
   GOAT_POOLS = "/goat-pools",
+  LAUNCH_POOLS = "/launch-pools",
   BLITZ_POOLS = "/blitz-pools",
   DRAFT_PICKS = "/draft-picks",
   TERMS_OF_USE = "/terms-of-use",
@@ -14,10 +15,14 @@ export enum ROUTES {
 const projectTypeRoutes: Record<ProjectModel["info"]["projectType"], string> = {
   goat: `${ROUTES.GOAT_POOLS}`,
   blitz: `${ROUTES.BLITZ_POOLS}`,
+  "launch-pool": `${ROUTES.LAUNCH_POOLS}`,
   "draft-pick": `${ROUTES.DRAFT_PICKS}`,
 }
 
 export const getProjectRoute = (project: ProjectModel | undefined) => {
   if (!project) return ""
+  if (["goat", "blitz"].includes(project.info.projectType)) {
+    return `${ROUTES.LAUNCH_POOLS}/${project.id}`
+  }
   return `${projectTypeRoutes[project.info.projectType]}/${project.id}`
 }
