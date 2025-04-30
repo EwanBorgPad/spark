@@ -26,17 +26,17 @@ type NavigationBarProps = {
 }
 const navigationItems: NavigationItem[] = [
   {
-    path: ROUTES.LAUNCH_POOLS,
-    label: "Launch Pools",
-    activeClass: "text-brand-primary",
-    className: "hover:text-brand-primary",
-  },
-  {
     path: ROUTES.DRAFT_PICKS,
     label: "Draft Picks",
     activeClass: "text-draft-picks",
     underlineClass: "border-draft-picks",
     className: "hover:text-draft-picks",
+  },
+  {
+    path: ROUTES.LAUNCH_POOLS,
+    label: "Launch Pools",
+    activeClass: "text-brand-primary",
+    className: "hover:text-brand-primary",
   },
   {
     url: ROUTES.DOCS,
