@@ -169,6 +169,10 @@ CREATE TABLE referral (
     UNIQUE (project_id, address)
 );
 
+CREATE INDEX idx_referral_address ON referral(address);
+CREATE INDEX idx_referral_project_id ON referral(project_id);
+CREATE INDEX idx_referral_referrer_by ON referral(referrer_by);
+
 ---- migration: merge goat pools & blitz pools to launch pools (30.04.25.)
 UPDATE project
 SET json = json_set(json, '$.info.projectType', 'launch-pool')
