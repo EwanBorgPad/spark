@@ -159,33 +159,59 @@ async function createNftCollection({
     warning?: string;
 }> {
     // Get the appropriate connection based on cluster
-    const rpcUrl = env.SOLANA_RPC_URL || (cluster === "mainnet" 
-        ? "https://api.mainnet-beta.solana.com" 
-        : "https://api.devnet.solana.com");
+    let rpcUrl: string;
+    
+    if (env.SOLANA_RPC_URL) {
+        // Extract the Helius API key if present
+        const heliusApiKeyMatch = env.SOLANA_RPC_URL.match(/api-key=([^&]+)/);
+        const heliusApiKey = heliusApiKeyMatch ? heliusApiKeyMatch[1] : null;
+        
+        if (heliusApiKey) {
+            // Format proper Helius URL based on cluster
+            rpcUrl = cluster === "mainnet" 
+                ? `https://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`
+                : `https://devnet.helius-rpc.com/?api-key=${heliusApiKey}`;
+        } else {
+            // Use provided URL as is
+            rpcUrl = env.SOLANA_RPC_URL;
+        }
+    } else {
+        // Fallback to default RPC endpoints
+        rpcUrl = cluster === "mainnet" 
+            ? "https://api.mainnet-beta.solana.com" 
+            : "https://api.devnet.solana.com";
+    }
     
     console.log("Using RPC URL:", rpcUrl);
     
     const connection = new Connection(rpcUrl, "confirmed");
-
-    const privateKeyString = env.BORGPAD_PRIVATE_KEY
-
-    // Convert base58 string to Uint8Array
-    const privateKeyUint8Array = bs58.decode(privateKeyString)
-
-    // Initialize wallet
-    const wallet = Keypair.fromSecretKey(privateKeyUint8Array)
-
-    // Initialize Metaplex
-    const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet))
-
-    // Metadata URI for the collection
-    const metadataUri = "https://files.borgpad.com/ambios/nft-metadata/collection-metadata.json"
-
-    console.log(`Creating NFT collection for project ${projectId} on ${cluster}`)
-    console.log(`Metadata URI: ${metadataUri}`)
-    console.log(`Name: ${nftConfig.name}, Symbol: ${nftConfig.symbol}`)
-
+    const privateKeyString = env.BORGPAD_PRIVATE_KEY;
+    
+    // Validate private key
+    if (!privateKeyString || typeof privateKeyString !== 'string') {
+        throw new Error("Invalid private key: BORGPAD_PRIVATE_KEY is missing or not a string");
+    }
+    
+    // Generate the metadata URI based on project ID and cluster
+    const baseDomain = cluster === "devnet" ? "files.staging.borgpad.com" : "files.borgpad.com";
+    const metadataUri = `https://${baseDomain}/${projectId}/nft-metadata/collection-metadata.json`;
+    
+    console.log(`Using metadata URI: ${metadataUri}`);
+    
     try {
+        // Convert base58 string to Uint8Array
+        const privateKeyUint8Array = bs58.decode(privateKeyString);
+        
+        // Initialize wallet
+        const wallet = Keypair.fromSecretKey(privateKeyUint8Array);
+        
+        // Initialize Metaplex
+        const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
+        
+        console.log(`Creating NFT collection for project ${projectId} on ${cluster}`);
+        console.log(`Metadata URI: ${metadataUri}`);
+        console.log(`Name: ${nftConfig.name}, Symbol: ${nftConfig.symbol}`);
+        
         // Create the collection NFT
         const result = await metaplex.nfts().create({
             uri: metadataUri,
@@ -193,30 +219,30 @@ async function createNftCollection({
             symbol: nftConfig.symbol,
             sellerFeeBasisPoints: 500, // 5% royalties
             isCollection: true,
-        })
-
-        const collectionNFT = result.nft
-        const signature = result.response.signature
-
-        console.log("Collection NFT created:", collectionNFT.address.toBase58())
-        console.log("Transaction signature:", signature)
+        });
+        
+        const collectionNFT = result.nft;
+        const signature = result.response.signature;
+        
+        console.log("Collection NFT created:", collectionNFT.address.toBase58());
+        console.log("Transaction signature:", signature);
         
         return {
             collectionAddress: collectionNFT.address.toBase58(),
             transactionSignature: signature
-        }
+        };
     } catch (error) {
-        console.error("Failed to create NFT collection:", error)
+        console.error("Failed to create NFT collection:", error);
         
         // Check if this is a confirmation error but the transaction might have succeeded
         if (error.toString().includes("block height exceeded") || 
             error.toString().includes("TransactionExpiredBlockheightExceededError")) {
           
             // Extract the signature from the error message if possible
-            const signatureMatch = error.toString().match(/Signature\s+([a-zA-Z0-9]+)\s+has expired/)
-            const possibleSignature = signatureMatch ? signatureMatch[1] : "unknown"
+            const signatureMatch = error.toString().match(/Signature\s+([a-zA-Z0-9]+)\s+has expired/);
+            const possibleSignature = signatureMatch ? signatureMatch[1] : "unknown";
             
-            console.log("Transaction may have succeeded despite confirmation error. Signature:", possibleSignature)
+            console.log("Transaction may have succeeded despite confirmation error. Signature:", possibleSignature);
             
             // Extract Helius API key from SOLANA_RPC_URL if available
             const HELIUS_API_KEY = env.SOLANA_RPC_URL?.split('api-key=')[1];
@@ -299,26 +325,31 @@ async function createNftCollection({
             
             // If Helius didn't work or didn't find a created token, try to find it via Metaplex
             try {
-                const nfts = await metaplex.nfts().findAllByCreator({ creator: wallet.publicKey })
+                // Need to recreate wallet and metaplex here since they're in a different scope
+                const privateKeyUint8Array = bs58.decode(privateKeyString);
+                const wallet = Keypair.fromSecretKey(privateKeyUint8Array);
+                const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
+                
+                const nfts = await metaplex.nfts().findAllByCreator({ creator: wallet.publicKey });
                 
                 // Get the most recently created NFT (likely our collection)
-                const possibleCollection = nfts[0]
+                const possibleCollection = nfts[0];
                 
                 if (possibleCollection) {
-                    console.log("Found potential collection NFT:", possibleCollection.address.toBase58())
+                    console.log("Found potential collection NFT:", possibleCollection.address.toBase58());
                     
                     return {
                         collectionAddress: possibleCollection.address.toBase58(),
                         transactionSignature: possibleSignature,
                         warning: "Transaction confirmation timed out, but collection may have been created successfully"
-                    }
+                    };
                 }
             } catch (lookupError) {
-                console.error("Error looking up possible collection:", lookupError)
+                console.error("Error looking up possible collection:", lookupError);
             }
         }
         
-        throw error
+        throw error;
     }
 }
 
