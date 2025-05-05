@@ -1,6 +1,12 @@
 // Using Web Crypto API instead of Node.js crypto
 // Secret key for generating referral codes - now coming from environment variables
-const getSecretKey = (env: any): string => {
+
+interface Environment {
+  REFERRAL_SECRET_KEY: string;
+  [key: string]: any;
+}
+
+const getSecretKey = (env: Environment): string => {
   // Use environment variable or fallback to default for development only
   return env?.REFERRAL_SECRET_KEY;
 }
@@ -11,7 +17,7 @@ const getSecretKey = (env: any): string => {
  * @param env The environment object containing secrets
  * @returns A short referral code
  */
-export function generateReferralCode(address: string, env: any): string {
+export function generateReferralCode(address: string, env: Environment): string {
   const secretKey = getSecretKey(env);
   
   // Create a hash of the address using the secret key
@@ -38,7 +44,7 @@ export function generateReferralCode(address: string, env: any): string {
  * @param env The environment object containing secrets
  * @returns True if the code is valid for the address
  */
-export function validateReferralCode(code: string, address: string, env: any): boolean {
+export function validateReferralCode(code: string, address: string, env: Environment): boolean {
   const expectedCode = generateReferralCode(address, env);
   return code === expectedCode;
 }
@@ -49,8 +55,13 @@ export function validateReferralCode(code: string, address: string, env: any): b
  * @param env The environment object containing secrets
  * @returns The referral code
  */
-export function getReferralCode(address: string, env: any): string {
+export function getReferralCode(address: string, env: Environment): string {
   return generateReferralCode(address, env);
+}
+
+interface UserRecord {
+  address: string;
+  [key: string]: unknown;
 }
 
 /**
@@ -60,7 +71,7 @@ export function getReferralCode(address: string, env: any): string {
  * @param env The environment object containing secrets
  * @returns The address of the user who owns this code, or null if not found
  */
-export async function getAddressByReferralCode(db: D1Database, code: string, env: any): Promise<string | null> {
+export async function getAddressByReferralCode(db: D1Database, code: string, env: Environment): Promise<string | null> {
   // This approach is not efficient for large databases, but avoids storing codes
   const users = await db
     .prepare("SELECT address FROM user")
@@ -69,9 +80,12 @@ export async function getAddressByReferralCode(db: D1Database, code: string, env
   if (!users || !users.results) return null;
   
   for (const user of users.results) {
-    const userAddress = user.address as string;
-    if (generateReferralCode(userAddress, env) === code) {
-      return userAddress;
+    // Safely check that user has an address property
+    if (typeof user === 'object' && user !== null && 'address' in user) {
+      const userAddress = user.address as string;
+      if (generateReferralCode(userAddress, env) === code) {
+        return userAddress;
+      }
     }
   }
   

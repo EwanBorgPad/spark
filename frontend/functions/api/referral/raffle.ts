@@ -29,6 +29,11 @@ type ProjectConfig = {
   };
 }
 
+type EligibleUser = {
+  referrer_by: string;
+  total_invested: number;
+}
+
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = ctx.env.DB
   try {
@@ -102,9 +107,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       }, 200);
     }
     
-    const selectRaffleWinners = (eligibleUsers: any[], count: number) => {
+    const selectRaffleWinners = (eligibleUsers: EligibleUser[], count: number) => {
       const users = [...eligibleUsers];
-      const winners = [];
+      const winners: EligibleUser[] = [];
       const totalInvestment = users.reduce((sum, user) => sum + user.total_invested, 0);
       
       for (let i = 0; i < count && users.length > 0; i++) {
@@ -136,7 +141,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       return winners;
     };
     
-    const raffleWinners = selectRaffleWinners(eligibleReferrers.results, raffleWinnerCount);
+    const raffleWinners = selectRaffleWinners(eligibleReferrers.results as EligibleUser[], raffleWinnerCount);
     
     return jsonResponse({ 
       message: "Raffle winners selected successfully",
