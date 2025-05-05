@@ -27,9 +27,7 @@ const ReferralModal = ({ onClose }: Props) => {
   const { address, isWalletConnected } = useWalletContext()
   const { projectId } = useParams()
   const { projectData } = useProjectDataContext()
-  const projectType = projectData?.info.projectType || "goat"
   const navigate = useNavigate()
-  const wasWalletConnected = useRef(isWalletConnected)
   
   // Check if user has seen How It Works before
   const [hasSeenHowItWorks, setHasSeenHowItWorks] = useState(localStorage.getItem(`hasSeenReferralHowItWorks_${projectId}`) === 'true')
@@ -52,7 +50,7 @@ const ReferralModal = ({ onClose }: Props) => {
 
   const referralCode = referralData?.code || ""
   const baseUrl = window.location.origin
-  const referralLink = referralCode ? `${baseUrl}/goat-pools/${projectId}?referral=${referralCode}` : ""
+  const referralLink = referralCode ? `${baseUrl}/launch-pools/${projectId}?referral=${referralCode}` : ""
 
   const totalTickets = referralData?.totalTickets || []
   const firstTotalInvested = totalTickets.reduce((sum, ticket) => sum + (ticket?.total_invested || 0), 0)
@@ -163,7 +161,7 @@ const ReferralModal = ({ onClose }: Props) => {
 
   const handleSignToU = () => {
     onClose()
-    navigate(`/${projectType}-pools/${projectId}`)
+    navigate(`/launch-pools/${projectId}`)
     scrollToJoinThePool()
   }
 
@@ -478,7 +476,7 @@ const ReferralModal = ({ onClose }: Props) => {
           />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 w-full">
           <ReferralCard
             title="Your Rewards"
             icon="SvgTrophy"

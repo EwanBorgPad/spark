@@ -11,18 +11,7 @@ import { getReferralCode, getAddressByReferralCode } from "../services/referralS
 type ENV = {
   DB: D1Database
   REFERRAL_SECRET_KEY: string
-}
-
-// Add this handler for OPTIONS requests
-export const onRequestOptions: PagesFunction = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "http://localhost:5173",
-      "Access-Control-Allow-Methods": "OPTIONS, GET, PUT, POST, DELETE, HEAD",
-      "Access-Control-Allow-Headers": "Content-Type"
-    }
-  })
+  VITE_ENVIRONMENT_TYPE: string
 }
 
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
@@ -74,7 +63,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       .first()
 
     if (existingReferral) {
-      return jsonResponse({ message: "Referral already exists for this project" }, 400)
+      return jsonResponse({ message: "You have already been referred for this project" }, 200)
     }
 
     const referrerAddress = await getAddressByReferralCode(db, referralCode, ctx.env);
@@ -174,5 +163,22 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   } catch (e) {
     await reportError(db, e);
     return jsonResponse({ message: "Something went wrong..." }, 500);
+  }
+}
+
+// Add this handler for OPTIONS requests
+export const onRequestOptions: PagesFunction<ENV> = async (ctx) => {
+  try {
+    if (ctx.env.VITE_ENVIRONMENT_TYPE !== "develop") return
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': 'http://localhost:5173', // Adjusted this for frontend origin
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    })
+  } catch (error) {
+    return jsonResponse({ message: error }, 500)
   }
 }

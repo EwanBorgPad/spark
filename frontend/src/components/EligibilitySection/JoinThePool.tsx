@@ -33,6 +33,8 @@ export const JoinThePool = () => {
   const [showReferralModal, setShowReferralModal] = useState(false)
   const [showAlreadyUsedModal, setShowAlreadyUsedModal] = useState(false)
   const referralCodeFromUrl = searchParams.get('referral')
+  const [isSigningToU, setIsSigningToU] = useState(false)
+  const hasProcessedReferral = useRef(false)
 
   // Query to check if the user already has a referral code
   const { data: eligibilityStatus } = useQuery({
@@ -52,30 +54,72 @@ export const JoinThePool = () => {
     }
   }
 
-  useEffect(() => {
-    if (!referralCodeFromUrl || !isWalletConnected || !eligibilityStatus) return
+  // Check if user has signed Terms of Use and if they've provided a referral code
+  const hasAcceptedToU = eligibilityStatus?.compliances?.some(
+    compliance => compliance.type === "ACCEPT_TERMS_OF_USE" && compliance.isCompleted
+  ) || false
 
-    // Check if user has already provided a referral code
-    const hasProvidedReferralCode = eligibilityStatus.compliances?.some(
-      compliance => compliance.type === "PROVIDE_REFERRAL_CODE" && compliance.isCompleted
-    )
+  const hasProvidedReferralCode = eligibilityStatus?.compliances?.some(
+    compliance => compliance.type === "PROVIDE_REFERRAL_CODE" && compliance.isCompleted
+  ) || false
+
+  // Clean up referral from URL if we've already processed it
+  useEffect(() => {
+    if (hasProvidedReferralCode && referralCodeFromUrl) {
+      removeReferralFromUrl()
+      hasProcessedReferral.current = true
+    }
+  }, [hasProvidedReferralCode, referralCodeFromUrl])
+
+  // Process referral code from URL - only show modal if we're not in the process of signing ToU
+  useEffect(() => {
+    // Skip if no referral code, not connected, no eligibility data, already signing ToU, or already processed referral
+    if (!referralCodeFromUrl || !isWalletConnected || !eligibilityStatus || isSigningToU || hasProcessedReferral.current) return
 
     if (hasProvidedReferralCode) {
+      // If user has already provided a referral code, show message and remove from URL
       setShowAlreadyUsedModal(true)
       removeReferralFromUrl()
-    } else {
+      hasProcessedReferral.current = true
+    } else if (!showReferralModal) {
+      // If modal not shown yet, show it
       setShowReferralModal(true)
+      
+      // Store referral code for later use
+      if (projectId) {
+        localStorage.setItem(`referralCode_${projectId}`, referralCodeFromUrl)
+      }
     }
-  }, [referralCodeFromUrl, isWalletConnected, eligibilityStatus])
+  }, [referralCodeFromUrl, isWalletConnected, eligibilityStatus, projectId, hasProvidedReferralCode, showReferralModal, isSigningToU])
 
+  // Reset the signing ToU flag when eligibility status changes
+  useEffect(() => {
+    if (hasAcceptedToU && isSigningToU) {
+      setIsSigningToU(false)
+    }
+  }, [hasAcceptedToU, isSigningToU])
+
+  // Called when the user clicks "Sign Terms of Use" in the modal
+  const handleSignToU = () => {
+    setIsSigningToU(true)  // Mark that we're in the process of signing ToU
+    setShowReferralModal(false)  // Close the modal
+  }
+
+  // Simply close the modal without removing referral code from URL if not provided yet
   const handleReferralModalClose = () => {
     setShowReferralModal(false)
-    removeReferralFromUrl()
+    
+    // Only remove the referral code if the user has already provided one
+    if (hasProvidedReferralCode) {
+      removeReferralFromUrl()
+      hasProcessedReferral.current = true
+    }
   }
 
   const handleAlreadyUsedModalClose = () => {
     setShowAlreadyUsedModal(false)
     removeReferralFromUrl()
+    hasProcessedReferral.current = true
   }
 
   return (
@@ -107,7 +151,8 @@ export const JoinThePool = () => {
       {/* Referral Modal with prefilled code */}
       {showReferralModal && (
         <ProvideReferralCodeModal 
-          onClose={handleReferralModalClose} 
+          onClose={handleReferralModalClose}
+          onSignToU={handleSignToU}
           initialReferralCode={referralCodeFromUrl || ""}
         />
       )}

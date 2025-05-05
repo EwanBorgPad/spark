@@ -6,28 +6,28 @@ import { backendApi } from "@/data/backendApi"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ReferralInputField } from "@/components/InputField/ReferralInputField"
-import { useState, useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useState, useEffect, useRef } from "react"
+import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import { Badge } from "@/components/Badge/Badge"
 import { toast } from "react-toastify"
 import { eligibilityStatusCacheBust } from "@/utils/cache-helper"
 import { sendTransaction } from "../../../../shared/solana/sendTransaction"
-import { useProjectDataContext } from "@/hooks/useProjectData"
 
 type ProvideReferralCodeModalProps = {
   onClose: () => void
+  onSignToU?: () => void
   initialReferralCode?: string
 }
 
-const ProvideReferralCodeModal = ({ onClose, initialReferralCode }: ProvideReferralCodeModalProps) => {
+const ProvideReferralCodeModal = ({ onClose, onSignToU, initialReferralCode }: ProvideReferralCodeModalProps) => {
   const { t } = useTranslation()
   const { address, signMessage, signTransaction, walletProvider, isConnectedWithLedger } = useWalletContext()
   const { projectId } = useParams()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const { projectData } = useProjectDataContext()
-  const projectType = projectData?.info.projectType || "goat"
+  const [searchParams] = useSearchParams()
   const [hasAcceptedToU, setHasAcceptedToU] = useState<boolean | null>(null)
+  const autoSubmitAttempted = useRef(false)
 
   // Check if user has signed Terms of Use
   const { data: eligibilityStatus } = useQuery({
@@ -39,34 +39,41 @@ const ProvideReferralCodeModal = ({ onClose, initialReferralCode }: ProvideRefer
     enabled: !!address && !!projectId,
   })
 
-  useEffect(() => {
-    if (eligibilityStatus) {
-      const hasToU = eligibilityStatus.compliances?.some(
-        compliance => compliance.type === "ACCEPT_TERMS_OF_USE" && compliance.isCompleted
-      )
-      setHasAcceptedToU(hasToU || false)
-    }
-  }, [eligibilityStatus])
+  // Get user's existing referral code
+  const { data: referralData } = useQuery({
+    queryKey: ["getReferralCode", address],
+    queryFn: () => backendApi.getReferralCode({ address: address || "", projectId: projectId || ""}),
+    enabled: !!address,
+  })
 
-  const scrollToJoinThePool = () => {
-    onClose()
-    navigate(`/${projectType}-pools/${projectId}`)
-    setTimeout(() => {
-      const joinThePoolElement = document.getElementById('complianceHeading')
-      if (joinThePoolElement) {
-        joinThePoolElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      } else {
-        const headings = document.querySelectorAll('h2')
-        for (const heading of headings) {
-          if (heading.textContent?.includes('Join the Launch Pool')) {
-            heading.scrollIntoView({ behavior: 'smooth', block: 'start' })
-            break
-          }
-        }
-      }
-    }, 500)
+  const UsereferralCode = referralData?.code || ""
+
+  // Initialize referral code from localStorage or initialReferralCode
+  const [referralCode, setReferralCode] = useState<string | null>(() => {
+    if (projectId) {
+      const storedCode = localStorage.getItem(`referralCode_${projectId}`)
+      return storedCode || initialReferralCode || null
+    }
+    return initialReferralCode || null
+  })
+
+  // Function to remove referral code from URL
+  const removeReferralFromUrl = () => {
+    const url = new URL(window.location.href)
+    if (url.searchParams.has('referral')) {
+      url.searchParams.delete('referral')
+      navigate(`${url.pathname}${url.search}`, { replace: true })
+    }
   }
 
+  // Save referral code to localStorage when not signed in
+  useEffect(() => {
+    if (referralCode && projectId && hasAcceptedToU === false) {
+      localStorage.setItem(`referralCode_${projectId}`, referralCode)
+    }
+  }, [referralCode, projectId, hasAcceptedToU])
+
+  // Update mutation for submitting referral code
   const {
     mutate: updateReferral,
     isPending,
@@ -98,28 +105,96 @@ const ProvideReferralCodeModal = ({ onClose, initialReferralCode }: ProvideRefer
       await backendApi.postReferralCode(data)
     },
     onSuccess: () => {
+      // Immediately remove the referral code from URL to prevent infinite loops
+      removeReferralFromUrl()
+      
+      // Clear stored referral code from localStorage
+      if (projectId) {
+        localStorage.removeItem(`referralCode_${projectId}`)
+      }
+      
+      // Update eligibility status to reflect the completed referral
       eligibilityStatusCacheBust.invokeCacheBusting()
       queryClient.invalidateQueries({
         queryKey: ["getEligibilityStatus", address, projectId],
       })
+      
+      // Close the modal
       onClose()
     },
     onError: (error) => toast.error(error.message, { theme: "colored" }),
   })
 
-  const { data: referralData } = useQuery({
-    queryKey: ["getReferralCode", address],
-    queryFn: () => backendApi.getReferralCode({ address: address || "" , projectId: projectId || ""}),
-    enabled: !!address,
-  })
+  // Process eligibility status changes and check for ToU acceptance
+  useEffect(() => {
+    if (!eligibilityStatus) return
 
-  const UsereferralCode = referralData?.code || ""
+    const hasToU = eligibilityStatus.compliances?.some(
+      compliance => compliance.type === "ACCEPT_TERMS_OF_USE" && compliance.isCompleted
+    )
+    
+    setHasAcceptedToU(hasToU || false)
+    
+    // If user has accepted ToU and we have a valid code, and we haven't tried to submit yet
+    if (hasToU && projectId && address && referralCode && !autoSubmitAttempted.current) {
+      // Mark that we've attempted auto-submission to prevent multiple attempts
+      autoSubmitAttempted.current = true
+      
+      // Make sure the code isn't the user's own code and is valid
+      if (referralCode !== UsereferralCode && referralCode.length > 0) {
+        // Slight delay to ensure states are updated
+        setTimeout(() => {
+          updateReferral(address)
+        }, 300)
+      }
+    }
+  }, [eligibilityStatus, address, projectId, referralCode, UsereferralCode])
 
-  const [referralCode, setReferralCode] = useState<string | null>(initialReferralCode || null)
-
-
+  // Function to validate referral code
   function isValidReferralCode(referralCode: string): boolean {
-    return referralCode.length > 0 && UsereferralCode!==referralCode
+    return referralCode.length > 0 && UsereferralCode !== referralCode
+  }
+
+  // Navigate to Terms of Use section while preserving referral code in URL
+  const scrollToJoinThePool = () => {
+    // Call the parent callback to notify we're signing ToU
+    if (onSignToU) {
+      onSignToU();
+    } else {
+      onClose();
+    }
+    
+    // Build the path while preserving the referral code in URL
+    let path = `/launch-pools/${projectId}`
+    
+    // Get current query parameters
+    const referralFromUrl = searchParams.get('referral')
+    
+    // If we have a referral code, add it to the path
+    if (referralFromUrl) {
+      path += `?referral=${referralFromUrl}`
+    } else if (referralCode) {
+      path += `?referral=${referralCode}`
+    }
+    
+    // Navigate while preserving the referral code
+    navigate(path)
+    
+    // Scroll to the ToU section
+    setTimeout(() => {
+      const joinThePoolElement = document.getElementById('complianceHeading')
+      if (joinThePoolElement) {
+        joinThePoolElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      } else {
+        const headings = document.querySelectorAll('h2')
+        for (const heading of headings) {
+          if (heading.textContent?.includes('Join the Launch Pool')) {
+            heading.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            break
+          }
+        }
+      }
+    }, 500)
   }
 
   return (
@@ -130,6 +205,7 @@ const ProvideReferralCodeModal = ({ onClose, initialReferralCode }: ProvideRefer
             <>
               <p className="text-center text-base text-fg-tertiary mb-2">
                 You need to sign the Terms of Use before you can use a referral code.
+                {referralCode && " We'll save this referral code and apply it automatically after you sign."}
               </p>
               <Button
                 btnText="Sign Terms of Use"
@@ -165,7 +241,11 @@ const ProvideReferralCodeModal = ({ onClose, initialReferralCode }: ProvideRefer
                   disabled={!referralCode || isPending || !isValidReferralCode(referralCode)}
                   isLoading={isPending}
                   btnText={t("referral.provide.button")}
-                  onClick={() => updateReferral(address)}
+                  onClick={() => {
+                    updateReferral(address)
+                    // Also remove referral from URL when clicking the button manually
+                    removeReferralFromUrl()
+                  }}
                 />
               )}
             </>
@@ -176,4 +256,4 @@ const ProvideReferralCodeModal = ({ onClose, initialReferralCode }: ProvideRefer
   )
 }
 
-export default ProvideReferralCodeModal 
+export default ProvideReferralCodeModal
