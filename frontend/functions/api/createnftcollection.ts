@@ -11,8 +11,7 @@ import { authSchema } from "../../shared/schemas/analysis-schema"
 
 type ENV = {
     DB: D1Database
-    STAGE_PRIVATE_KEY: string
-    PROD_PRIVATE_KEY: string
+    BORGPAD_PRIVATE_KEY: string
     SOLANA_RPC_URL: string
     ADMIN_ADDRESSES: string
     VITE_ENVIRONMENT_TYPE: "develop" | "production"
@@ -168,10 +167,7 @@ async function createNftCollection({
     
     const connection = new Connection(rpcUrl, "confirmed");
 
-    // Select the appropriate private key based on cluster
-    const privateKeyString = cluster === "mainnet"
-        ? env.PROD_PRIVATE_KEY
-        : env.STAGE_PRIVATE_KEY
+    const privateKeyString = env.BORGPAD_PRIVATE_KEY
 
     // Convert base58 string to Uint8Array
     const privateKeyUint8Array = bs58.decode(privateKeyString)
