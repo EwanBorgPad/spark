@@ -159,9 +159,28 @@ async function createNftCollection({
     warning?: string;
 }> {
     // Get the appropriate connection based on cluster
-    const rpcUrl = env.SOLANA_RPC_URL || (cluster === "mainnet" 
-        ? "https://api.mainnet-beta.solana.com" 
-        : "https://api.devnet.solana.com");
+    let rpcUrl: string;
+    
+    if (env.SOLANA_RPC_URL) {
+        // Extract the Helius API key if present
+        const heliusApiKeyMatch = env.SOLANA_RPC_URL.match(/api-key=([^&]+)/);
+        const heliusApiKey = heliusApiKeyMatch ? heliusApiKeyMatch[1] : null;
+        
+        if (heliusApiKey) {
+            // Format proper Helius URL based on cluster
+            rpcUrl = cluster === "mainnet" 
+                ? `https://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`
+                : `https://devnet.helius-rpc.com/?api-key=${heliusApiKey}`;
+        } else {
+            // Use provided URL as is
+            rpcUrl = env.SOLANA_RPC_URL;
+        }
+    } else {
+        // Fallback to default RPC endpoints
+        rpcUrl = cluster === "mainnet" 
+            ? "https://api.mainnet-beta.solana.com" 
+            : "https://api.devnet.solana.com";
+    }
     
     console.log("Using RPC URL:", rpcUrl);
     
