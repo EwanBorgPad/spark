@@ -155,3 +155,10 @@ CREATE TABLE analysis (
 
 CREATE INDEX idx_analysis_project_id ON analysis(project_id);
 ---- end
+
+
+---- migration: merge goat pools & blitz pools to launch pools (30.04.25.)
+UPDATE project
+SET json = json_set(json, '$.info.projectType', 'launch-pool')
+WHERE json_extract(json, '$.info.projectType') IN ('goat', 'blitz');
+---- end

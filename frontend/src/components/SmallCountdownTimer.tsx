@@ -66,7 +66,7 @@ const SmallCountDownTimer = ({ countdownEventDate, labelDuringCountdown }: Small
   return (
     <div className={twMerge("flex w-full items-center gap-1 rounded-t-xl")}>
       {isEventFinished ? (
-        <span className="text-sm opacity-50">{`Sale started on ${formatDateForTimer(countdownEventDate)}`}</span>
+        <span className="truncate text-ellipsis text-sm opacity-50">{`Sale started on ${formatDateForTimer(countdownEventDate)}`}</span>
       ) : (
         <div className={twMerge("flex items-start text-sm normal-nums opacity-50")}>
           <span className={twMerge("text-nowrap pr-1 text-sm font-normal")}>{labelDuringCountdown}</span>

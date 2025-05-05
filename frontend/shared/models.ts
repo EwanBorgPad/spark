@@ -124,7 +124,7 @@ const preRaisedSchema = z.object({
 
 export type NftConfigType = z.infer<typeof nftConfigSchema>
 
-export const ProjectTypeSchema = z.enum(["goat", "blitz", "draft-pick"])
+export const ProjectTypeSchema = z.enum(["goat", "blitz", "draft-pick", "launch-pool"])
 
 export const projectSchema = z.object({
   id: idSchema(),

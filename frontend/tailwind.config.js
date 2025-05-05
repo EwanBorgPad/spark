@@ -83,6 +83,7 @@ export default {
         geist: ["Geist", "Arial", "sans-serif"],
         "geist-mono": ["GeistMono", "monospace"],
         "sulphur-point": ["Sulphur Point", "sans-serif"],
+        vcr: ["VCR OSD Mono", "monospace"],
       },
       boxShadow: {
         underline: "0px 2px 0px 0px rgba(188,254,143,1)",
@@ -149,6 +150,10 @@ export default {
         "top-down": {
           "0%": { transform: "translateY(-5%)", opacity: "0" },
           "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        "top-up": {
+          "0%": { transform: "translateY(0)", opacity: "1" },
+          "100%": { transform: "translateY(-5%)", opacity: "0" },
         },
         "fade-in": {
           "0%": { opacity: 0, transform: "translateY(40%)", filter: "blur(10px)" },
@@ -227,6 +232,7 @@ export default {
         "opacity-in": "opacity-in 0.6s ease-in-out forwards",
         "opacity-in-fast": "opacity-in 0.2s ease-in-out forwards",
         "top-down": "top-down 0.1s ease-out forwards",
+        "top-up": "top-up 0.2s ease-out forwards",
         "fade-in": "fade-in 0.2s ease-in-out",
         "fade-in-from-below": "fade-in-2 0.2s ease-in-out forwards",
         "fade-in-from-below-slow": "fade-in 1s ease-in-out forwards",
