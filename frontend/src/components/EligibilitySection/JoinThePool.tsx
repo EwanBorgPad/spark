@@ -17,6 +17,7 @@ import { Icon } from "../Icon/Icon.tsx"
 import { SimpleModal } from "../Modal/SimpleModal"
 import ProvideReferralCodeModal from "../Modal/Modals/ProvideReferralCodeModal"
 import { Button } from "../Button/Button"
+import { useSearchParamsUpdate } from "@/hooks/useSearchParamsUpdate"
 
 type Props = {
   className?: string
@@ -26,7 +27,7 @@ type Props = {
 export const JoinThePool = () => {
   const eligibilityRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
   const { address, isWalletConnected } = useWalletContext()
   const { projectId } = useParams()
@@ -35,6 +36,7 @@ export const JoinThePool = () => {
   const referralCodeFromUrl = searchParams.get('referral')
   const [isSigningToU, setIsSigningToU] = useState(false)
   const hasProcessedReferral = useRef(false)
+  const { removeParam } = useSearchParamsUpdate()
 
   // Query to check if the user already has a referral code
   const { data: eligibilityStatus } = useQuery({
@@ -46,11 +48,11 @@ export const JoinThePool = () => {
     enabled: Boolean(address) && Boolean(projectId),
   })
 
+  // Remove referral code from URL using the useSearchParams hook
   const removeReferralFromUrl = () => {
     if (referralCodeFromUrl) {
-      const url = new URL(window.location.href)
-      url.searchParams.delete('referral')
-      navigate(`${url.pathname}${url.search}`, { replace: true })
+      // Simple version using the custom hook
+      removeParam('referral')
     }
   }
 

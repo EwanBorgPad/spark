@@ -12,6 +12,7 @@ import { Badge } from "@/components/Badge/Badge"
 import { toast } from "react-toastify"
 import { eligibilityStatusCacheBust } from "@/utils/cache-helper"
 import { sendTransaction } from "../../../../shared/solana/sendTransaction"
+import { useSearchParamsUpdate } from "@/hooks/useSearchParamsUpdate"
 
 type ProvideReferralCodeModalProps = {
   onClose: () => void
@@ -26,6 +27,7 @@ const ProvideReferralCodeModal = ({ onClose, onSignToU, initialReferralCode }: P
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { removeParam } = useSearchParamsUpdate()
   const [hasAcceptedToU, setHasAcceptedToU] = useState<boolean | null>(null)
   const autoSubmitAttempted = useRef(false)
 
@@ -57,13 +59,9 @@ const ProvideReferralCodeModal = ({ onClose, onSignToU, initialReferralCode }: P
     return initialReferralCode || null
   })
 
-  // Function to remove referral code from URL
+  // Function to remove referral code from URL using useSearchParamsUpdate
   const removeReferralFromUrl = () => {
-    const url = new URL(window.location.href)
-    if (url.searchParams.has('referral')) {
-      url.searchParams.delete('referral')
-      navigate(`${url.pathname}${url.search}`, { replace: true })
-    }
+    removeParam('referral')
   }
 
   // Save referral code to localStorage when not signed in
