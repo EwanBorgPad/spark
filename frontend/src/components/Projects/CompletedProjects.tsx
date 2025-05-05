@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import { ExpandedProject, processProjects } from "@/utils/projects-helper"
 import { useQuery } from "@tanstack/react-query"
 import { GetProjectsResponse, ProjectModel } from "shared/models"
-import { backendApi } from "@/data/backendApi"
+import { backendApi } from "@/data/api/backendApi"
 import { SortDropdown } from "../Dropdown/SortDropdown"
 import Pagination from "../Pagination/Pagination"
 

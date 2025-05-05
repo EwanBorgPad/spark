@@ -2,7 +2,7 @@ import { SimpleModal } from "../SimpleModal"
 import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { useTranslation } from "react-i18next"
-import { backendApi } from "@/data/backendApi"
+import { referralApi } from "@/data/api/referralApi"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ReferralInputField } from "@/components/InputField/ReferralInputField"
@@ -13,6 +13,7 @@ import { toast } from "react-toastify"
 import { eligibilityStatusCacheBust } from "@/utils/cache-helper"
 import { sendTransaction } from "../../../../shared/solana/sendTransaction"
 import { useSearchParamsUpdate } from "@/hooks/useSearchParamsUpdate"
+import { backendApi } from "@/data/api/backendApi"
 
 type ProvideReferralCodeModalProps = {
   onClose: () => void
@@ -44,7 +45,7 @@ const ProvideReferralCodeModal = ({ onClose, onSignToU, initialReferralCode }: P
   // Get user's existing referral code
   const { data: referralData } = useQuery({
     queryKey: ["getReferralCode", address],
-    queryFn: () => backendApi.getReferralCode({ address: address || "", projectId: projectId || ""}),
+    queryFn: () => referralApi.getReferralCode({ address: address || "", projectId: projectId || ""}),
     enabled: !!address,
   })
 
@@ -100,7 +101,7 @@ const ProvideReferralCodeModal = ({ onClose, onSignToU, initialReferralCode }: P
         isLedgerTransaction,
       }
 
-      await backendApi.postReferralCode(data)
+      await referralApi.postReferralCode(data)
     },
     onSuccess: () => {
       // Immediately remove the referral code from URL to prevent infinite loops

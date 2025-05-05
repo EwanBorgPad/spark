@@ -6,7 +6,7 @@ import { DropdownField } from "@/components/InputField/DropdownField"
 import { TextField } from "@/components/InputField/TextField"
 import { Controller, SubmitHandler, useForm } from "react-hook-form"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { backendApi } from "@/data/backendApi"
+import { backendApi } from "@/data/api/backendApi"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { usePersistedState } from "@/hooks/usePersistedState"
 import Img from "@/components/Image/Img"
@@ -17,6 +17,7 @@ import { useProjectDataContext } from "@/hooks/useProjectData"
 import { twMerge } from "tailwind-merge"
 import { BP_JWT_TOKEN } from "@/utils/constants"
 import { useSearchParamsUpdate } from "@/hooks/useSearchParamsUpdate"
+import { analysisApi } from "@/data/api/analysisApi"
 
 type Props = {
   onClose: () => void
@@ -65,7 +66,7 @@ const BecomeAnalystModal = ({ onClose }: Props) => {
     isPending,
     isSuccess: isAnalysisSubmittedSuccessfully,
   } = useMutation({
-    mutationFn: async (payload: NewAnalysisSchemaType) => backendApi.postNewAnalysis({ newAnalysis: payload }),
+    mutationFn: async (payload: NewAnalysisSchemaType) => analysisApi.postNewAnalysis({ newAnalysis: payload }),
     onSuccess: async (_, _variables) => toast.success("New Analysis submitted successfully!", { theme: "colored" }),
     onError: (error) => toast.error(error.message),
   })
@@ -75,7 +76,7 @@ const BecomeAnalystModal = ({ onClose }: Props) => {
 
   // fetch X (twitter) auth url
   const { data: authData, refetch: fetchTwitterAuthUrl } = useQuery({
-    queryFn: () => backendApi.getTwitterAuthUrl(),
+    queryFn: () => analysisApi.getTwitterAuthUrl(),
     queryKey: ["getTwitterAuthUrl"],
     enabled: false,
     staleTime: 30 * 60 * 1000,
@@ -84,7 +85,7 @@ const BecomeAnalystModal = ({ onClose }: Props) => {
   // fetch Analyst and token via sessionId
   const { data: session } = useQuery({
     queryFn: async () =>
-      backendApi.getSession(sessionId).then((result) => {
+      analysisApi.getSession(sessionId).then((result) => {
         removeParam("sessionId")
         return result
       }),

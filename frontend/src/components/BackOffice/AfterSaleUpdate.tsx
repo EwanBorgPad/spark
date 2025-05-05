@@ -1,4 +1,4 @@
-import { backendApi, PostAfterSaleUpdateArgs } from "@/data/backendApi"
+import { backendApi, PostAfterSaleUpdateArgs } from "@/data/api/backendApi"
 import { TextField } from "@/components/InputField/TextField"
 import { Button } from "@/components/Button/Button"
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'

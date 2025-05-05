@@ -5,9 +5,9 @@ import { AnalysisSortBy, AnalystRoleEnum } from "shared/schemas/analysis-schema"
 import Img from "../Image/Img"
 import { Button } from "../Button/Button"
 import { Icon } from "../Icon/Icon"
-import { backendApi, UpdateAnalysisApproval } from "@/data/backendApi"
 import { useQuery } from "@tanstack/react-query"
 import Text from "@/components/Text"
+import { analysisApi, UpdateAnalysisApproval } from "@/data/api/analysisApi"
 
 type Props = {
   onUpdateStatusSubmit?: (args: Pick<UpdateAnalysisApproval, "action" | "analysisId"> & { queryKey: string[] }) => void
@@ -27,7 +27,7 @@ const ApproveAnalysisTable = ({ onUpdateStatusSubmit }: Props) => {
 
   const { data, isLoading } = useQuery({
     queryFn: () =>
-      backendApi.getAnalysisList({
+      analysisApi.getAnalysisList({
         isApproved: false,
         sortBy,
         sortDirection,

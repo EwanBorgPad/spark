@@ -5,7 +5,7 @@ import { twMerge } from "tailwind-merge"
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { useWalletContext } from "@/hooks/useWalletContext"
-import { backendApi } from "@/data/backendApi"
+import { backendApi } from "@/data/api/backendApi.ts"
 import { formatCurrencyAmount } from "../../../../shared/utils/format.ts"
 import { getRewardDistributionMessage } from "@/utils/reward-helper"
 

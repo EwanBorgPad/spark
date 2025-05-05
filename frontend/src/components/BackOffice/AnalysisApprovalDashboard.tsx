@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { backendApi, UpdateAnalysisApproval } from "@/data/backendApi"
+import { backendApi, UpdateAnalysisApproval } from "@/data/api/backendApi"
 import { toast } from "react-toastify"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import ApproveAnalysisTable from "../Tables/ApproveAnalysisTable"

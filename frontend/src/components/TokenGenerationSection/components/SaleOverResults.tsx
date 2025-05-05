@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import { formatCurrencyAmount } from "shared/utils/format"
-import { backendApi } from "@/data/backendApi.ts"
+import { backendApi } from "@/data/api/backendApi"
 import Text from "@/components/Text"
 import { SaleResultsResponse } from "shared/models"
 

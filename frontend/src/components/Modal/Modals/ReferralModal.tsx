@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useWalletContext } from "@/hooks/useWalletContext";
-import { backendApi } from "@/data/backendApi";
+import { backendApi } from "@/data/api/backendApi";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProjectDataContext } from "@/hooks/useProjectData";
@@ -9,6 +9,7 @@ import { formatCurrencyAmount } from "shared/utils/format";
 import HowItWorksSection from "../../Referral/HowItWorksSection";
 import ReferralDashboard from "../../Referral/ReferralDashboard";
 import { ReferralData, LeaderboardData, TotalTicketsDistributed, UserPrize } from "../../Referral/types";
+import { referralApi } from "@/data/api/referralApi";
 
 type ReferralModalProps = {
   onClose: () => void;
@@ -46,14 +47,14 @@ const ReferralModal: React.FC<ReferralModalProps> = ({ onClose }) => {
   // Fetch referral data
   const { data: referralData } = useQuery({
     queryKey: ["getReferralCode", address],
-    queryFn: () => backendApi.getReferralCode({ address: address || "", projectId: projectId || "" }),
+    queryFn: () => referralApi.getReferralCode({ address: address || "", projectId: projectId || "" }),
     enabled: !!address,
   });
 
   // Fetch leaderboard data
   const { data: leaderboardData } = useQuery({
     queryKey: ["getLeaderboard", address],
-    queryFn: () => backendApi.getLeaderboard({ projectId: projectId || "" }),
+    queryFn: () => referralApi.getLeaderboard({ projectId: projectId || "" }),
   });
 
   const referralCode = referralData?.code || "";

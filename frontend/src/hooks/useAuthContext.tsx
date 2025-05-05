@@ -5,7 +5,7 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 import { useWalletContext } from "./useWalletContext"
 import { useMutation } from "@tanstack/react-query"
-import { backendApi } from "@/data/backendApi"
+import { backendApi } from "@/data/api/backendApi"
 import { AdminAuthFields } from "shared/models"
 import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"

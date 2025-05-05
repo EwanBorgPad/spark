@@ -1,7 +1,7 @@
 import { ProjectModel } from "../../shared/models.ts"
 import { createContext, ReactNode, useCallback, useContext } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { backendApi } from "@/data/backendApi.ts"
+import { backendApi } from "@/data/api/backendApi.ts"
 import { useParams } from "react-router-dom"
 
 type Context = {

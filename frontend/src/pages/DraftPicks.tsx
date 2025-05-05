@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { backendApi } from "@/data/backendApi"
+import { backendApi } from "@/data/api/backendApi"
 import { useQuery } from "@tanstack/react-query"
 import { ScrollRestoration } from "react-router-dom"
 

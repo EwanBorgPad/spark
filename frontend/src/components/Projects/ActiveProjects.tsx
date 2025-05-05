@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import { twMerge } from "tailwind-merge"
 import { useTranslation } from "react-i18next"
-import { backendApi } from "@/data/backendApi"
+import { backendApi } from "@/data/api/backendApi"
 import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { GetProjectsResponse, ProjectModel } from "shared/models"

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
-import { backendApi } from "@/data/backendApi.ts"
+import { backendApi } from "@/data/api/backendApi.ts"
 import { Badge } from "../Badge/Badge"
 import { twMerge } from "tailwind-merge"
 import { RefObject, useRef, useEffect, useState } from "react"
