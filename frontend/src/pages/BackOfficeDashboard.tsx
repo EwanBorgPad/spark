@@ -7,8 +7,9 @@ import { useWalletContext } from "@/hooks/useWalletContext"
 import { ConnectButton } from "@/components/Header/ConnectButton"
 import AnalysisApprovalDashboard from "@/components/BackOffice/AnalysisApprovalDashboard"
 import AfterSaleUpdate from "@/components/BackOffice/AfterSaleUpdate"
+import ProjectStatus from "@/components/BackOffice/ProjectStatus"
 
-const BACK_OFFICE_FEATURES = ["AFTER_SALE_UPDATE", "UPDATE_JSON_FILE"] as const
+const BACK_OFFICE_FEATURES = ["AFTER_SALE_UPDATE", "UPDATE_JSON_FILE", "PROJECT_STATUS"] as const
 type BackOfficeFeatureType = (typeof BACK_OFFICE_FEATURES)[number]
 
 const BackOfficeDashboard = () => {
@@ -21,6 +22,8 @@ const BackOfficeDashboard = () => {
       return <AfterSaleUpdate />
     } else if (renderedFeature === "UPDATE_JSON_FILE") {
       return <UpdateProjectJson />
+    } else if (renderedFeature === "PROJECT_STATUS") {
+      return <ProjectStatus />
     }
   }
 
@@ -50,6 +53,12 @@ const BackOfficeDashboard = () => {
                   onClick={() => setRenderedFeature("UPDATE_JSON_FILE")}
                 >
                   <span className="w-full text-center text-xl">📝 Update JSON files</span>
+                </div>
+                <div
+                  className="flex max-w-[300px] flex-1 cursor-pointer justify-center rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-primary/30 p-10 ring-[1px] ring-brand-primary/40 hover:bg-brand-secondary/40"
+                  onClick={() => setRenderedFeature("PROJECT_STATUS")}
+                >
+                  <span className="w-full text-center text-xl">✅ Projects Status</span>
                 </div>
               </div>
             </div>

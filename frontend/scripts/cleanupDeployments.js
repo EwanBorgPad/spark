@@ -10,6 +10,8 @@
 
 /* eslint-disable no-undef */
 /* eslint-disable no-console */
+import dotenv from 'dotenv';
+dotenv.config(); // Load environment variables
 
 // Cloudflare API information
 const API_TOKEN = process.env.VITE_DEPLOYMENTS_API_TOKEN
@@ -33,6 +35,7 @@ async function getDeployments(page) {
     method: "GET",
     headers,
   })
+  console.log("response", response)
   const data = await response.json()
   if (!data.ok) {
     console.log("no data")
