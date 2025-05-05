@@ -1,5 +1,5 @@
-import { jsonResponse, reportError } from "./cfPagesFunctionsUtils";
-import { isApiKeyValid } from "../services/apiKeyService";
+import { jsonResponse, reportError } from "../cfPagesFunctionsUtils";
+import { isApiKeyValid } from "../../services/apiKeyService";
 
 type ENV = {
   DB: D1Database

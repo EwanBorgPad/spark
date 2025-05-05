@@ -1,12 +1,12 @@
-import { ReferralCodeRequestSchema } from "../../shared/models";
-import { jsonResponse, reportError } from "./cfPagesFunctionsUtils";
+import { ReferralCodeRequestSchema } from "../../../shared/models";
+import { jsonResponse, reportError } from "../cfPagesFunctionsUtils";
 import { PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import { decodeUTF8 } from "tweetnacl-util";
-import { UserService } from "../services/userService"
-import { validateTransaction } from "../../shared/solana/validateTransaction"
+import { UserService } from "../../services/userService"
+import { validateTransaction } from "../../../shared/solana/validateTransaction"
 import { v4 as uuidv4 } from 'uuid';
-import { getReferralCode, getAddressByReferralCode } from "../services/referralService";
+import { getReferralCode, getAddressByReferralCode } from "../../services/referralService";
 
 type ENV = {
   DB: D1Database

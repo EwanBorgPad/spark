@@ -1,4 +1,4 @@
-import { jsonResponse, reportError } from "./cfPagesFunctionsUtils";
+import { jsonResponse, reportError } from "../cfPagesFunctionsUtils";
 
 type ENV = {
   DB: D1Database
