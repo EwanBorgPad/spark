@@ -168,3 +168,9 @@ CREATE TABLE referral (
     FOREIGN KEY (address) REFERENCES user(address) ON DELETE CASCADE,
     UNIQUE (project_id, address)
 );
+
+---- migration: merge goat pools & blitz pools to launch pools (30.04.25.)
+UPDATE project
+SET json = json_set(json, '$.info.projectType', 'launch-pool')
+WHERE json_extract(json, '$.info.projectType') IN ('goat', 'blitz');
+---- end

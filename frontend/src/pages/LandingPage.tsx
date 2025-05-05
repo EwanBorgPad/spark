@@ -15,7 +15,6 @@ import DontBeACexToy from "@/components/LandingPage/DontBeACexToy"
 import DiscoverSection from "@/components/LandingPage/DiscoverSection"
 import JoinCommunityBtn from "@/components/Button/JoinTheCommunityBtn"
 import RotatingSubtitle from "@/components/LandingPage/RotatingSubtitle"
-import CountdownBtnForNextLbp from "@/components/Button/CountdownBtnForNextLbp"
 import HeroCtaSection from "@/components/LandingPage/HeroCtaSection"
 
 const LandingPage = () => {

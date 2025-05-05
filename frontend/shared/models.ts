@@ -102,12 +102,37 @@ const nftConfigSchema = z.object({
   symbol: z.string(),
   description: z.string(),
   imageUrl: z.string(),
-  collection: z.string(),
+  collection: z.string().optional(),
+})
+export const bannerTypeSchema = z.enum(["WIDE", "COMPACT"])
+export type BannerType = z.infer<typeof bannerTypeSchema>
+const bannerSchema = z.object({
+  type: bannerTypeSchema,
+  imageUrl: z.string().optional(),
+  label: z.string(),
+  cta: z
+    .object({
+      label: z.string(),
+      url: urlSchema(),
+    })
+    .optional(),
+  borderGradient: z.object({
+    leftHex: z.string(),
+    rightHex: z.string(),
+  }),
+  backgroundGradient: z.object({
+    leftHex: z.string(),
+    rightHex: z.string(),
+  }),
+})
+const preRaisedSchema = z.object({
+  label: z.string(),
+  amount: z.number(),
 })
 
 export type NftConfigType = z.infer<typeof nftConfigSchema>
 
-export const ProjectTypeSchema = z.enum(["goat", "blitz", "draft-pick"])
+export const ProjectTypeSchema = z.enum(["goat", "blitz", "draft-pick", "launch-pool"])
 
 export const projectSchema = z.object({
   id: idSchema(),
@@ -175,6 +200,8 @@ export const projectSchema = z.object({
     targetFdv: z.string().min(1).optional(),
     targetVesting: z.string().min(1).optional(),
     chain: z.object({ name: z.string().min(1), iconUrl: urlSchema() }),
+    banner: bannerSchema.optional(),
+    preRaised: preRaisedSchema.optional(),
 
     dataRoom: z.object({ backgroundImgUrl: urlSchema().optional(), url: urlSchema() }),
     liquidityPool: z.object({

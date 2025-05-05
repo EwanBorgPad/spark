@@ -17,6 +17,7 @@ import LiveNowCountdown from "@/Countdown/LiveNowCountdown"
 import { isBefore } from "date-fns"
 import { CountDownCallback } from "@/components/CountDownCallback"
 import { isAfter } from "date-fns/isAfter"
+import Banner from "@/components/Projects/Banner"
 
 type LiveNowProps = {
   eventData: ExpandedTimelineEventType
@@ -77,7 +78,10 @@ const LiveNow = ({ timeline }: LiveNowProps) => {
   return (
     <div className="flex w-full flex-col items-center px-4">
       <div className="flex w-full max-w-[792px] flex-col items-center gap-8">
-        <Timeline timelineEvents={timeline} />
+        <div className="flex w-full flex-col gap-4">
+          <Timeline timelineEvents={timeline} />
+          <Banner type="WIDE" />
+        </div>
 
         {!isUserEligible && (
           <div className="relative flex w-full justify-center pb-8">

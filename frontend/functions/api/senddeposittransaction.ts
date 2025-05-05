@@ -242,8 +242,25 @@ async function extractTransactionData(txId: string, heliusApiKey: string, cluste
             ]
         }),
     })
-    const res = await response.json() as any
-    const dataObject = res[0]
+    // Check if response is ok before trying to parse JSON
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Helius API error (${response.status}): ${errorText}`);
+    }
+    
+    let dataObject;
+    try {
+        const res = await response.json();
+        if (!Array.isArray(res) || res.length === 0) {
+            throw new Error(`Invalid response format from Helius API: ${JSON.stringify(res)}`);
+        }
+        dataObject = res[0];
+    } catch (error) {
+        // Get the raw response body for debugging
+        const rawText = await response.clone().text();
+        throw new Error(`Failed to parse JSON response: ${error.message}. Raw response: ${rawText.substring(0, 100)}...`);
+    }
+    
     // user is always the fee payer for the transaction
     const userWalletAddress = dataObject.feePayer
     const tokenTransfers = dataObject.tokenTransfers

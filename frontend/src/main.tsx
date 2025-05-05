@@ -16,7 +16,7 @@ import "./index.css"
 
 import { Buffer } from "buffer"
 import { toast } from "react-toastify"
-import RedirectToGoatPools from "./components/LaunchPool/RedirectToGoatPools"
+import RedirectToLaunchPools from "./components/LaunchPool/RedirectToLaunchPools"
 import { ROUTES } from "./utils/routes"
 // import BackOffice from './pages/BackOffice2'
 // import BackOfficeDashboard from "./pages/BackOfficeDashboard"
@@ -24,10 +24,9 @@ import { AuthProvider } from "./hooks/useAuthContext"
 import ProtectedRoute from "./components/BackOffice/ProtectedRoute"
 import LandingPage from "./pages/LandingPage"
 import Project from "./pages/Project"
-import GoatPools from "./pages/GoatPools"
-import BlitzPools from "./pages/BlitzPools"
 import DraftPickPage from "./pages/DraftPickPage"
 import DraftPicks from "./pages/DraftPicks"
+import LaunchPools from "./pages/LaunchPools"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -77,7 +76,7 @@ const router = createBrowserRouter([
       //   element: <AngelStaking />,
       // },
       {
-        path: ROUTES.GOAT_POOLS,
+        path: ROUTES.LAUNCH_POOLS,
         errorElement: <SomethingWentWrong />,
         element: <Outlet />,
         children: [
@@ -91,26 +90,7 @@ const router = createBrowserRouter([
           },
           {
             path: "",
-            element: <GoatPools />,
-          },
-        ],
-      },
-      {
-        path: ROUTES.BLITZ_POOLS,
-        errorElement: <SomethingWentWrong />,
-        element: <Outlet />,
-        children: [
-          {
-            path: ":projectId",
-            element: (
-              <ProjectDataProvider>
-                <Project />
-              </ProjectDataProvider>
-            ),
-          },
-          {
-            path: "",
-            element: <BlitzPools />,
+            element: <LaunchPools />,
           },
         ],
       },
@@ -134,8 +114,12 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/launch-pools/*",
-        element: <RedirectToGoatPools />,
+        path: "/goat-pools/*",
+        element: <RedirectToLaunchPools />,
+      },
+      {
+        path: "/blitz-pools/*",
+        element: <RedirectToLaunchPools />,
       },
       {
         path: ROUTES.TERMS_OF_USE,

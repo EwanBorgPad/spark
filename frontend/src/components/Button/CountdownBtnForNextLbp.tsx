@@ -22,7 +22,7 @@ const CountdownBtnForNextLbp = ({ projectId }: { projectId: string }) => {
 
   return (
     <Link to={getProjectRoute(projectData)}>
-      <div className="group relative min-w-full overflow-hidden rounded-[13px] bg-[#abff73]/25 p-[2px] transition-colors hover:bg-[#abff73]/50 md:min-w-[328px] md:max-w-[460px]">
+      <div className="group relative min-w-full overflow-hidden rounded-[13px] bg-[#abff73]/25 p-[2px] transition-colors hover:bg-[#abff73]/50 md:min-w-[328px] md:max-w-[520px]">
         <div className="animated-conic-gradient absolute z-[-1] animate-rotate-border" />
         <div className="z-[10] flex h-[40px] items-center justify-between gap-2 rounded-xl bg-[#16231e] p-3">
           <div className="flex items-center gap-2">

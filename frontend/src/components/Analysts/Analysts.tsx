@@ -35,6 +35,8 @@ const Analysts = () => {
     enabled: Boolean(projectId),
     refetchOnWindowFocus: false,
   })
+  const first23Analysts = data?.analysisList.slice(0, 23)
+  const numOfRemainingAnalysts = data?.analysisList.slice(23).length
 
   const openBecomeAnalystModal = useCallback(() => {
     setShowBecomeAnalystModal(true)
@@ -74,15 +76,21 @@ const Analysts = () => {
         {isLoading ? (
           <div className="flex flex-wrap gap-1">
             {skeletonLoaderArray.map((item) => (
+              // eslint-disable-next-line react/jsx-max-props-per-line
               <Img size="6" isRounded key={item} isFetchingLink src="" />
             ))}
           </div>
         ) : data?.analysisList.length ? (
           <>
-            <div className="flex flex-wrap gap-1">
-              {data?.analysisList.map((item) => (
+            <div className="flex flex-wrap gap-1" onClick={() => setShowProjectAnalysisModal(true)}>
+              {first23Analysts?.map((item) => (
                 <Img size="6" isRounded key={item.analysis.id} src={item.analyst.twitterAvatar} />
               ))}
+              {!!numOfRemainingAnalysts && (
+                <div className="flex size-6 items-center justify-center rounded-full bg-tertiary text-fg-secondary">
+                  <span className="text-[10px] leading-none">+{numOfRemainingAnalysts}</span>
+                </div>
+              )}
             </div>
             <div className={twMerge("flex w-full flex-col gap-4", !isCuratorSet ? "md:flex-row" : "")}>
               <div className="flex w-full gap-4">
@@ -108,7 +116,7 @@ const Analysts = () => {
                 />
                 <Button
                   btnText="Become an Analyst"
-                  color="plain"
+                  color="tertiary"
                   className="h-fit flex-[1] rounded-lg py-2 text-sm"
                   onClick={openBecomeAnalystModal}
                 />

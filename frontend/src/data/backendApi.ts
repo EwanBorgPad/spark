@@ -53,6 +53,9 @@ const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
 const POST_REFERRAL_CODE = API_BASE_URL + "/referralcode"
 const GET_REFERRAL_CODE = API_BASE_URL + "/referralcode"
 const GET_LEADERBOARD = API_BASE_URL + "/referralleaderboard"
+const CHECK_TOKEN_ACCOUNT = API_BASE_URL + "/admin/checktokenaccount"
+const CREATE_NFT_COLLECTION = API_BASE_URL + "/createnftcollection"
+const UPLOAD_ON_R2 = API_BASE_URL + "/admin/uploadonr2"
 
 // analysis & analyst
 const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
@@ -719,6 +722,110 @@ const getLeaderboard = async ({
   return json
 }
 
+type CheckTokenAccountArgs = {
+  walletAddress: string; 
+  tokenMint: string; 
+  projectId: string;
+}
+
+const checkTokenAccount = async ({ 
+  walletAddress, 
+  tokenMint, 
+  projectId 
+}: CheckTokenAccountArgs): Promise<{ exists: boolean; tokenAccountInfo: Record<string, unknown> | null }> => {
+  const url = new URL(CHECK_TOKEN_ACCOUNT, window.location.href)
+
+  url.searchParams.set("walletAddress", walletAddress)
+  url.searchParams.set("tokenMint", tokenMint)
+  url.searchParams.set("projectId", projectId)
+
+  const response = await fetch(url)
+  if (!response.ok) throw new Error("Failed to check token account")
+  return await response.json()
+}
+
+// Add new API for creating NFT collections
+type CreateNftCollectionArgs = {
+  projectId: string;
+  auth: {
+    address: string;
+    message: string;
+    signature: number[];
+  };
+  nftConfig: {
+    name: string;
+    symbol: string;
+    description: string;
+    imageUrl: string;
+    collection: string;
+  };
+  cluster?: "mainnet" | "devnet";
+}
+
+type CreateNftCollectionResponse = {
+  collectionAddress: string;
+  transactionSignature: string;
+  warning?: string;
+}
+
+const createNftCollection = async (args: CreateNftCollectionArgs): Promise<CreateNftCollectionResponse> => {
+  const url = new URL(CREATE_NFT_COLLECTION, window.location.href)
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(args),
+  })
+  
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.message || 'Failed to create NFT collection')
+  }
+  
+  return await response.json()
+}
+
+// Add new API for uploading files directly to R2
+type UploadOnR2Args = {
+  projectId: string;
+  auth: {
+    address: string;
+    message: string;
+    signature: number[];
+  };
+  fileData: string;  // Base64 encoded file data
+  fileName: string;
+  contentType: string;
+  folder?: string;  // Optional folder path within the project directory
+  cluster?: "mainnet" | "devnet";  // Add cluster parameter
+};
+
+type UploadOnR2Response = {
+  message: string;
+  publicUrl: string;
+};
+
+const uploadOnR2 = async (args: UploadOnR2Args): Promise<UploadOnR2Response> => {
+  const url = new URL(UPLOAD_ON_R2, window.location.href)
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(args),
+  })
+  
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.message || 'Failed to upload file to R2')
+  }
+  
+  return await response.json()
+}
+
 export const backendApi = {
   getProject,
   getProjects,
@@ -752,4 +859,7 @@ export const backendApi = {
   manuallyAddAnalysis,
   getSession,
   isAdmin,
+  checkTokenAccount,
+  createNftCollection,
+  uploadOnR2,
 }

@@ -17,7 +17,7 @@ const privateKeyUint8Array = bs58.decode(privateKeyString);
 const wallet = Keypair.fromSecretKey(privateKeyUint8Array);
 
 // Connect to the Solana devnet
-const connection = new Connection(clusterApiUrl("mainnet-beta"));
+const connection = new Connection(clusterApiUrl("devnet"));
 
 // Initialize Metaplex with your wallet
 const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
@@ -25,7 +25,7 @@ const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
 // Define metadata for the collection NFT
 const collectionMetadata = {
   name: "AIDD Liquidity Provider",
-  symbol: "bpAIDDBITDOCTOR",
+  symbol: "bpAIDD",
   uri: "https://files.borgpad.com/bitdoctor/nft-metadata/collection-metadata.json", // Add your collection metadata JSON URL
   sellerFeeBasisPoints: 500, // 5% royalties
 };

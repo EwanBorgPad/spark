@@ -12,7 +12,7 @@ import { LaunchPoolCard } from "../Cards/LaunchPoolCard"
 import { ExpandedProject, processProjects } from "@/utils/projects-helper"
 
 type Props = {
-  projectType: "goat" | "blitz"
+  projectType: ProjectModel["info"]["projectType"]
 }
 
 export const ActiveProjects = ({ projectType }: Props) => {
