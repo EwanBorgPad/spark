@@ -75,11 +75,11 @@ export function SimpleModal({
         >
           <div
             className={twMerge(
-              "sticky left-0 right-0 top-0 z-[31] flex w-full items-start justify-between bg-secondary/70 p-4 text-center backdrop-blur-sm",
+              "sticky left-0 right-0 top-0 z-[31] flex w-full items-center justify-between bg-secondary/70 p-6 text-center backdrop-blur-sm",
               headerClass,
             )}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               {onClose && showCloseBtn && <CloseButton onClose={closeModalCallback} />}
               {title && <h1 className="flex-1 text-body-xl-semibold text-white">{title}</h1>}
             </div>
