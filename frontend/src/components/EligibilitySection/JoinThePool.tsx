@@ -86,7 +86,7 @@ export const JoinThePool = () => {
     } else if (!showReferralModal) {
       // If modal not shown yet, show it
       setShowReferralModal(true)
-      
+
       // Store referral code for later use
       if (projectId) {
         localStorage.setItem(`referralCode_${projectId}`, referralCodeFromUrl)
@@ -110,7 +110,7 @@ export const JoinThePool = () => {
   // Simply close the modal without removing referral code from URL if not provided yet
   const handleReferralModalClose = () => {
     setShowReferralModal(false)
-    
+
     // Only remove the referral code if the user has already provided one
     if (hasProvidedReferralCode) {
       removeReferralFromUrl()
@@ -136,8 +136,8 @@ export const JoinThePool = () => {
 
       {/* Modal for already used referral code */}
       {showAlreadyUsedModal && (
-        <SimpleModal 
-          showCloseBtn={true} 
+        <SimpleModal
+          showCloseBtn={true}
           onClose={handleAlreadyUsedModalClose}
           title="Referral Code Already Used"
         >
@@ -152,7 +152,7 @@ export const JoinThePool = () => {
 
       {/* Referral Modal with prefilled code */}
       {showReferralModal && (
-        <ProvideReferralCodeModal 
+        <ProvideReferralCodeModal
           onClose={handleReferralModalClose}
           onSignToU={handleSignToU}
           initialReferralCode={referralCodeFromUrl || ""}
@@ -203,7 +203,6 @@ const ConnectWalletStep = () => {
 const EligibilityCompliancesSection = ({
   className,
   isLastStep,
-  isDraftPicks,
 }: {
   className?: string
   isLastStep?: boolean
@@ -211,6 +210,7 @@ const EligibilityCompliancesSection = ({
 }) => {
   const { address, isWalletConnected } = useWalletContext()
   const { projectId } = useParams()
+  const { projectData } = useProjectDataContext()
 
   const { data: eligibilityStatus, isLoading } = useQuery({
     queryFn: () => {
@@ -223,7 +223,13 @@ const EligibilityCompliancesSection = ({
   })
 
   const skeletonCompliances = Array.from({ length: 2 }, (_, i) => i)
-  const complianceQuests = eligibilityStatus?.compliances ? sortByCompletionStatus(eligibilityStatus.compliances) : null
+  let complianceQuests = eligibilityStatus?.compliances ? sortByCompletionStatus(eligibilityStatus.compliances) : null
+
+  // Filter out PROVIDE_REFERRAL_CODE quest if referralDistribution is not enabled
+  if (complianceQuests && !projectData?.config.referralDistribution) {
+    complianceQuests = complianceQuests.filter(quest => quest.type !== "PROVIDE_REFERRAL_CODE")
+  }
+
   const isCompliant = isWalletConnected && !!eligibilityStatus?.isCompliant
 
   return (
@@ -235,7 +241,9 @@ const EligibilityCompliancesSection = ({
         {!isLoading
           ? complianceQuests
             ? complianceQuests?.map((quest) => <QuestComponent key={quest.type} quest={quest} isCompliance />)
-            : DEFAULT_COMPLIANCES.map((quest) => <QuestComponent key={quest.type} quest={quest} isCompliance />)
+            : getDefaultCompliances(!!projectData?.config.referralDistribution).map((quest) => (
+              <QuestComponent key={quest.type} quest={quest} isCompliance />
+            ))
           : skeletonCompliances.map((quest) => <Skeleton.Compliance key={quest} />)}
       </div>
     </section>
@@ -273,9 +281,11 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
         // tier container
         return (
           <TierWrapper key={tier.id} tier={tier} tierWithCompletion={null}>
-            {tier.quests.map((quest) => (
-              <QuestComponent key={quest.type} quest={{ ...quest, ...restOfQuest }} />
-            ))}
+            {tier.quests
+              .filter(quest => projectData.config.referralDistribution || quest.type !== "PROVIDE_REFERRAL_CODE")
+              .map((quest) => (
+                <QuestComponent key={quest.type} quest={{ ...quest, ...restOfQuest }} />
+              ))}
           </TierWrapper>
         )
       })
@@ -283,7 +293,12 @@ const EligibilityTiersSection = ({ className, parentRef }: Props) => {
       const isCompliant = isWalletConnected && !!eligibilityStatus?.isCompliant
 
       return eligibilityStatus.tiers.map((tier) => {
-        const tierQuests = sortByCompletionStatus(tier.quests)
+        let tierQuests = sortByCompletionStatus(tier.quests)
+
+        // Filter out PROVIDE_REFERRAL_CODE quests if referralDistribution is not enabled
+        if (!projectData.config.referralDistribution) {
+          tierQuests = tierQuests.filter(quest => quest.type !== "PROVIDE_REFERRAL_CODE")
+        }
 
         return (
           <TierWrapper key={tier.id} tier={tier} isCompliant={isCompliant} tierWithCompletion={tier}>
@@ -346,6 +361,15 @@ const DEFAULT_COMPLIANCES: EligibilityStatus["compliances"] = [
     isOptional: true,
   }
 ]
+
+// Function to get default compliances based on referralDistribution flag
+const getDefaultCompliances = (hasReferralDistribution?: boolean): EligibilityStatus["compliances"] => {
+  if (!hasReferralDistribution) {
+    // Filter out PROVIDE_REFERRAL_CODE if referralDistribution is not enabled
+    return DEFAULT_COMPLIANCES.filter(compliance => compliance.type !== "PROVIDE_REFERRAL_CODE");
+  }
+  return DEFAULT_COMPLIANCES;
+}
 
 const SideElements = ({
   number,
