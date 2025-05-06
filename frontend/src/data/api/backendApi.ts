@@ -1,6 +1,5 @@
 import {
   AcceptTermsRequest,
-  AdminAuthFields,
   CreateEmailRequest,
   DepositStatus,
   GetExchangeResponse,
@@ -14,18 +13,9 @@ import {
   SaleResultsResponse,
   TokenAmountModel,
 } from "../../../shared/models.ts"
-import {
-  AnalysisSortBy,
-  AnalysisSortDirection,
-  AnalystRoleEnum,
-  analystSchema,
-  GetListOfAnalysisResponse,
-  NewAnalysisSchemaType,
-} from "../../../shared/schemas/analysis-schema.ts"
-import { Analyst, Analysis } from "../../../shared/drizzle-schema.ts"
+
 import { EligibilityStatus } from "../../../shared/eligibilityModel.ts"
 import { eligibilityStatusCacheBust, investmentIntentSummaryCacheBust } from "@/utils/cache-helper.ts"
-import { BP_JWT_TOKEN } from "@/utils/constants.ts"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? `${window.location.origin}/api`
 const GET_ELIGIBILITY_STATUS_API = API_BASE_URL + "/eligibilitystatus"
@@ -48,8 +38,6 @@ const SEND_CLAIM_TRANSACTION = API_BASE_URL + "/sendclaimtransaction"
 const POST_AFTER_SALE_UPDATE = API_BASE_URL + "/projects/after-sale-update"
 const UPDATE_JSON = API_BASE_URL + "/projects/update-json"
 const POST_CREATE_EMAIL = API_BASE_URL + "/createemail"
-const GET_SESSION = API_BASE_URL + "/session"
-const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
 const CHECK_TOKEN_ACCOUNT = API_BASE_URL + "/admin/checktokenaccount"
 const CREATE_NFT_COLLECTION = API_BASE_URL + "/createnftcollection"
 const UPLOAD_ON_R2 = API_BASE_URL + "/admin/uploadonr2"

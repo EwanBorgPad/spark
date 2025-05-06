@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { backendApi, UpdateAnalysisApproval } from "@/data/api/backendApi"
+import { analysisApi, UpdateAnalysisApproval } from "@/data/api/analysisApi"
 import { toast } from "react-toastify"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import ApproveAnalysisTable from "../Tables/ApproveAnalysisTable"
@@ -15,7 +15,7 @@ const AnalysisApprovalDashboard = () => {
 
   // API request - postNewAnalysis
   const { mutate: updateAnalysisStatus } = useMutation({
-    mutationFn: async (args: UpdateAnalysisApproval) => backendApi.updateAnalysisApproval(args),
+    mutationFn: async (args: UpdateAnalysisApproval) => analysisApi.updateAnalysisApproval(args),
     onError: (error) => {
       toast.error(error.message)
     },

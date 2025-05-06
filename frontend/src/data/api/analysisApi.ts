@@ -1,18 +1,5 @@
 import {
-  AcceptTermsRequest,
   AdminAuthFields,
-  CreateEmailRequest,
-  DepositStatus,
-  GetExchangeResponse,
-  GetPresignedUrlResponse,
-  GetProjectsResponse,
-  InvestmentIntentRequest,
-  InvestmentIntentSummary,
-  MyRewardsResponse,
-  ProjectModel,
-  projectSchema,
-  SaleResultsResponse,
-  TokenAmountModel,
 } from "../../../shared/models.ts"
 import {
   AnalysisSortBy,
@@ -23,8 +10,6 @@ import {
   NewAnalysisSchemaType,
 } from "../../../shared/schemas/analysis-schema.ts"
 import { Analyst, Analysis } from "../../../shared/drizzle-schema.ts"
-import { EligibilityStatus } from "../../../shared/eligibilityModel.ts"
-import { eligibilityStatusCacheBust, investmentIntentSummaryCacheBust } from "@/utils/cache-helper.ts"
 import { BP_JWT_TOKEN } from "@/utils/constants.ts"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? `${window.location.origin}/api`
@@ -37,19 +22,6 @@ const GET_ANALYST_URL = API_BASE_URL + "/analyst"
 const POST_ANALYSIS = API_BASE_URL + "/analysis"
 const GET_ANALYSIS_LIST = API_BASE_URL + "/analysis"
 const MANUALLY_ADD_ANALYSIS = API_BASE_URL + "/analysis/manuallyadd"
-
-const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
-  const response = await fetch(...args)
-
-  if (response.status === 401) {
-    throw new Error("Signature mismatch! Please make sure you are signing the message with the correct wallet address!")
-  }
-
-  if (!response.ok) {
-    const responseBody = (await response.json()) as { message?: string }
-    throw new Error(responseBody?.message || "Something went wrong...")
-  }
-}
 
 const getTwitterAuthUrl = async (): Promise<{ twitterAuthUrl: string }> => {
   const url = new URL(GET_TWITTER_AUTH_URL, window.location.href)

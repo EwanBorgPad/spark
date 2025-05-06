@@ -1,32 +1,3 @@
-import {
-  AcceptTermsRequest,
-  AdminAuthFields,
-  CreateEmailRequest,
-  DepositStatus,
-  GetExchangeResponse,
-  GetPresignedUrlResponse,
-  GetProjectsResponse,
-  InvestmentIntentRequest,
-  InvestmentIntentSummary,
-  MyRewardsResponse,
-  ProjectModel,
-  projectSchema,
-  SaleResultsResponse,
-  TokenAmountModel,
-} from "../../../shared/models.ts"
-import {
-  AnalysisSortBy,
-  AnalysisSortDirection,
-  AnalystRoleEnum,
-  analystSchema,
-  GetListOfAnalysisResponse,
-  NewAnalysisSchemaType,
-} from "../../../shared/schemas/analysis-schema.ts"
-import { Analyst, Analysis } from "../../../shared/drizzle-schema.ts"
-import { EligibilityStatus } from "../../../shared/eligibilityModel.ts"
-import { eligibilityStatusCacheBust, investmentIntentSummaryCacheBust } from "@/utils/cache-helper.ts"
-import { BP_JWT_TOKEN } from "@/utils/constants.ts"
-
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? `${window.location.origin}/api`
 
 // referral
