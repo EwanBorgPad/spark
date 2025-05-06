@@ -11,6 +11,7 @@ import AcceptTermsOfUseModal from "../Modal/Modals/AcceptTermsOfUseModal"
 import { ProvideInvestmentIntentModal } from "../Modal/Modals/ProvideInvestmentIntentModal"
 import ProvideEmailModal from "../Modal/Modals/ProvideEmailModal"
 import ProvideReferralCodeModal from "../Modal/Modals/ProvideReferralCodeModal"
+import { useProjectDataContext } from "@/hooks/useProjectData"
 
 import { ProjectModel } from "shared/models"
 import { formatDateForTimer } from "@/utils/date-helpers"
@@ -24,6 +25,7 @@ type QuestComponentProps = {
 export const QuestComponent = ({ quest, autoCheck, isCompliance }: QuestComponentProps) => {
   const { isWalletConnected } = useWalletContext()
   const { t } = useTranslation()
+  const { projectData } = useProjectDataContext()
 
   const { type } = quest
   const isCompleted = autoCheck || quest.isCompleted
@@ -51,7 +53,7 @@ export const QuestComponent = ({ quest, autoCheck, isCompliance }: QuestComponen
         description: "",
         additionalElement: <ProvideEmailBtn />,
       }
-    if (type === "PROVIDE_REFERRAL_CODE")
+    if (type === "PROVIDE_REFERRAL_CODE" && projectData?.config.referralDistribution)
       return {
         label: t("referral.provide.heading"),
         description: "",
