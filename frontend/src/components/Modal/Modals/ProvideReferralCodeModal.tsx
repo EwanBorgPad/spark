@@ -124,6 +124,11 @@ const ProvideReferralCodeModal = ({ onClose, onSignToU, initialReferralCode }: P
     onError: (error) => toast.error(error.message, { theme: "colored" }),
   })
 
+  // Function to validate referral code
+  function isValidReferralCode(referralCode: string): boolean {
+    return referralCode.length > 0 && UsereferralCode !== referralCode
+  }
+
   // Process eligibility status changes and check for ToU acceptance
   useEffect(() => {
     if (!eligibilityStatus) return
@@ -134,25 +139,15 @@ const ProvideReferralCodeModal = ({ onClose, onSignToU, initialReferralCode }: P
     
     setHasAcceptedToU(hasToU || false)
     
-    // If user has accepted ToU and we have a valid code, and we haven't tried to submit yet
-    if (hasToU && projectId && address && referralCode && !autoSubmitAttempted.current) {
-      // Mark that we've attempted auto-submission to prevent multiple attempts
+    // Mark that we've attempted auto-submission to prevent multiple attempts if code changes
+    // This prevents re-triggering auto-submit if referral code changes
+    if (hasToU && projectId && address && referralCode) {
       autoSubmitAttempted.current = true
-      
-      // Make sure the code isn't the user's own code and is valid
-      if (referralCode !== UsereferralCode && referralCode.length > 0) {
-        // Slight delay to ensure states are updated
-        setTimeout(() => {
-          updateReferral(address)
-        }, 300)
-      }
     }
-  }, [eligibilityStatus, address, projectId, referralCode, UsereferralCode])
-
-  // Function to validate referral code
-  function isValidReferralCode(referralCode: string): boolean {
-    return referralCode.length > 0 && UsereferralCode !== referralCode
-  }
+    
+    // Auto-submission has been removed - users must now click the button manually
+    // even when the referral code comes from localStorage or URL
+  }, [eligibilityStatus, address, projectId, referralCode])
 
   // Navigate to Terms of Use section while preserving referral code in URL
   const scrollToJoinThePool = () => {
