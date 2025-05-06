@@ -1,5 +1,6 @@
 import {
   AcceptTermsRequest,
+  AdminAuthFields,
   CreateEmailRequest,
   DepositStatus,
   GetExchangeResponse,
@@ -41,6 +42,8 @@ const POST_CREATE_EMAIL = API_BASE_URL + "/createemail"
 const CHECK_TOKEN_ACCOUNT = API_BASE_URL + "/admin/checktokenaccount"
 const CREATE_NFT_COLLECTION = API_BASE_URL + "/createnftcollection"
 const UPLOAD_ON_R2 = API_BASE_URL + "/admin/uploadonr2"
+
+const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
 
 const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
   const response = await fetch(...args)
@@ -574,6 +577,21 @@ const uploadOnR2 = async (args: UploadOnR2Args): Promise<UploadOnR2Response> => 
   return await response.json()
 }
 
+const isAdmin = async (auth: AdminAuthFields): Promise<void> => {
+  const url = new URL(IS_ADMIN_URL, window.location.href)
+
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(auth),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
+}
+
 export const backendApi = {
   getProject,
   getProjects,
@@ -599,4 +617,5 @@ export const backendApi = {
   checkTokenAccount,
   createNftCollection,
   uploadOnR2,
+  isAdmin,
 }

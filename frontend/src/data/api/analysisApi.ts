@@ -15,7 +15,7 @@ import { BP_JWT_TOKEN } from "@/utils/constants.ts"
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? `${window.location.origin}/api`
 
 const GET_SESSION = API_BASE_URL + "/session"
-const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
+
 // analysis & analyst
 const GET_TWITTER_AUTH_URL = API_BASE_URL + "/analyst/twitterauthurl"
 const GET_ANALYST_URL = API_BASE_URL + "/analyst"
@@ -157,20 +157,6 @@ const getSession = async (sessionId: string): Promise<{ analyst: Analyst; token:
   return json
 }
 
-const isAdmin = async (auth: AdminAuthFields): Promise<void> => {
-  const url = new URL(IS_ADMIN_URL, window.location.href)
-
-  const response = await fetch(url, {
-    method: "POST",
-    body: JSON.stringify(auth),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-  const json = await response.json()
-  if (!response.ok) throw new Error(json.message)
-  return json
-}
 
 export const analysisApi = {
   getTwitterAuthUrl,
@@ -180,5 +166,4 @@ export const analysisApi = {
   updateAnalysisApproval,
   manuallyAddAnalysis,
   getSession,
-  isAdmin,
 }
