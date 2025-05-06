@@ -6,7 +6,7 @@ import { referralApi } from "@/data/api/referralApi"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ReferralInputField } from "@/components/InputField/ReferralInputField"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import { Badge } from "@/components/Badge/Badge"
 import { toast } from "react-toastify"
@@ -191,8 +191,16 @@ const ProvideReferralCodeModal = ({ onClose, onSignToU, initialReferralCode }: P
     }, 500)
   }
 
+  // Enhanced onClose handler that removes referral from URL when modal is closed
+  const handleClose = useCallback(() => {
+    // Remove referral from URL when modal is closed
+    removeReferralFromUrl();
+    // Call the original onClose handler
+    onClose();
+  }, [onClose, removeReferralFromUrl]);
+
   return (
-    <SimpleModal showCloseBtn={true} onClose={onClose} title={t("referral.provide.heading")}>
+    <SimpleModal showCloseBtn={true} onClose={handleClose} title={t("referral.provide.heading")}>
       <div className="flex w-full max-w-[460px] flex-col items-center justify-center max-sm:h-full">
         <div className={twMerge("flex w-full grow flex-col justify-start gap-4 px-4 pb-8 pt-3 md:px-10")}>
           {hasAcceptedToU === false ? (
