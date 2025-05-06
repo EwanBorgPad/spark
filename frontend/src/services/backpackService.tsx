@@ -40,7 +40,7 @@ export async function connectBackpack(): Promise<string> {
   
   if (!provider) {
     handleNoProvider("BACKPACK")
-    throw new Error("Backpack provider not found")
+    return ""
   }
   
   try {
@@ -62,7 +62,7 @@ export async function signInBackpack(): Promise<string> {
   
   if (!provider) {
     handleNoProvider("BACKPACK")
-    throw new Error("Backpack provider not found")
+    return ""
   }
   
   try {

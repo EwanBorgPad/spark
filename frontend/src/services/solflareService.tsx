@@ -40,7 +40,7 @@ export async function connectSolflare(): Promise<string> {
   
   if (!provider) {
     handleNoProvider("SOLFLARE")
-    throw new Error("Solflare provider not found")
+    return ""
   }
   
   try {
@@ -67,7 +67,7 @@ export async function signInSolflare(): Promise<string> {
   
   if (!provider) {
     handleNoProvider("SOLFLARE")
-    throw new Error("Solflare provider not found")
+    return ""
   }
   
   try {
