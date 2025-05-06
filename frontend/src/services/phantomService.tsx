@@ -40,7 +40,7 @@ export async function connectPhantom(): Promise<string> {
   
   if (!provider) {
     handleNoProvider("PHANTOM")
-    throw new Error("Phantom provider not found")
+    return ""
   }
   
   try {
@@ -62,7 +62,7 @@ export async function signInPhantom(): Promise<string> {
   
   if (!provider) {
     handleNoProvider("PHANTOM")
-    throw new Error("Phantom provider not found")
+    return ""
   }
   
   try {
