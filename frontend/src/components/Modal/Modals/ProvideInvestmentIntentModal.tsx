@@ -33,7 +33,7 @@ export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentInten
   const [showJoinCommunityCta, setShowJoinCommunityCta] = useState(false)
   const [userExpressedInterest, setUserExpressedInterest] = useState(false)
 
-  const maxInvestment = projectData?.info.tiers[0].benefits.maxInvestment || 0
+  const maxInvestment = projectData?.info.tiers[0].benefits.maxInvestment || 2500
 
   const { data: investmentSummaryData } = useQuery({
     queryFn: () =>
