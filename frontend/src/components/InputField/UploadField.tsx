@@ -2,7 +2,7 @@ import { HTMLProps } from "@/@types/general"
 import React, { useEffect, useRef, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import { Button } from "../Button/Button"
-import { backendApi } from "@/data/backendApi"
+import { backendApi } from "@/data/api/backendApi"
 import { MAX_IMAGE_SIZE } from "@/utils/constants"
 import { FieldError } from "react-hook-form"
 

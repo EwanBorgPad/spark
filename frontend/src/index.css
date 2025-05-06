@@ -1,6 +1,14 @@
 @import "./style/inputSlider.css";
 @import url('https://fonts.googleapis.com/css2?family=Sulphur+Point:wght@300;400;700&display=swap');
 
+@font-face {
+  font-family: 'VCR OSD Mono';
+  src: url('/VCROSDMono.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -195,4 +203,55 @@ input[type="checkbox"] {
 }
 .react-datepicker__month-container {
   height: 294px !important;
+}
+
+/* PrizeCard gradient border */
+.prize-card-gradient {
+  position: relative;
+  background: #121621; /* Fond sombre pour l'intérieur de la carte */
+  border-radius: 0.5rem; /* Arrondi des coins */
+}
+
+.prize-card-gradient::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: -1px;
+  z-index: -1;
+  border-radius: 0.5rem;
+  background: linear-gradient(to top, var(--gradient-start), var(--gradient-end));
+  padding: 1px; /* Épaisseur du contour */
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Classes spécifiques pour chaque type de carte */
+.prize-card-grand::before {
+  background: linear-gradient(to top, rgba(172, 255, 115, 0.5), rgba(172, 255, 115, 0.15));
+  padding: 1px;
+}
+
+.prize-card-gold::before {
+  background: linear-gradient(to top, rgba(242, 191, 126, 0.5), rgba(242, 191, 126, 0.15));
+  padding: 1px;
+}
+
+.prize-card-silver::before {
+  background: linear-gradient(to top, rgba(225, 231, 239, 0.5), rgba(225, 231, 239, 0.15));
+  padding: 1px;
+}
+
+.prize-card-bronze::before {
+  background: linear-gradient(to top, rgba(211, 129, 96, 0.5), rgba(211, 129, 96, 0.15));
+  padding: 1px;
+}
+
+/* Classes utilitaires */
+.font-vcr {
+  font-family: 'VCR OSD Mono', monospace;
 }

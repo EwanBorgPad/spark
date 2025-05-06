@@ -10,7 +10,7 @@ import { Button } from "@/components/Button/Button"
 import { useRef } from "react"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { useQuery } from "@tanstack/react-query"
-import { backendApi } from "@/data/backendApi"
+import { backendApi } from "@/data/api/backendApi"
 import { useParams } from "react-router-dom"
 import Banner from "@/components/Projects/Banner"
 

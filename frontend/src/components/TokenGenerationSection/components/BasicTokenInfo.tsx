@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 
-import { backendApi } from "@/data/backendApi.ts"
+import { backendApi } from "@/data/api/backendApi"
 import { formatCurrencyAmount } from "shared/utils/format"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import Text from "@/components/Text"

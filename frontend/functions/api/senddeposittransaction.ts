@@ -11,8 +11,9 @@ import { exchangeService } from "../services/exchangeService"
 import { Buffer } from "buffer"
 import * as bs58 from "bs58"
 import { SaleResultsService } from "../services/saleResultsService"
-import { projectTable } from "../../shared/drizzle-schema"
-import { eq } from "drizzle-orm"
+import { projectTable, referralTable } from "../../shared/drizzle-schema"
+import { and, eq, sql } from "drizzle-orm"
+
 
 type ENV = {
     DB: D1Database,
@@ -169,6 +170,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             transactionStatus.confirmationStatus &&
             ['confirmed', 'finalized'].includes(transactionStatus.confirmationStatus)
         ) {
+            // Create user deposit
             await DepositService.createUserDeposit({
                 db,
                 amount: amountInLamports.toString(),
@@ -186,7 +188,21 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
                     tokensCalculation,
                     transactionStatus,
                 },
-            })
+            });
+
+            // Update the referral table to add the amount invested
+            await db
+                .update(referralTable)
+                .set({
+                    invested_dollar_value: sql`${referralTable.invested_dollar_value} + ${tokenAmount}`
+                } as any)
+                .where(
+                    and(
+                        eq(referralTable.address, userWalletAddress),
+                        eq(referralTable.project_id, data.projectId)
+                    )
+                );
+
         }
 
         return jsonResponse({ message: "Ok!" }, 200)

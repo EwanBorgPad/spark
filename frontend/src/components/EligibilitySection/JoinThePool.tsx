@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
-import { backendApi } from "@/data/backendApi.ts"
+import { backendApi } from "@/data/api/backendApi.ts"
 import { Badge } from "../Badge/Badge"
 import { twMerge } from "tailwind-merge"
-import { RefObject, useRef } from "react"
-import { useParams } from "react-router-dom"
+import { RefObject, useRef, useEffect, useState } from "react"
+import { useParams, useSearchParams, useNavigate } from "react-router-dom"
 import { FinalSnapshotTaken } from "@/components/EligibilitySection/FinalSnapshotTaken.tsx"
 import { QuestComponent, sortByCompletionStatus, TierWrapper } from "./Quests.tsx"
 import { Skeleton, TierSkeletonContainer } from "./EligibilitySkeletons.tsx"
@@ -14,6 +14,10 @@ import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import { ConnectButton } from "../Header/ConnectButton.tsx"
 import Divider from "../Divider.tsx"
 import { Icon } from "../Icon/Icon.tsx"
+import { SimpleModal } from "../Modal/SimpleModal"
+import ProvideReferralCodeModal from "../Modal/Modals/ProvideReferralCodeModal"
+import { Button } from "../Button/Button"
+import { useSearchParamsUpdate } from "@/hooks/useSearchParamsUpdate"
 
 type Props = {
   className?: string
@@ -23,6 +27,102 @@ type Props = {
 export const JoinThePool = () => {
   const eligibilityRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const { address, isWalletConnected } = useWalletContext()
+  const { projectId } = useParams()
+  const [showReferralModal, setShowReferralModal] = useState(false)
+  const [showAlreadyUsedModal, setShowAlreadyUsedModal] = useState(false)
+  const referralCodeFromUrl = searchParams.get('referral')
+  const [isSigningToU, setIsSigningToU] = useState(false)
+  const hasProcessedReferral = useRef(false)
+  const { removeParam } = useSearchParamsUpdate()
+
+  // Query to check if the user already has a referral code
+  const { data: eligibilityStatus } = useQuery({
+    queryFn: () => {
+      if (!address || !projectId) return
+      return backendApi.getEligibilityStatus({ address, projectId })
+    },
+    queryKey: ["getEligibilityStatus", address, projectId],
+    enabled: Boolean(address) && Boolean(projectId),
+  })
+
+  // Remove referral code from URL using the useSearchParams hook
+  const removeReferralFromUrl = () => {
+    if (referralCodeFromUrl) {
+      // Simple version using the custom hook
+      removeParam('referral')
+    }
+  }
+
+  // Check if user has signed Terms of Use and if they've provided a referral code
+  const hasAcceptedToU = eligibilityStatus?.compliances?.some(
+    compliance => compliance.type === "ACCEPT_TERMS_OF_USE" && compliance.isCompleted
+  ) || false
+
+  const hasProvidedReferralCode = eligibilityStatus?.compliances?.some(
+    compliance => compliance.type === "PROVIDE_REFERRAL_CODE" && compliance.isCompleted
+  ) || false
+
+  // Clean up referral from URL if we've already processed it
+  useEffect(() => {
+    if (hasProvidedReferralCode && referralCodeFromUrl) {
+      removeReferralFromUrl()
+      hasProcessedReferral.current = true
+    }
+  }, [hasProvidedReferralCode, referralCodeFromUrl])
+
+  // Process referral code from URL - only show modal if we're not in the process of signing ToU
+  useEffect(() => {
+    // Skip if no referral code, not connected, no eligibility data, already signing ToU, or already processed referral
+    if (!referralCodeFromUrl || !isWalletConnected || !eligibilityStatus || isSigningToU || hasProcessedReferral.current) return
+
+    if (hasProvidedReferralCode) {
+      // If user has already provided a referral code, show message and remove from URL
+      setShowAlreadyUsedModal(true)
+      removeReferralFromUrl()
+      hasProcessedReferral.current = true
+    } else if (!showReferralModal) {
+      // If modal not shown yet, show it
+      setShowReferralModal(true)
+      
+      // Store referral code for later use
+      if (projectId) {
+        localStorage.setItem(`referralCode_${projectId}`, referralCodeFromUrl)
+      }
+    }
+  }, [referralCodeFromUrl, isWalletConnected, eligibilityStatus, projectId, hasProvidedReferralCode, showReferralModal, isSigningToU])
+
+  // Reset the signing ToU flag when eligibility status changes
+  useEffect(() => {
+    if (hasAcceptedToU && isSigningToU) {
+      setIsSigningToU(false)
+    }
+  }, [hasAcceptedToU, isSigningToU])
+
+  // Called when the user clicks "Sign Terms of Use" in the modal
+  const handleSignToU = () => {
+    setIsSigningToU(true)  // Mark that we're in the process of signing ToU
+    setShowReferralModal(false)  // Close the modal
+  }
+
+  // Simply close the modal without removing referral code from URL if not provided yet
+  const handleReferralModalClose = () => {
+    setShowReferralModal(false)
+    
+    // Only remove the referral code if the user has already provided one
+    if (hasProvidedReferralCode) {
+      removeReferralFromUrl()
+      hasProcessedReferral.current = true
+    }
+  }
+
+  const handleAlreadyUsedModalClose = () => {
+    setShowAlreadyUsedModal(false)
+    removeReferralFromUrl()
+    hasProcessedReferral.current = true
+  }
 
   return (
     <div ref={eligibilityRef} className="flex w-full max-w-[536px] flex-col items-center gap-[36px] pt-10">
@@ -33,6 +133,31 @@ export const JoinThePool = () => {
       <ConnectWalletStep />
       <EligibilityCompliancesSection />
       <EligibilityTiersSection parentRef={eligibilityRef} />
+
+      {/* Modal for already used referral code */}
+      {showAlreadyUsedModal && (
+        <SimpleModal 
+          showCloseBtn={true} 
+          onClose={handleAlreadyUsedModalClose}
+          title="Referral Code Already Used"
+        >
+          <div className="flex w-full max-w-[460px] flex-col items-center justify-center px-4 py-6 md:px-10">
+            <p className="text-center text-base text-fg-tertiary mb-4">
+              You have already provided a referral code for this project. Please try with another wallet if you want to use a different referral code.
+            </p>
+            <Button btnText="Close" onClick={handleAlreadyUsedModalClose} />
+          </div>
+        </SimpleModal>
+      )}
+
+      {/* Referral Modal with prefilled code */}
+      {showReferralModal && (
+        <ProvideReferralCodeModal 
+          onClose={handleReferralModalClose}
+          onSignToU={handleSignToU}
+          initialReferralCode={referralCodeFromUrl || ""}
+        />
+      )}
     </div>
   )
 }
@@ -215,6 +340,11 @@ const DEFAULT_COMPLIANCES: EligibilityStatus["compliances"] = [
     isCompleted: false,
     isOptional: true,
   },
+  {
+    type: "PROVIDE_REFERRAL_CODE",
+    isCompleted: false,
+    isOptional: true,
+  }
 ]
 
 const SideElements = ({

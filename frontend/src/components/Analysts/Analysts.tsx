@@ -7,7 +7,7 @@ import BecomeAnAnalystModal from "../Modal/Modals/BecomeAnalystModal"
 import { useSearchParams } from "react-router-dom"
 import { usePersistedState } from "@/hooks/usePersistedState"
 import { useQuery } from "@tanstack/react-query"
-import { backendApi } from "@/data/backendApi"
+import { analysisApi } from "@/data/api/analysisApi"
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import ProjectAnalysisModal from "../Modal/Modals/ProjectAnalysisModal"
 import { Icon } from "../Icon/Icon"
@@ -30,7 +30,7 @@ const Analysts = () => {
 
   const { data, isLoading } = useQuery({
     queryFn: () =>
-      backendApi.getAnalysisList({ projectId, isApproved: true, sortBy: "impressions", sortDirection: undefined }),
+      analysisApi.getAnalysisList({ projectId, isApproved: true, sortBy: "impressions", sortDirection: undefined }),
     queryKey: ["getAnalysisList", "isApproved=true", "impressions", projectId],
     enabled: Boolean(projectId),
     refetchOnWindowFocus: false,

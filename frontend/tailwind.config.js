@@ -74,6 +74,7 @@ export default {
         "texture-zoomed-out": "url(/src/assets/grainy-top1.png)",
         "top-contributor": "url(/src/assets/bg-top-contributor.png)",
         fallback: "url(/src/assets/fallback.png)",
+        "grand-prize": "url(/src/assets/bg-grand-prize.png)",
       },
       backgroundColor: {
         "contribution-gradient":

@@ -1,4 +1,5 @@
 export * from "./SvgLoader"
+export * from "./SvgTicket"
 export * from "./SvgArrowDown"
 export * from "./SvgArrowRight"
 export * from "./SvgBorgCoin"

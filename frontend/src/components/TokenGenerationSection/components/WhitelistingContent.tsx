@@ -6,7 +6,7 @@ import { Icon } from "@/components/Icon/Icon"
 import TokenRewards from "./TokenRewards"
 
 import { useQuery } from "@tanstack/react-query"
-import { backendApi } from "@/data/backendApi.ts"
+import { backendApi } from "@/data/api/backendApi"
 import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import Img from "@/components/Image/Img"
 import { useParams } from "react-router-dom"

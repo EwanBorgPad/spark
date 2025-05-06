@@ -1,6 +1,6 @@
 import { toast } from "react-toastify"
 import { ProjectModel, GetProjectsResponse } from "shared/models"
-import { backendApi } from "@/data/backendApi"
+import { backendApi } from "@/data/api/backendApi"
 import { sendTokenTo } from "../../../../shared/solana/sendTokenTo"
 import { Transaction } from "@solana/web3.js"
 import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query"

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Controller, SubmitHandler, useForm } from "react-hook-form"
 import { useWalletContext } from "@/hooks/useWalletContext"
-import { backendApi } from "@/data/backendApi"
+import { backendApi } from "@/data/api/backendApi"
 import { AdminAuthFields, GetProjectsResponse } from "shared/models"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { DropdownSelector } from "@/components/Dropdown/Dropdown"
@@ -15,6 +15,7 @@ import { AnalystRoleEnum, analystRoleSchema } from "shared/schemas/analysis-sche
 import { DropdownField } from "@/components/InputField/DropdownField"
 import { SvgTwitter } from "@/components/Icon/Svg"
 import { Icon } from "@/components/Icon/Icon"
+import { analysisApi } from "@/data/api/analysisApi"
 
 const roleOptions: { label: string; id: AnalystRoleEnum }[] = [
   {
@@ -52,7 +53,7 @@ const ManuallyAddAnalysisModal = ({ onClose }: Props) => {
 
   // API request - postNewAnalysis
   const { mutate: manuallyAddAnalysis, isPending } = useMutation({
-    mutationFn: async (args: FormType & { auth: AdminAuthFields }) => backendApi.manuallyAddAnalysis(args),
+    mutationFn: async (args: FormType & { auth: AdminAuthFields }) => analysisApi.manuallyAddAnalysis(args),
     onError: (error) => {
       toast.error(error.message)
     },

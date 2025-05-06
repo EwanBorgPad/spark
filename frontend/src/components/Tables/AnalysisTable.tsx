@@ -7,7 +7,7 @@ import { Button } from "../Button/Button"
 import { Icon } from "../Icon/Icon"
 import Text from "@/components/Text"
 import { useQuery } from "@tanstack/react-query"
-import { backendApi } from "@/data/backendApi"
+import { analysisApi } from "@/data/api/analysisApi"
 
 type Props = {
   projectId: string
@@ -25,7 +25,7 @@ const AnalysisTable = ({ projectId }: Props) => {
 
   const { data, isLoading } = useQuery({
     queryFn: () =>
-      backendApi.getAnalysisList({
+      analysisApi.getAnalysisList({
         projectId,
         isApproved: true,
         sortBy,

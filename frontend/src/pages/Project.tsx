@@ -15,6 +15,7 @@ import Analysts from "@/components/Analysts/Analysts"
 import DataRoom from "@/components/LaunchPool/DataRoom"
 import BasicTokenInfo from "@/components/TokenGenerationSection/components/BasicTokenInfo"
 import DealComingFrom from "@/components/LaunchPool/DealComingFrom"
+import Referral from "@/components/LaunchPool/Referral"
 
 const Project = () => {
   const { projectData, isLoading } = useProjectDataContext()
@@ -64,6 +65,7 @@ const Project = () => {
           </div>
           {/* right side */}
           <div className="relative flex flex-col items-start gap-3 md:items-end">
+            {projectData?.config.referralDistribution && <Referral />}
             <DataRoom />
             <div className="flex items-start gap-2">
               {projectData?.info.projectLinks.map((link, index) => (

@@ -11,8 +11,21 @@ type Props = {
   className?: string
   headerClass?: string
   title?: string
+  actionButton?: {
+    text: string
+    onClick: () => void
+  }
 }
-export function SimpleModal({ children, showCloseBtn, onClose, className, headerClass, title }: Props) {
+
+export function SimpleModal({ 
+  children, 
+  showCloseBtn, 
+  onClose, 
+  className, 
+  headerClass, 
+  title,
+  actionButton 
+}: Props) {
   const modalRef = useRef<HTMLDivElement | null>(null)
   const backdropRef = useRef<HTMLDivElement | null>(null)
 
@@ -62,12 +75,22 @@ export function SimpleModal({ children, showCloseBtn, onClose, className, header
         >
           <div
             className={twMerge(
-              "sticky left-0 right-0 top-0 z-[31] grid w-full grid-cols-modal-header grid-rows-1 items-start bg-secondary/70 p-4 text-center backdrop-blur-sm",
+              "sticky left-0 right-0 top-0 z-[31] flex w-full items-center justify-between bg-secondary/70 p-6 text-center backdrop-blur-sm",
               headerClass,
             )}
           >
-            {onClose && showCloseBtn && <CloseButton onClose={closeModalCallback} />}
-            {title && <h1 className="flex-1 text-body-xl-semibold text-white">{title}</h1>}
+            <div className="flex items-center gap-4">
+              {onClose && showCloseBtn && <CloseButton onClose={closeModalCallback} />}
+              {title && <h1 className="flex-1 text-body-xl-semibold text-white">{title}</h1>}
+            </div>
+            {actionButton && (
+              <Button
+                btnText={actionButton.text}
+                color="plain"
+                className="text-sm rounded-md text-white hover:bg-tertiary"
+                onClick={actionButton.onClick}
+              />
+            )}
           </div>
 
           {children}

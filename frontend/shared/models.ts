@@ -39,7 +39,7 @@ export type UserModelJson = {
   referral?: Record<
     ProjectId,
     {
-      referrerTwitterHandle: string
+      referralCode: string
       createdAt: string
       message: string
       signature: number[]
@@ -50,6 +50,14 @@ export type UserModelJson = {
     providedAt: Date
     acceptedTextSigned: string
   }
+  referralCode?: Record<
+    ProjectId,
+    {
+      code: string
+      message: string
+      signature: number[]
+    }
+  >
 }
 /**
  * Represents url type
@@ -160,6 +168,13 @@ export const projectSchema = z.object({
     raisedTokenData: TokenDataSchema,
     launchedTokenData: TokenDataSchema,
     nftConfig: nftConfigSchema.optional(),
+    referralDistribution: z
+      .object({
+        totalAmountDistributed: z.number().int().positive(),
+        ranking: z.record(z.string(), z.number().min(0).max(1)),
+        raffle: z.record(z.string(), z.number().min(0).max(1)),
+      })
+      .optional(),
   }),
   info: z.object({
     /// following 4 fields are typically added AFTER the sale
@@ -362,3 +377,14 @@ export type AdminAuthFields = {
   message: string
   signature: number[]
 }
+
+export const ReferralCodeRequestSchema = z.object({
+  publicKey: z.string(),
+  projectId: z.string(),
+  referralCode: z.string(),
+  message: z.string(),
+  signature: z.array(z.number()),
+  isLedgerTransaction: z.boolean().optional(),
+})
+
+export type ReferralCodeRequest = z.infer<typeof ReferralCodeRequestSchema>

@@ -6,7 +6,7 @@ import { formatCurrencyAmount } from "shared/utils/format"
 import ProgressBar from "./ProgressBar"
 import Text from "@/components/Text"
 import { useQuery } from "@tanstack/react-query"
-import { backendApi } from "@/data/backendApi"
+import { backendApi } from "@/data/api/backendApi"
 
 const SaleProgress = () => {
   const { t } = useTranslation()

@@ -66,6 +66,12 @@ const ProvideEmailQuestSchema = BaseQuestSchema.extend({
 /**
  * Requires the User to provide their email.
  */
+const ProvideReferralQuestSchema = BaseQuestSchema.extend({
+  type: z.literal('PROVIDE_REFERRAL_CODE'),
+})
+/**
+ * Requires the User to provide their email.
+ */
 const AllListedCompliancesSchema = BaseQuestSchema.extend({
   type: z.literal('ALL_LISTED_COMPLIANCES'),
 })
@@ -82,6 +88,7 @@ const QuestSchema = z.discriminatedUnion("type", [
   WhitelistQuestSchema,
   ReferralQuestSchema,
   ProvideEmailQuestSchema,
+  ProvideReferralQuestSchema,
   AllListedCompliancesSchema,
 ])
 export type Quest = z.infer<typeof QuestSchema>
@@ -102,6 +109,7 @@ const QuestWithCompletionSchema = z.union([
   ReferralQuestSchema.merge(CompletionSchema),
   WhitelistQuestSchema.merge(CompletionSchema),
   ProvideEmailQuestSchema.merge(CompletionSchema),
+  ProvideReferralQuestSchema.merge(CompletionSchema),
   AllListedCompliancesSchema.merge(CompletionSchema),
 ])
 export type QuestWithCompletion = z.infer<typeof QuestWithCompletionSchema>

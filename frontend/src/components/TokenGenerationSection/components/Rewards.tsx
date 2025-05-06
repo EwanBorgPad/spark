@@ -15,7 +15,7 @@ import { isBefore } from "date-fns/isBefore"
 import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
 import { useQuery } from "@tanstack/react-query"
-import { backendApi } from "@/data/backendApi.ts"
+import { backendApi } from "@/data/api/backendApi"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
 
 const Rewards = () => {

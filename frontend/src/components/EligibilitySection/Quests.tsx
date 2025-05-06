@@ -1,7 +1,6 @@
 import { ReactNode, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { EligibilityStatus, QuestWithCompletion, TierType, TierWithCompletion } from "shared/eligibilityModel"
-import EnterReferralCode from "./EnterReferralCode"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "../Icon/Icon"
 import { useWalletContext } from "@/hooks/useWalletContext"
@@ -11,6 +10,7 @@ import { ExternalLink } from "../Button/ExternalLink"
 import AcceptTermsOfUseModal from "../Modal/Modals/AcceptTermsOfUseModal"
 import { ProvideInvestmentIntentModal } from "../Modal/Modals/ProvideInvestmentIntentModal"
 import ProvideEmailModal from "../Modal/Modals/ProvideEmailModal"
+import ProvideReferralCodeModal from "../Modal/Modals/ProvideReferralCodeModal"
 
 import { ProjectModel } from "shared/models"
 import { formatDateForTimer } from "@/utils/date-helpers"
@@ -51,6 +51,12 @@ export const QuestComponent = ({ quest, autoCheck, isCompliance }: QuestComponen
         description: "",
         additionalElement: <ProvideEmailBtn />,
       }
+    if (type === "PROVIDE_REFERRAL_CODE")
+      return {
+        label: t("referral.provide.heading"),
+        description: "",
+        additionalElement: <ProvideReferralCodeBtn />,
+      }
 
     if (type === "FOLLOW_ON_TWITTER")
       return {
@@ -74,13 +80,6 @@ export const QuestComponent = ({ quest, autoCheck, isCompliance }: QuestComponen
         description: "",
         // TODO @productionPush
         // additionalElement: <HoldTokenBtn tokenName={quest.tokenName} />,
-      }
-    if (type === "REFERRAL")
-      return {
-        label: "Were you referred by someone? (optional)",
-        description: "Let us know who sent you to help us recognize community contributors",
-        // TODO @productionPush
-        additionalElement: <EnterReferralCode />,
       }
 
     // we are not displaying anything for this type; non-eligibility message will take care of UX
@@ -211,6 +210,20 @@ const ProvideEmailBtn = () => {
         {t("email.provide.button")}
       </Button>
       {showModal && <ProvideEmailModal onClose={() => setShowModal(false)} />}
+    </div>
+  )
+}
+
+const ProvideReferralCodeBtn = () => {
+  const { t } = useTranslation()
+  const [showModal, setShowModal] = useState(false)
+
+  return (
+    <div className="mt-2 flex justify-start">
+      <Button color="secondary" size="xs" className="rounded-lg px-3" onClick={() => setShowModal(!showModal)}>
+        {t("referral.provide.button")}
+      </Button>
+      {showModal && <ProvideReferralCodeModal onClose={() => setShowModal(false)} />}
     </div>
   )
 }

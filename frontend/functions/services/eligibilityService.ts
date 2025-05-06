@@ -28,6 +28,10 @@ const getCompliances = (project:ProjectModel):Quest[] => {
     {
       type: 'PROVIDE_EMAIL',
       isOptional: !isDraftPick,
+    },
+    {
+      type: 'PROVIDE_REFERRAL_CODE',
+      isOptional: !isDraftPick,
     }
   ]
 }
@@ -90,23 +94,23 @@ const getEligibilityStatus = async ({ db, address, projectId, rpcUrl }: GetEligi
         ...quest,
         isCompleted: providedInvestmentIntentForProject,
       })
-    } else if (quest.type === 'REFERRAL') {
-      const providedReferralForProject = Boolean(user.json.referral?.[projectId])
-      compliancesWithCompletion.push({
-        ...quest,
-        isCompleted: providedReferralForProject,
-      })
     } else if (quest.type === 'PROVIDE_EMAIL') {
       const providedEmailForProject = Boolean(user.json.emailData?.providedAt)
       compliancesWithCompletion.push({
         ...quest,
         isCompleted: providedEmailForProject,
       })  
+    } else if (quest.type === 'PROVIDE_REFERRAL_CODE') {
+      const providedReferralCodeForProject = Boolean(user.json.referralCode?.[projectId])
+      compliancesWithCompletion.push({
+        ...quest,
+        isCompleted: providedReferralCodeForProject,
+      })  
     } else {
       throw new Error(`Unknown compliance type (${quest.type})!`)
     }
   }
-  console.log(compliancesWithCompletion);
+  console.log("compliancesWithCompletion", compliancesWithCompletion);
 
 
   const collections: string[] = project.json.info.tiers

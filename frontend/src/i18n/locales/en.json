@@ -154,5 +154,12 @@
   "email.provide.button": "Provide Email",
   "email.register.placeholder": "Enter your email",
   "email.provide.message": "I acknowledge that I plan to provide my email",
-  "email.invalid": "Invalid email address"
+  "email.invalid": "Invalid email address",
+
+  "referral.provide.heading": "Were you referred by someone?",
+  "referral.provide.description": "If someone referred you to this project, please enter their referral code below.",
+  "referral.provide.button": "Provide Referral Code",
+  "referral.register.placeholder": "Enter referral code",
+  "referral.provide.message": "I acknowledge that I was referred to this project with this code",
+  "referral.invalid": "Invalid referral code"
 }

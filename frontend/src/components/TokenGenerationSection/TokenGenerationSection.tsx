@@ -12,7 +12,7 @@ import { useProjectDataContext } from "@/hooks/useProjectData.tsx"
 import TgeEventSkeleton from "./TGEStatus/TgeEventSkeleton.tsx"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
-import { backendApi } from "@/data/backendApi.ts"
+import { backendApi } from "@/data/api/backendApi.ts"
 
 type Props = {
   expandedTimeline: ExpandedTimelineEventType[]
