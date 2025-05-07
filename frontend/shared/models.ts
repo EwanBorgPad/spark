@@ -213,7 +213,8 @@ export const projectSchema = z.object({
       iconUrl: urlSchema(),
       lbpType: z.string().min(1),
       lockingPeriod: z.string().min(1).optional(),
-      borgPadFees: z.string().min(1).optional(),
+      investorFees: z.string().min(1).optional(),
+      projectFees: z.string().min(1).optional(),
     }),
     curator: z.object({
       avatarUrl: urlSchema(),
