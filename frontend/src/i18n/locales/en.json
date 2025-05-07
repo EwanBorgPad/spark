@@ -50,6 +50,7 @@
   "tge.liquidity_pool_details": "Liquidity Pool Details",
   "tge.vesting": "Vesting",
   "tge.lbp_type": "LBP Type",
+  "tge.borgpad_fees": "BorgPad Fees",
   "tge.defi_protocol": "DeFi Protocol",
   "tge.locking_period": "Locking Period",
   "tge.token_generation_event": "Token Generation Event",
