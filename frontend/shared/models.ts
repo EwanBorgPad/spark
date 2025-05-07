@@ -144,7 +144,10 @@ export const projectSchema = z.object({
     raiseTargetInUsd: integerSchema(),
     fdv: optional(integerSchema()),
     marketCap: optional(integerSchema()),
-
+    fdvBottom: optional(z.string()),
+    fdvBorgPad: optional(z.string()),
+    floorStrategy: optional(z.string()),
+    kpiEndFloorStrategy: optional(z.string()),
     totalTokensForLiquidityPool: integerSchema(),
     totalTokensForRewardDistribution: integerSchema(),
 
@@ -209,6 +212,7 @@ export const projectSchema = z.object({
       iconUrl: urlSchema(),
       lbpType: z.string().min(1),
       lockingPeriod: z.string().min(1).optional(),
+      borgPadFees: z.string().min(1).optional(),
     }),
     curator: z.object({
       avatarUrl: urlSchema(),
