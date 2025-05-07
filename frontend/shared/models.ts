@@ -148,6 +148,7 @@ export const projectSchema = z.object({
     fdvBorgPad: optional(z.string()),
     floorStrategy: optional(z.string()),
     kpiEndFloorStrategy: optional(z.string()),
+    
     totalTokensForLiquidityPool: integerSchema(),
     totalTokensForRewardDistribution: integerSchema(),
 
