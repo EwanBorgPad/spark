@@ -32,9 +32,13 @@ const BasicTokenInfo = ({ isDraftPick }: Props) => {
   const targetFdv = projectData?.info?.targetFdv
   const tgeDate = projectData?.info?.tokenGenerationEventDate || "TBD"
   const targetVesting = projectData?.info?.targetVesting || projectData?.info.tokenGenerationEventDate || "TBD"
-
+  const fdvBottom = projectData?.config.fdvBottom || "TBD"
+  const fdvBorgPad = projectData?.config.fdvBorgPad || "TBD"
+  const floorStrategy = projectData?.config.floorStrategy || "TBD"
+  const kpiEndFloorStrategy = projectData?.config.kpiEndFloorStrategy || "TBD"
+  
   return (
-    <section className="max-w-screen flex w-full flex-col items-center gap-[25px]">
+    <section className="max-w-screen flex w-full flex-col items-center gap-4">
       <div className="flex w-full max-w-[792px] flex-col flex-wrap justify-between gap-3 divide-bd-secondary rounded-lg border border-bd-secondary bg-default py-3 md:flex-row md:gap-6 md:divide-x-[1px] md:px-0 md:py-0">
         <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
           <span className="text-nowrap text-sm text-fg-tertiary">{t("total_investment_interest")}</span>
@@ -57,10 +61,26 @@ const BasicTokenInfo = ({ isDraftPick }: Props) => {
           </div>
         )}
         <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
-          <span className="text-sm text-fg-tertiary">Target FDV</span>
-          <Text text={targetFdv} isLoading={isLoading} className="text-base text-fg-primary" />
+          <span className="text-sm text-fg-tertiary">FDV BorgPad</span>
+          <Text text={fdvBorgPad} isLoading={isLoading} className="text-base text-fg-primary" />
         </div>
       </div>
+      {projectData?.id === "vnx-community-hub" && (
+        <div className="flex w-full max-w-[792px] flex-col flex-wrap justify-between gap-3 divide-bd-secondary rounded-lg border border-bd-secondary bg-default py-3 md:flex-row md:gap-6 md:divide-x-[1px] md:px-0 md:py-0">
+          <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
+            <span className="text-sm text-fg-tertiary">Floor Strategy</span>
+            <Text text={floorStrategy} isLoading={isLoading} className="text-base text-fg-primary" />
+          </div>
+          <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
+            <span className="text-sm text-fg-tertiary">KPI End floor strategy</span>
+            <Text text={kpiEndFloorStrategy} isLoading={isLoading} className="text-base text-fg-primary" />
+          </div>
+          <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
+            <span className="text-sm text-fg-tertiary">FDV Bottom</span>
+            <Text text={fdvBottom} isLoading={isLoading} className="text-base text-fg-primary" />
+          </div>
+        </div>
+      )}
     </section>
   )
 }

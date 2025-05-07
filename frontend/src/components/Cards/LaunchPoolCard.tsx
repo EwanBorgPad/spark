@@ -12,7 +12,7 @@ import { ExternalLink } from "../Button/ExternalLink"
 import { getProjectRoute } from "@/utils/routes"
 import { AvailableIcons, Icon } from "../Icon/Icon"
 import { ProjectModel } from "shared/models"
-import { formatCurrencyAmount, formatCurrencyCompact } from "shared/utils/format"
+import { formatCurrencyAmount, formatCurrencyCompact, formatCurrencyCompactWithDecimals } from "shared/utils/format"
 import { formatDateForProject } from "@/utils/date-helpers"
 
 type Props = { project: ExpandedProject | null; isLoading?: boolean }
@@ -77,7 +77,7 @@ export const LaunchPoolCard = ({ project, isLoading }: Props) => {
                       createDetailRow(
                         "SvgChartLine",
                         "Valuation (FDV)",
-                        formatCurrencyCompact(project?.config.fdv),
+                        formatCurrencyCompactWithDecimals(project?.config.fdv),
                         project?.info.projectType === "blitz" ? "text-brand-blitz" : "text-fg-brand-primary",
                       ),
                       createDetailRow("SvgChartLine", "Sector", project?.info?.sector ?? "N/A"),

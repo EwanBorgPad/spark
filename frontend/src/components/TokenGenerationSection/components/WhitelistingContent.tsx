@@ -156,6 +156,13 @@ const WhitelistingContent = () => {
           <span>{t("tge.lbp_type")}</span>
           <Text text={projectData?.info.liquidityPool.lbpType} isLoading={isLoading} />
         </div>
+        <hr className="w-full border-bd-primary opacity-50"></hr>
+
+        {/* BorgPad Fees */}
+        <div className="flex w-full items-center justify-between py-3">
+          <span>{t("tge.borgpad_fees")}</span>
+          <Text text={projectData?.info.liquidityPool.borgPadFees} isLoading={isLoading} />
+        </div>
       </div>
 
       {walletState !== "CONNECTED" && (

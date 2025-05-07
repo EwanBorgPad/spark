@@ -39,6 +39,18 @@ export const formatCurrencyCompact = (amount: number | string | undefined) => {
   }).format(Number(amount))
   return formattedValue
 }
+export const formatCurrencyCompactWithDecimals = (amount: number | string | undefined) => {
+  if (!amount) return "$0"
+  const formattedValue = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    style: "currency",
+    currency: "USD",
+    compactDisplay: "short",
+    maximumFractionDigits: 1,
+  }).format(Number(amount))
+  return formattedValue
+}
+
 export const formatNumberValue = (amount: number | string | undefined) => {
   if (!amount) return "0"
   const formattedValue = new Intl.NumberFormat("en-US", {
