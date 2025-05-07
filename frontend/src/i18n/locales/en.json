@@ -48,6 +48,8 @@
   "tge.price": "Price",
   "tge.whitelist_participants": "Whitelist Participants",
   "tge.liquidity_pool_details": "Liquidity Pool Details",
+  "tge.project_fees": "Project",
+  "tge.investor_fees": "Investors",
   "tge.vesting": "Vesting",
   "tge.lbp_type": "LBP Type",
   "tge.borgpad_fees": "BorgPad Fees",

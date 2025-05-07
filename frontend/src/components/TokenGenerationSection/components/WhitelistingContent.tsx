@@ -157,11 +157,23 @@ const WhitelistingContent = () => {
           <Text text={projectData?.info.liquidityPool.lbpType} isLoading={isLoading} />
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
-
         {/* BorgPad Fees */}
+        <span className="pb-2 pt-3 text-xs font-semibold uppercase text-fg-tertiary">
+          {t("tge.borgpad_fees")}
+        </span>
+        <hr className="w-full border-bd-primary opacity-50"></hr>
+
+        {/* Investors Fees */}
         <div className="flex w-full items-center justify-between py-3">
-          <span>{t("tge.borgpad_fees")}</span>
-          <Text text={projectData?.info.liquidityPool.borgPadFees} isLoading={isLoading} />
+          <span>{t("tge.investor_fees")}</span>
+          <Text text={projectData?.info.liquidityPool.investorFees} isLoading={isLoading} />
+        </div>
+        <hr className="w-full border-bd-primary opacity-50"></hr>
+
+        {/* Project Fees */}
+        <div className="flex w-full items-center justify-between py-3">
+          <span>{t("tge.project_fees")}</span>
+          <Text text={projectData?.info.liquidityPool.projectFees} isLoading={isLoading} />
         </div>
       </div>
 
