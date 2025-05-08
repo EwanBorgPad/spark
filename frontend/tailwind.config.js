@@ -49,6 +49,9 @@ export default {
           "alt-default": "#0C111D",
           "alt-default-muted": "#868A8E",
           "gray-line": "#d9d9d983",
+          "fixed-fdv": "#EDA8FF",
+          "float-fdv": "#AFDAFF",
+          "floor-strategy": "#BEBAFF",
         },
 
         // border colors
@@ -65,6 +68,9 @@ export default {
           danger2: "#55160C",
           "success-primary": "#074D31",
           blitz: "#5A5E28",
+          "fixed-fdv": "#EDA8FF",
+          "float-fdv": "#AFDAFF",
+          "floor-strategy": "#BEBAFF",
         },
 
         // other colors

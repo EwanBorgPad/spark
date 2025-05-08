@@ -1,5 +1,6 @@
 import { ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { useState } from "react"
 
 import TokenGenerationSection from "../components/TokenGenerationSection/TokenGenerationSection"
 import { ExternalLink } from "../components/Button/ExternalLink"
@@ -9,21 +10,44 @@ import backdropImg from "@/assets/backdropImgMin.png"
 import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
 import ProjectTester2 from "@/components/QA/ProjectTester2.tsx"
-import { Icon } from "@/components/Icon/Icon.tsx"
+import { Icon } from "@/components/Icon/Icon"
 import { twMerge } from "tailwind-merge"
 import Analysts from "@/components/Analysts/Analysts"
 import DataRoom from "@/components/LaunchPool/DataRoom"
 import BasicTokenInfo from "@/components/TokenGenerationSection/components/BasicTokenInfo"
 import DealComingFrom from "@/components/LaunchPool/DealComingFrom"
 import Referral from "@/components/LaunchPool/Referral"
+import FloorStrategyModal from "@/components/Modal/Modals/FloorStrategyModal"
+
+type FloorStrategyIcon = "SvgFloorStrategy" | "SvgFixedFDV" | "SvgFloatFDV"
 
 const Project = () => {
   const { projectData, isLoading } = useProjectDataContext()
   const { t } = useTranslation()
+  const [isFloorStrategyModalOpen, setIsFloorStrategyModalOpen] = useState(false)
 
   const isDevnet = projectData?.config.cluster === "devnet"
 
   const expandedTimeline = expandTimelineDataInfo(projectData?.info.timeline ?? [])
+  const floorStrategy = projectData?.config.floorStrategy ?? "Float FDV"
+  let iconStrategy: FloorStrategyIcon = "SvgFloorStrategy"
+  let color = "text-fg-brand-primary"
+  switch (floorStrategy) {
+    case "Floor Strategy":
+      iconStrategy = "SvgFloorStrategy"
+      color = "text-fg-floor-strategy"
+      break
+    case "Fixed FDV":
+      iconStrategy = "SvgFixedFDV"
+      color = "text-fg-fixed-fdv"
+      break
+    case "Float FDV":
+      iconStrategy = "SvgFloatFDV"
+      color = "text-fg-float-fdv"
+      break
+    default:
+      iconStrategy = "SvgFloorStrategy"
+  }
 
   return (
     <main className="z-[10] flex w-full max-w-full select-none flex-col items-center gap-4 overflow-y-hidden py-[72px] font-normal text-fg-primary md:py-[100px]">
@@ -79,7 +103,26 @@ const Project = () => {
         {/* Project details (chain, origin, sector) */}
         <div className="flex w-full flex-col gap-x-5 gap-y-3 text-sm md:max-w-[792px] md:flex-row">
           <div className="flex gap-5 divide-x-[1px] divide-fg-primary/40">
-            <div className="flex items-center gap-2">
+            {floorStrategy !== "Not set" && (
+              <div className="flex items-center gap-2">
+                <Icon icon={iconStrategy} className={`h-6 w-6 ${color}`} />
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setIsFloorStrategyModalOpen(true)}
+                    className="flex items-center gap-2 hover:opacity-80"
+                  >
+                    <Text 
+                      text={floorStrategy} 
+                      isLoading={isLoading} 
+                      loadingClass="max-w-[100px]"
+                      className={color}
+                    />
+                    <Icon icon="SvgQuestionCircle" className="h-4 w-4 text-fg-secondary" />
+                  </button>
+                </div>
+              </div>
+            )}
+            <div className="flex items-center gap-2 pl-5">
               <span className="text-fg-primary text-opacity-50">{t("chain")}</span>
               <Img size="4" src={projectData?.info.chain.iconUrl} isRounded />
               <Text text={projectData?.info.chain.name} isLoading={isLoading} loadingClass="max-w-[100px]" />
@@ -129,9 +172,15 @@ const Project = () => {
 
       <TokenGenerationSection expandedTimeline={expandedTimeline} />
 
+      <FloorStrategyModal 
+        isOpen={isFloorStrategyModalOpen}
+        onClose={() => setIsFloorStrategyModalOpen(false)}
+      />
+      
       <ScrollRestoration />
 
       {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && <ProjectTester2 />}
+
     </main>
   )
 }

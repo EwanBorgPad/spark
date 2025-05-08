@@ -6,7 +6,7 @@ import { useCheckOutsideClick } from "@/hooks/useCheckOutsideClick.tsx"
 
 type Props = {
   children: ReactNode
-  showCloseBtn: boolean
+  showCloseBtn?: boolean
   onClose?: () => void
   className?: string
   headerClass?: string
@@ -15,6 +15,7 @@ type Props = {
     text: string
     onClick: () => void
   }
+  isOpen?: boolean
 }
 
 export function SimpleModal({ 
@@ -24,7 +25,8 @@ export function SimpleModal({
   className, 
   headerClass, 
   title,
-  actionButton 
+  actionButton,
+  isOpen = true
 }: Props) {
   const modalRef = useRef<HTMLDivElement | null>(null)
   const backdropRef = useRef<HTMLDivElement | null>(null)
@@ -40,7 +42,9 @@ export function SimpleModal({
   useCheckOutsideClick(modalRef, () => closeModalCallback())
 
   useEffect(() => {
-    document.body.style.overflow = "hidden" // disable document's scroll if modal is active
+    if (isOpen) {
+      document.body.style.overflow = "hidden" // disable document's scroll if modal is active
+    }
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         closeModalCallback()
@@ -50,10 +54,12 @@ export function SimpleModal({
     document.addEventListener("keydown", handleKeyDown)
 
     return () => {
-      document.body.style.overflow = ""
+      document.body.style.overflow = "" // restore document's scroll when modal is closed
       document.removeEventListener("keydown", handleKeyDown)
     }
-  }, [closeModalCallback])
+  }, [closeModalCallback, isOpen])
+
+  if (!isOpen) return null;
 
   return (
     <Portal id="simple-modal">
