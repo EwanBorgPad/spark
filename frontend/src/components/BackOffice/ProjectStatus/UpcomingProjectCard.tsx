@@ -2,6 +2,11 @@ import React from "react"
 import { Button } from "../../Button/Button"
 import { ProjectModel } from "shared/models"
 
+interface CardField {
+  label: string
+  value: string | React.ReactNode
+}
+
 interface UpcomingProjectCardProps {
   nextProjectToGoLive: ProjectModel
   currentProjectIndex: number
@@ -10,6 +15,8 @@ interface UpcomingProjectCardProps {
   goToNextProject: () => void
   selectProject: (projectId: string) => void
   formatDate: (date: Date | string | null) => string
+  customFields?: CardField[]
+  showSelectButton?: boolean
 }
 
 export const UpcomingProjectCard: React.FC<UpcomingProjectCardProps> = ({
@@ -20,7 +27,57 @@ export const UpcomingProjectCard: React.FC<UpcomingProjectCardProps> = ({
   goToNextProject,
   selectProject,
   formatDate,
+  customFields,
+  showSelectButton = true,
 }) => {
+  const defaultFields: CardField[] = [
+    {
+      label: "Project",
+      value: nextProjectToGoLive.info.title
+    },
+    {
+      label: "Sale Opens",
+      value: (() => {
+        const saleOpensDate = nextProjectToGoLive.info.timeline.find(event => event.id === "SALE_OPENS")?.date;
+        if (!saleOpensDate) return "N/A";
+        const now = new Date()
+        return new Date(saleOpensDate) < now ? "LIVE" : formatDate(saleOpensDate);
+      })()
+    },
+    {
+      label: "Cluster",
+      value: nextProjectToGoLive.config.cluster || "Not set"
+    },
+    {
+      label: "LBP Wallet",
+      value: nextProjectToGoLive.config.lbpWalletAddress ? (
+        <a
+          href={`https://solscan.io/account/${nextProjectToGoLive.config.lbpWalletAddress}?cluster=${nextProjectToGoLive.config.cluster || 'devnet'}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-400 hover:text-blue-300"
+        >
+          {nextProjectToGoLive.config.lbpWalletAddress}
+        </a>
+      ) : "Not set"
+    },
+    {
+      label: "NFT Collection",
+      value: nextProjectToGoLive.config.nftConfig?.collection ? (
+        <a
+          href={`https://solscan.io/token/${nextProjectToGoLive.config.nftConfig.collection}?cluster=${nextProjectToGoLive.config.cluster || 'devnet'}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-400 hover:text-blue-300"
+        >
+          {nextProjectToGoLive.config.nftConfig.collection}
+        </a>
+      ) : "Not set"
+    }
+  ]
+
+  const fields = customFields || defaultFields
+
   return (
     <div className="w-full max-w-3xl bg-bg-secondary p-4 mb-4 rounded-lg border border-bd-secondary">
       <div className="flex justify-between items-center mb-2">
@@ -43,69 +100,20 @@ export const UpcomingProjectCard: React.FC<UpcomingProjectCardProps> = ({
         </button>
       </div>
       <div className="flex flex-col space-y-2">
-        <div className="flex justify-between">
-          <span className="font-medium">Project:</span>
-          <span>{nextProjectToGoLive.info.title}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Sale Opens:</span>
-          <span>
-            {(() => {
-              const saleOpensDate = nextProjectToGoLive.info.timeline.find(event => event.id === "SALE_OPENS")?.date;
-              if (!saleOpensDate) return "N/A";
-              const now = new Date()
-              return new Date(saleOpensDate) < now ? "LIVE" : formatDate(saleOpensDate);
-            })()}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Cluster:</span>
-          <span>
-            {nextProjectToGoLive.config.cluster || "Not set"}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">LBP Wallet:</span>
-          <span className="truncate">
-            {nextProjectToGoLive.config.lbpWalletAddress ? (
-              <>
-                <a
-                  href={`https://solscan.io/account/${nextProjectToGoLive.config.lbpWalletAddress}?cluster=${nextProjectToGoLive.config.cluster || 'devnet'}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-300"
-                >
-                  {nextProjectToGoLive.config.lbpWalletAddress}
-                </a>
-              </>
-            ) : (
-              "Not set"
-            )}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">NFT Collection:</span>
-          <span className="truncate">
-            {nextProjectToGoLive.config.nftConfig?.collection ? (
-              <a
-                href={`https://solscan.io/token/${nextProjectToGoLive.config.nftConfig.collection}?cluster=${nextProjectToGoLive.config.cluster || 'devnet'}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-300"
-              >
-                {nextProjectToGoLive.config.nftConfig.collection}
-              </a>
-            ) : (
-              "Not set"
-            )}
-          </span>
-        </div>
-        <Button
-          btnText="Select This Project"
-          size="sm"
-          className="mt-2"
-          onClick={() => selectProject(nextProjectToGoLive.id)}
-        />
+        {fields.map((field, index) => (
+          <div key={index} className="flex justify-between">
+            <span className="font-medium">{field.label}:</span>
+            <span>{field.value}</span>
+          </div>
+        ))}
+        {showSelectButton && (
+          <Button
+            btnText="Select This Project"
+            size="sm"
+            className="mt-2"
+            onClick={() => selectProject(nextProjectToGoLive.id)}
+          />
+        )}
       </div>
     </div>
   )

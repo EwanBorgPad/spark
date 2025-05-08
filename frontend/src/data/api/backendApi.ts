@@ -592,6 +592,71 @@ const isAdmin = async (auth: AdminAuthFields): Promise<void> => {
   return json
 }
 
+type GetTokenDistributionResponse = {
+  transactionId: string
+  createdAt: string
+  fromAddress: string
+  amountDeposited: string
+  tokenAddress: string
+  projectId: string
+  tierId: string
+  nftAddress: string
+  json: {
+    cluster: string
+    uiAmount: number
+    decimalMultiplier: string
+    tokensCalculation: {
+      lpPosition: {
+        borg: string
+        borgRaw: number
+        borgInUSD: string
+        token: string
+        tokenRaw: number
+        tokenInUSD: string
+      }
+      rewardDistribution: {
+        token: string
+        tokenRaw: number
+        tokenInUSD: string
+      }
+      totalToBeReceived: {
+        borg: string
+        token: string
+      }
+    }
+  }
+}[]
+
+type DistributeTokensArgs = {
+  projectId: string
+  auth: {
+    address: string
+    message: string
+    signature: number[]
+  }
+}
+
+const getTokenDistribution = async ({ projectId }: { projectId: string }): Promise<GetTokenDistributionResponse> => {
+  const response = await fetch(`${BACKEND_RPC_URL}/tokendistribution?projectId=${projectId}`)
+  if (!response.ok) {
+    throw new Error("Failed to get token distribution")
+  }
+  return response.json()
+}
+
+const distributeTokens = async (args: DistributeTokensArgs): Promise<void> => {
+  const response = await fetch(`${BACKEND_RPC_URL}/distributetokens`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(args),
+  })
+  if (!response.ok) {
+    throw new Error("Failed to distribute tokens")
+  }
+}
+
 export const backendApi = {
   getProject,
   getProjects,
@@ -618,4 +683,6 @@ export const backendApi = {
   createNftCollection,
   uploadOnR2,
   isAdmin,
+  getTokenDistribution,
+  distributeTokens,
 }
