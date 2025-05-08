@@ -109,22 +109,23 @@ const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[]
                         <TableCell className="py-[2px]">
                           <span className={`text-xs ${textColorClass}`}>
                             {(() => {
-                              // For ranking positions, use the percentage defined in the configuration
+                              // For ranking positions, use the amount defined in the configuration
                               if (isInRanking && projectData?.config.referralDistribution?.ranking) {
-                                const rankingPercent = projectData.config.referralDistribution.ranking[position];
-                                return prizeAmount ? formatCurrencyAmount(prizeAmount * rankingPercent) : 0;
+                                const rankingAmount = projectData.config.referralDistribution.ranking[position];
+                                return prizeAmount ? formatCurrencyAmount(rankingAmount) : 0;
                               } 
                               // For non-ranking positions, show the raffle prize (if available)
                               else if (projectData?.config.referralDistribution?.raffle) {
                                 // Calculate average raffle prize (total raffle amount / number of raffle winners)
                                 const raffleValues = Object.values(projectData.config.referralDistribution.raffle);
-                                const totalRafflePercent = raffleValues.reduce((sum, percent) => sum + percent, 0);
+                                const totalRaffleAmount = raffleValues.reduce((sum, amount) => sum + amount, 0);
                                 const raffleWinners = Object.keys(projectData.config.referralDistribution.raffle).length;
-                                const avgRafflePercent = raffleWinners > 0 ? totalRafflePercent / raffleWinners : 0;
-                                return prizeAmount ? formatCurrencyAmount(prizeAmount * avgRafflePercent) : 0;
+                                const avgRaffleAmount = raffleWinners > 0 ? totalRaffleAmount / raffleWinners : 0;
+                                return prizeAmount ? formatCurrencyAmount(avgRaffleAmount) : 0;
                               }
                               return 0;
                             })()}
+                            $
                           </span>
                         </TableCell>
                       </tr>

@@ -8,7 +8,7 @@ import { formatCurrencyAmount } from "shared/utils/format";
 
 import HowItWorksSection from "../../Referral/HowItWorksSection";
 import ReferralDashboard from "../../Referral/ReferralDashboard";
-import { ReferralData, LeaderboardData, TotalTicketsDistributed, UserPrize } from "../../Referral/types";
+import { ReferralData, LeaderboardData, TotalTicketsDistributed, UserPrize, ProjectDataTypeForReferral } from "../../Referral/types";
 import { referralApi } from "@/data/api/referralApi";
 
 type ReferralModalProps = {
@@ -91,18 +91,18 @@ const ReferralModal: React.FC<ReferralModalProps> = ({ onClose }) => {
 
     // Check if user is in ranking positions
     if (position in referralDistribution.ranking) {
-      const rankingPercent = referralDistribution.ranking[position];
+      const rankingAmount = referralDistribution.ranking[position];
       return { 
-        value: formatCurrencyAmount(prizeAmount ? prizeAmount * rankingPercent : 0),
+        value: formatCurrencyAmount(rankingAmount ? rankingAmount : 0),
         isRaffle: false
       };
     } else {
       // User might win raffle prize
       const raffleValues = Object.values(referralDistribution.raffle || {});
       if (raffleValues.length > 0) {
-        const avgRafflePercent = raffleValues.reduce((sum, percent) => sum + percent, 0) / raffleValues.length;
+        const avgRaffleAmount = raffleValues.reduce((sum, amount) => sum + amount, 0) / raffleValues.length;
         return { 
-          value: formatCurrencyAmount(prizeAmount ? prizeAmount * avgRafflePercent : 0),
+          value: formatCurrencyAmount(avgRaffleAmount),
           isRaffle: true
         };
       }
@@ -182,8 +182,7 @@ const ReferralModal: React.FC<ReferralModalProps> = ({ onClose }) => {
       <HowItWorksSection 
         onContinue={showDashboard}
         onClose={onClose}
-        prizeAmount={prizeAmount}
-        projectData={projectData}
+        projectData={projectData as ProjectDataTypeForReferral}
       />
     );
   }
@@ -203,7 +202,7 @@ const ReferralModal: React.FC<ReferralModalProps> = ({ onClose }) => {
       userPrize={calculateUserPrize()}
       referralLink={referralLink}
       prizeAmount={prizeAmount}
-      projectData={projectData}
+      projectData={projectData as ProjectDataTypeForReferral}
       referralsTable={referralsTable}
       leaderboardReferrals={leaderboardReferrals}
       onCopyCode={handleCopyCode}

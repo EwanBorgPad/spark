@@ -16,6 +16,7 @@ type ReferralCardProps = {
   onValueClick1?: () => void;
   onValueClick2?: () => void;
   isTicket?: boolean;
+  isRewardPool?: boolean;
   showConnectButton?: boolean;
   showSignToUButton?: boolean;
   onSignToUClick?: () => void;
@@ -34,6 +35,7 @@ const ReferralCard: React.FC<ReferralCardProps> = ({
   onValueClick1,
   onValueClick2,
   isTicket,
+  isRewardPool,
   showConnectButton,
   showSignToUButton,
   onSignToUClick,
@@ -65,7 +67,7 @@ const ReferralCard: React.FC<ReferralCardProps> = ({
             />
           </div>
         )}
-        {value && (
+        {value && !isRewardPool && (
           <span
             className={twMerge(
               "text-base md:text-xl font-medium text-white",
@@ -74,6 +76,11 @@ const ReferralCard: React.FC<ReferralCardProps> = ({
             onClick={onValueClick1}
           >
             {value}
+          </span>
+        )}
+        {value && isRewardPool && (
+          <span className="text-base md:text-xl font-medium text-white">
+            {value}$
           </span>
         )}
       </div>
