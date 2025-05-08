@@ -128,7 +128,7 @@ const TokenDistribution = () => {
     }
   }
 
-  const totalTokensPerUSDC = Number(nextProjectToGoLive.config.totalTokensForLiquidityPool) / Number(nextProjectToGoLive.config.raiseTargetInUsd)
+  const totalTokensPerUSDC = nextProjectToGoLive ? Number(nextProjectToGoLive.config.totalTokensForLiquidityPool) / Number(nextProjectToGoLive.config.raiseTargetInUsd) : 0
   const totalAmountRaised = saleData ? Number(saleData.totalAmountRaised.amountInUsd) : 0
   const totalTokensToDistribute = totalAmountRaised * totalTokensPerUSDC
 
@@ -183,7 +183,7 @@ const TokenDistribution = () => {
         />
       )}
 
-      {tokenDistributionData && (
+      {tokenDistributionData?.data && (
         <div className="w-full max-w-3xl">
           <h2 className="text-xl font-semibold mb-4">Token Distribution List</h2>
           <div className="overflow-x-auto">
@@ -197,7 +197,7 @@ const TokenDistribution = () => {
                 </tr>
               </thead>
               <tbody>
-                {tokenDistributionData.map((item: TokenDistributionData) => (
+                {tokenDistributionData.data.map((item: TokenDistributionData) => (
                   <tr key={item.transactionId} className="border-b border-bg-secondary">
                     <td className="p-4">{item.fromAddress}</td>
                     <td className="p-4">${formatCurrencyAmount(Number(item.json.tokensCalculation.lpPosition.borgInUSD.replace("$", "")))}</td>

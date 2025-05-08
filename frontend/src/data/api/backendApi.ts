@@ -44,6 +44,8 @@ const CREATE_NFT_COLLECTION = API_BASE_URL + "/createnftcollection"
 const UPLOAD_ON_R2 = API_BASE_URL + "/admin/uploadonr2"
 
 const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
+const GET_TOKEN_DISTRIBUTION = API_BASE_URL + "/tokendistribution"
+const DISTRIBUTE_TOKENS = API_BASE_URL + "/distributetokens"
 
 const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
   const response = await fetch(...args)
@@ -593,39 +595,41 @@ const isAdmin = async (auth: AdminAuthFields): Promise<void> => {
 }
 
 type GetTokenDistributionResponse = {
-  transactionId: string
-  createdAt: string
-  fromAddress: string
-  amountDeposited: string
-  tokenAddress: string
-  projectId: string
-  tierId: string
-  nftAddress: string
-  json: {
-    cluster: string
-    uiAmount: number
-    decimalMultiplier: string
-    tokensCalculation: {
-      lpPosition: {
-        borg: string
-        borgRaw: number
-        borgInUSD: string
-        token: string
-        tokenRaw: number
-        tokenInUSD: string
-      }
-      rewardDistribution: {
-        token: string
-        tokenRaw: number
-        tokenInUSD: string
-      }
-      totalToBeReceived: {
-        borg: string
-        token: string
+  data: {
+    transactionId: string
+    createdAt: string
+    fromAddress: string
+    amountDeposited: string
+    tokenAddress: string
+    projectId: string
+    tierId: string
+    nftAddress: string
+    json: {
+      cluster: string
+      uiAmount: number
+      decimalMultiplier: string
+      tokensCalculation: {
+        lpPosition: {
+          borg: string
+          borgRaw: number
+          borgInUSD: string
+          token: string
+          tokenRaw: number
+          tokenInUSD: string
+        }
+        rewardDistribution: {
+          token: string
+          tokenRaw: number
+          tokenInUSD: string
+        }
+        totalToBeReceived: {
+          borg: string
+          token: string
+        }
       }
     }
-  }
-}[]
+  }[]
+}
 
 type DistributeTokensArgs = {
   projectId: string
@@ -637,7 +641,9 @@ type DistributeTokensArgs = {
 }
 
 const getTokenDistribution = async ({ projectId }: { projectId: string }): Promise<GetTokenDistributionResponse> => {
-  const response = await fetch(`${BACKEND_RPC_URL}/tokendistribution?projectId=${projectId}`)
+  const url = new URL(GET_TOKEN_DISTRIBUTION, window.location.href)
+  url.searchParams.set("projectId", projectId)
+  const response = await fetch(url)
   if (!response.ok) {
     throw new Error("Failed to get token distribution")
   }
@@ -645,7 +651,8 @@ const getTokenDistribution = async ({ projectId }: { projectId: string }): Promi
 }
 
 const distributeTokens = async (args: DistributeTokensArgs): Promise<void> => {
-  const response = await fetch(`${BACKEND_RPC_URL}/distributetokens`, {
+  const url = new URL(DISTRIBUTE_TOKENS, window.location.href)
+  const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

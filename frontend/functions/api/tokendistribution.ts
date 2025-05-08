@@ -28,7 +28,20 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       .where(eq(depositTable.projectId, projectId))
       .all()
 
-    return jsonResponse({ deposits }, {
+    // Transform the data to match the expected format
+    const tokenDistributionData = deposits.map(deposit => ({
+      transactionId: deposit.transactionId,
+      createdAt: deposit.createdAt,
+      fromAddress: deposit.fromAddress,
+      amountDeposited: deposit.amountDeposited,
+      tokenAddress: deposit.tokenAddress,
+      projectId: deposit.projectId,
+      tierId: deposit.tierId,
+      nftAddress: deposit.nftAddress,
+      json: deposit.json
+    }))
+
+    return jsonResponse({ data: tokenDistributionData }, {
       headers: {
         "Cache-Control": "public, max-age=15",
       }
