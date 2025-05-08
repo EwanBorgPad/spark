@@ -596,38 +596,10 @@ const isAdmin = async (auth: AdminAuthFields): Promise<void> => {
 
 type GetTokenDistributionResponse = {
   data: {
-    transactionId: string
-    createdAt: string
     fromAddress: string
-    amountDeposited: string
-    tokenAddress: string
-    projectId: string
-    tierId: string
-    nftAddress: string
-    json: {
-      cluster: string
-      uiAmount: number
-      decimalMultiplier: string
-      tokensCalculation: {
-        lpPosition: {
-          borg: string
-          borgRaw: number
-          borgInUSD: string
-          token: string
-          tokenRaw: number
-          tokenInUSD: string
-        }
-        rewardDistribution: {
-          token: string
-          tokenRaw: number
-          tokenInUSD: string
-        }
-        totalToBeReceived: {
-          borg: string
-          token: string
-        }
-      }
-    }
+    totalAmountDeposited: number
+    lastDepositDate: string
+    depositCount: number
   }[]
 }
 

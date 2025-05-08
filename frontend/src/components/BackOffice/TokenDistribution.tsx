@@ -10,38 +10,10 @@ import { formatCurrencyAmount } from "shared/utils/format"
 import { UpcomingProjectCard } from "./ProjectStatus/UpcomingProjectCard"
 
 type TokenDistributionData = {
-  transactionId: string
-  createdAt: string
   fromAddress: string
-  amountDeposited: string
-  tokenAddress: string
-  projectId: string
-  tierId: string
-  nftAddress: string
-  json: {
-    cluster: string
-    uiAmount: number
-    decimalMultiplier: string
-    tokensCalculation: {
-      lpPosition: {
-        borg: string
-        borgRaw: number
-        borgInUSD: string
-        token: string
-        tokenRaw: number
-        tokenInUSD: string
-      }
-      rewardDistribution: {
-        token: string
-        tokenRaw: number
-        tokenInUSD: string
-      }
-      totalToBeReceived: {
-        borg: string
-        token: string
-      }
-    }
-  }
+  totalAmountDeposited: number
+  lastDepositDate: string
+  depositCount: number
 }
 
 const TokenDistribution = () => {
@@ -152,7 +124,7 @@ const TokenDistribution = () => {
           upcomingProjects={upcomingProjects}
           goToPreviousProject={goToPreviousProject}
           goToNextProject={goToNextProject}
-          selectProject={() => {}}
+          selectProject={() => { }}
           formatDate={formatDate}
           showSelectButton={false}
           customFields={[
@@ -190,19 +162,30 @@ const TokenDistribution = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-bg-secondary">
-                  <th className="text-left p-4">Address</th>
-                  <th className="text-left p-4">Amount Invested</th>
-                  <th className="text-left p-4">Tokens to Receive</th>
-                  <th className="text-left p-4">Date</th>
+                  <th className="text-left p-1">Address</th>
+                  <th className="text-left p-1">Total Amount Invested</th>
+                  <th className="text-left p-1">Tokens to Receive</th>
+                  <th className="text-left p-1">Last Deposit</th>
                 </tr>
               </thead>
               <tbody>
                 {tokenDistributionData.data.map((item: TokenDistributionData) => (
-                  <tr key={item.transactionId} className="border-b border-bg-secondary">
-                    <td className="p-4">{item.fromAddress}</td>
-                    <td className="p-4">${formatCurrencyAmount(Number(item.json.tokensCalculation.lpPosition.borgInUSD.replace("$", "")))}</td>
-                    <td className="p-4">{formatCurrencyAmount(Number(item.json.tokensCalculation.totalToBeReceived.token))}</td>
-                    <td className="p-4">{formatDate(new Date(item.createdAt))}</td>
+                  <tr key={item.fromAddress} className="border-b border-bg-secondary hover:bg-bg-tertiary">
+                    <td className="p-1">
+                      {`${item.fromAddress.slice(0, 4)}...${item.fromAddress.slice(-4)}`}
+                    </td>
+                    <td className="p-1">${formatCurrencyAmount(item.totalAmountDeposited)}</td>
+                    <td className="p-1">{formatCurrencyAmount(item.totalAmountDeposited * totalTokensPerUSDC)}</td>
+                    <td className="p-1">
+                      {new Date(item.lastDepositDate).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                      })}
+                    </td>
                   </tr>
                 ))}
               </tbody>

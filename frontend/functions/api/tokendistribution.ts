@@ -28,18 +28,43 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       .where(eq(depositTable.projectId, projectId))
       .all()
 
-    // Transform the data to match the expected format
-    const tokenDistributionData = deposits.map(deposit => ({
-      transactionId: deposit.transactionId,
-      createdAt: deposit.createdAt,
-      fromAddress: deposit.fromAddress,
-      amountDeposited: deposit.amountDeposited,
-      tokenAddress: deposit.tokenAddress,
-      projectId: deposit.projectId,
-      tierId: deposit.tierId,
-      nftAddress: deposit.nftAddress,
-      json: deposit.json
-    }))
+    // Group deposits by address and calculate totals
+    const groupedDeposits = deposits.reduce((acc, deposit) => {
+      const address = deposit.fromAddress
+      if (!acc[address]) {
+        acc[address] = {
+          fromAddress: address,
+          totalAmountDeposited: 0,
+          lastDepositDate: new Date(deposit.createdAt),
+          depositCount: 0
+        }
+      }
+      
+      acc[address].totalAmountDeposited += Number(deposit.json.tokensCalculation.lpPosition.borgInUSD.replace("$", ""))
+      acc[address].depositCount++
+      
+      const depositDate = new Date(deposit.createdAt)
+      if (depositDate > acc[address].lastDepositDate) {
+        acc[address].lastDepositDate = depositDate
+      }
+      
+      return acc
+    }, {} as Record<string, {
+      fromAddress: string
+      totalAmountDeposited: number
+      lastDepositDate: Date
+      depositCount: number
+    }>)
+
+    // Convert to array and sort by total amount deposited
+    const tokenDistributionData = Object.values(groupedDeposits)
+      .sort((a, b) => b.totalAmountDeposited - a.totalAmountDeposited)
+      .map(item => ({
+        fromAddress: item.fromAddress,
+        totalAmountDeposited: item.totalAmountDeposited,
+        lastDepositDate: item.lastDepositDate.toISOString(),
+        depositCount: item.depositCount
+      }))
 
     return jsonResponse({ data: tokenDistributionData }, {
       headers: {
