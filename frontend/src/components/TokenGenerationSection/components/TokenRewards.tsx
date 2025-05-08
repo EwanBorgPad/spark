@@ -47,9 +47,9 @@ const TokenRewards = ({ raisedTokenInput, raisedTokenPriceInUSD, isYourContribut
                 <span className="text-base">{rewardDistribution.token}</span>
                 <span className="text-base">{tokenTicker}</span>
               </div>
-              {!isYourContribution && (
+              {/* {!isYourContribution && (
                 <span className="text-sm font-normal text-fg-secondary">{rewardDistribution.tokenInUSD}</span>
-              )}
+              )} */}
             </div>
           </div>
 
