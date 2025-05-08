@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm'
 
 import { ComputeBudgetProgram, Connection, Keypair, ParsedAccountData, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js'
 import { createTransferInstruction } from '@solana/spl-token'
-import { createProgrammableNft, mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata'
+import { createProgrammableNft, findMetadataPda, mplTokenMetadata, verifyCollectionV1 } from '@metaplex-foundation/mpl-token-metadata'
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
 import { createNoopSigner, createSignerFromKeypair, percentAmount, publicKey, signerIdentity, transactionBuilder } from '@metaplex-foundation/umi'
 import { toWeb3JsInstruction, toWeb3JsKeypair } from '@metaplex-foundation/umi-web3js-adapters'
@@ -296,6 +296,16 @@ type MintNftAndCreateTransferNftInstructionsArgs = {
     nftConfig: NftConfigType
     r2BucketBaseUrl: string
 }
+
+/**
+ * Creates instructions to mint an NFT and verify it as part of a collection.
+ * The process involves:
+ * 1. Minting a Programmable NFT with an unverified collection reference
+ * 2. Verifying the NFT as part of the collection
+ * 
+ * This ensures the NFT receives proper recognition in wallets and marketplaces
+ * as a verified member of the collection.
+ */
 async function mintNftAndCreateTransferNftInstructions({ 
     projectId,
     connection, 
@@ -304,6 +314,8 @@ async function mintNftAndCreateTransferNftInstructions({
     nftConfig,
     r2BucketBaseUrl,
 }: MintNftAndCreateTransferNftInstructionsArgs) {
+    console.log('Starting NFT minting process...');
+    
     // create umi client for mpl token package
     const umi = createUmi(connection)
     const userPublicKey = publicKey(usersWalletAddress)
@@ -321,10 +333,21 @@ async function mintNftAndCreateTransferNftInstructions({
     umi.use(signerIdentity(signer))
     umi.use(mplTokenMetadata())
 
+    console.log(`NFT mint address: ${mintSigner.publicKey}`);
+    console.log(`Creating NFT for user: ${usersWalletAddress}`);
+
     const metadataKey = `${projectId}/nft-metadata/metadata.json`
     const metadataUrl = new URL(metadataKey, r2BucketBaseUrl).href
-    // make tx for minting nft
-    const builder = transactionBuilder().add(createProgrammableNft(umi, {
+    console.log(`Using metadata URL: ${metadataUrl}`);
+    
+    // Collection public key
+    const collectionPublicKey = publicKey(nftConfig.collection)
+    console.log(`Collection address: ${collectionPublicKey}`);
+    
+    // Step 1: Create mint instructions
+    // Initially, the NFT is created with verified=false for the collection
+    console.log('Creating mint instructions...');
+    const mintBuilder = transactionBuilder().add(createProgrammableNft(umi, {
         symbol: nftConfig.symbol,
         name: nftConfig.name,
         uri: metadataUrl,
@@ -337,21 +360,40 @@ async function mintNftAndCreateTransferNftInstructions({
         tokenOwner: userPublicKey,
         
         collection: {
-            verified: false,
-            // @ts-expect-error TS2322: Type 'string' is not assignable to type 'PublicKey'.
-            key: nftConfig.collection,
-            // key: 'H4TkbayRd1fhF7wu9odrrYZREkHNMrV5Rhmtkor9wVoK', // https://solscan.io/token/H4TkbayRd1fhF7wu9odrrYZREkHNMrV5Rhmtkor9wVoK
+            verified: false, // Initially set as unverified, we'll verify it in the next step
+            key: collectionPublicKey,
         }
-    }))
-
-    // send minting nft tx
-    const listOfInstructions = builder.getInstructions()
-    // convert metaplex Instruction to Solana web 3 js Instruction https://developers.metaplex.com/umi/web3js-differences-and-adapters
-    const instructions = listOfInstructions.map(ix => {
+    }));
+    
+    // Find the metadata PDA for the NFT
+    const metadata = findMetadataPda(umi, { mint: mintSigner.publicKey });
+    console.log(`NFT metadata PDA: ${metadata}`);
+    
+    // Step 2: Create collection verification instructions
+    // This step updates the NFT's metadata to show it's verified by the collection's authority
+    console.log('Creating collection verification instructions...');
+    const verifyBuilder = transactionBuilder().add(
+        verifyCollectionV1(umi, {
+            metadata,
+            collectionMint: collectionPublicKey,
+            authority: signer, // Collection authority
+        })
+    );
+    
+    // Combine mint and verify instructions to execute them in a single transaction
+    const allInstructions = [
+        ...mintBuilder.getInstructions(),
+        ...verifyBuilder.getInstructions()
+    ];
+    console.log(`Created ${allInstructions.length} instructions (mint + verify)`);
+    
+    // Convert metaplex Instructions to Solana web3.js Instructions
+    const instructions = allInstructions.map(ix => {
         return toWeb3JsInstruction(ix)
-    })
-    const nftMintSigner = toWeb3JsKeypair(mintKeypair)
-
+    });
+    
+    const nftMintSigner = toWeb3JsKeypair(mintKeypair);
+    console.log('NFT minting and verification instructions created successfully');
 
     return {
         instructions,
