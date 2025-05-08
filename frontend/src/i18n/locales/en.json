@@ -63,6 +63,8 @@
   "tge.crypto_app_listing": "Crypto App Listing",
   "tge.learn_more_about": "Learn More about Launch Pool Investing",
   "tge.join_launch_pool": "Join the Launch Pool",
+  "tge.pool_manager": "Pool managed by",
+  "tge.token_paired_with": "Token paired with",
 
   "sale_over": "Sale Over",
   "sale_over.thank_you": "Thank you for your participation",
