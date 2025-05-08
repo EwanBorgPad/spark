@@ -174,9 +174,11 @@ export const projectSchema = z.object({
     nftConfig: nftConfigSchema.optional(),
     referralDistribution: z
       .object({
+        tokenTickerDistributed: z.string().optional(),
+        iconUrl: urlSchema().optional(),
         totalAmountDistributed: z.number().int().positive(),
-        ranking: z.record(z.string(), z.number().min(0).max(1)),
-        raffle: z.record(z.string(), z.number().min(0).max(1)),
+        ranking: z.record(z.string(), z.number().min(0)),
+        raffle: z.record(z.string(), z.number().min(0)),
       })
       .optional(),
   }),

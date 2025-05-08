@@ -18,6 +18,8 @@ export interface ProjectDataTypeForReferral {
       ticker: string;
     };
     referralDistribution?: {
+      tokenTickerDistributed: string;
+      iconUrl: string;
       ranking: Record<string, number>;
       raffle: Record<string, number>;
       totalAmountDistributed?: number;

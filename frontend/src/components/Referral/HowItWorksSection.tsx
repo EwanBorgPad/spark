@@ -9,7 +9,6 @@ import { ProjectDataTypeForReferral } from "./types";
 type HowItWorksSectionProps = {
   onContinue: () => void;
   onClose: () => void;
-  prizeAmount?: number;
   projectData?: ProjectDataTypeForReferral;
 };
 
@@ -19,9 +18,9 @@ type HowItWorksSectionProps = {
 const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({
   onContinue,
   onClose,
-  prizeAmount,
   projectData
 }) => {
+  const totalAmountDistributed = projectData?.config.referralDistribution?.totalAmountDistributed || 0;
   return (
     <SimpleModal
       showCloseBtn
@@ -84,7 +83,7 @@ const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({
             Prize Pool
           </span>
           <span className="mb-[24px] text-center text-base font-normal text-fg-secondary">
-            Total: {formatCurrencyAmount(prizeAmount)} {projectData?.config.launchedTokenData.ticker}
+            Total: {formatCurrencyAmount(totalAmountDistributed)} {projectData?.config.referralDistribution?.tokenTickerDistributed || projectData?.config.launchedTokenData.ticker}
           </span>
 
           <div className="flex flex-col gap-3">
@@ -96,9 +95,9 @@ const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({
                 </>
               }
               subtitle="1st ranking place"
-              amount={formatCurrencyAmount(prizeAmount ? prizeAmount * (projectData?.config.referralDistribution?.ranking["1"] || 0.3) : 0)}
+              amount={formatCurrencyAmount(projectData?.config.referralDistribution?.ranking["1"] || 0)}
               type="grand"
-              logoUrl={projectData?.info.logoUrl}
+              logoUrl={projectData?.config.referralDistribution?.iconUrl || projectData?.info.logoUrl}
             />
 
             <PrizeCard
@@ -109,9 +108,9 @@ const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({
                 </>
               }
               subtitle="2nd ranking place"
-              amount={formatCurrencyAmount(prizeAmount ? prizeAmount * (projectData?.config.referralDistribution?.ranking["2"] || 0.2) : 0)}
+              amount={formatCurrencyAmount(projectData?.config.referralDistribution?.ranking["2"] || 0)}
               type="gold"
-              logoUrl={projectData?.info.logoUrl}
+              logoUrl={projectData?.config.referralDistribution?.iconUrl || projectData?.info.logoUrl}
             />
 
             <PrizeCard
@@ -122,9 +121,9 @@ const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({
                 </>
               }
               subtitle="3rd ranking place"
-              amount={formatCurrencyAmount(prizeAmount ? prizeAmount * (projectData?.config.referralDistribution?.ranking["3"] || 0.1) : 0)}
+              amount={formatCurrencyAmount(projectData?.config.referralDistribution?.ranking["3"] || 0)}
               type="silver"
-              logoUrl={projectData?.info.logoUrl}
+              logoUrl={projectData?.config.referralDistribution?.iconUrl || projectData?.info.logoUrl}
             />
 
             <PrizeCard
@@ -135,10 +134,9 @@ const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({
                 </>
               }
               subtitle="Raffle winners"
-              amount={formatCurrencyAmount(prizeAmount ?
-                prizeAmount * Object.values(projectData?.config.referralDistribution?.raffle || {}).reduce((a: number, b: number) => a + (b || 0), 0) / Object.keys(projectData?.config.referralDistribution?.raffle || {}).length : 0)}
+              amount={formatCurrencyAmount(projectData?.config.referralDistribution?.raffle ? Object.values(projectData?.config.referralDistribution?.raffle || {}).reduce((a: number, b: number) => a + (b || 0), 0) / Object.keys(projectData?.config.referralDistribution?.raffle || {}).length : 0)}
               type="bronze"
-              logoUrl={projectData?.info.logoUrl}
+              logoUrl={projectData?.config.referralDistribution?.iconUrl || projectData?.info.logoUrl}
             />
           </div>
         </div>
