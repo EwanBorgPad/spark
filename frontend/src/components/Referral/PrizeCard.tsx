@@ -45,7 +45,7 @@ const PrizeCard: React.FC<PrizeCardProps> = ({
             size="5"
           />
         )}
-        <p className={`font-medium`} style={{ color: colorIcon }}>{amount}</p>
+        <p className={`font-medium`} style={{ color: colorIcon }}>{amount}$</p>
       </div>
     </div>
   );

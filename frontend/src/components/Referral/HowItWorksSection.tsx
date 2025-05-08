@@ -42,7 +42,7 @@ const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({
               number={1}
               text={
                 <>
-                  Ask friends to use your referral code
+                  Ask friends to use your referral code.
                 </>
               }
             />
@@ -51,7 +51,7 @@ const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({
               number={2}
               text={
                 <>
-                  You get guaranteed allocation <span className="text-brand-primary">for each $1</span> they invest
+                  You get <span className="text-brand-primary">100 tickets per 1$</span> they invest.
                 </>
               }
             />
@@ -60,7 +60,7 @@ const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({
               number={3}
               text={
                 <>
-                  Additionally, you get <span className="text-brand-primary">1 ticket per 1$</span> they invest.
+                  When the sale ends, if you are in the <span className="text-brand-primary">top 3 on the leaderboard</span>, you get a guaranteed prize.
                 </>
               }
             />
@@ -69,8 +69,8 @@ const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({
               number={4}
               text={
                 <>
-                  When the sale ends, <span className="text-brand-primary">you can win one of the prizes</span> in the raffle or based on the place on the leaderboard.
-                  <span className="text-brand-primary"> More tickets</span> = the bigger the chance to win
+                  <span className="text-brand-primary">You can also win one of the prizes</span> in the raffle.
+                  <span className="text-brand-primary"> More tickets</span> = the bigger the chance to win !
                 </>
               }
             />
@@ -83,7 +83,7 @@ const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({
             Prize Pool
           </span>
           <span className="mb-[24px] text-center text-base font-normal text-fg-secondary">
-            Total: {formatCurrencyAmount(totalAmountDistributed)} {projectData?.config.referralDistribution?.tokenTickerDistributed || projectData?.config.launchedTokenData.ticker}
+            Total: {formatCurrencyAmount(totalAmountDistributed)}$ of ${projectData?.config.referralDistribution?.tokenTickerDistributed || projectData?.config.launchedTokenData.ticker}
           </span>
 
           <div className="flex flex-col gap-3">
