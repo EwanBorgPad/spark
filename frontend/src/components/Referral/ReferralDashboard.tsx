@@ -100,6 +100,7 @@ const ReferralDashboard: React.FC<ReferralDashboardProps> = ({
             icon="SvgTrophy"
             value={userPrize.value}
             subtitle1={userPrize.isRaffle ? "Depending on the raffle" : ""}
+            isRewardPool={true}
             logoUrl={projectData?.config.referralDistribution?.iconUrl || projectData?.info.logoUrl}
           />
           <ReferralCard
@@ -153,6 +154,7 @@ const ReferralDashboard: React.FC<ReferralDashboardProps> = ({
             icon="SvgTrophy"
             value={formatCurrencyAmount(prizeAmount)}
             subtitle1=""
+            isRewardPool={true}
             logoUrl={projectData?.config.referralDistribution?.iconUrl || projectData?.info.logoUrl}
           />
         </div>

@@ -125,6 +125,7 @@ const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[]
                               }
                               return 0;
                             })()}
+                            $
                           </span>
                         </TableCell>
                       </tr>
