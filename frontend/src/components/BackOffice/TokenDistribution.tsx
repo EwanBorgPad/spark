@@ -53,8 +53,6 @@ const TokenDistribution = () => {
     queryKey: ["getProjects", "all"],
   })
 
-  const { formatDate } = useProjectStatusUtils()
-
   const upcomingProjects = useMemo(() => {
     if (!data?.projects) return []
 
@@ -77,6 +75,20 @@ const TokenDistribution = () => {
   const nextProjectToGoLive = useMemo(() => {
     return upcomingProjects[currentProjectIndex] || null
   }, [upcomingProjects, currentProjectIndex])
+
+  const { data: saleData, isLoading: isLoadingSaleResults } = useQuery({
+    queryFn: async () => {
+      if (!nextProjectToGoLive?.id) return null
+      return await backendApi.getSaleResults({
+        projectId: nextProjectToGoLive.id,
+      })
+    },
+    queryKey: ["saleResults", nextProjectToGoLive?.id],
+    enabled: Boolean(nextProjectToGoLive?.id),
+    staleTime: 30 * 1000,
+  })
+
+  const { formatDate } = useProjectStatusUtils()
 
   const { data: tokenDistributionData, isLoading: isLoadingDistribution } = useQuery({
     queryFn: () => {
@@ -116,19 +128,9 @@ const TokenDistribution = () => {
     }
   }
 
-  const totalAmountRaised = useMemo(() => {
-    if (!tokenDistributionData) return 0
-    return tokenDistributionData.reduce((acc: number, curr: TokenDistributionData) => {
-      return acc + Number(curr.json.tokensCalculation.lpPosition.borgInUSD.replace("$", ""))
-    }, 0)
-  }, [tokenDistributionData])
-
-  const totalTokensToDistribute = useMemo(() => {
-    if (!tokenDistributionData) return 0
-    return tokenDistributionData.reduce((acc: number, curr: TokenDistributionData) => {
-      return acc + Number(curr.json.tokensCalculation.totalToBeReceived.token)
-    }, 0)
-  }, [tokenDistributionData])
+  const totalTokensPerUSDC = Number(nextProjectToGoLive.config.totalTokensForLiquidityPool) / Number(nextProjectToGoLive.config.raiseTargetInUsd)
+  const totalAmountRaised = saleData ? Number(saleData.totalAmountRaised.amountInUsd) : 0
+  const totalTokensToDistribute = totalAmountRaised * totalTokensPerUSDC
 
   return (
     <main className="z-[10] flex h-full w-full max-w-full flex-col items-center gap-10 py-[100px] font-normal text-fg-primary lg:py-[20px]">
@@ -167,11 +169,7 @@ const TokenDistribution = () => {
             },
             {
               label: "Tokens per USDC",
-              value: (() => {
-                const totalTokens = Number(nextProjectToGoLive.config.totalTokensForLiquidityPool)
-                const totalRaise = Number(nextProjectToGoLive.config.raiseTargetInUsd)
-                return totalRaise > 0 ? (totalTokens / totalRaise).toFixed(2) : "0"
-              })()
+              value: formatCurrencyAmount(totalTokensPerUSDC)
             },
             {
               label: "Total Amount Raised",
