@@ -151,12 +151,34 @@ const WhitelistingContent = () => {
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
 
+        {/* Pool Manager */}
+        <div className="flex w-full items-center justify-between py-3">
+          <span>{t("tge.pool_manager")}</span>
+          <div className="flex items-center gap-2">
+            <Img src={projectData?.info.liquidityPool.iconPoolManager} size="5" isFetchingLink={isLoading} isRounded />
+            <Text text={projectData?.info.liquidityPool.poolManager} isLoading={isLoading} />
+          </div>
+        </div>
+        <hr className="w-full border-bd-primary opacity-50"></hr>
+
         {/* LP Type */}
         <div className="flex w-full items-center justify-between py-3">
           <span>{t("tge.lbp_type")}</span>
           <Text text={projectData?.info.liquidityPool.lbpType} isLoading={isLoading} />
         </div>
         <hr className="w-full border-bd-primary opacity-50"></hr>
+
+        {/* Token paired with */}
+        <div className="flex w-full items-center justify-between py-3">
+          <span>{t("tge.token_paired_with")}</span>
+          <div className="flex items-center gap-2">
+            <Img src={projectData?.info.liquidityPool.iconPairedWith} size="5" isFetchingLink={isLoading} isRounded />
+            <Text text={projectData?.info.liquidityPool.tokenPairedWith} isLoading={isLoading} />
+          </div>
+        </div>
+        <hr className="w-full border-bd-primary opacity-50"></hr>
+
+
         {/* BorgPad Fees */}
         <span className="pb-2 pt-3 text-xs font-semibold uppercase text-fg-tertiary">
           {t("tge.borgpad_fees")}

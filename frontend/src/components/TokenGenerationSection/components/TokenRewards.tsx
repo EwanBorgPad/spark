@@ -53,14 +53,14 @@ const TokenRewards = ({ raisedTokenInput, raisedTokenPriceInUSD, isYourContribut
             </div>
           </div>
 
-          <div className="flex flex-col items-center gap-1.5">
+          {/* <div className="flex flex-col items-center gap-1.5">
             <div className="flex h-fit items-center justify-center gap-1.5 rounded-full text-xs font-medium text-fg-tertiary ">
               <Icon icon="SvgChartLine" className="text-base" />
               <span>{rewardDistributionLabel}</span>
             </div>
             <span className="text-xs font-medium text-fg-tertiary">🔒 LP position permanently locked </span>
             <span className="text-xs font-medium text-fg-tertiary">🔥 All BORG fees burned</span>
-          </div>
+          </div> */}
         </div>
       </div>
 

@@ -217,6 +217,10 @@ export const projectSchema = z.object({
       lockingPeriod: z.string().min(1).optional(),
       investorFees: z.string().min(1).optional(),
       projectFees: z.string().min(1).optional(),
+      poolManager: z.string().min(1).optional(),
+      iconPoolManager: urlSchema().optional(),
+      tokenPairedWith: z.string().min(1).optional(),
+      iconPairedWith: urlSchema().optional(),
     }),
     curator: z.object({
       avatarUrl: urlSchema(),
