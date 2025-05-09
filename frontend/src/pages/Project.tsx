@@ -18,6 +18,7 @@ import BasicTokenInfo from "@/components/TokenGenerationSection/components/Basic
 import DealComingFrom from "@/components/LaunchPool/DealComingFrom"
 import Referral from "@/components/LaunchPool/Referral"
 import FloorStrategyModal from "@/components/Modal/Modals/FloorStrategyModal"
+import { Button } from "@/components/Button/Button"
 
 type FloorStrategyIcon = "SvgFloorStrategy" | "SvgFixedFDV" | "SvgFloatFDV"
 
@@ -32,18 +33,22 @@ const Project = () => {
   const floorStrategy = projectData?.config.floorStrategy ?? "Float FDV"
   let iconStrategy: FloorStrategyIcon = "SvgFloorStrategy"
   let color = "text-fg-brand-primary"
+  let bgColor = "bg-brand-primary"
   switch (floorStrategy) {
     case "Floor Strategy":
       iconStrategy = "SvgFloorStrategy"
       color = "text-fg-floor-strategy"
+      bgColor = "text-fg-floor-strategy"
       break
     case "Fixed FDV":
       iconStrategy = "SvgFixedFDV"
       color = "text-fg-fixed-fdv"
+      bgColor = "text-fg-floor-strategy"
       break
     case "Float FDV":
       iconStrategy = "SvgFloatFDV"
       color = "text-fg-float-fdv"
+      bgColor = "text-fg-floor-strategy"
       break
     default:
       iconStrategy = "SvgFloorStrategy"
@@ -100,46 +105,47 @@ const Project = () => {
           </div>
         </div>
 
-        {/* Project details (chain, origin, sector) */}
-        <div className="flex w-full flex-col gap-x-5 gap-y-3 text-sm md:max-w-[792px] md:flex-row">
-          <div className="flex gap-5 divide-x-[1px] divide-fg-primary/40">
+        {/* Project details (floor strategy, chain, origin, sector) */}
+        <div className="flex w-full flex-wrap gap-4 text-sm md:max-w-[792px]">
+          <div className="flex flex-wrap gap-4 [&>*:not(:last-child)]:border-r [&>*:not(:last-child)]:border-fg-primary/40 [&>*:not(:last-child)]:pr-4 [&>*]:h-5">
             {floorStrategy !== "Not set" && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <Icon icon={iconStrategy} className={`h-6 w-6 ${color}`} />
                 <div className="flex items-center gap-2">
-                  <button 
+                  <Button
                     onClick={() => setIsFloorStrategyModalOpen(true)}
-                    className="flex items-center gap-2 hover:opacity-80"
+                    color="plain"
+                    className={`${bgColor} bg-opacity-30 hover:bg-opacity-50 flex items-center gap-2 whitespace-nowrap`}
                   >
                     <Text 
                       text={floorStrategy} 
                       isLoading={isLoading} 
                       loadingClass="max-w-[100px]"
-                      className={color}
+                      className={`${color} whitespace-nowrap`}
                     />
                     <Icon icon="SvgQuestionCircle" className="h-4 w-4 text-fg-secondary" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
-            <div className="flex items-center gap-2 pl-5">
+            <div className="flex items-center gap-2">
               <span className="text-fg-primary text-opacity-50">{t("chain")}</span>
               <Img size="4" src={projectData?.info.chain.iconUrl} isRounded />
               <Text text={projectData?.info.chain.name} isLoading={isLoading} loadingClass="max-w-[100px]" />
             </div>
-            <div className="flex items-center gap-2 pl-5">
+            <div className="flex items-center gap-2">
               <span className="text-fg-primary text-opacity-50">{t("sector")}</span>
               <Text text={projectData?.info.sector} isLoading={isLoading} />
             </div>
           </div>
           {projectData?.info.tokenContractUrl && projectData?.info.poolContractUrl && (
-            <div className="flex flex-col md:flex-row">
+            <div className="flex flex-wrap gap-4 [&>*:not(:last-child)]:border-r [&>*:not(:last-child)]:border-fg-primary/40 [&>*:not(:last-child)]:pr-4 [&>*]:h-5">
               {projectData?.info.tokenContractUrl && (
                 <a
                   href={projectData.info.tokenContractUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-2 border-r-[1px] px-5 md:border-l-[1px] md:border-x-fg-gray-line"
+                  className="group flex items-center gap-2"
                 >
                   <Img size="4" src={projectData?.info.logoUrl} isRounded />
                   <Text text={`$${projectData.config.launchedTokenData.ticker}`} isLoading={isLoading} />
@@ -151,7 +157,7 @@ const Project = () => {
                   href={projectData.info.poolContractUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-2 px-5  md:border-r-fg-gray-line"
+                  className="group flex items-center gap-2"
                 >
                   <Img size="4" src={projectData?.info.logoUrl} isRounded />
                   <Text text={`$${projectData.config.launchedTokenData.ticker}/BORG`} isLoading={isLoading} />

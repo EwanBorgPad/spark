@@ -33,6 +33,9 @@ export default {
         "brand-blitz-secondary": "#262716",
         "draft-picks": "#96F5FF",
         "draft-picks-2": "#96EAFF",
+        "fixed-fdv": "#EDA8FF",
+        "float-fdv": "#AFDAFF",
+        "floor-strategy": "#BEBAFF",
 
         // font colors
         fg: {

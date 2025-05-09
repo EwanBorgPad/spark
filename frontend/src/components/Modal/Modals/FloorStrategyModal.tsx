@@ -18,6 +18,9 @@ import { twMerge } from "tailwind-merge"
 import { BP_JWT_TOKEN } from "@/utils/constants"
 import { useSearchParamsUpdate } from "@/hooks/useSearchParamsUpdate"
 import { analysisApi } from "@/data/api/analysisApi"
+import fixedFdvImg from '@/assets/launchPools/fixed-fdv.png'
+import floatFdvImg from '@/assets/launchPools/float-fdv.png'
+import floorStrategyImg from '@/assets/launchPools/floor-strategy.png'
 
 type Props = {
   onClose: () => void
@@ -45,6 +48,7 @@ const FloorStrategyModal = ({ onClose, isOpen }: Props) => {
   const [__, setJwtToken] = usePersistedState(BP_JWT_TOKEN)
   const { projectData } = useProjectDataContext()
   const [sessionId, setSessionId] = useState<string>("")
+  const [selectedStrategy, setSelectedStrategy] = useState<"Floor Strategy" | "Fixed FDV" | "Float FDV">("Floor Strategy")
   const queryClient = useQueryClient()
   const { removeParam, getParam, removeParamIfNull } = useSearchParamsUpdate()
 
@@ -154,20 +158,117 @@ const FloorStrategyModal = ({ onClose, isOpen }: Props) => {
         <span className="pb-12 text-center text-fg-secondary">Learn more about what different pool strategies mean</span>
 
         <div className="flex flex-col gap-4 md:flex-row md:justify-center">
-          <button className="flex h-11 w-fit items-center gap-2 rounded-xl border border-bd-primary bg-[#060a1440] px-3 md:px-6 hover:bg-[#20212168] active:scale-[98%] md:h-12">
-            <Icon icon="SvgFixedFDV" className="h-6 w-6 text-fg-fixed-fdv" />
+          <button
+            onClick={() => setSelectedStrategy("Fixed FDV")}
+            className={`flex h-11 w-fit items-center gap-2 rounded-xl border border-bd-primary px-3 md:px-6 hover:bg-[#20212168] active:scale-[98%] md:h-12 ${selectedStrategy === "Fixed FDV" ? "bg-[#20212168]" : "bg-[#060a1440]"
+              }`}
+          >
+            <div className="p-1 rounded-lg bg-fg-floor-strategy bg-opacity-10 mx-0">
+              <Icon icon="SvgFixedFDV" className="h-6 w-6 text-fg-fixed-fdv" />
+            </div>
             <span className="text-center text-sm font-medium text-fg-fixed-fdv">Fixed FDV</span>
           </button>
 
-          <button className="flex h-11 w-fit items-center gap-2 rounded-xl border border-bd-primary bg-[#060a1440] px-3 md:px-6 hover:bg-[#20212168] active:scale-[98%] md:h-12">
-            <Icon icon="SvgFloatFDV" className="h-6 w-6 text-fg-float-fdv" />
+          <button
+            onClick={() => setSelectedStrategy("Float FDV")}
+            className={`flex h-11 w-fit items-center gap-2 rounded-xl border border-bd-primary px-3 md:px-6 hover:bg-[#20212168] active:scale-[98%] md:h-12 ${selectedStrategy === "Float FDV" ? "bg-[#20212168]" : "bg-[#060a1440]"
+              }`}
+          >
+            <div className="p-1 rounded-lg bg-fg-float-fdv bg-opacity-10 mx-0">
+              <Icon icon="SvgFloatFDV" className="h-6 w-6 text-fg-float-fdv" />
+            </div>
             <span className="text-center text-sm font-medium text-fg-float-fdv">Float FDV</span>
           </button>
 
-          <button className="flex h-11 w-fit items-center gap-2 rounded-xl border border-bd-primary bg-[#060a1440] px-3 md:px-6 hover:bg-[#20212168] active:scale-[98%] md:h-12">
-            <Icon icon="SvgFloorStrategy" className="h-6 w-6 text-fg-floor-strategy" />
+          <button
+            onClick={() => setSelectedStrategy("Floor Strategy")}
+            className={`flex h-11 w-fit items-center gap-2 rounded-xl border border-bd-primary px-3 md:px-6 hover:bg-[#20212168] active:scale-[98%] md:h-12 ${selectedStrategy === "Floor Strategy" ? "bg-[#20212168]" : "bg-[#060a1440]"
+              }`}
+          >
+            <div className="p-1 rounded-lg bg-fg-floor-strategy bg-opacity-10 mx-0">
+              <Icon icon="SvgFloorStrategy" className="h-6 w-6 text-fg-floor-strategy" />
+            </div>
             <span className="text-center text-sm font-medium text-fg-floor-strategy">Floor Strategy</span>
           </button>
+        </div>
+
+        <div className="mt-8">
+          {selectedStrategy === "Floor Strategy" && (
+            <div className="flex flex-col md:flex-row-reverse md:items-start md:gap-8">
+              <div className="flex flex-col items-start text-left w-[330px] md:w-[390px] gap-4 font-body font-normal ml-2 mb-4 md:mb-0">
+                <div className="p-1 rounded-lg bg-fg-floor-strategy bg-opacity-10 mx-0">
+                  <Icon icon="SvgFloorStrategy" className="h-6 w-6 text-fg-floor-strategy" />
+                </div>
+                <span className="text-lg font-semibold text-fg-primary">Floor Strategy</span>
+                <span className="text-sm text-fg-secondary font-body font-normal">
+                  A TGE model that protects your downside and unleashes infinite upside.<br />
+                  <span className="text-fg-primary">The downside is capped, but your upside is unlimited.</span> The risk curve is flipped in your favour.
+                </span>
+                <span className="text-sm text-fg-secondary font-body font-normal">At TGE, your tokens can&apos;t be sold below a protected price - The Floor.</span>
+              </div>
+              <div className="w-[340px] h-[340px] md:w-[390px] md:h-[360px] flex items-center justify-center bg-accent rounded-xl mx-auto md:mx-0 mb-4 md:mb-0">
+                <img src={floorStrategyImg} alt="Floor Strategy Chart" className="max-w-[90%] max-h-[90%]" />
+              </div>
+            </div>
+          )}
+
+          {selectedStrategy === "Fixed FDV" && (
+            <div className="flex flex-col md:flex-row-reverse md:items-start md:gap-8">
+              <div className="flex flex-col items-start text-left w-[330px] md:w-[390px] gap-4 font-body font-normal ml-2 mb-4 md:mb-0">
+                <div className="p-1 rounded-lg bg-fg-fixed-fdv bg-opacity-10 mx-0">
+                  <Icon icon="SvgFixedFDV" className="h-6 w-6 text-fg-fixed-fdv" />
+                </div>
+                <span className="text-lg font-semibold text-fg-primary">Fixed FDV</span>
+                <span className="text-sm text-fg-secondary font-body font-normal">
+                  The Fully Diluted Valuation (FDV) is <span className="text-fg-primary">set in advance</span> and <span className="text-fg-primary">does not change</span> based on the amount raised during the final raise on BorgPad.
+                </span>
+                <div className="flex flex-col items-start text-left">
+                  <span className="text-sm font-semibold text-fg-primary mb-2 font-body font-normal">What this means:</span>
+                  <ul className="list-disc space-y-2 ml-5">
+                    <li className="text-sm text-fg-secondary font-body font-normal">Investors know upfront the valuation they are investing at.</li>
+                    <li className="text-sm text-fg-secondary font-body font-normal">This offers <span className="text-fg-primary">full predictability</span> for both projects and investors.</li>
+                  </ul>
+                  <div className="mt-2">
+                    <span className="text-sm font-semibold text-fg-primary block font-body font-normal">Example:</span>
+                    <span className="text-sm text-fg-secondary font-body font-normal">If the FDV is set at $10 million, no matter how much is raised, the total valuation stays at $10M.</span>
+                  </div>
+                </div>
+              </div>
+              <div className="w-[340px] h-[340px] md:w-[390px] md:h-[360px] flex items-center justify-center bg-accent rounded-xl mx-auto md:mx-0 mb-4 md:mb-0">
+                <img src={fixedFdvImg} alt="Fixed FDV Chart" className="max-w-[90%] max-h-[90%]" />
+              </div>
+            </div>
+          )}
+
+          {selectedStrategy === "Float FDV" && (
+            <div className="flex flex-col md:flex-row-reverse md:items-start md:gap-8">
+              <div className="flex flex-col items-start text-left w-[330px] md:w-[390px] gap-4 font-body font-normal ml-2 mb-4 md:mb-0">
+                <div className="p-1 rounded-lg bg-fg-float-fdv bg-opacity-10 mx-0">
+                  <Icon icon="SvgFloatFDV" className="h-6 w-6 text-fg-float-fdv" />
+                </div>
+                <span className="text-lg font-semibold text-fg-primary">Float FDV</span>
+                <span className="text-sm text-fg-secondary font-body font-normal">
+                  The Fully Diluted Valuation (FDV) is determined by the amount raised during the final raise on BorgPad. <span className="text-fg-primary">The more capital raised, the higher the final valuation.</span>
+                </span>
+                <div className="flex flex-col items-start text-left">
+                  <span className="text-sm font-semibold text-fg-primary mb-2 font-body font-normal">What this means:</span>
+                  <ul className="list-disc space-y-2 ml-5">
+                    <li className="text-sm text-fg-secondary font-body font-normal">FDV dynamically adjusts based on market demand.</li>
+                    <li className="text-sm text-fg-secondary font-body font-normal">Investors are buying into a valuation that <span className="text-fg-primary">directly reflects real user interest.</span></li>
+                    <li className="text-sm text-fg-secondary font-body font-normal">This enables <span className="text-fg-primary">natural price discovery</span> and measures organic traction.</li>
+                  </ul>
+                  <div className="mt-2">
+                    <span className="text-sm font-semibold text-fg-primary block font-body font-normal">Example:</span>
+                    <li className="text-sm text-fg-secondary font-body font-normal">If <span className="text-fg-primary">$50,000</span> is raised, the final FDV might be <span className="text-fg-primary">$1 million.</span></li>
+                    <li className="text-sm text-fg-secondary font-body font-normal">If <span className="text-fg-primary">$200,000</span> is raised, the FDV could rise to <span className="text-fg-primary">$5 million.</span></li>
+                  </div>
+                </div>
+              </div>
+              <div className="w-[340px] h-[340px] md:w-[390px] md:h-[360px] flex items-center justify-center bg-accent rounded-xl mx-auto md:mx-0 mb-4 md:mb-0">
+                <img src={floatFdvImg} alt="Float FDV Chart" className="max-w-[90%] max-h-[90%]" />
+              </div>
+            </div>
+          )}
         </div>
 
       </div>
