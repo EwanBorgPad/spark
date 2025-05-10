@@ -51,7 +51,7 @@ const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({
               number={2}
               text={
                 <>
-                  You get <span className="text-brand-primary">100 tickets per 1$</span> they invest.
+                  You get <span className="text-brand-primary">1 tickets per 1$</span> they invest.
                 </>
               }
             />
