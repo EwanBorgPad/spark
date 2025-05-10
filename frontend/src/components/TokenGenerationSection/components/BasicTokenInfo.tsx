@@ -69,7 +69,7 @@ const BasicTokenInfo = ({ isDraftPick }: Props) => {
         <div className="flex w-full max-w-[792px] flex-col flex-wrap justify-between gap-3 divide-bd-secondary rounded-lg border border-bd-secondary bg-default py-3 md:flex-row md:gap-6 md:divide-x-[1px] md:px-0 md:py-0">
           <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
             <span className="text-sm text-fg-tertiary">Launch Strategy</span>
-            <Text text={floorStrategy} isLoading={isLoading} className="text-base text-fg-primary" />
+            <Text text={floorStrategy === "Floor Strategy" ? "ALL TIME FLOOR" : floorStrategy} isLoading={isLoading} className="text-base text-fg-primary" />
           </div>
           <div className="flex min-w-[118px] flex-1 items-center justify-between gap-2 px-4 md:flex-col md:items-start md:py-4">
             <span className="text-sm text-fg-tertiary">KPI End floor strategy</span>

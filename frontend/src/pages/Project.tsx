@@ -1,5 +1,6 @@
 import { ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { useState } from "react"
 
 import TokenGenerationSection from "../components/TokenGenerationSection/TokenGenerationSection"
 import { ExternalLink } from "../components/Button/ExternalLink"
@@ -9,21 +10,49 @@ import backdropImg from "@/assets/backdropImgMin.png"
 import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
 import ProjectTester2 from "@/components/QA/ProjectTester2.tsx"
-import { Icon } from "@/components/Icon/Icon.tsx"
+import { Icon } from "@/components/Icon/Icon"
 import { twMerge } from "tailwind-merge"
 import Analysts from "@/components/Analysts/Analysts"
 import DataRoom from "@/components/LaunchPool/DataRoom"
 import BasicTokenInfo from "@/components/TokenGenerationSection/components/BasicTokenInfo"
 import DealComingFrom from "@/components/LaunchPool/DealComingFrom"
 import Referral from "@/components/LaunchPool/Referral"
+import FloorStrategyModal from "@/components/Modal/Modals/FloorStrategyModal"
+import { Button } from "@/components/Button/Button"
+
+type FloorStrategyIcon = "SvgFloorStrategy" | "SvgFixedFDV" | "SvgFloatFDV"
 
 const Project = () => {
   const { projectData, isLoading } = useProjectDataContext()
   const { t } = useTranslation()
+  const [isFloorStrategyModalOpen, setIsFloorStrategyModalOpen] = useState(false)
 
   const isDevnet = projectData?.config.cluster === "devnet"
 
   const expandedTimeline = expandTimelineDataInfo(projectData?.info.timeline ?? [])
+  const floorStrategy = projectData?.config.floorStrategy ?? "Float FDV"
+  let iconStrategy: FloorStrategyIcon = "SvgFloorStrategy"
+  let color = "text-fg-brand-primary"
+  let bgColor = "bg-brand-primary"
+  switch (floorStrategy) {
+    case "Floor Strategy":
+      iconStrategy = "SvgFloorStrategy"
+      color = "text-fg-floor-strategy"
+      bgColor = "text-fg-floor-strategy"
+      break
+    case "Fixed FDV":
+      iconStrategy = "SvgFixedFDV"
+      color = "text-fg-fixed-fdv"
+      bgColor = "text-fg-floor-strategy"
+      break
+    case "Float FDV":
+      iconStrategy = "SvgFloatFDV"
+      color = "text-fg-float-fdv"
+      bgColor = "text-fg-floor-strategy"
+      break
+    default:
+      iconStrategy = "SvgFloorStrategy"
+  }
 
   return (
     <main className="z-[10] flex w-full max-w-full select-none flex-col items-center gap-4 overflow-y-hidden py-[72px] font-normal text-fg-primary md:py-[100px]">
@@ -76,27 +105,47 @@ const Project = () => {
           </div>
         </div>
 
-        {/* Project details (chain, origin, sector) */}
-        <div className="flex w-full flex-col gap-x-5 gap-y-3 text-sm md:max-w-[792px] md:flex-row">
-          <div className="flex gap-5 divide-x-[1px] divide-fg-primary/40">
+        {/* Project details (floor strategy, chain, origin, sector) */}
+        <div className="flex w-full flex-wrap gap-4 text-sm md:max-w-[792px]">
+          <div className="flex flex-wrap gap-4 [&>*:not(:last-child)]:border-r [&>*:not(:last-child)]:border-fg-primary/40 [&>*:not(:last-child)]:pr-4 [&>*]:h-5">
+            {floorStrategy !== "Not set" && (
+              <div className="flex items-center gap-1">
+                <Icon icon={iconStrategy} className={`h-6 w-6 ${color}`} />
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => setIsFloorStrategyModalOpen(true)}
+                    color="plain"
+                    className={`${bgColor} bg-opacity-30 hover:bg-opacity-50 flex items-center gap-2 whitespace-nowrap`}
+                  >
+                    <Text 
+                      text={floorStrategy} 
+                      isLoading={isLoading} 
+                      loadingClass="max-w-[100px]"
+                      className={`${color} whitespace-nowrap`}
+                    />
+                    <Icon icon="SvgQuestionCircle" className="h-4 w-4 text-fg-secondary" />
+                  </Button>
+                </div>
+              </div>
+            )}
             <div className="flex items-center gap-2">
               <span className="text-fg-primary text-opacity-50">{t("chain")}</span>
               <Img size="4" src={projectData?.info.chain.iconUrl} isRounded />
               <Text text={projectData?.info.chain.name} isLoading={isLoading} loadingClass="max-w-[100px]" />
             </div>
-            <div className="flex items-center gap-2 pl-5">
+            <div className="flex items-center gap-2">
               <span className="text-fg-primary text-opacity-50">{t("sector")}</span>
               <Text text={projectData?.info.sector} isLoading={isLoading} />
             </div>
           </div>
           {projectData?.info.tokenContractUrl && projectData?.info.poolContractUrl && (
-            <div className="flex flex-col md:flex-row">
+            <div className="flex flex-wrap gap-4 [&>*:not(:last-child)]:border-r [&>*:not(:last-child)]:border-fg-primary/40 [&>*:not(:last-child)]:pr-4 [&>*]:h-5">
               {projectData?.info.tokenContractUrl && (
                 <a
                   href={projectData.info.tokenContractUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-2 border-r-[1px] px-5 md:border-l-[1px] md:border-x-fg-gray-line"
+                  className="group flex items-center gap-2"
                 >
                   <Img size="4" src={projectData?.info.logoUrl} isRounded />
                   <Text text={`$${projectData.config.launchedTokenData.ticker}`} isLoading={isLoading} />
@@ -108,7 +157,7 @@ const Project = () => {
                   href={projectData.info.poolContractUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-2 px-5  md:border-r-fg-gray-line"
+                  className="group flex items-center gap-2"
                 >
                   <Img size="4" src={projectData?.info.logoUrl} isRounded />
                   <Text text={`$${projectData.config.launchedTokenData.ticker}/BORG`} isLoading={isLoading} />
@@ -129,9 +178,16 @@ const Project = () => {
 
       <TokenGenerationSection expandedTimeline={expandedTimeline} />
 
+      <FloorStrategyModal 
+        isOpen={isFloorStrategyModalOpen}
+        onClose={() => setIsFloorStrategyModalOpen(false)}
+        initialStrategy={floorStrategy}
+      />
+      
       <ScrollRestoration />
 
       {import.meta.env.VITE_ENVIRONMENT_TYPE === "develop" && <ProjectTester2 />}
+
     </main>
   )
 }
