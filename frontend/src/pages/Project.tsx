@@ -181,6 +181,7 @@ const Project = () => {
       <FloorStrategyModal 
         isOpen={isFloorStrategyModalOpen}
         onClose={() => setIsFloorStrategyModalOpen(false)}
+        initialStrategy={floorStrategy}
       />
       
       <ScrollRestoration />

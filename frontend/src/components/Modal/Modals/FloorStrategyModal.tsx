@@ -25,6 +25,7 @@ import floorStrategyImg from '@/assets/launchPools/floor-strategy.png'
 type Props = {
   onClose: () => void
   isOpen: boolean
+  initialStrategy?: "Floor Strategy" | "Fixed FDV" | "Float FDV"
 }
 
 const roleOptions: { label: string; id: AnalystRoleEnum }[] = [
@@ -42,13 +43,13 @@ const roleOptions: { label: string; id: AnalystRoleEnum }[] = [
   },
 ]
 
-const FloorStrategyModal = ({ onClose, isOpen }: Props) => {
+const FloorStrategyModal = ({ onClose, isOpen, initialStrategy }: Props) => {
   const navigate = useNavigate()
   const [_, setRedirectionUrl] = usePersistedState("bp_redirectionUrl")
   const [__, setJwtToken] = usePersistedState(BP_JWT_TOKEN)
   const { projectData } = useProjectDataContext()
   const [sessionId, setSessionId] = useState<string>("")
-  const [selectedStrategy, setSelectedStrategy] = useState<"Floor Strategy" | "Fixed FDV" | "Float FDV">("Floor Strategy")
+  const [selectedStrategy, setSelectedStrategy] = useState<"Floor Strategy" | "Fixed FDV" | "Float FDV">(initialStrategy || "Floor Strategy")
   const queryClient = useQueryClient()
   const { removeParam, getParam, removeParamIfNull } = useSearchParamsUpdate()
 
@@ -136,6 +137,10 @@ const FloorStrategyModal = ({ onClose, isOpen }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectData?.id, session, setValue])
 
+  useEffect(() => {
+    if (initialStrategy) setSelectedStrategy(initialStrategy)
+  }, [initialStrategy])
+
   const formValues = watch()
 
   return (
@@ -158,38 +163,44 @@ const FloorStrategyModal = ({ onClose, isOpen }: Props) => {
         <span className="pb-12 text-center text-fg-secondary">Learn more about what different pool strategies mean</span>
 
         <div className="flex flex-col gap-4 md:flex-row md:justify-center">
-          <button
-            onClick={() => setSelectedStrategy("Fixed FDV")}
-            className={`flex h-11 w-fit items-center gap-2 rounded-xl border border-bd-primary px-3 md:px-6 hover:bg-[#20212168] active:scale-[98%] md:h-12 ${selectedStrategy === "Fixed FDV" ? "bg-[#20212168]" : "bg-[#060a1440]"
-              }`}
-          >
-            <div className="p-1 rounded-lg bg-fg-floor-strategy bg-opacity-10 mx-0">
-              <Icon icon="SvgFixedFDV" className="h-6 w-6 text-fg-fixed-fdv" />
+          <div className="flex flex-row justify-center gap-0 md:gap-4">
+            <div className="mr-2">
+              <button
+                onClick={() => setSelectedStrategy("Fixed FDV")}
+                className={`flex h-11 w-fit items-center gap-2 rounded-xl border border-bd-primary px-3 md:px-6 hover:bg-[#20212168] active:scale-[98%] md:h-12 ${selectedStrategy === "Fixed FDV" ? "bg-[#20212168]" : "bg-[#060a1440]"
+                  }`}
+              >
+                <div className="p-1 rounded-lg bg-fg-floor-strategy bg-opacity-10 mx-0">
+                  <Icon icon="SvgFixedFDV" className="h-6 w-6 text-fg-fixed-fdv" />
+                </div>
+                <span className="text-center text-sm font-medium text-fg-fixed-fdv">Fixed FDV</span>
+              </button>
             </div>
-            <span className="text-center text-sm font-medium text-fg-fixed-fdv">Fixed FDV</span>
-          </button>
-
-          <button
-            onClick={() => setSelectedStrategy("Float FDV")}
-            className={`flex h-11 w-fit items-center gap-2 rounded-xl border border-bd-primary px-3 md:px-6 hover:bg-[#20212168] active:scale-[98%] md:h-12 ${selectedStrategy === "Float FDV" ? "bg-[#20212168]" : "bg-[#060a1440]"
-              }`}
-          >
-            <div className="p-1 rounded-lg bg-fg-float-fdv bg-opacity-10 mx-0">
-              <Icon icon="SvgFloatFDV" className="h-6 w-6 text-fg-float-fdv" />
+            <div>
+              <button
+                onClick={() => setSelectedStrategy("Float FDV")}
+                className={`flex h-11 w-fit items-center gap-2 rounded-xl border border-bd-primary px-3 md:px-6 hover:bg-[#20212168] active:scale-[98%] md:h-12 ${selectedStrategy === "Float FDV" ? "bg-[#20212168]" : "bg-[#060a1440]"
+                  }`}
+              >
+                <div className="p-1 rounded-lg bg-fg-float-fdv bg-opacity-10 mx-0">
+                  <Icon icon="SvgFloatFDV" className="h-6 w-6 text-fg-float-fdv" />
+                </div>
+                <span className="text-center text-sm font-medium text-fg-float-fdv">Float FDV</span>
+              </button>
             </div>
-            <span className="text-center text-sm font-medium text-fg-float-fdv">Float FDV</span>
-          </button>
-
-          <button
-            onClick={() => setSelectedStrategy("Floor Strategy")}
-            className={`flex h-11 w-fit items-center gap-2 rounded-xl border border-bd-primary px-3 md:px-6 hover:bg-[#20212168] active:scale-[98%] md:h-12 ${selectedStrategy === "Floor Strategy" ? "bg-[#20212168]" : "bg-[#060a1440]"
-              }`}
-          >
-            <div className="p-1 rounded-lg bg-fg-floor-strategy bg-opacity-10 mx-0">
-              <Icon icon="SvgFloorStrategy" className="h-6 w-6 text-fg-floor-strategy" />
-            </div>
-            <span className="text-center text-sm font-medium text-fg-floor-strategy">Floor Strategy</span>
-          </button>
+          </div>
+          <div className="flex justify-center">
+            <button
+              onClick={() => setSelectedStrategy("Floor Strategy")}
+              className={`flex h-11 w-fit items-center gap-2 rounded-xl border border-bd-primary px-3 md:px-6 hover:bg-[#20212168] active:scale-[98%] md:h-12 ${selectedStrategy === "Floor Strategy" ? "bg-[#20212168]" : "bg-[#060a1440]"
+                }`}
+            >
+              <div className="p-1 rounded-lg bg-fg-floor-strategy bg-opacity-10 mx-0">
+                <Icon icon="SvgFloorStrategy" className="h-6 w-6 text-fg-floor-strategy" />
+              </div>
+              <span className="text-center text-sm font-medium text-fg-floor-strategy">Floor Strategy</span>
+            </button>
+          </div>
         </div>
 
         <div className="mt-8">
