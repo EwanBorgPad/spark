@@ -62,7 +62,7 @@ const ReferralsTable = ({ data = [], isLoading = false }: Props) => {
                         <span className="text-xs text-fg-primary">{item.invested_dollar_value}</span>
                       </TableCell>
                       <TableCell className="py-[2px]">
-                        <span className="text-xs text-fg-primary">{item.invested_dollar_value*100}</span>
+                        <span className="text-xs text-fg-primary">{item.invested_dollar_value}</span>
                       </TableCell>
                     </tr>
                   ))}
