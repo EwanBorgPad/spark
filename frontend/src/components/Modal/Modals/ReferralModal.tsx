@@ -42,7 +42,7 @@ const ReferralModal: React.FC<ReferralModalProps> = ({ onClose }) => {
   const saleClosesDate = saleClosesEvent?.date ? new Date(saleClosesEvent.date) : new Date(Date.now() + 24 * 60 * 60 * 1000); // Fallback to 24h from now if not found
 
   const prizeAmount = projectData?.config?.referralDistribution?.totalAmountDistributed;
-  const ticketPerAmountInvested = 100; // Hardcoded value for tickets per dollar
+  const ticketPerAmountInvested = 1; // Hardcoded value for tickets per dollar
 
   // Fetch referral data
   const { data: referralData } = useQuery({
