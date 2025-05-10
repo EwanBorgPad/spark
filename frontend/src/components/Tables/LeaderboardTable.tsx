@@ -104,7 +104,7 @@ const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[]
                           </div>
                         </TableCell>
                         <TableCell className="py-[2px]">
-                          <span className="text-xs text-fg-primary">{item.total_invested*100}</span>
+                          <span className="text-xs text-fg-primary">{item.total_invested}</span>
                         </TableCell>
                         <TableCell className="py-[2px]">
                           <span className={`text-xs ${textColorClass}`}>
