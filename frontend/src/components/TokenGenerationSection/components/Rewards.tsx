@@ -1,4 +1,7 @@
 import { useTranslation } from "react-i18next"
+import { useRef, useEffect } from "react"
+import { Transaction } from "@solana/web3.js"
+import { useWallet } from '@solana/wallet-adapter-react';
 
 import { useProjectDataContext } from "@/hooks/useProjectData"
 import CountDownTimer from "@/components/CountDownTimer"
@@ -16,16 +19,50 @@ import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/api/backendApi"
-import { useWalletContext } from "@/hooks/useWalletContext.tsx"
+// import { useWalletContext } from "@/hooks/useWalletContext.tsx"
+
+// Add Streamflow window type
+declare global {
+  interface Window {
+    Streamflow?: {
+      widgets: {
+        injectWalletContext: (element: HTMLElement, wallet: unknown) => void;
+      };
+    };
+  }
+}
 
 const Rewards = () => {
   const { t } = useTranslation()
   const { projectData, isLoading } = useProjectDataContext()
-  const { address } = useWalletContext()
+  // const { address, walletProvider, signTransaction, signMessage, walletState } = useWalletContext()
   const projectId = projectData?.id || ""
+  const widgetRef = useRef<HTMLElement | null>(null)
+  const wallet = useWallet();
 
   const iconUrl = projectData?.config.launchedTokenData.iconUrl || ""
   const ticker = projectData?.config.launchedTokenData.ticker || ""
+
+  // Load the widget script
+  useEffect(() => {
+    const script = document.createElement("script")
+    script.src = "https://widgets.streamflow.finance/widgets/airdrop-claim/airdrop-claim-0-0-1.js"
+    script.type = "module"
+    document.body.appendChild(script)
+    return () => {
+      document.body.removeChild(script)
+    }
+  }, [])
+
+  // Inject wallet context after widget is mounted (official adapter)
+  useEffect(() => {
+    if (!widgetRef.current) return;
+    if (wallet && window.Streamflow?.widgets.injectWalletContext) {
+      window.Streamflow.widgets.injectWalletContext(widgetRef.current, wallet);
+    }
+  }, [wallet]);
+
+  const address = wallet?.publicKey?.toBase58() || ""
 
   const { data: myRewardsResponse } = useQuery({
     queryFn: () => {
@@ -44,13 +81,6 @@ const Rewards = () => {
   const nextScheduledPayment = myRewardsResponse?.rewards.payoutSchedule.find(
     (payment) => !payment.isClaimed && isBefore(currentMoment, payment.date),
   )
-
-  const claimRewardsHandler = () => {
-    /**
-     * TODO @api for claiming rewards
-     * - refetch rewards
-     */
-  }
 
   const rewardDistributionDate =
     projectData?.info.timeline.find((item) => item.id === "REWARD_DISTRIBUTION")?.date || null
@@ -87,9 +117,17 @@ const Rewards = () => {
         )}
         <div className="w-full px-4 pb-6">
           {claimUrl ? (
-            <a href={claimUrl} target="_blank" rel="noopener noreferrer">
-              <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
-            </a>
+            <sf-airdrop-claim
+              ref={widgetRef}
+              data-theme="dark"
+              name={ticker}
+              cluster="devnet"
+              distributor-id="4WDt8h8Gpe87uTWuLU81XeQfoGyxdT2J7JC1oP6P4ACT"
+              endpoint="https://api.devnet.solana.com"
+              token-decimals={projectData?.config.launchedTokenData.decimals.toString() || "9"}
+              token-symbol={ticker}
+              enable-wallet-passthrough="true"
+            />
           ) : (
             <Button btnText={btnText} size="lg" disabled={true} className="w-full py-3 font-normal" />
           )}

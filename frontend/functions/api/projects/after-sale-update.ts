@@ -27,6 +27,7 @@ const requestSchema = z.object({
 type ENV = {
   DB: D1Database
   ADMIN_ADDRESSES: string
+  VITE_ENVIRONMENT_TYPE: "develop" | "production" 
 }
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
@@ -84,5 +85,21 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   } catch (e) {
     await reportError(ctx.env.DB, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
+  }
+}
+
+export const onRequestOptions: PagesFunction<ENV> = async (ctx) => {
+  try {
+    if (ctx.env.VITE_ENVIRONMENT_TYPE !== "develop") return
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': 'http://localhost:5173', // Adjusted this for frontend origin
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    })
+  } catch (error) {
+    return jsonResponse({ message: error }, 500)
   }
 }
