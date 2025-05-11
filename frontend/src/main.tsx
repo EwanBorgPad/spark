@@ -27,6 +27,8 @@ import Project from "./pages/Project"
 import DraftPickPage from "./pages/DraftPickPage"
 import DraftPicks from "./pages/DraftPicks"
 import LaunchPools from "./pages/LaunchPools"
+import { ConnectionProvider, WalletProvider as SolanaWalletProvider } from '@solana/wallet-adapter-react';
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -45,14 +47,21 @@ const TermsOfUse = lazy(() => import("./pages/TermsOfUse"))
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"))
 const NotFound = lazy(() => import("./pages/NotFound"))
 
+const endpoint = "https://api.devnet.solana.com"; // or use mainnet endpoint
+const wallets = [new PhantomWalletAdapter()];
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
       <QueryClientProvider client={queryClient}>
-        <WalletProvider>
-          <App />
-        </WalletProvider>
+        <ConnectionProvider endpoint={endpoint}>
+          <SolanaWalletProvider wallets={wallets} autoConnect>
+            <WalletProvider>
+              <App />
+            </WalletProvider>
+          </SolanaWalletProvider>
+        </ConnectionProvider>
       </QueryClientProvider>
     ),
     children: [
