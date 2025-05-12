@@ -13,7 +13,10 @@ import { formatDateForDisplay, formatDateForTimer } from "@/utils/date-helpers"
 import { isBefore } from "date-fns/isBefore"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/api/backendApi"
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useWallet, WalletContextState } from '@solana/wallet-adapter-react'
+import { useWalletContext } from "@/hooks/useWalletContext"
+import { useWalletContextTest } from "@/hooks/useWalletContextTest"
+
 import { useEffect, useRef } from "react"
 
 declare global {
@@ -30,6 +33,7 @@ const Rewards = () => {
   const { t } = useTranslation()
   const { projectData, isLoading } = useProjectDataContext()
   const wallet = useWallet()
+  // const wallets = useWalletContextTest()
   const projectId = projectData?.id || ""
 
   const widgetRef = useRef<HTMLElement | null>(null);
@@ -37,9 +41,21 @@ const Rewards = () => {
   useEffect(() => {
     if (!widgetRef.current) return;
     if (wallet && window.Streamflow?.widgets.injectWalletContext) {
+      console.log('[Rewards] Injecting wallet context:', wallet)
+      console.log('[Rewards] Widget ref:', widgetRef.current)
       window.Streamflow.widgets.injectWalletContext(widgetRef.current, wallet);
     }
   }, [wallet]);
+
+  // useEffect(() => {
+  //   if (!widgetRef.current) return;
+  //   if (wallets && window.Streamflow?.widgets.injectWalletContext) {
+  //     console.log('Injecting wallet context:', wallets)
+  //     console.log('Widget ref:', widgetRef.current)
+  //     window.Streamflow.widgets.injectWalletContext(widgetRef.current, wallets);
+  //   }
+  // }, [wallets]);
+
 
   const iconUrl = projectData?.config.launchedTokenData.iconUrl || ""
   const ticker = projectData?.config.launchedTokenData.ticker || ""
