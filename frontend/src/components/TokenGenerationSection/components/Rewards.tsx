@@ -4,7 +4,6 @@ import { useProjectDataContext } from "@/hooks/useProjectData"
 import CountDownTimer from "@/components/CountDownTimer"
 import ShowPayoutSchedule from "./ShowPayoutSchedule"
 import Divider from "@/components/Divider"
-import ProgressBar from "./ProgressBar"
 import { TgeWrapper } from "./Wrapper"
 
 import { Button } from "@/components/Button/Button"
@@ -12,8 +11,6 @@ import { formatCurrencyAmount } from "shared/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 import { formatDateForDisplay, formatDateForTimer } from "@/utils/date-helpers"
 import { isBefore } from "date-fns/isBefore"
-import Img from "@/components/Image/Img"
-import Text from "@/components/Text"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/api/backendApi"
 import { useWalletContext } from "@/hooks/useWalletContext.tsx"
@@ -30,15 +27,18 @@ const useScript = (src: string) => {
       document.head.removeChild(script)
     }
   }, [src])
+
 }
 
 const Rewards = () => {
   const { t } = useTranslation()
   const { projectData, isLoading } = useProjectDataContext()
-  const { address } = useWalletContext()
+  const wallet = useWallet()
+  // const wallets = useWalletContextTest()
   const projectId = projectData?.id || ""
 
   useScript("https://widgets.streamflow.finance/widgets/airdrop-claim/airdrop-claim-0-0-1.js")
+
 
   const iconUrl = projectData?.config.launchedTokenData.iconUrl || ""
   const ticker = projectData?.config.launchedTokenData.ticker || ""
@@ -46,11 +46,14 @@ const Rewards = () => {
 
   const { data: myRewardsResponse } = useQuery({
     queryFn: () => {
-      if (!address || !projectId) return
-      return backendApi.getMyRewards({ address, projectId })
+      if (!wallet.publicKey || !projectId) return
+      return backendApi.getMyRewards({ 
+        address: wallet.publicKey.toString(), 
+        projectId 
+      })
     },
-    queryKey: ["getMyRewards", address, projectId],
-    enabled: Boolean(address) && Boolean(projectId),
+    queryKey: ["getMyRewards", wallet.publicKey?.toString(), projectId],
+    enabled: Boolean(wallet.publicKey) && Boolean(projectId),
   })
 
   if (!myRewardsResponse?.hasUserInvested) {
@@ -95,13 +98,16 @@ const Rewards = () => {
         <div className="w-full px-4 pb-6">
           {claimUrl ? (
             <sf-airdrop-claim
+              ref={widgetRef}
               data-theme="dark"
+              style={{ "--brand": "171 255 114", "--text": "245 245 245", "--secondary": "134 137 141", "--background": "18 22 33", "--white": "18 22 33" } as React.CSSProperties}
               name={ticker}
               cluster={projectData?.config.cluster}
               distributor-id={projectData?.info.claimUrl.split('/').pop() || ""}
               endpoint={endpoint}
               token-decimals={projectData?.config.launchedTokenData.decimals.toString() || "9"}
               token-symbol={ticker}
+              enable-wallet-passthrough="true"
             />
           ) : (
             <Button btnText={btnText} size="lg" disabled={true} className="w-full py-3 font-normal" />
