@@ -26,6 +26,7 @@ const Rewards = () => {
 
   const iconUrl = projectData?.config.launchedTokenData.iconUrl || ""
   const ticker = projectData?.config.launchedTokenData.ticker || ""
+  const endpoint = projectData?.config.cluster === "mainnet" ? "https://api.mainnet-beta.solana.com" : "https://api.devnet.solana.com"
 
   const { data: myRewardsResponse } = useQuery({
     queryFn: () => {
@@ -45,13 +46,6 @@ const Rewards = () => {
     (payment) => !payment.isClaimed && isBefore(currentMoment, payment.date),
   )
 
-  const claimRewardsHandler = () => {
-    /**
-     * TODO @api for claiming rewards
-     * - refetch rewards
-     */
-  }
-
   const rewardDistributionDate =
     projectData?.info.timeline.find((item) => item.id === "REWARD_DISTRIBUTION")?.date || null
   const isNan = myRewardsResponse.rewards.claimableAmount.uiAmount === "NaN"
@@ -69,9 +63,6 @@ const Rewards = () => {
         {rewardDistributionDate && (
           <p className="text-center text-sm opacity-60">{`Monthly payments need to be Claimed manually. Distribution of rewards will start from ${formatDateForDisplay(rewardDistributionDate)}.`}</p>
         )}
-        {/* <span className="cursor-pointer text-center text-sm underline opacity-60">
-          {t("sale_over.learn_more_about")}
-        </span> */}
       </div>
       <TgeWrapper label={t("sale_over.monthly_payout")}>
         {nextScheduledPayment ? (
@@ -87,41 +78,19 @@ const Rewards = () => {
         )}
         <div className="w-full px-4 pb-6">
           {claimUrl ? (
-            <a href={claimUrl} target="_blank" rel="noopener noreferrer">
-              <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
-            </a>
+            <sf-airdrop-claim
+              data-theme="dark"
+              name={ticker}
+              cluster={projectData?.config.cluster}
+              distributor-id={projectData?.info.claimUrl.split('/').pop() || ""}
+              endpoint={endpoint}
+              token-decimals={projectData?.config.launchedTokenData.decimals.toString() || "9"}
+              token-symbol={ticker}
+            />
           ) : (
             <Button btnText={btnText} size="lg" disabled={true} className="w-full py-3 font-normal" />
           )}
         </div>
-
-        {/* Uncomment when claimed data per user is ready */}
-        {/* {myRewardsResponse?.rewards.hasRewardsDistributionStarted && (
-          <>
-            <hr className="w-full max-w-[calc(100%-32px)] border-bd-primary" />
-            <div className="flex w-full flex-col gap-2.5 p-4 pb-7">
-              <div className="flex w-full items-center justify-between gap-2">
-                <span className="text-sm font-medium">{t("reward_distribution.claimed")}</span>
-                <div className="flex items-center gap-2">
-                  <Img src={iconUrl} size="4" isFetchingLink={isLoading} />
-                  <p>
-                    <span className="mr-1">
-                      {formatCurrencyAmount(myRewardsResponse.rewards.claimedAmount.uiAmount)}
-                    </span>
-                    <span className="mr-1">/</span>
-                    <span className="mr-1">{formatCurrencyAmount(myRewardsResponse.rewards.totalAmount.uiAmount)}</span>
-                    <Text text={ticker} isLoading={isLoading} />
-                  </p>
-                </div>
-              </div>
-              
-              <ProgressBar
-                fulfilledAmount={Number(myRewardsResponse.rewards.claimedAmount.uiAmount)}
-                totalAmount={Number(myRewardsResponse.rewards.totalAmount.uiAmount)}
-              /> 
-            </div>
-          </>
-        )} */}
       </TgeWrapper>
       {myRewardsResponse?.rewards.hasRewardsDistributionStarted && (
         <ShowPayoutSchedule
