@@ -90,6 +90,7 @@ const Rewards = () => {
             <a href={claimUrl} target="_blank" rel="noopener noreferrer">
               <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
             </a>
+
           ) : (
             <Button btnText={btnText} size="lg" disabled={true} className="w-full py-3 font-normal" />
           )}
