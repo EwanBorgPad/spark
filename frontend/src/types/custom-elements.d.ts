@@ -9,6 +9,7 @@ declare namespace JSX {
         endpoint?: string;
         'token-decimals'?: string;
         'token-symbol'?: string;
+        'enable-wallet-passthrough'?: string;
       },
       HTMLElement
     >;

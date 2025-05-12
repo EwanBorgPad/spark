@@ -16,13 +16,57 @@ import Img from "@/components/Image/Img"
 import Text from "@/components/Text"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/api/backendApi"
-import { useWalletContext } from "@/hooks/useWalletContext.tsx"
+import { useWallet } from '@solana/wallet-adapter-react'
+import { useEffect, useRef } from "react"
+import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js"
+import type { WalletContextState } from '@solana/wallet-adapter-react';
+
+declare global {
+  interface Window {
+    Streamflow?: {
+      widgets: {
+        injectWalletContext: (attachToElementInstance: HTMLElement, walletContext: unknown) => void;
+      };
+    };
+  }
+}
 
 const Rewards = () => {
   const { t } = useTranslation()
   const { projectData, isLoading } = useProjectDataContext()
-  const { address } = useWalletContext()
+  const wallet = useWallet()
   const projectId = projectData?.id || ""
+
+  const widgetRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    console.log("Rewards useEffect running", { widgetRef: widgetRef.current, wallet });
+    if (!widgetRef.current) return;
+    if (wallet && window.Streamflow?.widgets.injectWalletContext) {
+      console.log("Injecting wallet into Streamflow widget:", {
+        publicKey: wallet.publicKey?.toString(),
+        connected: wallet.connected,
+      });
+
+      window.Streamflow.widgets.injectWalletContext(widgetRef.current, wallet);
+      console.log("Widget injected successfully");
+    }
+
+    // Add widget event listeners for debugging
+    const element = widgetRef.current;
+    if (element) {
+      const handler = (event: Event) => {
+        // @ts-expect-error event.detail is not typed on Event but is present on CustomEvent from the widget
+        console.log("Streamflow widget event:", event.type, event.detail);
+      };
+      element.addEventListener("WidgetError", handler);
+      element.addEventListener("RequestWalletConnection", handler);
+      return () => {
+        element.removeEventListener("WidgetError", handler);
+        element.removeEventListener("RequestWalletConnection", handler);
+      };
+    }
+  }, [wallet]);
 
   const iconUrl = projectData?.config.launchedTokenData.iconUrl || ""
   const ticker = projectData?.config.launchedTokenData.ticker || ""
@@ -30,11 +74,14 @@ const Rewards = () => {
 
   const { data: myRewardsResponse } = useQuery({
     queryFn: () => {
-      if (!address || !projectId) return
-      return backendApi.getMyRewards({ address, projectId })
+      if (!wallet.publicKey || !projectId) return
+      return backendApi.getMyRewards({ 
+        address: wallet.publicKey.toString(), 
+        projectId 
+      })
     },
-    queryKey: ["getMyRewards", address, projectId],
-    enabled: Boolean(address) && Boolean(projectId),
+    queryKey: ["getMyRewards", wallet.publicKey?.toString(), projectId],
+    enabled: Boolean(wallet.publicKey) && Boolean(projectId),
   })
 
   if (!myRewardsResponse?.hasUserInvested) {
@@ -79,6 +126,7 @@ const Rewards = () => {
         <div className="w-full px-4 pb-6">
           {claimUrl ? (
             <sf-airdrop-claim
+              ref={widgetRef}
               data-theme="dark"
               name={ticker}
               cluster={projectData?.config.cluster}
@@ -86,6 +134,7 @@ const Rewards = () => {
               endpoint={endpoint}
               token-decimals={projectData?.config.launchedTokenData.decimals.toString() || "9"}
               token-symbol={ticker}
+              enable-wallet-passthrough="true"
             />
           ) : (
             <Button btnText={btnText} size="lg" disabled={true} className="w-full py-3 font-normal" />

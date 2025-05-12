@@ -6,9 +6,14 @@ import React, { lazy, Suspense } from "react"
 import ReactDOM from "react-dom/client"
 import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
+import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { clusterApiUrl } from '@solana/web3.js';
 
 import App from "./App"
-import { WalletProvider } from "@/hooks/useWalletContext"
+import { WalletProvider as CustomWalletProvider } from "@/hooks/useWalletContext"
 import { ProjectDataProvider } from "./hooks/useProjectData"
 import SomethingWentWrong from "./components/SomethingWentWrong"
 
@@ -45,14 +50,29 @@ const TermsOfUse = lazy(() => import("./pages/TermsOfUse"))
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"))
 const NotFound = lazy(() => import("./pages/NotFound"))
 
+const network = WalletAdapterNetwork.Devnet;
+const endpoint = clusterApiUrl(network);
+const wallets = [
+  new PhantomWalletAdapter(),
+  new SolflareWalletAdapter(),
+];
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
       <QueryClientProvider client={queryClient}>
-        <WalletProvider>
-          <App />
-        </WalletProvider>
+        <ConnectionProvider endpoint={endpoint}>
+          <WalletProvider wallets={wallets} autoConnect>
+            <WalletModalProvider>
+              <WalletProvider wallets={wallets} autoConnect>
+                <CustomWalletProvider>
+                  <App />
+                </CustomWalletProvider>
+              </WalletProvider>
+            </WalletModalProvider>
+          </WalletProvider>
+        </ConnectionProvider>
       </QueryClientProvider>
     ),
     children: [
