@@ -164,6 +164,7 @@ export async function signTransactionWithPhantom(transaction: Transaction): Prom
  * @returns The signature as Uint8Array
  */
 export async function signMessageWithPhantom(message: string): Promise<Uint8Array> {
+  // @ts-expect-error no typing
   const signature = await window.solana.signMessage(Buffer.from(message))
   return signature.signature
 }
