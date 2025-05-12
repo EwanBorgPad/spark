@@ -3,6 +3,7 @@ declare namespace JSX {
     'sf-airdrop-claim': React.DetailedHTMLProps<
       React.HTMLAttributes<HTMLElement> & {
         'data-theme'?: string;
+        style?: React.CSSProperties;
         name?: string;
         cluster?: string;
         'distributor-id'?: string;

@@ -4,7 +4,6 @@ import { useProjectDataContext } from "@/hooks/useProjectData"
 import CountDownTimer from "@/components/CountDownTimer"
 import ShowPayoutSchedule from "./ShowPayoutSchedule"
 import Divider from "@/components/Divider"
-import ProgressBar from "./ProgressBar"
 import { TgeWrapper } from "./Wrapper"
 
 import { Button } from "@/components/Button/Button"
@@ -12,14 +11,10 @@ import { formatCurrencyAmount } from "shared/utils/format"
 import { Icon } from "@/components/Icon/Icon"
 import { formatDateForDisplay, formatDateForTimer } from "@/utils/date-helpers"
 import { isBefore } from "date-fns/isBefore"
-import Img from "@/components/Image/Img"
-import Text from "@/components/Text"
 import { useQuery } from "@tanstack/react-query"
 import { backendApi } from "@/data/api/backendApi"
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useEffect, useRef } from "react"
-import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js"
-import type { WalletContextState } from '@solana/wallet-adapter-react';
 
 declare global {
   interface Window {
@@ -40,31 +35,9 @@ const Rewards = () => {
   const widgetRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    console.log("Rewards useEffect running", { widgetRef: widgetRef.current, wallet });
     if (!widgetRef.current) return;
     if (wallet && window.Streamflow?.widgets.injectWalletContext) {
-      console.log("Injecting wallet into Streamflow widget:", {
-        publicKey: wallet.publicKey?.toString(),
-        connected: wallet.connected,
-      });
-
       window.Streamflow.widgets.injectWalletContext(widgetRef.current, wallet);
-      console.log("Widget injected successfully");
-    }
-
-    // Add widget event listeners for debugging
-    const element = widgetRef.current;
-    if (element) {
-      const handler = (event: Event) => {
-        // @ts-expect-error event.detail is not typed on Event but is present on CustomEvent from the widget
-        console.log("Streamflow widget event:", event.type, event.detail);
-      };
-      element.addEventListener("WidgetError", handler);
-      element.addEventListener("RequestWalletConnection", handler);
-      return () => {
-        element.removeEventListener("WidgetError", handler);
-        element.removeEventListener("RequestWalletConnection", handler);
-      };
     }
   }, [wallet]);
 
@@ -128,6 +101,7 @@ const Rewards = () => {
             <sf-airdrop-claim
               ref={widgetRef}
               data-theme="dark"
+              style={{ "--brand": "171 255 114", "--text": "245 245 245", "--secondary": "134 137 141", "--background": "18 22 33", "--white": "18 22 33" } as React.CSSProperties}
               name={ticker}
               cluster={projectData?.config.cluster}
               distributor-id={projectData?.info.claimUrl.split('/').pop() || ""}
