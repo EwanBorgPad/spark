@@ -100,7 +100,9 @@ const TokenDistribution = () => {
     }
   }
 
-  const totalTokensPerUSDC = nextProjectToGoLive ? Number(nextProjectToGoLive.config.totalTokensForLiquidityPool) / Number(nextProjectToGoLive.config.raiseTargetInUsd) : 0
+  const totalTokensPerUSDC = nextProjectToGoLive?.config ? 
+    Number(nextProjectToGoLive.config.totalTokensForLiquidityPool) / Number(nextProjectToGoLive.config.raiseTargetInUsd) 
+    : 0
   const totalAmountRaised = saleData ? Number(saleData.totalAmountRaised.amountInUsd) : 0
   const totalTokensToDistribute = totalAmountRaised * totalTokensPerUSDC
 
