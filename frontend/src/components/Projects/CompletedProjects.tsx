@@ -18,10 +18,10 @@ type SortField = 'name' | 'date' | 'raised' | 'fdv' | 'participants' | 'commitme
 type SortDirection = 'asc' | 'desc'
 
 type SortOption = {
-    value: string;
-    label: string;
-    field: SortField;
-    direction: SortDirection;
+  value: string;
+  label: string;
+  field: SortField;
+  direction: SortDirection;
 }
 
 export const CompletedProjects = ({ projectType }: Props) => {
@@ -106,16 +106,16 @@ export const CompletedProjects = ({ projectType }: Props) => {
               </div>
               {!isLoading
                 ? projects.map((project) => (
-                    <CompletedLaunchPoolCard
-                      key={"CompletedLaunchPoolCard_" + project.id}
-                      projectType={projectType}
-                      project={project}
-                      isLoading={false}
-                    />
-                  ))
+                  <CompletedLaunchPoolCard
+                    key={"CompletedLaunchPoolCard_" + project.id}
+                    projectType={projectType}
+                    project={project}
+                    isLoading={false}
+                  />
+                ))
                 : skeletonItems.map((item) => (
-                    <CompletedLaunchPoolCard key={item} projectType={projectType} isLoading={true} project={null} />
-                  ))}
+                  <CompletedLaunchPoolCard key={item} projectType={projectType} isLoading={true} project={null} />
+                ))}
             </div>
           </ul>
         </div>

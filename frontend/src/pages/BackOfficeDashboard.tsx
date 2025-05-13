@@ -8,8 +8,9 @@ import { ConnectButton } from "@/components/Header/ConnectButton"
 import AnalysisApprovalDashboard from "@/components/BackOffice/AnalysisApprovalDashboard"
 import AfterSaleUpdate from "@/components/BackOffice/AfterSaleUpdate"
 import ProjectStatus from "@/components/BackOffice/ProjectStatus"
+import TokenDistribution from "@/components/BackOffice/TokenDistribution"
 
-const BACK_OFFICE_FEATURES = ["AFTER_SALE_UPDATE", "UPDATE_JSON_FILE", "PROJECT_STATUS"] as const
+const BACK_OFFICE_FEATURES = ["AFTER_SALE_UPDATE", "UPDATE_JSON_FILE", "PROJECT_STATUS", "TOKEN_DISTRIBUTION"] as const
 type BackOfficeFeatureType = (typeof BACK_OFFICE_FEATURES)[number]
 
 const BackOfficeDashboard = () => {
@@ -24,6 +25,8 @@ const BackOfficeDashboard = () => {
       return <UpdateProjectJson />
     } else if (renderedFeature === "PROJECT_STATUS") {
       return <ProjectStatus />
+    } else if (renderedFeature === "TOKEN_DISTRIBUTION") {
+      return <TokenDistribution />
     }
   }
 
@@ -59,6 +62,12 @@ const BackOfficeDashboard = () => {
                   onClick={() => setRenderedFeature("PROJECT_STATUS")}
                 >
                   <span className="w-full text-center text-xl">✅ Projects Status</span>
+                </div>
+                <div
+                  className="flex max-w-[300px] flex-1 cursor-pointer justify-center rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-primary/30 p-10 ring-[1px] ring-brand-primary/40 hover:bg-brand-secondary/40"
+                  onClick={() => setRenderedFeature("TOKEN_DISTRIBUTION")}
+                >
+                  <span className="w-full text-center text-xl">💰 Token Distribution</span>
                 </div>
               </div>
             </div>

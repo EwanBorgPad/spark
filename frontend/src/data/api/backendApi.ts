@@ -44,6 +44,8 @@ const CREATE_NFT_COLLECTION = API_BASE_URL + "/createnftcollection"
 const UPLOAD_ON_R2 = API_BASE_URL + "/admin/uploadonr2"
 
 const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
+const GET_TOKEN_DISTRIBUTION = API_BASE_URL + "/tokendistribution"
+const DISTRIBUTE_TOKENS = API_BASE_URL + "/distributetokens"
 
 const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
   const response = await fetch(...args)
@@ -592,6 +594,48 @@ const isAdmin = async (auth: AdminAuthFields): Promise<void> => {
   return json
 }
 
+type GetTokenDistributionResponse = {
+  data: {
+    fromAddress: string
+    totalAmountDeposited: number
+    lastDepositDate: string
+    depositCount: number
+  }[]
+}
+
+type DistributeTokensArgs = {
+  projectId: string
+  auth: {
+    address: string
+    message: string
+    signature: number[]
+  }
+}
+
+const getTokenDistribution = async ({ projectId }: { projectId: string }): Promise<GetTokenDistributionResponse> => {
+  const url = new URL(GET_TOKEN_DISTRIBUTION, window.location.href)
+  url.searchParams.set("projectId", projectId)
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error("Failed to get token distribution")
+  }
+  return response.json()
+}
+
+const distributeTokens = async (args: DistributeTokensArgs): Promise<void> => {
+  const url = new URL(DISTRIBUTE_TOKENS, window.location.href)
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(args),
+  })
+  if (!response.ok) {
+    throw new Error("Failed to distribute tokens")
+  }
+}
+
 export const backendApi = {
   getProject,
   getProjects,
@@ -618,4 +662,6 @@ export const backendApi = {
   createNftCollection,
   uploadOnR2,
   isAdmin,
+  getTokenDistribution,
+  distributeTokens,
 }
