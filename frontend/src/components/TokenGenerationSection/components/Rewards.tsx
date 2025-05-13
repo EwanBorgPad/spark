@@ -108,18 +108,22 @@ const Rewards = () => {
         )}
         <div className="w-full px-4 pb-6">
           {claimUrl ? (
-            <sf-airdrop-claim
-              data-theme="dark"
-              style={{ "--brand": "171 255 114", "--text": "245 245 245", "--secondary": "134 137 141", "--background": "18 22 33", "--white": "18 22 33" } as React.CSSProperties}
-              name={ticker}
-              cluster={cluster}
-              distributor-id={projectData?.info.claimUrl.split('/').pop() || ""}
-              endpoint={rpcUrl}
-              token-decimals={projectData?.config.launchedTokenData.decimals.toString() || "9"}
-              token-symbol={ticker}
-            // enable-wallet-passthrough="true"
-            />
-
+            new Date(projectData?.info.timeline.find((item) => item.id === "SALE_OPENS")?.date || "") > new Date("2025-05-01T00:00:00.000Z") ? (
+              <sf-airdrop-claim
+                data-theme="dark"
+                style={{ "--brand": "171 255 114", "--text": "245 245 245", "--secondary": "134 137 141", "--background": "18 22 33", "--white": "18 22 33" } as React.CSSProperties}
+                name={ticker}
+                cluster={cluster}
+                distributor-id={projectData?.info.claimUrl.split('/').pop() || ""}
+                endpoint={rpcUrl}
+                token-decimals={projectData?.config.launchedTokenData.decimals.toString() || "9"}
+                token-symbol={ticker}
+              />
+            ) : (
+              <a href={claimUrl} target="_blank" rel="noopener noreferrer">
+                <Button btnText={btnText} size="lg" disabled={false} className="w-full py-3 font-normal" />
+              </a>
+            )
           ) : (
             <Button btnText={btnText} size="lg" disabled={true} className="w-full py-3 font-normal" />
           )}
