@@ -32,14 +32,14 @@ const TokenDistribution = () => {
 
     return data.projects
       .filter(project => {
-        const saleOpensEvent = project.info.timeline.find(event => event.id === "SALE_CLOSES")
+        const saleOpensEvent = project.info.timeline.find(event => event.id === "REWARD_DISTRIBUTION")
         return saleOpensEvent &&
           saleOpensEvent.date &&
           new Date(saleOpensEvent.date) > now
       })
       .sort((a, b) => {
-        const aDate = new Date(a.info.timeline.find(event => event.id === "SALE_OPENS")?.date || 0)
-        const bDate = new Date(b.info.timeline.find(event => event.id === "SALE_OPENS")?.date || 0)
+        const aDate = new Date(a.info.timeline.find(event => event.id === "REWARD_DISTRIBUTION")?.date || 0)
+        const bDate = new Date(b.info.timeline.find(event => event.id === "REWARD_DISTRIBUTION")?.date || 0)
         return bDate.getTime() - aDate.getTime()
       })
   }, [data])
