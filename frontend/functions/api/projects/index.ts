@@ -217,7 +217,7 @@ const getProjectsFromDB = async (db: DrizzleD1Database, args: GetProjectsFromDbA
 
           const aDate = aEvent?.date ? new Date(aEvent.date).getTime() : 0;
           const bDate = bEvent?.date ? new Date(bEvent.date).getTime() : 0;
-          return (bDate - aDate) * multiplier;
+          return (aDate - bDate) * multiplier;
         }
         case 'fdv':
           const fdvA = a.json?.config?.fdv || 0;
