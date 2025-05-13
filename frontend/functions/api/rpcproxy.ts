@@ -3,6 +3,7 @@ import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 
 const allowedMethods = [
+  "getMultipleAccounts",
   "getAccountInfo",
   "getTokenAccountsByOwner",
   "getLatestBlockhash",
