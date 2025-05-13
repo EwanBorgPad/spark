@@ -67,7 +67,7 @@ const TokenGenerationSection = ({ expandedTimeline }: Props) => {
         return <LiveNow eventData={tgeEvent} timeline={expandedTimeline} />
       case "SALE_CLOSES":
       case "REWARD_DISTRIBUTION":
-        return <SaleOver eventData={tgeEvent} timeline={expandedTimeline} />
+        return <SaleOver eventData={tgeEvent} timeline={expandedTimeline} isRaiseTargetReached={saleData?.raiseTargetReached} />
       case "DISTRIBUTION_OVER":
         return <DistributionOver eventData={tgeEvent} timeline={expandedTimeline} />
     }

@@ -8,6 +8,7 @@ import { getCurrentTgeEvent } from "@/utils/getCurrentTgeEvent"
 
 export type Props = {
   timelineEvents: ExpandedTimelineEventType[]
+  isRaiseTargetReached?: boolean
 }
 
 export const timelineEventIds = [
@@ -45,7 +46,7 @@ const GAP_SIZE = 16
 const BORDER_SIZE = 1
 const HORIZONTAL_PADDING = 16
 
-const Timeline = ({ timelineEvents }: Props) => {
+const Timeline = ({ timelineEvents, isRaiseTargetReached = false }: Props) => {
   const [containerWidth, setContainerWidth] = useState<number | null>(null)
   const [timelineData, setTimelineData] = useState<ExpandedTimelineEventType[]>([])
   const containerRef = useRef<HTMLDivElement>(null)
@@ -57,6 +58,8 @@ const Timeline = ({ timelineEvents }: Props) => {
   const renderTimelineEvent = (event: ExpandedTimelineEventType, dataLength: number, index: number) => {
     const displayTimeline = dataLength - 1 !== index
     const calculateTimelineRatio = () => {
+      if (isRaiseTargetReached && event.id === "SALE_OPENS") return 1
+      
       const isTimelineFinished = Boolean(event?.nextEventDate && isBefore(event.nextEventDate, new Date()))
       if (isTimelineFinished) return 1
       if (!event.wasEventBeforeCurrentMoment) return 0
@@ -76,6 +79,10 @@ const Timeline = ({ timelineEvents }: Props) => {
       )
     }
     const horizontalTimelineWidth = calculateHorizontalTimelineSectionWidth()
+
+    // const isCompleted = event.wasEventBeforeCurrentMoment || (isRaiseTargetReached && event.id === "SALE_OPENS")
+    const isCurrent = (!isRaiseTargetReached && event.id === currentTgeEvent?.id) || 
+                     (isRaiseTargetReached && event.id === "SALE_CLOSES")
 
     return (
       <div key={event.id} className="flex w-full flex-1 items-center gap-4 lg:max-w-[132px] lg:flex-col">
@@ -104,14 +111,14 @@ const Timeline = ({ timelineEvents }: Props) => {
               ></div>
             </>
           )}
-          {event.wasEventBeforeCurrentMoment && <div className="z-[3] h-2 w-2 rounded-full bg-brand-primary"></div>}
+          {(event.wasEventBeforeCurrentMoment || isCurrent) && <div className="z-[3] h-2 w-2 rounded-full bg-brand-primary"></div>}
         </div>
 
         <div className="flex flex-1 flex-col lg:items-center">
           <span
             className={twMerge(
               "truncate text-wrap text-xs font-normal",
-              event.wasEventBeforeCurrentMoment && "font-semibold",
+              (event.wasEventBeforeCurrentMoment || isCurrent) && "font-semibold",
             )}
           >
             {event.label}

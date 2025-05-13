@@ -25,9 +25,10 @@ import Text from "@/components/Text"
 type LiveProps = {
   eventData: ExpandedTimelineEventType
   timeline: ExpandedTimelineEventType[]
+  isRaiseTargetReached?: boolean
 }
 
-const SaleOver = ({ eventData, timeline }: LiveProps) => {
+const SaleOver = ({ eventData, timeline, isRaiseTargetReached }: LiveProps) => {
   const contributionsRef = useRef<HTMLDivElement>(null)
   const rewardsRef = useRef<HTMLDivElement>(null)
   const { projectData } = useProjectDataContext()
@@ -69,7 +70,7 @@ const SaleOver = ({ eventData, timeline }: LiveProps) => {
   return (
     <div key="sale-over" className="flex w-full flex-col items-center justify-center px-4">
       <div className="flex w-full max-w-[792px] flex-col items-center">
-        <Timeline timelineEvents={timeline} />
+        <Timeline timelineEvents={timeline} isRaiseTargetReached={isRaiseTargetReached} />
 
         <div className="mt-[52px] flex w-full flex-col items-center gap-9">
           <div className="flex w-full flex-col items-center gap-1">
