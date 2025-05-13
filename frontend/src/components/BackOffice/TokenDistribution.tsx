@@ -40,7 +40,7 @@ const TokenDistribution = () => {
       .sort((a, b) => {
         const aDate = new Date(a.info.timeline.find(event => event.id === "REWARD_DISTRIBUTION")?.date || 0)
         const bDate = new Date(b.info.timeline.find(event => event.id === "REWARD_DISTRIBUTION")?.date || 0)
-        return bDate.getTime() - aDate.getTime()
+        return aDate.getTime() - bDate.getTime()
       })
   }, [data])
 
