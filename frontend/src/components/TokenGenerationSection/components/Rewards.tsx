@@ -108,7 +108,7 @@ const Rewards = () => {
         )}
         <div className="w-full px-4 pb-6">
           {claimUrl ? (
-            projectData.id === "vnx-community-hub" ? (
+            new Date(projectData?.info.timeline.find((item) => item.id === "SALE_OPENS")?.date || "") > new Date("2025-05-01T00:00:00.000Z") ? (
               <sf-airdrop-claim
                 data-theme="dark"
                 style={{ "--brand": "171 255 114", "--text": "245 245 245", "--secondary": "134 137 141", "--background": "18 22 33", "--white": "18 22 33" } as React.CSSProperties}
