@@ -43,12 +43,10 @@ export interface ReferralData {
 /**
  * Type for leaderboard data
  */
-export interface LeaderboardData {
+export type LeaderboardData = {
   referrer_by: string;
-  total_recruited: number;
-  total_investment: number;
-  total_tickets: number;
   total_invested: number;
+  result_type?: 'ranking' | 'raffle' | 'lost' | null;
 }
 
 /**

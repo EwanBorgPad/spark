@@ -9,7 +9,8 @@ import { formatCurrencyAmount } from "shared/utils/format"
 
 type LeaderboardData = {
   referrer_by: string;
-  total_invested: number; // or string, depending on your data type
+  total_invested: number;
+  result_type?: 'ranking' | 'raffle' | 'lost' | null;
 }
 
 type TotalTicketsDistributed = {
@@ -35,6 +36,37 @@ const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[]
     "2": "text-[#F2BF7E]", // 2nd - gold
     "3": "text-[#E1E7EF]", // 3rd - silver
     "default": "text-[#D38160]" // other top positions - bronze
+  }
+
+  // Helper function to get prize amount
+  const getPrizeAmount = (item: LeaderboardData, position: string) => {
+    // If we have final results, use the configured amounts
+    if (item.result_type === 'ranking') {
+      // For ranking winners, use the position in the leaderboard to determine prize
+      if (projectData?.config.referralDistribution?.ranking && position in projectData.config.referralDistribution.ranking) {
+        return projectData.config.referralDistribution.ranking[position];
+      }
+    } else if (item.result_type === 'raffle') {
+      // For raffle winners, use the raffle prize amount
+      if (projectData?.config.referralDistribution?.raffle) {
+        const raffleValues = Object.values(projectData.config.referralDistribution.raffle);
+        const totalRaffleAmount = raffleValues.reduce((sum, amount) => sum + amount, 0);
+        const raffleWinners = Object.keys(projectData.config.referralDistribution.raffle).length;
+        return raffleWinners > 0 ? totalRaffleAmount / raffleWinners : 0;
+      }
+    }
+    
+    // For ongoing results or no result_type, show potential prize
+    if (projectData?.config.referralDistribution?.ranking && position in projectData.config.referralDistribution.ranking) {
+      return projectData.config.referralDistribution.ranking[position];
+    } 
+    else if (projectData?.config.referralDistribution?.raffle) {
+      const raffleValues = Object.values(projectData.config.referralDistribution.raffle);
+      const totalRaffleAmount = raffleValues.reduce((sum, amount) => sum + amount, 0);
+      const raffleWinners = Object.keys(projectData.config.referralDistribution.raffle).length;
+      return raffleWinners > 0 ? totalRaffleAmount / raffleWinners : 0;
+    }
+    return 0;
   }
 
   return (
@@ -70,17 +102,21 @@ const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[]
                     const isCurrentUser = address && item.referrer_by === address?.substring(0, 4);
                     const position = (index + 1).toString();
                     
-                    // Check if this position is part of the ranking in the configuration
-                    const isInRanking = projectData?.config.referralDistribution?.ranking && 
-                                      position in projectData.config.referralDistribution.ranking;
-                    
                     // Get the appropriate color for this position
                     let textColorClass = "";
-                    if (isInRanking) {
+                    if (item.result_type === 'ranking') {
+                      // For ranking winners, use position-based colors
                       textColorClass = positionColors[position as keyof typeof positionColors] || positionColors.default;
-                    } else {
-                      // Apply bronze color to all other positions
+                    } else if (item.result_type === 'raffle') {
+                      // Raffle winners get bronze color
                       textColorClass = positionColors.default;
+                    } else {
+                      // For ongoing results, use the original color logic
+                      const isInRanking = projectData?.config.referralDistribution?.ranking && 
+                                        position in projectData.config.referralDistribution.ranking;
+                      textColorClass = isInRanking ? 
+                        positionColors[position as keyof typeof positionColors] || positionColors.default :
+                        positionColors.default;
                     }
                     
                     return (
@@ -89,7 +125,9 @@ const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[]
                         key={item.referrer_by}
                       >
                         <TableCell className="px-5 py-[2px]">
-                          <span className={`text-xs ${textColorClass}`}>{position}</span>
+                          <span className={`text-xs ${textColorClass}`}>
+                            {position}
+                          </span>
                         </TableCell>
                         <TableCell className="py-[2px]">
                           <div className="flex w-full flex-row items-center gap-1">
@@ -108,24 +146,25 @@ const LeaderboardTable = ({ data = [], prizeAmount=0, totalTicketsDistributed=[]
                         </TableCell>
                         <TableCell className="py-[2px]">
                           <span className={`text-xs ${textColorClass}`}>
-                            {(() => {
-                              // For ranking positions, use the amount defined in the configuration
+                            {item.result_type === 'ranking' ? formatCurrencyAmount(getPrizeAmount(item, position)) + '$' : ''}
+                            {item.result_type === 'raffle' ? formatCurrencyAmount(getPrizeAmount(item, position)) + '$' : ''}
+                            {item.result_type === 'lost' ? '0$' : ''}
+                            {item.result_type === null ? (() => {
+                              const isInRanking = projectData?.config.referralDistribution?.ranking && 
+                                position in projectData.config.referralDistribution.ranking;
                               if (isInRanking && projectData?.config.referralDistribution?.ranking) {
                                 const rankingAmount = projectData.config.referralDistribution.ranking[position];
-                                return prizeAmount ? formatCurrencyAmount(rankingAmount) : 0;
+                                return formatCurrencyAmount(rankingAmount) + '$';
                               } 
-                              // For non-ranking positions, show the raffle prize (if available)
                               else if (projectData?.config.referralDistribution?.raffle) {
-                                // Calculate average raffle prize (total raffle amount / number of raffle winners)
                                 const raffleValues = Object.values(projectData.config.referralDistribution.raffle);
                                 const totalRaffleAmount = raffleValues.reduce((sum, amount) => sum + amount, 0);
                                 const raffleWinners = Object.keys(projectData.config.referralDistribution.raffle).length;
                                 const avgRaffleAmount = raffleWinners > 0 ? totalRaffleAmount / raffleWinners : 0;
-                                return prizeAmount ? formatCurrencyAmount(avgRaffleAmount) : 0;
+                                return formatCurrencyAmount(avgRaffleAmount) + '$';
                               }
-                              return 0;
-                            })()}
-                            $
+                              return '0$';
+                            })() : ''}
                           </span>
                         </TableCell>
                       </tr>
