@@ -67,20 +67,24 @@ const TokenDistribution = () => {
 
   const { data: amountRaisedOnLbp } = useQuery<RaisedAmountOnLbpResponse>({
     queryFn: async () => {
+      if (!nextProjectToGoLive?.config?.lbpWalletAddress) {
+        throw new Error("No LBP wallet address available")
+      }
       const startDate = nextProjectToGoLive?.info.timeline.find(event => event.id === "SALE_OPENS")?.date || new Date();
       const endDate = nextProjectToGoLive?.info.timeline.find(event => event.id === "SALE_CLOSES")?.date || new Date();
 
       const response = await backendApi.getRaisedAmountOnLbp(
         {
-          lbpWalletAddress: nextProjectToGoLive?.config.lbpWalletAddress || "",
+          lbpWalletAddress: nextProjectToGoLive?.config?.lbpWalletAddress,
           startDate: new Date(startDate),
           endDate: new Date(endDate),
-          cluster: nextProjectToGoLive?.config.cluster || "mainnet"
+          cluster: nextProjectToGoLive.config.cluster || "mainnet"
         }
       );
       return response as unknown as RaisedAmountOnLbpResponse;
     },
-    queryKey: ["getRaisedAmountOnLbp", nextProjectToGoLive?.config.lbpWalletAddress],
+    queryKey: ["getRaisedAmountOnLbp", nextProjectToGoLive?.config?.lbpWalletAddress],
+    enabled: Boolean(nextProjectToGoLive?.config?.lbpWalletAddress)
   })
 
   const { data: saleData, isLoading: isLoadingSaleResults } = useQuery({
