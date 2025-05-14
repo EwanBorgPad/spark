@@ -40,7 +40,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
         }
       }
       
-      acc[address].totalAmountDeposited += Number(deposit.json.tokensCalculation.lpPosition.borgInUSD.replace("$", ""))
+      acc[address].totalAmountDeposited += Number(deposit.json.tokensCalculation.lpPosition.borgInUSD.replace("$", "").replace(",", ""))
       acc[address].depositCount++
       
       const depositDate = new Date(deposit.createdAt)
