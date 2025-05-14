@@ -30,4 +30,6 @@ function main() {
   console.log(JSON.stringify(req, null, 2))
 }
 
+// USE THE WHITELIST API ON POSTMAN
+
 main()
