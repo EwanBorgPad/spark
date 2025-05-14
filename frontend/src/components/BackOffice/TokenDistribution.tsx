@@ -16,6 +16,23 @@ type TokenDistributionData = {
   depositCount: number
 }
 
+type RaisedAmountOnLbpData = {
+  totalUsdcReceived: number;
+  transactionCount: number;
+  transactions: Array<{
+    timestamp: number;
+    tokenTransfers?: Array<{
+      mint: string;
+      toUserAccount: string;
+      tokenAmount: number;
+    }>;
+  }>;
+}
+
+type RaisedAmountOnLbpResponse = {
+  data: RaisedAmountOnLbpData;
+}
+
 const TokenDistribution = () => {
   const { address, signMessage, signTransaction, walletProvider, isWalletConnected } = useWalletContext()
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0)
@@ -47,6 +64,24 @@ const TokenDistribution = () => {
   const nextProjectToGoLive = useMemo(() => {
     return upcomingProjects[currentProjectIndex] || null
   }, [upcomingProjects, currentProjectIndex])
+
+  const { data: amountRaisedOnLbp } = useQuery<RaisedAmountOnLbpResponse>({
+    queryFn: async () => {
+      const startDate = nextProjectToGoLive?.info.timeline.find(event => event.id === "SALE_OPENS")?.date || new Date();
+      const endDate = nextProjectToGoLive?.info.timeline.find(event => event.id === "SALE_CLOSES")?.date || new Date();
+
+      const response = await backendApi.getRaisedAmountOnLbp(
+        {
+          lbpWalletAddress: nextProjectToGoLive?.config.lbpWalletAddress || "",
+          startDate: new Date(startDate),
+          endDate: new Date(endDate),
+          cluster: nextProjectToGoLive?.config.cluster || "mainnet"
+        }
+      );
+      return response as unknown as RaisedAmountOnLbpResponse;
+    },
+    queryKey: ["getRaisedAmountOnLbp", nextProjectToGoLive?.config.lbpWalletAddress],
+  })
 
   const { data: saleData, isLoading: isLoadingSaleResults } = useQuery({
     queryFn: async () => {
@@ -100,8 +135,8 @@ const TokenDistribution = () => {
     }
   }
 
-  const totalTokensPerUSDC = nextProjectToGoLive?.config ? 
-    Number(nextProjectToGoLive.config.totalTokensForLiquidityPool) / Number(nextProjectToGoLive.config.raiseTargetInUsd) 
+  const totalTokensPerUSDC = nextProjectToGoLive?.config ?
+    Number(nextProjectToGoLive.config.totalTokensForLiquidityPool) / Number(nextProjectToGoLive.config.raiseTargetInUsd)
     : 0
   const totalAmountRaised = saleData ? Number(saleData.totalAmountRaised.amountInUsd) : 0
   const totalTokensToDistribute = totalAmountRaised * totalTokensPerUSDC
@@ -148,6 +183,24 @@ const TokenDistribution = () => {
             {
               label: "Total Amount Raised",
               value: `$${formatCurrencyAmount(totalAmountRaised)}`
+            },
+            {
+              label: "Total Amount on LBP",
+              value: (
+                <div className="flex items-center gap-2">
+                  {nextProjectToGoLive?.config?.lbpWalletAddress && (
+                    <a
+                      href={`https://solscan.io/account/${nextProjectToGoLive.config.lbpWalletAddress}?cluster=${nextProjectToGoLive.config.cluster || 'mainnet'}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:text-blue-600"
+                    >
+                      {nextProjectToGoLive.config.lbpWalletAddress}
+                    </a>
+                  )}
+                  <span>{`$${formatCurrencyAmount(amountRaisedOnLbp?.data.totalUsdcReceived || 0)}`}</span>
+                </div>
+              )
             },
             {
               label: "Total Tokens to distribute",

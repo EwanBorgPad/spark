@@ -182,7 +182,7 @@ async function createNftCollection({
             : "https://api.devnet.solana.com";
     }
     
-    console.log("Using RPC URL:", rpcUrl);
+    // console.log("Using RPC URL:", rpcUrl);
     
     const connection = new Connection(rpcUrl, "confirmed");
     const privateKeyString = env.BORGPAD_PRIVATE_KEY;

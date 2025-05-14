@@ -46,6 +46,7 @@ const UPLOAD_ON_R2 = API_BASE_URL + "/admin/uploadonr2"
 const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
 const GET_TOKEN_DISTRIBUTION = API_BASE_URL + "/tokendistribution"
 const DISTRIBUTE_TOKENS = API_BASE_URL + "/distributetokens"
+const GET_RAISED_AMOUNT_ON_LBP = API_BASE_URL + "/getraisedamountonlbp"
 
 const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
   const response = await fetch(...args)
@@ -636,6 +637,24 @@ const distributeTokens = async (args: DistributeTokensArgs): Promise<void> => {
   }
 }
 
+type RaisedAmountOnLbpResponse = {
+  totalAmountRaised: number
+}
+
+const getRaisedAmountOnLbp = async ({ lbpWalletAddress, startDate, endDate, cluster }: { lbpWalletAddress: string, startDate: Date, endDate: Date, cluster: string }): Promise<RaisedAmountOnLbpResponse> => {
+  const url = new URL(GET_RAISED_AMOUNT_ON_LBP, window.location.href)
+  url.searchParams.set("lbpWalletAddress", lbpWalletAddress)
+  url.searchParams.set("startDate", startDate.toISOString())
+  url.searchParams.set("endDate", endDate.toISOString())
+  url.searchParams.set("cluster", cluster)
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error("Failed to get raised amount on LBP")
+  }
+  return response.json()
+}
+
+
 export const backendApi = {
   getProject,
   getProjects,
@@ -664,4 +683,5 @@ export const backendApi = {
   isAdmin,
   getTokenDistribution,
   distributeTokens,
+  getRaisedAmountOnLbp,
 }
