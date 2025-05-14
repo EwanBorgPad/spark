@@ -77,28 +77,59 @@ const ReferralModal: React.FC<ReferralModalProps> = ({ onClose }) => {
       return { value: "0", isRaffle: false };
     }
 
-    const userPosition = leaderboardReferrals.findIndex(item => 
+    const userEntry = leaderboardReferrals.find(item => 
       item.referrer_by === address.substring(0, 4)
     );
 
     // Not in leaderboard
-    if (userPosition === -1) {
+    if (!userEntry) {
       return { value: "0", isRaffle: false };
     }
 
-    const position = (userPosition + 1).toString();
-    const referralDistribution = projectData.config.referralDistribution;
+    // If we have final results, use those
+    if (userEntry.result_type === 'ranking') {
+      const userPosition = leaderboardReferrals.findIndex(item => 
+        item.referrer_by === address.substring(0, 4)
+      ) + 1;
+      const position = userPosition.toString();
+      const rankingAmount = projectData.config.referralDistribution.ranking[position];
+      return { 
+        value: formatCurrencyAmount(rankingAmount || 0),
+        isRaffle: false
+      };
+    } else if (userEntry.result_type === 'raffle') {
+      // For raffle winners, use the raffle prize amount
+      const raffleValues = Object.values(projectData.config.referralDistribution.raffle || {});
+      if (raffleValues.length > 0) {
+        const avgRaffleAmount = raffleValues.reduce((sum, amount) => sum + amount, 0) / raffleValues.length;
+        return { 
+          value: formatCurrencyAmount(avgRaffleAmount),
+          isRaffle: false
+        };
+      }
+    } else if (userEntry.result_type === 'lost') {
+      return { 
+        value: "0",
+        isRaffle: false
+      };
+    }
+
+    // For ongoing results, calculate potential prize
+    const userPosition = leaderboardReferrals.findIndex(item => 
+      item.referrer_by === address.substring(0, 4)
+    ) + 1;
+    const position = userPosition.toString();
 
     // Check if user is in ranking positions
-    if (position in referralDistribution.ranking) {
-      const rankingAmount = referralDistribution.ranking[position];
+    if (position in projectData.config.referralDistribution.ranking) {
+      const rankingAmount = projectData.config.referralDistribution.ranking[position];
       return { 
-        value: formatCurrencyAmount(rankingAmount ? rankingAmount : 0),
+        value: formatCurrencyAmount(rankingAmount || 0),
         isRaffle: false
       };
     } else {
       // User might win raffle prize
-      const raffleValues = Object.values(referralDistribution.raffle || {});
+      const raffleValues = Object.values(projectData.config.referralDistribution.raffle || {});
       if (raffleValues.length > 0) {
         const avgRaffleAmount = raffleValues.reduce((sum, amount) => sum + amount, 0) / raffleValues.length;
         return { 

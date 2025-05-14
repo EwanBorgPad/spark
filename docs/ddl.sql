@@ -163,6 +163,7 @@ CREATE TABLE referral (
     address TEXT NOT NULL,
     invested_dollar_value INTEGER,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    result_type TEXT CHECK (result_type IN ('ranking', 'raffle', 'lost', NULL)),
     FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
     FOREIGN KEY (referrer_by) REFERENCES user(address) ON DELETE CASCADE,
     FOREIGN KEY (address) REFERENCES user(address) ON DELETE CASCADE,

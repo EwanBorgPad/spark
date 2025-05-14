@@ -27,11 +27,20 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     // Order all the referrals for the leaderboard by invested_dollar_value grouped by referrer_by
     const leaderboardReferrals = await db
       .prepare(`
-        SELECT SUBSTR(referrer_by, 1, 4) AS referrer_by, SUM(invested_dollar_value) AS total_invested
+        SELECT 
+          SUBSTR(referrer_by, 1, 4) AS referrer_by, 
+          SUM(invested_dollar_value) AS total_invested,
+          MAX(result_type) as result_type
         FROM referral
         WHERE project_id = ?
         GROUP BY referrer_by
-        ORDER BY total_invested DESC
+        ORDER BY 
+          CASE 
+            WHEN MAX(result_type) = 'ranking' THEN 1
+            WHEN MAX(result_type) = 'raffle' THEN 2
+            ELSE 3
+          END,
+          total_invested DESC
       `)
       .bind(projectId)
       .all();
