@@ -158,8 +158,12 @@ async function signInWithCode({
   },
   })
   const authResponse = await authRes.json<SignInWithCodeResponse>()
+  console.log("Twitter auth response:", authResponse)
 
-  if (authResponse?.error) throw new Error ("signInWithCode failed")
+  if (authResponse?.error) {
+    console.error("Twitter auth error:", authResponse.error, authResponse.error_description)
+    throw new Error(`signInWithCode failed: ${authResponse.error} - ${authResponse.error_description}`)
+  }
 
   return authResponse["access_token"]
 }
