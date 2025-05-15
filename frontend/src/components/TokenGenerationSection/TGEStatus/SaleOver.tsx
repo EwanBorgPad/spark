@@ -65,7 +65,7 @@ const SaleOver = ({ eventData, timeline, isRaiseTargetReached }: LiveProps) => {
 
   const tweetId = projectData?.info.tweetUrl ? getTweetIdFromURL(projectData.info.tweetUrl) : ""
   const sectionClass = "flex w-full max-w-[400px] flex-col items-center gap-6 z-[1]"
-  const hasDistributionStarted = eventData.id === "REWARD_DISTRIBUTION"
+  const hasDistributionStarted = eventData.id === "REWARD_DISTRIBUTION" || (projectData?.info.claimUrl !== null && projectData?.info.claimUrl !== "")
 
   return (
     <div key="sale-over" className="flex w-full flex-col items-center justify-center px-4">
