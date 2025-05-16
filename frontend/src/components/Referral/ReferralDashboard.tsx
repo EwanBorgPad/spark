@@ -38,6 +38,8 @@ export interface ReferralDashboardProps {
   onConnectWallet: () => void;
   onSignToU: () => void;
   ticketPerAmountInvested: number;
+  userEntry: LeaderboardData | null;
+  userPosition: number;
 }
 
 /**
@@ -64,8 +66,27 @@ const ReferralDashboard: React.FC<ReferralDashboardProps> = ({
   onConnectWallet,
   onSignToU,
   ticketPerAmountInvested,
+  userEntry,
+  userPosition,
 }) => {
   const [activeTab, setActiveTab] = useState<'referrals' | 'leaderboard'>('referrals');
+
+  const isRaffleDone = userEntry?.result_type !== null;
+
+  const getPrizeType = (position: number) => {
+    switch (position) {
+      case 1:
+        return "Grand Prize";
+      case 2:
+        return "Gold Prize";
+      case 3:
+        return "Silver Prize";
+      default:
+        return "Bronze Prize";
+    }
+  };
+
+  const userPositionText = userPosition === 1 ? "1st" : userPosition === 2 ? "2nd" : userPosition === 3 ? "3rd" : `${userPosition}th`;
 
   return (
     <SimpleModal
@@ -84,15 +105,32 @@ const ReferralDashboard: React.FC<ReferralDashboardProps> = ({
             Invite Friends, {projectData?.config.launchedTokenData.ticker}
           </span>
           <div className="mb-6 flex items-center justify-center flex-wrap gap-2 text-center text-base font-normal text-fg-primary">
-            <span>Raffle happens & leaderboard closes in</span>
-            <SimpleCountDownTimer
-              endOfEvent={saleClosesDate}
-              labelAboveTimer=""
-              className="!h-auto !w-auto !bg-transparent !pt-0 inline-flex"
-              timerClass="text-brand-primary"
-            />
+            {isRaffleDone ? (
+              <span>Raffle Finished</span>
+            ) : (
+              <>
+                <span>Raffle happens & leaderboard closes in</span>
+                <SimpleCountDownTimer
+                  endOfEvent={saleClosesDate}
+                  labelAboveTimer=""
+                  className="!h-auto !w-auto !bg-transparent !pt-0 inline-flex"
+                  timerClass="text-brand-primary"
+                />
+              </>
+            )}
           </div>
         </div>
+        {userEntry?.result_type && userEntry.result_type !== 'lost' && (
+          <div className="w-full mb-6 p-4 bg-[#ACFF731A] border border-[#ACFF7333] rounded-lg">
+            <div className="flex items-center gap-2 text-fg-primary">
+              <span className="text-xl">💰</span>
+              <span>
+                You finished {userPositionText} in the leaderboard and won the <span className="text-brand-primary">{getPrizeType(userPosition)}!</span> <span className="text-gray-400">{userPrize.value} {projectData?.config.launchedTokenData.ticker} will be sent to you.</span>
+              </span>
+            </div>
+          </div>
+        )}
+
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 w-full">
           <ReferralCard
