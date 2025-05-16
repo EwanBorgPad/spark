@@ -5,10 +5,15 @@ import { eq, inArray } from "drizzle-orm"
 import { TweetScoutTweetResponse } from '../../../shared/types/api-types'
 import { isApiKeyValid } from '../../services/apiKeyService'
 import { isAfter } from 'date-fns'
+import { AdminAuthFields } from '../../../shared/models'
+import { checkAdminAuthorization } from '../../services/authService'
+import { authSchema } from '../../../shared/schemas/analysis-schema'
+import { isAdminReturnValue } from '../../services/authService'
 
 type ENV = {
   DB: D1Database
   TWEET_SCOUT_API_KEY: string
+  ADMIN_ADDRESSES: string
 }
 type AnalysisTableColumns = typeof analysisTable.$inferSelect;
 
@@ -18,24 +23,56 @@ type FetchResult = {
   analysisId: string
 }
 
-export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
+type RefreshStatsRequest = {
+  auth: AdminAuthFields
+}
+
+export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
   try {
-    console.log("Refreshing X stats for articles initiated.");
-    // authorize request
-    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
-      return jsonResponse(null, 401)
+    const request = await ctx.request.json() as RefreshStatsRequest
+    const {
+      auth
+    } = request
+
+    // Validate request
+    if (!auth) {
+      return jsonResponse({
+        message: 'Missing required fields: auth'
+      }, 400)
     }
 
+    // Parse and validate auth data
+    const { error, data } = authSchema.safeParse(auth)
+    if (error) {
+      return jsonResponse({
+        message: 'Invalid auth data format'
+      }, 400)
+    }
+
+    // Check if user is admin using the auth service
+    const authResult: isAdminReturnValue = checkAdminAuthorization({
+      ctx,
+      auth: data as AdminAuthFields
+    })
+
+    if (!authResult.isAdmin) {
+      const { error: authError } = authResult as { error: { code: number; message: string }, isAdmin: false }
+      await reportError(db, new Error(authError.message))
+      return jsonResponse({ message: "Unauthorized! Only admins can refresh stats." }, authError.code)
+    }
+
+    console.log("Refreshing X stats for articles initiated.");
+    // Remove API key validation since we're using wallet signature
     const tweetScoutApiKey = ctx.env.TWEET_SCOUT_API_KEY
     if (!tweetScoutApiKey) throw new Error("Missing api key for Tweet Scout!")
 
     // Fetch a single tweet's metrics from Tweet Scout API.
     const fetchTweetMetrics = async (analysis: Analysis): Promise<FetchResult> => {
       console.log(`Fetching metrics for articleUrl: ${analysis.articleUrl}`);
-      try {  
+      try {
         const body = JSON.stringify({ tweet_link: analysis.articleUrl });
-        
+
         const response = await fetch("https://api.tweetscout.io/v2/tweet-info", {
           method: "POST",
           headers: {
@@ -72,7 +109,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
 
       const activeProjectIds = await getActiveProjectIds(db)
       if (!activeProjectIds || !activeProjectIds.length) {
-        console.log("no active projects with analysis!"); 
+        console.log("no active projects with analysis!");
         return []
       }
 
@@ -109,16 +146,16 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       if (!results.length) return []
       return results;
     };
-    const results: FetchResult[]  = await fetchMetricsInBatches()
+    const results: FetchResult[] = await fetchMetricsInBatches()
     if (!results || !results.length) {
       return jsonResponse({ message: "No results" }, 404)
     }
 
-    await updateRowsInBatch({updates: results, db})
+    await updateRowsInBatch({ updates: results, db })
 
     console.log("🚀 ~ refreshImpressionsAndLikes ~ results:", results)
     return jsonResponse(null, 200)
-    
+
   } catch (e) {
     await reportError(db, e)
     return jsonResponse({ message: e?.message || "Something went wrong..." }, 500)
@@ -159,15 +196,15 @@ const updateRowsInBatch = async ({ updates, db }: UpdateRowsInBatchArgs) => {
 
 const getActiveProjectIds = async (db: DrizzleD1Database) => {
   const allProjectIds = (await db
-    .selectDistinct({projectId: analysisTable.projectId}).from(analysisTable).all())
+    .selectDistinct({ projectId: analysisTable.projectId }).from(analysisTable).all())
     .map(item => item.projectId);
-  console.log("allProjectIds: ",allProjectIds);
-  
+  console.log("allProjectIds: ", allProjectIds);
+
   const projectsStillActive = await db
     .select().from(projectTable)
-    .where(inArray(projectTable.id,allProjectIds))
+    .where(inArray(projectTable.id, allProjectIds))
     .all()
-  console.log("projectsStillActive: ",projectsStillActive);
+  console.log("projectsStillActive: ", projectsStillActive);
 
   const activeProjectIds = projectsStillActive
     .filter(project => {
@@ -177,7 +214,7 @@ const getActiveProjectIds = async (db: DrizzleD1Database) => {
       return false
     })
     .map(project => project.id)
-  console.log("activeProjectIds: ",activeProjectIds);
+  console.log("activeProjectIds: ", activeProjectIds);
 
 
   return activeProjectIds

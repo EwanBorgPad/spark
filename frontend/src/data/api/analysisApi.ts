@@ -22,7 +22,7 @@ const GET_ANALYST_URL = API_BASE_URL + "/analyst"
 const POST_ANALYSIS = API_BASE_URL + "/analysis"
 const GET_ANALYSIS_LIST = API_BASE_URL + "/analysis"
 const MANUALLY_ADD_ANALYSIS = API_BASE_URL + "/analysis/manuallyadd"
-
+const REFRESH_ANALYSIS = API_BASE_URL + "/analysis/refreshstats"
 const getTwitterAuthUrl = async (): Promise<{ twitterAuthUrl: string }> => {
   const url = new URL(GET_TWITTER_AUTH_URL, window.location.href)
 
@@ -157,6 +157,25 @@ const getSession = async (sessionId: string): Promise<{ analyst: Analyst; token:
   return json
 }
 
+const refreshAnalysis = async ({ auth }: { auth: AdminAuthFields }): Promise<void> => {
+  const url = new URL(REFRESH_ANALYSIS, window.location.href)
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ auth })
+  })
+  if (!response.ok) {
+    const json = await response.json()
+    throw new Error(json.message || 'Failed to refresh analysis')
+  }
+  // Don't try to parse JSON if response is empty
+  if (response.status === 200) return
+  const json = await response.json()
+  return json
+}
+
 
 export const analysisApi = {
   getTwitterAuthUrl,
@@ -166,4 +185,5 @@ export const analysisApi = {
   updateAnalysisApproval,
   manuallyAddAnalysis,
   getSession,
+  refreshAnalysis,
 }

@@ -21,6 +21,21 @@ const AnalysisApprovalDashboard = () => {
     },
   })
 
+  const { mutate: refreshAnalysis } = useMutation({
+    mutationFn: async () => {
+      const message = "I confirm I am an admin by signing this message."
+      const signature = Array.from(await signMessage(message))
+      const auth = { address, message, signature }
+      return analysisApi.refreshAnalysis({ auth })
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+    onSuccess: () => {
+      toast.success("Analysis refreshed!", { theme: "colored" })
+    },
+  })
+
   const onUpdateStatusSubmit = async ({
     action,
     analysisId,
@@ -51,6 +66,12 @@ const AnalysisApprovalDashboard = () => {
             time. They are fetched periodically.
           </span>
         </div>
+        <Button
+          onClick={() => refreshAnalysis()}
+          prefixElement={<Icon icon="SvgLoader" className="text-xl" />}
+          btnText="Refresh Analysis"
+          color="tertiary"
+        />
         <Button
           onClick={() => setDisplayModal(true)}
           prefixElement={<Icon icon="SvgPlus" className="text-xl" />}
