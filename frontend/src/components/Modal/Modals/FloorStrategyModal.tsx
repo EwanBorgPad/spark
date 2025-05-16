@@ -216,6 +216,7 @@ const FloorStrategyModal = ({ onClose, isOpen, initialStrategy }: Props) => {
                   <span className="text-fg-primary">The downside is capped, but your upside is unlimited.</span> The risk curve is flipped in your favour.
                 </span>
                 <span className="text-sm text-fg-secondary font-body font-normal">At TGE, your tokens can&apos;t be sold below a protected price - The Floor.</span>
+                <span className="text-sm text-fg-secondary font-body font-normal">Token unlocks are handled through Floor bin injections at TGE price or controlled DLMM sales, <span className="text-fg-primary">preserving the Floor Strategy&apos;s</span> guaranteed price protection for its full duration.</span>
               </div>
               <div className="w-[340px] h-[340px] md:w-[390px] md:h-[360px] flex items-center justify-center bg-accent rounded-xl mx-auto md:mx-0 mb-4 md:mb-0">
                 <img src={floorStrategyImg} alt="Floor Strategy Chart" className="max-w-[90%] max-h-[90%]" />
