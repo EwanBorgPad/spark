@@ -81,8 +81,8 @@ export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentInten
 
       if (isConnectedWithLedger) {
         if (!walletProvider) throw new Error("No wallet provider selected")
-          signature = await sendTransaction(message, address, signTransaction, walletProvider)
-          isLedgerTransaction = true
+        signature = await sendTransaction(message, address, signTransaction, walletProvider)
+        isLedgerTransaction = true
       } else {
         signature = await signMessage(message)
       }
@@ -133,7 +133,17 @@ export const ProvideInvestmentIntentModal = ({ onClose }: ProvideInvestmentInten
           <div className={twMerge("flex w-full grow flex-col justify-start gap-4 px-4 pb-8 pt-3 md:px-10")}>
             <div>
               <p className="text-left text-base text-fg-tertiary md:text-center">
-                <span>{t("investment.intent.quest.description")}</span>
+                <span>
+                  Let us know how much are you interested to invest during TGE
+                  <br />
+                  <span 
+                    className="cursor-pointer hover:text-fg-success-primary"
+                    onClick={() => toast.info("Accurate commitments may unlock rewards or early access. Overstating your intent can hurt this launch and lead to restrictions. It's in everyone's interest — the project's, yours, and BorgPad's — to keep it real.", { theme: "colored" })}
+                  >
+                    ⚠️ BE HONEST ⚠️
+                  </span>
+                  <br />
+                </span>
               </p>
               <CurrencyInputField
                 maxLength={12}

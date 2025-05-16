@@ -131,7 +131,7 @@
 
   "investment.intent.quest.heading": "Express Your Investment Interest",
   "investment.intent.quest.button": "Enter Amount",
-  "investment.intent.quest.description": "Let us know how much are you interested to invest during TGE",
+  "investment.intent.quest.description": "Let us know how much are you interested to invest during TGE\n\n ⚠️Be honest.⚠️\nAccurate commitments may unlock rewards or early access.\nOverstating your intent can hurt this launch and lead to restrictions.\nIt’s in everyone’s interest — the project’s, yours, and BorgPad’s — to keep it real.",
   "investment.intent.quest.placeholder": "Enter amount in USDC (e.g. 500)",
   "investment.intent.quest.modal.button": "Confirm Interest",
   "investment.intent.quest.message": "I acknowledge that I plan to invest {{ amount }} in {{ projectId }}",
