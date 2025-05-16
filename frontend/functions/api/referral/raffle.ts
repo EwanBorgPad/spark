@@ -143,6 +143,40 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     
     const raffleWinners = selectRaffleWinners(eligibleReferrers.results as EligibleUser[], raffleWinnerCount);
     
+    // Update result_type for ranking winners (top 3)
+    await db.prepare(`
+      UPDATE referral 
+      SET result_type = 'ranking' 
+      WHERE project_id = ? 
+      AND referrer_by IN (
+        SELECT referrer_by 
+        FROM referral 
+        WHERE project_id = ? 
+        GROUP BY referrer_by 
+        ORDER BY SUM(invested_dollar_value) DESC 
+        LIMIT ?
+      )
+    `).bind(projectId, projectId, rankingPositions).run();
+
+    // Update result_type for raffle winners
+    const raffleWinnerAddresses = raffleWinners.map(winner => winner.referrer_by);
+    if (raffleWinnerAddresses.length > 0) {
+      await db.prepare(`
+        UPDATE referral 
+        SET result_type = 'raffle' 
+        WHERE project_id = ? 
+        AND referrer_by IN (${raffleWinnerAddresses.map(() => '?').join(',')})
+      `).bind(projectId, ...raffleWinnerAddresses).run();
+    }
+
+    // Update result_type for losers (those who didn't win ranking or raffle)
+    await db.prepare(`
+      UPDATE referral 
+      SET result_type = 'lost' 
+      WHERE project_id = ? 
+      AND result_type IS NULL
+    `).bind(projectId).run();
+    
     return jsonResponse({ 
       message: "Raffle winners selected successfully",
       raffleWinners: raffleWinners,

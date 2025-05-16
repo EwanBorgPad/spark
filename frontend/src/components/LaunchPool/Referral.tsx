@@ -104,6 +104,13 @@ const Referral = ({ className }: Props) => {
               <span className="text-fg-primary">{projectData?.config.launchedTokenData.ticker}</span>
             </div>
           )}
+          {userEntry?.result_type && userEntry.result_type === 'lost' && (
+            <div className="flex items-center gap-1">
+              <span className="text-l">💰</span>
+              <span>Raffle</span>
+              <span>Finished</span>
+            </div>
+          )}
         </Button>
       </div>
 
