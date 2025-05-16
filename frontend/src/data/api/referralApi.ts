@@ -1,10 +1,14 @@
+import { GetProjectsProjectResponse } from "shared/models"
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? `${window.location.origin}/api`
 
 // referral
 const POST_REFERRAL_CODE = API_BASE_URL + "/referral/code"
 const GET_REFERRAL_CODE = API_BASE_URL + "/referral/code"
 const GET_LEADERBOARD = API_BASE_URL + "/referral/leaderboard"
+const RUN_RAFFLE = API_BASE_URL + "/referral/raffle"
 
+type ProjectConfig = GetProjectsProjectResponse
 
 const failFastFetch = async (...args: Parameters<typeof fetch>): Promise<void> => {
   const response = await fetch(...args)
@@ -45,6 +49,7 @@ type GetReferralCodeArgs = {
 type LeaderboardReferral = {
   referrer_by: string;
   total_invested: number;
+  result_type: 'ranking' | 'raffle' | 'lost' | null;
 };
 
 type Referral = {
@@ -100,8 +105,32 @@ const getLeaderboard = async ({
   return json
 }
 
+type RunRaffleArgs = {
+  projectId: string
+  auth: {
+    address: string
+    message: string
+    signature: number[]
+  }
+  projectConfig: ProjectConfig
+}
+
+const runRaffle = async (args: RunRaffleArgs): Promise<void> => {
+  const url = new URL(RUN_RAFFLE, window.location.href)
+  url.searchParams.set("projectId", args.projectId)
+
+  await failFastFetch(url, {
+    method: "POST",
+    body: JSON.stringify({
+      auth: args.auth,
+      projectConfig: args.projectConfig
+    })
+  })
+}
+
 export const referralApi = {
   postReferralCode,
   getReferralCode,
   getLeaderboard,
+  runRaffle,
 }

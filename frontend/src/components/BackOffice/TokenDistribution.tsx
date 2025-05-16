@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { GetProjectsProjectResponse, GetProjectsResponse } from "shared/models"
 import { backendApi } from "@/data/api/backendApi"
@@ -8,6 +8,7 @@ import { Button } from "../Button/Button"
 import { useProjectStatusUtils } from "./ProjectStatus/useProjectStatusUtils"
 import { formatCurrencyAmount } from "shared/utils/format"
 import { UpcomingProjectCard } from "./ProjectStatus/UpcomingProjectCard"
+import { referralApi } from "@/data/api/referralApi"
 
 type TokenDistributionData = {
   fromAddress: string
@@ -33,9 +34,16 @@ type RaisedAmountOnLbpResponse = {
   data: RaisedAmountOnLbpData;
 }
 
+type LeaderboardReferral = {
+  referrer_by: string
+  total_invested: number
+  result_type: 'ranking' | 'raffle' | 'lost' | null
+}
+
 const TokenDistribution = () => {
   const { address, signMessage, signTransaction, walletProvider, isWalletConnected } = useWalletContext()
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0)
+  const queryClient = useQueryClient()
 
   const { data, refetch, isLoading: isLoadingProjects } = useQuery<GetProjectsResponse>({
     queryFn: () => backendApi.getProjects({ page: 1, limit: 999 }),
@@ -110,6 +118,15 @@ const TokenDistribution = () => {
     enabled: !!nextProjectToGoLive?.id
   })
 
+  const { data: leaderboardData } = useQuery({
+    queryFn: () => {
+      if (!nextProjectToGoLive?.id) return null
+      return referralApi.getLeaderboard({ projectId: nextProjectToGoLive.id })
+    },
+    queryKey: ["getLeaderboard", nextProjectToGoLive?.id],
+    enabled: !!nextProjectToGoLive?.id
+  })
+
   const { mutate: distributeTokens, isPending: isDistributing } = useMutation({
     mutationFn: async () => {
       if (!nextProjectToGoLive?.id) throw new Error("No project selected")
@@ -124,6 +141,28 @@ const TokenDistribution = () => {
     },
     onError: (error) => {
       toast.error(error.message || "Failed to distribute tokens")
+    }
+  })
+
+  const { mutate: runRaffle, isPending: isRunningRaffle } = useMutation({
+    mutationFn: async () => {
+      if (!nextProjectToGoLive?.id) throw new Error("No project selected")
+      const message = "I confirm I am an admin by signing this message."
+      const signature = Array.from(await signMessage(message))
+      const auth = { address, message, signature }
+      return referralApi.runRaffle({ 
+        projectId: nextProjectToGoLive.id, 
+        auth,
+        projectConfig: nextProjectToGoLive
+      })
+    },
+    onSuccess: () => {
+      toast.success("Raffle completed successfully!")
+      refetch()
+      queryClient.invalidateQueries({ queryKey: ["getLeaderboard", nextProjectToGoLive?.id] })
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to run raffle")
     }
   })
 
@@ -252,7 +291,6 @@ const TokenDistribution = () => {
           </div>
         </div>
       )}
-
       {nextProjectToGoLive && (
         <div className="w-full max-w-3xl flex justify-end">
           <Button
@@ -263,6 +301,59 @@ const TokenDistribution = () => {
           />
         </div>
       )}
+
+      {/* Referral Leaderboard Section */}
+      {leaderboardData?.leaderboardReferrals && (
+        <div className="w-full max-w-3xl mt-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Referral Leaderboard</h2>
+            <Button
+              btnText={isRunningRaffle ? "Running Raffle..." : "Run Raffle"}
+              size="sm"
+              onClick={() => runRaffle()}
+              disabled={!isWalletConnected || isRunningRaffle}
+            />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-bg-secondary">
+                  <th className="text-left p-1">Rank</th>
+                  <th className="text-left p-1">Referrer</th>
+                  <th className="text-left p-1">Total Invested</th>
+                  <th className="text-left p-1">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leaderboardData?.leaderboardReferrals.map((item: LeaderboardReferral, index: number) => (
+                  <tr key={item.referrer_by} className="border-b border-bg-secondary hover:bg-bg-tertiary">
+                    <td className="p-1">{index + 1}</td>
+                    <td className="p-1">
+                      {`${item.referrer_by.slice(0, 4)}...${item.referrer_by.slice(-4)}`}
+                    </td>
+                    <td className="p-1">${formatCurrencyAmount(item.total_invested)}</td>
+                    <td className="p-1">
+                      {item.result_type ? (
+                        <span className={`px-2 py-1 rounded-full text-xs ${item.result_type === 'ranking' ? 'bg-green-500/20 text-green-500' :
+                          item.result_type === 'raffle' ? 'bg-blue-500/20 text-blue-500' :
+                            'bg-gray-500/20 text-gray-500'
+                          }`}>
+                          {item.result_type.charAt(0).toUpperCase() + item.result_type.slice(1)}
+                        </span>
+                      ) : (
+                        <span className="px-2 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-500">
+                          Pending
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
     </main>
   )
 }

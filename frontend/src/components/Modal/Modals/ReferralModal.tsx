@@ -71,33 +71,25 @@ const ReferralModal: React.FC<ReferralModalProps> = ({ onClose }) => {
   const referralsTable = (referralData?.referralsTable || []) as ReferralData[];
   const totalTicketsDistributed = (leaderboardData?.totalTicketsDistributed || []) as TotalTicketsDistributed[];
 
+  // Calculate user entry and position
+  const userEntry = address ? leaderboardReferrals.find(item => item.referrer_by === address.substring(0, 4)) || null : null;
+  const userPosition = userEntry ? leaderboardReferrals.findIndex(item => item.referrer_by === address.substring(0, 4)) + 1 : 0;
+
   // Calculate user's potential prize based on leaderboard position
   const calculateUserPrize = (): UserPrize => {
     if (!isWalletConnected || !address || !projectData?.config.referralDistribution) {
       return { value: "0", isRaffle: false };
     }
 
-    const userEntry = leaderboardReferrals.find(item => 
-      item.referrer_by === address.substring(0, 4)
-    );
-
-    // Not in leaderboard
-    if (!userEntry) {
-      return { value: "0", isRaffle: false };
-    }
-
     // If we have final results, use those
-    if (userEntry.result_type === 'ranking') {
-      const userPosition = leaderboardReferrals.findIndex(item => 
-        item.referrer_by === address.substring(0, 4)
-      ) + 1;
+    if (userEntry && userEntry.result_type === 'ranking') {
       const position = userPosition.toString();
       const rankingAmount = projectData.config.referralDistribution.ranking[position];
       return { 
         value: formatCurrencyAmount(rankingAmount || 0),
         isRaffle: false
       };
-    } else if (userEntry.result_type === 'raffle') {
+    } else if (userEntry && userEntry.result_type === 'raffle') {
       // For raffle winners, use the raffle prize amount
       const raffleValues = Object.values(projectData.config.referralDistribution.raffle || {});
       if (raffleValues.length > 0) {
@@ -107,7 +99,7 @@ const ReferralModal: React.FC<ReferralModalProps> = ({ onClose }) => {
           isRaffle: false
         };
       }
-    } else if (userEntry.result_type === 'lost') {
+    } else if (userEntry && userEntry.result_type === 'lost') {
       return { 
         value: "0",
         isRaffle: false
@@ -115,9 +107,6 @@ const ReferralModal: React.FC<ReferralModalProps> = ({ onClose }) => {
     }
 
     // For ongoing results, calculate potential prize
-    const userPosition = leaderboardReferrals.findIndex(item => 
-      item.referrer_by === address.substring(0, 4)
-    ) + 1;
     const position = userPosition.toString();
 
     // Check if user is in ranking positions
@@ -241,6 +230,8 @@ const ReferralModal: React.FC<ReferralModalProps> = ({ onClose }) => {
       onConnectWallet={handleConnectWallet}
       onSignToU={handleSignToU}
       ticketPerAmountInvested={ticketPerAmountInvested}
+      userEntry={userEntry}
+      userPosition={userPosition}
     />
   );
 };
