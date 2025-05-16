@@ -34,8 +34,8 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
 
       if (isConnectedWithLedger) {
         if (!walletProvider) throw new Error("No wallet provider selected")
-          signature = await sendTransaction(message, address, signTransaction, walletProvider)
-          isLedgerTransaction = true
+        signature = await sendTransaction(message, address, signTransaction, walletProvider)
+        isLedgerTransaction = true
       } else {
         signature = await signMessage(message)
       }
@@ -76,7 +76,7 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
         <>
           {/* Body */}
           <div className={twMerge("flex w-full grow flex-col justify-start gap-5 px-4 pb-8 pt-3 md:px-10")}>
-            <p className="whitespace-pre-wrap text-center text-sm text-fg-tertiary md:text-base">
+            <p className="whitespace-pre-wrap text-center text-xs text-fg-tertiary md:text-sm">
               No representation or warranty is made concerning any aspect of the BorgPad Protocol, including its
               suitability, quality, availability, accessibility, accuracy or safety. As more fully explained in the
               <a className="text-fg-success-primary" href={"/terms-of-use"} target="_blank" rel="noreferrer">
@@ -94,6 +94,13 @@ const AcceptTermsOfUseModal = ({ onClose }: AcceptTermsOfUseModalProps) => {
               other jurisdiction in which accessing or using the BorgPad Protocol is prohibited (“Prohibited
               Jurisdictions”). In using this Interface, you confirm that you are not located in, incorporated or
               otherwise established in, or resident of, a Prohibited Jurisdiction.
+              <br />
+              <br />
+              No guarantees are made regarding the protection, confidentiality, or security of any personal data
+              submitted through this Interface, including but not limited to email addresses. Users are strongly advised
+              not to use any email address or information that could be directly linked to their real-world identity.
+              By using this Interface, you acknowledge and accept that any data shared may be exposed to potential
+              security risks, and you assume full responsibility for any consequences arising from such disclosure.
             </p>
             <CheckboxField
               inputClassName="text-white!"

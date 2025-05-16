@@ -532,7 +532,17 @@ const TermsOfUse = () => {
             </p>
           </li>
           <li className="flex flex-col">
-            <h2 className="text-xl">24. CONTACT</h2>{" "}
+            <h2 className="text-xl">24. DATA</h2>{" "}
+            <p>
+              No guarantees are made regarding the protection, confidentiality, or security of any personal data
+              submitted through this Interface, including but not limited to email addresses. Users are strongly advised
+              not to use any email address or information that could be directly linked to their real-world identity.
+              By using this Interface, you acknowledge and accept that any data shared may be exposed to potential
+              security risks, and you assume full responsibility for any consequences arising from such disclosure.
+            </p>
+          </li>
+          <li className="flex flex-col">
+            <h2 className="text-xl">25. CONTACT</h2>{" "}
             <p>
               If you wish to contact us please do so at the following e-mail
               address: team@borgpad.com
