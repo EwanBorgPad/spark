@@ -22,7 +22,7 @@ import { ROUTES } from "./utils/routes"
 // import BackOfficeDashboard from "./pages/BackOfficeDashboard"
 import { AuthProvider } from "./hooks/useAuthContext"
 import ProtectedRoute from "./components/BackOffice/ProtectedRoute"
-import LandingPage from "./pages/LandingPage2"
+import LandingPage from "./pages/LandingPage"
 import Project from "./pages/Project"
 import DraftPickPage from "./pages/DraftPickPage"
 import DraftPicks from "./pages/DraftPicks"
@@ -30,9 +30,10 @@ import LaunchPools from "./pages/LaunchPools"
 import GetStarted from "./pages/GetStarted"
 import Connection from "./pages/Connection"
 import EmailConnection from "./pages/EmailConnection"
-import LandingPage2 from "./pages/LandingPage2"
 import Username from "./pages/Username"
 import Terms from "./pages/Terms"
+import Profile from "./pages/Profile"
+import Search from "./pages/Search"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -122,16 +123,20 @@ const router = createBrowserRouter([
         element: <LandingPage />,
       },
       {
-        path: ROUTES.LANDING_PAGE_2,
-        element: <LandingPage2 />,
-      },
-      {
         path: ROUTES.USERNAME,
         element: <Username />,
       },
       {
+        path: ROUTES.PROFILE,
+        element: <Profile />,
+      },
+      {
         path: ROUTES.TERMS,
         element: <Terms />,
+      },
+      {
+        path: ROUTES.SEARCH,
+        element: <Search />,
       },
       // @backOffice
       {

@@ -22,6 +22,8 @@ const Connection = () => {
       console.log('User logged in successfully', user);
       if (isNewUser) {
         navigate(ROUTES.USERNAME)
+      } else {
+        navigate(ROUTES.LANDING_PAGE)
       }
     },
     onError: (error) => {
