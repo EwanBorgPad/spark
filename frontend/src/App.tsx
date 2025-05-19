@@ -19,12 +19,12 @@ Sentry.init({
 function App() {
   return (
     <div className="max-w-screen relative flex min-h-screen flex-col items-center justify-center overscroll-x-none bg-accent font-geist text-fg-primary">
-      <EnvBanner />
-      <ToastContainer />
+      {/* <EnvBanner /> */}
+      {/* <ToastContainer /> */}
 
-      <Header />
+      {/* <Header /> */}
       <Outlet />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   )
 }

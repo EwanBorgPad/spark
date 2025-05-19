@@ -15,7 +15,7 @@ export default {
         accent: "#060A14",
         "success-primary": "#053321",
         "success-secondary": "#074D31",
-        "brand-primary": "#ACFF73",
+        "brand-primary": "#FF5500FF",
         "brand-secondary": "#A3E683",
         attention: "#4E1D09",
         e: "#55160C",

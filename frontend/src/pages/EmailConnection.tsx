@@ -8,8 +8,10 @@ import { useState } from 'react';
 import { ROUTES } from "@/utils/routes"
 
 
-const LandingPage = () => {
+const EmailConnection = () => {
   const navigate = useNavigate();
+  const [code, setCode] = useState('');
+  const { loginWithCode } = useLoginWithEmail();
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full max-w-[100vw] flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
@@ -25,9 +27,31 @@ const LandingPage = () => {
 
           <div className="w-full max-w-[400px] space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Landing Page</label>
+              <label className="text-sm font-medium">Enter the code sent to your email</label>
+              <Input
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                type="email"
+                placeholder="123456"
+                className="w-full"
+              />
             </div>
           </div>
+        </div>
+
+        <div className="flex flex-col items-center gap-4 w-full max-w-[400px]">
+          <Button
+            onClick={() => {
+              loginWithCode({ code })
+              navigate(ROUTES.USERNAME)
+            }}
+            btnText="Continue"
+            size="xl"
+            className={twMerge(
+              "mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal md:mt-[24px]",
+            )}
+            textClassName="text-sm font-medium"
+          />
         </div>
       </section>
       <ScrollRestoration />
@@ -35,4 +59,4 @@ const LandingPage = () => {
   )
 }
 
-export default LandingPage
+export default EmailConnection
