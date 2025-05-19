@@ -13,19 +13,60 @@ const LandingPage = () => {
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full max-w-[100vw] flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
+      <div className="absolute left-4 top-4 z-50">
+        <Button
+          onClick={() => {
+            navigate(ROUTES.PROFILE)
+          }}
+          size="lg"
+          className="flex-1 bg-brand-primary hover:bg-brand-primary/80"
+        >
+          <Icon icon="SvgGear" className="text-xl text-fg-primary" />
+        </Button>
+      </div>
+      <div className="absolute right-4 top-4 z-50">
+        <Button
+          onClick={() => {
+            navigate(ROUTES.SEARCH)
+          }}
+          size="lg"
+          className="flex-1 bg-brand-primary hover:bg-brand-primary/80"
+        >
+          <Icon icon="SvgLoupe" className="text-xl text-fg-primary" />
+        </Button>
+      </div>
       <section className="z-[1] flex h-full w-full flex-1 flex-col items-center justify-between px-5 pb-[60px] pt-10 md:pb-[56px] md:pt-[40px]">
-        <div className="flex w-full flex-col items-center mt-[15vh]">
-          <h1 className="text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-[68px] md:leading-[74px] mb-4">
-            <span className="text-brand-primary">Spark-it</span>
-          </h1>
-
-          <h2 className="text-xl md:text-2xl text-center mb-12 opacity-75">
-            Make your idea become real
+        <div className="flex w-full flex-col items-center">
+          <h2 className="text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-[68px] md:leading-[74px] mb-4">
+            <span className="text-brand-primary">Explore</span>
           </h2>
 
-          <div className="w-full max-w-[400px] space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Landing Page</label>
+          <img 
+            src="/src/assets/landing-page-banner.png" 
+            alt="Explore Banner"
+            className="w-full max-w-[800px] h-[250px] mb-6 object-cover rounded-lg"
+          />
+
+          <div className="w-full max-w-[800px]">
+            <h3 className="text-2xl font-medium mb-6">Best Projects</h3>
+            
+            <div className="grid gap-6">
+              {[1, 2, 3].map((project) => (
+                <div key={project} className="flex items-center gap-4 p-4 bg-secondary rounded-lg">
+                  <img 
+                    src={`/project-${project}.jpg`}
+                    alt={`Project ${project}`}
+                    className="w-16 h-16 rounded-full object-cover"
+                  />
+                  <div className="flex-1">
+                    <h4 className="font-medium">Project Name {project}</h4>
+                    <div className="flex gap-4 text-sm opacity-75">
+                      <span>Market Cap: $1.2M</span>
+                      <span>Token Price: $0.12</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
