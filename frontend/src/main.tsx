@@ -22,7 +22,7 @@ import { ROUTES } from "./utils/routes"
 // import BackOfficeDashboard from "./pages/BackOfficeDashboard"
 import { AuthProvider } from "./hooks/useAuthContext"
 import ProtectedRoute from "./components/BackOffice/ProtectedRoute"
-import LandingPage from "./pages/LandingPage"
+import Project2 from "./pages/Project2"
 import Project from "./pages/Project"
 import DraftPickPage from "./pages/DraftPickPage"
 import DraftPicks from "./pages/DraftPicks"
@@ -34,6 +34,8 @@ import Username from "./pages/Username"
 import Terms from "./pages/Terms"
 import Profile from "./pages/Profile"
 import Search from "./pages/Search"
+import Projects from "./pages/Projects"
+
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -119,8 +121,22 @@ const router = createBrowserRouter([
         element: <EmailConnection />,
       },
       {
-        path: ROUTES.LANDING_PAGE,
-        element: <LandingPage />,
+        path: ROUTES.PROJECTS,
+        element: <Outlet />,
+        children: [
+          {
+            path: ":id",
+            element: (
+              <ProjectDataProvider>
+                <Project />
+              </ProjectDataProvider>
+            ),
+          },
+          {
+            path: "",
+            element: <Projects />,
+          },
+        ],
       },
       {
         path: ROUTES.USERNAME,
