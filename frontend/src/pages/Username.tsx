@@ -2,8 +2,7 @@ import { ScrollRestoration, useNavigate } from "react-router-dom"
 import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { Input } from "@/components/Input/Input"
-import { Icon } from "@/components/Icon/Icon"
-import { useLoginWithEmail, usePrivy } from '@privy-io/react-auth';
+import { useSolanaWallets } from '@privy-io/react-auth';
 import { useEffect, useState } from 'react';
 import { ROUTES } from "@/utils/routes"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
@@ -13,11 +12,9 @@ const Username = () => {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
-  const address = usePrivy().user?.wallet?.address;
-  console.log(address);
-  const email = localStorage.getItem('sparkit-email');
-  console.log(email);
-  
+  const { wallets } = useSolanaWallets();
+  const address = wallets[0]?.address
+
   const handleSubmit = async () => {
     setAttemptedSubmit(true);
     if (!username) {
@@ -27,10 +24,9 @@ const Username = () => {
       try {
         await backendSparkApi.postCreateUserStatus({
           address: address || '',
-          email: email || '',
           username: username
         });
-        // Navigate or perform other actions after successful submission
+        navigate(ROUTES.PROJECTS)
       } catch (error) {
         console.error("Error creating user status:", error);
         setError('Failed to create user status. Please try again.');
@@ -40,7 +36,7 @@ const Username = () => {
 
   const invalidUsername = !username.trim() || username.length < 3;
 
-useEffect(() => {
+  useEffect(() => {
     if (attemptedSubmit) {
       if (invalidUsername) {
         setError('Username must be at least 3 characters long');

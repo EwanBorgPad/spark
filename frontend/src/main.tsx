@@ -35,7 +35,7 @@ import Terms from "./pages/Terms"
 import Profile from "./pages/Profile"
 import Search from "./pages/Search"
 import Projects from "./pages/Projects"
-
+import Providers from "./providers/PrivyProvider"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -59,52 +59,9 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <QueryClientProvider client={queryClient}>
-        <PrivyProvider
-          appId={import.meta.env.VITE_PRIVY_APP_ID || ''}
-          clientId={import.meta.env.VITE_PRIVY_CLIENT_ID || ''}
-          config={{
-            embeddedWallets: {
-              solana: {
-                createOnLogin: 'all-users',
-              },
-            },
-            appearance: {
-              accentColor: "#6A6FF5",
-              theme: "#222224",
-              showWalletLoginFirst: false,
-              logo: "https://auth.privy.io/logos/privy-logo-dark.png",
-              landingHeader: 'Spark',
-              loginMessage: 'Your gateway to the future of DeFi',
-              walletChainType: "solana-only",
-              walletList: [
-                "detected_wallets",
-                "metamask",
-                "phantom"
-              ]
-            },
-            loginMethods: [
-              "email",
-              "twitter",
-              "apple",
-              "google"
-            ],
-            fundingMethodConfig: {
-              moonpay: {
-                useSandbox: true
-              }
-            },
-            mfa: {
-              noPromptOnMfaRequired: false
-            },
-            solanaClusters: [
-              { name: 'mainnet-beta', rpcUrl: import.meta.env.VITE_MAINNET_RPC_URL },
-              { name: 'devnet', rpcUrl: import.meta.env.VITE_DEVNET_RPC_URL },
-            ]
-          }}
-        >
+        <Providers>
           <App />
-        </PrivyProvider>
-
+        </Providers>
       </QueryClientProvider>
     ),
     children: [

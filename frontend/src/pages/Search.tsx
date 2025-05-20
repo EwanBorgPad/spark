@@ -16,7 +16,7 @@ const Profile = () => {
       <div className="absolute left-4 top-4 z-50">
         <Button
           onClick={() => {
-            navigate(ROUTES.LANDING_PAGE)
+            navigate(ROUTES.PROJECTS)
           }}
           size="lg"
           className="flex-1 bg-brand-primary hover:bg-brand-primary/80"

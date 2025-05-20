@@ -1,3 +1,5 @@
+// File: functions/user.ts or functions/api/user.ts (depending on your structure)
+
 import { CreateUsernameRequestSchema } from "../../shared/models";
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils";
 
@@ -6,73 +8,135 @@ type ENV = {
   VITE_ENVIRONMENT_TYPE: string
 }
 
-export const onRequestOptions: PagesFunction<ENV> = async (ctx) => {
-  try {
-    if (ctx.env.VITE_ENVIRONMENT_TYPE !== "develop") return
+// Define a general handler function for applying CORS headers
+function corsHeaders(request) {
+  const origin = request.headers.get('Origin') || 'http://localhost:5173';
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Max-Age': '86400',
+  };
+}
+
+// Handle all HTTP methods
+export const onRequest: PagesFunction<ENV> = async (context) => {
+  // Extract method and add CORS headers for all responses
+  const request = context.request;
+  const method = request.method.toUpperCase();
+  
+  // For OPTIONS requests, return just the CORS headers
+  if (method === 'OPTIONS') {
     return new Response(null, {
       status: 204,
-      headers: {
-        'Access-Control-Allow-Origin': 'http://localhost:5173', // Adjusted this for frontend origin
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
-    })
-  } catch (error) {
-    return jsonResponse({ message: error }, 500)
+      headers: corsHeaders(request)
+    });
+  }
+  
+  // For POST requests, process the user creation
+  if (method === 'POST') {
+    return handlePostRequest(context);
+  }
+  // For POST requests, process the user creation
+  if (method === 'GET') {
+    return handleGetRequest(context);
+  }
+  
+  // For any other methods, return 405 Method Not Allowed
+  return new Response('Method Not Allowed', {
+    status: 405,
+    headers: {
+      ...corsHeaders(request),
+      'Allow': 'OPTIONS, POST'
+    }
+  });
+};
+
+// Handle GET requests
+async function handleGetRequest(ctx) {
+  const db = ctx.env.DB;
+  const request = ctx.request;
+  
+  try {
+    const { searchParams } = new URL(ctx.request.url)
+    const address = searchParams.get("address")
+    
+    if (!address) {
+      return jsonResponse({ message: "Address is required" }, 400)
+    }
+
+    const existingUser = await db
+      .prepare("SELECT address, username FROM user WHERE address = ?")
+      .bind(address)
+      .first();
+
+    if (!existingUser) {
+      return jsonResponse({ message: "User not found" }, 404)
+    }
+
+    return jsonResponse(existingUser, 200)
+  } catch (e) {
+    await reportError(db, e);
+    return jsonResponse({ message: "Something went wrong..." }, 500)
   }
 }
 
-
-
-export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
-  const db = ctx.env.DB
+// Handle POST requests
+async function handlePostRequest(context) {
+  const db = context.env.DB;
+  const request = context.request;
+  
   try {
-    const requestJson = await ctx.request.json()
-    const { error, data } = CreateUsernameRequestSchema.safeParse(requestJson)
+    const requestJson = await request.json();
+
+    const { error, data } = CreateUsernameRequestSchema.safeParse(requestJson);
 
     if (error) {
-      return jsonResponse(null, 400)
+      return new Response(JSON.stringify({ message: "Invalid request data" }), {
+        status: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders(request)
+        }
+      });
     }
 
-    ///// authorization
-    const { publicKey, email, username } = data
+    const { publicKey, username } = data;
 
-    // const existingUser = await db
-    //   .prepare("SELECT * FROM user WHERE address = ?")
-    //   .bind(publicKey)
-    //   .run()
-
-    // console.log({ existingUser })
-
-    const existingUser = false
+    // Check for existing user
+    const existingUser = await db
+      .prepare("SELECT * FROM user WHERE address = ?")
+      .bind(publicKey)
+      .first(); // Use .first() to get a single record or null
 
     if (!existingUser) {
-      console.log("User not found in db, inserting...")
       await db
-        .prepare("INSERT INTO user (address, email, username) VALUES (?1, ?2, ?3)")
-        .bind(publicKey, email, username)
-        .run()
-      console.log("User inserted into db.")
+        .prepare("INSERT INTO user (address, username) VALUES (?1, ?2)")
+        .bind(publicKey, username)
+        .run();
     } else {
-      console.log("User found in db, updating...")
-
       await db
-        .prepare("UPDATE user SET email = ?2, username = ?3 WHERE address = ?1")
-        .bind(publicKey, email, username)
-        .run()
-      console.log("User updated")
+        .prepare("UPDATE user SET username = ?2 WHERE address = ?1")
+        .bind(publicKey, username)
+        .run();
     }
 
-    return new Response(null, {
-      status: 204,
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
       headers: {
-        "Access-Control-Allow-Origin": "http://localhost:5173",
-        "Access-Control-Allow-Methods": "OPTIONS, GET, POST, PUT",
-        "Access-Control-Allow-Headers": "Content-Type"
+        'Content-Type': 'application/json',
+        ...corsHeaders(request)
       }
     });
   } catch (e) {
-    await reportError(db, e)
-    return jsonResponse({ message: "Something went wrong..." }, 500)
+    await reportError(db, e);
+    return new Response(JSON.stringify({ message: "Something went wrong..." }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        ...corsHeaders(request)
+      }
+    });
   }
 }

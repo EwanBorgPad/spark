@@ -4,6 +4,5 @@
 
 CREATE TABLE user (
     address TEXT NOT NULL PRIMARY KEY,
-    email TEXT NOT NULL UNIQUE,
     username TEXT NOT NULL UNIQUE
 );
