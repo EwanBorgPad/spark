@@ -4,14 +4,29 @@ import { Button } from "@/components/Button/Button"
 import { Input } from "@/components/Input/Input"
 import { Icon } from "@/components/Icon/Icon"
 import { useLoginWithEmail } from '@privy-io/react-auth';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ROUTES } from "@/utils/routes"
 
 
 const EmailConnection = () => {
   const navigate = useNavigate();
   const [code, setCode] = useState('');
-  const { loginWithCode } = useLoginWithEmail();
+  const { loginWithCode, state } = useLoginWithEmail();
+  const [error, setError] = useState('');
+
+  const handleLogin = async () => {
+    try {
+      loginWithCode({ code });
+    } catch (error) {
+      setError((error as Error).message || 'An unknown error occurred');
+    }
+  };
+
+  useEffect(() => {
+    if (state.status === 'done') {
+      navigate(ROUTES.USERNAME);
+    }
+  }, [state.status]);
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full max-w-[100vw] flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
@@ -30,27 +45,34 @@ const EmailConnection = () => {
               <label className="text-sm font-medium">Enter the code sent to your email</label>
               <Input
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
-                type="email"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 6) {
+                    setCode(value.replace(/[^0-9]/g, ''));
+                  }
+                }}
+                type="text"
                 placeholder="123456"
                 className="w-full"
+                maxLength={6}
               />
+              <div className="text-sm text-fg-error-primary text-opacity-75">
+                <span>{error}</span>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col items-center gap-4 w-full max-w-[400px]">
           <Button
-            onClick={() => {
-              loginWithCode({ code })
-              navigate(ROUTES.USERNAME)
-            }}
+            onClick={handleLogin}
             btnText="Continue"
             size="xl"
             className={twMerge(
-              "mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal md:mt-[24px]",
+              "mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal md:mt-[24px] disabled:opacity-50",
             )}
             textClassName="text-sm font-medium"
+            disabled={code === ''}
           />
         </div>
       </section>

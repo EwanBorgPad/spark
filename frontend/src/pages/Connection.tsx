@@ -5,17 +5,16 @@ import { Input } from "@/components/Input/Input"
 import { Icon } from "@/components/Icon/Icon"
 import { useLoginWithEmail } from '@privy-io/react-auth';
 import { useLoginWithOAuth } from '@privy-io/react-auth';
-import { Provider, useState } from 'react';
+import { Provider, useState, useEffect } from 'react';
 import { ROUTES } from "@/utils/routes"
 
 
 const Connection = () => {
   const navigate = useNavigate();
 
-
   const [email, setEmail] = useState('');
   const { sendCode } = useLoginWithEmail();
-  const { state, loading } = useLoginWithOAuth();
+  localStorage.setItem('sparkit-email', email);
 
   const { initOAuth } = useLoginWithOAuth({
     onComplete: ({ user, isNewUser }) => {
@@ -31,6 +30,31 @@ const Connection = () => {
     }
   });
 
+  const [error, setError] = useState('');
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false);
+
+  useEffect(() => {
+    if (attemptedSubmit) {
+      const invalidEmail = !email.includes('@') || !email.includes('.');
+      if (invalidEmail) {
+        setError('Invalid email');
+      } else {
+        setError('');
+      }
+    }
+  }, [email, attemptedSubmit]);
+
+  const handleSubmit = () => {
+    setAttemptedSubmit(true);
+    const invalidEmail = !email.includes('@') || !email.includes('.');
+    if (invalidEmail) {
+      setError('Invalid email');
+    } else {
+      setError('');
+      sendCode({ email });
+      navigate(ROUTES.EMAIL_CONNECTION);
+    }
+  };
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full max-w-[100vw] flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
@@ -54,6 +78,11 @@ const Connection = () => {
                 placeholder="your@email.com"
                 className="w-full"
               />
+              {attemptedSubmit && error && (
+                <div className="text-sm text-fg-error-primary text-opacity-75">
+                  <span>{error}</span>
+                </div>
+              )}
               <p className="text-sm text-fg-secondary">We&apos;ll use this to create your account</p>
             </div>
 
@@ -103,16 +132,14 @@ const Connection = () => {
 
         <div className="flex flex-col items-center gap-4 w-full max-w-[400px]">
           <Button
-            onClick={() => {
-              sendCode({ email })
-              navigate(ROUTES.EMAIL_CONNECTION)
-            }}
+            onClick={handleSubmit}
             btnText="Continue"
             size="xl"
             className={twMerge(
-              "mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal md:mt-[24px]",
+              "mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal md:mt-[24px] disabled:opacity-50",
             )}
             textClassName="text-sm font-medium"
+            disabled={email === ''}
           />
         </div>
       </section>

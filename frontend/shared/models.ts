@@ -6,7 +6,8 @@ import { TierSchema } from "./eligibilityModel"
  */
 export type UserModel = {
   wallet_address: string
-  json: UserModelJson
+  email: string
+  username: string
 }
 type TwitterHandle = string
 type ProjectId = string
@@ -308,6 +309,13 @@ export const CreateEmailRequestSchema = z.object({
   isLedgerTransaction: z.boolean().optional().default(false),
 })
 export type CreateEmailRequest = z.infer<typeof CreateEmailRequestSchema>
+
+export const CreateUsernameRequestSchema = z.object({
+  publicKey: z.string(),
+  email: z.string(),
+  username: z.string(),
+})
+export type CreateUsernameRequest = z.infer<typeof CreateUsernameRequestSchema>
 
 export type TokenAmountModel = {
   /**

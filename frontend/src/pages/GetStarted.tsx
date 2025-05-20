@@ -20,9 +20,16 @@ import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { ROUTES } from "@/utils/routes"
 import { useNavigate } from "react-router-dom"
+import { usePrivy } from '@privy-io/react-auth';
+
 
 const GetStarted = () => {
   const navigate = useNavigate()
+  const { ready } = usePrivy();
+
+  if (!ready) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full max-w-[100vw] flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">

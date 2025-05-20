@@ -3,14 +3,53 @@ import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { Input } from "@/components/Input/Input"
 import { Icon } from "@/components/Icon/Icon"
-import { useLoginWithEmail } from '@privy-io/react-auth';
-import { useState } from 'react';
+import { useLoginWithEmail, usePrivy } from '@privy-io/react-auth';
+import { useEffect, useState } from 'react';
 import { ROUTES } from "@/utils/routes"
-
+import { backendSparkApi } from "@/data/api/backendSparkApi"
 
 const Username = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
+  const [error, setError] = useState('');
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false);
+  const address = usePrivy().user?.wallet?.address;
+  console.log(address);
+  const email = localStorage.getItem('sparkit-email');
+  console.log(email);
+  
+  const handleSubmit = async () => {
+    setAttemptedSubmit(true);
+    if (!username) {
+      setError('Username is required');
+    } else {
+      setError('');
+      try {
+        await backendSparkApi.postCreateUserStatus({
+          address: address || '',
+          email: email || '',
+          username: username
+        });
+        // Navigate or perform other actions after successful submission
+      } catch (error) {
+        console.error("Error creating user status:", error);
+        setError('Failed to create user status. Please try again.');
+      }
+    }
+  };
+
+  const invalidUsername = !username.trim() || username.length < 3;
+
+useEffect(() => {
+    if (attemptedSubmit) {
+      if (invalidUsername) {
+        setError('Username must be at least 3 characters long');
+      } else {
+        setError('');
+      }
+    }
+  }, [username, attemptedSubmit]);
+
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full max-w-[100vw] flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
@@ -40,9 +79,7 @@ const Username = () => {
 
         <div className="flex flex-col items-center gap-4 w-full max-w-[400px]">
           <Button
-            onClick={() => {  
-              navigate(ROUTES.TERMS)
-            }}
+            onClick={handleSubmit}
             btnText="Continue"
             size="xl"
             className={twMerge(
