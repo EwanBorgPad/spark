@@ -3,24 +3,68 @@ import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { Input } from "@/components/Input/Input"
 import { Icon } from "@/components/Icon/Icon"
-import { useLoginWithEmail } from '@privy-io/react-auth';
-import { useLoginWithOAuth } from '@privy-io/react-auth';
+import { useLoginWithEmail, useLoginWithOAuth } from '@privy-io/react-auth';
+import {useSolanaWallets} from '@privy-io/react-auth/solana';
 import { Provider, useState, useEffect } from 'react';
 import { ROUTES } from "@/utils/routes"
+import { toast } from "react-toastify"
 
 
 const Connection = () => {
   const navigate = useNavigate();
+  
+  const { createWallet } = useSolanaWallets();
 
   const [email, setEmail] = useState('');
   const { sendCode } = useLoginWithEmail();
   localStorage.setItem('sparkit-email', email);
 
   const { initOAuth } = useLoginWithOAuth({
-    onComplete: ({ user, isNewUser }) => {
+    onComplete: async ({ user, isNewUser }) => {
       console.log('User logged in successfully', user);
       if (isNewUser) {
-        navigate(ROUTES.USERNAME)
+        console.log("user.email", user.email)
+        console.log("user.google.email", user.google?.email)
+        console.log("user.email.address", user.email?.address)
+        setEmail(user.google?.email || '')
+        localStorage.setItem('sparkit-email', user.email?.address || '')
+        console.log("email", email)
+        
+        try {
+          toast.info("Creating wallet...", {
+            position: "top-right",
+            autoClose: false,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+          });
+          
+          const wallet = await createWallet();
+          console.log("wallet", wallet)
+          localStorage.setItem('sparkit-wallet', wallet.address)
+          
+          toast.success("Wallet created successfully!", {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+          
+          navigate(ROUTES.USERNAME)
+        } catch (error) {
+          toast.error("Failed to create wallet. Please try again.", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+          console.error("Error creating wallet:", error);
+        }
       } else {
         navigate(ROUTES.PROJECTS)
       }
@@ -29,6 +73,8 @@ const Connection = () => {
       console.error('Login failed', error);
     }
   });
+
+
 
   const [error, setError] = useState('');
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
