@@ -53,7 +53,7 @@ const Terms = () => {
         <div className="flex flex-col items-center gap-4 w-full max-w-[400px]">
           <Button
             onClick={() => {
-              navigate(ROUTES.LANDING_PAGE)
+              navigate(ROUTES.PROJECTS)
             }}
             btnText="Continue"
             size="xl"

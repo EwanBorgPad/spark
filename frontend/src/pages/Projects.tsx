@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { ROUTES } from "@/utils/routes"
 
 
-const LandingPage = () => {
+const Projects = () => {
   const navigate = useNavigate();
 
   return (
@@ -52,7 +52,11 @@ const LandingPage = () => {
             
             <div className="grid gap-6">
               {[1, 2, 3].map((project) => (
-                <div key={project} className="flex items-center gap-4 p-4 bg-secondary rounded-lg">
+                <div 
+                  key={project} 
+                  className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
+                  onClick={() => navigate(`${ROUTES.PROJECTS}/${project}`)}
+                >
                   <img 
                     src={`/project-${project}.jpg`}
                     alt={`Project ${project}`}
@@ -76,4 +80,4 @@ const LandingPage = () => {
   )
 }
 
-export default LandingPage
+export default Projects
