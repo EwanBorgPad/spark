@@ -9,17 +9,17 @@ const GET_USER = API_BASE_URL + "/user"
 
 type PostCreateUserStatusArgs = {
   address: string
-  email: string
+  // email: string
   username: string
 }
 
-const postCreateUserStatus = async ({ address, email, username }: PostCreateUserStatusArgs): Promise<boolean> => {
+const postCreateUserStatus = async ({ address, username }: PostCreateUserStatusArgs): Promise<boolean> => {
   // Create complete URL for the request
   const url = new URL(POST_CREATE_USER)
   
   const body = JSON.stringify({
     publicKey: address, // Make sure this matches the expected schema on the server
-    email,
+    // email,
     username,
   })
 
@@ -48,7 +48,6 @@ type GetUserArgs = {
 
 type UserModelJson = {
   address: string
-  email: string
   username: string
 }
 

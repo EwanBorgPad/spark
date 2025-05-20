@@ -6,7 +6,6 @@ import { TierSchema } from "./eligibilityModel"
  */
 export type UserModel = {
   wallet_address: string
-  email: string
   username: string
 }
 type TwitterHandle = string
@@ -312,7 +311,6 @@ export type CreateEmailRequest = z.infer<typeof CreateEmailRequestSchema>
 
 export const CreateUsernameRequestSchema = z.object({
   publicKey: z.string(),
-  email: z.string(),
   username: z.string(),
 })
 export type CreateUsernameRequest = z.infer<typeof CreateUsernameRequestSchema>

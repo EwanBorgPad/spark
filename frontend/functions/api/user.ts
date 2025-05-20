@@ -67,7 +67,7 @@ async function handleGetRequest(ctx) {
     }
 
     const existingUser = await db
-      .prepare("SELECT address, email, username FROM user WHERE address = ?")
+      .prepare("SELECT address, username FROM user WHERE address = ?")
       .bind(address)
       .first();
 
@@ -89,7 +89,6 @@ async function handlePostRequest(context) {
   
   try {
     const requestJson = await request.json();
-    console.log("Received JSON:", requestJson);
 
     const { error, data } = CreateUsernameRequestSchema.safeParse(requestJson);
 
@@ -103,7 +102,7 @@ async function handlePostRequest(context) {
       });
     }
 
-    const { publicKey, email, username } = data;
+    const { publicKey, username } = data;
 
     // Check for existing user
     const existingUser = await db
@@ -111,22 +110,16 @@ async function handlePostRequest(context) {
       .bind(publicKey)
       .first(); // Use .first() to get a single record or null
 
-    console.log("existingUser", existingUser);
-
     if (!existingUser) {
-      console.log("User not found in db, inserting...");
       await db
-        .prepare("INSERT INTO user (address, email, username) VALUES (?1, ?2, ?3)")
-        .bind(publicKey, email, username)
+        .prepare("INSERT INTO user (address, username) VALUES (?1, ?2)")
+        .bind(publicKey, username)
         .run();
-      console.log("User inserted into db.");
     } else {
-      console.log("User found in db, updating...");
       await db
-        .prepare("UPDATE user SET email = ?2, username = ?3 WHERE address = ?1")
-        .bind(publicKey, email, username)
+        .prepare("UPDATE user SET username = ?2 WHERE address = ?1")
+        .bind(publicKey, username)
         .run();
-      console.log("User updated");
     }
 
     return new Response(JSON.stringify({ success: true }), {

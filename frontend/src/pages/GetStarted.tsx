@@ -29,6 +29,7 @@ import { backendSparkApi } from "@/data/api/backendSparkApi"
 const GetStarted = () => {
   const navigate = useNavigate()
   const { ready } = usePrivy();
+  const { login } = usePrivy();
   const { wallets } = useSolanaWallets();
 
   const address = wallets[0]?.address
@@ -39,14 +40,20 @@ const GetStarted = () => {
   });
 
   useEffect(() => {
-    if (user) {
-      console.log("user", user);
+    if (user && user.username) {
       navigate(ROUTES.PROJECTS);
     }
   }, [user, navigate]);
 
   if (!ready || isLoading) {
     return <div>Loading...</div>;
+  }
+
+  const handleLogin = () => {
+    login()
+    const address = wallets[0]?.address
+    localStorage.setItem('sparkit-wallet', address || '');
+    navigate(ROUTES.USERNAME)
   }
 
   return (
@@ -76,7 +83,7 @@ const GetStarted = () => {
         <div className="flex flex-col items-center gap-4 w-full">
           <Button
             onClick={() => {
-              navigate(ROUTES.CONNECTION)
+              handleLogin()
             }}
             btnText="Get Started"
             size="xl"

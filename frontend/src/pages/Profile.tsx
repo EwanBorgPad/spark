@@ -17,9 +17,9 @@ const Profile = () => {
   const [userId, setUserId] = useState('');
 
   const { data: user, isLoading } = useQuery({
-    queryKey: ['user', userId],
-    queryFn: () => userId ? backendSparkApi.getUser({ address: userId }) : Promise.resolve(null),
-    enabled: !!userId,
+    queryKey: ['user', address],
+    queryFn: () => address ? backendSparkApi.getUser({ address: address }) : Promise.resolve(null),
+    enabled: !!address,
   });
 
   const handleUserIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,13 +70,13 @@ const Profile = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              {/* <div className="flex items-center gap-3">
                 <Icon icon="SvgDocument" className="text-brand-primary" />
                 <div>
                   <label className="text-sm font-medium">Email</label>
                   <p className="text-lg">{user?.email}</p>
                 </div>
-              </div>
+              </div> */}
 
               <div className="flex items-center gap-3">
                 <Icon icon="SvgWalletFilled" className="text-brand-primary" />

@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { Input } from "@/components/Input/Input"
 import { Icon } from "@/components/Icon/Icon"
-import { useLoginWithEmail, useLoginWithOAuth } from '@privy-io/react-auth';
+import { useLoginWithEmail, useLoginWithOAuth, usePrivy } from '@privy-io/react-auth';
 import {useSolanaWallets} from '@privy-io/react-auth/solana';
 import { Provider, useState, useEffect } from 'react';
 import { ROUTES } from "@/utils/routes"
@@ -12,6 +12,7 @@ import { toast } from "react-toastify"
 
 const Connection = () => {
   const navigate = useNavigate();
+  const { login } = usePrivy();
   
   const { createWallet } = useSolanaWallets();
 
@@ -74,8 +75,6 @@ const Connection = () => {
     }
   });
 
-
-
   const [error, setError] = useState('');
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
@@ -110,13 +109,14 @@ const Connection = () => {
             <span className="text-brand-primary">Spark-it</span>
           </h1>
 
-          <h2 className="text-xl md:text-2xl text-center mb-12 opacity-75">
+          <h2 className="text-xl md:text-2xl text-center mb-32 opacity-75">
             Make your idea become real
           </h2>
 
           <div className="w-full max-w-[400px] space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Enter your email</label>
+              <Button onClick={() => login()} size="xl" className="w-full py-4 text-lg">Login</Button>
+              {/* <label className="text-sm font-medium">Enter your email</label>
               <Input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -171,12 +171,12 @@ const Connection = () => {
                 textClassName="text-white"
               >
                 <Icon icon="SvgApple" className="text-xl text-fg-primary" />
-              </Button>
-            </div>
+              </Button> */}
+            </div> 
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-4 w-full max-w-[400px]">
+        {/* <div className="flex flex-col items-center gap-4 w-full max-w-[400px]">
           <Button
             onClick={handleSubmit}
             btnText="Continue"
@@ -187,7 +187,7 @@ const Connection = () => {
             textClassName="text-sm font-medium"
             disabled={email === ''}
           />
-        </div>
+        </div> */}
       </section>
       <ScrollRestoration />
     </main>
