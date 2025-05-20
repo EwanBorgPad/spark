@@ -26,10 +26,10 @@ const Username = () => {
           address: address || '',
           username: username
         });
-        navigate(ROUTES.PROJECTS)
+        navigate(ROUTES.TERMS)
       } catch (error) {
         console.error("Error creating user status:", error);
-        setError('Failed to create user status. Please try again.');
+        setError('Username already taken');
       }
     }
   };
@@ -69,6 +69,7 @@ const Username = () => {
                 placeholder="satoshi"
                 className="w-full"
               />
+              {error && <p className="text-sm text-fg-error-primary">{error}</p>}
             </div>
           </div>
         </div>
@@ -80,10 +81,10 @@ const Username = () => {
             size="xl"
             className={twMerge(
               "mt-[2px] w-full px-7 py-4 text-lg font-medium leading-normal md:mt-[24px]",
-              !username && "opacity-50 cursor-not-allowed"
+              !username || invalidUsername ? "opacity-50 cursor-not-allowed" : ""
             )}
             textClassName="text-sm font-medium"
-            disabled={!username}
+            disabled={!username || invalidUsername}
           />
         </div>
       </section>

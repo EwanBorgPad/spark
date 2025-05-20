@@ -31,7 +31,6 @@ const GetStarted = () => {
   const { ready } = usePrivy();
   const { login } = usePrivy();
   const { wallets } = useSolanaWallets();
-
   const address = wallets[0]?.address
 
   const { data: user, isLoading } = useQuery({
@@ -40,21 +39,27 @@ const GetStarted = () => {
   });
 
   useEffect(() => {
-    if (user && user.username) {
-      navigate(ROUTES.PROJECTS);
+    if (!ready || isLoading) {
+      return; // Wait until ready and user data is loaded
     }
-  }, [user, navigate]);
+
+    if (user && user.username) {
+      console.log("user", user);
+      navigate(ROUTES.PROJECTS);
+    } else {
+      console.log("User not found:", user);
+    }
+
+    if (address && !user?.username) {
+      localStorage.setItem('sparkit-wallet', address || '');
+      navigate(ROUTES.USERNAME);
+    }
+  }, [user, address, ready, isLoading, navigate]);
 
   if (!ready || isLoading) {
     return <div>Loading...</div>;
   }
 
-  const handleLogin = () => {
-    login()
-    const address = wallets[0]?.address
-    localStorage.setItem('sparkit-wallet', address || '');
-    navigate(ROUTES.USERNAME)
-  }
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full max-w-[100vw] flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
@@ -83,7 +88,7 @@ const GetStarted = () => {
         <div className="flex flex-col items-center gap-4 w-full">
           <Button
             onClick={() => {
-              handleLogin()
+              login()
             }}
             btnText="Get Started"
             size="xl"
