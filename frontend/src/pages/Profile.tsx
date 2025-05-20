@@ -3,20 +3,46 @@ import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { Input } from "@/components/Input/Input"
 import { Icon } from "@/components/Icon/Icon"
-import { useLoginWithEmail } from '@privy-io/react-auth';
-import { useState } from 'react';
+import { useLoginWithEmail, useSolanaWallets } from '@privy-io/react-auth';
+import { useState, startTransition } from 'react';
 import { ROUTES } from "@/utils/routes"
+import { useQuery } from "@tanstack/react-query"
+import { backendSparkApi } from "@/data/api/backendSparkApi"
 
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { wallets } = useSolanaWallets();
+  const address = wallets[0]?.address
+  const [userId, setUserId] = useState('');
+
+  const { data: user, isLoading } = useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => userId ? backendSparkApi.getUser({ address: userId }) : Promise.resolve(null),
+    enabled: !!userId,
+  });
+
+  const handleUserIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newUserId = e.target.value;
+    setUserId(newUserId);
+    
+    startTransition(() => {
+      setUserId(newUserId);
+    });
+  };
+
+  console.log("user", user)
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full max-w-[100vw] flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
       <div className="absolute left-4 top-4 z-50">
         <Button
           onClick={() => {
-            navigate(ROUTES.LANDING_PAGE)
+            navigate(ROUTES.PROJECTS)
           }}
           size="lg"
           className="flex-1 bg-brand-primary hover:bg-brand-primary/80"
@@ -40,7 +66,7 @@ const Profile = () => {
                 <Icon icon="SvgTwoAvatars" className="text-brand-primary" />
                 <div>
                   <label className="text-sm font-medium">Username</label>
-                  <p className="text-lg">@username</p>
+                  <p className="text-lg">{user?.username}</p>
                 </div>
               </div>
 
@@ -48,7 +74,7 @@ const Profile = () => {
                 <Icon icon="SvgDocument" className="text-brand-primary" />
                 <div>
                   <label className="text-sm font-medium">Email</label>
-                  <p className="text-lg">user@example.com</p>
+                  <p className="text-lg">{user?.email}</p>
                 </div>
               </div>
 
@@ -56,7 +82,7 @@ const Profile = () => {
                 <Icon icon="SvgWalletFilled" className="text-brand-primary" />
                 <div>
                   <label className="text-sm font-medium">Wallet Address</label>
-                  <p className="text-lg break-all">0x1234...5678</p>
+                  <p className="text-lg break-all">{user?.address}</p>
                 </div>
               </div>
             </div>

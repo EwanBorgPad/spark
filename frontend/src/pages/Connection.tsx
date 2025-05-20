@@ -22,7 +22,7 @@ const Connection = () => {
       if (isNewUser) {
         navigate(ROUTES.USERNAME)
       } else {
-        navigate(ROUTES.LANDING_PAGE)
+        navigate(ROUTES.PROJECTS)
       }
     },
     onError: (error) => {

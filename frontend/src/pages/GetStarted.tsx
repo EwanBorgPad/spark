@@ -1,4 +1,5 @@
 import { ScrollRestoration } from "react-router-dom"
+import { useEffect } from "react"
 
 import solanaImg from "@/assets/angelStaking/solana.png"
 import swissborgLogo from "@/assets/landingPage/swissborg-logo.png"
@@ -20,14 +21,31 @@ import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { ROUTES } from "@/utils/routes"
 import { useNavigate } from "react-router-dom"
-import { usePrivy } from '@privy-io/react-auth';
+import { usePrivy, useSolanaWallets } from '@privy-io/react-auth';
+import { useQuery } from "@tanstack/react-query"
+import { backendSparkApi } from "@/data/api/backendSparkApi"
 
 
 const GetStarted = () => {
   const navigate = useNavigate()
   const { ready } = usePrivy();
+  const { wallets } = useSolanaWallets();
 
-  if (!ready) {
+  const address = wallets[0]?.address
+
+  const { data: user, isLoading } = useQuery({
+    queryKey: ['user', address],
+    queryFn: () => address ? backendSparkApi.getUser({ address }) : Promise.resolve(null),
+  });
+
+  useEffect(() => {
+    if (user) {
+      console.log("user", user);
+      navigate(ROUTES.PROJECTS);
+    }
+  }, [user, navigate]);
+
+  if (!ready || isLoading) {
     return <div>Loading...</div>;
   }
 

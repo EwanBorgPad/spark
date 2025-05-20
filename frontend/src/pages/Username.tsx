@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { Input } from "@/components/Input/Input"
 import { Icon } from "@/components/Icon/Icon"
-import { useLoginWithEmail, usePrivy } from '@privy-io/react-auth';
+import { useLoginWithEmail, usePrivy, useSolanaWallets } from '@privy-io/react-auth';
 import { useEffect, useState } from 'react';
 import { ROUTES } from "@/utils/routes"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
@@ -13,8 +13,9 @@ const Username = () => {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
-  const address = usePrivy().user?.wallet?.address;
-  console.log(address);
+  const { wallets } = useSolanaWallets();
+  const address = wallets[0]?.address
+  console.log("address", address)
   const email = localStorage.getItem('sparkit-email');
   console.log(email);
   
@@ -30,6 +31,8 @@ const Username = () => {
           email: email || '',
           username: username
         });
+        console.log("user created")
+        navigate(ROUTES.PROJECTS)
         // Navigate or perform other actions after successful submission
       } catch (error) {
         console.error("Error creating user status:", error);
