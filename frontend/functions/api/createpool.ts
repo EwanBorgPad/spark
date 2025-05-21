@@ -1,9 +1,10 @@
 // src/pages/api/createToken.ts
 
-// import { S3 } from 'aws-sdk';
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
 import { DynamicBondingCurveClient } from '@meteora-ag/dynamic-bonding-curve-sdk';
 import bs58 from "bs58";
+import { PinataSDK } from "pinata";
+
 
 
 const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID as string;
@@ -23,6 +24,7 @@ type ENV = {
   PRIVATE_KEY: string
   BUCKET: R2Bucket
   R2: R2Bucket
+  PINATA_JWT: string
 }
 
 
@@ -46,6 +48,7 @@ export const onRequestPost = async (context: { request: Request, env: ENV }): Pr
         headers: { 'Content-Type': 'application/json' },
       });
     }
+
 
     const keyPair = Keypair.generate();
     const mint = keyPair.publicKey.toBase58();
@@ -127,7 +130,7 @@ export const onRequestPost = async (context: { request: Request, env: ENV }): Pr
 };
 
 async function uploadMetadata(
-  context: { env: { BUCKET?: R2Bucket; R2?: R2Bucket } },
+  context: { env: { BUCKET?: R2Bucket; R2?: R2Bucket; PINATA_JWT: string } },
   params: { tokenName: string; tokenSymbol: string; mint: string; image: string, description: string }
 ): Promise<string | false> {
   const metadata = {
@@ -142,22 +145,31 @@ async function uploadMetadata(
     // Convert metadata to JSON string
     const jsonString = JSON.stringify(metadata, null, 2);
 
-    // Convert JSON string to a buffer
     const fileBuffer = new TextEncoder().encode(jsonString); // Create a Uint8Array from the JSON string
+    const file = new File([fileBuffer], fileName, { type: 'application/json' });
+
+    const pinata = new PinataSDK({
+      pinataJwt: context.env.PINATA_JWT,
+      pinataGateway: "amethyst-imperial-yak-2.mypinata.cloud",
+    });
+    const upload = await pinata.upload.public.file(file);
+
+
+    // Convert JSON string to a buffer
 
     // Access the R2 bucket
-    const bucket = context.env.BUCKET || context.env.R2; // Ensure you have the correct bucket binding
-    if (!bucket) {
-      throw new Error('No R2 bucket binding available in the environment');
-    }
+    // const bucket = context.env.BUCKET || context.env.R2; // Ensure you have the correct bucket binding
+    // if (!bucket) {
+    //   throw new Error('No R2 bucket binding available in the environment');
+    // }
 
-    // Upload using bucket.put
-    await bucket.put(fileName, fileBuffer, {
-      httpMetadata: {
-        contentType: 'application/json',
-      },
-    });
-    console.log(`Metadata uploaded to R2: ${PUBLIC_R2_URL}/${fileName}`);
+    // // Upload using bucket.put
+    // await bucket.put(fileName, fileBuffer, {
+    //   httpMetadata: {
+    //     contentType: 'application/json',
+    //   },
+    // });
+    // console.log(`Metadata uploaded to R2: ${PUBLIC_R2_URL}/${fileName}`);
 
     return `${PUBLIC_R2_URL}/${fileName}`;
   } catch (error) {
