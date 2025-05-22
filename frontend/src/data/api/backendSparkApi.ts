@@ -1,12 +1,13 @@
 import {
-  CreateUsernameRequestSchema // Make sure this schema is correctly imported
+  CreateUsernameRequestSchema, // Make sure this schema is correctly imported
+  GetTokensResponse
 } from "../../../shared/models.ts"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || `${window.location.origin}/api`
 
 const POST_CREATE_USER = API_BASE_URL + "/user"
 const GET_USER = API_BASE_URL + "/user"
-
+const GET_TOKENS = API_BASE_URL + "/tokens"
 type PostCreateUserStatusArgs = {
   address: string
   // email: string
@@ -59,7 +60,20 @@ const getUser = async ({ address }: GetUserArgs): Promise<UserModelJson> => {
   return json
 }
 
+type GetTokensArgs = {
+  isGraduated: string
+}
+
+const getTokens = async ({ isGraduated }: GetTokensArgs): Promise<GetTokensResponse> => {
+  const url = new URL(GET_TOKENS)
+  url.searchParams.set("isGraduated", isGraduated)
+  const response = await fetch(url)
+  const json = await response.json()
+  return json
+}
+
 export const backendSparkApi = {
   postCreateUserStatus,
   getUser,
+  getTokens,
 }

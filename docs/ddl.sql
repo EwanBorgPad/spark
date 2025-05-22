@@ -6,3 +6,9 @@ CREATE TABLE user (
     address TEXT NOT NULL PRIMARY KEY,
     username TEXT NOT NULL UNIQUE
 );
+
+CREATE TABLE tokens (
+    mint TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    isGraduated BOOLEAN NOT NULL
+);

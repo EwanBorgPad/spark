@@ -59,6 +59,17 @@ export type UserModelJson = {
     }
   >
 }
+
+export type TokenModel = {
+  mint: string
+  name: string
+  isGraduated: string
+}
+
+export type GetTokensResponse = {
+  tokens: TokenModel[]
+}
+
 /**
  * Represents url type
  * Not sure what we wanna validate there ATM, so leave it as string for now.

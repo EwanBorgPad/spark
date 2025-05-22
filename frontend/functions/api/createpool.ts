@@ -25,6 +25,7 @@ type ENV = {
   BUCKET: R2Bucket
   R2: R2Bucket
   PINATA_JWT: string
+  DB: D1Database
 }
 
 
@@ -37,7 +38,7 @@ interface CreatePoolRequest {
 
 export const onRequestPost = async (context: { request: Request, env: ENV }): Promise<Response> => {
   const request = context.request; // Extract the request from context
-
+  const db = context.env.DB;
   try {
     const { tokenName, tokenSymbol, imageUrl, tokenDescription } = await request.json() as CreatePoolRequest;
 
@@ -112,6 +113,14 @@ export const onRequestPost = async (context: { request: Request, env: ENV }): Pr
     // Send transaction
     const connection = new Connection(context.env.RPC_URL, 'confirmed');
     const txSignature = await connection.sendRawTransaction(poolTx.serialize(), { skipPreflight: false, preflightCommitment: 'confirmed' });
+
+
+    if (txSignature) {
+      await db
+        .prepare("INSERT INTO tokens (mint, name, isGraduated) VALUES (?1, ?2, ?3)")
+        .bind(mint, tokenName, false)
+        .run();
+    }
 
     return new Response(JSON.stringify({
       success: true,
