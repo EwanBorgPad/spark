@@ -94,51 +94,72 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       communityTokenType,
       councilTokenType
     );
+    console.log("createRealmInstruction", createRealmInstruction);
 
 
-    // // You might also want to create governance and treasury
-    // const realmAccount = await splGovernance.getRealmByName(name);
-    // console.log("realmAccount", realmAccount);
 
-    // const createGovernanceInstruction = await splGovernance.createGovernanceInstruction(
-    //   config: GovernanceConfig, 
-    //   realmAccount: PublicKey, 
-    //   governanceAuthority: PublicKey, 
-    //   tokenOwnerRecord: PublicKey | undefined, 
-    //   payer: PublicKey, 
-    //   governanceAccountSeed?: PublicKey, 
-    //   voterWeightRecord?: PublicKey
-    // );
+    const realmPubKey = createRealmInstruction.keys[0].pubkey;
 
-    // const createNativeTreasuryInstruction = await splGovernance.createNativeTreasuryInstruction(
-    //     realmAccount,
-    //     payerPubKey
-    // );
+    console.log("Creating governance instruction with:");
+    console.log("realmPubKey:", realmPubKey.toBase58());
+    console.log("payerPubKey:", payerPubKey.toBase58());
+    console.log("councilTokenMintPubKey:", councilTokenMintPubKey ? councilTokenMintPubKey.toBase58() : "undefined");
 
-    // const setRealmAuthorityInstruction = await splGovernance.setRealmAuthorityInstruction(
-    //     realmAccount,
-    //     payerPubKey,
-    //     'SetChecked'
-    // );
+    const createGovernanceInstruction = await splGovernance.createGovernanceInstruction(
+      {
+        communityVoteThreshold: { yesVotePercentage: [50] },
+        minCommunityWeightToCreateProposal: minCommunityWeightToCreateGovernance,
+        minTransactionHoldUpTime: 0,
+        votingBaseTime: 216000,
+        communityVoteTipping: { disabled: {} },
+        councilVoteThreshold: { disabled: {} },
+        councilVetoVoteThreshold: { disabled: {} },
+        minCouncilWeightToCreateProposal: 1,
+        councilVoteTipping: { strict: {} },
+        communityVetoVoteThreshold: { disabled: {} },
+        votingCoolOffTime: 43200,
+        depositExemptProposalCount: 10,
+      },
+      realmPubKey,
+      payerPubKey,
+      undefined,
+      payerPubKey
+    );
+    console.log("createGovernanceInstruction", createGovernanceInstruction);
 
-    // Fetch the latest blockhash
-    const { blockhash } = await connection.getLatestBlockhash();
+    // Extract governance public key from the governance instruction
+    const governancePubKey = createGovernanceInstruction.keys[1].pubkey;
+
+    const createNativeTreasuryInstruction = await splGovernance.createNativeTreasuryInstruction(
+      governancePubKey, // Use governance public key instead of realm public key
+      payerPubKey
+    );
+    console.log("createNativeTreasuryInstruction", createNativeTreasuryInstruction);
+
+    // Create the transaction with only the first 3 instructions
+    const transaction2 = new Transaction().add(
+        createRealmInstruction, 
+        createGovernanceInstruction, 
+        createNativeTreasuryInstruction
+    );
 
     // Create the transaction and set the blockhash
-    const transaction = new Transaction().add(createRealmInstruction);
-    transaction.recentBlockhash = blockhash;
-    transaction.feePayer = payerPubKey; // Set the fee payer
+    const { blockhash } = await connection.getLatestBlockhash();
+    transaction2.recentBlockhash = blockhash;
+    transaction2.feePayer = payerPubKey; // Set the fee payer
+    console.log("transaction2", transaction2);
+    console.log("transaction2", transaction2.serialize({ requireAllSignatures: false }).toString('base64'));
 
     // Sign the transaction
-    transaction.sign(wallet);
+    transaction2.sign(wallet);
 
     // Send the transaction
-    const txSignature = await connection.sendRawTransaction(transaction.serialize(), { skipPreflight: false, preflightCommitment: 'confirmed' });
+    const txSignature2 = await connection.sendRawTransaction(transaction2.serialize(), { skipPreflight: false, preflightCommitment: 'confirmed' });
 
-    if (txSignature) {
+    if (txSignature2) {
       return jsonResponse({
         success: true,
-        txSignature: txSignature,
+        txSignature2: txSignature2,
       }, 200);
     }
 
@@ -146,7 +167,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     // In a real implementation, you might want to serialize the transaction
     return jsonResponse({
       message: "DAO creation transaction prepared successfully!",
-      transaction: transaction.serialize({ requireAllSignatures: false }).toString('base64'),
+      transaction: transaction2.serialize({ requireAllSignatures: false }).toString('base64'),
       realmName: name
     }, 200);
 
