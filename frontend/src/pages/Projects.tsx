@@ -6,10 +6,31 @@ import { Icon } from "@/components/Icon/Icon"
 import { useLoginWithEmail } from '@privy-io/react-auth';
 import { useState } from 'react';
 import { ROUTES } from "@/utils/routes"
-
+import { useQuery } from "@tanstack/react-query"
+import { GetTokensResponse } from "shared/models"
+import { backendSparkApi } from "@/data/api/backendSparkApi"
 
 const Projects = () => {
+  const { data: sparksData, isLoading: sparksLoading, refetch: sparksRefetch } = useQuery<GetTokensResponse>({
+    queryFn: () =>
+      backendSparkApi.getTokens({
+        isGraduated: "false",
+      }),
+    queryKey: ["getTokens", "isGraduated", "false"],
+  })
+  const { data: blazesData, isLoading: blazesLoading, refetch: blazesRefetch } = useQuery<GetTokensResponse>({
+    queryFn: () =>
+      backendSparkApi.getTokens({
+        isGraduated: "true",
+      }),
+    queryKey: ["getTokens", "isGraduated", "true"],
+  })
+
+  console.log(sparksData)
+  console.log(blazesData)
+  
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('sparks');
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full max-w-[100vw] flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
@@ -47,30 +68,147 @@ const Projects = () => {
             className="w-full max-w-[800px] h-[250px] mb-6 object-cover rounded-lg"
           />
 
-          <div className="w-full max-w-[800px]">
-            <h3 className="text-2xl font-medium mb-6">Best Projects</h3>
-            
-            <div className="grid gap-6">
-              {[1, 2, 3].map((project) => (
-                <div 
-                  key={project} 
-                  className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
-                  onClick={() => navigate(`${ROUTES.PROJECTS}/${project}`)}
-                >
-                  <img 
-                    src={`/project-${project}.jpg`}
-                    alt={`Project ${project}`}
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                  <div className="flex-1">
-                    <h4 className="font-medium">Project Name {project}</h4>
-                    <div className="flex gap-4 text-sm opacity-75">
-                      <span>Market Cap: $1.2M</span>
-                      <span>Token Price: $0.12</span>
-                    </div>
+          {/* Mobile Tabs */}
+          <div className="flex md:hidden w-full mb-4">
+            <button
+              className={twMerge(
+                "flex-1 py-2 text-sm font-vcr border-b-2 transition-colors uppercase",
+                activeTab === 'sparks'
+                  ? "border-brand-primary text-brand-primary"
+                  : "border-transparent text-fg-secondary"
+              )}
+              onClick={() => setActiveTab('sparks')}
+            >
+              Sparks
+            </button>
+            <button
+              className={twMerge(
+                "flex-1 py-2 text-sm font-vcr border-b-2 transition-colors uppercase",
+                activeTab === 'blazes'
+                  ? "border-brand-primary text-brand-primary"
+                  : "border-transparent text-fg-secondary"
+              )}
+              onClick={() => setActiveTab('blazes')}
+            >
+              Blazes
+            </button>
+          </div>
+
+          {/* Content for Mobile Tabs */}
+          <div className="md:hidden w-full mt-4">
+            {activeTab === 'sparks' ? (
+              <div className="bg-default rounded-lg overflow-hidden">
+                <div className="w-full">
+                  <h3 className="text-2xl font-medium mb-6">Sparks</h3>
+                  <div className="grid gap-6">
+                    {sparksData?.tokens.map((token) => (
+                      <div 
+                        key={token.mint} 
+                        className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
+                        onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`)}
+                      >
+                        <img 
+                          src={`/project-${token.mint}.jpg`}
+                          alt={`Project ${token.mint}`}
+                          className="w-16 h-16 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <h4 className="font-medium">{token.name}</h4>
+                          <div className="flex gap-4 text-sm opacity-75">
+                            <span>Market Cap: $1.2M</span>
+                            <span>Token Price: $0.12</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
+              </div>
+            ) : (
+              <div className="bg-default rounded-lg overflow-hidden">
+                <div className="w-full">
+                  <h3 className="text-2xl font-medium mb-6">Blazes</h3>
+                  <div className="grid gap-6">
+                    {blazesData?.tokens.map((token) => (
+                      <div 
+                        key={token.mint} 
+                        className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
+                        onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`)}
+                      >
+                        <img 
+                          src={`/project-${token.mint}.jpg`}
+                          alt={`Project ${token.mint}`}
+                          className="w-16 h-16 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <h4 className="font-medium">{token.name}</h4>
+                          <div className="flex gap-4 text-sm opacity-75">
+                            <span>Market Cap: $1.5M</span>
+                            <span>Token Price: $0.15</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Layout */}
+          <div className="hidden md:flex w-full gap-4">
+            {/* Sparks Section */}
+            <div className="w-full">
+              <h3 className="text-2xl font-medium mb-6">Sparks</h3>
+              <div className="grid gap-6">
+                {[1, 2, 3].map((project) => (
+                  <div 
+                    key={project} 
+                    className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
+                    onClick={() => navigate(`${ROUTES.PROJECTS}/${project}`)}
+                  >
+                    <img 
+                      src={`/project-${project}.jpg`}
+                      alt={`Project ${project}`}
+                      className="w-16 h-16 rounded-full object-cover"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-medium">New Project Name {project}</h4>
+                      <div className="flex gap-4 text-sm opacity-75">
+                        <span>Market Cap: $1.2M</span>
+                        <span>Token Price: $0.12</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Blazes Section */}
+            <div className="w-full">
+              <h3 className="text-2xl font-medium mb-6">Blazes</h3>
+              <div className="grid gap-6">
+                {[4, 5, 6].map((project) => (
+                  <div 
+                    key={project} 
+                    className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
+                    onClick={() => navigate(`${ROUTES.PROJECTS}/${project}`)}
+                  >
+                    <img 
+                      src={`/project-${project}.jpg`}
+                      alt={`Project ${project}`}
+                      className="w-16 h-16 rounded-full object-cover"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-medium">Graduated Project Name {project}</h4>
+                      <div className="flex gap-4 text-sm opacity-75">
+                        <span>Market Cap: $1.5M</span>
+                        <span>Token Price: $0.15</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

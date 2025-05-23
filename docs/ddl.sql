@@ -6,3 +6,24 @@ CREATE TABLE user (
     address TEXT NOT NULL PRIMARY KEY,
     username TEXT NOT NULL UNIQUE
 );
+
+CREATE TABLE tokens (
+    mint TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    isGraduated BOOLEAN NOT NULL
+);
+
+CREATE TABLE error (
+    id TEXT NOT NULL PRIMARY KEY,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    json JSONB NOT NULL DEFAULT '{}'
+);
+
+CREATE TABLE api_key (
+    id TEXT NOT NULL PRIMARY KEY,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    permissions TEXT NOT NULL,
+    hash TEXT NOT NULL
+);
+

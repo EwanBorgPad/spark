@@ -4,6 +4,12 @@ import { AnalystRoleEnum } from "./schemas/analysis-schema"
 import { InferSelectModel, sql } from "drizzle-orm"
 import { z } from "zod"
 
+export const tokensTable = sqliteTable("tokens", {
+  mint: text("mint").primaryKey(),
+  name: text("name").notNull(),
+  isGraduated: text("isGraduated").notNull().default("false"),
+})
+
 export const whitelistTable = sqliteTable(
   "whitelist",
   {

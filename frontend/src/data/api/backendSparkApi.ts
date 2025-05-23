@@ -1,14 +1,17 @@
 import {
-  CreateUsernameRequestSchema // Make sure this schema is correctly imported
+  CreateUsernameRequestSchema, // Make sure this schema is correctly imported
+  GetTokensResponse
 } from "../../../shared/models.ts"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || `${window.location.origin}/api`
 
 const POST_CREATE_USER = API_BASE_URL + "/user"
 const GET_USER = API_BASE_URL + "/user"
+const GET_TOKENS = API_BASE_URL + "/tokens"
+const CREATE_DAO = API_BASE_URL + "/createdao"
 
 type PostCreateUserStatusArgs = {
-  address: string
+  address: string 
   // email: string
   username: string
 }
@@ -59,7 +62,38 @@ const getUser = async ({ address }: GetUserArgs): Promise<UserModelJson> => {
   return json
 }
 
+type GetTokensArgs = {
+  isGraduated: string
+}
+
+const getTokens = async ({ isGraduated }: GetTokensArgs): Promise<GetTokensResponse> => {
+  const url = new URL(GET_TOKENS)
+  url.searchParams.set("isGraduated", isGraduated)
+  const response = await fetch(url)
+  const json = await response.json()
+  return json
+}
+
+type CreateDaoArgs = {
+  tokenName: string
+  tokenSymbol: string
+  tokenAddress: string
+}
+
+const createDao = async ({ tokenName, tokenSymbol, tokenAddress }: CreateDaoArgs): Promise<boolean> => {
+  const url = new URL(CREATE_DAO)
+  const response = await fetch(url, {
+    method: "POST",
+    // body: JSON.stringify({ tokenName, tokenSymbol, tokenAddress }),
+  })
+  const json = await response.json()
+  return json
+}
+
+
 export const backendSparkApi = {
   postCreateUserStatus,
   getUser,
+  getTokens,
+  createDao,
 }
