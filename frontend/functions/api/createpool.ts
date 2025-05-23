@@ -4,8 +4,8 @@ import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
 import { DynamicBondingCurveClient } from '@meteora-ag/dynamic-bonding-curve-sdk';
 import bs58 from "bs58";
 import { PinataSDK } from "pinata";
-
-
+import { jsonResponse } from './cfPagesFunctionsUtils';
+import { isApiKeyValid } from '../services/apiKeyService';
 
 const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID as string;
 const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY as string;
@@ -36,10 +36,16 @@ interface CreatePoolRequest {
   tokenDescription: string;
 }
 
-export const onRequestPost = async (context: { request: Request, env: ENV }): Promise<Response> => {
-  const request = context.request; // Extract the request from context
-  const db = context.env.DB;
+export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
+  const request = ctx.request; // Extract the request from context
+  const db = ctx.env.DB;
   try {
+
+    // authorize request
+    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
+      return jsonResponse(null, 401)
+    }
+
     const { tokenName, tokenSymbol, imageUrl, tokenDescription } = await request.json() as CreatePoolRequest;
 
     // Validate required fields
@@ -63,7 +69,7 @@ export const onRequestPost = async (context: { request: Request, env: ENV }): Pr
     //   });
     // }
 
-    const metadataUrl = await uploadMetadata(context, { tokenName, tokenSymbol, mint, image: imageUrl, description: tokenDescription });
+    const metadataUrl = await uploadMetadata(ctx, { tokenName, tokenSymbol, mint, image: imageUrl, description: tokenDescription });
     if (!metadataUrl) {
       return new Response(JSON.stringify({ error: 'Failed to upload metadata' }), {
         status: 400,
@@ -71,7 +77,7 @@ export const onRequestPost = async (context: { request: Request, env: ENV }): Pr
       });
     }
 
-    const privateKeyString = context.env.PRIVATE_KEY;
+    const privateKeyString = ctx.env.PRIVATE_KEY;
 
     if (!privateKeyString || typeof privateKeyString !== 'string') {
       throw new Error('Invalid private key format');
@@ -92,7 +98,7 @@ export const onRequestPost = async (context: { request: Request, env: ENV }): Pr
       tokenSymbol,
       metadataUrl,
       userWallet,
-    }, context);
+    }, ctx);
 
     // Sign the transaction with the private key
     // try {
@@ -111,7 +117,7 @@ export const onRequestPost = async (context: { request: Request, env: ENV }): Pr
 
     poolTx.sign(wallet, keyPair);
     // Send transaction
-    const connection = new Connection(context.env.RPC_URL, 'confirmed');
+    const connection = new Connection(ctx.env.RPC_URL, 'confirmed');
     const txSignature = await connection.sendRawTransaction(poolTx.serialize(), { skipPreflight: false, preflightCommitment: 'confirmed' });
 
 
@@ -139,7 +145,7 @@ export const onRequestPost = async (context: { request: Request, env: ENV }): Pr
 };
 
 async function uploadMetadata(
-  context: { env: { BUCKET?: R2Bucket; R2?: R2Bucket; PINATA_JWT: string } },
+  ctx: { env: { BUCKET?: R2Bucket; R2?: R2Bucket; PINATA_JWT: string } },
   params: { tokenName: string; tokenSymbol: string; mint: string; image: string, description: string }
 ): Promise<string | false> {
   const metadata = {
@@ -158,7 +164,7 @@ async function uploadMetadata(
     const file = new File([fileBuffer], fileName, { type: 'application/json' });
 
     const pinata = new PinataSDK({
-      pinataJwt: context.env.PINATA_JWT,
+      pinataJwt: ctx.env.PINATA_JWT,
       pinataGateway: "amethyst-imperial-yak-2.mypinata.cloud",
     });
     const upload = await pinata.upload.public.file(file);

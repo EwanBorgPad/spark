@@ -8,8 +8,10 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || `${window.location.ori
 const POST_CREATE_USER = API_BASE_URL + "/user"
 const GET_USER = API_BASE_URL + "/user"
 const GET_TOKENS = API_BASE_URL + "/tokens"
+const CREATE_DAO = API_BASE_URL + "/createdao"
+
 type PostCreateUserStatusArgs = {
-  address: string
+  address: string 
   // email: string
   username: string
 }
@@ -72,8 +74,26 @@ const getTokens = async ({ isGraduated }: GetTokensArgs): Promise<GetTokensRespo
   return json
 }
 
+type CreateDaoArgs = {
+  tokenName: string
+  tokenSymbol: string
+  tokenAddress: string
+}
+
+const createDao = async ({ tokenName, tokenSymbol, tokenAddress }: CreateDaoArgs): Promise<boolean> => {
+  const url = new URL(CREATE_DAO)
+  const response = await fetch(url, {
+    method: "POST",
+    // body: JSON.stringify({ tokenName, tokenSymbol, tokenAddress }),
+  })
+  const json = await response.json()
+  return json
+}
+
+
 export const backendSparkApi = {
   postCreateUserStatus,
   getUser,
   getTokens,
+  createDao,
 }
