@@ -10,10 +10,9 @@ import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
 import { useQuery } from "@tanstack/react-query"
-import { GetTokenResponse, DaoModel } from "shared/models"
-// import TokenChart from "@/components/TokenChart/TokenChart"
-// import TokenStats from "@/components/TokenStats/TokenStats"
-// import DAOInfo from "@/components/DAOInfo/DAOInfo"
+import { GetTokenResponse, DaoModel, GetTokenMarketResponse } from "shared/models"
+import TokenChart from "@/components/TokenChart/TokenChart"
+import TokenStats from "@/components/TokenStats/TokenStats"
 
 const Project = () => {
   const { id } = useParams()
@@ -35,9 +34,21 @@ const Project = () => {
     enabled: Boolean(tokenData?.token?.dao && tokenData?.token?.dao !== ""),
   })
 
+  // Fetch token market data
+  const { data: marketData, isLoading: marketLoading, error: marketError } = useQuery<GetTokenMarketResponse>({
+    queryFn: () =>
+      backendSparkApi.getTokenMarket({
+        address: id || "",
+      }),
+    queryKey: ["getTokenMarket", id],
+    enabled: Boolean(id),
+  })
+
   console.log("tokenData:", tokenData)
   console.log("daoData:", daoData)
   console.log("daoError:", daoError)
+  console.log("marketData:", marketData)
+  console.log("marketError:", marketError)
 
 
   return (
@@ -57,28 +68,71 @@ const Project = () => {
             size="20"
           />
           <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <Text
+                text={tokenData?.token?.name || marketData?.tokenMarketData?.name}
+                as="h1"
+                className="font-semibold"
+                isLoading={tokenLoading && marketLoading}
+                loadingClass="max-w-[120px]"
+              />
+              {marketData?.tokenMarketData?.symbol && (
+                <span className="px-2 py-1 bg-bg-primary/10 rounded text-sm font-medium text-fg-primary text-opacity-75">
+                  {marketData.tokenMarketData.symbol}
+                </span>
+              )}
+            </div>
             <Text
-              text={tokenData?.token?.name}
-              as="h1"
-              className="font-semibold"
-              isLoading={tokenLoading}
-              loadingClass="max-w-[120px]"
-            />
-            <Text
-              text={tokenData?.token?.dao}
+              text={tokenData?.token?.dao || `Token Address: ${id?.slice(0, 8)}...${id?.slice(-8)}`}
               as="span"
-              className="text-fg-primary text-opacity-75"
+              className="text-fg-primary text-opacity-75 font-mono text-sm"
               isLoading={tokenLoading}
             />
+            {marketData?.tokenMarketData?.price && (
+              <div className="flex items-center gap-2 mt-1">
+                <Text
+                  text={`$${marketData.tokenMarketData.price < 0.001 
+                    ? marketData.tokenMarketData.price.toExponential(3)
+                    : marketData.tokenMarketData.price.toFixed(marketData.tokenMarketData.price < 1 ? 6 : 4)
+                  }`}
+                  as="span"
+                  className="font-semibold text-lg"
+                  isLoading={marketLoading}
+                />
+                <span className={`text-sm font-medium ${
+                  marketData.tokenMarketData.priceChange24h >= 0 ? 'text-green-500' : 'text-red-500'
+                }`}>
+                  {marketData.tokenMarketData.priceChange24h >= 0 ? '+' : ''}
+                  {marketData.tokenMarketData.priceChange24h.toFixed(2)}%
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Price Chart */}
-        <div className="w-full rounded-lg bg-bg-secondary p-4">
-          <div className="h-[300px] flex items-center justify-center">
-            <Text text="Price Chart Coming Soon" as="p" className="text-fg-primary text-opacity-75" />
+        {marketLoading ? (
+          <div className="w-full rounded-lg bg-bg-secondary p-4">
+            <div className="h-[300px] flex items-center justify-center">
+              <Text text="Loading price chart..." as="p" className="text-fg-primary text-opacity-75" />
+            </div>
           </div>
-        </div>
+        ) : marketError ? (
+          <div className="w-full rounded-lg bg-bg-secondary p-4 border border-red-500/20">
+            <div className="h-[300px] flex items-center justify-center flex-col gap-2">
+              <Text text="Failed to load price chart" as="p" className="text-red-400" />
+              <Text text="Market data may not be available for this token" as="p" className="text-sm text-fg-primary text-opacity-75" />
+            </div>
+          </div>
+        ) : marketData?.tokenMarketData ? (
+          <TokenChart tokenMarketData={marketData.tokenMarketData} />
+        ) : (
+          <div className="w-full rounded-lg bg-bg-secondary p-4">
+            <div className="h-[300px] flex items-center justify-center">
+              <Text text="No market data available" as="p" className="text-fg-primary text-opacity-75" />
+            </div>
+          </div>
+        )}
 
         {/* Description */}
         <div className="w-full">
@@ -91,18 +145,35 @@ const Project = () => {
         </div>
 
         {/* Token Stats */}
-        <div className="w-full rounded-lg bg-bg-secondary p-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Text text="Market Cap" as="h3" className="text-fg-primary text-opacity-75" />
-              <Text text="Coming Soon" as="p" className="font-semibold" />
-            </div>
-            <div>
-              <Text text="Token Price" as="h3" className="text-fg-primary text-opacity-75" />
-              <Text text="Coming Soon" as="p" className="font-semibold" />
+        {marketData?.tokenMarketData ? (
+          <TokenStats 
+            tokenMarketData={marketData.tokenMarketData} 
+            isLoading={marketLoading}
+          />
+        ) : (
+          <div className="w-full rounded-lg bg-bg-secondary p-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Text text="Market Cap" as="h3" className="text-fg-primary text-opacity-75" />
+                <Text 
+                  text={marketLoading ? "Loading..." : "N/A"} 
+                  as="p" 
+                  className="font-semibold" 
+                  isLoading={marketLoading} 
+                />
+              </div>
+              <div>
+                <Text text="Token Price" as="h3" className="text-fg-primary text-opacity-75" />
+                <Text 
+                  text={marketLoading ? "Loading..." : "N/A"} 
+                  as="p" 
+                  className="font-semibold" 
+                  isLoading={marketLoading} 
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* DAO Info */}
         {tokenData?.token?.dao && tokenData?.token?.dao !== "" && (

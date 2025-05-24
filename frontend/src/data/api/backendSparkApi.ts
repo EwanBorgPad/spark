@@ -3,7 +3,8 @@ import {
   GetTokensResponse,
   TokenModel,
   DaoModel,
-  GetUserTokensResponse
+  GetUserTokensResponse,
+  GetTokenMarketResponse
 } from "../../../shared/models.ts"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || `${window.location.origin}/api`
@@ -15,6 +16,7 @@ const GET_TOKEN = API_BASE_URL + "/token"
 const CREATE_DAO = API_BASE_URL + "/createdao"
 const GET_DAO = API_BASE_URL + "/getdao"
 const GET_USER_TOKENS = API_BASE_URL + "/getusertokens"
+const GET_TOKEN_MARKET = API_BASE_URL + "/gettokenmarket"
 
 type PostCreateUserStatusArgs = {
   address: string 
@@ -144,6 +146,21 @@ const getUserTokens = async ({ address }: GetUserTokensArgs): Promise<GetUserTok
   return json
 }
 
+type GetTokenMarketArgs = {
+  address: string
+}
+
+const getTokenMarket = async ({ address }: GetTokenMarketArgs): Promise<GetTokenMarketResponse> => {
+  const url = new URL(GET_TOKEN_MARKET)
+  url.searchParams.set("address", address)
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(`Failed to fetch token market data: ${response.statusText}`)
+  }
+  const json = await response.json()
+  return json
+}
+
 export const backendSparkApi = {
   postCreateUserStatus,
   getUser,
@@ -152,4 +169,5 @@ export const backendSparkApi = {
   getToken,
   getDao,
   getUserTokens,
+  getTokenMarket,
 }

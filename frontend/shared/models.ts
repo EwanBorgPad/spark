@@ -162,6 +162,28 @@ export type GetUserTokensResponse = {
   tokenCount: number
 }
 
+export type TokenMarketData = {
+  address: string
+  name: string
+  symbol: string
+  price: number
+  priceChange24h: number
+  marketCap: number
+  volume24h: number
+  liquidity: number
+  fdv: number
+  priceChart: Array<{
+    timestamp: number
+    price: number
+  }>
+  lastUpdated: string
+}
+
+export type GetTokenMarketResponse = {
+  success: boolean
+  tokenMarketData: TokenMarketData
+}
+
 /**
  * Represents url type
  * Not sure what we wanna validate there ATM, so leave it as string for now.
