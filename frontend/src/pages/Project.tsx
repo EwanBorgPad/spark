@@ -15,6 +15,7 @@ import TokenChart from "@/components/TokenChart/TokenChart"
 import TokenStats from "@/components/TokenStats/TokenStats"
 import ProposalVoting from "@/components/ProposalVoting/ProposalVoting"
 import GovernanceStatus from "@/components/GovernanceStatus/GovernanceStatus"
+import JupiterSwap from "@/components/JupiterSwap"
 
 const Project = () => {
   const { id } = useParams()
@@ -101,17 +102,16 @@ const Project = () => {
             {marketData?.tokenMarketData?.price && (
               <div className="flex items-center gap-2 mt-1">
                 <Text
-                  text={`$${marketData.tokenMarketData.price < 0.001 
+                  text={`$${marketData.tokenMarketData.price < 0.001
                     ? marketData.tokenMarketData.price.toExponential(3)
                     : marketData.tokenMarketData.price.toFixed(marketData.tokenMarketData.price < 1 ? 6 : 4)
-                  }`}
+                    }`}
                   as="span"
                   className="font-semibold text-lg"
                   isLoading={marketLoading}
                 />
-                <span className={`text-sm font-medium ${
-                  marketData.tokenMarketData.priceChange24h >= 0 ? 'text-green-500' : 'text-red-500'
-                }`}>
+                <span className={`text-sm font-medium ${marketData.tokenMarketData.priceChange24h >= 0 ? 'text-green-500' : 'text-red-500'
+                  }`}>
                   {marketData.tokenMarketData.priceChange24h >= 0 ? '+' : ''}
                   {marketData.tokenMarketData.priceChange24h.toFixed(2)}%
                 </span>
@@ -156,8 +156,8 @@ const Project = () => {
 
         {/* Token Stats */}
         {marketData?.tokenMarketData ? (
-          <TokenStats 
-            tokenMarketData={marketData.tokenMarketData} 
+          <TokenStats
+            tokenMarketData={marketData.tokenMarketData}
             isLoading={marketLoading}
           />
         ) : (
@@ -165,25 +165,31 @@ const Project = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Text text="Market Cap" as="h3" className="text-fg-primary text-opacity-75" />
-                <Text 
-                  text={marketLoading ? "Loading..." : "N/A"} 
-                  as="p" 
-                  className="font-semibold" 
-                  isLoading={marketLoading} 
+                <Text
+                  text={marketLoading ? "Loading..." : "N/A"}
+                  as="p"
+                  className="font-semibold"
+                  isLoading={marketLoading}
                 />
               </div>
               <div>
                 <Text text="Token Price" as="h3" className="text-fg-primary text-opacity-75" />
-                <Text 
-                  text={marketLoading ? "Loading..." : "N/A"} 
-                  as="p" 
-                  className="font-semibold" 
-                  isLoading={marketLoading} 
+                <Text
+                  text={marketLoading ? "Loading..." : "N/A"}
+                  as="p"
+                  className="font-semibold"
+                  isLoading={marketLoading}
                 />
               </div>
             </div>
           </div>
         )}
+
+        {/* Jupiter Swap */}
+        <JupiterSwap
+          outputMint={tokenData?.token?.mint || id || ""}
+          className="w-full"
+        />
 
         {/* DAO Info */}
         {tokenData?.token?.dao && tokenData?.token?.dao !== "" && (
@@ -235,7 +241,7 @@ const Project = () => {
                 </div>
 
                 {/* Governance Status */}
-                <GovernanceStatus 
+                <GovernanceStatus
                   dao={daoData.dao}
                   onStatusUpdate={handleGovernanceStatusUpdate}
                 />
@@ -270,13 +276,13 @@ const Project = () => {
                     <div className="space-y-4">
                       {/* Show first 3 proposals with full voting interface */}
                       {daoData.dao.proposals.slice(0, 3).map((proposal) => (
-                        <ProposalVoting 
+                        <ProposalVoting
                           key={proposal.address}
                           proposal={proposal}
                           dao={daoData.dao}
                         />
                       ))}
-                      
+
                       {/* Show remaining proposals in compact view */}
                       {daoData.dao.proposals.length > 3 && (
                         <div className="space-y-3 pt-4 border-t border-fg-primary/10">
@@ -297,15 +303,15 @@ const Project = () => {
 
                                     return (
                                       <span className={`px-2 py-1 rounded text-xs font-medium ${stateKey === 'voting' ? 'bg-blue-500/20 text-blue-400' :
-                                          stateKey === 'succeeded' ? 'bg-green-500/20 text-green-400' :
-                                            stateKey === 'completed' ? 'bg-purple-500/20 text-purple-400' :
-                                              stateKey === 'defeated' ? 'bg-red-500/20 text-red-400' :
-                                                stateKey === 'draft' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                  stateKey === 'signingOff' ? 'bg-orange-500/20 text-orange-400' :
-                                                    stateKey === 'executing' ? 'bg-indigo-500/20 text-indigo-400' :
-                                                      stateKey === 'cancelled' ? 'bg-gray-500/20 text-gray-400' :
-                                                        stateKey === 'vetoed' ? 'bg-red-600/20 text-red-300' :
-                                                          'bg-gray-500/20 text-gray-400'
+                                        stateKey === 'succeeded' ? 'bg-green-500/20 text-green-400' :
+                                          stateKey === 'completed' ? 'bg-purple-500/20 text-purple-400' :
+                                            stateKey === 'defeated' ? 'bg-red-500/20 text-red-400' :
+                                              stateKey === 'draft' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                stateKey === 'signingOff' ? 'bg-orange-500/20 text-orange-400' :
+                                                  stateKey === 'executing' ? 'bg-indigo-500/20 text-indigo-400' :
+                                                    stateKey === 'cancelled' ? 'bg-gray-500/20 text-gray-400' :
+                                                      stateKey === 'vetoed' ? 'bg-red-600/20 text-red-300' :
+                                                        'bg-gray-500/20 text-gray-400'
                                         }`}>
                                         {stateDisplay}
                                       </span>
