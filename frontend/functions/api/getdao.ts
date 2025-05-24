@@ -109,6 +109,25 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       // Get all governance accounts for this realm
       const governanceAccounts = await splGovernance.getGovernanceAccountsByRealm(realmPubKey);
       console.log(`Found ${governanceAccounts.length} governance accounts`);
+
+      // Calculate governance token holding account PDA for community mint
+      const [communityTokenHoldingAccount] = PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("governance"),
+          realmPubKey.toBuffer(),
+          realm.communityMint.toBuffer()
+        ],
+        governanceProgramId
+      );
+
+      // Calculate realm config account PDA
+      const [realmConfigAccount] = PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("realm-config"),
+          realmPubKey.toBuffer()
+        ],
+        governanceProgramId
+      );
       
       // Get all proposals for this realm by fetching proposals for each governance
       const allProposals = [];
@@ -128,6 +147,8 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
         name: realm.name,
         description: `Governance realm (${isV1 ? 'V1' : 'V2'}) with ${governanceAccounts.length} governance(s)`,
         communityMint: realm.communityMint.toBase58(),
+        communityTokenHoldingAccount: communityTokenHoldingAccount.toBase58(),
+        realmConfigAccount: realmConfigAccount.toBase58(),
         councilMint: isV1 
           ? (realm as any).config?.councilMint?.toBase58() || null
           : realm.config.councilMint?.toBase58() || null,

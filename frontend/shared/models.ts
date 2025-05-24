@@ -131,6 +131,8 @@ export type DaoModel = {
   name: string
   description: string
   communityMint: string
+  communityTokenHoldingAccount: string
+  realmConfigAccount: string
   councilMint: string | null
   authority: string | null
   version: 'V1' | 'V2'

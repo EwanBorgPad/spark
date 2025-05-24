@@ -13,6 +13,8 @@ import { useQuery } from "@tanstack/react-query"
 import { GetTokenResponse, DaoModel, GetTokenMarketResponse } from "shared/models"
 import TokenChart from "@/components/TokenChart/TokenChart"
 import TokenStats from "@/components/TokenStats/TokenStats"
+import ProposalVoting from "@/components/ProposalVoting/ProposalVoting"
+import GovernanceStatus from "@/components/GovernanceStatus/GovernanceStatus"
 
 const Project = () => {
   const { id } = useParams()
@@ -49,6 +51,14 @@ const Project = () => {
   console.log("daoError:", daoError)
   console.log("marketData:", marketData)
   console.log("marketError:", marketError)
+
+  const handleGovernanceStatusUpdate = () => {
+    // Refetch DAO data when governance status updates
+    if (daoData?.dao) {
+      // This would trigger a refetch in a real implementation
+      console.log("Governance status updated, refreshing data...")
+    }
+  }
 
 
   return (
@@ -224,6 +234,12 @@ const Project = () => {
                   </div>
                 </div>
 
+                {/* Governance Status */}
+                <GovernanceStatus 
+                  dao={daoData.dao}
+                  onStatusUpdate={handleGovernanceStatusUpdate}
+                />
+
                 {/* Governance Accounts */}
                 {daoData.dao.governances.length > 0 && (
                   <div className="rounded-lg bg-bg-secondary p-4">
@@ -247,54 +263,82 @@ const Project = () => {
                   </div>
                 )}
 
-                {/* Recent Proposals */}
+                {/* DAO Proposals with Voting Interface */}
                 {daoData.dao.proposals.length > 0 && (
                   <div className="rounded-lg bg-bg-secondary p-4">
-                    <Text text="Recent Proposals" as="h3" className="font-semibold mb-3" />
-                    <div className="space-y-3">
-                      {daoData.dao.proposals.slice(0, 5).map((proposal) => (
-                        <div key={proposal.address} className="border border-fg-primary/10 rounded p-3">
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-start">
-                              <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium" />
-                              {(() => {
-                                // Handle proposal state as object (Solana enum format)
-                                const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                                  ? Object.keys(proposal.state)[0]
-                                  : proposal.state;
-                                const stateDisplay = typeof stateKey === 'string'
-                                  ? stateKey.charAt(0).toUpperCase() + stateKey.slice(1)
-                                  : 'Unknown';
-
-                                return (
-                                  <span className={`px-2 py-1 rounded text-xs font-medium ${stateKey === 'voting' ? 'bg-blue-500/20 text-blue-400' :
-                                      stateKey === 'succeeded' ? 'bg-green-500/20 text-green-400' :
-                                        stateKey === 'completed' ? 'bg-purple-500/20 text-purple-400' :
-                                          stateKey === 'defeated' ? 'bg-red-500/20 text-red-400' :
-                                            stateKey === 'draft' ? 'bg-yellow-500/20 text-yellow-400' :
-                                              stateKey === 'signingOff' ? 'bg-orange-500/20 text-orange-400' :
-                                                stateKey === 'executing' ? 'bg-indigo-500/20 text-indigo-400' :
-                                                  stateKey === 'cancelled' ? 'bg-gray-500/20 text-gray-400' :
-                                                    stateKey === 'vetoed' ? 'bg-red-600/20 text-red-300' :
-                                                      'bg-gray-500/20 text-gray-400'
-                                    }`}>
-                                    {stateDisplay}
-                                  </span>
-                                );
-                              })()}
-                            </div>
-
-                            {proposal.description && (
-                              <Text text={proposal.description} as="p" className="text-sm text-fg-primary text-opacity-75" />
-                            )}
-
-                            <Text text={`${proposal.address.slice(0, 8)}...${proposal.address.slice(-8)}`} as="p" className="text-xs text-fg-primary text-opacity-50 font-mono" />
-                          </div>
-                        </div>
+                    <Text text="DAO Proposals" as="h3" className="font-semibold mb-4" />
+                    <div className="space-y-4">
+                      {/* Show first 3 proposals with full voting interface */}
+                      {daoData.dao.proposals.slice(0, 3).map((proposal) => (
+                        <ProposalVoting 
+                          key={proposal.address}
+                          proposal={proposal}
+                          dao={daoData.dao}
+                        />
                       ))}
+                      
+                      {/* Show remaining proposals in compact view */}
+                      {daoData.dao.proposals.length > 3 && (
+                        <div className="space-y-3 pt-4 border-t border-fg-primary/10">
+                          <Text text="Other Proposals" as="h3" className="font-medium mb-2" />
+                          {daoData.dao.proposals.slice(3).map((proposal) => (
+                            <div key={proposal.address} className="border border-fg-primary/10 rounded p-3">
+                              <div className="space-y-2">
+                                <div className="flex justify-between items-start">
+                                  <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium" />
+                                  {(() => {
+                                    // Handle proposal state as object (Solana enum format)
+                                    const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                      ? Object.keys(proposal.state)[0]
+                                      : proposal.state;
+                                    const stateDisplay = typeof stateKey === 'string'
+                                      ? stateKey.charAt(0).toUpperCase() + stateKey.slice(1)
+                                      : 'Unknown';
 
-                      {daoData.dao.proposals.length > 5 && (
-                        <Text text={`... and ${daoData.dao.proposals.length - 5} more proposals`} as="p" className="text-sm text-fg-primary text-opacity-75 text-center" />
+                                    return (
+                                      <span className={`px-2 py-1 rounded text-xs font-medium ${stateKey === 'voting' ? 'bg-blue-500/20 text-blue-400' :
+                                          stateKey === 'succeeded' ? 'bg-green-500/20 text-green-400' :
+                                            stateKey === 'completed' ? 'bg-purple-500/20 text-purple-400' :
+                                              stateKey === 'defeated' ? 'bg-red-500/20 text-red-400' :
+                                                stateKey === 'draft' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                  stateKey === 'signingOff' ? 'bg-orange-500/20 text-orange-400' :
+                                                    stateKey === 'executing' ? 'bg-indigo-500/20 text-indigo-400' :
+                                                      stateKey === 'cancelled' ? 'bg-gray-500/20 text-gray-400' :
+                                                        stateKey === 'vetoed' ? 'bg-red-600/20 text-red-300' :
+                                                          'bg-gray-500/20 text-gray-400'
+                                        }`}>
+                                        {stateDisplay}
+                                      </span>
+                                    );
+                                  })()}
+                                </div>
+
+                                {proposal.description && (
+                                  <Text text={proposal.description} as="p" className="text-sm text-fg-primary text-opacity-75" />
+                                )}
+
+                                <div className="flex justify-between text-xs text-fg-primary text-opacity-60">
+                                  <span>Yes: {(() => {
+                                    const weight = parseInt(proposal.options[0]?.voteWeight || "0");
+                                    if (weight === 0) return "0";
+                                    const formatted = weight / 1000000000;
+                                    if (formatted >= 1000000) return `${(formatted / 1000000).toFixed(1)}M`;
+                                    else if (formatted >= 1000) return `${(formatted / 1000).toFixed(1)}K`;
+                                    else return formatted.toFixed(1);
+                                  })()}</span>
+                                  <span>No: {(() => {
+                                    const weight = parseInt(proposal.denyVoteWeight || "0");
+                                    if (weight === 0) return "0";
+                                    const formatted = weight / 1000000000;
+                                    if (formatted >= 1000000) return `${(formatted / 1000000).toFixed(1)}M`;
+                                    else if (formatted >= 1000) return `${(formatted / 1000).toFixed(1)}K`;
+                                    else return formatted.toFixed(1);
+                                  })()}</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </div>
                   </div>
