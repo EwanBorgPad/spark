@@ -36,6 +36,8 @@ import Profile from "./pages/Profile"
 import Search from "./pages/Search"
 import Projects from "./pages/Projects"
 import Providers from "./providers/PrivyProvider"
+import MathisPage from "./pages/MathisPage"
+import PwaInstall from "./pages/PwaInstall"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -111,6 +113,10 @@ const router = createBrowserRouter([
         path: ROUTES.SEARCH,
         element: <Search />,
       },
+      {
+        path: "/mathis",
+        element: <MathisPage />,
+      },
       // @backOffice
       {
         path: ROUTES.BACK_OFFICE,
@@ -179,6 +185,10 @@ const router = createBrowserRouter([
       {
         path: ROUTES.TERMS_AND_CONDITIONS,
         element: <TermsAndConditions />,
+      },
+      {
+        path: "/pwa-install",
+        element: <PwaInstall />,
       },
       {
         path: "*",
