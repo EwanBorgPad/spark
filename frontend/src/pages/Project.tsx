@@ -154,33 +154,140 @@ const Project = () => {
           />
         </div>
 
-        {/* Token Stats */}
+                {/* Token Stats */}
         {marketData?.tokenMarketData ? (
-          <TokenStats
-            tokenMarketData={marketData.tokenMarketData}
+          <TokenStats 
+            tokenMarketData={marketData.tokenMarketData} 
             isLoading={marketLoading}
           />
         ) : (
           <div className="w-full rounded-lg bg-bg-secondary p-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Text text="Market Cap" as="h3" className="text-fg-primary text-opacity-75" />
-                <Text
-                  text={marketLoading ? "Loading..." : "N/A"}
-                  as="p"
-                  className="font-semibold"
-                  isLoading={marketLoading}
-                />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Text text="Token Information" as="h3" className="text-lg font-semibold" />
+                {!marketLoading && (
+                  <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded text-xs font-medium">
+                    Limited Data
+                  </span>
+                )}
               </div>
-              <div>
-                <Text text="Token Price" as="h3" className="text-fg-primary text-opacity-75" />
-                <Text
-                  text={marketLoading ? "Loading..." : "N/A"}
-                  as="p"
-                  className="font-semibold"
-                  isLoading={marketLoading}
-                />
-              </div>
+              
+              {marketLoading ? (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Text text="Market Cap" as="h3" className="text-fg-primary text-opacity-75" />
+                    <Text text="Loading..." as="p" className="font-semibold" isLoading={true} />
+                  </div>
+                  <div>
+                    <Text text="Token Price" as="h3" className="text-fg-primary text-opacity-75" />
+                    <Text text="Loading..." as="p" className="font-semibold" isLoading={true} />
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Basic Token Info */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Text text="Token Name" as="h3" className="text-fg-primary text-opacity-75 text-sm" />
+                      <Text 
+                        text={tokenData?.token?.name || "Unknown Token"} 
+                        as="p" 
+                        className="font-semibold" 
+                      />
+                    </div>
+                    <div>
+                      <Text text="Token Mint" as="h3" className="text-fg-primary text-opacity-75 text-sm" />
+                      <Text 
+                        text={tokenData?.token?.mint ? `${tokenData.token.mint.slice(0, 12)}...` : "Unknown"} 
+                        as="p" 
+                        className="font-semibold font-mono text-sm" 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Token Address */}
+                  <div>
+                    <Text text="Token Address" as="h3" className="text-fg-primary text-opacity-75 text-sm" />
+                    <div className="flex items-center gap-2 mt-1">
+                      <Text 
+                        text={`${id?.slice(0, 8)}...${id?.slice(-8)}`} 
+                        as="p" 
+                        className="font-mono text-sm" 
+                      />
+                      <button
+                        onClick={() => navigator.clipboard.writeText(id || "")}
+                        className="p-1 hover:bg-bg-primary/20 rounded"
+                        title="Copy address"
+                      >
+                        <Icon icon="SvgCopy" className="w-4 h-4 text-fg-primary text-opacity-60" />
+                      </button>
+                      <a
+                        href={`https://solscan.io/token/${id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-1 hover:bg-bg-primary/20 rounded"
+                        title="View on Solscan"
+                      >
+                        <Icon icon="SvgExternalLink" className="w-4 h-4 text-fg-primary text-opacity-60" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Market Status */}
+                  <div className="bg-bg-primary/5 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Icon icon="SvgQuestionCircle" className="w-4 h-4 text-blue-400" />
+                      <Text text="Market Data Status" as="h3" className="text-sm font-medium" />
+                    </div>
+                    <Text 
+                      text="Market data is not available for this token. This could mean the token is newly created, has low trading volume, or is not listed on major exchanges." 
+                      as="p" 
+                      className="text-sm text-fg-primary text-opacity-75" 
+                    />
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <a
+                        href={`https://birdeye.so/token/${id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-blue-400 hover:text-blue-300 underline"
+                      >
+                        Check Birdeye
+                      </a>
+                      <a
+                        href={`https://dexscreener.com/solana/${id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-blue-400 hover:text-blue-300 underline"
+                      >
+                        Check DexScreener
+                      </a>
+                      <a
+                        href={`https://www.coingecko.com/en/search?query=${id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-blue-400 hover:text-blue-300 underline"
+                      >
+                        Search CoinGecko
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* DAO Badge if available */}
+                  {tokenData?.token?.dao && tokenData?.token?.dao !== "" && (
+                    <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
+                      <div className="flex items-center gap-2">
+                        <Icon icon="SvgRoundCheckmark" className="w-4 h-4 text-green-400" />
+                        <Text text="DAO Governance Available" as="p" className="text-sm font-medium text-green-400" />
+                      </div>
+                      <Text 
+                        text="This token has an associated DAO for governance. View details below." 
+                        as="p" 
+                        className="text-xs text-fg-primary text-opacity-75 mt-1" 
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
