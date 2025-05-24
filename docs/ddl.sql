@@ -13,6 +13,12 @@ CREATE TABLE tokens (
     isGraduated BOOLEAN NOT NULL
 );
 
+ALTER TABLE tokens
+ADD COLUMN imageUrl TEXT;
+
+ALTER TABLE tokens
+ADD COLUMN dao TEXT;
+
 CREATE TABLE error (
     id TEXT NOT NULL PRIMARY KEY,
     message TEXT NOT NULL,
@@ -26,4 +32,6 @@ CREATE TABLE api_key (
     permissions TEXT NOT NULL,
     hash TEXT NOT NULL
 );
+
+
 

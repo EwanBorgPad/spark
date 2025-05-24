@@ -63,11 +63,103 @@ export type UserModelJson = {
 export type TokenModel = {
   mint: string
   name: string
-  isGraduated: string
+  isGraduated: boolean
+  imageUrl: string
+  dao: string
 }
 
 export type GetTokensResponse = {
   tokens: TokenModel[]
+}
+
+export type GetTokenResponse = {
+  token: TokenModel
+}
+
+export type DaoGovernanceModel = {
+  address: string
+  realm: string
+  governedAccount: string
+  activeProposalCount: number
+  config: {
+    minCommunityWeightToCreateProposal: string
+    minTransactionHoldUpTime: number
+    votingBaseTime: number
+    votingCoolOffTime: number
+  }
+}
+
+export type DaoProposalOptionModel = {
+  label: string
+  voteWeight: string
+  voteResult: "None" | "Succeeded" | "Defeated"
+  transactionsCount: number
+  transactionsExecutedCount: number
+}
+
+export type DaoProposalState = 
+  | { draft: Record<string, never> }
+  | { signingOff: Record<string, never> }
+  | { voting: Record<string, never> }
+  | { succeeded: Record<string, never> }
+  | { executing: Record<string, never> }
+  | { completed: Record<string, never> }
+  | { cancelled: Record<string, never> }
+  | { defeated: Record<string, never> }
+  | { executingWithErrors: Record<string, never> }
+  | { vetoed: Record<string, never> }
+
+export type DaoProposalModel = {
+  address: string
+  governance: string
+  name: string
+  description: string
+  state: DaoProposalState
+  draftAt?: string
+  votingAt?: string
+  votingCompletedAt?: string
+  executingAt?: string
+  closedAt?: string
+  options: DaoProposalOptionModel[]
+  denyVoteWeight: string
+  abstainVoteWeight: string
+  vetoVoteWeight: string
+}
+
+export type DaoModel = {
+  address: string
+  name: string
+  description: string
+  communityMint: string
+  councilMint: string | null
+  authority: string | null
+  version: 'V1' | 'V2'
+  governances: DaoGovernanceModel[]
+  proposals: DaoProposalModel[]
+  proposalCount: number
+}
+
+export type UserTokenMetadata = {
+  name?: string
+  symbol?: string
+  image?: string
+  description?: string
+}
+
+export type UserTokenModel = {
+  mint: string
+  amount: string
+  decimals: number
+  uiAmount: number
+  metadata: UserTokenMetadata
+}
+
+export type GetUserTokensResponse = {
+  success: boolean
+  userAddress: string
+  solBalance: UserTokenModel
+  tokens: UserTokenModel[]
+  tokenCount: number
 }
 
 /**

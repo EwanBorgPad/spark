@@ -9,6 +9,7 @@ import { ROUTES } from "@/utils/routes"
 import { useQuery } from "@tanstack/react-query"
 import { GetTokensResponse } from "shared/models"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
+import Img from "@/components/Image/Img"
 
 const Projects = () => {
   const { data: sparksData, isLoading: sparksLoading, refetch: sparksRefetch } = useQuery<GetTokensResponse>({
@@ -107,10 +108,12 @@ const Projects = () => {
                         className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
                         onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`)}
                       >
-                        <img 
-                          src={`/project-${token.mint}.jpg`}
-                          alt={`Project ${token.mint}`}
-                          className="w-16 h-16 rounded-full object-cover"
+                        <Img
+                          src={token.imageUrl}
+                          isFetchingLink={sparksLoading}
+                          imgClassName="w-16 h-16 rounded-full object-cover"
+                          isRounded={true}
+                          size="20"
                         />
                         <div className="flex-1">
                           <h4 className="font-medium">{token.name}</h4>
@@ -135,10 +138,12 @@ const Projects = () => {
                         className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
                         onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`)}
                       >
-                        <img 
-                          src={`/project-${token.mint}.jpg`}
-                          alt={`Project ${token.mint}`}
-                          className="w-16 h-16 rounded-full object-cover"
+                        <Img
+                          src={token.imageUrl}
+                          isFetchingLink={blazesLoading}
+                          imgClassName="w-16 h-16 rounded-full object-cover"
+                          isRounded={true}
+                          size="20"
                         />
                         <div className="flex-1">
                           <h4 className="font-medium">{token.name}</h4>
@@ -161,19 +166,21 @@ const Projects = () => {
             <div className="w-full">
               <h3 className="text-2xl font-medium mb-6">Sparks</h3>
               <div className="grid gap-6">
-                {[1, 2, 3].map((project) => (
+                {sparksData?.tokens.map((token) => (
                   <div 
-                    key={project} 
+                    key={token.mint} 
                     className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
-                    onClick={() => navigate(`${ROUTES.PROJECTS}/${project}`)}
+                    onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`)}
                   >
-                    <img 
-                      src={`/project-${project}.jpg`}
-                      alt={`Project ${project}`}
-                      className="w-16 h-16 rounded-full object-cover"
+                    <Img
+                      src={token.imageUrl}
+                      isFetchingLink={sparksLoading}
+                      imgClassName="w-16 h-16 rounded-full object-cover"
+                      isRounded={true}
+                      size="20"
                     />
                     <div className="flex-1">
-                      <h4 className="font-medium">New Project Name {project}</h4>
+                      <h4 className="font-medium">{token.name}</h4>
                       <div className="flex gap-4 text-sm opacity-75">
                         <span>Market Cap: $1.2M</span>
                         <span>Token Price: $0.12</span>
@@ -188,19 +195,21 @@ const Projects = () => {
             <div className="w-full">
               <h3 className="text-2xl font-medium mb-6">Blazes</h3>
               <div className="grid gap-6">
-                {[4, 5, 6].map((project) => (
+                {blazesData?.tokens.map((token) => (
                   <div 
-                    key={project} 
+                    key={token.mint} 
                     className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
-                    onClick={() => navigate(`${ROUTES.PROJECTS}/${project}`)}
+                    onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`)}
                   >
-                    <img 
-                      src={`/project-${project}.jpg`}
-                      alt={`Project ${project}`}
-                      className="w-16 h-16 rounded-full object-cover"
+                    <Img
+                      src={token.imageUrl}
+                      isFetchingLink={blazesLoading}
+                      imgClassName="w-16 h-16 rounded-full object-cover"
+                      isRounded={true}
+                      size="20"
                     />
                     <div className="flex-1">
-                      <h4 className="font-medium">Graduated Project Name {project}</h4>
+                      <h4 className="font-medium">{token.name}</h4>
                       <div className="flex gap-4 text-sm opacity-75">
                         <span>Market Cap: $1.5M</span>
                         <span>Token Price: $0.15</span>
