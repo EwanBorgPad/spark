@@ -11,12 +11,19 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                     "showWalletLoginFirst": false,
                     "logo": "https://auth.privy.io/logos/privy-logo-dark.png",
                     "walletChainType": "solana-only",
+                    "walletList": [
+                        "phantom",
+                        "solflare", 
+                        "backpack",
+                        "okx_wallet"
+                    ]
                 },
                 "loginMethods": [
                     "email",
                     "twitter",
                     "apple",
-                    "google"
+                    "google",
+                    "wallet"
                 ],
                 "fundingMethodConfig": {
                     "moonpay": {
@@ -30,14 +37,22 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                         "createOnLogin": "off"
                     },
                     "solana": {
-                        "createOnLogin": "all-users"
+                        "createOnLogin": "users-without-wallets"
                     }
                 },
                 "mfa": {
                     "noPromptOnMfaRequired": false
+                },
+                "externalWallets": {
+                    "solana": {
+                        "connectors": {
+                            "onMount": () => {},
+                            "onUnmount": () => {},
+                            "get": () => []
+                        }
+                    }
                 }
-            }}
-        >
+            }}>
             {children}
         </PrivyProvider>
     );

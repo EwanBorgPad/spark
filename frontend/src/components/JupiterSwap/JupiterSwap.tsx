@@ -27,14 +27,13 @@ interface SwapQuote {
 const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" }) => {
   const { user, authenticated } = usePrivy();
   const { wallets } = useSolanaWallets();
-  const [inputMint, setInputMint] = useState('So11111111111111111111111111111111111111112'); // SOL
+  const inputMint = 'So11111111111111111111111111111111111111112'; // SOL - locked
   const [inputAmount, setInputAmount] = useState('');
   const [outputAmount, setOutputAmount] = useState('');
   const [quote, setQuote] = useState<SwapQuote | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSwapping, setIsSwapping] = useState(false);
   const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
-  const [popularTokens, setPopularTokens] = useState<TokenInfo[]>([]);
 
   const connection = new Connection(import.meta.env.VITE_RPC_URL || 'https://api.mainnet-beta.solana.com');
 
@@ -54,12 +53,6 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
           map.set(token.address, token);
         });
         setTokenMap(map);
-
-        // Set popular tokens for input selection
-        const popular = tokenList.filter(token => 
-          ['SOL', 'USDC', 'USDT', 'BONK', 'WIF', 'BOME'].includes(token.symbol)
-        );
-        setPopularTokens(popular);
       } catch (error) {
         console.error('Error loading tokens:', error);
       }
@@ -182,7 +175,6 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
     }
   };
 
-  const inputToken = tokenMap.get(inputMint);
   const outputToken = tokenMap.get(outputMint);
 
   return (
@@ -195,28 +187,10 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
         </div>
       ) : (
         <div className="space-y-4">
-          {/* Input Token Selection */}
+          {/* SOL Amount Input */}
           <div>
             <label className="block text-sm text-fg-primary text-opacity-75 mb-2">
-              Pay with
-            </label>
-            <select 
-              value={inputMint}
-              onChange={(e) => setInputMint(e.target.value)}
-              className="w-full px-3 py-2 bg-bg-primary border border-fg-primary/20 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {popularTokens.map((token) => (
-                <option key={token.address} value={token.address}>
-                  {token.symbol} - {token.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Input Amount */}
-          <div>
-            <label className="block text-sm text-fg-primary text-opacity-75 mb-2">
-              Amount
+              Pay with SOL
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -228,8 +202,15 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
                 min="0"
                 step="0.1"
               />
-              <Text text={inputToken?.symbol || 'Token'} as="span" className="text-sm text-fg-primary text-opacity-75" />
+              <div className="flex items-center gap-2 px-3 py-2 bg-bg-primary/50 border border-fg-primary/10 rounded-md">
+                <Text text="SOL" as="span" className="text-sm font-medium text-fg-primary" />
+              </div>
             </div>
+          </div>
+
+          {/* Arrow indicator */}
+          <div className="flex justify-center">
+            <div className="text-fg-primary text-opacity-50">↓</div>
           </div>
 
           {/* Output Display */}
@@ -245,7 +226,9 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
                 className="flex-1 px-3 py-2 bg-bg-primary/50 border border-fg-primary/10 rounded-md text-black"
                 placeholder="0.0"
               />
-              <Text text={outputToken?.symbol || 'Token'} as="span" className="text-sm text-fg-primary text-opacity-75" />
+              <div className="flex items-center gap-2 px-3 py-2 bg-bg-primary/50 border border-fg-primary/10 rounded-md">
+                <Text text={outputToken?.symbol || 'TOKEN'} as="span" className="text-sm font-medium text-fg-primary" />
+              </div>
             </div>
           </div>
 
