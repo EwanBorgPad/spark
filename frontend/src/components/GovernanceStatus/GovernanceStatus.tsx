@@ -225,48 +225,58 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
   };
 
   return (
-    <div className={`bg-bg-secondary rounded-lg p-6 border border-fg-primary/10 ${className}`}>
-      <Text text="Your Governance Status" as="h2" className="text-xl font-semibold mb-4" />
+    <div className={`p-6 ${className}`}>
+      <div className="flex items-center gap-2 mb-6">
+        <span className="text-xl">🗳️</span>
+        <Text text="Your Governance Status" as="h2" className="text-lg font-semibold" />
+      </div>
       
       {!authenticated ? (
-        <div className="text-center py-6">
+        <div className="text-center py-8 bg-bg-primary/5 rounded-xl">
+          <div className="text-4xl mb-3">🔗</div>
+          <Text text="Connect Wallet" as="h3" className="text-lg font-medium mb-2" />
           <Text text="Connect your wallet to participate in governance" as="p" className="text-fg-primary text-opacity-75" />
         </div>
       ) : (
         <div className="space-y-6">
           {/* Status Overview */}
-          <div className="grid grid-cols-2 gap-6">
-            <div className="bg-bg-primary/5 rounded-lg p-4 text-center">
-              <Text text="Token Balance" as="h3" className="text-fg-primary text-opacity-60 mb-2" />
-              <Text text={`${userTokenBalance.toFixed(2)}`} as="p" className="text-2xl font-bold text-blue-400" />
-              <Text text={dao.name || 'tokens'} as="p" className="text-sm text-fg-primary text-opacity-75" />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 rounded-xl p-4 text-center border border-blue-500/20">
+              <div className="text-2xl mb-2">💰</div>
+              <Text text="Wallet Balance" as="h3" className="text-xs text-fg-primary text-opacity-60 mb-1 uppercase tracking-wide" />
+              <Text text={`${userTokenBalance.toFixed(2)}`} as="p" className="text-xl font-bold text-blue-400" />
+              <Text text={dao.name || 'tokens'} as="p" className="text-xs text-fg-primary text-opacity-75" />
             </div>
-            <div className="bg-bg-primary/5 rounded-lg p-4 text-center">
-              <Text text="Voting Power" as="h3" className="text-fg-primary text-opacity-60 mb-2" />
-              <Text text={`${votingPower.toFixed(2)}`} as="p" className="text-2xl font-bold text-green-400" />
-              <Text text="deposited tokens" as="p" className="text-sm text-fg-primary text-opacity-75" />
+            <div className="bg-gradient-to-br from-green-500/10 to-green-600/5 rounded-xl p-4 text-center border border-green-500/20">
+              <div className="text-2xl mb-2">⚡</div>
+              <Text text="Voting Power" as="h3" className="text-xs text-fg-primary text-opacity-60 mb-1 uppercase tracking-wide" />
+              <Text text={`${votingPower.toFixed(2)}`} as="p" className="text-xl font-bold text-green-400" />
+              <Text text="deposited" as="p" className="text-xs text-fg-primary text-opacity-75" />
             </div>
           </div>
 
           {/* Token Management */}
-          <div className="bg-bg-primary/5 rounded-lg p-4">
-            <Text text="Manage Governance Tokens" as="h3" className="font-medium mb-4" />
+          <div className="bg-bg-primary/5 rounded-xl p-5 border border-fg-primary/10">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-lg">⚙️</span>
+              <Text text="Manage Tokens" as="h3" className="font-medium" />
+            </div>
             
             <div className="mb-4">
-              <label className="block text-sm text-fg-primary text-opacity-75 mb-2">
-                Deposit Amount
-              </label>
+              <Text text="Deposit Amount" as="p" className="block text-sm text-fg-primary text-opacity-75 mb-2" />
               <div className="flex items-center gap-2">
                 <input
                   type="number"
                   value={(parseInt(depositAmount) / 1000000000).toString()}
                   onChange={(e) => setDepositAmount((parseFloat(e.target.value) * 1000000000).toString())}
-                  className="flex-1 px-3 py-2 bg-bg-primary border border-fg-primary/20 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 px-4 py-3 bg-bg-primary border border-fg-primary/20 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   placeholder="1.0"
                   min="0"
                   step="0.1"
                 />
-                <Text text="tokens" as="span" className="text-sm text-fg-primary text-opacity-75" />
+                <div className="px-3 py-3 bg-bg-primary/50 border border-fg-primary/10 rounded-lg">
+                  <Text text="tokens" as="span" className="text-sm text-fg-primary text-opacity-75" />
+                </div>
               </div>
             </div>
 
@@ -274,9 +284,9 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
               <Button
                 onClick={handleDepositTokens}
                 disabled={isDepositing || parseFloat(depositAmount) <= 0 || userTokenBalance === 0}
-                className="flex-1"
+                className="flex-1 bg-brand-primary hover:bg-brand-primary/90"
               >
-                {isDepositing ? "Depositing..." : "Deposit Tokens"}
+                {isDepositing ? "Depositing..." : "🔒 Deposit"}
               </Button>
               
               <Button
@@ -284,13 +294,19 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
                 disabled={isWithdrawing || votingPower === 0}
                 className="flex-1 bg-gray-600 hover:bg-gray-700"
               >
-                {isWithdrawing ? "Withdrawing..." : "Withdraw All"}
+                {isWithdrawing ? "Withdrawing..." : "🔓 Withdraw"}
               </Button>
             </div>
 
             {userTokenBalance === 0 && (
-              <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                <Text text="You need tokens in your wallet to deposit into governance" as="p" className="text-sm text-yellow-400" />
+              <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <span className="text-amber-400 text-lg">⚠️</span>
+                  <div>
+                    <Text text="No Tokens Available" as="p" className="text-sm font-medium text-amber-400 mb-1" />
+                    <Text text="You need tokens in your wallet to deposit into governance" as="p" className="text-xs text-fg-primary text-opacity-75" />
+                  </div>
+                </div>
               </div>
             )}
           </div>
