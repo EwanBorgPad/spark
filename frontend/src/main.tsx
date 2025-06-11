@@ -36,7 +36,7 @@ import Profile from "./pages/Profile"
 import Search from "./pages/Search"
 import Projects from "./pages/Projects"
 import Providers from "./providers/PrivyProvider"
-import MathisPage from "./pages/MathisPage"
+import LandingPage from "./pages/LandingPage"
 import PwaInstall from "./pages/PwaInstall"
 window.Buffer = Buffer
 
@@ -114,8 +114,8 @@ const router = createBrowserRouter([
         element: <Search />,
       },
       {
-        path: "/mathis",
-        element: <MathisPage />,
+        path: "/landing-page",
+        element: <LandingPage />,
       },
       // @backOffice
       {
