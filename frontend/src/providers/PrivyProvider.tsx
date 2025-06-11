@@ -1,4 +1,5 @@
 import { PrivyProvider } from '@privy-io/react-auth';
+import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (
@@ -11,12 +12,20 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                     "showWalletLoginFirst": false,
                     "logo": "https://auth.privy.io/logos/privy-logo-dark.png",
                     "walletChainType": "solana-only",
+                    "walletList": [
+                        "detected_solana_wallets",
+                        "phantom",
+                        "solflare",
+                        "backpack",
+                        "okx_wallet"
+                    ]
                 },
                 "loginMethods": [
                     "email",
                     "twitter",
                     "apple",
-                    "google"
+                    "google",
+                    "wallet"
                 ],
                 "fundingMethodConfig": {
                     "moonpay": {
@@ -30,12 +39,17 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                         "createOnLogin": "off"
                     },
                     "solana": {
-                        "createOnLogin": "all-users"
+                        "createOnLogin": "users-without-wallets"
                     }
                 },
                 "mfa": {
                     "noPromptOnMfaRequired": false
-                }
+                },
+                "externalWallets": {
+                    "solana": {
+                        "connectors": toSolanaWalletConnectors()
+                    }
+                  }
             }}
         >
             {children}
