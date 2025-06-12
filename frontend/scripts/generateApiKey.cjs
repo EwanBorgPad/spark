@@ -30,7 +30,7 @@ function generateApiKeys(keyNames, permission) {
 
 
 // Generate API keys with read permission
-generateApiKeys(["ewan_stage_write"], "write")
+generateApiKeys(["mickael_prod_write"], "write")
 
 // Uncomment to generate API keys with write permission
 // generateApiKeys(["ewan_stage_write2"], "write")

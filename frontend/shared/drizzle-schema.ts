@@ -7,7 +7,9 @@ import { z } from "zod"
 export const tokensTable = sqliteTable("tokens", {
   mint: text("mint").primaryKey(),
   name: text("name").notNull(),
-  isGraduated: text("isGraduated").notNull().default("false"),
+  isGraduated: integer("isGraduated", { mode: "boolean" }).notNull().default(false),
+  imageUrl: text("imageUrl").notNull(),
+  dao: text("dao").notNull(),
 })
 
 export const whitelistTable = sqliteTable(

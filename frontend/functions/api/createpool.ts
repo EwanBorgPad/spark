@@ -7,23 +7,13 @@ import { PinataSDK } from "pinata";
 import { jsonResponse } from './cfPagesFunctionsUtils';
 import { isApiKeyValid } from '../services/apiKeyService';
 
-const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID as string;
-const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY as string;
-const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID as string;
-const R2_BUCKET = process.env.R2_BUCKET as string;
-// const RPC_URL = process.env.RPC_URL as string;
-// const POOL_CONFIG_KEY = process.env.POOL_CONFIG_KEY as string;
-const PRIVATE_KEY = process.env.PRIVATE_KEY as string; // Base64 encoded private key
 
-const PRIVATE_R2_URL = `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
 const PUBLIC_R2_URL = 'https://pub-85c7f5f0dc104dc784e656b623d999e5.r2.dev';
 
 type ENV = {
   RPC_URL: string
   POOL_CONFIG_KEY: string
   PRIVATE_KEY: string
-  BUCKET: R2Bucket
-  R2: R2Bucket
   PINATA_JWT: string
   DB: D1Database
 }
@@ -123,8 +113,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     if (txSignature) {
       await db
-        .prepare("INSERT INTO tokens (mint, name, isGraduated) VALUES (?1, ?2, ?3)")
-        .bind(mint, tokenName, false)
+        .prepare("INSERT INTO tokens (mint, name, isGraduated, imageUrl, dao) VALUES (?1, ?2, ?3, ?4, ?5)")
+        .bind(mint, tokenName, false, imageUrl, "")
         .run();
     }
 
@@ -156,6 +146,10 @@ async function uploadMetadata(
   };
   const fileName = `metadata/${params.mint}.json`;
 
+  if (!ctx.env.PINATA_JWT) {
+    throw new Error('PINATA_JWT is not set');
+  }
+
   try {
     // Convert metadata to JSON string
     const jsonString = JSON.stringify(metadata, null, 2);
@@ -186,7 +180,7 @@ async function uploadMetadata(
     // });
     // console.log(`Metadata uploaded to R2: ${PUBLIC_R2_URL}/${fileName}`);
 
-    return `${PUBLIC_R2_URL}/${fileName}`;
+    return `https://amethyst-imperial-yak-2.mypinata.cloud/${fileName}`;
   } catch (error) {
     console.error('Error uploading metadata:', error);
     return false;
