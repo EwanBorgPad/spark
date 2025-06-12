@@ -30,7 +30,7 @@ const Project = () => {
   const [jupiterQuote, setJupiterQuote] = useState<number | null>(null)
   const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map())
   const [solPriceUSD, setSolPriceUSD] = useState<number | null>(null)
-  
+
   const { user, authenticated } = usePrivy()
   const { wallets } = useSolanaWallets()
 
@@ -46,7 +46,7 @@ const Project = () => {
       }
     }
 
-        document.addEventListener('keydown', handleEscape)
+    document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
   }, [isSwapModalOpen])
 
@@ -56,7 +56,7 @@ const Project = () => {
       try {
         const tokens = await new TokenListProvider().resolve()
         const tokenList = tokens.filterByChainId(101).getList() // Mainnet
-        
+
         const map = new Map()
         tokenList.forEach((token) => {
           map.set(token.address, token)
@@ -102,13 +102,13 @@ const Project = () => {
       const response = await fetch(
         `https://quote-api.jup.ag/v6/quote?inputMint=${outputMint}&outputMint=${inputMint}&amount=${oneTokenInSmallestUnit}&slippageBps=50`
       )
-      
+
       if (!response.ok) {
         throw new Error('Failed to get quote')
       }
 
       const quoteData = await response.json()
-      
+
       // Calculate SOL amount for 1 token
       const solDecimals = 9
       const solAmount = parseInt(quoteData.outAmount) / Math.pow(10, solDecimals)
@@ -157,7 +157,7 @@ const Project = () => {
 
     checkUserTokenBalance()
   }, [authenticated, user, id, connection])
-  
+
   const { data: tokenData, isLoading: tokenLoading, refetch: tokenRefetch } = useQuery<GetTokenResponse>({
     queryFn: () =>
       backendSparkApi.getToken({
@@ -229,7 +229,7 @@ const Project = () => {
                 loadingClass="max-w-[120px]"
               />
             </div>
-            
+
             {/* Token Address - first 4 and last 4 characters */}
             <Text
               text={id ? `${id.slice(0, 4)}...${id.slice(-4)}` : "Unknown"}
@@ -238,7 +238,7 @@ const Project = () => {
               isLoading={tokenLoading}
             />
           </div>
-          
+
           {/* Market Cap and Volume */}
           {marketData?.tokenMarketData && (
             <div className="flex flex-col gap-1 text-left ml-auto mr-4">
@@ -320,7 +320,7 @@ const Project = () => {
                   isLoading={marketLoading}
                 />
                 <Text
-                  text={authenticated 
+                  text={authenticated
                     ? userTokenBalance.toFixed(2)
                     : "--"
                   }
@@ -330,26 +330,26 @@ const Project = () => {
                 />
 
               </div>
-                              <div className="flex flex-col items-center text-center flex-1">
-                  <Text
-                    text="Value"
-                    as="span"
-                    className="text-xs text-fg-primary text-opacity-75 font-medium mb-1"
-                    isLoading={marketLoading}
-                  />
-                  <Text
-                    text={authenticated && userTokenBalance > 0 && jupiterQuote && solPriceUSD
-                      ? `$${(userTokenBalance * jupiterQuote * solPriceUSD).toFixed(2)}`
-                      : authenticated && userTokenBalance > 0 && marketData.tokenMarketData.price
+              <div className="flex flex-col items-center text-center flex-1">
+                <Text
+                  text="Value"
+                  as="span"
+                  className="text-xs text-fg-primary text-opacity-75 font-medium mb-1"
+                  isLoading={marketLoading}
+                />
+                <Text
+                  text={authenticated && userTokenBalance > 0 && jupiterQuote && solPriceUSD
+                    ? `$${(userTokenBalance * jupiterQuote * solPriceUSD).toFixed(2)}`
+                    : authenticated && userTokenBalance > 0 && marketData.tokenMarketData.price
                       ? `$${(userTokenBalance * marketData.tokenMarketData.price).toFixed(2)}`
                       : "--"
-                    }
-                    as="span"
-                    className="text-lg font-semibold text-fg-primary"
-                    isLoading={marketLoading}
-                  />
+                  }
+                  as="span"
+                  className="text-lg font-semibold text-fg-primary"
+                  isLoading={marketLoading}
+                />
 
-                </div>
+              </div>
             </div>
           </div>
         )}
@@ -393,9 +393,9 @@ const Project = () => {
                 {/* DAO Name and Realms Link */}
                 <div className="flex items-center justify-between p-4 rounded-xl bg-bg-secondary border border-fg-primary/10">
                   <Text text={daoData.dao.name} as="h3" className="text-xl font-bold text-brand-primary" />
-                  <a 
-                    href={`https://app.realms.today/dao/${daoData.dao.address}`} 
-                    target="_blank" 
+                  <a
+                    href={`https://app.realms.today/dao/${daoData.dao.address}`}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2 bg-brand-primary hover:bg-brand-primary/90 text-white rounded-lg transition-colors font-medium text-sm"
                   >
@@ -492,7 +492,7 @@ const Project = () => {
                                         : 'Unknown';
 
                                       const getStatusEmoji = (state: string) => {
-                                        switch(state) {
+                                        switch (state) {
                                           case 'voting': return '🗳️';
                                           case 'signingOff': return '✍️';
                                           case 'executing': return '⚡';
@@ -501,12 +501,11 @@ const Project = () => {
                                       };
 
                                       return (
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 ${
-                                          stateKey === 'voting' ? 'bg-blue-500/20 text-blue-400' :
-                                          stateKey === 'signingOff' ? 'bg-orange-500/20 text-orange-400' :
-                                          stateKey === 'executing' ? 'bg-indigo-500/20 text-indigo-400' :
-                                          'bg-gray-500/20 text-gray-400'
-                                        }`}>
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 ${stateKey === 'voting' ? 'bg-blue-500/20 text-blue-400' :
+                                            stateKey === 'signingOff' ? 'bg-orange-500/20 text-orange-400' :
+                                              stateKey === 'executing' ? 'bg-indigo-500/20 text-indigo-400' :
+                                                'bg-gray-500/20 text-gray-400'
+                                          }`}>
                                           <span>{getStatusEmoji(stateKey)}</span>
                                           {stateDisplay}
                                         </span>
@@ -557,7 +556,7 @@ const Project = () => {
                                         : 'Unknown';
 
                                       const getHistoryEmoji = (state: string) => {
-                                        switch(state) {
+                                        switch (state) {
                                           case 'succeeded': return '✅';
                                           case 'completed': return '🎉';
                                           case 'defeated': return '❌';
@@ -568,14 +567,13 @@ const Project = () => {
                                       };
 
                                       return (
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 ${
-                                          stateKey === 'succeeded' ? 'bg-green-500/20 text-green-400' :
-                                          stateKey === 'completed' ? 'bg-purple-500/20 text-purple-400' :
-                                          stateKey === 'defeated' ? 'bg-red-500/20 text-red-400' :
-                                          stateKey === 'cancelled' ? 'bg-gray-500/20 text-gray-400' :
-                                          stateKey === 'vetoed' ? 'bg-red-600/20 text-red-300' :
-                                          'bg-gray-500/20 text-gray-400'
-                                        }`}>
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 ${stateKey === 'succeeded' ? 'bg-green-500/20 text-green-400' :
+                                            stateKey === 'completed' ? 'bg-purple-500/20 text-purple-400' :
+                                              stateKey === 'defeated' ? 'bg-red-500/20 text-red-400' :
+                                                stateKey === 'cancelled' ? 'bg-gray-500/20 text-gray-400' :
+                                                  stateKey === 'vetoed' ? 'bg-red-600/20 text-red-300' :
+                                                    'bg-gray-500/20 text-gray-400'
+                                          }`}>
                                           <span>{getHistoryEmoji(stateKey)}</span>
                                           {stateDisplay}
                                         </span>

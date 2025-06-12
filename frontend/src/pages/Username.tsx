@@ -6,6 +6,8 @@ import { useSolanaWallets } from '@privy-io/react-auth';
 import { useEffect, useState } from 'react';
 import { ROUTES } from "@/utils/routes"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
+import Img from "@/components/Image/Img";
+import logoType from "@/assets/logos/logo-resize.png"
 
 const Username = () => {
   const navigate = useNavigate();
@@ -51,9 +53,16 @@ const Username = () => {
     <main className="relative z-[10] flex min-h-screen w-full max-w-[100vw] flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
       <section className="z-[1] flex h-full w-full flex-1 flex-col items-center justify-between px-5 pb-[60px] pt-10 md:pb-[56px] md:pt-[40px]">
         <div className="flex w-full flex-col items-center mt-[15vh]">
-          <h1 className="text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-[68px] md:leading-[74px] mb-4">
+          {/* <h1 className="text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-[68px] md:leading-[74px] mb-4">
             <span className="text-brand-primary">Spark-it</span>
-          </h1>
+          </h1> */}
+          <Img
+            src={logoType}
+            size="custom"
+            customClass="w-[300px] rounded-none mb-6"
+            imgClassName="object-contain"
+            alt="Spark-it logo"
+          />
 
           <h2 className="text-xl md:text-2xl text-center mb-12 opacity-75">
             Make your idea become real

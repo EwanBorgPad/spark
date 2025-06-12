@@ -24,12 +24,12 @@ import { useNavigate } from "react-router-dom"
 import { usePrivy, useSolanaWallets } from '@privy-io/react-auth';
 import { useQuery } from "@tanstack/react-query"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
+import logoType from "@/assets/logos/type-png-resized.png"
 
 
 const GetStarted = () => {
   const navigate = useNavigate()
-  const { ready } = usePrivy();
-  const { login } = usePrivy();
+  const { login, ready, authenticated, logout } = usePrivy();
   const { wallets } = useSolanaWallets();
   const address = wallets[0]?.address
 
@@ -37,6 +37,12 @@ const GetStarted = () => {
     queryKey: ['user', address],
     queryFn: () => address ? backendSparkApi.getUser({ address }) : Promise.resolve(null),
   });
+
+  useEffect(() => {
+    if (ready && !authenticated) {
+      login(); // This triggers Privy's auth flow
+    }
+  }, [ready, authenticated, login]);
 
   useEffect(() => {
     if (!ready || isLoading) {
@@ -56,10 +62,10 @@ const GetStarted = () => {
     }
   }, [user, address, ready, isLoading, navigate]);
 
+
   if (!ready || isLoading) {
     return <div>Loading...</div>;
   }
-
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full max-w-[100vw] flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
@@ -76,9 +82,16 @@ const GetStarted = () => {
             />
           </div>
 
-          <h1 className="text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-[68px] md:leading-[74px] mb-4">
+          {/* <h1 className="text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-[68px] md:leading-[74px] mb-4">
             <span className="text-brand-primary">Spark-it</span>
-          </h1>
+          </h1> */}
+          <Img
+            src={logoType}
+            size="custom"
+            customClass="w-[300px] rounded-none mb-6"
+            imgClassName="object-contain"
+            alt="Spark-it logo"
+          />
 
           <h2 className="text-xl md:text-2xl text-center mb-12 opacity-75">
             Make your idea become real

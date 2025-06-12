@@ -1,14 +1,6 @@
 @import "./style/inputSlider.css";
 @import url('https://fonts.googleapis.com/css2?family=Sulphur+Point:wght@300;400;700&display=swap');
 
-@font-face {
-  font-family: 'VCR OSD Mono';
-  src: url('/VCROSDMono.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -25,9 +17,10 @@
   @font-face {
     font-family: 'VCR OSD Mono';
     src: url('/VCROSDMono.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap; /* Improves performance by allowing text to render while font loads */
+  }
+  @font-face {
+    font-family: 'Francy';
+    src: url("/Francy.woff2") format('woff2');
   }
   
 }

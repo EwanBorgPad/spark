@@ -272,7 +272,7 @@ const Profile = () => {
                     title="Click to copy address"
                   >
                     <Text
-                      text={address ? `${address.slice(0, 8)}...${address.slice(-8)}` : "Not connected"}
+                      text={address ? `${address.slice(0, 4)}...${address.slice(-4)}` : "Not connected"}
                       as="p"
                       className="text-lg font-medium font-mono"
                     />
@@ -342,7 +342,7 @@ const Profile = () => {
                         as="p"
                         className="font-medium text-lg"
                       />
-                      <Text text="SOL" as="p" className="text-sm opacity-75" />
+                      {/* <Text text="SOL" as="p" className="text-sm opacity-75" /> */}
                     </div>
                     <Button
                       onClick={openSOLSendModal}
@@ -370,7 +370,7 @@ const Profile = () => {
                       </div>
                       <div>
                         <Text
-                          text={token.metadata.name || `Token ${token.mint.slice(0, 8)}...`}
+                          text={token.metadata.name?.slice(0, 10) || `Token ${token.mint.slice(0, 4)}...`}
                           as="p"
                           className="font-medium"
                         />
@@ -385,16 +385,16 @@ const Profile = () => {
                       <div className="text-right">
                         <Text
                           text={token.uiAmount.toLocaleString(undefined, {
-                            maximumFractionDigits: token.decimals > 6 ? 6 : token.decimals
+                            maximumFractionDigits: token.decimals > 4 ? 4 : token.decimals
                           })}
                           as="p"
                           className="font-medium text-lg"
                         />
-                        <Text
+                        {/* <Text
                           text={token.metadata.symbol || "TOKEN"}
                           as="p"
                           className="text-sm opacity-75"
-                        />
+                        /> */}
                       </div>
                       <Button
                         onClick={() => openSendModal(token)}
