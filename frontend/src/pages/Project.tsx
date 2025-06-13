@@ -204,25 +204,26 @@ const Project = () => {
     }
   }
 
+  // Check if DAO exists to conditionally adjust layout
+  const hasDao = tokenData?.token?.dao && tokenData?.token?.dao !== ""
 
   return (
-    <main className="relative z-[10] flex w-full max-w-full select-none flex-col items-center gap-4 overflow-y-hidden py-[72px] font-normal text-fg-primary md:py-[100px]">
-      {/* Header with back button */}
-      <div className="absolute left-4 top-4 z-50">
-        <Button
-          onClick={() => navigate(ROUTES.PROJECTS)}
-          size="lg"
-          className="bg-brand-primary hover:bg-brand-primary/80"
-        >
-          <Icon icon="SvgArrowLeft" className="text-xl text-fg-primary" />
-        </Button>
-      </div>
-
-      <div className="max-w-screen absolute left-0 top-10 z-[-11] w-full overflow-hidden md:top-16">
+    <main className={`relative z-[10] flex w-full max-w-full select-none flex-col items-start gap-4 overflow-y-hidden font-normal text-fg-primary ${hasDao ? 'pb-[48px] md:pb-[64px]' : 'pb-[16px] md:pb-[24px]'}`}>
+      <div className="max-w-screen absolute left-0 top-0 z-[-11] w-full overflow-hidden">
         <img src={backdropImg} className="h-[740px] min-w-[1440px] md:h-auto md:w-screen" />
+        {/* Header with back button */}
+        <div className="absolute left-4 top-4 z-50">
+          <Button
+            onClick={() => navigate(ROUTES.PROJECTS)}
+            size="sm"
+            className="bg-bg-secondary/80 hover:bg-bg-secondary border border-fg-primary/10 backdrop-blur-sm"
+          >
+            <Icon icon="SvgArrowLeft" className="text-sm text-fg-primary/60" />
+          </Button>
+        </div>
       </div>
 
-      <section className="flex w-full flex-col items-center gap-8 px-4 md:max-w-[792px]">
+      <section className="flex w-full flex-col items-center gap-8 px-4 md:max-w-[792px] mx-auto mt-20 md:mt-24">
         {/* Header with logo and name */}
         <div className="flex w-full items-center gap-4">
           <Img
@@ -376,7 +377,7 @@ const Project = () => {
         </Button>
 
         {/* DAO Governance */}
-        {tokenData?.token?.dao && tokenData?.token?.dao !== "" && (
+        {hasDao && (
           <div className="w-full space-y-6">
             <div className="text-center">
               <Text text="🏛️ DAO Governance" as="h2" className="text-2xl font-bold mb-2" />

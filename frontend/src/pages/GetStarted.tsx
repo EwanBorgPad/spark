@@ -172,7 +172,14 @@ const GetStarted = () => {
   }, [ready, authenticated, wallets, privyUser, navigate]);
 
   if (!ready || isCheckingUser) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-accent">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-fg-primary text-lg">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
