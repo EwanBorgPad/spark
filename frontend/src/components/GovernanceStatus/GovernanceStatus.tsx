@@ -23,7 +23,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
   const [userTokenBalance, setUserTokenBalance] = useState(0);
   const [votingPower, setVotingPower] = useState(0);
 
-  const RPC_URL = import.meta.env.VITE_RPC_URL || "https://api.mainnet-beta.solana.com";
+  const RPC_URL = import.meta.env.VITE_RPC_URL || "https://haleigh-sa5aoh-fast-mainnet.helius-rpc.com";
   const connection = new Connection(RPC_URL);
   const governanceService = new GovernanceService(RPC_URL);
 
