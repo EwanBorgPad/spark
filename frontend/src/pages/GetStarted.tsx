@@ -2,21 +2,7 @@ import { ScrollRestoration } from "react-router-dom"
 import { useEffect, useState } from "react"
 
 import solanaImg from "@/assets/angelStaking/solana.png"
-import swissborgLogo from "@/assets/landingPage/swissborg-logo.png"
-import angelStakingTexture1Mob from "@/assets/angelStaking/angelStakingTexture1-mob.png"
-import angelStakingTexture1 from "@/assets/angelStaking/angelStakingTexture1.png"
-import angelStakingBottom from "@/assets/angelStaking/angelStakingBottom-min.png"
-import divider from "@/assets/landingPage/fearless-divider-min.png"
-import dividerMobile from "@/assets/landingPage/fearless-divider-min.png"
-import fearlessBackdrop from "@/assets/landingPage/fearless-backdrop-min.png"
-import fearlessBackdropMobile from "@/assets/landingPage/fearless-backdrop-mobile-min.png"
-
 import Img from "@/components/Image/Img"
-import DontBeACexToy from "@/components/LandingPage/DontBeACexToy"
-import DiscoverSection from "@/components/LandingPage/DiscoverSection"
-import JoinCommunityBtn from "@/components/Button/JoinTheCommunityBtn"
-import RotatingSubtitle from "@/components/LandingPage/RotatingSubtitle"
-import HeroCtaSection from "@/components/LandingPage/HeroCtaSection"
 import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { ROUTES } from "@/utils/routes"
@@ -26,6 +12,8 @@ import { useQuery } from "@tanstack/react-query"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
 import logoType from "@/assets/logos/type-png-resized.png"
 import { getCorrectWalletAddress } from "@/utils/walletUtils"
+import { useDeviceDetection } from "@/hooks/useDeviceDetection"
+import DesktopLandingPage from "./DesktopLandingPage"
 
 
 const GetStarted = () => {
@@ -34,6 +22,7 @@ const GetStarted = () => {
   const { wallets, createWallet } = useSolanaWallets();
   const [address, setAddress] = useState<string | null>(localStorage.getItem('sparkit-wallet'))
   const [isCheckingUser, setIsCheckingUser] = useState(false)
+  const { isDesktop, isMobile } = useDeviceDetection()
 
   const { data: user, isLoading, refetch } = useQuery({
     queryKey: ['user', address],
@@ -180,6 +169,11 @@ const GetStarted = () => {
         </div>
       </div>
     );
+  }
+
+  // Show desktop landing page for desktop users
+  if (isDesktop) {
+    return <DesktopLandingPage />
   }
 
   return (

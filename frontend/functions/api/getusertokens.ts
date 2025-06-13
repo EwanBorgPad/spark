@@ -25,8 +25,8 @@ type UserToken = {
   metadata: TokenMetadata;
 }
 
-// Known token registry for common tokens
-const KNOWN_TOKENS: Record<string, TokenMetadata> = {
+// Known fungible tokens registry (these are definitely not NFTs)
+const KNOWN_FUNGIBLE_TOKENS: Record<string, TokenMetadata> = {
   "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v": {
     name: "USD Coin",
     symbol: "USDC",
@@ -61,98 +61,92 @@ const KNOWN_TOKENS: Record<string, TokenMetadata> = {
     name: "Serum",
     symbol: "SRM",
     image: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt/logo.png"
+  },
+  "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263": {
+    name: "Bonk",
+    symbol: "BONK",
+    image: "https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I"
+  },
+  "7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr": {
+    name: "Popcat",
+    symbol: "POPCAT",
+    image: "https://dd.dexscreener.com/ds-data/tokens/solana/7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr.png"
   }
 };
 
 /**
- * Enhanced token metadata fetcher with multiple fallback strategies
+ * Check if a token is likely an NFT based on various criteria
  */
-async function getTokenMetadata(connection: Connection, mintAddress: string | PublicKey): Promise<TokenMetadata> {
-  const mint = typeof mintAddress === 'string' ? new PublicKey(mintAddress) : mintAddress;
+async function isLikelyNFT(connection: Connection, mint: PublicKey, tokenAccount: any): Promise<boolean> {
   const mintString = mint.toBase58();
   
-  console.log(`Fetching metadata for mint: ${mintString}`);
-  
-  // Strategy 1: Check known tokens first
-  if (KNOWN_TOKENS[mintString]) {
-    console.log(`Found in known tokens registry: ${mintString}`);
-    return KNOWN_TOKENS[mintString];
+  // 1. If it's in our known fungible tokens list, it's definitely not an NFT
+  if (KNOWN_FUNGIBLE_TOKENS[mintString]) {
+    return false;
   }
   
-  // Strategy 2: Try Metaplex metadata
+  // 2. Check token supply - NFTs typically have supply of 1
   try {
-    const metaplexMetadata = await getMetaplexMetadata(connection, mint);
-    if (metaplexMetadata.name || metaplexMetadata.symbol) {
-      console.log(`Found Metaplex metadata for: ${mintString}`);
-      return metaplexMetadata;
+    const mintInfo = await connection.getTokenSupply(mint);
+    const supply = BigInt(mintInfo.value.amount);
+    
+    // If supply is 1 and decimals is 0, it's likely an NFT
+    if (supply === 1n && mintInfo.value.decimals === 0) {
+      return true;
+    }
+    
+    // If supply is very low (< 1000) and decimals is 0, might be NFT
+    if (supply < 1000n && mintInfo.value.decimals === 0) {
+      return true;
     }
   } catch (error) {
-    console.warn(`Metaplex metadata failed for ${mintString}:`, error);
+    console.warn(`Failed to get token supply for ${mintString}:`, error);
   }
   
-  // Strategy 3: Try Jupiter API
+  // 3. Check if token has Metaplex metadata (common for NFTs)
   try {
-    const jupiterMetadata = await getJupiterTokenMetadata(mintString);
-    if (jupiterMetadata.name || jupiterMetadata.symbol) {
-      console.log(`Found in Jupiter API: ${mintString}`);
-      return jupiterMetadata;
+    const TOKEN_METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+    const [metadataPDA] = PublicKey.findProgramAddressSync(
+      [Buffer.from("metadata"), TOKEN_METADATA_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+      TOKEN_METADATA_PROGRAM_ID
+    );
+    
+    const metadataAccount = await connection.getAccountInfo(metadataPDA);
+    if (metadataAccount) {
+      // Parse basic metadata to check for NFT characteristics
+      const metadata = parseBasicMetadata(metadataAccount.data);
+      
+      // NFTs often have specific naming patterns or no symbol
+      if (metadata.name && !metadata.symbol) {
+        return true;
+      }
+      
+      // Check for NFT-like names (containing #, numbers at end, etc.)
+      if (metadata.name && /#\d+$/.test(metadata.name)) {
+        return true;
+      }
     }
   } catch (error) {
-    console.warn(`Jupiter API failed for ${mintString}:`, error);
+    // If metadata check fails, continue with other checks
   }
   
-  console.log(`No metadata found for ${mintString}`);
-  return {};
+  // 4. Check user's balance - if they own exactly 1 token, might be NFT
+  const parsedInfo = tokenAccount.account.data.parsed?.info;
+  if (parsedInfo && parsedInfo.tokenAmount.decimals === 0 && parsedInfo.tokenAmount.uiAmount === 1) {
+    return true;
+  }
+  
+  return false;
 }
 
 /**
- * Get metadata from Metaplex Token Metadata program
+ * Parse basic metadata from account data
  */
-async function getMetaplexMetadata(connection: Connection, mint: PublicKey): Promise<TokenMetadata> {
-  const TOKEN_METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
-  
-  const [metadataPDA] = PublicKey.findProgramAddressSync(
-    [
-      Buffer.from("metadata"),
-      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-      mint.toBuffer(),
-    ],
-    TOKEN_METADATA_PROGRAM_ID
-  );
-
-  const metadataAccount = await connection.getAccountInfo(metadataPDA);
-  
-  if (!metadataAccount) {
-    return {};
-  }
-
-  const metadata = parseMetadataAccount(metadataAccount.data);
-  
-  // If there's a URI, fetch external metadata
-  if (metadata.uri) {
-    try {
-      const externalMetadata = await fetchExternalMetadata(metadata.uri);
-      return { ...metadata, ...externalMetadata };
-    } catch (error) {
-      console.warn(`Failed to fetch external metadata from URI: ${metadata.uri}`, error);
-    }
-  }
-
-  return metadata;
-}
-
-/**
- * Parse Metaplex metadata account
- */
-function parseMetadataAccount(data: Buffer): TokenMetadata {
+function parseBasicMetadata(data: Buffer): { name?: string; symbol?: string } {
   try {
     let offset = 1; // Skip the key byte
-    
-    // Skip update authority (32 bytes)
-    offset += 32;
-    
-    // Skip mint (32 bytes)  
-    offset += 32;
+    offset += 32; // Skip update authority
+    offset += 32; // Skip mint
     
     // Parse name
     const nameLength = data.readUInt32LE(offset);
@@ -171,174 +165,155 @@ function parseMetadataAccount(data: Buffer): TokenMetadata {
       if (symbolLength > 0 && symbolLength < 50 && offset + symbolLength <= data.length) {
         const symbolBytes = data.slice(offset, offset + symbolLength);
         symbol = symbolBytes.toString('utf8').replace(/\0/g, '').trim();
-        offset += symbolLength;
       }
       
-      // Parse URI
-      const uriLength = data.readUInt32LE(offset);
-      offset += 4;
-      
-      let uri = '';
-      if (uriLength > 0 && uriLength < 500 && offset + uriLength <= data.length) {
-        const uriBytes = data.slice(offset, offset + uriLength);
-        uri = uriBytes.toString('utf8').replace(/\0/g, '').trim();
-      }
-      
-      return {
-        name: name || undefined,
-        symbol: symbol || undefined,
-        uri: uri || undefined
-      };
+      return { name: name || undefined, symbol: symbol || undefined };
     }
   } catch (error) {
-    console.error('Error parsing metadata account:', error);
+    // Ignore parsing errors
   }
   
   return {};
 }
 
 /**
- * Fetch from Jupiter API
+ * Get token metadata from Jupiter API (reliable source for fungible tokens)
  */
-async function getJupiterTokenMetadata(mintString: string): Promise<TokenMetadata> {
+async function getJupiterTokenList(): Promise<Record<string, TokenMetadata>> {
   try {
-    const response = await fetch(
-      `https://token.jup.ag/strict`,
-      { signal: AbortSignal.timeout(5000) }
-    );
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const tokens = await response.json() as TokenMetadata[];
-    const token = tokens.find((t: any) => t.address === mintString);
-    
-    if (token) {
-      return {
-        name: token.name || undefined,
-        symbol: token.symbol || undefined,
-        image: token.image || undefined,
-        description: token.description || undefined
-      };
-    }
-  } catch (error) {
-    console.error('Error fetching from Jupiter API:', error);
-  }
-  
-  return {};
-}
-
-/**
- * Fetch external metadata from URI
- */
-async function fetchExternalMetadata(uri: string): Promise<Partial<TokenMetadata>> {
-  try {
-    let fetchUrl = uri;
-    
-    // Handle different URI schemes
-    if (uri.startsWith('ipfs://')) {
-      fetchUrl = uri.replace('ipfs://', 'https://ipfs.io/ipfs/');
-    } else if (uri.startsWith('ar://')) {
-      fetchUrl = uri.replace('ar://', 'https://arweave.net/');
-    }
-    
-    const response = await fetch(fetchUrl, {
-      headers: { 'Accept': 'application/json' },
-      signal: AbortSignal.timeout(5000)
+    console.log("Fetching Jupiter token list...");
+    const response = await fetch("https://token.jup.ag/strict", {
+      signal: AbortSignal.timeout(10000)
     });
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    const metadata = await response.json() as TokenMetadata;
+    const tokens = await response.json() as Array<{
+      address: string;
+      name: string;
+      symbol: string;
+      logoURI?: string;
+      decimals: number;
+    }>;
     
-    return {
-      name: metadata.name || undefined,
-      symbol: metadata.symbol || undefined,
-      description: metadata.description || undefined,
-      image: metadata.image || undefined
-    };
+    const tokenMap: Record<string, TokenMetadata> = {};
+    tokens.forEach(token => {
+      tokenMap[token.address] = {
+        name: token.name,
+        symbol: token.symbol,
+        image: token.logoURI
+      };
+    });
+    
+    console.log(`Loaded ${tokens.length} tokens from Jupiter`);
+    return tokenMap;
   } catch (error) {
-    console.error('Error fetching external metadata:', error);
+    console.error("Failed to fetch Jupiter token list:", error);
     return {};
   }
 }
 
 /**
- * Get metadata with fallback
+ * Get metadata for a token with fallback strategies
  */
-async function getTokenMetadataWithFallback(
-  connection: Connection,
-  mintAddress: string | PublicKey
+async function getTokenMetadata(
+  mintString: string, 
+  jupiterTokens: Record<string, TokenMetadata>
 ): Promise<TokenMetadata> {
-  const mint = typeof mintAddress === 'string' ? new PublicKey(mintAddress) : mintAddress;
-  const mintString = mint.toBase58();
-  
-  const metadata = await getTokenMetadata(connection, mint);
-  
-  // If still no metadata, create fallback
-  if (!metadata.name && !metadata.symbol) {
-    return {
-      name: `Token ${mintString.slice(0, 8)}...`,
-      symbol: mintString.slice(0, 4).toUpperCase(),
-      ...metadata
-    };
+  // 1. Check known fungible tokens first
+  if (KNOWN_FUNGIBLE_TOKENS[mintString]) {
+    return KNOWN_FUNGIBLE_TOKENS[mintString];
   }
   
-  return metadata;
+  // 2. Check Jupiter token list (most reliable for fungible tokens)
+  if (jupiterTokens[mintString]) {
+    return jupiterTokens[mintString];
+  }
+  
+  // 3. Fallback to basic token info
+  return {
+    name: `Token ${mintString.slice(0, 8)}...`,
+    symbol: mintString.slice(0, 4).toUpperCase()
+  };
 }
 
 /**
- * Batch fetch metadata for multiple tokens
+ * Filter and process user tokens to exclude NFTs
  */
-async function getBatchTokenMetadata(
+async function processUserTokens(
   connection: Connection,
-  mintAddresses: string[]
-): Promise<Record<string, TokenMetadata>> {
-  const results: Record<string, TokenMetadata> = {};
+  tokenAccounts: any[],
+  jupiterTokens: Record<string, TokenMetadata>
+): Promise<UserToken[]> {
+  const validTokens: UserToken[] = [];
   
-  // Process in smaller batches to avoid rate limiting
-  const batchSize = 3;
-  for (let i = 0; i < mintAddresses.length; i += batchSize) {
-    const batch = mintAddresses.slice(i, i + batchSize);
+  console.log(`Processing ${tokenAccounts.length} token accounts...`);
+  
+  // Process tokens in batches to avoid overwhelming the RPC
+  const batchSize = 5;
+  for (let i = 0; i < tokenAccounts.length; i += batchSize) {
+    const batch = tokenAccounts.slice(i, i + batchSize);
     
-    const batchPromises = batch.map(async (mintString) => {
+    const batchPromises = batch.map(async (tokenAccount) => {
       try {
-        const metadata = await getTokenMetadataWithFallback(connection, mintString);
-        return { mintString, metadata };
-      } catch (error) {
-        console.error(`Failed to fetch metadata for ${mintString}:`, error);
-        return { 
-          mintString, 
-          metadata: {
-            name: `Token ${mintString.slice(0, 8)}...`,
-            symbol: mintString.slice(0, 4).toUpperCase()
-          }
+        const parsedInfo = tokenAccount.account.data.parsed?.info;
+        if (!parsedInfo) return null;
+        
+        const amount = BigInt(parsedInfo.tokenAmount.amount);
+        if (amount === 0n) return null; // Skip zero balance
+        
+        const mint = new PublicKey(parsedInfo.mint);
+        const mintString = mint.toBase58();
+        
+        // Check if this is likely an NFT
+        const isNFT = await isLikelyNFT(connection, mint, tokenAccount);
+        if (isNFT) {
+          console.log(`Skipping NFT: ${mintString}`);
+          return null;
+        }
+        
+        // Get token metadata
+        const metadata = await getTokenMetadata(mintString, jupiterTokens);
+        
+        return {
+          mint: mintString,
+          amount: amount.toString(),
+          decimals: parsedInfo.tokenAmount.decimals,
+          uiAmount: parsedInfo.tokenAmount.uiAmount || 0,
+          metadata
         };
+      } catch (error) {
+        console.error(`Error processing token:`, error);
+        return null;
       }
     });
     
     const batchResults = await Promise.allSettled(batchPromises);
     
     batchResults.forEach((result) => {
-      if (result.status === 'fulfilled') {
-        results[result.value.mintString] = result.value.metadata;
+      if (result.status === 'fulfilled' && result.value) {
+        validTokens.push(result.value);
       }
     });
     
-    // Add delay between batches
-    if (i + batchSize < mintAddresses.length) {
-      await new Promise(resolve => setTimeout(resolve, 300));
+    // Add small delay between batches
+    if (i + batchSize < tokenAccounts.length) {
+      await new Promise(resolve => setTimeout(resolve, 200));
     }
   }
   
-  return results;
+  // Sort by balance (highest first)
+  validTokens.sort((a, b) => b.uiAmount - a.uiAmount);
+  
+  console.log(`Filtered to ${validTokens.length} fungible tokens`);
+  return validTokens;
 }
 
 export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true });
+  
   try {
     const url = new URL(ctx.request.url);
     const userAddress = url.searchParams.get('address');
@@ -356,63 +331,37 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     }
 
     const connection = new Connection(ctx.env.RPC_URL);
+    
+    console.log(`Fetching tokens for user: ${userAddress}`);
 
-    // Get all token accounts owned by the user with parsed data
-    const tokenAccounts = await connection.getParsedTokenAccountsByOwner(userPubKey, {
-      programId: new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"), // SPL Token Program
-    });
+    // Fetch Jupiter token list for metadata (parallel with token accounts)
+    const [tokenAccountsResult, jupiterTokens] = await Promise.all([
+      connection.getParsedTokenAccountsByOwner(userPubKey, {
+        programId: new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"), // SPL Token Program
+      }),
+      getJupiterTokenList()
+    ]);
 
-    console.log(`Found ${tokenAccounts.value.length} token accounts for ${userAddress}`);
+    console.log(`Found ${tokenAccountsResult.value.length} total token accounts`);
 
-    // First, collect all non-zero token accounts
-    const validTokenAccounts = [];
-    for (const tokenAccount of tokenAccounts.value) {
-      const parsedInfo = tokenAccount.account.data.parsed?.info;
-      if (!parsedInfo) continue;
-      
-      const amount = BigInt(parsedInfo.tokenAmount.amount);
-      if (amount === 0n) continue; // Skip tokens with zero balance
-      
-      validTokenAccounts.push({
-        mint: parsedInfo.mint,
-        amount: amount.toString(),
-        decimals: parsedInfo.tokenAmount.decimals,
-        uiAmount: parsedInfo.tokenAmount.uiAmount || 0
-      });
-    }
-
-    console.log(`Processing ${validTokenAccounts.length} tokens with non-zero balance`);
-
-    // Batch fetch metadata for all tokens
-    const mintAddresses = validTokenAccounts.map(token => token.mint);
-    const metadataMap = await getBatchTokenMetadata(connection, mintAddresses);
-
-    // Create user tokens array with metadata
-    const userTokens: UserToken[] = validTokenAccounts.map(token => ({
-      mint: token.mint,
-      amount: token.amount,
-      decimals: token.decimals,
-      uiAmount: token.uiAmount,
-      metadata: metadataMap[token.mint] || {
-        name: `Token ${token.mint.slice(0, 8)}...`,
-        symbol: token.mint.slice(0, 4).toUpperCase()
-      }
-    }));
-
-    // Sort tokens by balance (highest first)
-    userTokens.sort((a, b) => b.uiAmount - a.uiAmount);
+    // Process tokens and filter out NFTs
+    const userTokens = await processUserTokens(
+      connection, 
+      tokenAccountsResult.value, 
+      jupiterTokens
+    );
 
     // Get SOL balance
     const solBalance = await connection.getBalance(userPubKey);
-    const solBalanceInSol = solBalance / 1e9; // Convert lamports to SOL
+    const solBalanceInSol = solBalance / 1e9;
 
-    console.log(`Successfully processed ${userTokens.length} tokens for ${userAddress}`);
+    console.log(`Successfully processed ${userTokens.length} fungible tokens for ${userAddress}`);
 
     return jsonResponse({
       success: true,
       userAddress,
       solBalance: {
-        mint: "So11111111111111111111111111111111111111112", // SOL mint
+        mint: "So11111111111111111111111111111111111111112",
         amount: solBalance.toString(),
         decimals: 9,
         uiAmount: solBalanceInSol,

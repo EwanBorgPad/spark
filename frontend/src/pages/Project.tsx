@@ -23,6 +23,7 @@ import { Connection, PublicKey } from '@solana/web3.js'
 import { getAssociatedTokenAddress } from '@solana/spl-token'
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry'
 import { ROUTES } from "@/utils/routes"
+import { useDeviceDetection } from "@/hooks/useDeviceDetection"
 
 const Project = () => {
   const { id } = useParams()
@@ -36,6 +37,7 @@ const Project = () => {
   const [solPriceUSD, setSolPriceUSD] = useState<number | null>(null)
   const [fallbackChartData, setFallbackChartData] = useState<TokenMarketData | null>(null)
   const [isLoadingFallbackChart, setIsLoadingFallbackChart] = useState(false)
+  const { isDesktop, isMobile } = useDeviceDetection()
 
   const { user, authenticated } = usePrivy()
   const { wallets } = useSolanaWallets()
@@ -670,44 +672,46 @@ const Project = () => {
         </div>
       </div>
 
-      <section className="flex w-full flex-col items-center gap-8 px-4 md:max-w-[792px] mx-auto mt-20 md:mt-24">
+      <section className={`flex w-full flex-col items-center gap-8 px-4 mx-auto mt-20 md:mt-24 ${isDesktop ? 'max-w-[1200px]' : 'md:max-w-[792px]'}`}>
         {/* Header with logo and name */}
-        <div className="flex w-full items-center gap-4">
-          <Img
-            src={tokenData?.token?.imageUrl}
-            isFetchingLink={tokenLoading}
-            imgClassName="w-16 h-16 rounded-full object-cover"
-            isRounded={true}
-            size="20"
-          />
-          <div className="flex flex-col gap-2 flex-1">
-            <div className="flex items-center gap-2">
+        <div className={`flex w-full items-center gap-4 ${isDesktop ? 'justify-between' : ''}`}>
+          <div className="flex items-center gap-4">
+            <Img
+              src={tokenData?.token?.imageUrl}
+              isFetchingLink={tokenLoading}
+              imgClassName={`rounded-full object-cover ${isDesktop ? 'w-20 h-20' : 'w-16 h-16'}`}
+              isRounded={true}
+              size="20"
+            />
+            <div className="flex flex-col gap-2 flex-1">
+              <div className="flex items-center gap-2">
+                <Text
+                  text={tokenData?.token?.name || marketData?.tokenMarketData?.name || fallbackChartData?.name}
+                  as="h1"
+                  className={`font-semibold ${isDesktop ? 'text-3xl' : 'text-2xl'}`}
+                  isLoading={tokenLoading && marketLoading && isLoadingFallbackChart}
+                  loadingClass="max-w-[120px]"
+                />
+              </div>
+
+              {/* Token Address - first 4 and last 4 characters */}
               <Text
-                text={tokenData?.token?.name || marketData?.tokenMarketData?.name || fallbackChartData?.name}
-                as="h1"
-                className="font-semibold text-2xl"
-                isLoading={tokenLoading && marketLoading && isLoadingFallbackChart}
-                loadingClass="max-w-[120px]"
+                text={id ? `${id.slice(0, 4)}...${id.slice(-4)}` : "Unknown"}
+                as="span"
+                className={`text-fg-primary text-opacity-75 font-mono ${isDesktop ? 'text-base' : 'text-sm'}`}
+                isLoading={tokenLoading}
               />
             </div>
-
-            {/* Token Address - first 4 and last 4 characters */}
-            <Text
-              text={id ? `${id.slice(0, 4)}...${id.slice(-4)}` : "Unknown"}
-              as="span"
-              className="text-fg-primary text-opacity-75 font-mono text-sm"
-              isLoading={tokenLoading}
-            />
           </div>
 
           {/* Market Cap and Volume */}
           {(marketData?.tokenMarketData || fallbackChartData) && (
-            <div className="flex flex-col gap-1 text-left ml-auto mr-4">
-              <div className="flex items-center gap-1">
+            <div className={`flex gap-6 text-left ${isDesktop ? 'flex-row' : 'flex-col gap-1 ml-auto mr-4'}`}>
+              <div className="flex flex-col items-center text-center">
                 <Text
-                  text="Mkt Cap"
+                  text="Market Cap"
                   as="span"
-                  className="text-xs text-fg-primary text-opacity-75 font-medium"
+                  className={`text-fg-primary text-opacity-75 font-medium ${isDesktop ? 'text-sm mb-1' : 'text-xs'}`}
                   isLoading={marketLoading && isLoadingFallbackChart}
                 />
                 <Text
@@ -720,15 +724,15 @@ const Project = () => {
                         : `$${marketCap || 0}`
                   })()}
                   as="span"
-                  className="text-xs font-medium text-fg-primary"
+                  className={`font-medium text-fg-primary ${isDesktop ? 'text-lg' : 'text-xs'}`}
                   isLoading={marketLoading && isLoadingFallbackChart}
                 />
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex flex-col items-center text-center">
                 <Text
-                  text="Vol (24h)"
+                  text="Volume (24h)"
                   as="span"
-                  className="text-xs text-fg-primary text-opacity-75 font-medium"
+                  className={`text-fg-primary text-opacity-75 font-medium ${isDesktop ? 'text-sm mb-1' : 'text-xs'}`}
                   isLoading={marketLoading && isLoadingFallbackChart}
                 />
                 <Text
@@ -741,7 +745,7 @@ const Project = () => {
                         : `$${volume24h || 0}`
                   })()}
                   as="span"
-                  className="text-xs font-medium text-fg-primary"
+                  className={`font-medium text-fg-primary ${isDesktop ? 'text-lg' : 'text-xs'}`}
                   isLoading={marketLoading && isLoadingFallbackChart}
                 />
               </div>
@@ -749,14 +753,18 @@ const Project = () => {
           )}
         </div>
 
-        {/* Price Chart */}
-        {(marketLoading || isLoadingFallbackChart) ? (
-          <div className="w-full rounded-lg bg-bg-secondary p-4">
-            <div className="h-[300px] flex items-center justify-center">
-              <Text text="Loading price chart..." as="p" className="text-fg-primary text-opacity-75" />
-            </div>
-          </div>
-        ) : (() => {
+        {/* Main Content Grid - Desktop vs Mobile Layout */}
+        <div className={`w-full ${isDesktop ? 'grid grid-cols-1 lg:grid-cols-3 gap-8' : 'flex flex-col gap-8'}`}>
+          {/* Left Column - Chart and Trading (Desktop: 2 columns, Mobile: full width) */}
+          <div className={`${isDesktop ? 'lg:col-span-2' : ''} space-y-6`}>
+            {/* Price Chart */}
+            {(marketLoading || isLoadingFallbackChart) ? (
+              <div className="w-full rounded-lg bg-bg-secondary p-4">
+                <div className="h-[300px] flex items-center justify-center">
+                  <Text text="Loading price chart..." as="p" className="text-fg-primary text-opacity-75" />
+                </div>
+              </div>
+            ) : (() => {
           // Determine which data to use for chart
           const hasValidBackendData = marketData?.tokenMarketData && 
             marketData.tokenMarketData.priceChart && 
@@ -804,105 +812,182 @@ const Project = () => {
           }
         })()}
 
-        {/* Token Balance and Value */}
-        {(marketData?.tokenMarketData || fallbackChartData) && (
-          <div className="w-full rounded-lg bg-bg-secondary p-4 border border-fg-primary/10">
-            <div className="flex justify-between items-center">
-              <div className="flex flex-col items-center text-center flex-1">
-                <Text
-                  text="Balance"
-                  as="span"
-                  className="text-xs text-fg-primary text-opacity-75 font-medium mb-1"
-                  isLoading={marketLoading && isLoadingFallbackChart}
-                />
-                <Text
-                  text={authenticated
-                    ? userTokenBalance.toFixed(2)
-                    : "--"
-                  }
-                  as="span"
-                  className="text-lg font-semibold text-fg-primary"
-                  isLoading={marketLoading && isLoadingFallbackChart}
-                />
+            {/* Token Balance and Value */}
+            {(marketData?.tokenMarketData || fallbackChartData) && (
+              <div className="w-full rounded-lg bg-bg-secondary p-4 border border-fg-primary/10">
+                <div className="flex justify-between items-center">
+                  <div className="flex flex-col items-center text-center flex-1">
+                    <Text
+                      text="Balance"
+                      as="span"
+                      className="text-xs text-fg-primary text-opacity-75 font-medium mb-1"
+                      isLoading={marketLoading && isLoadingFallbackChart}
+                    />
+                    <Text
+                      text={authenticated
+                        ? userTokenBalance.toFixed(2)
+                        : "--"
+                      }
+                      as="span"
+                      className="text-lg font-semibold text-fg-primary"
+                      isLoading={marketLoading && isLoadingFallbackChart}
+                    />
 
+                  </div>
+                  <div className="flex flex-col items-center text-center flex-1">
+                    <Text
+                      text="Value"
+                      as="span"
+                      className="text-xs text-fg-primary text-opacity-75 font-medium mb-1"
+                      isLoading={marketLoading && isLoadingFallbackChart}
+                    />
+                    <Text
+                      text={(() => {
+                        // Debug logging
+                        console.log("Value calculation debug:", {
+                          authenticated,
+                          userTokenBalance,
+                          jupiterQuote,
+                          solPriceUSD,
+                          marketPrice: marketData?.tokenMarketData?.price,
+                          fallbackPrice: fallbackChartData?.price,
+                          hasJupiterData: !!(jupiterQuote && solPriceUSD),
+                          hasMarketData: !!marketData?.tokenMarketData?.price,
+                          hasFallbackData: !!fallbackChartData?.price
+                        });
+
+                        if (!authenticated) return "--";
+                        if (userTokenBalance <= 0) return "$0.00";
+
+                        // Try Jupiter quote first
+                        if (jupiterQuote && solPriceUSD) {
+                          const value = userTokenBalance * jupiterQuote * solPriceUSD;
+                          return `$${value.toFixed(2)}`;
+                        }
+
+                        // Try market data price
+                        if (marketData?.tokenMarketData?.price) {
+                          const value = userTokenBalance * marketData.tokenMarketData.price;
+                          return `$${value.toFixed(2)}`;
+                        }
+
+                        // Try fallback chart data price
+                        if (fallbackChartData?.price) {
+                          const value = userTokenBalance * fallbackChartData.price;
+                          return `$${value.toFixed(2)}`;
+                        }
+
+                        // No price data available
+                        return "--";
+                      })()}
+                      as="span"
+                      className="text-lg font-semibold text-fg-primary"
+                      isLoading={marketLoading && isLoadingFallbackChart}
+                    />
+
+                  </div>
+                </div>
               </div>
-              <div className="flex flex-col items-center text-center flex-1">
-                <Text
-                  text="Value"
-                  as="span"
-                  className="text-xs text-fg-primary text-opacity-75 font-medium mb-1"
-                  isLoading={marketLoading && isLoadingFallbackChart}
-                />
-                <Text
-                  text={(() => {
-                    // Debug logging
-                    console.log("Value calculation debug:", {
-                      authenticated,
-                      userTokenBalance,
-                      jupiterQuote,
-                      solPriceUSD,
-                      marketPrice: marketData?.tokenMarketData?.price,
-                      fallbackPrice: fallbackChartData?.price,
-                      hasJupiterData: !!(jupiterQuote && solPriceUSD),
-                      hasMarketData: !!marketData?.tokenMarketData?.price,
-                      hasFallbackData: !!fallbackChartData?.price
-                    });
+            )}
 
-                    if (!authenticated) return "--";
-                    if (userTokenBalance <= 0) return "$0.00";
-
-                    // Try Jupiter quote first
-                    if (jupiterQuote && solPriceUSD) {
-                      const value = userTokenBalance * jupiterQuote * solPriceUSD;
-                      return `$${value.toFixed(2)}`;
-                    }
-
-                    // Try market data price
-                    if (marketData?.tokenMarketData?.price) {
-                      const value = userTokenBalance * marketData.tokenMarketData.price;
-                      return `$${value.toFixed(2)}`;
-                    }
-
-                    // Try fallback chart data price
-                    if (fallbackChartData?.price) {
-                      const value = userTokenBalance * fallbackChartData.price;
-                      return `$${value.toFixed(2)}`;
-                    }
-
-                    // No price data available
-                    return "--";
-                  })()}
-                  as="span"
-                  className="text-lg font-semibold text-fg-primary"
-                  isLoading={marketLoading && isLoadingFallbackChart}
-                />
-
-              </div>
+            {/* Buy and Sell Token Buttons */}
+            <div className="flex gap-3 w-full">
+              <Button
+                onClick={() => {
+                  setSwapMode('buy')
+                  setIsSwapModalOpen(true)
+                }}
+                className="flex-1 !bg-green-600 hover:!bg-green-700 !text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+              >
+                Buy Token
+              </Button>
+              <Button
+                onClick={() => {
+                  setSwapMode('sell')
+                  setIsSwapModalOpen(true)
+                }}
+                className="flex-1 !bg-red-600 hover:!bg-red-700 !text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:!bg-gray-500 disabled:!text-gray-300"
+                disabled={!authenticated || userTokenBalance <= 0}
+              >
+                Sell Token
+              </Button>
             </div>
           </div>
-        )}
 
-        {/* Buy and Sell Token Buttons */}
-        <div className="flex gap-3 w-full">
-          <Button
-            onClick={() => {
-              setSwapMode('buy')
-              setIsSwapModalOpen(true)
-            }}
-            className="flex-1 !bg-green-600 hover:!bg-green-700 !text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-          >
-            Buy Token
-          </Button>
-          <Button
-            onClick={() => {
-              setSwapMode('sell')
-              setIsSwapModalOpen(true)
-            }}
-            className="flex-1 !bg-red-600 hover:!bg-red-700 !text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:!bg-gray-500 disabled:!text-gray-300"
-            disabled={!authenticated || userTokenBalance <= 0}
-          >
-            Sell Token
-          </Button>
+          {/* Right Column - Token Info and Quick Actions (Desktop only) */}
+          {isDesktop && (
+            <div className="lg:col-span-1 space-y-6">
+              {/* Quick Stats Card */}
+              <div className="bg-bg-secondary rounded-xl p-6 border border-fg-primary/10">
+                <h3 className="text-lg font-semibold mb-4">Token Stats</h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between">
+                    <span className="text-fg-primary/70">Price</span>
+                    <span className="font-medium">
+                      {marketData?.tokenMarketData?.price || fallbackChartData?.price 
+                        ? `$${(marketData?.tokenMarketData?.price || fallbackChartData?.price || 0).toExponential(3)}`
+                        : '--'
+                      }
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-fg-primary/70">24h Change</span>
+                    <span className={`font-medium ${
+                      (marketData?.tokenMarketData?.priceChange24h || fallbackChartData?.priceChange24h || 0) >= 0 
+                        ? 'text-green-400' 
+                        : 'text-red-400'
+                    }`}>
+                      {marketData?.tokenMarketData?.priceChange24h || fallbackChartData?.priceChange24h 
+                        ? `${(marketData?.tokenMarketData?.priceChange24h || fallbackChartData?.priceChange24h || 0).toFixed(2)}%`
+                        : '--'
+                      }
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-fg-primary/70">Liquidity</span>
+                    <span className="font-medium">
+                      {fallbackChartData?.liquidity 
+                        ? `$${(fallbackChartData.liquidity / 1000).toFixed(1)}K`
+                        : '--'
+                      }
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Actions Card */}
+              <div className="bg-bg-secondary rounded-xl p-6 border border-fg-primary/10">
+                <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+                <div className="space-y-3">
+                  <Button
+                    onClick={() => {
+                      setSwapMode('buy')
+                      setIsSwapModalOpen(true)
+                    }}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Buy Token
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setSwapMode('sell')
+                      setIsSwapModalOpen(true)
+                    }}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white disabled:bg-gray-500"
+                    disabled={!authenticated || userTokenBalance <= 0}
+                  >
+                    Sell Token
+                  </Button>
+                  <Button
+                    onClick={() => window.open(`https://dexscreener.com/solana/${id}`, '_blank')}
+                    className="w-full bg-bg-primary hover:bg-brand-primary/20 text-fg-primary border border-brand-primary/30"
+                  >
+                    View on DexScreener
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* DAO Governance */}

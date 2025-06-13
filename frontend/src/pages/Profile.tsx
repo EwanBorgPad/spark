@@ -14,12 +14,14 @@ import { GetUserTokensResponse, UserTokenModel } from "shared/models"
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js"
 import { TOKEN_PROGRAM_ID, createTransferInstruction, getAssociatedTokenAddress } from "@solana/spl-token"
 import { getCorrectWalletAddress } from "@/utils/walletUtils"
+import { useDeviceDetection } from "@/hooks/useDeviceDetection"
 
 
 const Profile = () => {
   const navigate = useNavigate();
   const { wallets } = useSolanaWallets();
   const { user: privyUser, logout } = usePrivy();
+  const { isDesktop, isMobile } = useDeviceDetection();
   
   const address = getCorrectWalletAddress(privyUser, wallets);
   const [userId, setUserId] = useState('');
@@ -262,215 +264,227 @@ const Profile = () => {
 
       {/* Main content */}
       <div className="flex-1 px-4 py-20 md:px-8">
-        <div className="mx-auto max-w-6xl">
+        <div className={`mx-auto ${isDesktop ? 'max-w-7xl' : 'max-w-6xl'}`}>
           {/* Profile Header */}
           <div className="text-center mb-12">
             <Text
               text="Profile"
               as="h1"
-              className="text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-[68px] md:leading-[74px] mb-4 text-brand-primary"
+              className={`font-medium tracking-[-0.4px] mb-4 text-brand-primary ${
+                isDesktop ? 'text-[56px] leading-[60px]' : 'text-[40px] leading-[48px] md:text-[68px] md:leading-[74px]'
+              }`}
             />
             <Text
               text="Your Account & Token Portfolio"
               as="h2"
-              className="text-xl md:text-2xl opacity-75"
+              className={`opacity-75 ${isDesktop ? 'text-2xl' : 'text-xl md:text-2xl'}`}
             />
           </div>
 
-          {/* Account Information Card */}
-          <div className="bg-bg-secondary rounded-xl p-6 mb-8 border border-border-primary/20">
-            <Text text="Account Information" as="h3" className="text-xl font-semibold mb-6" />
+          {/* Main Content Grid */}
+          <div className={`${isDesktop ? 'grid grid-cols-1 lg:grid-cols-3 gap-8' : 'space-y-8'}`}>
+            {/* Left Column - Account Info (Desktop: 1 column, Mobile: full width) */}
+            <div className={`${isDesktop ? 'lg:col-span-1' : ''}`}>
+              {/* Account Information Card */}
+              <div className="bg-bg-secondary rounded-xl p-6 border border-border-primary/20">
+                <Text text="Account Information" as="h3" className="text-xl font-semibold mb-6" />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-brand-primary/20 flex items-center justify-center">
-                  <Icon icon="SvgTwoAvatars" className="text-brand-primary text-xl" />
-                </div>
-                <div>
-                  <Text text="Username" as="span" className="text-sm font-medium opacity-75" />
-                  <Text text={user?.username || "Not set"} as="p" className="text-lg font-medium" />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-brand-primary/20 flex items-center justify-center">
-                  <Icon icon="SvgWalletFilled" className="text-brand-primary text-xl" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <Text text="Wallet Address" as="span" className="text-sm font-medium opacity-75" />
-                  <div
-                    onClick={copyAddressToClipboard}
-                    className="cursor-pointer hover:bg-bg-primary rounded px-2 py-1 -mx-2 -my-1 transition-colors"
-                    title="Click to copy address"
-                  >
-                    <Text
-                      text={address ? `${address.slice(0, 4)}...${address.slice(-4)}` : "Not connected"}
-                      as="p"
-                      className="text-lg font-medium font-mono"
-                    />
-                    {copiedAddress && (
-                      <Text text="Copied!" as="span" className="text-sm text-green-400 mt-1" />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Disconnect Button */}
-            <div className="flex justify-center pt-4 border-t border-border-primary/20">
-              <Button
-                onClick={handleDisconnect}
-                size="lg"
-                className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border-red-500/30 px-8"
-              >
-                <Icon icon="SvgLogOut" className="text-lg mr-2" />
-                Disconnect Wallet
-              </Button>
-            </div>
-          </div>
-
-          {/* Token Portfolio */}
-          <div className="bg-bg-secondary rounded-xl p-6 border border-border-primary/20">
-            <div className="flex items-center justify-between mb-6">
-              <Text text="Token Portfolio" as="h3" className="text-xl font-semibold" />
-              {userTokens && (
-                <Text
-                  text={`${userTokens.tokenCount + 1} tokens`}
-                  as="span"
-                  className="text-sm opacity-75"
-                />
-              )}
-            </div>
-
-            {tokensLoading && (
-              <div className="text-center py-12">
-                <Text text="Loading tokens..." as="p" className="text-lg opacity-75" />
-              </div>
-            )}
-
-            {tokensError && (
-              <div className="text-center py-12">
-                <Text text="Failed to load tokens" as="p" className="text-lg text-red-400" />
-              </div>
-            )}
-
-            {userTokens && (
-              <div className="space-y-3">
-                {/* SOL Balance */}
-                <div className="flex items-center justify-between p-4 bg-bg-primary rounded-lg border border-border-primary/10">
-                  <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <Img
-                      src={userTokens.solBalance.metadata.image}
-                      imgClassName="w-12 h-12 rounded-full"
-                      isRounded={true}
-                    />
-                    <div className="min-w-0">
-                      <Text
-                        text={userTokens.solBalance.metadata.name || "Solana"}
-                        as="p"
-                        className="font-medium"
-                      />
-                      <Text
-                        text={userTokens.solBalance.metadata.symbol || "SOL"}
-                        as="p"
-                        className="text-sm opacity-75"
-                      />
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-brand-primary/20 flex items-center justify-center">
+                      <Icon icon="SvgTwoAvatars" className="text-brand-primary text-xl" />
+                    </div>
+                    <div>
+                      <Text text="Username" as="span" className="text-sm font-medium opacity-75" />
+                      <Text text={user?.username || "Not set"} as="p" className="text-lg font-medium" />
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    <div className="text-right min-w-0 max-w-[120px]">
-                      <Text
-                        text={(() => {
-                          const amount = userTokens.solBalance.uiAmount;
-                          if (amount >= 1000000) {
-                            return `${(amount / 1000000).toFixed(2)}M`;
-                          } else if (amount >= 1000) {
-                            return `${(amount / 1000).toFixed(2)}K`;
-                          } else {
-                            return amount.toLocaleString(undefined, {
-                              maximumFractionDigits: 4
-                            });
-                          }
-                        })()}
-                        as="p"
-                        className="font-medium text-lg truncate"
-                      />
-                    </div>
-                    <Button
-                      onClick={openSOLSendModal}
-                      size="sm"
-                      className="bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border-brand-primary/30 flex-shrink-0"
-                    >
-                      Send
-                    </Button>
-                  </div>
-                </div>
 
-                {/* Other Tokens */}
-                {userTokens.tokens.map((token: UserTokenModel) => (
-                  <div
-                    key={token.mint}
-                    className="flex items-center justify-between p-4 bg-bg-primary rounded-lg border border-border-primary/10"
-                  >
-                    <div className="flex items-center gap-4 flex-1 min-w-0">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-primary/20 to-brand-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Text
-                          text={token.metadata.symbol?.slice(0, 2) || token.mint.slice(0, 2)}
-                          as="span"
-                          className="font-bold text-brand-primary"
-                        />
-                      </div>
-                      <div className="min-w-0">
-                        <Text
-                          text={token.metadata.name?.slice(0, 15) || `Token ${token.mint.slice(0, 4)}...`}
-                          as="p"
-                          className="font-medium truncate"
-                        />
-                        <Text
-                          text={token.metadata.symbol || token.mint.slice(0, 4).toUpperCase()}
-                          as="p"
-                          className="text-sm opacity-75"
-                        />
-                      </div>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-brand-primary/20 flex items-center justify-center">
+                      <Icon icon="SvgWalletFilled" className="text-brand-primary text-xl" />
                     </div>
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                      <div className="text-right min-w-0 max-w-[120px]">
-                        <Text
-                          text={(() => {
-                            const amount = token.uiAmount;
-                            if (amount >= 1000000) {
-                              return `${(amount / 1000000).toFixed(2)}M`;
-                            } else if (amount >= 1000) {
-                              return `${(amount / 1000).toFixed(2)}K`;
-                            } else {
-                              return amount.toLocaleString(undefined, {
-                                maximumFractionDigits: token.decimals > 4 ? 4 : token.decimals
-                              });
-                            }
-                          })()}
-                          as="p"
-                          className="font-medium text-lg truncate"
-                        />
-                      </div>
-                      <Button
-                        onClick={() => openSendModal(token)}
-                        size="sm"
-                        className="bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border-brand-primary/30 flex-shrink-0"
+                    <div className="flex-1 min-w-0">
+                      <Text text="Wallet Address" as="span" className="text-sm font-medium opacity-75" />
+                      <div
+                        onClick={copyAddressToClipboard}
+                        className="cursor-pointer hover:bg-bg-primary rounded px-2 py-1 -mx-2 -my-1 transition-colors"
+                        title="Click to copy address"
                       >
-                        Send
-                      </Button>
+                        <Text
+                          text={address ? `${address.slice(0, 4)}...${address.slice(-4)}` : "Not connected"}
+                          as="p"
+                          className="text-lg font-medium font-mono"
+                        />
+                        {copiedAddress && (
+                          <Text text="Copied!" as="span" className="text-sm text-green-400 mt-1" />
+                        )}
+                      </div>
                     </div>
                   </div>
-                ))}
+                </div>
 
-                {userTokens.tokens.length === 0 && (
+                {/* Disconnect Button */}
+                <div className="flex justify-center pt-6 mt-6 border-t border-border-primary/20">
+                  <Button
+                    onClick={handleDisconnect}
+                    size="lg"
+                    className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border-red-500/30 px-8"
+                  >
+                    <Icon icon="SvgLogOut" className="text-lg mr-2" />
+                    Disconnect Wallet
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Token Portfolio (Desktop: 2 columns, Mobile: full width) */}
+            <div className={`${isDesktop ? 'lg:col-span-2' : ''}`}>
+
+              {/* Token Portfolio */}
+              <div className="bg-bg-secondary rounded-xl p-6 border border-border-primary/20">
+                <div className="flex items-center justify-between mb-6">
+                  <Text text="Token Portfolio" as="h3" className="text-xl font-semibold" />
+                  {userTokens && (
+                    <Text
+                      text={`${userTokens.tokenCount + 1} tokens`}
+                      as="span"
+                      className="text-sm opacity-75"
+                    />
+                  )}
+                </div>
+
+                {tokensLoading && (
                   <div className="text-center py-12">
-                    <Text text="No tokens found in this wallet" as="p" className="text-lg opacity-75" />
-                    <Text text="Only SOL balance is available" as="p" className="text-sm opacity-50 mt-2" />
+                    <Text text="Loading tokens..." as="p" className="text-lg opacity-75" />
+                  </div>
+                )}
+
+                {tokensError && (
+                  <div className="text-center py-12">
+                    <Text text="Failed to load tokens" as="p" className="text-lg text-red-400" />
+                  </div>
+                )}
+
+                {userTokens && (
+                  <div className="space-y-3">
+                    {/* SOL Balance */}
+                    <div className="flex items-center justify-between p-4 bg-bg-primary rounded-lg border border-border-primary/10">
+                      <div className="flex items-center gap-4 flex-1 min-w-0">
+                        <Img
+                          src={userTokens.solBalance.metadata.image}
+                          imgClassName="w-12 h-12 rounded-full"
+                          isRounded={true}
+                        />
+                        <div className="min-w-0">
+                          <Text
+                            text={userTokens.solBalance.metadata.name || "Solana"}
+                            as="p"
+                            className="font-medium"
+                          />
+                          <Text
+                            text={userTokens.solBalance.metadata.symbol || "SOL"}
+                            as="p"
+                            className="text-sm opacity-75"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <div className="text-right min-w-0 max-w-[120px]">
+                          <Text
+                            text={(() => {
+                              const amount = userTokens.solBalance.uiAmount;
+                              if (amount >= 1000000) {
+                                return `${(amount / 1000000).toFixed(2)}M`;
+                              } else if (amount >= 1000) {
+                                return `${(amount / 1000).toFixed(2)}K`;
+                              } else {
+                                return amount.toLocaleString(undefined, {
+                                  maximumFractionDigits: 4
+                                });
+                              }
+                            })()}
+                            as="p"
+                            className="font-medium text-lg truncate"
+                          />
+                        </div>
+                        <Button
+                          onClick={openSOLSendModal}
+                          size="sm"
+                          className="bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border-brand-primary/30 flex-shrink-0"
+                        >
+                          Send
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Other Tokens */}
+                    {userTokens.tokens.map((token: UserTokenModel) => (
+                      <div
+                        key={token.mint}
+                        className="flex items-center justify-between p-4 bg-bg-primary rounded-lg border border-border-primary/10"
+                      >
+                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-primary/20 to-brand-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Text
+                              text={token.metadata.symbol?.slice(0, 2) || token.mint.slice(0, 2)}
+                              as="span"
+                              className="font-bold text-brand-primary"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <Text
+                              text={token.metadata.name?.slice(0, 15) || `Token ${token.mint.slice(0, 4)}...`}
+                              as="p"
+                              className="font-medium truncate"
+                            />
+                            <Text
+                              text={token.metadata.symbol || token.mint.slice(0, 4).toUpperCase()}
+                              as="p"
+                              className="text-sm opacity-75"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          <div className="text-right min-w-0 max-w-[120px]">
+                            <Text
+                              text={(() => {
+                                const amount = token.uiAmount;
+                                if (amount >= 1000000) {
+                                  return `${(amount / 1000000).toFixed(2)}M`;
+                                } else if (amount >= 1000) {
+                                  return `${(amount / 1000).toFixed(2)}K`;
+                                } else {
+                                  return amount.toLocaleString(undefined, {
+                                    maximumFractionDigits: token.decimals > 4 ? 4 : token.decimals
+                                  });
+                                }
+                              })()}
+                              as="p"
+                              className="font-medium text-lg truncate"
+                            />
+                          </div>
+                          <Button
+                            onClick={() => openSendModal(token)}
+                            size="sm"
+                            className="bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border-brand-primary/30 flex-shrink-0"
+                          >
+                            Send
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+
+                    {userTokens.tokens.length === 0 && (
+                      <div className="text-center py-12">
+                        <Text text="No tokens found in this wallet" as="p" className="text-lg opacity-75" />
+                        <Text text="Only SOL balance is available" as="p" className="text-sm opacity-50 mt-2" />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>

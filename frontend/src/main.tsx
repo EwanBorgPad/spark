@@ -37,6 +37,7 @@ import Search from "./pages/Search"
 import Projects from "./pages/Projects"
 import Providers from "./providers/PrivyProvider"
 import LandingPage from "./pages/LandingPage"
+import DesktopLandingPage from "./pages/DesktopLandingPage"
 import PwaInstall from "./pages/PwaInstall"
 window.Buffer = Buffer
 
@@ -116,6 +117,10 @@ const router = createBrowserRouter([
       {
         path: "/landing-page",
         element: <LandingPage />,
+      },
+      {
+        path: "/desktop-landing",
+        element: <DesktopLandingPage />,
       },
       // @backOffice
       {
