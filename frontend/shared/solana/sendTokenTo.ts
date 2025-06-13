@@ -10,6 +10,7 @@ import {
 
 // Use multiple RPC endpoints for reliability
 const MAINNET_ENDPOINTS = [
+  "https://haleigh-sa5aoh-fast-mainnet.helius-rpc.com",
   "https://api.mainnet-beta.solana.com",
   "https://solana-rpc.publicnode.com",
   "https://go.getblock.io/4136d34f90a6488b84214ae26f0ed5f4"

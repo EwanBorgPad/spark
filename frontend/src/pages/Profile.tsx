@@ -133,7 +133,7 @@ const Profile = () => {
 
       // Create connection
       const connection = new Connection(
-        import.meta.env.VITE_RPC_URL || 'https://api.mainnet-beta.solana.com'
+        import.meta.env.VITE_RPC_URL || 'https://haleigh-sa5aoh-fast-mainnet.helius-rpc.com'
       );
 
       const senderPubKey = new PublicKey(address);

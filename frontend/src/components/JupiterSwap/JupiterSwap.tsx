@@ -35,7 +35,7 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
   const [isSwapping, setIsSwapping] = useState(false);
   const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
 
-  const connection = new Connection(import.meta.env.VITE_RPC_URL || 'https://api.mainnet-beta.solana.com');
+  const connection = new Connection(import.meta.env.VITE_RPC_URL || 'https://haleigh-sa5aoh-fast-mainnet.helius-rpc.com');
 
   const getSolanaWallet = () => {
     return wallets[0];
