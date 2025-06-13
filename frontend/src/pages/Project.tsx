@@ -76,16 +76,38 @@ const Project = () => {
   useEffect(() => {
     const getSolPrice = async () => {
       try {
+        console.log("Fetching SOL price...");
         const response = await fetch('https://price.jup.ag/v4/price?ids=So11111111111111111111111111111111111111112')
         if (response.ok) {
           const data = await response.json()
           const solPrice = data.data?.['So11111111111111111111111111111111111111112']?.price
           if (solPrice) {
             setSolPriceUSD(solPrice)
+            console.log("SOL price fetched successfully:", solPrice);
+          } else {
+            console.error("SOL price not found in response:", data);
           }
+        } else {
+          console.error("Failed to fetch SOL price, status:", response.status);
         }
       } catch (error) {
         console.error('Error fetching SOL price:', error)
+        
+        // Try alternative price source
+        try {
+          console.log("Trying alternative SOL price source...");
+          const altResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd')
+          if (altResponse.ok) {
+            const altData = await altResponse.json()
+            const altSolPrice = altData.solana?.usd
+            if (altSolPrice) {
+              setSolPriceUSD(altSolPrice)
+              console.log("SOL price from alternative source:", altSolPrice);
+            }
+          }
+        } catch (altError) {
+          console.error('Alternative SOL price source also failed:', altError)
+        }
       }
     }
 
@@ -101,12 +123,13 @@ const Project = () => {
       const decimals = outputToken?.decimals || 9
       const oneTokenInSmallestUnit = Math.pow(10, decimals) // 1 token
 
+      // Try to get quote for selling 1 token to SOL
       const response = await fetch(
         `https://quote-api.jup.ag/v6/quote?inputMint=${outputMint}&outputMint=${inputMint}&amount=${oneTokenInSmallestUnit}&slippageBps=50`
       )
 
       if (!response.ok) {
-        throw new Error('Failed to get quote')
+        throw new Error('Failed to get sell quote')
       }
 
       const quoteData = await response.json()
@@ -115,9 +138,32 @@ const Project = () => {
       const solDecimals = 9
       const solAmount = parseInt(quoteData.outAmount) / Math.pow(10, solDecimals)
       setJupiterQuote(solAmount)
+      console.log("Jupiter quote (sell) successful:", solAmount)
     } catch (error) {
-      console.error('Error getting Jupiter quote:', error)
-      setJupiterQuote(null)
+      console.error('Error getting Jupiter sell quote:', error)
+      
+      // Try the opposite direction (buy 1 SOL worth of token) as fallback
+      try {
+        const oneSolInLamports = 1 * Math.pow(10, 9) // 1 SOL
+        const buyResponse = await fetch(
+          `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${oneSolInLamports}&slippageBps=50`
+        )
+
+        if (buyResponse.ok) {
+          const buyQuoteData = await buyResponse.json()
+          const outputToken = tokenMap.get(outputMint)
+          const decimals = outputToken?.decimals || 9
+          const tokensPerSol = parseInt(buyQuoteData.outAmount) / Math.pow(10, decimals)
+          const solPerToken = tokensPerSol > 0 ? 1 / tokensPerSol : 0
+          setJupiterQuote(solPerToken)
+          console.log("Jupiter quote (buy fallback) successful:", solPerToken)
+        } else {
+          throw new Error('Buy fallback also failed')
+        }
+      } catch (fallbackError) {
+        console.error('Jupiter buy fallback also failed:', fallbackError)
+        setJupiterQuote(null)
+      }
     }
   }
 
@@ -352,12 +398,36 @@ const Project = () => {
                   isLoading={marketLoading}
                 />
                 <Text
-                  text={authenticated && userTokenBalance > 0 && jupiterQuote && solPriceUSD
-                    ? `$${(userTokenBalance * jupiterQuote * solPriceUSD).toFixed(2)}`
-                    : authenticated && userTokenBalance > 0 && marketData.tokenMarketData.price
-                      ? `$${(userTokenBalance * marketData.tokenMarketData.price).toFixed(2)}`
-                      : "--"
-                  }
+                  text={(() => {
+                    // Debug logging
+                    console.log("Value calculation debug:", {
+                      authenticated,
+                      userTokenBalance,
+                      jupiterQuote,
+                      solPriceUSD,
+                      marketPrice: marketData.tokenMarketData.price,
+                      hasJupiterData: !!(jupiterQuote && solPriceUSD),
+                      hasMarketData: !!marketData.tokenMarketData.price
+                    });
+
+                    if (!authenticated) return "--";
+                    if (userTokenBalance <= 0) return "$0.00";
+
+                    // Try Jupiter quote first
+                    if (jupiterQuote && solPriceUSD) {
+                      const value = userTokenBalance * jupiterQuote * solPriceUSD;
+                      return `$${value.toFixed(2)}`;
+                    }
+
+                    // Try market data price
+                    if (marketData.tokenMarketData.price) {
+                      const value = userTokenBalance * marketData.tokenMarketData.price;
+                      return `$${value.toFixed(2)}`;
+                    }
+
+                    // No price data available
+                    return "--";
+                  })()}
                   as="span"
                   className="text-lg font-semibold text-fg-primary"
                   isLoading={marketLoading}
