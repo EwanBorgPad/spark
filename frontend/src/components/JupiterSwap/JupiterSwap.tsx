@@ -7,8 +7,11 @@ import Text from '../Text';
 import { Button } from '../Button/Button';
 
 interface JupiterSwapProps {
+  inputMint?: string; // The token they want to sell (optional, defaults to SOL)
   outputMint: string; // The token they want to buy
   className?: string;
+  solPriceUSD?: number; // SOL price in USD for value calculations
+  userTokenBalance?: number; // User's token balance for the input token
 }
 
 interface SwapQuote {
@@ -24,21 +27,56 @@ interface SwapQuote {
   routePlan: unknown[];
 }
 
-const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" }) => {
+const JupiterSwap: React.FC<JupiterSwapProps> = ({ inputMint = 'So11111111111111111111111111111111111111112', outputMint, className = "", solPriceUSD, userTokenBalance }) => {
   const { user, authenticated } = usePrivy();
   const { wallets } = useSolanaWallets();
-  const inputMint = 'So11111111111111111111111111111111111111112'; // SOL - locked
   const [inputAmount, setInputAmount] = useState('');
   const [outputAmount, setOutputAmount] = useState('');
   const [quote, setQuote] = useState<SwapQuote | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSwapping, setIsSwapping] = useState(false);
   const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
+  const [solBalance, setSolBalance] = useState<number>(0);
 
   const connection = new Connection(import.meta.env.VITE_RPC_URL || 'https://haleigh-sa5aoh-fast-mainnet.helius-rpc.com');
 
   const getSolanaWallet = () => {
-    return wallets[0];
+    // Find the connected Solana wallet from Privy
+    const connectedWallet = wallets.find(wallet => wallet.connectedAt && wallet.walletClientType === 'privy');
+    if (connectedWallet) {
+      return connectedWallet;
+    }
+    
+    // Fallback to any available wallet
+    return wallets.find(wallet => wallet.connectedAt) || wallets[0];
+  };
+
+  // Fetch SOL balance
+  const fetchSolBalance = async () => {
+    if (!authenticated || !user?.wallet?.address) {
+      console.log("Cannot fetch SOL balance - not authenticated or no wallet address");
+      return;
+    }
+
+    try {
+      const wallet = getSolanaWallet();
+      const walletAddress = user?.wallet?.address || wallet?.address;
+      console.log("Fetching SOL balance for address:", walletAddress);
+      
+      if (!walletAddress) {
+        console.log("No wallet address found");
+        return;
+      }
+
+      const publicKey = new PublicKey(walletAddress);
+      const balance = await connection.getBalance(publicKey);
+      const solBalance = balance / 1000000000; // Convert lamports to SOL
+      console.log("SOL balance fetched:", solBalance, "SOL");
+      setSolBalance(solBalance);
+    } catch (error) {
+      console.error('Error fetching SOL balance:', error);
+      setSolBalance(0);
+    }
   };
 
   // Load token list
@@ -60,6 +98,13 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
 
     loadTokens();
   }, []);
+
+  // Fetch SOL balance when authenticated
+  useEffect(() => {
+    if (authenticated) {
+      fetchSolBalance();
+    }
+  }, [authenticated, user, connection]);
 
   // Get quote from Jupiter
   const getQuote = async (inputMint: string, outputMint: string, amount: string) => {
@@ -107,9 +152,42 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
     }
   };
 
+  // Handle Max button click
+  const handleMaxClick = () => {
+    const isSellingToken = inputMint !== 'So11111111111111111111111111111111111111112';
+    
+    console.log("Max button clicked:", {
+      isSellingToken,
+      userTokenBalance,
+      solBalance,
+      inputMint,
+      outputMint
+    });
+    
+    if (isSellingToken && userTokenBalance) {
+      // When selling tokens, use the token balance
+      console.log("Using token balance:", userTokenBalance);
+      setInputAmount(userTokenBalance.toString());
+      if (userTokenBalance > 0) {
+        getQuote(inputMint, outputMint, userTokenBalance.toString());
+      }
+      } else {
+    // When buying tokens (paying with SOL), use SOL balance minus small fee buffer
+    const feeBuffer = Math.min(0.001, solBalance * 0.1); // Use 0.001 SOL or 10% of balance, whichever is smaller
+    const maxSol = Math.max(0, solBalance - feeBuffer);
+    console.log("Using SOL balance:", solBalance, "Fee buffer:", feeBuffer, "Max SOL:", maxSol);
+    if (maxSol > 0) {
+      setInputAmount(maxSol.toFixed(6)); // Use fixed decimal to avoid scientific notation
+      getQuote(inputMint, outputMint, maxSol.toString());
+    } else {
+      console.log("No SOL balance available after fee buffer");
+    }
+  }
+  };
+
   // Execute swap
   const executeSwap = async () => {
-    if (!quote || !authenticated || !user?.wallet?.address) {
+    if (!quote || !authenticated) {
       alert('Please connect your wallet and get a quote first');
       return;
     }
@@ -121,6 +199,19 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
         throw new Error('No Solana wallet found');
       }
 
+      // Get the correct wallet address - prioritize embedded wallet
+      let walletAddress = user?.wallet?.address;
+      if (!walletAddress && wallet.address) {
+        walletAddress = wallet.address;
+      }
+      
+      if (!walletAddress) {
+        throw new Error('No wallet address found');
+      }
+
+      console.log('Using wallet address:', walletAddress);
+      console.log('Using wallet type:', wallet.walletClientType);
+
       // Get swap transaction from Jupiter
       const response = await fetch('https://quote-api.jup.ag/v6/swap', {
         method: 'POST',
@@ -129,7 +220,7 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
         },
         body: JSON.stringify({
           quoteResponse: quote,
-          userPublicKey: user.wallet.address,
+          userPublicKey: walletAddress,
           wrapAndUnwrapSol: true,
           dynamicComputeUnitLimit: true,
           prioritizationFeeLamports: 'auto'
@@ -176,10 +267,49 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
   };
 
   const outputToken = tokenMap.get(outputMint);
+  const inputToken = tokenMap.get(inputMint);
+  const isSellingToken = inputMint !== 'So11111111111111111111111111111111111111112';
+
+  // Calculate USD value of tokens based on SOL equivalent
+  const getTokenUSDValue = (tokenAmount: string, isOutput: boolean) => {
+    if (!solPriceUSD || !quote) return null;
+    
+    try {
+      const amount = parseFloat(tokenAmount);
+      if (isNaN(amount)) return null;
+      
+      if (isOutput) {
+        // For output tokens, calculate based on input SOL amount
+        const inputSolAmount = parseFloat(inputAmount);
+        if (isNaN(inputSolAmount)) return null;
+        
+        if (outputMint === 'So11111111111111111111111111111111111111112') {
+          // Output is SOL
+          return amount * solPriceUSD;
+        } else {
+          // Output is tokens, calculate based on SOL input value
+          return inputSolAmount * solPriceUSD;
+        }
+      } else {
+        // For input tokens
+        if (inputMint === 'So11111111111111111111111111111111111111112') {
+          // Input is SOL
+          return amount * solPriceUSD;
+        } else {
+          // Input is tokens, calculate based on SOL output value
+          const outputSolAmount = parseFloat(outputAmount);
+          if (isNaN(outputSolAmount)) return null;
+          return outputSolAmount * solPriceUSD;
+        }
+      }
+    } catch (error) {
+      return null;
+    }
+  };
 
   return (
     <div className={`bg-bg-secondary rounded-lg p-6 border border-fg-primary/10 ${className}`}>
-      <Text text="Buy Tokens" as="h2" className="text-xl font-semibold mb-4" />
+      <Text text={isSellingToken ? "Sell Tokens" : "Buy Tokens"} as="h2" className="text-xl font-semibold mb-4" />
       
       {!authenticated ? (
         <div className="text-center py-6">
@@ -187,11 +317,19 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
         </div>
       ) : (
         <div className="space-y-4">
-          {/* SOL Amount Input */}
+          {/* Input Amount */}
           <div>
-            <label className="block text-sm text-fg-primary text-opacity-75 mb-2">
-              Pay with SOL
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-sm text-fg-primary text-opacity-75 font-medium">
+                {isSellingToken ? "Sell" : "Pay with"} {inputToken?.symbol || (inputMint === 'So11111111111111111111111111111111111111112' ? 'SOL' : 'TOKEN')}
+              </label>
+              <div className="text-xs text-fg-primary text-opacity-60">
+                Balance: {isSellingToken ? 
+                  (userTokenBalance?.toFixed(4) || "0") : 
+                  solBalance.toFixed(4)
+                } {inputToken?.symbol || (inputMint === 'So11111111111111111111111111111111111111112' ? 'SOL' : 'TOKEN')}
+              </div>
+            </div>
             <div className="flex items-center gap-2">
               <input
                 type="number"
@@ -202,10 +340,31 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
                 min="0"
                 step="0.1"
               />
+              <button
+                onClick={handleMaxClick}
+                className="px-3 py-2 bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border border-brand-primary/30 rounded-md text-sm font-medium transition-colors"
+              >
+                Max
+              </button>
               <div className="flex items-center gap-2 px-3 py-2 bg-bg-primary/50 border border-fg-primary/10 rounded-md">
-                <Text text="SOL" as="span" className="text-sm font-medium text-fg-primary" />
+                <Text text={inputToken?.symbol || (inputMint === 'So11111111111111111111111111111111111111112' ? 'SOL' : 'TOKEN')} as="span" className="text-sm font-medium text-fg-primary" />
               </div>
             </div>
+            {/* USD Value for input */}
+            {inputAmount && (
+              <div className="text-xs text-fg-primary text-opacity-60 mt-1">
+                {(() => {
+                  const usdValue = getTokenUSDValue(inputAmount, false);
+                  if (usdValue) {
+                    return `≈ $${usdValue.toFixed(2)} USD`;
+                  } else if (inputMint !== 'So11111111111111111111111111111111111111112') {
+                    return `${parseFloat(inputAmount).toLocaleString()} tokens`;
+                  } else {
+                    return `${parseFloat(inputAmount).toFixed(6)} SOL`;
+                  }
+                })()}
+              </div>
+            )}
           </div>
 
           {/* Arrow indicator */}
@@ -227,9 +386,24 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ outputMint, className = "" })
                 placeholder="0.0"
               />
               <div className="flex items-center gap-2 px-3 py-2 bg-bg-primary/50 border border-fg-primary/10 rounded-md">
-                <Text text={outputToken?.symbol || 'TOKEN'} as="span" className="text-sm font-medium text-fg-primary" />
+                <Text text={outputToken?.symbol || (outputMint === 'So11111111111111111111111111111111111111112' ? 'SOL' : 'TOKEN')} as="span" className="text-sm font-medium text-fg-primary" />
               </div>
             </div>
+            {/* USD Value for output */}
+            {outputAmount && (
+              <div className="text-xs text-fg-primary text-opacity-60 mt-1">
+                {(() => {
+                  const usdValue = getTokenUSDValue(outputAmount, true);
+                  if (usdValue) {
+                    return `≈ $${usdValue.toFixed(2)} USD`;
+                  } else if (outputMint !== 'So11111111111111111111111111111111111111112') {
+                    return `${parseFloat(outputAmount).toLocaleString()} tokens`;
+                  } else {
+                    return `${parseFloat(outputAmount).toFixed(6)} SOL`;
+                  }
+                })()}
+              </div>
+            )}
           </div>
 
           {/* Quote Info */}

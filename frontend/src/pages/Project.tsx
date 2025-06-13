@@ -28,6 +28,7 @@ const Project = () => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'current' | 'past'>('current')
   const [isSwapModalOpen, setIsSwapModalOpen] = useState(false)
+  const [swapMode, setSwapMode] = useState<'buy' | 'sell'>('buy')
   const [userTokenBalance, setUserTokenBalance] = useState(0)
   const [jupiterQuote, setJupiterQuote] = useState<number | null>(null)
   const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map())
@@ -438,13 +439,28 @@ const Project = () => {
           </div>
         )}
 
-        {/* Buy Token Button */}
-        <Button
-          onClick={() => setIsSwapModalOpen(true)}
-          className="w-full bg-brand-primary hover:bg-brand-primary/90 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-        >
-          Buy Token
-        </Button>
+        {/* Buy and Sell Token Buttons */}
+        <div className="flex gap-3 w-full">
+          <Button
+            onClick={() => {
+              setSwapMode('buy')
+              setIsSwapModalOpen(true)
+            }}
+            className="flex-1 !bg-green-600 hover:!bg-green-700 !text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+          >
+            Buy Token
+          </Button>
+          <Button
+            onClick={() => {
+              setSwapMode('sell')
+              setIsSwapModalOpen(true)
+            }}
+            className="flex-1 !bg-red-600 hover:!bg-red-700 !text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:!bg-gray-500 disabled:!text-gray-300"
+            disabled={!authenticated || userTokenBalance <= 0}
+          >
+            Sell Token
+          </Button>
+        </div>
 
         {/* DAO Governance */}
         {hasDao && (
@@ -722,7 +738,7 @@ const Project = () => {
         )}
       </section>
 
-      {/* Buy Token Modal */}
+      {/* Buy/Sell Token Modal */}
       {isSwapModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Modal Background Overlay */}
@@ -742,10 +758,25 @@ const Project = () => {
                 <Icon icon="SvgClose" className="w-4 h-4 text-fg-primary" />
               </button>
 
+              {/* Modal Title */}
+              <div className="mb-4 text-center">
+                <h3 className="text-lg font-semibold text-fg-primary">
+                  {swapMode === 'buy' ? 'Buy Token' : 'Sell Token'}
+                </h3>
+                {swapMode === 'sell' && userTokenBalance > 0 && (
+                  <p className="text-sm text-fg-primary/60 mt-1">
+                    Available: {userTokenBalance.toFixed(4)} tokens
+                  </p>
+                )}
+              </div>
+
               {/* Jupiter Swap Component */}
               <JupiterSwap
-                outputMint={tokenData?.token?.mint || id || ""}
+                inputMint={swapMode === 'buy' ? "So11111111111111111111111111111111111111112" : (tokenData?.token?.mint || id || "")}
+                outputMint={swapMode === 'buy' ? (tokenData?.token?.mint || id || "") : "So11111111111111111111111111111111111111112"}
                 className="w-full"
+                solPriceUSD={solPriceUSD || undefined}
+                userTokenBalance={swapMode === 'sell' ? userTokenBalance : undefined}
               />
             </div>
           </div>
