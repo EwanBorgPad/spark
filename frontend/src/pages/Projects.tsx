@@ -11,6 +11,7 @@ import { GetTokensResponse } from "shared/models"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
 import Img from "@/components/Image/Img"
 import landingPageBanner from "@/assets/landing-page-banner.png"
+import { useDeviceDetection } from "@/hooks/useDeviceDetection"
 
 const Projects = () => {
   const { data: sparksData, isLoading: sparksLoading, refetch: sparksRefetch } = useQuery<GetTokensResponse>({
@@ -33,6 +34,7 @@ const Projects = () => {
   
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('sparks');
+  const { isDesktop, isMobile } = useDeviceDetection();
 
   return (
     <main className="relative z-[10] flex min-h-screen w-full max-w-[100vw] flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
@@ -58,16 +60,16 @@ const Projects = () => {
           <Icon icon="SvgLoupe" className="text-xl text-fg-primary" />
         </Button>
       </div>
-      <section className="z-[1] flex h-full w-full flex-1 flex-col items-center justify-between px-5 pb-[60px] pt-10 md:pb-[56px] md:pt-[40px]">
+      <section className={`z-[1] flex h-full w-full flex-1 flex-col items-center justify-between px-5 pb-[60px] pt-10 md:pb-[56px] md:pt-[40px] ${isDesktop ? 'max-w-[1400px]' : ''}`}>
         <div className="flex w-full flex-col items-center">
-          <h2 className="text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-[68px] md:leading-[74px] mb-4">
+          <h2 className={`font-medium tracking-[-0.4px] mb-4 ${isDesktop ? 'text-[56px] leading-[60px]' : 'text-[40px] leading-[48px] md:text-[68px] md:leading-[74px]'}`}>
             <span className="text-brand-primary">Explore</span>
           </h2>
 
           <Img
             src={landingPageBanner}
             size="custom"
-            customClass="w-full max-w-[800px] h-[250px] mb-6 object-cover rounded-lg"
+            customClass={`w-full object-cover rounded-lg mb-6 ${isDesktop ? 'max-w-[1200px] h-[300px]' : 'max-w-[800px] h-[250px]'}`}
             imgClassName="object-contain"
             alt="Explore Banner"
           />
@@ -164,27 +166,27 @@ const Projects = () => {
           </div>
 
           {/* Desktop Layout */}
-          <div className="hidden md:flex w-full gap-4">
+          <div className="hidden md:flex w-full gap-8">
             {/* Sparks Section */}
             <div className="w-full">
-              <h3 className="text-2xl font-medium mb-6">Sparks</h3>
-              <div className="grid gap-6">
+              <h3 className={`font-medium mb-6 ${isDesktop ? 'text-3xl' : 'text-2xl'}`}>Sparks</h3>
+              <div className={`grid gap-6 ${isDesktop ? 'grid-cols-1 lg:grid-cols-2' : ''}`}>
                 {sparksData?.tokens.map((token) => (
                   <div 
                     key={token.mint} 
-                    className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
+                    className={`flex items-center gap-4 p-6 bg-secondary rounded-xl cursor-pointer hover:bg-secondary/80 transition-all hover:scale-[1.02] ${isDesktop ? 'shadow-lg' : ''}`}
                     onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`)}
                   >
                     <Img
                       src={token.imageUrl}
                       isFetchingLink={sparksLoading}
-                      imgClassName="w-16 h-16 rounded-full object-cover"
+                      imgClassName={`rounded-full object-cover ${isDesktop ? 'w-20 h-20' : 'w-16 h-16'}`}
                       isRounded={true}
                       size="20"
                     />
                     <div className="flex-1">
-                      <h4 className="font-medium">{token.name}</h4>
-                      <div className="flex gap-4 text-sm opacity-75">
+                      <h4 className={`font-semibold ${isDesktop ? 'text-lg' : 'font-medium'}`}>{token.name}</h4>
+                      <div className={`flex gap-4 opacity-75 ${isDesktop ? 'text-base' : 'text-sm'}`}>
                         <span>Market Cap: $1.2M</span>
                         <span>Token Price: $0.12</span>
                       </div>
@@ -196,7 +198,7 @@ const Projects = () => {
 
             {/* Blazes Section */}
             <div className="w-full">
-              <h3 className="text-2xl font-medium mb-6">Blazes</h3>
+              <h3 className={`font-medium mb-6 ${isDesktop ? 'text-3xl' : 'text-2xl'}`}>Blazes</h3>
               <div className="grid gap-6">
                 {blazesData?.tokens.map((token) => (
                   <div 
