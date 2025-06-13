@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { ScrollRestoration } from "react-router-dom"
+import { ScrollRestoration, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
 import { useProjectDataContext } from "@/hooks/useProjectData"
@@ -21,9 +21,11 @@ import { usePrivy, useSolanaWallets } from '@privy-io/react-auth'
 import { Connection, PublicKey } from '@solana/web3.js'
 import { getAssociatedTokenAddress } from '@solana/spl-token'
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry'
+import { ROUTES } from "@/utils/routes"
 
 const Project = () => {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'current' | 'past'>('current')
   const [isSwapModalOpen, setIsSwapModalOpen] = useState(false)
   const [userTokenBalance, setUserTokenBalance] = useState(0)
@@ -204,7 +206,18 @@ const Project = () => {
 
 
   return (
-    <main className="z-[10] flex w-full max-w-full select-none flex-col items-center gap-4 overflow-y-hidden py-[72px] font-normal text-fg-primary md:py-[100px]">
+    <main className="relative z-[10] flex w-full max-w-full select-none flex-col items-center gap-4 overflow-y-hidden py-[72px] font-normal text-fg-primary md:py-[100px]">
+      {/* Header with back button */}
+      <div className="absolute left-4 top-4 z-50">
+        <Button
+          onClick={() => navigate(ROUTES.PROJECTS)}
+          size="lg"
+          className="bg-brand-primary hover:bg-brand-primary/80"
+        >
+          <Icon icon="SvgArrowLeft" className="text-xl text-fg-primary" />
+        </Button>
+      </div>
+
       <div className="max-w-screen absolute left-0 top-10 z-[-11] w-full overflow-hidden md:top-16">
         <img src={backdropImg} className="h-[740px] min-w-[1440px] md:h-auto md:w-screen" />
       </div>
