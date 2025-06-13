@@ -5,6 +5,7 @@ import { Connection } from '@solana/web3.js';
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 import Text from '../Text';
 import { Button } from '../Button/Button';
+import { getCorrectWalletAddress } from '@/utils/walletUtils';
 
 interface JupiterSwapProps {
   inputMint?: string; // The token they want to sell (optional, defaults to SOL)
@@ -41,14 +42,37 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ inputMint = 'So11111111111111
   const connection = new Connection(import.meta.env.VITE_RPC_URL || 'https://haleigh-sa5aoh-fast-mainnet.helius-rpc.com');
 
   const getSolanaWallet = () => {
-    // Find the connected Solana wallet from Privy
-    const connectedWallet = wallets.find(wallet => wallet.connectedAt && wallet.walletClientType === 'privy');
+    console.log("Available wallets:", wallets.map(w => ({
+      address: w.address,
+      walletClientType: w.walletClientType,
+      connectedAt: w.connectedAt
+    })));
+
+    // Use the same wallet selection logic as Profile page
+    const correctWalletAddress = getCorrectWalletAddress(user, wallets);
+    
+    if (correctWalletAddress) {
+      const correctWallet = wallets.find(w => w.address === correctWalletAddress);
+      if (correctWallet) {
+        console.log("Using correct wallet:", correctWallet.address, correctWallet.walletClientType);
+        return correctWallet;
+      }
+    }
+
+    // Fallback: Find any connected wallet (but avoid Solflare unless it's the only option)
+    const connectedWallet = wallets.find(wallet => 
+      wallet.connectedAt && wallet.walletClientType !== 'solflare'
+    );
+    
     if (connectedWallet) {
+      console.log("Using connected wallet:", connectedWallet.address, connectedWallet.walletClientType);
       return connectedWallet;
     }
-    
-    // Fallback to any available wallet
-    return wallets.find(wallet => wallet.connectedAt) || wallets[0];
+
+    // Last resort: use any wallet
+    const fallbackWallet = wallets[0];
+    console.log("Using fallback wallet:", fallbackWallet?.address, fallbackWallet?.walletClientType);
+    return fallbackWallet;
   };
 
   // Fetch SOL balance
@@ -199,11 +223,8 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({ inputMint = 'So11111111111111
         throw new Error('No Solana wallet found');
       }
 
-      // Get the correct wallet address - prioritize embedded wallet
-      let walletAddress = user?.wallet?.address;
-      if (!walletAddress && wallet.address) {
-        walletAddress = wallet.address;
-      }
+      // Get the correct wallet address - use consistent logic
+      const walletAddress = getCorrectWalletAddress(user, wallets) || wallet.address;
       
       if (!walletAddress) {
         throw new Error('No wallet address found');
