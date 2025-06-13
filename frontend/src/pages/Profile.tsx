@@ -112,10 +112,21 @@ const Profile = () => {
   };
 
     const handleSendToken = async () => {
-    if (!selectedToken || !address || !sendForm.recipientAddress || !sendForm.amount || !wallets[0]) {
+    if (!selectedToken || !address || !sendForm.recipientAddress || !sendForm.amount) {
       alert('Please fill in all fields and ensure wallet is connected');
       return;
     }
+
+    // Get the correct wallet using the same logic as the rest of the app
+    const correctWalletAddress = getCorrectWalletAddress(privyUser, wallets);
+    const correctWallet = wallets.find(w => w.address === correctWalletAddress);
+    
+    if (!correctWallet) {
+      alert('No connected wallet found');
+      return;
+    }
+
+    console.log('Using wallet for send:', correctWallet.address, correctWallet.walletClientType);
 
     setIsSending(true);
     setTxSuccess(null);
@@ -202,8 +213,8 @@ const Profile = () => {
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = senderPubKey;
 
-      // Sign and send transaction using Privy wallet
-      const signedTransaction = await wallets[0].signTransaction(transaction);
+      // Sign and send transaction using the correct Privy wallet
+      const signedTransaction = await correctWallet.signTransaction(transaction);
       const signature = await connection.sendRawTransaction(signedTransaction.serialize());
       
       // Confirm transaction
