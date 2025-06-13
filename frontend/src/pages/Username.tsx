@@ -2,10 +2,13 @@ import { ScrollRestoration, useNavigate } from "react-router-dom"
 import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { Input } from "@/components/Input/Input"
-import { useSolanaWallets } from '@privy-io/react-auth';
+import { useSolanaWallets, usePrivy } from '@privy-io/react-auth';
 import { useEffect, useState } from 'react';
 import { ROUTES } from "@/utils/routes"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
+import Img from "@/components/Image/Img";
+import logoType from "@/assets/logos/logo-resize.png"
+import { getCorrectWalletAddress } from "@/utils/walletUtils"
 
 const Username = () => {
   const navigate = useNavigate();
@@ -13,17 +16,28 @@ const Username = () => {
   const [error, setError] = useState('');
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
   const { wallets } = useSolanaWallets();
-  const address = wallets[0]?.address
+  const { user: privyUser } = usePrivy();
+  
+  // Get the correct wallet address
+  const address = getCorrectWalletAddress(privyUser, wallets);
+
+  console.log("=== Username Page Debug ===");
+  console.log("Address being used:", address);
+  console.log("Privy user:", privyUser);
+  console.log("Available wallets:", wallets);
 
   const handleSubmit = async () => {
     setAttemptedSubmit(true);
     if (!username) {
       setError('Username is required');
+    } else if (!address) {
+      setError('No wallet address found');
     } else {
       setError('');
       try {
+        console.log("Creating user with address:", address, "and username:", username);
         await backendSparkApi.postCreateUserStatus({
-          address: address || '',
+          address: address,
           username: username
         });
         navigate(ROUTES.TERMS)
@@ -51,9 +65,16 @@ const Username = () => {
     <main className="relative z-[10] flex min-h-screen w-full max-w-[100vw] flex-col items-center bg-accent pt-[48px] font-normal text-fg-primary lg:pt-[72px]">
       <section className="z-[1] flex h-full w-full flex-1 flex-col items-center justify-between px-5 pb-[60px] pt-10 md:pb-[56px] md:pt-[40px]">
         <div className="flex w-full flex-col items-center mt-[15vh]">
-          <h1 className="text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-[68px] md:leading-[74px] mb-4">
+          {/* <h1 className="text-[40px] font-medium leading-[48px] tracking-[-0.4px] md:text-[68px] md:leading-[74px] mb-4">
             <span className="text-brand-primary">Spark-it</span>
-          </h1>
+          </h1> */}
+          <Img
+            src={logoType}
+            size="custom"
+            customClass="w-[300px] rounded-none mb-6"
+            imgClassName="object-contain"
+            alt="Spark-it logo"
+          />
 
           <h2 className="text-xl md:text-2xl text-center mb-12 opacity-75">
             Make your idea become real

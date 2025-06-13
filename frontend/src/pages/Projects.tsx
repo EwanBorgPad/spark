@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query"
 import { GetTokensResponse } from "shared/models"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
 import Img from "@/components/Image/Img"
+import landingPageBanner from "@/assets/landing-page-banner.png"
 
 const Projects = () => {
   const { data: sparksData, isLoading: sparksLoading, refetch: sparksRefetch } = useQuery<GetTokensResponse>({
@@ -63,10 +64,12 @@ const Projects = () => {
             <span className="text-brand-primary">Explore</span>
           </h2>
 
-          <img 
-            src="/src/assets/landing-page-banner.png" 
+          <Img
+            src={landingPageBanner}
+            size="custom"
+            customClass="w-full max-w-[800px] h-[250px] mb-6 object-cover rounded-lg"
+            imgClassName="object-contain"
             alt="Explore Banner"
-            className="w-full max-w-[800px] h-[250px] mb-6 object-cover rounded-lg"
           />
 
           {/* Mobile Tabs */}
@@ -98,7 +101,7 @@ const Projects = () => {
           {/* Content for Mobile Tabs */}
           <div className="md:hidden w-full mt-4">
             {activeTab === 'sparks' ? (
-              <div className="bg-default rounded-lg overflow-hidden">
+              <div className="overflow-hidden">
                 <div className="w-full">
                   <h3 className="text-2xl font-medium mb-6">Sparks</h3>
                   <div className="grid gap-6">
@@ -128,7 +131,7 @@ const Projects = () => {
                 </div>
               </div>
             ) : (
-              <div className="bg-default rounded-lg overflow-hidden">
+              <div className="overflow-hidden">
                 <div className="w-full">
                   <h3 className="text-2xl font-medium mb-6">Blazes</h3>
                   <div className="grid gap-6">

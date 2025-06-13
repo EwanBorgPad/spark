@@ -15,8 +15,8 @@ export default {
         accent: "#060A14",
         "success-primary": "#053321",
         "success-secondary": "#074D31",
-        "brand-primary": "#FF5500FF",
-        "brand-secondary": "#FFA600FF",
+        "brand-primary": "#F25C05",
+        "brand-secondary": "#F29F04",
         attention: "#4E1D09",
         e: "#55160C",
         "alt-default": "#1E2022",
@@ -94,6 +94,7 @@ export default {
         "geist-mono": ["GeistMono", "monospace"],
         "sulphur-point": ["Sulphur Point", "sans-serif"],
         vcr: ["VCR OSD Mono", "monospace"],
+        francy: ["Francy", "sans-serif"],
       },
       boxShadow: {
         underline: "0px 2px 0px 0px rgba(188,254,143,1)",
