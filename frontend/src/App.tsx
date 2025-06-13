@@ -18,7 +18,7 @@ Sentry.init({
 
 function App() {
   return (
-    <div className="max-w-screen relative flex min-h-screen flex-col items-center justify-center overscroll-x-none bg-accent font-geist text-fg-primary">
+    <div className="max-w-screen relative flex min-h-screen flex-col items-center justify-start overscroll-x-none bg-accent font-geist text-fg-primary">
       {/* <EnvBanner /> */}
       {/* <ToastContainer /> */}
 

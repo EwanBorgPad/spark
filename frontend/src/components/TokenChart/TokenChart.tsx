@@ -21,7 +21,15 @@ const TokenChart: React.FC<TokenChartProps> = ({ tokenMarketData, className = ""
   const prices = priceChart.map(point => point.price);
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
-  const priceRange = maxPrice - minPrice;
+  let priceRange = maxPrice - minPrice;
+  
+  // Handle case where all prices are the same or very close
+  if (priceRange === 0 || priceRange < maxPrice * 0.001) {
+    // Create a small range around the price for visualization
+    const centerPrice = (minPrice + maxPrice) / 2;
+    const artificialRange = centerPrice * 0.05; // 5% range
+    priceRange = artificialRange;
+  }
 
   // Chart dimensions
   const width = 600;
@@ -32,9 +40,21 @@ const TokenChart: React.FC<TokenChartProps> = ({ tokenMarketData, className = ""
   const createPath = () => {
     if (priceChart.length < 2) return "";
 
+    const centerPrice = (minPrice + maxPrice) / 2;
+    const useArtificialRange = maxPrice - minPrice < maxPrice * 0.001;
+
     const points = priceChart.map((point, index) => {
       const x = padding + (index / (priceChart.length - 1)) * (width - 2 * padding);
-      const y = height - padding - ((point.price - minPrice) / priceRange) * (height - 2 * padding);
+      let y;
+      
+      if (useArtificialRange) {
+        // Center the line and add small variations
+        const variation = (point.price - centerPrice) / (centerPrice * 0.05);
+        y = height / 2 + variation * (height * 0.2); // Use 20% of height for variations
+      } else {
+        y = height - padding - ((point.price - minPrice) / priceRange) * (height - 2 * padding);
+      }
+      
       return `${x},${y}`;
     });
 
@@ -45,9 +65,21 @@ const TokenChart: React.FC<TokenChartProps> = ({ tokenMarketData, className = ""
   const createAreaPath = () => {
     if (priceChart.length < 2) return "";
 
+    const centerPrice = (minPrice + maxPrice) / 2;
+    const useArtificialRange = maxPrice - minPrice < maxPrice * 0.001;
+
     const points = priceChart.map((point, index) => {
       const x = padding + (index / (priceChart.length - 1)) * (width - 2 * padding);
-      const y = height - padding - ((point.price - minPrice) / priceRange) * (height - 2 * padding);
+      let y;
+      
+      if (useArtificialRange) {
+        // Center the line and add small variations
+        const variation = (point.price - centerPrice) / (centerPrice * 0.05);
+        y = height / 2 + variation * (height * 0.2); // Use 20% of height for variations
+      } else {
+        y = height - padding - ((point.price - minPrice) / priceRange) * (height - 2 * padding);
+      }
+      
       return `${x},${y}`;
     });
 
@@ -137,8 +169,19 @@ const TokenChart: React.FC<TokenChartProps> = ({ tokenMarketData, className = ""
 
           {/* Price points */}
           {priceChart.map((point, index) => {
+            const centerPrice = (minPrice + maxPrice) / 2;
+            const useArtificialRange = maxPrice - minPrice < maxPrice * 0.001;
+            
             const x = padding + (index / (priceChart.length - 1)) * (width - 2 * padding);
-            const y = height - padding - ((point.price - minPrice) / priceRange) * (height - 2 * padding);
+            let y;
+            
+            if (useArtificialRange) {
+              // Center the line and add small variations
+              const variation = (point.price - centerPrice) / (centerPrice * 0.05);
+              y = height / 2 + variation * (height * 0.2); // Use 20% of height for variations
+            } else {
+              y = height - padding - ((point.price - minPrice) / priceRange) * (height - 2 * padding);
+            }
             
             // Only show every nth point to avoid overcrowding
             if (index % Math.ceil(priceChart.length / 20) === 0 || index === priceChart.length - 1) {

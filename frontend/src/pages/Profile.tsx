@@ -112,10 +112,21 @@ const Profile = () => {
   };
 
     const handleSendToken = async () => {
-    if (!selectedToken || !address || !sendForm.recipientAddress || !sendForm.amount || !wallets[0]) {
+    if (!selectedToken || !address || !sendForm.recipientAddress || !sendForm.amount) {
       alert('Please fill in all fields and ensure wallet is connected');
       return;
     }
+
+    // Get the correct wallet using the same logic as the rest of the app
+    const correctWalletAddress = getCorrectWalletAddress(privyUser, wallets);
+    const correctWallet = wallets.find(w => w.address === correctWalletAddress);
+    
+    if (!correctWallet) {
+      alert('No connected wallet found');
+      return;
+    }
+
+    console.log('Using wallet for send:', correctWallet.address, correctWallet.walletClientType);
 
     setIsSending(true);
     setTxSuccess(null);
@@ -202,8 +213,8 @@ const Profile = () => {
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = senderPubKey;
 
-      // Sign and send transaction using Privy wallet
-      const signedTransaction = await wallets[0].signTransaction(transaction);
+      // Sign and send transaction using the correct Privy wallet
+      const signedTransaction = await correctWallet.signTransaction(transaction);
       const signature = await connection.sendRawTransaction(signedTransaction.serialize());
       
       // Confirm transaction
@@ -347,13 +358,13 @@ const Profile = () => {
               <div className="space-y-3">
                 {/* SOL Balance */}
                 <div className="flex items-center justify-between p-4 bg-bg-primary rounded-lg border border-border-primary/10">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
                     <Img
                       src={userTokens.solBalance.metadata.image}
                       imgClassName="w-12 h-12 rounded-full"
                       isRounded={true}
                     />
-                    <div>
+                    <div className="min-w-0">
                       <Text
                         text={userTokens.solBalance.metadata.name || "Solana"}
                         as="p"
@@ -366,21 +377,29 @@ const Profile = () => {
                       />
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="text-right min-w-0 max-w-[120px]">
                       <Text
-                        text={userTokens.solBalance.uiAmount.toLocaleString(undefined, {
-                          maximumFractionDigits: 4
-                        })}
+                        text={(() => {
+                          const amount = userTokens.solBalance.uiAmount;
+                          if (amount >= 1000000) {
+                            return `${(amount / 1000000).toFixed(2)}M`;
+                          } else if (amount >= 1000) {
+                            return `${(amount / 1000).toFixed(2)}K`;
+                          } else {
+                            return amount.toLocaleString(undefined, {
+                              maximumFractionDigits: 4
+                            });
+                          }
+                        })()}
                         as="p"
-                        className="font-medium text-lg"
+                        className="font-medium text-lg truncate"
                       />
-                      {/* <Text text="SOL" as="p" className="text-sm opacity-75" /> */}
                     </div>
                     <Button
                       onClick={openSOLSendModal}
                       size="sm"
-                      className="bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border-brand-primary/30"
+                      className="bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border-brand-primary/30 flex-shrink-0"
                     >
                       Send
                     </Button>
@@ -393,19 +412,19 @@ const Profile = () => {
                     key={token.mint}
                     className="flex items-center justify-between p-4 bg-bg-primary rounded-lg border border-border-primary/10"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-primary/20 to-brand-primary/10 flex items-center justify-center">
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-primary/20 to-brand-primary/10 flex items-center justify-center flex-shrink-0">
                         <Text
                           text={token.metadata.symbol?.slice(0, 2) || token.mint.slice(0, 2)}
                           as="span"
                           className="font-bold text-brand-primary"
                         />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <Text
-                          text={token.metadata.name?.slice(0, 10) || `Token ${token.mint.slice(0, 4)}...`}
+                          text={token.metadata.name?.slice(0, 15) || `Token ${token.mint.slice(0, 4)}...`}
                           as="p"
-                          className="font-medium"
+                          className="font-medium truncate"
                         />
                         <Text
                           text={token.metadata.symbol || token.mint.slice(0, 4).toUpperCase()}
@@ -414,25 +433,29 @@ const Profile = () => {
                         />
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <div className="text-right min-w-0 max-w-[120px]">
                         <Text
-                          text={token.uiAmount.toLocaleString(undefined, {
-                            maximumFractionDigits: token.decimals > 4 ? 4 : token.decimals
-                          })}
+                          text={(() => {
+                            const amount = token.uiAmount;
+                            if (amount >= 1000000) {
+                              return `${(amount / 1000000).toFixed(2)}M`;
+                            } else if (amount >= 1000) {
+                              return `${(amount / 1000).toFixed(2)}K`;
+                            } else {
+                              return amount.toLocaleString(undefined, {
+                                maximumFractionDigits: token.decimals > 4 ? 4 : token.decimals
+                              });
+                            }
+                          })()}
                           as="p"
-                          className="font-medium text-lg"
+                          className="font-medium text-lg truncate"
                         />
-                        {/* <Text
-                          text={token.metadata.symbol || "TOKEN"}
-                          as="p"
-                          className="text-sm opacity-75"
-                        /> */}
                       </div>
                       <Button
                         onClick={() => openSendModal(token)}
                         size="sm"
-                        className="bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border-brand-primary/30"
+                        className="bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border-brand-primary/30 flex-shrink-0"
                       >
                         Send
                       </Button>
