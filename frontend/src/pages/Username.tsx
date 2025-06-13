@@ -2,12 +2,13 @@ import { ScrollRestoration, useNavigate } from "react-router-dom"
 import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { Input } from "@/components/Input/Input"
-import { useSolanaWallets } from '@privy-io/react-auth';
+import { useSolanaWallets, usePrivy } from '@privy-io/react-auth';
 import { useEffect, useState } from 'react';
 import { ROUTES } from "@/utils/routes"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
 import Img from "@/components/Image/Img";
 import logoType from "@/assets/logos/logo-resize.png"
+import { getCorrectWalletAddress } from "@/utils/walletUtils"
 
 const Username = () => {
   const navigate = useNavigate();
@@ -15,17 +16,28 @@ const Username = () => {
   const [error, setError] = useState('');
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
   const { wallets } = useSolanaWallets();
-  const address = wallets[0]?.address
+  const { user: privyUser } = usePrivy();
+  
+  // Get the correct wallet address
+  const address = getCorrectWalletAddress(privyUser, wallets);
+
+  console.log("=== Username Page Debug ===");
+  console.log("Address being used:", address);
+  console.log("Privy user:", privyUser);
+  console.log("Available wallets:", wallets);
 
   const handleSubmit = async () => {
     setAttemptedSubmit(true);
     if (!username) {
       setError('Username is required');
+    } else if (!address) {
+      setError('No wallet address found');
     } else {
       setError('');
       try {
+        console.log("Creating user with address:", address, "and username:", username);
         await backendSparkApi.postCreateUserStatus({
-          address: address || '',
+          address: address,
           username: username
         });
         navigate(ROUTES.TERMS)

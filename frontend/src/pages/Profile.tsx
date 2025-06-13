@@ -13,13 +13,15 @@ import { backendSparkApi } from "@/data/api/backendSparkApi"
 import { GetUserTokensResponse, UserTokenModel } from "shared/models"
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js"
 import { TOKEN_PROGRAM_ID, createTransferInstruction, getAssociatedTokenAddress } from "@solana/spl-token"
+import { getCorrectWalletAddress } from "@/utils/walletUtils"
 
 
 const Profile = () => {
   const navigate = useNavigate();
   const { wallets } = useSolanaWallets();
-  const { user: privyUser } = usePrivy();
-  const address = wallets[0]?.address
+  const { user: privyUser, logout } = usePrivy();
+  
+  const address = getCorrectWalletAddress(privyUser, wallets);
   const [userId, setUserId] = useState('');
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [sendModalOpen, setSendModalOpen] = useState(false);
@@ -50,6 +52,26 @@ const Profile = () => {
     startTransition(() => {
       setUserId(newUserId);
     });
+  };
+
+  const handleDisconnect = async () => {
+    try {
+      // Clear localStorage
+      localStorage.removeItem('sparkit-wallet');
+      localStorage.removeItem('sparkit-email');
+      
+      // Logout from Privy
+      await logout();
+      
+      // Navigate to home
+      navigate('/');
+    } catch (error) {
+      console.error('Error disconnecting:', error);
+      // Even if logout fails, clear storage and navigate
+      localStorage.removeItem('sparkit-wallet');
+      localStorage.removeItem('sparkit-email');
+      navigate('/');
+    }
   };
 
   const copyAddressToClipboard = async () => {
@@ -146,12 +168,11 @@ const Profile = () => {
           recipientPubKey
         );
 
-        // Check if recipient token account exists
+        // Check if recipient doesn't have token account, we'll need to create it
         const toAccountInfo = await connection.getAccountInfo(toTokenAccount);
         
         transaction = new Transaction();
 
-        // If recipient doesn't have token account, we'll need to create it
         if (!toAccountInfo) {
           const { createAssociatedTokenAccountInstruction } = await import("@solana/spl-token");
           transaction.add(
@@ -249,7 +270,7 @@ const Profile = () => {
           <div className="bg-bg-secondary rounded-xl p-6 mb-8 border border-border-primary/20">
             <Text text="Account Information" as="h3" className="text-xl font-semibold mb-6" />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-brand-primary/20 flex items-center justify-center">
                   <Icon icon="SvgTwoAvatars" className="text-brand-primary text-xl" />
@@ -282,6 +303,18 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Disconnect Button */}
+            <div className="flex justify-center pt-4 border-t border-border-primary/20">
+              <Button
+                onClick={handleDisconnect}
+                size="lg"
+                className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border-red-500/30 px-8"
+              >
+                <Icon icon="SvgLogOut" className="text-lg mr-2" />
+                Disconnect Wallet
+              </Button>
             </div>
           </div>
 
