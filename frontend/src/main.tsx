@@ -36,7 +36,7 @@ import Profile from "./pages/Profile"
 import Search from "./pages/Search"
 import Projects from "./pages/Projects"
 import Providers from "./providers/PrivyProvider"
-import LandingPage from "./pages/DesktopLandingPage"
+import LandingPage from "./pages/LandingPage"
 import PwaInstall from "./pages/PwaInstall"
 window.Buffer = Buffer
 

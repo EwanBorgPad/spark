@@ -890,39 +890,39 @@ const Project = () => {
               </div>
             )}
 
-            {/* Buy and Sell Token Buttons */}
-            <div className="flex gap-3 w-full">
+            {/* Trading Actions */}
+            <div className="flex gap-2 w-full">
               <Button
                 onClick={() => {
                   setSwapMode('buy')
                   setIsSwapModalOpen(true)
                 }}
-                className="flex-1 !bg-green-600 hover:!bg-green-700 !text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded transition-colors"
               >
-                Buy Token
+                Buy
               </Button>
               <Button
                 onClick={() => {
                   setSwapMode('sell')
                   setIsSwapModalOpen(true)
                 }}
-                className="flex-1 !bg-red-600 hover:!bg-red-700 !text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:!bg-gray-500 disabled:!text-gray-300"
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded transition-colors disabled:bg-gray-500"
                 disabled={!authenticated || userTokenBalance <= 0}
               >
-                Sell Token
+                Sell
               </Button>
             </div>
           </div>
 
-          {/* Right Column - Token Info and Quick Actions (Desktop only) */}
+          {/* Right Column - Simplified Info (Desktop only) */}
           {isDesktop && (
-            <div className="lg:col-span-1 space-y-6">
-              {/* Quick Stats Card */}
-              <div className="bg-bg-secondary rounded-xl p-6 border border-fg-primary/10">
-                <h3 className="text-lg font-semibold mb-4">Token Stats</h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between">
-                    <span className="text-fg-primary/70">Price</span>
+            <div className="lg:col-span-1 space-y-4">
+              {/* Token Stats */}
+              <div className="bg-bg-secondary rounded-lg p-4 border border-fg-primary/10">
+                <h3 className="text-base font-medium mb-3">Token Info</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-fg-primary/60">Price</span>
                     <span className="font-medium">
                       {marketData?.tokenMarketData?.price || fallbackChartData?.price 
                         ? `$${(marketData?.tokenMarketData?.price || fallbackChartData?.price || 0).toExponential(3)}`
@@ -930,8 +930,8 @@ const Project = () => {
                       }
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-fg-primary/70">24h Change</span>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-fg-primary/60">24h Change</span>
                     <span className={`font-medium ${
                       (marketData?.tokenMarketData?.priceChange24h || fallbackChartData?.priceChange24h || 0) >= 0 
                         ? 'text-green-400' 
@@ -943,28 +943,19 @@ const Project = () => {
                       }
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-fg-primary/70">Liquidity</span>
-                    <span className="font-medium">
-                      {fallbackChartData?.liquidity 
-                        ? `$${(fallbackChartData.liquidity / 1000).toFixed(1)}K`
-                        : '--'
-                      }
-                    </span>
-                  </div>
                 </div>
               </div>
 
-              {/* Quick Actions Card */}
-              <div className="bg-bg-secondary rounded-xl p-6 border border-fg-primary/10">
-                <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
-                <div className="space-y-3">
+              {/* Actions */}
+              <div className="bg-bg-secondary rounded-lg p-4 border border-fg-primary/10">
+                <h3 className="text-base font-medium mb-3">Actions</h3>
+                <div className="space-y-2">
                   <Button
                     onClick={() => {
                       setSwapMode('buy')
                       setIsSwapModalOpen(true)
                     }}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2"
                   >
                     Buy Token
                   </Button>
@@ -973,16 +964,10 @@ const Project = () => {
                       setSwapMode('sell')
                       setIsSwapModalOpen(true)
                     }}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white disabled:bg-gray-500"
+                    className="w-full bg-red-600 hover:bg-red-700 text-white disabled:bg-gray-500 text-sm py-2"
                     disabled={!authenticated || userTokenBalance <= 0}
                   >
                     Sell Token
-                  </Button>
-                  <Button
-                    onClick={() => window.open(`https://dexscreener.com/solana/${id}`, '_blank')}
-                    className="w-full bg-bg-primary hover:bg-brand-primary/20 text-fg-primary border border-brand-primary/30"
-                  >
-                    View on DexScreener
                   </Button>
                 </div>
               </div>
@@ -992,158 +977,124 @@ const Project = () => {
 
         {/* DAO Governance */}
         {hasDao && (
-          <div className="w-full space-y-6">
+          <div className="w-full space-y-4">
             <div className="text-center">
-              <Text text="🏛️ DAO Governance" as="h2" className="text-2xl font-bold mb-2" />
-              <Text text="Participate in decentralized governance and shape the future of this project" as="p" className="text-sm text-fg-primary text-opacity-75" />
+              <Text text="DAO Governance" as="h2" className="text-xl font-semibold mb-1" />
+              <Text text="Participate in project governance" as="p" className="text-sm text-fg-primary/60" />
             </div>
 
             {daoLoading && (
-              <div className="w-full rounded-xl bg-bg-secondary p-6 border border-fg-primary/10">
-                <div className="flex items-center justify-center space-x-3">
-                  <div className="w-5 h-5 border-2 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
-                  <Text text="Loading governance data..." as="p" className="text-fg-primary text-opacity-75" />
+              <div className="w-full rounded-lg bg-bg-secondary p-4 border border-fg-primary/10">
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
+                  <Text text="Loading..." as="p" className="text-fg-primary/60" />
                 </div>
               </div>
             )}
 
             {daoError && (
-              <div className="w-full rounded-xl bg-red-500/5 p-6 border border-red-500/20">
-                <div className="text-center space-y-2">
-                  <Text text="❌ Failed to load governance data" as="p" className="text-red-400 font-medium" />
-                  <Text text={daoError?.message || "Unknown error occurred"} as="p" className="text-xs text-fg-primary text-opacity-75" />
+              <div className="w-full rounded-lg bg-bg-secondary p-4 border border-fg-primary/10">
+                <div className="text-center">
+                  <Text text="Failed to load governance data" as="p" className="text-fg-primary/60" />
                 </div>
               </div>
             )}
 
             {daoData?.dao && (
-              <div className="w-full space-y-6">
-                {/* DAO Name and Realms Link */}
-                <div className="flex items-center justify-between p-4 rounded-xl bg-bg-secondary border border-fg-primary/10">
-                  <Text text={daoData.dao.name} as="h3" className="text-xl font-bold text-brand-primary" />
+              <div className="w-full space-y-4">
+                {/* DAO Header */}
+                <div className="flex items-center justify-between p-4 rounded-lg bg-bg-secondary border border-fg-primary/10">
+                  <Text text={daoData.dao.name} as="h3" className="text-lg font-medium" />
                   <a
                     href={`https://app.realms.today/dao/${daoData.dao.address}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2 bg-brand-primary hover:bg-brand-primary/90 text-white rounded-lg transition-colors font-medium text-sm"
+                    className="px-3 py-1 bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary rounded text-sm transition-colors"
                   >
                     View on Realms
                   </a>
                 </div>
 
-                {/* Governance Status */}
-                <div className="rounded-xl bg-bg-secondary border border-fg-primary/10 overflow-hidden">
-                  <GovernanceStatus
-                    dao={daoData.dao}
-                    onStatusUpdate={handleGovernanceStatusUpdate}
-                  />
+                {/* Governance Status - Clean Design */}
+                <div className="rounded-lg bg-bg-secondary border border-fg-primary/10 overflow-hidden">
+                  <div className="p-4 border-b border-fg-primary/10">
+                    <Text text="Governance Status" as="h3" className="text-base font-medium" />
+                  </div>
+                  <div className="p-4">
+                    <GovernanceStatus
+                      dao={daoData.dao}
+                      onStatusUpdate={handleGovernanceStatusUpdate}
+                    />
+                  </div>
                 </div>
 
                 {/* DAO Proposals */}
                 {daoData.dao.proposals.length > 0 && (
-                  <div className="rounded-xl bg-bg-secondary p-6 border border-fg-primary/10">
-                    <div className="flex items-center justify-between mb-6">
-                      <Text text="📋 Governance Proposals" as="h3" className="text-lg font-semibold" />
-                      <div className="px-3 py-1 bg-brand-primary/10 rounded-full">
-                        <Text text={`${daoData.dao.proposals.length} total`} as="span" className="text-xs text-brand-primary font-medium" />
-                      </div>
+                  <div className="rounded-lg bg-bg-secondary p-4 border border-fg-primary/10">
+                    <div className="flex items-center justify-between mb-4">
+                      <Text text="Proposals" as="h3" className="text-base font-medium" />
+                      <Text text={`${daoData.dao.proposals.length} total`} as="span" className="text-xs text-fg-primary/60" />
                     </div>
 
-                    {/* Enhanced Tabs */}
-                    <div className="flex mb-6 bg-bg-primary/5 rounded-lg p-1">
+                    {/* Simple Tabs */}
+                    <div className="flex mb-4 bg-bg-primary/10 rounded p-1">
                       <button
                         onClick={() => setActiveTab('current')}
                         className={twMerge(
-                          "flex-1 py-3 px-4 text-sm font-medium rounded-md transition-all duration-200",
+                          "flex-1 py-2 px-3 text-sm font-medium rounded transition-colors",
                           activeTab === 'current'
-                            ? "bg-brand-primary text-white shadow-lg"
-                            : "text-fg-secondary hover:text-fg-primary hover:bg-bg-primary/10"
+                            ? "bg-bg-primary text-fg-primary"
+                            : "text-fg-primary/60 hover:text-fg-primary"
                         )}
                       >
-                        🗳️ Active Proposals
+                        Active
                       </button>
                       <button
                         onClick={() => setActiveTab('past')}
                         className={twMerge(
-                          "flex-1 py-3 px-4 text-sm font-medium rounded-md transition-all duration-200",
+                          "flex-1 py-2 px-3 text-sm font-medium rounded transition-colors",
                           activeTab === 'past'
-                            ? "bg-brand-primary text-white shadow-lg"
-                            : "text-fg-secondary hover:text-fg-primary hover:bg-bg-primary/10"
+                            ? "bg-bg-primary text-fg-primary"
+                            : "text-fg-primary/60 hover:text-fg-primary"
                         )}
                       >
-                        📚 Proposal History
+                        History
                       </button>
                     </div>
 
                     {/* Tab Content */}
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {activeTab === 'current' ? (
                         <>
-                          {/* Current proposals (voting, signingOff, executing) - NO DRAFTS */}
+                          {/* Current proposals - simplified view */}
                           {daoData.dao.proposals
                             .filter(proposal => {
                               const stateKey = typeof proposal.state === 'object' && proposal.state !== null
                                 ? Object.keys(proposal.state)[0]
                                 : proposal.state;
-                              return ['voting', 'signingOff', 'executing'].includes(stateKey); // Removed 'draft'
+                              return ['voting', 'signingOff', 'executing'].includes(stateKey);
                             })
-                            .slice(0, 3)
+                            .slice(0, 5)
                             .map((proposal) => (
-                              <div key={proposal.address} className="border border-fg-primary/10 rounded-xl overflow-hidden bg-gradient-to-r from-bg-primary/5 to-transparent">
-                                <ProposalVoting
-                                  proposal={proposal}
-                                  dao={daoData.dao}
-                                />
-                              </div>
-                            ))}
-
-                          {/* Additional current proposals in enhanced compact view */}
-                          {daoData.dao.proposals
-                            .filter(proposal => {
-                              const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                                ? Object.keys(proposal.state)[0]
-                                : proposal.state;
-                              return ['voting', 'signingOff', 'executing'].includes(stateKey); // Removed 'draft'
-                            })
-                            .slice(3)
-                            .map((proposal) => (
-                              <div key={proposal.address} className="border border-fg-primary/10 rounded-lg p-4 bg-bg-primary/5 hover:bg-bg-primary/10 transition-colors">
-                                <div className="space-y-3">
-                                  <div className="flex justify-between items-start">
-                                    <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium text-fg-primary" />
-                                    {(() => {
-                                      const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                                        ? Object.keys(proposal.state)[0]
-                                        : proposal.state;
-                                      const stateDisplay = typeof stateKey === 'string'
-                                        ? stateKey.charAt(0).toUpperCase() + stateKey.slice(1)
-                                        : 'Unknown';
-
-                                      const getStatusEmoji = (state: string) => {
-                                        switch (state) {
-                                          case 'voting': return '🗳️';
-                                          case 'signingOff': return '✍️';
-                                          case 'executing': return '⚡';
-                                          default: return '📄';
-                                        }
-                                      };
-
-                                      return (
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 ${stateKey === 'voting' ? 'bg-blue-500/20 text-blue-400' :
-                                            stateKey === 'signingOff' ? 'bg-orange-500/20 text-orange-400' :
-                                              stateKey === 'executing' ? 'bg-indigo-500/20 text-indigo-400' :
-                                                'bg-gray-500/20 text-gray-400'
-                                          }`}>
-                                          <span>{getStatusEmoji(stateKey)}</span>
-                                          {stateDisplay}
-                                        </span>
-                                      );
-                                    })()}
-                                  </div>
-                                  {proposal.description && (
-                                    <Text text={proposal.description} as="p" className="text-sm text-fg-primary text-opacity-75 line-clamp-2" />
-                                  )}
+                              <div key={proposal.address} className="border border-fg-primary/10 rounded p-3 bg-bg-primary/5">
+                                <div className="flex justify-between items-start mb-2">
+                                  <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium text-fg-primary text-sm" />
+                                  {(() => {
+                                    const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                      ? Object.keys(proposal.state)[0]
+                                      : proposal.state;
+                                    return (
+                                      <span className="px-2 py-1 rounded text-xs bg-brand-primary/20 text-brand-primary">
+                                        {stateKey === 'voting' ? 'Voting' : 
+                                         stateKey === 'signingOff' ? 'Signing' : 
+                                         stateKey === 'executing' ? 'Executing' : 'Active'}
+                                      </span>
+                                    );
+                                  })()}
                                 </div>
+                                {proposal.description && (
+                                  <Text text={proposal.description.slice(0, 100) + (proposal.description.length > 100 ? '...' : '')} as="p" className="text-xs text-fg-primary/60" />
+                                )}
                               </div>
                             ))}
 
@@ -1151,18 +1102,16 @@ const Project = () => {
                             const stateKey = typeof proposal.state === 'object' && proposal.state !== null
                               ? Object.keys(proposal.state)[0]
                               : proposal.state;
-                            return ['voting', 'signingOff', 'executing'].includes(stateKey); // Removed 'draft'
+                            return ['voting', 'signingOff', 'executing'].includes(stateKey);
                           }).length === 0 && (
-                              <div className="text-center py-12 bg-bg-primary/5 rounded-lg">
-                                <div className="text-4xl mb-3">🗳️</div>
-                                <Text text="No Active Proposals" as="p" className="text-lg font-medium mb-2" />
-                                <Text text="There are currently no proposals open for voting" as="p" className="text-sm text-fg-primary text-opacity-50" />
+                              <div className="text-center py-6 bg-bg-primary/5 rounded">
+                                <Text text="No active proposals" as="p" className="text-fg-primary/60" />
                               </div>
                             )}
                         </>
                       ) : (
                         <>
-                          {/* Past proposals (succeeded, completed, defeated, cancelled, vetoed) */}
+                          {/* Past proposals - simplified view */}
                           {daoData.dao.proposals
                             .filter(proposal => {
                               const stateKey = typeof proposal.state === 'object' && proposal.state !== null
@@ -1170,76 +1119,33 @@ const Project = () => {
                                 : proposal.state;
                               return ['succeeded', 'completed', 'defeated', 'cancelled', 'vetoed'].includes(stateKey);
                             })
+                            .slice(0, 5)
                             .map((proposal) => (
-                              <div key={proposal.address} className="border border-fg-primary/10 rounded-lg p-4 bg-bg-primary/5 hover:bg-bg-primary/10 transition-colors">
-                                <div className="space-y-3">
-                                  <div className="flex justify-between items-start">
-                                    <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium text-fg-primary" />
-                                    {(() => {
-                                      const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                                        ? Object.keys(proposal.state)[0]
-                                        : proposal.state;
-                                      const stateDisplay = typeof stateKey === 'string'
-                                        ? stateKey.charAt(0).toUpperCase() + stateKey.slice(1)
-                                        : 'Unknown';
-
-                                      const getHistoryEmoji = (state: string) => {
-                                        switch (state) {
-                                          case 'succeeded': return '✅';
-                                          case 'completed': return '🎉';
-                                          case 'defeated': return '❌';
-                                          case 'cancelled': return '🚫';
-                                          case 'vetoed': return '⛔';
-                                          default: return '📋';
-                                        }
-                                      };
-
-                                      return (
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 ${stateKey === 'succeeded' ? 'bg-green-500/20 text-green-400' :
-                                            stateKey === 'completed' ? 'bg-purple-500/20 text-purple-400' :
-                                              stateKey === 'defeated' ? 'bg-red-500/20 text-red-400' :
-                                                stateKey === 'cancelled' ? 'bg-gray-500/20 text-gray-400' :
-                                                  stateKey === 'vetoed' ? 'bg-red-600/20 text-red-300' :
-                                                    'bg-gray-500/20 text-gray-400'
-                                          }`}>
-                                          <span>{getHistoryEmoji(stateKey)}</span>
-                                          {stateDisplay}
-                                        </span>
-                                      );
-                                    })()}
-                                  </div>
-                                  {proposal.description && (
-                                    <Text text={proposal.description} as="p" className="text-sm text-fg-primary text-opacity-75 line-clamp-2" />
-                                  )}
-                                  <div className="flex justify-between items-center text-xs bg-bg-primary/10 rounded-lg p-3">
-                                    <div className="flex items-center gap-1">
-                                      <span className="text-green-400">👍</span>
-                                      <span className="text-fg-primary text-opacity-60">
-                                        {(() => {
-                                          const weight = parseInt(proposal.options[0]?.voteWeight || "0");
-                                          if (weight === 0) return "0";
-                                          const formatted = weight / 1000000000;
-                                          if (formatted >= 1000000) return `${(formatted / 1000000).toFixed(1)}M`;
-                                          else if (formatted >= 1000) return `${(formatted / 1000).toFixed(1)}K`;
-                                          else return formatted.toFixed(1);
-                                        })()}
+                              <div key={proposal.address} className="border border-fg-primary/10 rounded p-3 bg-bg-primary/5">
+                                <div className="flex justify-between items-start mb-2">
+                                  <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium text-fg-primary text-sm" />
+                                  {(() => {
+                                    const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                      ? Object.keys(proposal.state)[0]
+                                      : proposal.state;
+                                    return (
+                                      <span className={`px-2 py-1 rounded text-xs ${
+                                        stateKey === 'succeeded' || stateKey === 'completed' ? 'bg-green-500/20 text-green-400' :
+                                        stateKey === 'defeated' ? 'bg-red-500/20 text-red-400' :
+                                        'bg-fg-primary/20 text-fg-primary/60'
+                                      }`}>
+                                        {stateKey === 'succeeded' ? 'Passed' : 
+                                         stateKey === 'completed' ? 'Completed' : 
+                                         stateKey === 'defeated' ? 'Failed' : 
+                                         stateKey === 'cancelled' ? 'Cancelled' : 
+                                         stateKey === 'vetoed' ? 'Vetoed' : 'Closed'}
                                       </span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                      <span className="text-red-400">👎</span>
-                                      <span className="text-fg-primary text-opacity-60">
-                                        {(() => {
-                                          const weight = parseInt(proposal.denyVoteWeight || "0");
-                                          if (weight === 0) return "0";
-                                          const formatted = weight / 1000000000;
-                                          if (formatted >= 1000000) return `${(formatted / 1000000).toFixed(1)}M`;
-                                          else if (formatted >= 1000) return `${(formatted / 1000).toFixed(1)}K`;
-                                          else return formatted.toFixed(1);
-                                        })()}
-                                      </span>
-                                    </div>
-                                  </div>
+                                    );
+                                  })()}
                                 </div>
+                                {proposal.description && (
+                                  <Text text={proposal.description.slice(0, 100) + (proposal.description.length > 100 ? '...' : '')} as="p" className="text-xs text-fg-primary/60" />
+                                )}
                               </div>
                             ))}
 
@@ -1249,10 +1155,8 @@ const Project = () => {
                               : proposal.state;
                             return ['succeeded', 'completed', 'defeated', 'cancelled', 'vetoed'].includes(stateKey);
                           }).length === 0 && (
-                              <div className="text-center py-12 bg-bg-primary/5 rounded-lg">
-                                <div className="text-4xl mb-3">📚</div>
-                                <Text text="No Historical Proposals" as="p" className="text-lg font-medium mb-2" />
-                                <Text text="No proposals have been completed yet" as="p" className="text-sm text-fg-primary text-opacity-50" />
+                              <div className="text-center py-6 bg-bg-primary/5 rounded">
+                                <Text text="No historical proposals" as="p" className="text-fg-primary/60" />
                               </div>
                             )}
                         </>
