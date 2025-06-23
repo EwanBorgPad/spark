@@ -2,13 +2,13 @@
 export default {
     async scheduled(event, env, ctx) {
       try {
-        const { ADMIN_API_KEY, INDEX_TOKEN_BALANCES_API } = env
+        const { ADMIN_API_KEY, CREATE_DAO_API } = env
   
-        if (!ADMIN_API_KEY || !INDEX_TOKEN_BALANCES_API) throw new Error('Misconfigured env!')
+        if (!ADMIN_API_KEY || !CREATE_DAO_API) throw new Error('Misconfigured env!')
   
-        console.log(`Indexing token balances. (${new Date().toISOString()})`)
+        console.log(`Creating DAO. (${new Date().toISOString()})`)
         
-        const response = await fetch(INDEX_TOKEN_BALANCES_API, {
+        const response = await fetch(CREATE_DAO_API, {
           method: 'POST',
           headers: { 'Authorization': ADMIN_API_KEY },
         })
@@ -17,7 +17,7 @@ export default {
           throw new Error(await response.text())
         }
         
-        console.log(`Indexing token balances successful. Date=(${new Date().toISOString()}). Status=${JSON.stringify(await response.text())}`)
+        console.log(`Creating DAO successful. Date=(${new Date().toISOString()}). Status=${JSON.stringify(await response.text())}`)
       } catch (e) {
         console.error('Something went wrong...')
         console.error(e)
