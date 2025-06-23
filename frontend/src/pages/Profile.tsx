@@ -65,14 +65,14 @@ const Profile = () => {
       // Logout from Privy
       await logout();
       
-      // Navigate to home
-      navigate('/');
+      // Navigate to landing page
+      navigate(ROUTES.LANDING_PAGE);
     } catch (error) {
       console.error('Error disconnecting:', error);
       // Even if logout fails, clear storage and navigate
       localStorage.removeItem('sparkit-wallet');
       localStorage.removeItem('sparkit-email');
-      navigate('/');
+      navigate(ROUTES.LANDING_PAGE);
     }
   };
 
