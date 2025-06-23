@@ -36,8 +36,7 @@ import Profile from "./pages/Profile"
 import Search from "./pages/Search"
 import Projects from "./pages/Projects"
 import Providers from "./providers/PrivyProvider"
-import LandingPage from "./pages/LandingPage"
-import DesktopLandingPage from "./pages/DesktopLandingPage"
+import LandingPage from "./pages/DesktopLandingPage"
 import PwaInstall from "./pages/PwaInstall"
 window.Buffer = Buffer
 
@@ -68,6 +67,10 @@ const router = createBrowserRouter([
       </QueryClientProvider>
     ),
     children: [
+      {
+        path: ROUTES.LANDING_PAGE,
+        element: <LandingPage />,
+      },
       {
         path: ROUTES.GET_STARTED,
         element: <GetStarted />,
@@ -114,14 +117,7 @@ const router = createBrowserRouter([
         path: ROUTES.SEARCH,
         element: <Search />,
       },
-      {
-        path: "/landing-page",
-        element: <LandingPage />,
-      },
-      {
-        path: "/desktop-landing",
-        element: <DesktopLandingPage />,
-      },
+
       // @backOffice
       {
         path: ROUTES.BACK_OFFICE,

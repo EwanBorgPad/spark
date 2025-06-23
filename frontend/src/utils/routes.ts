@@ -1,12 +1,12 @@
 import { ProjectModel } from "shared/models"
 
 export enum ROUTES {
-  GET_STARTED = "/",
+  LANDING_PAGE = "/",
+  GET_STARTED = "/get-started",
   CONNECTION = "/connection",
   EMAIL_CONNECTION = "/email-connection",
   USERNAME = "/username",
   TERMS = "/terms",
-  LANDING_PAGE = "/landing-page",
   PROJECTS = "/projects",
   PROFILE = "/profile",
   SEARCH = "/search",

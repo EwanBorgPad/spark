@@ -12,8 +12,6 @@ import { useQuery } from "@tanstack/react-query"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
 import logoType from "@/assets/logos/type-png-resized.png"
 import { getCorrectWalletAddress } from "@/utils/walletUtils"
-import { useDeviceDetection } from "@/hooks/useDeviceDetection"
-import DesktopLandingPage from "./DesktopLandingPage"
 
 
 const GetStarted = () => {
@@ -22,7 +20,6 @@ const GetStarted = () => {
   const { wallets, createWallet } = useSolanaWallets();
   const [address, setAddress] = useState<string | null>(localStorage.getItem('sparkit-wallet'))
   const [isCheckingUser, setIsCheckingUser] = useState(false)
-  const { isDesktop, isMobile } = useDeviceDetection()
 
   const { data: user, isLoading, refetch } = useQuery({
     queryKey: ['user', address],
@@ -39,7 +36,7 @@ const GetStarted = () => {
       console.log("Current address state:", address);
       console.log("Privy user:", privyUser);
       console.log("Available wallets:", wallets);
-      
+
       // The main connection flow will handle wallet detection and creation
       // No need for separate logic here
     }
@@ -57,25 +54,25 @@ const GetStarted = () => {
       console.log("Authenticated:", authenticated);
       console.log("Privy user:", privyUser);
       console.log("Available wallets:", wallets);
-      
+
       if (authenticated && privyUser) {
         // User is authenticated - get the CURRENT wallet address
         const currentWalletAddress = getCorrectWalletAddress(privyUser, wallets);
-        
+
         console.log("Current wallet address:", currentWalletAddress);
         console.log("Address state:", address);
-        
+
         if (currentWalletAddress) {
           // We have a proper wallet address
           const storedAddress = localStorage.getItem('sparkit-wallet');
-          
+
           // Always update localStorage and state with current address
           if (storedAddress !== currentWalletAddress) {
             console.log("Updating stored address from", storedAddress, "to", currentWalletAddress);
             localStorage.setItem('sparkit-wallet', currentWalletAddress);
             setAddress(currentWalletAddress);
           }
-          
+
           // Check if user exists in DB with the CURRENT wallet address
           setIsCheckingUser(true);
           try {
@@ -100,13 +97,13 @@ const GetStarted = () => {
           // Authenticated but no proper wallet address found
           // This might happen for social logins where the embedded wallet is still being created
           console.log("Authenticated but no wallet address found - checking if we need to create one");
-          
+
           // Check if user has Google/social login (means they need an embedded wallet)
           const hasGoogleAccount = privyUser.google;
           const hasTwitterAccount = privyUser.twitter;
           const hasAppleAccount = privyUser.apple;
           const isSocialLogin = hasGoogleAccount || hasTwitterAccount || hasAppleAccount;
-          
+
           if (isSocialLogin) {
             console.log("Social login detected, creating embedded wallet...");
             try {
@@ -126,7 +123,7 @@ const GetStarted = () => {
       } else if (!authenticated) {
         // Check if there's a stored address from previous session (legacy)
         const storedAddress = localStorage.getItem('sparkit-wallet');
-        
+
         if (storedAddress) {
           console.log("Legacy scenario: stored address but not authenticated:", storedAddress);
           setIsCheckingUser(true);
@@ -169,11 +166,6 @@ const GetStarted = () => {
         </div>
       </div>
     );
-  }
-
-  // Show desktop landing page for desktop users
-  if (isDesktop) {
-    return <DesktopLandingPage />
   }
 
   return (
