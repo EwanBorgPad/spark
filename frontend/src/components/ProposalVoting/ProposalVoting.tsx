@@ -19,7 +19,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
   const [hasVoted, setHasVoted] = useState(false);
   const [userVote, setUserVote] = useState<'approve' | 'deny' | null>(null);
 
-  const RPC_URL = import.meta.env.VITE_RPC_URL || "https://haleigh-sa5aoh-fast-mainnet.helius-rpc.com";
+  const RPC_URL = import.meta.env.VITE_RPC_URL;
   const connection = new Connection(RPC_URL);
   const governanceService = new GovernanceService(RPC_URL);
 

@@ -42,7 +42,7 @@ const Project = () => {
   const { user, authenticated } = usePrivy()
   const { wallets } = useSolanaWallets()
 
-  const RPC_URL = import.meta.env.VITE_RPC_URL || "https://haleigh-sa5aoh-fast-mainnet.helius-rpc.com"
+  const RPC_URL = import.meta.env.VITE_RPC_URL
   const connection = new Connection(RPC_URL)
   const inputMint = 'So11111111111111111111111111111111111111112' // SOL
 
@@ -694,13 +694,25 @@ const Project = () => {
                 />
               </div>
 
-              {/* Token Address - first 4 and last 4 characters */}
-              <Text
-                text={id ? `${id.slice(0, 4)}...${id.slice(-4)}` : "Unknown"}
-                as="span"
-                className={`text-fg-primary text-opacity-75 font-mono ${isDesktop ? 'text-base' : 'text-sm'}`}
-                isLoading={tokenLoading}
-              />
+              {/* Token Address - clickable to copy */}
+              <div 
+                className={`flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity ${isDesktop ? 'text-base' : 'text-sm'}`}
+                onClick={() => {
+                  if (id) {
+                    navigator.clipboard.writeText(id);
+                    // You could add a toast notification here if you have a toast system
+                  }
+                }}
+                title="Click to copy full address"
+              >
+                <Text
+                  text={id ? `${id.slice(0, 4)}...${id.slice(-4)}` : "Unknown"}
+                  as="span"
+                  className="text-fg-primary text-opacity-75 font-mono"
+                  isLoading={tokenLoading}
+                />
+                <Icon icon="SvgCopy" className="text-xs text-fg-primary/60" />
+              </div>
             </div>
           </div>
 
