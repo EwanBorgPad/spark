@@ -145,9 +145,7 @@ const Profile = () => {
       }
 
       // Create connection
-      const connection = new Connection(
-        import.meta.env.VITE_RPC_URL || 'https://haleigh-sa5aoh-fast-mainnet.helius-rpc.com'
-      );
+      const connection = new Connection(import.meta.env.VITE_RPC_URL);
 
       const senderPubKey = new PublicKey(address);
       const amount = parseFloat(sendForm.amount);

@@ -5,6 +5,8 @@ import { Button } from '../Button/Button';
 import { usePrivy, useSolanaWallets } from '@privy-io/react-auth';
 import { Connection, PublicKey } from '@solana/web3.js';
 import GovernanceService from '../../services/governanceService';
+import { getCorrectWalletAddress } from '@/utils/walletUtils';
+import { toast } from 'react-toastify';
 
 interface ProposalVotingProps {
   proposal: DaoProposalModel;
@@ -19,13 +21,21 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
   const [hasVoted, setHasVoted] = useState(false);
   const [userVote, setUserVote] = useState<'approve' | 'deny' | null>(null);
 
-  const RPC_URL = import.meta.env.VITE_RPC_URL || "https://haleigh-sa5aoh-fast-mainnet.helius-rpc.com";
+  const RPC_URL = import.meta.env.VITE_RPC_URL;
   const connection = new Connection(RPC_URL);
   const governanceService = new GovernanceService(RPC_URL);
 
-  // Get Solana wallet from Privy
+  // Get Solana wallet from Privy using the correct wallet selection logic
   const getSolanaWallet = () => {
-    return wallets[0]; // Get the first (and typically only) Solana wallet
+    const correctWalletAddress = getCorrectWalletAddress(user, wallets);
+    if (correctWalletAddress) {
+      const correctWallet = wallets.find(w => w.address === correctWalletAddress);
+      if (correctWallet) {
+        console.log("Using correct wallet:", correctWallet.address, correctWallet.walletClientType);
+        return correctWallet;
+      }
+    }
+    return null;
   };
 
   // Check if proposal is in voting state
@@ -61,10 +71,14 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
   // Check user's vote status
   useEffect(() => {
     const checkUserVote = async () => {
-      if (!authenticated || !user?.wallet?.address) return;
+      if (!authenticated) return;
+
+      // Get the correct wallet address
+      const correctWalletAddress = getCorrectWalletAddress(user, wallets);
+      if (!correctWalletAddress) return;
 
       try {
-        const userPubkey = new PublicKey(user.wallet.address);
+        const userPubkey = new PublicKey(correctWalletAddress);
         const realmPubkey = new PublicKey(dao.address);
         const proposalPubkey = new PublicKey(proposal.address);
         const communityMint = new PublicKey(dao.communityMint);
@@ -84,7 +98,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
     };
 
     checkUserVote();
-  }, [authenticated, user, dao.address, proposal.address, dao.communityMint]);
+  }, [authenticated, user, wallets, dao.address, proposal.address, dao.communityMint]);
 
   // Don't render if voting is not open
   if (!isVotingOpen) {
@@ -92,14 +106,21 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
   }
 
   const handleVote = async (voteType: 'approve' | 'deny') => {
-    if (!authenticated || !user?.wallet?.address) {
-      alert("Please connect your wallet first");
+    if (!authenticated) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+
+    // Get the correct wallet
+    const solanaWallet = getSolanaWallet();
+    if (!solanaWallet) {
+      toast.error("No Solana wallet found");
       return;
     }
 
     setIsVoting(true);
     try {
-      const userPubkey = new PublicKey(user.wallet.address);
+      const userPubkey = new PublicKey(solanaWallet.address);
       const realmPubkey = new PublicKey(dao.address);
       const proposalPubkey = new PublicKey(proposal.address);
       const communityMint = new PublicKey(dao.communityMint);
@@ -129,13 +150,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
 
       console.log(`Signing ${voteType} vote with Privy...`);
       
-      // Get Privy Solana wallet
-      const solanaWallet = getSolanaWallet();
-      if (!solanaWallet) {
-        throw new Error("No Solana wallet found");
-      }
-
-      // Sign transaction using Privy
+      // Sign transaction using Privy (wallet already obtained above)
       const signedTransaction = await solanaWallet.signTransaction(transaction);
       
       // Send transaction
@@ -146,7 +161,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
       await connection.confirmTransaction(signature, 'confirmed');
       
       console.log(`Vote ${voteType} successful! Signature:`, signature);
-      alert(`Successfully voted ${voteType}!\nSignature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
+      toast.success(`Successfully voted ${voteType}! Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
       
       // Update local state
       setHasVoted(true);
@@ -154,21 +169,28 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
 
     } catch (error) {
       console.error("Error casting vote:", error);
-      alert("Failed to cast vote. This is using a placeholder implementation.");
+      toast.error(`Failed to cast vote: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsVoting(false);
     }
   };
 
   const handleRelinquishVote = async () => {
-    if (!authenticated || !user?.wallet?.address) {
-      alert("Please connect your wallet first");
+    if (!authenticated) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+
+    // Get the correct wallet
+    const solanaWallet = getSolanaWallet();
+    if (!solanaWallet) {
+      toast.error("No Solana wallet found");
       return;
     }
 
     setIsVoting(true);
     try {
-      const userPubkey = new PublicKey(user.wallet.address);
+      const userPubkey = new PublicKey(solanaWallet.address);
       const realmPubkey = new PublicKey(dao.address);
       const proposalPubkey = new PublicKey(proposal.address);
       const communityMint = new PublicKey(dao.communityMint);
@@ -197,13 +219,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
 
       console.log("Signing relinquish vote with Privy...");
       
-      // Get Privy Solana wallet
-      const solanaWallet = getSolanaWallet();
-      if (!solanaWallet) {
-        throw new Error("No Solana wallet found");
-      }
-
-      // Sign transaction using Privy
+      // Sign transaction using Privy (wallet already obtained above)
       const signedTransaction = await solanaWallet.signTransaction(transaction);
       
       // Send transaction
@@ -214,7 +230,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
       await connection.confirmTransaction(signature, 'confirmed');
       
       console.log("Relinquish vote successful! Signature:", signature);
-      alert(`Successfully changed vote!\nSignature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
+      toast.success(`Successfully changed vote! Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
       
       // Update local state
       setHasVoted(false);
@@ -222,60 +238,26 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
 
     } catch (error) {
       console.error("Error relinquishing vote:", error);
-      alert("Failed to relinquish vote. This is using a placeholder implementation.");
+      toast.error(`Failed to relinquish vote: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsVoting(false);
     }
   };
 
   return (
-    <div className={`bg-bg-secondary rounded-lg p-6 border border-fg-primary/10 ${className}`}>
-      {/* Proposal Header */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <Text text={proposal.name || "Unnamed Proposal"} as="h3" className="text-lg font-semibold" />
-          <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400">
-            {getProposalStateDisplay()}
-          </span>
-        </div>
-        
-        {proposal.description && (
-          <Text text={proposal.description} as="p" className="text-sm text-fg-primary text-opacity-75 mb-4" />
-        )}
-
-        {/* Proposal Vote Stats */}
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div className="bg-green-500/10 rounded-lg p-3 text-center">
-            <Text text="Yes Votes" as="p" className="text-fg-primary text-opacity-60 mb-1" />
-            <Text 
-              text={formatVoteCount(proposal.options[0]?.voteWeight || "0")} 
-              as="p" 
-              className="text-xl font-bold text-green-500" 
-            />
-          </div>
-          <div className="bg-red-500/10 rounded-lg p-3 text-center">
-            <Text text="No Votes" as="p" className="text-fg-primary text-opacity-60 mb-1" />
-            <Text 
-              text={formatVoteCount(proposal.denyVoteWeight || "0")} 
-              as="p" 
-              className="text-xl font-bold text-red-500" 
-            />
-          </div>
-        </div>
-      </div>
-
+    <div className={`${className}`}>
       {!authenticated ? (
-        <div className="text-center py-4">
-          <Text text="Connect your wallet to participate in voting" as="p" className="text-fg-primary text-opacity-75" />
+        <div className="text-center py-2 bg-blue-600/20 border border-blue-600/30 rounded">
+          <Text text="Connect wallet to vote" as="p" className="text-blue-300 text-xs font-medium" />
         </div>
       ) : hasVoted ? (
-        <div className="space-y-4">
-          <div className="text-center py-3 bg-bg-primary/5 rounded-lg">
-            <Text text="Your Vote" as="p" className="text-fg-primary text-opacity-75 mb-2" />
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+        <div className="space-y-2">
+          <div className="text-center py-2 bg-gray-800/50 border border-gray-700 rounded">
+            <Text text="Your Vote:" as="span" className="text-gray-300 text-xs mr-2" />
+            <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
               userVote === 'approve' 
-                ? 'bg-green-500/20 text-green-400' 
-                : 'bg-red-500/20 text-red-400'
+                ? 'bg-green-600/30 text-green-300 border border-green-600/50' 
+                : 'bg-orange-600/30 text-orange-300 border border-orange-600/50'
             }`}>
               {userVote === 'approve' ? '✓ Yes' : '✗ No'}
             </span>
@@ -284,22 +266,18 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
           <Button
             onClick={handleRelinquishVote}
             disabled={isVoting}
-            className="w-full bg-gray-600 hover:bg-gray-700"
+            className="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium text-xs py-2 border border-gray-600"
           >
             {isVoting ? "Processing..." : "Change Vote"}
           </Button>
         </div>
       ) : (
-        <div className="space-y-4">
-          <div className="text-center py-2">
-            <Text text="Cast your vote on this proposal" as="p" className="text-fg-primary text-opacity-75 mb-4" />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
             <Button
               onClick={() => handleVote('approve')}
               disabled={isVoting}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-500 text-white font-medium text-xs py-2 border border-green-600/50 shadow-sm"
             >
               {isVoting ? "Voting..." : "Vote Yes"}
             </Button>
@@ -307,14 +285,14 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
             <Button
               onClick={() => handleVote('deny')}
               disabled={isVoting}
-              className="bg-[#FF2200FF] hover:bg-[#8B1C0BFF]"
+              className="bg-orange-600 hover:bg-orange-500 text-white font-medium text-xs py-2 border border-orange-600/50 shadow-sm"
             >
               {isVoting ? "Voting..." : "Vote No"}
             </Button>
           </div>
           
-          <div className="text-center text-xs text-fg-primary text-opacity-60">
-            <Text text="You need governance tokens deposited to vote" as="p" />
+          <div className="text-center">
+            <Text text="Need governance tokens deposited to vote" as="p" className="text-xs text-gray-400" />
           </div>
         </div>
       )}

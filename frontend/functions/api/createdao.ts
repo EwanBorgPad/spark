@@ -157,9 +157,23 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     const txSignature2 = await connection.sendRawTransaction(transaction2.serialize(), { skipPreflight: false, preflightCommitment: 'confirmed' });
 
     if (txSignature2) {
+      // Update the database with the DAO address (realm address)
+      try {
+        await ctx.env.DB
+          .prepare("UPDATE tokens SET dao = ? WHERE mint = ?")
+          .bind(realmPubKey.toBase58(), communityTokenMint)
+          .run();
+        console.log(`Updated token ${communityTokenMint} with DAO address: ${realmPubKey.toBase58()}`);
+      } catch (dbError) {
+        console.error("Error updating database with DAO address:", dbError);
+        // Don't fail the entire request if DB update fails, just log it
+      }
+
       return jsonResponse({
         success: true,
         txSignature2: txSignature2,
+        realmAddress: realmPubKey.toBase58(),
+        governanceAddress: governancePubKey.toBase58(),
       }, 200);
     }
 

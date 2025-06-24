@@ -42,7 +42,7 @@ const Project = () => {
   const { user, authenticated } = usePrivy()
   const { wallets } = useSolanaWallets()
 
-  const RPC_URL = import.meta.env.VITE_RPC_URL || "https://haleigh-sa5aoh-fast-mainnet.helius-rpc.com"
+  const RPC_URL = import.meta.env.VITE_RPC_URL
   const connection = new Connection(RPC_URL)
   const inputMint = 'So11111111111111111111111111111111111111112' // SOL
 
@@ -98,7 +98,7 @@ const Project = () => {
         }
       } catch (error) {
         console.error('Error fetching SOL price:', error)
-        
+
         // Try alternative price source
         try {
           console.log("Trying alternative SOL price source...");
@@ -147,7 +147,7 @@ const Project = () => {
       console.log("Jupiter quote (sell) successful:", solAmount)
     } catch (error) {
       console.error('Error getting Jupiter sell quote:', error)
-      
+
       // Try the opposite direction (buy 1 SOL worth of token) as fallback
       try {
         const oneSolInLamports = 1 * Math.pow(10, 9) // 1 SOL
@@ -267,20 +267,20 @@ const Project = () => {
       if (pairAddress) {
         console.log("Fetching OHLCV data from GeckoTerminal for pair:", pairAddress)
         const geckoOHLCVUrl = `https://api.geckoterminal.com/api/v2/networks/solana/pools/${pairAddress}/ohlcv/hour?aggregate=1h&before_timestamp=${Math.floor(Date.now() / 1000)}&limit=24`
-        
+
         try {
           const ohlcvResponse = await fetch(geckoOHLCVUrl)
           if (ohlcvResponse.ok) {
             const ohlcvData = await ohlcvResponse.json()
             console.log("GeckoTerminal OHLCV data:", ohlcvData)
-            
+
             if (ohlcvData.data && ohlcvData.data.attributes && ohlcvData.data.attributes.ohlcv_list) {
               const ohlcvList = ohlcvData.data.attributes.ohlcv_list
               const chartData = ohlcvList.map((ohlcv: number[]) => ({
                 timestamp: ohlcv[0] * 1000, // Convert to milliseconds
                 price: parseFloat(ohlcv[4].toString()) // Close price
               })).filter((point: { timestamp: number; price: number }) => point.price > 0)
-              
+
               if (chartData.length > 0) {
                 console.log("Successfully fetched OHLCV data:", chartData.length, "points")
                 return chartData.reverse() // Reverse to get chronological order
@@ -347,7 +347,7 @@ const Project = () => {
                 timestamp: new Date(trade.Block.Time).getTime(),
                 price: parseFloat(trade.Trade.PriceInUSD)
               }))
-            
+
             if (chartData.length > 0) {
               console.log("Successfully fetched Bitquery transaction data:", chartData.length, "points")
               return chartData
@@ -371,20 +371,20 @@ const Project = () => {
               // But we can use price changes to create more realistic synthetic data
               const currentPrice = parseFloat(historyData.pair.priceUsd || "0")
               const changes = historyData.pair.priceChange
-              
+
               const now = Date.now()
               const oneHour = 60 * 60 * 1000
               const chartData = []
-              
+
               // Use available price change data to create more realistic points
               const change24h = parseFloat(changes.h24 || "0") / 100
               const change6h = parseFloat(changes.h6 || "0") / 100
               const change1h = parseFloat(changes.h1 || "0") / 100
-              
+
               for (let i = 23; i >= 0; i--) {
                 const timestamp = now - (i * oneHour)
                 let priceMultiplier = 1
-                
+
                 // Apply different change rates based on time periods
                 if (i >= 18) { // Last 6 hours
                   const progress = (23 - i) / 6
@@ -396,18 +396,18 @@ const Project = () => {
                   const progress = (23 - i) / 23
                   priceMultiplier = 1 + (change24h * progress)
                 }
-                
+
                 // Add some realistic volatility
                 const volatility = (Math.random() - 0.5) * 0.03
                 const basePrice = currentPrice / (1 + change24h)
                 const price = basePrice * priceMultiplier * (1 + volatility)
-                
+
                 chartData.push({
                   timestamp,
                   price: Math.max(0, price)
                 })
               }
-              
+
               console.log("Generated enhanced synthetic data using DexScreener price changes")
               return chartData
             }
@@ -427,7 +427,7 @@ const Project = () => {
   // Fetch fallback chart data when backend data is not available
   const fetchFallbackChartData = async (tokenAddress: string): Promise<TokenMarketData | null> => {
     if (!tokenAddress) return null
-    
+
     setIsLoadingFallbackChart(true)
     console.log("Fetching fallback chart data for:", tokenAddress)
 
@@ -435,20 +435,20 @@ const Project = () => {
       // Try DexScreener API first (free and reliable)
       const dexScreenerUrl = `https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`
       const dexResponse = await fetch(dexScreenerUrl)
-      
+
       if (dexResponse.ok) {
         const dexData = await dexResponse.json()
         console.log("DexScreener data:", dexData)
-        
+
         if (dexData.pairs && dexData.pairs.length > 0) {
           // Get the pair with highest liquidity (most reliable)
-          const bestPair = dexData.pairs.reduce((prev: Record<string, unknown>, current: Record<string, unknown>) => 
+          const bestPair = dexData.pairs.reduce((prev: Record<string, unknown>, current: Record<string, unknown>) =>
             ((current.liquidity as Record<string, number>)?.usd || 0) > ((prev.liquidity as Record<string, number>)?.usd || 0) ? current : prev
           )
 
           if (bestPair) {
             console.log("Best pair found:", bestPair)
-            
+
             // Create chart data structure similar to backend format
             const chartData: TokenMarketData = {
               address: tokenAddress,
@@ -482,21 +482,21 @@ const Project = () => {
             const oneHour = 60 * 60 * 1000
             const currentPrice = chartData.price
             const dailyChange = chartData.priceChange24h / 100 // Convert percentage to decimal
-            
+
             // Create 24 hours of hourly data points
             const mockChart = []
             for (let i = 23; i >= 0; i--) {
               const timestamp = now - (i * oneHour)
-              
+
               // Calculate price progression to achieve the 24h change
               const progressRatio = (23 - i) / 23 // 0 to 1 progression
               const targetChange = dailyChange * progressRatio
-              
+
               // Add some realistic volatility
               const volatility = (Math.random() - 0.5) * 0.05 // ±2.5% volatility
               const basePrice = currentPrice / (1 + dailyChange) // Starting price 24h ago
               const price = basePrice * (1 + targetChange + volatility)
-              
+
               mockChart.push({
                 timestamp,
                 price: Math.max(0, price)
@@ -514,15 +514,15 @@ const Project = () => {
       console.log("Trying GeckoTerminal API as fallback...")
       const geckoTerminalUrl = `https://api.geckoterminal.com/api/v2/networks/solana/tokens/${tokenAddress}`
       const geckoResponse = await fetch(geckoTerminalUrl)
-      
+
       if (geckoResponse.ok) {
         const geckoData = await geckoResponse.json()
         console.log("GeckoTerminal data:", geckoData)
-        
+
         if (geckoData.data && geckoData.data.attributes) {
           const attrs = geckoData.data.attributes
           const price = parseFloat(attrs.price_usd || "0")
-          
+
           if (price > 0) {
             const chartData: TokenMarketData = {
               address: tokenAddress,
@@ -543,7 +543,7 @@ const Project = () => {
             const oneHour = 60 * 60 * 1000
             const currentPrice = chartData.price
             const dailyChange = chartData.priceChange24h / 100
-            
+
             const mockChart = []
             for (let i = 23; i >= 0; i--) {
               const timestamp = now - (i * oneHour)
@@ -552,7 +552,7 @@ const Project = () => {
               const volatility = (Math.random() - 0.5) * 0.03
               const basePrice = currentPrice / (1 + dailyChange)
               const price = basePrice * (1 + targetChange + volatility)
-              
+
               mockChart.push({
                 timestamp,
                 price: Math.max(0, price)
@@ -570,15 +570,15 @@ const Project = () => {
       console.log("Trying Jupiter Price API as final fallback...")
       const jupiterPriceUrl = `https://lite-api.jup.ag/price/v2?ids=${tokenAddress}&showExtraInfo=true`
       const jupiterResponse = await fetch(jupiterPriceUrl)
-      
+
       if (jupiterResponse.ok) {
         const jupiterData = await jupiterResponse.json()
         console.log("Jupiter price data:", jupiterData)
-        
+
         const tokenData = jupiterData.data?.[tokenAddress]
         if (tokenData) {
           const price = parseFloat(tokenData.price || "0")
-          
+
           // Create basic chart data with Jupiter price
           const chartData: TokenMarketData = {
             address: tokenAddress,
@@ -598,13 +598,13 @@ const Project = () => {
           const now = Date.now()
           const oneHour = 60 * 60 * 1000
           const mockChart = []
-          
+
           for (let i = 23; i >= 0; i--) {
             const timestamp = now - (i * oneHour)
             // Add slight volatility to make it look more realistic
             const volatility = (Math.random() - 0.5) * 0.02 // ±1% volatility
             const adjustedPrice = price * (1 + volatility)
-            
+
             mockChart.push({
               timestamp,
               price: Math.max(0, adjustedPrice)
@@ -633,10 +633,10 @@ const Project = () => {
     const loadFallbackChart = async () => {
       if (id && !marketLoading) {
         // Check if we should use fallback data
-        const shouldUseFallback = 
+        const shouldUseFallback =
           marketError || // Backend error
           (marketData?.tokenMarketData && (
-            !marketData.tokenMarketData.priceChart || 
+            !marketData.tokenMarketData.priceChart ||
             marketData.tokenMarketData.priceChart.length === 0 ||
             (marketData.tokenMarketData.price === 0 && marketData.tokenMarketData.marketCap === 0)
           ))
@@ -694,13 +694,25 @@ const Project = () => {
                 />
               </div>
 
-              {/* Token Address - first 4 and last 4 characters */}
-              <Text
-                text={id ? `${id.slice(0, 4)}...${id.slice(-4)}` : "Unknown"}
-                as="span"
-                className={`text-fg-primary text-opacity-75 font-mono ${isDesktop ? 'text-base' : 'text-sm'}`}
-                isLoading={tokenLoading}
-              />
+              {/* Token Address - clickable to copy */}
+              <div
+                className={`flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity ${isDesktop ? 'text-base' : 'text-sm'}`}
+                onClick={() => {
+                  if (id) {
+                    navigator.clipboard.writeText(id);
+                    // You could add a toast notification here if you have a toast system
+                  }
+                }}
+                title="Click to copy full address"
+              >
+                <Text
+                  text={id ? `${id.slice(0, 4)}...${id.slice(-4)}` : "Unknown"}
+                  as="span"
+                  className="text-fg-primary text-opacity-75 font-mono"
+                  isLoading={tokenLoading}
+                />
+                <Icon icon="SvgCopy" className="text-xs text-fg-primary/60" />
+              </div>
             </div>
           </div>
 
@@ -765,52 +777,52 @@ const Project = () => {
                 </div>
               </div>
             ) : (() => {
-          // Determine which data to use for chart
-          const hasValidBackendData = marketData?.tokenMarketData && 
-            marketData.tokenMarketData.priceChart && 
-            marketData.tokenMarketData.priceChart.length > 0 &&
-            !(marketData.tokenMarketData.price === 0 && marketData.tokenMarketData.marketCap === 0)
+              // Determine which data to use for chart
+              const hasValidBackendData = marketData?.tokenMarketData &&
+                marketData.tokenMarketData.priceChart &&
+                marketData.tokenMarketData.priceChart.length > 0 &&
+                !(marketData.tokenMarketData.price === 0 && marketData.tokenMarketData.marketCap === 0)
 
-          console.log("Chart rendering decision:", {
-            hasValidBackendData,
-            hasFallbackData: !!fallbackChartData,
-            fallbackDataValid: fallbackChartData && fallbackChartData.priceChart && fallbackChartData.priceChart.length > 0,
-            fallbackChartLength: fallbackChartData?.priceChart?.length,
-            fallbackPrice: fallbackChartData?.price
-          })
+              console.log("Chart rendering decision:", {
+                hasValidBackendData,
+                hasFallbackData: !!fallbackChartData,
+                fallbackDataValid: fallbackChartData && fallbackChartData.priceChart && fallbackChartData.priceChart.length > 0,
+                fallbackChartLength: fallbackChartData?.priceChart?.length,
+                fallbackPrice: fallbackChartData?.price
+              })
 
-          if (hasValidBackendData) {
-            console.log("Using backend chart data")
-            return <CandlestickChart tokenMarketData={marketData.tokenMarketData} />
-          } else if (fallbackChartData) {
-            console.log("Using fallback chart data:", fallbackChartData)
-            return (
-              <div className="w-full">
-                <CandlestickChart tokenMarketData={fallbackChartData} />
-                <div className="text-center mt-2">
-                  <Text text="📊 Chart data from external sources" as="p" className="text-xs text-fg-primary text-opacity-50" />
-                </div>
-              </div>
-            )
-          } else {
-            console.log("No chart data available")
-            return (
-              <div className="w-full rounded-lg bg-bg-secondary p-4 border border-yellow-500/20">
-                <div className="h-[300px] flex items-center justify-center flex-col gap-2">
-                  <Text text="No chart data available" as="p" className="text-yellow-400" />
-                  <Text text="This token may be too new or have insufficient trading data" as="p" className="text-sm text-fg-primary text-opacity-75" />
-                  <Button
-                    onClick={() => window.open(`https://dexscreener.com/solana/${id}`, '_blank')}
-                    size="sm"
-                    className="mt-4 bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border-brand-primary/30"
-                  >
-                    View on DexScreener
-                  </Button>
-                </div>
-              </div>
-            )
-          }
-        })()}
+              if (hasValidBackendData) {
+                console.log("Using backend chart data")
+                return <CandlestickChart tokenMarketData={marketData.tokenMarketData} />
+              } else if (fallbackChartData) {
+                console.log("Using fallback chart data:", fallbackChartData)
+                return (
+                  <div className="w-full">
+                    <CandlestickChart tokenMarketData={fallbackChartData} />
+                    <div className="text-center mt-2">
+                      <Text text="📊 Chart data from external sources" as="p" className="text-xs text-fg-primary text-opacity-50" />
+                    </div>
+                  </div>
+                )
+              } else {
+                console.log("No chart data available")
+                return (
+                  <div className="w-full rounded-lg bg-bg-secondary p-4 border border-yellow-500/20">
+                    <div className="h-[300px] flex items-center justify-center flex-col gap-2">
+                      <Text text="No chart data available" as="p" className="text-yellow-400" />
+                      <Text text="This token may be too new or have insufficient trading data" as="p" className="text-sm text-fg-primary text-opacity-75" />
+                      <Button
+                        onClick={() => window.open(`https://dexscreener.com/solana/${id}`, '_blank')}
+                        size="sm"
+                        className="mt-4 bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border-brand-primary/30"
+                      >
+                        View on DexScreener
+                      </Button>
+                    </div>
+                  </div>
+                )
+              }
+            })()}
 
             {/* Token Balance and Value */}
             {(marketData?.tokenMarketData || fallbackChartData) && (
@@ -906,7 +918,7 @@ const Project = () => {
                   setSwapMode('sell')
                   setIsSwapModalOpen(true)
                 }}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded transition-colors disabled:bg-gray-500"
+                className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 rounded transition-colors disabled:bg-gray-500"
                 disabled={!authenticated || userTokenBalance <= 0}
               >
                 Sell
@@ -924,7 +936,7 @@ const Project = () => {
                   <div className="flex justify-between text-sm">
                     <span className="text-fg-primary/60">Price</span>
                     <span className="font-medium">
-                      {marketData?.tokenMarketData?.price || fallbackChartData?.price 
+                      {marketData?.tokenMarketData?.price || fallbackChartData?.price
                         ? `$${(marketData?.tokenMarketData?.price || fallbackChartData?.price || 0).toExponential(3)}`
                         : '--'
                       }
@@ -932,12 +944,11 @@ const Project = () => {
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-fg-primary/60">24h Change</span>
-                    <span className={`font-medium ${
-                      (marketData?.tokenMarketData?.priceChange24h || fallbackChartData?.priceChange24h || 0) >= 0 
-                        ? 'text-green-400' 
-                        : 'text-red-400'
-                    }`}>
-                      {marketData?.tokenMarketData?.priceChange24h || fallbackChartData?.priceChange24h 
+                    <span className={`font-medium ${(marketData?.tokenMarketData?.priceChange24h || fallbackChartData?.priceChange24h || 0) >= 0
+                      ? 'text-green-400'
+                      : 'text-red-400'
+                      }`}>
+                      {marketData?.tokenMarketData?.priceChange24h || fallbackChartData?.priceChange24h
                         ? `${(marketData?.tokenMarketData?.priceChange24h || fallbackChartData?.priceChange24h || 0).toFixed(2)}%`
                         : '--'
                       }
@@ -964,7 +975,7 @@ const Project = () => {
                       setSwapMode('sell')
                       setIsSwapModalOpen(true)
                     }}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white disabled:bg-gray-500 text-sm py-2"
+                    className="w-full bg-orange-600 hover:bg-orange-700 text-white disabled:bg-gray-500 text-sm py-2"
                     disabled={!authenticated || userTokenBalance <= 0}
                   >
                     Sell Token
@@ -1015,155 +1026,200 @@ const Project = () => {
                   </a>
                 </div>
 
-                {/* Governance Status - Clean Design */}
-                <div className="rounded-lg bg-bg-secondary border border-fg-primary/10 overflow-hidden">
-                  <div className="p-4 border-b border-fg-primary/10">
-                    <Text text="Governance Status" as="h3" className="text-base font-medium" />
+                {/* Two Column Layout for Desktop */}
+                <div className={`${isDesktop ? 'grid grid-cols-1 lg:grid-cols-2 gap-6' : 'space-y-4'}`}>
+                  {/* Left Column - Governance Status */}
+                  <div className="rounded-lg bg-bg-secondary border border-fg-primary/10 overflow-hidden">
+                    <div className="p-4 border-b border-fg-primary/10">
+                      <Text text="Governance Status" as="h3" className="text-base font-medium" />
+                    </div>
+                    <div className="p-4">
+                      <GovernanceStatus
+                        dao={daoData.dao}
+                        onStatusUpdate={handleGovernanceStatusUpdate}
+                      />
+                    </div>
                   </div>
-                  <div className="p-4">
-                    <GovernanceStatus
-                      dao={daoData.dao}
-                      onStatusUpdate={handleGovernanceStatusUpdate}
-                    />
-                  </div>
+
+                  {/* Right Column - DAO Proposals */}
+                  {daoData.dao.proposals.length > 0 && (
+                    <div className="rounded-lg bg-bg-secondary border border-fg-primary/10 overflow-hidden">
+                      <div className="p-4 border-b border-fg-primary/10">
+                        <div className="flex items-center justify-between">
+                          <Text text="Proposals" as="h3" className="text-base font-medium" />
+                          <Text text={`${daoData.dao.proposals.length} total`} as="span" className="text-xs text-fg-primary/60" />
+                        </div>
+                      </div>
+                      
+                      <div className="p-4">
+                        {/* Simple Tabs */}
+                        <div className="flex mb-4 bg-bg-primary/10 rounded p-1">
+                          <button
+                            onClick={() => setActiveTab('current')}
+                            className={twMerge(
+                              "flex-1 py-2 px-3 text-sm font-medium rounded transition-colors",
+                              activeTab === 'current'
+                                ? "bg-bg-primary text-fg-primary"
+                                : "text-fg-primary/60 hover:text-fg-primary"
+                            )}
+                          >
+                            Active
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('past')}
+                            className={twMerge(
+                              "flex-1 py-2 px-3 text-sm font-medium rounded transition-colors",
+                              activeTab === 'past'
+                                ? "bg-bg-primary text-fg-primary"
+                                : "text-fg-primary/60 hover:text-fg-primary"
+                            )}
+                          >
+                            History
+                          </button>
+                        </div>
+
+                        {/* Tab Content */}
+                        <div className="space-y-3">
+                          {activeTab === 'current' ? (
+                            <>
+                              {/* Current proposals - with voting functionality */}
+                              {daoData.dao.proposals
+                                .filter(proposal => {
+                                  const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                    ? Object.keys(proposal.state)[0]
+                                    : proposal.state;
+                                  return ['voting', 'signingOff', 'executing'].includes(stateKey);
+                                })
+                                .slice(0, 5)
+                                .map((proposal) => {
+                                  const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                    ? Object.keys(proposal.state)[0]
+                                    : proposal.state;
+                                  const isVotingOpen = stateKey === 'voting';
+
+                                  return (
+                                    <div key={proposal.address} className="border border-fg-primary/10 rounded-lg p-4 bg-bg-primary/5 space-y-3">
+                                      {/* Proposal Header */}
+                                      <div className="flex justify-between items-start">
+                                        <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium text-fg-primary text-sm" />
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${isVotingOpen
+                                          ? 'bg-green-600/30 text-green-300 border-green-600/50'
+                                          : 'bg-blue-600/30 text-blue-300 border-blue-600/50'
+                                          }`}>
+                                          {stateKey === 'voting' ? 'Voting Open' :
+                                            stateKey === 'signingOff' ? 'Signing' :
+                                              stateKey === 'executing' ? 'Executing' : 'Active'}
+                                        </span>
+                                      </div>
+
+                                      {/* Description */}
+                                      {proposal.description && (
+                                        <Text text={proposal.description.slice(0, 150) + (proposal.description.length > 150 ? '...' : '')} as="p" className="text-xs text-fg-primary/60" />
+                                      )}
+
+                                      {/* Vote Stats */}
+                                      <div className="grid grid-cols-2 gap-2 text-xs">
+                                        <div className="bg-green-600/20 border border-green-600/30 rounded p-2 text-center">
+                                          <Text text="Yes" as="p" className="text-green-300 font-medium mb-1" />
+                                          <Text text={(() => {
+                                            const yesVotes = proposal.options[0]?.voteWeight || "0";
+                                            const votes = parseInt(yesVotes) / 1000000000;
+                                            return votes >= 1000000 ? `${(votes / 1000000).toFixed(1)}M` :
+                                              votes >= 1000 ? `${(votes / 1000).toFixed(1)}K` :
+                                                votes.toFixed(1);
+                                          })()} as="p" className="text-white font-semibold" />
+                                        </div>
+                                        <div className="bg-orange-600/20 border border-orange-600/30 rounded p-2 text-center">
+                                          <Text text="No" as="p" className="text-red-300 font-medium mb-1" />
+                                          <Text text={(() => {
+                                            const noVotes = proposal.denyVoteWeight || "0";
+                                            const votes = parseInt(noVotes) / 1000000000;
+                                            return votes >= 1000000 ? `${(votes / 1000000).toFixed(1)}M` :
+                                              votes >= 1000 ? `${(votes / 1000).toFixed(1)}K` :
+                                                votes.toFixed(1);
+                                          })()} as="p" className="text-white font-semibold" />
+                                        </div>
+                                      </div>
+
+                                      {/* Voting Buttons - Only show for voting state */}
+                                      {isVotingOpen && (
+                                        <ProposalVoting
+                                          proposal={proposal}
+                                          dao={daoData.dao}
+                                          className="mt-3"
+                                        />
+                                      )}
+                                    </div>
+                                  );
+                                })}
+
+                              {daoData.dao.proposals.filter(proposal => {
+                                const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                  ? Object.keys(proposal.state)[0]
+                                  : proposal.state;
+                                return ['voting', 'signingOff', 'executing'].includes(stateKey);
+                              }).length === 0 && (
+                                <div className="text-center py-6 bg-bg-primary/5 rounded">
+                                  <Text text="No active proposals" as="p" className="text-fg-primary/60" />
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {/* Past proposals - simplified view */}
+                              {daoData.dao.proposals
+                                .filter(proposal => {
+                                  const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                    ? Object.keys(proposal.state)[0]
+                                    : proposal.state;
+                                  return ['succeeded', 'completed', 'defeated', 'cancelled', 'vetoed'].includes(stateKey);
+                                })
+                                .slice(0, 5)
+                                .map((proposal) => (
+                                  <div key={proposal.address} className="border border-fg-primary/10 rounded p-3 bg-bg-primary/5">
+                                    <div className="flex justify-between items-start mb-2">
+                                      <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium text-fg-primary text-sm" />
+                                      {(() => {
+                                        const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                          ? Object.keys(proposal.state)[0]
+                                          : proposal.state;
+                                        return (
+                                          <span className={`px-2 py-1 rounded text-xs ${stateKey === 'succeeded' || stateKey === 'completed' ? 'bg-green-500/20 text-green-400' :
+                                            stateKey === 'defeated' ? 'bg-orange-500/20 text-orange-400' :
+                                              'bg-fg-primary/20 text-fg-primary/60'
+                                          }`}>
+                                            {stateKey === 'succeeded' ? 'Passed' :
+                                              stateKey === 'completed' ? 'Completed' :
+                                                stateKey === 'defeated' ? 'Failed' :
+                                                  stateKey === 'cancelled' ? 'Cancelled' :
+                                                    stateKey === 'vetoed' ? 'Vetoed' : 'Closed'}
+                                          </span>
+                                        );
+                                      })()}
+                                    </div>
+                                    {proposal.description && (
+                                      <Text text={proposal.description.slice(0, 100) + (proposal.description.length > 100 ? '...' : '')} as="p" className="text-xs text-fg-primary/60" />
+                                    )}
+                                  </div>
+                                ))}
+
+                              {daoData.dao.proposals.filter(proposal => {
+                                const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                  ? Object.keys(proposal.state)[0]
+                                  : proposal.state;
+                                return ['succeeded', 'completed', 'defeated', 'cancelled', 'vetoed'].includes(stateKey);
+                              }).length === 0 && (
+                                  <div className="text-center py-6 bg-bg-primary/5 rounded">
+                                    <Text text="No historical proposals" as="p" className="text-fg-primary/60" />
+                                  </div>
+                                )}
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                {/* DAO Proposals */}
-                {daoData.dao.proposals.length > 0 && (
-                  <div className="rounded-lg bg-bg-secondary p-4 border border-fg-primary/10">
-                    <div className="flex items-center justify-between mb-4">
-                      <Text text="Proposals" as="h3" className="text-base font-medium" />
-                      <Text text={`${daoData.dao.proposals.length} total`} as="span" className="text-xs text-fg-primary/60" />
-                    </div>
-
-                    {/* Simple Tabs */}
-                    <div className="flex mb-4 bg-bg-primary/10 rounded p-1">
-                      <button
-                        onClick={() => setActiveTab('current')}
-                        className={twMerge(
-                          "flex-1 py-2 px-3 text-sm font-medium rounded transition-colors",
-                          activeTab === 'current'
-                            ? "bg-bg-primary text-fg-primary"
-                            : "text-fg-primary/60 hover:text-fg-primary"
-                        )}
-                      >
-                        Active
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('past')}
-                        className={twMerge(
-                          "flex-1 py-2 px-3 text-sm font-medium rounded transition-colors",
-                          activeTab === 'past'
-                            ? "bg-bg-primary text-fg-primary"
-                            : "text-fg-primary/60 hover:text-fg-primary"
-                        )}
-                      >
-                        History
-                      </button>
-                    </div>
-
-                    {/* Tab Content */}
-                    <div className="space-y-3">
-                      {activeTab === 'current' ? (
-                        <>
-                          {/* Current proposals - simplified view */}
-                          {daoData.dao.proposals
-                            .filter(proposal => {
-                              const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                                ? Object.keys(proposal.state)[0]
-                                : proposal.state;
-                              return ['voting', 'signingOff', 'executing'].includes(stateKey);
-                            })
-                            .slice(0, 5)
-                            .map((proposal) => (
-                              <div key={proposal.address} className="border border-fg-primary/10 rounded p-3 bg-bg-primary/5">
-                                <div className="flex justify-between items-start mb-2">
-                                  <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium text-fg-primary text-sm" />
-                                  {(() => {
-                                    const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                                      ? Object.keys(proposal.state)[0]
-                                      : proposal.state;
-                                    return (
-                                      <span className="px-2 py-1 rounded text-xs bg-brand-primary/20 text-brand-primary">
-                                        {stateKey === 'voting' ? 'Voting' : 
-                                         stateKey === 'signingOff' ? 'Signing' : 
-                                         stateKey === 'executing' ? 'Executing' : 'Active'}
-                                      </span>
-                                    );
-                                  })()}
-                                </div>
-                                {proposal.description && (
-                                  <Text text={proposal.description.slice(0, 100) + (proposal.description.length > 100 ? '...' : '')} as="p" className="text-xs text-fg-primary/60" />
-                                )}
-                              </div>
-                            ))}
-
-                          {daoData.dao.proposals.filter(proposal => {
-                            const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                              ? Object.keys(proposal.state)[0]
-                              : proposal.state;
-                            return ['voting', 'signingOff', 'executing'].includes(stateKey);
-                          }).length === 0 && (
-                              <div className="text-center py-6 bg-bg-primary/5 rounded">
-                                <Text text="No active proposals" as="p" className="text-fg-primary/60" />
-                              </div>
-                            )}
-                        </>
-                      ) : (
-                        <>
-                          {/* Past proposals - simplified view */}
-                          {daoData.dao.proposals
-                            .filter(proposal => {
-                              const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                                ? Object.keys(proposal.state)[0]
-                                : proposal.state;
-                              return ['succeeded', 'completed', 'defeated', 'cancelled', 'vetoed'].includes(stateKey);
-                            })
-                            .slice(0, 5)
-                            .map((proposal) => (
-                              <div key={proposal.address} className="border border-fg-primary/10 rounded p-3 bg-bg-primary/5">
-                                <div className="flex justify-between items-start mb-2">
-                                  <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium text-fg-primary text-sm" />
-                                  {(() => {
-                                    const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                                      ? Object.keys(proposal.state)[0]
-                                      : proposal.state;
-                                    return (
-                                      <span className={`px-2 py-1 rounded text-xs ${
-                                        stateKey === 'succeeded' || stateKey === 'completed' ? 'bg-green-500/20 text-green-400' :
-                                        stateKey === 'defeated' ? 'bg-red-500/20 text-red-400' :
-                                        'bg-fg-primary/20 text-fg-primary/60'
-                                      }`}>
-                                        {stateKey === 'succeeded' ? 'Passed' : 
-                                         stateKey === 'completed' ? 'Completed' : 
-                                         stateKey === 'defeated' ? 'Failed' : 
-                                         stateKey === 'cancelled' ? 'Cancelled' : 
-                                         stateKey === 'vetoed' ? 'Vetoed' : 'Closed'}
-                                      </span>
-                                    );
-                                  })()}
-                                </div>
-                                {proposal.description && (
-                                  <Text text={proposal.description.slice(0, 100) + (proposal.description.length > 100 ? '...' : '')} as="p" className="text-xs text-fg-primary/60" />
-                                )}
-                              </div>
-                            ))}
-
-                          {daoData.dao.proposals.filter(proposal => {
-                            const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                              ? Object.keys(proposal.state)[0]
-                              : proposal.state;
-                            return ['succeeded', 'completed', 'defeated', 'cancelled', 'vetoed'].includes(stateKey);
-                          }).length === 0 && (
-                              <div className="text-center py-6 bg-bg-primary/5 rounded">
-                                <Text text="No historical proposals" as="p" className="text-fg-primary/60" />
-                              </div>
-                            )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
             )}
           </div>

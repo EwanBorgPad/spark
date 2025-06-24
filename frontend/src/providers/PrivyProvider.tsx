@@ -49,7 +49,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                     "solana": {
                         "connectors": toSolanaWalletConnectors()
                     }
-                  }
+                },
+                "solanaClusters": [
+                    { name: 'mainnet-beta', rpcUrl: 'https://api.mainnet-beta.solana.com' },
+                    { name: 'devnet', rpcUrl: 'https://api.devnet.solana.com' },
+                ]
             }}
         >
             {children}

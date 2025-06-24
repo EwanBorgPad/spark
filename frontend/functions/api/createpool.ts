@@ -32,9 +32,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   try {
 
     // authorize request
-    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
-      return jsonResponse(null, 401)
-    }
+    // if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
+    //   return jsonResponse(null, 401)
+    // }
 
     const { tokenName, tokenSymbol, imageUrl, tokenDescription } = await request.json() as CreatePoolRequest;
 
@@ -45,7 +45,6 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         headers: { 'Content-Type': 'application/json' },
       });
     }
-
 
     const keyPair = Keypair.generate();
     const mint = keyPair.publicKey.toBase58();
@@ -68,19 +67,16 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     }
 
     const privateKeyString = ctx.env.PRIVATE_KEY;
-
     if (!privateKeyString || typeof privateKeyString !== 'string') {
       throw new Error('Invalid private key format');
     }
 
     // Convert base58 string to Uint8Array
     const privateKeyUint8Array = bs58.decode(privateKeyString);
-
     // Initialize your wallet
     const wallet = Keypair.fromSecretKey(privateKeyUint8Array);
-
     const userWallet = wallet.publicKey.toBase58()
-
+    console.log("userWallet:", userWallet);
     // Create pool transaction
     const poolTx = await createPoolTransaction({
       mint,
@@ -89,6 +85,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       metadataUrl,
       userWallet,
     }, ctx);
+
+    console.log("poolTx:", poolTx);
 
     // Sign the transaction with the private key
     // try {
@@ -108,14 +106,16 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
     poolTx.sign(wallet, keyPair);
     // Send transaction
     const connection = new Connection(ctx.env.RPC_URL, 'confirmed');
+    console.log("connection:", connection);
     const txSignature = await connection.sendRawTransaction(poolTx.serialize(), { skipPreflight: false, preflightCommitment: 'confirmed' });
-
+    console.log("txSignature:", txSignature);
 
     if (txSignature) {
       await db
         .prepare("INSERT INTO tokens (mint, name, isGraduated, imageUrl, dao) VALUES (?1, ?2, ?3, ?4, ?5)")
         .bind(mint, tokenName, false, imageUrl, "")
         .run();
+      console.log("token inserted");
     }
 
     return new Response(JSON.stringify({
@@ -219,19 +219,32 @@ async function createPoolTransaction({ mint, tokenName, tokenSymbol, metadataUrl
 
   const RPC_URL = ctx.env.RPC_URL as string;
   const POOL_CONFIG_KEY = ctx.env.POOL_CONFIG_KEY as string;
-  // console.log("RPC_URL:", RPC_URL);
-  // console.log("POOL_CONFIG_KEY:", POOL_CONFIG_KEY);
-  // console.log("mint:", mint);
-  // console.log("userWallet:", userWallet);
-
+  console.log("RPC_URL:", RPC_URL);
+  console.log("POOL_CONFIG_KEY:", POOL_CONFIG_KEY);
+  
   // Validate public keys
   if (!userWallet || !PublicKey.isOnCurve(userWallet)) {
     throw new Error('Invalid user wallet address');
   }
 
   const connection = new Connection(RPC_URL, 'confirmed');
+  
+  // Debug: Check if pool config account exists
+  try {
+    const configPubkey = new PublicKey(POOL_CONFIG_KEY);
+    const accountInfo = await connection.getAccountInfo(configPubkey);
+    console.log("Pool config account exists:", !!accountInfo);
+    if (!accountInfo) {
+      throw new Error(`Pool config account ${POOL_CONFIG_KEY} does not exist on the blockchain. Please initialize it first.`);
+    }
+    console.log("Pool config account data length:", accountInfo.data.length);
+  } catch (error) {
+    console.error("Error checking pool config account:", error);
+    throw error;
+  }
+  
   const client = new DynamicBondingCurveClient(connection, 'confirmed');
-
+  console.log("client:", client);
   const poolTx = await client.pool.createPool({
     config: new PublicKey(POOL_CONFIG_KEY),
     baseMint: new PublicKey(mint),
@@ -241,10 +254,10 @@ async function createPoolTransaction({ mint, tokenName, tokenSymbol, metadataUrl
     payer: new PublicKey(userWallet),
     poolCreator: new PublicKey(userWallet),
   });
-
+  console.log("poolTx:", poolTx);
   const { blockhash } = await connection.getLatestBlockhash();
   poolTx.feePayer = new PublicKey(userWallet);
   poolTx.recentBlockhash = blockhash;
-
+  console.log("poolTx:", poolTx);
   return poolTx;
 }
