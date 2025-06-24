@@ -1026,193 +1026,200 @@ const Project = () => {
                   </a>
                 </div>
 
-                {/* Governance Status - Clean Design */}
-                <div className="rounded-lg bg-bg-secondary border border-fg-primary/10 overflow-hidden">
-                  <div className="p-4 border-b border-fg-primary/10">
-                    <Text text="Governance Status" as="h3" className="text-base font-medium" />
-                  </div>
-                  <div className="p-4">
-                    <GovernanceStatus
-                      dao={daoData.dao}
-                      onStatusUpdate={handleGovernanceStatusUpdate}
-                    />
-                  </div>
-                </div>
-
-                {/* DAO Proposals */}
-                {daoData.dao.proposals.length > 0 && (
-                  <div className="rounded-lg bg-bg-secondary p-4 border border-fg-primary/10">
-                    <div className="flex items-center justify-between mb-4">
-                      <Text text="Proposals" as="h3" className="text-base font-medium" />
-                      <Text text={`${daoData.dao.proposals.length} total`} as="span" className="text-xs text-fg-primary/60" />
+                {/* Two Column Layout for Desktop */}
+                <div className={`${isDesktop ? 'grid grid-cols-1 lg:grid-cols-2 gap-6' : 'space-y-4'}`}>
+                  {/* Left Column - Governance Status */}
+                  <div className="rounded-lg bg-bg-secondary border border-fg-primary/10 overflow-hidden">
+                    <div className="p-4 border-b border-fg-primary/10">
+                      <Text text="Governance Status" as="h3" className="text-base font-medium" />
                     </div>
-
-                    {/* Simple Tabs */}
-                    <div className="flex mb-4 bg-bg-primary/10 rounded p-1">
-                      <button
-                        onClick={() => setActiveTab('current')}
-                        className={twMerge(
-                          "flex-1 py-2 px-3 text-sm font-medium rounded transition-colors",
-                          activeTab === 'current'
-                            ? "bg-bg-primary text-fg-primary"
-                            : "text-fg-primary/60 hover:text-fg-primary"
-                        )}
-                      >
-                        Active
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('past')}
-                        className={twMerge(
-                          "flex-1 py-2 px-3 text-sm font-medium rounded transition-colors",
-                          activeTab === 'past'
-                            ? "bg-bg-primary text-fg-primary"
-                            : "text-fg-primary/60 hover:text-fg-primary"
-                        )}
-                      >
-                        History
-                      </button>
+                    <div className="p-4">
+                      <GovernanceStatus
+                        dao={daoData.dao}
+                        onStatusUpdate={handleGovernanceStatusUpdate}
+                      />
                     </div>
+                  </div>
 
-                    {/* Tab Content */}
-                    <div className="space-y-3">
-                      {activeTab === 'current' ? (
-                        <>
-                          {/* Current proposals - with voting functionality */}
-                          {daoData.dao.proposals
-                            .filter(proposal => {
-                              const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                                ? Object.keys(proposal.state)[0]
-                                : proposal.state;
-                              return ['voting', 'signingOff', 'executing'].includes(stateKey);
-                            })
-                            .slice(0, 5)
-                            .map((proposal) => {
-                              const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                                ? Object.keys(proposal.state)[0]
-                                : proposal.state;
-                              const isVotingOpen = stateKey === 'voting';
-
-                              return (
-                                <div key={proposal.address} className="border border-fg-primary/10 rounded-lg p-4 bg-bg-primary/5 space-y-3">
-                                  {/* Proposal Header */}
-                                  <div className="flex justify-between items-start">
-                                    <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium text-fg-primary text-sm" />
-                                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${isVotingOpen
-                                      ? 'bg-green-600/30 text-green-300 border-green-600/50'
-                                      : 'bg-blue-600/30 text-blue-300 border-blue-600/50'
-                                      }`}>
-                                      {stateKey === 'voting' ? 'Voting Open' :
-                                        stateKey === 'signingOff' ? 'Signing' :
-                                          stateKey === 'executing' ? 'Executing' : 'Active'}
-                                    </span>
-                                  </div>
-
-                                  {/* Description */}
-                                  {proposal.description && (
-                                    <Text text={proposal.description.slice(0, 150) + (proposal.description.length > 150 ? '...' : '')} as="p" className="text-xs text-fg-primary/60" />
-                                  )}
-
-                                  {/* Vote Stats */}
-                                  <div className="grid grid-cols-2 gap-2 text-xs">
-                                    <div className="bg-green-600/20 border border-green-600/30 rounded p-2 text-center">
-                                      <Text text="Yes" as="p" className="text-green-300 font-medium mb-1" />
-                                      <Text text={(() => {
-                                        const yesVotes = proposal.options[0]?.voteWeight || "0";
-                                        const votes = parseInt(yesVotes) / 1000000000;
-                                        return votes >= 1000000 ? `${(votes / 1000000).toFixed(1)}M` :
-                                          votes >= 1000 ? `${(votes / 1000).toFixed(1)}K` :
-                                            votes.toFixed(1);
-                                      })()} as="p" className="text-white font-semibold" />
-                                    </div>
-                                    <div className="bg-orange-600/20 border border-orange-600/30 rounded p-2 text-center">
-                                      <Text text="No" as="p" className="text-red-300 font-medium mb-1" />
-                                      <Text text={(() => {
-                                        const noVotes = proposal.denyVoteWeight || "0";
-                                        const votes = parseInt(noVotes) / 1000000000;
-                                        return votes >= 1000000 ? `${(votes / 1000000).toFixed(1)}M` :
-                                          votes >= 1000 ? `${(votes / 1000).toFixed(1)}K` :
-                                            votes.toFixed(1);
-                                      })()} as="p" className="text-white font-semibold" />
-                                    </div>
-                                  </div>
-
-                                  {/* Voting Buttons - Only show for voting state */}
-                                  {isVotingOpen && (
-                                    <ProposalVoting
-                                      proposal={proposal}
-                                      dao={daoData.dao}
-                                      className="mt-3"
-                                    />
-                                  )}
-                                </div>
-                              );
-                            })}
-
-                          {daoData.dao.proposals.filter(proposal => {
-                            const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                              ? Object.keys(proposal.state)[0]
-                              : proposal.state;
-                            return ['voting', 'signingOff', 'executing'].includes(stateKey);
-                          }).length === 0 && (
-                            <div className="text-center py-6 bg-bg-primary/5 rounded">
-                              <Text text="No active proposals" as="p" className="text-fg-primary/60" />
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          {/* Past proposals - simplified view */}
-                          {daoData.dao.proposals
-                            .filter(proposal => {
-                              const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                                ? Object.keys(proposal.state)[0]
-                                : proposal.state;
-                              return ['succeeded', 'completed', 'defeated', 'cancelled', 'vetoed'].includes(stateKey);
-                            })
-                            .slice(0, 5)
-                            .map((proposal) => (
-                              <div key={proposal.address} className="border border-fg-primary/10 rounded p-3 bg-bg-primary/5">
-                                <div className="flex justify-between items-start mb-2">
-                                  <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium text-fg-primary text-sm" />
-                                  {(() => {
-                                    const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                                      ? Object.keys(proposal.state)[0]
-                                      : proposal.state;
-                                    return (
-                                      <span className={`px-2 py-1 rounded text-xs ${stateKey === 'succeeded' || stateKey === 'completed' ? 'bg-green-500/20 text-green-400' :
-                                        stateKey === 'defeated' ? 'bg-orange-500/20 text-orange-400' :
-                                          'bg-fg-primary/20 text-fg-primary/60'
-                                      }`}>
-                                        {stateKey === 'succeeded' ? 'Passed' :
-                                          stateKey === 'completed' ? 'Completed' :
-                                            stateKey === 'defeated' ? 'Failed' :
-                                              stateKey === 'cancelled' ? 'Cancelled' :
-                                                stateKey === 'vetoed' ? 'Vetoed' : 'Closed'}
-                                      </span>
-                                    );
-                                  })()}
-                                </div>
-                                {proposal.description && (
-                                  <Text text={proposal.description.slice(0, 100) + (proposal.description.length > 100 ? '...' : '')} as="p" className="text-xs text-fg-primary/60" />
-                                )}
-                              </div>
-                            ))}
-
-                          {daoData.dao.proposals.filter(proposal => {
-                            const stateKey = typeof proposal.state === 'object' && proposal.state !== null
-                              ? Object.keys(proposal.state)[0]
-                              : proposal.state;
-                            return ['succeeded', 'completed', 'defeated', 'cancelled', 'vetoed'].includes(stateKey);
-                          }).length === 0 && (
-                              <div className="text-center py-6 bg-bg-primary/5 rounded">
-                                <Text text="No historical proposals" as="p" className="text-fg-primary/60" />
-                              </div>
+                  {/* Right Column - DAO Proposals */}
+                  {daoData.dao.proposals.length > 0 && (
+                    <div className="rounded-lg bg-bg-secondary border border-fg-primary/10 overflow-hidden">
+                      <div className="p-4 border-b border-fg-primary/10">
+                        <div className="flex items-center justify-between">
+                          <Text text="Proposals" as="h3" className="text-base font-medium" />
+                          <Text text={`${daoData.dao.proposals.length} total`} as="span" className="text-xs text-fg-primary/60" />
+                        </div>
+                      </div>
+                      
+                      <div className="p-4">
+                        {/* Simple Tabs */}
+                        <div className="flex mb-4 bg-bg-primary/10 rounded p-1">
+                          <button
+                            onClick={() => setActiveTab('current')}
+                            className={twMerge(
+                              "flex-1 py-2 px-3 text-sm font-medium rounded transition-colors",
+                              activeTab === 'current'
+                                ? "bg-bg-primary text-fg-primary"
+                                : "text-fg-primary/60 hover:text-fg-primary"
                             )}
-                        </>
-                      )}
+                          >
+                            Active
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('past')}
+                            className={twMerge(
+                              "flex-1 py-2 px-3 text-sm font-medium rounded transition-colors",
+                              activeTab === 'past'
+                                ? "bg-bg-primary text-fg-primary"
+                                : "text-fg-primary/60 hover:text-fg-primary"
+                            )}
+                          >
+                            History
+                          </button>
+                        </div>
+
+                        {/* Tab Content */}
+                        <div className="space-y-3">
+                          {activeTab === 'current' ? (
+                            <>
+                              {/* Current proposals - with voting functionality */}
+                              {daoData.dao.proposals
+                                .filter(proposal => {
+                                  const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                    ? Object.keys(proposal.state)[0]
+                                    : proposal.state;
+                                  return ['voting', 'signingOff', 'executing'].includes(stateKey);
+                                })
+                                .slice(0, 5)
+                                .map((proposal) => {
+                                  const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                    ? Object.keys(proposal.state)[0]
+                                    : proposal.state;
+                                  const isVotingOpen = stateKey === 'voting';
+
+                                  return (
+                                    <div key={proposal.address} className="border border-fg-primary/10 rounded-lg p-4 bg-bg-primary/5 space-y-3">
+                                      {/* Proposal Header */}
+                                      <div className="flex justify-between items-start">
+                                        <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium text-fg-primary text-sm" />
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${isVotingOpen
+                                          ? 'bg-green-600/30 text-green-300 border-green-600/50'
+                                          : 'bg-blue-600/30 text-blue-300 border-blue-600/50'
+                                          }`}>
+                                          {stateKey === 'voting' ? 'Voting Open' :
+                                            stateKey === 'signingOff' ? 'Signing' :
+                                              stateKey === 'executing' ? 'Executing' : 'Active'}
+                                        </span>
+                                      </div>
+
+                                      {/* Description */}
+                                      {proposal.description && (
+                                        <Text text={proposal.description.slice(0, 150) + (proposal.description.length > 150 ? '...' : '')} as="p" className="text-xs text-fg-primary/60" />
+                                      )}
+
+                                      {/* Vote Stats */}
+                                      <div className="grid grid-cols-2 gap-2 text-xs">
+                                        <div className="bg-green-600/20 border border-green-600/30 rounded p-2 text-center">
+                                          <Text text="Yes" as="p" className="text-green-300 font-medium mb-1" />
+                                          <Text text={(() => {
+                                            const yesVotes = proposal.options[0]?.voteWeight || "0";
+                                            const votes = parseInt(yesVotes) / 1000000000;
+                                            return votes >= 1000000 ? `${(votes / 1000000).toFixed(1)}M` :
+                                              votes >= 1000 ? `${(votes / 1000).toFixed(1)}K` :
+                                                votes.toFixed(1);
+                                          })()} as="p" className="text-white font-semibold" />
+                                        </div>
+                                        <div className="bg-orange-600/20 border border-orange-600/30 rounded p-2 text-center">
+                                          <Text text="No" as="p" className="text-red-300 font-medium mb-1" />
+                                          <Text text={(() => {
+                                            const noVotes = proposal.denyVoteWeight || "0";
+                                            const votes = parseInt(noVotes) / 1000000000;
+                                            return votes >= 1000000 ? `${(votes / 1000000).toFixed(1)}M` :
+                                              votes >= 1000 ? `${(votes / 1000).toFixed(1)}K` :
+                                                votes.toFixed(1);
+                                          })()} as="p" className="text-white font-semibold" />
+                                        </div>
+                                      </div>
+
+                                      {/* Voting Buttons - Only show for voting state */}
+                                      {isVotingOpen && (
+                                        <ProposalVoting
+                                          proposal={proposal}
+                                          dao={daoData.dao}
+                                          className="mt-3"
+                                        />
+                                      )}
+                                    </div>
+                                  );
+                                })}
+
+                              {daoData.dao.proposals.filter(proposal => {
+                                const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                  ? Object.keys(proposal.state)[0]
+                                  : proposal.state;
+                                return ['voting', 'signingOff', 'executing'].includes(stateKey);
+                              }).length === 0 && (
+                                <div className="text-center py-6 bg-bg-primary/5 rounded">
+                                  <Text text="No active proposals" as="p" className="text-fg-primary/60" />
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {/* Past proposals - simplified view */}
+                              {daoData.dao.proposals
+                                .filter(proposal => {
+                                  const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                    ? Object.keys(proposal.state)[0]
+                                    : proposal.state;
+                                  return ['succeeded', 'completed', 'defeated', 'cancelled', 'vetoed'].includes(stateKey);
+                                })
+                                .slice(0, 5)
+                                .map((proposal) => (
+                                  <div key={proposal.address} className="border border-fg-primary/10 rounded p-3 bg-bg-primary/5">
+                                    <div className="flex justify-between items-start mb-2">
+                                      <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium text-fg-primary text-sm" />
+                                      {(() => {
+                                        const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                          ? Object.keys(proposal.state)[0]
+                                          : proposal.state;
+                                        return (
+                                          <span className={`px-2 py-1 rounded text-xs ${stateKey === 'succeeded' || stateKey === 'completed' ? 'bg-green-500/20 text-green-400' :
+                                            stateKey === 'defeated' ? 'bg-orange-500/20 text-orange-400' :
+                                              'bg-fg-primary/20 text-fg-primary/60'
+                                          }`}>
+                                            {stateKey === 'succeeded' ? 'Passed' :
+                                              stateKey === 'completed' ? 'Completed' :
+                                                stateKey === 'defeated' ? 'Failed' :
+                                                  stateKey === 'cancelled' ? 'Cancelled' :
+                                                    stateKey === 'vetoed' ? 'Vetoed' : 'Closed'}
+                                          </span>
+                                        );
+                                      })()}
+                                    </div>
+                                    {proposal.description && (
+                                      <Text text={proposal.description.slice(0, 100) + (proposal.description.length > 100 ? '...' : '')} as="p" className="text-xs text-fg-primary/60" />
+                                    )}
+                                  </div>
+                                ))}
+
+                              {daoData.dao.proposals.filter(proposal => {
+                                const stateKey = typeof proposal.state === 'object' && proposal.state !== null
+                                  ? Object.keys(proposal.state)[0]
+                                  : proposal.state;
+                                return ['succeeded', 'completed', 'defeated', 'cancelled', 'vetoed'].includes(stateKey);
+                              }).length === 0 && (
+                                  <div className="text-center py-6 bg-bg-primary/5 rounded">
+                                    <Text text="No historical proposals" as="p" className="text-fg-primary/60" />
+                                  </div>
+                                )}
+                            </>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             )}
           </div>
