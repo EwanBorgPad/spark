@@ -7,6 +7,7 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { getAssociatedTokenAddress } from '@solana/spl-token';
 import GovernanceService from '../../services/governanceService';
 import BN from 'bn.js';
+import { getCorrectWalletAddress } from '@/utils/walletUtils';
 
 interface GovernanceStatusProps {
   dao: DaoModel;
@@ -23,22 +24,34 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
   const [userTokenBalance, setUserTokenBalance] = useState(0);
   const [votingPower, setVotingPower] = useState(0);
 
-  const RPC_URL = import.meta.env.VITE_RPC_URL || "https://haleigh-sa5aoh-fast-mainnet.helius-rpc.com";
+  const RPC_URL = import.meta.env.VITE_RPC_URL;
   const connection = new Connection(RPC_URL);
   const governanceService = new GovernanceService(RPC_URL);
 
-  // Get Solana wallet from Privy
+  // Get Solana wallet from Privy using the correct wallet selection logic
   const getSolanaWallet = () => {
-    return wallets[0]; // Get the first (and typically only) Solana wallet
+    const correctWalletAddress = getCorrectWalletAddress(user, wallets);
+    if (correctWalletAddress) {
+      const correctWallet = wallets.find(w => w.address === correctWalletAddress);
+      if (correctWallet) {
+        console.log("Using correct wallet:", correctWallet.address, correctWallet.walletClientType);
+        return correctWallet;
+      }
+    }
+    return null;
   };
 
   // Check user's token balance and voting power
   useEffect(() => {
     const checkUserStatus = async () => {
-      if (!authenticated || !user?.wallet?.address) return;
+      if (!authenticated) return;
+
+      // Get the correct wallet address
+      const correctWalletAddress = getCorrectWalletAddress(user, wallets);
+      if (!correctWalletAddress) return;
 
       try {
-        const userPubkey = new PublicKey(user.wallet.address);
+        const userPubkey = new PublicKey(correctWalletAddress);
         const communityMint = new PublicKey(dao.communityMint);
 
         // Get user's token account balance
@@ -74,14 +87,21 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
   }, [authenticated, user, dao.communityMint, dao.address]);
 
   const handleDepositTokens = async () => {
-    if (!authenticated || !user?.wallet?.address) {
+    if (!authenticated) {
       alert("Please connect your wallet first");
+      return;
+    }
+
+    // Get the correct wallet
+    const solanaWallet = getSolanaWallet();
+    if (!solanaWallet) {
+      alert("No Solana wallet found");
       return;
     }
 
     setIsDepositing(true);
     try {
-      const userPubkey = new PublicKey(user.wallet.address);
+      const userPubkey = new PublicKey(solanaWallet.address);
       const communityMint = new PublicKey(dao.communityMint);
       const realmPubkey = new PublicKey(dao.address);
       const amount = new BN(depositAmount);
@@ -123,13 +143,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
 
       console.log("Signing deposit transaction with Privy...");
       
-      // Get Privy Solana wallet
-      const solanaWallet = getSolanaWallet();
-      if (!solanaWallet) {
-        throw new Error("No Solana wallet found");
-      }
-
-      // Sign transaction using Privy
+      // Sign transaction using Privy (wallet already obtained above)
       const signedTransaction = await solanaWallet.signTransaction(transaction);
       
       // Send transaction
@@ -158,14 +172,21 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
   };
 
   const handleWithdrawTokens = async () => {
-    if (!authenticated || !user?.wallet?.address) {
+    if (!authenticated) {
       alert("Please connect your wallet first");
+      return;
+    }
+
+    // Get the correct wallet
+    const solanaWallet = getSolanaWallet();
+    if (!solanaWallet) {
+      alert("No Solana wallet found");
       return;
     }
 
     setIsWithdrawing(true);
     try {
-      const userPubkey = new PublicKey(user.wallet.address);
+      const userPubkey = new PublicKey(solanaWallet.address);
       const communityMint = new PublicKey(dao.communityMint);
       const realmPubkey = new PublicKey(dao.address);
 
@@ -190,13 +211,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
 
       console.log("Signing withdraw transaction with Privy...");
       
-      // Get Privy Solana wallet
-      const solanaWallet = getSolanaWallet();
-      if (!solanaWallet) {
-        throw new Error("No Solana wallet found");
-      }
-
-      // Sign transaction using Privy
+      // Sign transaction using Privy (wallet already obtained above)
       const signedTransaction = await solanaWallet.signTransaction(transaction);
       
       // Send transaction
@@ -255,7 +270,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
                   type="number"
                   value={(parseInt(depositAmount) / 1000000000).toString()}
                   onChange={(e) => setDepositAmount((parseFloat(e.target.value) * 1000000000).toString())}
-                  className="flex-1 px-3 py-2 bg-bg-primary border border-fg-primary/20 rounded text-fg-primary text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="flex-1 px-3 py-2 bg-bg-primary border border-fg-primary/20 rounded text-black text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   placeholder="1.0"
                   min="0"
                   step="0.1"

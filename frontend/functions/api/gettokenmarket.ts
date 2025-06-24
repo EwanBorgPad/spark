@@ -52,19 +52,19 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     };
 
     try {
-      // First, try to get basic token info from Jupiter
-      const jupiterResponse = await fetch(`https://price.jup.ag/v4/price?ids=${tokenAddress}`);
+      // First, try to get basic token info from Jupiter Price API V2
+      const jupiterResponse = await fetch(`https://lite-api.jup.ag/price/v2?ids=${tokenAddress}`);
       if (jupiterResponse.ok) {
         const jupiterData = await jupiterResponse.json() as any;
         const tokenData = jupiterData.data?.[tokenAddress];
         
-        if (tokenData) {
-          tokenMarketData.price = tokenData.price || 0;
-          console.log(`Jupiter price for ${tokenAddress}: $${tokenData.price}`);
+        if (tokenData && tokenData.price) {
+          tokenMarketData.price = parseFloat(tokenData.price);
+          console.log(`Jupiter Price API V2 for ${tokenAddress}: $${tokenData.price}`);
         }
       }
     } catch (error) {
-      console.warn("Failed to fetch from Jupiter API:", error);
+      console.warn("Failed to fetch from Jupiter Price API V2:", error);
     }
 
     try {

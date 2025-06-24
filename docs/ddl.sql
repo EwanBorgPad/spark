@@ -10,14 +10,10 @@ CREATE TABLE user (
 CREATE TABLE tokens (
     mint TEXT NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
-    isGraduated BOOLEAN NOT NULL
+    isGraduated BOOLEAN NOT NULL,
+    imageUrl TEXT,
+    dao TEXT
 );
-
-ALTER TABLE tokens
-ADD COLUMN imageUrl TEXT;
-
-ALTER TABLE tokens
-ADD COLUMN dao TEXT;
 
 CREATE TABLE error (
     id TEXT NOT NULL PRIMARY KEY,
