@@ -918,7 +918,7 @@ const Project = () => {
                   setSwapMode('sell')
                   setIsSwapModalOpen(true)
                 }}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded transition-colors disabled:bg-gray-500"
+                className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 rounded transition-colors disabled:bg-gray-500"
                 disabled={!authenticated || userTokenBalance <= 0}
               >
                 Sell
@@ -975,7 +975,7 @@ const Project = () => {
                       setSwapMode('sell')
                       setIsSwapModalOpen(true)
                     }}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white disabled:bg-gray-500 text-sm py-2"
+                    className="w-full bg-orange-600 hover:bg-orange-700 text-white disabled:bg-gray-500 text-sm py-2"
                     disabled={!authenticated || userTokenBalance <= 0}
                   >
                     Sell Token
@@ -1124,7 +1124,7 @@ const Project = () => {
                                             votes.toFixed(1);
                                       })()} as="p" className="text-white font-semibold" />
                                     </div>
-                                    <div className="bg-red-600/20 border border-red-600/30 rounded p-2 text-center">
+                                    <div className="bg-orange-600/20 border border-orange-600/30 rounded p-2 text-center">
                                       <Text text="No" as="p" className="text-red-300 font-medium mb-1" />
                                       <Text text={(() => {
                                         const noVotes = proposal.denyVoteWeight || "0";
@@ -1180,7 +1180,7 @@ const Project = () => {
                                       : proposal.state;
                                     return (
                                       <span className={`px-2 py-1 rounded text-xs ${stateKey === 'succeeded' || stateKey === 'completed' ? 'bg-green-500/20 text-green-400' :
-                                        stateKey === 'defeated' ? 'bg-red-500/20 text-red-400' :
+                                        stateKey === 'defeated' ? 'bg-orange-500/20 text-orange-400' :
                                           'bg-fg-primary/20 text-fg-primary/60'
                                       }`}>
                                         {stateKey === 'succeeded' ? 'Passed' :

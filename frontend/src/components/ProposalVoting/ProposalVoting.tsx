@@ -256,7 +256,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
             <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
               userVote === 'approve' 
                 ? 'bg-green-600/30 text-green-300 border border-green-600/50' 
-                : 'bg-red-600/30 text-red-300 border border-red-600/50'
+                : 'bg-orange-600/30 text-orange-300 border border-orange-600/50'
             }`}>
               {userVote === 'approve' ? '✓ Yes' : '✗ No'}
             </span>
@@ -284,7 +284,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
             <Button
               onClick={() => handleVote('deny')}
               disabled={isVoting}
-              className="bg-red-600 hover:bg-red-500 text-white font-medium text-xs py-2 border border-red-600/50 shadow-sm"
+              className="bg-orange-600 hover:bg-orange-500 text-white font-medium text-xs py-2 border border-orange-600/50 shadow-sm"
             >
               {isVoting ? "Voting..." : "Vote No"}
             </Button>
