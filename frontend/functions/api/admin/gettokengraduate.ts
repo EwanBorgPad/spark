@@ -1,4 +1,4 @@
-import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
+import { jsonResponse, reportError } from "../cfPagesFunctionsUtils"
 import { drizzle } from "drizzle-orm/d1"
 import { Connection, PublicKey, Keypair } from "@solana/web3.js"
 import { DynamicBondingCurveClient, deriveDbcPoolAddress } from "@meteora-ag/dynamic-bonding-curve-sdk"
@@ -7,6 +7,7 @@ import BN from "bn.js"
 import bs58 from "bs58"
 import { eq, or, isNull } from "drizzle-orm"
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core"
+import { isApiKeyValid } from "../../services/apiKeyService"
 
 // Define the tokens table schema
 const tokensTable = sqliteTable('tokens', {
@@ -28,6 +29,11 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
   const rawDb = ctx.env.DB
   try {
+    // authorize request
+    if (!await isApiKeyValid({ ctx, permissions: ['write'] })) {
+      return jsonResponse(null, 401)
+    }
+
     // Get tokens that don't have DAOs (dao field is empty or null)
     const tokensWithoutDao = await db
       .select()
