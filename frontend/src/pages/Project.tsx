@@ -43,6 +43,15 @@ const Project = () => {
   const { wallets } = useSolanaWallets()
 
   const RPC_URL = import.meta.env.VITE_RPC_URL
+  
+  // Debug logging to help troubleshoot RPC URL issues
+  console.log("RPC_URL from env:", RPC_URL)
+  console.log("All Vite env vars:", import.meta.env)
+  
+  if (!RPC_URL) {
+    console.error("VITE_RPC_URL is not set! This will cause connection errors.")
+  }
+  
   const connection = new Connection(RPC_URL)
   const inputMint = 'So11111111111111111111111111111111111111112' // SOL
 
