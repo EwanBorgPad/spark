@@ -20,7 +20,19 @@ function App() {
   return (
     <div className="max-w-screen relative flex min-h-screen flex-col items-center justify-start overscroll-x-none bg-accent font-geist text-fg-primary">
       {/* <EnvBanner /> */}
-      {/* <ToastContainer /> */}
+      <ToastContainer />
+      {/* <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      /> */}
 
       {/* <Header /> */}
       <Outlet />

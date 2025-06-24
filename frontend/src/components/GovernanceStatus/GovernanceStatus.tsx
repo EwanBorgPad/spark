@@ -8,6 +8,7 @@ import { getAssociatedTokenAddress } from '@solana/spl-token';
 import GovernanceService from '../../services/governanceService';
 import BN from 'bn.js';
 import { getCorrectWalletAddress } from '@/utils/walletUtils';
+import { toast } from 'react-toastify';
 
 interface GovernanceStatusProps {
   dao: DaoModel;
@@ -88,14 +89,14 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
 
   const handleDepositTokens = async () => {
     if (!authenticated) {
-      alert("Please connect your wallet first");
+      toast.error("Please connect your wallet first");
       return;
     }
 
     // Get the correct wallet
     const solanaWallet = getSolanaWallet();
     if (!solanaWallet) {
-      alert("No Solana wallet found");
+      toast.error("No Solana wallet found");
       return;
     }
 
@@ -154,7 +155,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
       await connection.confirmTransaction(signature, 'confirmed');
       
       console.log("Deposit successful! Signature:", signature);
-      alert(`Successfully deposited ${(amount.toNumber() / 1000000000).toFixed(2)} tokens!\nSignature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
+      toast.success(`Successfully deposited ${(amount.toNumber() / 1000000000).toFixed(2)} tokens! Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
       
       // Refresh user status
       setTimeout(() => {
@@ -165,7 +166,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
 
     } catch (error) {
       console.error("Error depositing tokens:", error);
-      alert("Failed to deposit tokens. This is using a placeholder implementation.");
+      toast.error(`Failed to deposit tokens: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsDepositing(false);
     }
@@ -173,14 +174,14 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
 
   const handleWithdrawTokens = async () => {
     if (!authenticated) {
-      alert("Please connect your wallet first");
+      toast.error("Please connect your wallet first");
       return;
     }
 
     // Get the correct wallet
     const solanaWallet = getSolanaWallet();
     if (!solanaWallet) {
-      alert("No Solana wallet found");
+      toast.error("No Solana wallet found");
       return;
     }
 
@@ -222,7 +223,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
       await connection.confirmTransaction(signature, 'confirmed');
       
       console.log("Withdraw successful! Signature:", signature);
-      alert(`Successfully withdrew all governance tokens!\nSignature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
+      toast.success(`Successfully withdrew all governance tokens! Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
       
       // Refresh user status
       setTimeout(() => {
@@ -233,7 +234,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
 
     } catch (error) {
       console.error("Error withdrawing tokens:", error);
-      alert("Failed to withdraw tokens. This is using a placeholder implementation.");
+      toast.error(`Failed to withdraw tokens: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsWithdrawing(false);
     }

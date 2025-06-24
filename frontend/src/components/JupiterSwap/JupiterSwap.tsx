@@ -8,6 +8,7 @@ import BN from 'bn.js';
 import Text from '../Text';
 import { Button } from '../Button/Button';
 import { getCorrectWalletAddress } from '@/utils/walletUtils';
+import { toast } from 'react-toastify';
 
 interface JupiterSwapProps {
   inputMint?: string; // The token they want to sell (optional, defaults to SOL)
@@ -288,7 +289,7 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
   // Execute swap using DBC
   const executeSwap = async () => {
     if (!quote || !authenticated || !poolAddress || !poolConfigKey) {
-      alert('Please connect your wallet and get a quote first');
+      toast.error('Please connect your wallet and get a quote first');
       return;
     }
 
@@ -296,14 +297,16 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
     try {
       const wallet = getSolanaWallet();
       if (!wallet) {
-        throw new Error('No Solana wallet found');
+        toast.error('No Solana wallet found');
+        return;
       }
 
       // Get the correct wallet address
       const walletAddress = getCorrectWalletAddress(user, wallets) || wallet.address;
       
       if (!walletAddress) {
-        throw new Error('No wallet address found');
+        toast.error('No wallet address found');
+        return;
       }
 
       console.log('Using wallet address:', walletAddress);
@@ -320,10 +323,11 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
           baseMint: poolState.baseMint?.toBase58(),
           config: poolState.config?.toBase58()
         });
-      } catch (poolError) {
-        console.error('Pool validation error:', poolError);
-        throw new Error('Unable to access pool. Please check if the pool exists.');
-      }
+              } catch (poolError) {
+          console.error('Pool validation error:', poolError);
+          toast.error('Unable to access pool. Please check if the pool exists.');
+          return;
+        }
 
       // Convert input amount to BN
       const inputToken = tokenMap.get(inputMint);
@@ -379,7 +383,7 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
       // Wait for confirmation
       await connection.confirmTransaction(signature, 'confirmed');
 
-      alert(`Swap successful! You received approximately ${outputAmount} tokens.\nSignature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
+      toast.success(`Swap successful! You received approximately ${outputAmount} tokens. Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
 
       // Reset form
       setInputAmount('');
@@ -391,7 +395,7 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
 
     } catch (error) {
       console.error('Error executing DBC swap:', error);
-      alert(`Swap failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`Swap failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsSwapping(false);
     }

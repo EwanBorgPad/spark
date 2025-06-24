@@ -6,6 +6,7 @@ import { usePrivy, useSolanaWallets } from '@privy-io/react-auth';
 import { Connection, PublicKey } from '@solana/web3.js';
 import GovernanceService from '../../services/governanceService';
 import { getCorrectWalletAddress } from '@/utils/walletUtils';
+import { toast } from 'react-toastify';
 
 interface ProposalVotingProps {
   proposal: DaoProposalModel;
@@ -106,14 +107,14 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
 
   const handleVote = async (voteType: 'approve' | 'deny') => {
     if (!authenticated) {
-      alert("Please connect your wallet first");
+      toast.error("Please connect your wallet first");
       return;
     }
 
     // Get the correct wallet
     const solanaWallet = getSolanaWallet();
     if (!solanaWallet) {
-      alert("No Solana wallet found");
+      toast.error("No Solana wallet found");
       return;
     }
 
@@ -160,7 +161,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
       await connection.confirmTransaction(signature, 'confirmed');
       
       console.log(`Vote ${voteType} successful! Signature:`, signature);
-      alert(`Successfully voted ${voteType}!\nSignature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
+      toast.success(`Successfully voted ${voteType}! Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
       
       // Update local state
       setHasVoted(true);
@@ -168,7 +169,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
 
     } catch (error) {
       console.error("Error casting vote:", error);
-      alert("Failed to cast vote. This is using a placeholder implementation.");
+      toast.error(`Failed to cast vote: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsVoting(false);
     }
@@ -176,14 +177,14 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
 
   const handleRelinquishVote = async () => {
     if (!authenticated) {
-      alert("Please connect your wallet first");
+      toast.error("Please connect your wallet first");
       return;
     }
 
     // Get the correct wallet
     const solanaWallet = getSolanaWallet();
     if (!solanaWallet) {
-      alert("No Solana wallet found");
+      toast.error("No Solana wallet found");
       return;
     }
 
@@ -229,7 +230,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
       await connection.confirmTransaction(signature, 'confirmed');
       
       console.log("Relinquish vote successful! Signature:", signature);
-      alert(`Successfully changed vote!\nSignature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
+      toast.success(`Successfully changed vote! Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
       
       // Update local state
       setHasVoted(false);
@@ -237,7 +238,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
 
     } catch (error) {
       console.error("Error relinquishing vote:", error);
-      alert("Failed to relinquish vote. This is using a placeholder implementation.");
+      toast.error(`Failed to relinquish vote: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsVoting(false);
     }
