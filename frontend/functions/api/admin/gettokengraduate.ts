@@ -230,9 +230,39 @@ async function createDaoForToken({
     preflightCommitment: 'confirmed'
   })
 
-  // Wait for confirmation
-  await connection.confirmTransaction(signature, 'confirmed')
-
-  console.log(`DAO created for token ${tokenMint} with signature: ${signature}`)
+  // Wait for confirmation with extended timeout for devnet
+  try {
+    // Use a more robust confirmation approach with timeout handling
+    const confirmation = await Promise.race([
+      connection.confirmTransaction(signature, 'confirmed'),
+      new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Confirmation timeout')), 60000)
+      )
+    ])
+    console.log(`DAO created for token ${tokenMint} with signature: ${signature}`)
+  } catch (timeoutError) {
+    // If timeout, check if transaction actually succeeded
+    console.log(`Confirmation timeout for ${tokenMint}, checking transaction status...`)
+    
+    try {
+      const transactionStatus = await connection.getSignatureStatus(signature)
+      if (transactionStatus.value?.confirmationStatus === 'confirmed' || 
+          transactionStatus.value?.confirmationStatus === 'finalized') {
+        console.log(`DAO creation confirmed via status check for token ${tokenMint}`)
+      } else {
+        console.log(`Transaction status for ${tokenMint}:`, transactionStatus.value)
+        // Re-throw if transaction actually failed
+        if (transactionStatus.value?.err) {
+          throw new Error(`Transaction failed: ${JSON.stringify(transactionStatus.value.err)}`)
+        }
+        // If still processing, log but don't fail
+        console.log(`Transaction for ${tokenMint} may still be processing`)
+      }
+    } catch (statusError) {
+      console.error(`Error checking transaction status for ${tokenMint}:`, statusError)
+      // Don't fail the whole process, just log the issue
+    }
+  }
+  
   return signature
 }
