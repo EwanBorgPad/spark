@@ -79,17 +79,17 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
           console.log(`Token ${token.mint} has graduated! Creating DAO...`)
 
           // Create DAO for graduated token
-          const daoSignature = await createDaoForToken({
+          const daoAddress = await createDaoForToken({
             tokenName: token.name,
             tokenMint: token.mint,
             wallet,
             connection
           })
 
-          // Update token record with DAO signature
+          // Update token record with DAO address
           await rawDb
             .prepare("UPDATE tokens SET dao = ?1 WHERE mint = ?2")
-            .bind(daoSignature, token.mint)
+            .bind(daoAddress, token.mint)
             .run()
 
           results.push({
@@ -99,7 +99,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
             curveProgress,
             graduated: true,
             daoCreated: true,
-            daoSignature
+            daoAddress
           })
         } else {
           results.push({
@@ -179,7 +179,7 @@ async function createDaoForToken({
     "dormant"
   )
 
-  const realmPubKey = createRealmInstruction.keys[0].pubkey
+  const realmPubKey = createRealmInstruction.keys[0].pubkey // This is the DAO address
 
   // Create governance instruction
   const createGovernanceInstruction = await splGovernance.createGovernanceInstruction(
@@ -264,5 +264,6 @@ async function createDaoForToken({
     }
   }
   
-  return signature
+  console.log(`DAO address for token ${tokenMint}: ${realmPubKey.toBase58()}`)
+  return realmPubKey.toBase58() // Return DAO address instead of transaction signature
 }
