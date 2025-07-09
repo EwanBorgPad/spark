@@ -234,7 +234,7 @@ async function getTokenMetadata(
   
   // 3. Fallback to basic token info
   return {
-    name: `Token ${mintString.slice(0, 8)}...`,
+    name: `${mintString.slice(0, 3)}..${mintString.slice(-3)}`,
     symbol: mintString.slice(0, 4).toUpperCase()
   };
 }
