@@ -63,13 +63,13 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       quoteMint: new PublicKey('So11111111111111111111111111111111111111112'), // SOL
       poolFees: {
         baseFee: {
-          cliffFeeNumerator: new BN('500000000'), // 1dcd6500 in hex = 500000000
+          cliffFeeNumerator: new BN('200000000'), // 200bps = 2%
           numberOfPeriod: 240,
           reductionFactor: new BN('208'), // d0 in hex = 208
           periodFrequency: new BN('1'), // 01 in hex = 1 (1 minute intervals)
           feeSchedulerMode: 1, // Exponential
         },
-        dynamicFee: null, // No dynamic fee based on the config
+        dynamicFee: null, // Temporarily disable to fix type error
       },
       activationType: 0, // Slot-based activation
       collectFeeMode: 0, // Only Quote
@@ -77,9 +77,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       tokenType: 0, // SPL
       tokenDecimal: 9,
       migrationQuoteThreshold: new BN('1000000000'), // 3b9aca00 = 1e9
-      partnerLpPercentage: 0,
-      creatorLpPercentage: 100,
-      partnerLockedLpPercentage: 0,
+      partnerLpPercentage: 100, // 100% for partner
+      creatorLpPercentage: 0, // 0% for creator
+      partnerLockedLpPercentage: 100,
       creatorLockedLpPercentage: 0,
       sqrtStartPrice: new BN('58333726687135158'), // From example
       lockedVesting: {
@@ -89,12 +89,13 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
         numberOfPeriod: new BN('0'),
         cliffUnlockAmount: new BN('0'),
       },
-      migrationFeeOption: 0, // 0.25% (FixedBps25)
+      migrationFeeOption: 3, // 2% (FixedBps200)
       tokenSupply: {
-        preMigrationTokenSupply: new BN('1000000000000000000'), // 1 billion tokens with 9 decimals
-        postMigrationTokenSupply: new BN('1000000000000000000'), // Same as pre-migration
+        // Post-migration supply must not exceed pre-migration supply
+        preMigrationTokenSupply: new BN('1000000000000000000'), // 1B total supply
+        postMigrationTokenSupply: new BN('1000000000000000000'), // 1B total supply
       },
-      creatorTradingFeePercentage: 0,
+      creatorTradingFeePercentage: 2, // 2% creator trading fee
       padding0: [],
       padding1: [],
       curve: [
