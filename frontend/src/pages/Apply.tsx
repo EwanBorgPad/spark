@@ -303,122 +303,267 @@ const Apply = () => {
       <SimpleModal
         isOpen={isApplicationModalOpen}
         onClose={handleModalClose}
-        title={`Apply to ${selectedDao?.name}`}
-        className="max-w-2xl"
+        className="max-w-7xl max-h-[95vh] w-[95vw] mx-auto my-4"
       >
-        <div className="space-y-6">
-          {/* Form Fields */}
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-fg-primary mb-2">
-                Deliverable Name *
-              </label>
-              <Input
-                value={applicationForm.deliverableName}
-                onChange={(e) => handleInputChange('deliverableName', e.target.value)}
-                placeholder="e.g., Mobile App, Web Dashboard, Smart Contract"
-                className="w-full"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-fg-primary mb-2">
-                Requested Price (USD) *
-              </label>
-              <Input
-                type="number"
-                value={applicationForm.requestedPrice}
-                onChange={(e) => handleInputChange('requestedPrice', e.target.value)}
-                placeholder="e.g., 50000"
-                className="w-full"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-fg-primary mb-2">
-                Estimated Deadline *
-              </label>
-              <Input
-                value={applicationForm.estimatedDeadline}
-                onChange={(e) => handleInputChange('estimatedDeadline', e.target.value)}
-                placeholder="e.g., 3 months, 6 weeks, Q2 2024"
-                className="w-full"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-fg-primary mb-2">
-                Feature Description *
-              </label>
-              <textarea
-                value={applicationForm.featureDescription}
-                onChange={(e) => handleInputChange('featureDescription', e.target.value)}
-                placeholder="Describe the features and functionality you plan to build..."
-                className="w-full h-32 px-3 py-2 bg-bg-secondary border border-fg-primary/20 rounded-md text-fg-primary resize-none"
-                rows={4}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-fg-primary mb-2">
-                Solana Wallet Address *
-              </label>
-              <Input
-                value={applicationForm.solanaWalletAddress}
-                onChange={(e) => handleInputChange('solanaWalletAddress', e.target.value)}
-                placeholder="Your Solana wallet address for receiving payments"
-                className="w-full"
-              />
+        <div className="flex flex-col h-full max-h-[90vh]">
+          {/* Header with Close Button */}
+          <div className="border-b border-fg-primary/10 pb-6 mb-6 flex-shrink-0 mx-6 mt-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Img
+                  src={selectedDao?.imageUrl || '/images/default-dao-logo.png'}
+                  alt={selectedDao?.name}
+                  imgClassName="w-16 h-16 rounded-lg"
+                />
+                <div>
+                  <h2 className="text-2xl font-bold text-fg-primary">Apply to {selectedDao?.name}</h2>
+                  <p className="text-fg-secondary">Submit your development proposal</p>
+                </div>
+              </div>
+              <button
+                onClick={handleModalClose}
+                className="p-2 hover:bg-bg-secondary rounded-lg transition-colors group flex items-center justify-center"
+                type="button"
+              >
+                <svg 
+                  className="w-6 h-6 text-fg-secondary group-hover:text-fg-primary transition-colors" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
           </div>
 
-          {/* Rules Section */}
-          <div className="bg-bg-secondary/50 rounded-lg p-4 space-y-3">
-            <h4 className="font-semibold text-fg-primary">Required Rules</h4>
-            <div className="space-y-2 text-sm text-fg-secondary">
-              <div className="flex items-start gap-2">
-                <Icon icon="SvgCircledCheckmark" className="w-4 h-4 text-brand-primary mt-0.5" />
-                <span>Code must be open source</span>
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto px-2">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mx-auto max-w-6xl">
+              {/* Form Section */}
+              <div className="lg:col-span-2 space-y-6">
+                <div className="space-y-5">
+                  {/* Project Details Section */}
+                  <div className="bg-gradient-to-r from-brand-primary/5 to-brand-secondary/5 rounded-lg p-6 border border-brand-primary/20">
+                    <h3 className="text-lg font-semibold text-fg-primary mb-4 flex items-center gap-2">
+                      <Icon icon="SvgDocument" className="w-5 h-5 text-brand-primary" />
+                      Project Details
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-fg-primary mb-2">
+                          Deliverable Name *
+                        </label>
+                        <Input
+                          value={applicationForm.deliverableName}
+                          onChange={(e) => handleInputChange('deliverableName', e.target.value)}
+                          placeholder="e.g., Mobile Trading App"
+                          className="w-full"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-fg-primary mb-2">
+                          Estimated Deadline *
+                        </label>
+                        <Input
+                          value={applicationForm.estimatedDeadline}
+                          onChange={(e) => handleInputChange('estimatedDeadline', e.target.value)}
+                          placeholder="e.g., 3 months"
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Financial Details Section */}
+                  <div className="bg-gradient-to-r from-green-500/5 to-emerald-500/5 rounded-lg p-6 border border-green-500/20">
+                    <h3 className="text-lg font-semibold text-fg-primary mb-4 flex items-center gap-2">
+                      <Icon icon="SvgChartLine" className="w-5 h-5 text-green-500" />
+                      Financial Details
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-fg-primary mb-2">
+                          Requested Price (USD) *
+                        </label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-fg-secondary">$</span>
+                          <Input
+                            type="number"
+                            value={applicationForm.requestedPrice}
+                            onChange={(e) => handleInputChange('requestedPrice', e.target.value)}
+                            placeholder="50000"
+                            className="w-full pl-8"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-fg-primary mb-2">
+                          Solana Wallet Address *
+                        </label>
+                        <Input
+                          value={applicationForm.solanaWalletAddress}
+                          onChange={(e) => handleInputChange('solanaWalletAddress', e.target.value)}
+                          placeholder="Your wallet address"
+                          className="w-full font-mono text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Technical Description Section */}
+                  <div className="bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-lg p-6 border border-blue-500/20">
+                    <h3 className="text-lg font-semibold text-fg-primary mb-4 flex items-center gap-2">
+                      <Icon icon="SvgList" className="w-5 h-5 text-blue-500" />
+                      Technical Description
+                    </h3>
+                    <div>
+                      <label className="block text-sm font-medium text-fg-primary mb-2">
+                        Feature Description *
+                      </label>
+                      <textarea
+                        value={applicationForm.featureDescription}
+                        onChange={(e) => handleInputChange('featureDescription', e.target.value)}
+                        placeholder="Describe the features, technical architecture, and functionality you plan to build. Include details about user experience, backend systems, and integration requirements..."
+                        className="w-full h-40 px-4 py-3 bg-bg-secondary border border-fg-primary/20 rounded-lg text-black resize-none focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                        rows={6}
+                      />
+                      <div className="flex justify-between items-center mt-2 text-xs text-fg-secondary">
+                        <span>Be specific about deliverables and timeline</span>
+                        <span>{applicationForm.featureDescription.length}/1000</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-start gap-2">
-                <Icon icon="SvgCircledCheckmark" className="w-4 h-4 text-brand-primary mt-0.5" />
-                <span>You must host the product V1</span>
+
+              {/* Sidebar */}
+              <div className="space-y-6">
+                {/* GitHub Profile */}
+                <div className="bg-bg-secondary rounded-lg p-6 border border-fg-primary/10">
+                  <h3 className="text-lg font-semibold text-fg-primary mb-4 flex items-center gap-2">
+                    <Icon icon="SvgExternalLink" className="w-5 h-5 text-purple-500" />
+                    Developer Profile
+                  </h3>
+                  {githubAuth && (
+                    <div className="flex items-center gap-3 p-3 bg-bg-primary rounded-lg">
+                      <img 
+                        src={githubAuth.user.avatar_url} 
+                        alt={githubAuth.user.username}
+                        className="w-10 h-10 rounded-full"
+                      />
+                      <div>
+                        <p className="font-medium text-fg-primary">{githubAuth.user.name}</p>
+                        <p className="text-sm text-fg-secondary">@{githubAuth.user.username}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Requirements */}
+                <div className="bg-gradient-to-br from-orange-500/5 to-red-500/5 rounded-lg p-6 border border-orange-500/20">
+                  <h3 className="text-lg font-semibold text-fg-primary mb-4 flex items-center gap-2">
+                    <Icon icon="SvgQuestionCircle" className="w-5 h-5 text-orange-500" />
+                    Requirements
+                  </h3>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-start gap-3 p-3 bg-bg-primary rounded-lg">
+                      <Icon icon="SvgCircledCheckmark" className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-fg-primary">Open Source Code</p>
+                        <p className="text-fg-secondary">All code must be publicly available on GitHub</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-bg-primary rounded-lg">
+                      <Icon icon="SvgCircledCheckmark" className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-fg-primary">Product Hosting</p>
+                        <p className="text-fg-secondary">Deploy and maintain V1 on production servers</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-bg-primary rounded-lg">
+                      <Icon icon="SvgCircledCheckmark" className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-fg-primary">Ongoing Support</p>
+                        <p className="text-fg-secondary">Provide initial maintenance and bug fixes</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-fg-primary/10">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id="rulesAccepted"
+                        checked={rulesAccepted}
+                        onChange={(e) => setRulesAccepted(e.target.checked)}
+                        className="w-5 h-5 text-brand-primary bg-bg-secondary border-fg-primary/20 rounded focus:ring-brand-primary"
+                      />
+                      <label htmlFor="rulesAccepted" className="text-sm font-medium text-fg-primary">
+                        I accept and agree to follow all requirements
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Estimated Timeline */}
+                <div className="bg-bg-secondary rounded-lg p-6 border border-fg-primary/10">
+                                      <h3 className="text-lg font-semibold text-fg-primary mb-4 flex items-center gap-2">
+                      <Icon icon="SvgLoader" className="w-5 h-5 text-blue-500" />
+                      Process Timeline
+                    </h3>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-fg-secondary">Review Period:</span>
+                      <span className="text-fg-primary font-medium">3-5 days</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-fg-secondary">Response Time:</span>
+                      <span className="text-fg-primary font-medium">7 days max</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-fg-secondary">Project Start:</span>
+                      <span className="text-fg-primary font-medium">Within 2 weeks</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-start gap-2">
-                <Icon icon="SvgCircledCheckmark" className="w-4 h-4 text-brand-primary mt-0.5" />
-                <span>Initial maintenance must be provided by the developer</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 mt-4">
-              <input
-                type="checkbox"
-                id="rulesAccepted"
-                checked={rulesAccepted}
-                onChange={(e) => setRulesAccepted(e.target.checked)}
-                className="w-4 h-4 text-brand-primary"
-              />
-              <label htmlFor="rulesAccepted" className="text-sm text-fg-primary">
-                I accept and agree to follow all the required rules
-              </label>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-4">
-            <Button
-              onClick={handleModalClose}
-              color="secondary"
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSubmitApplication}
-              className="flex-1 bg-brand-primary hover:bg-brand-primary/90 text-white"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Submitting...' : 'Submit Application'}
-            </Button>
+          {/* Footer */}
+          <div className="border-t border-fg-primary/10 pt-6 mt-6 flex-shrink-0 mx-6 mb-6">
+            <div className="flex flex-col sm:flex-row gap-3 mx-auto max-w-6xl">
+              <Button
+                onClick={handleModalClose}
+                color="secondary"
+                className="sm:w-auto"
+                size="lg"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmitApplication}
+                className="flex-1 bg-gradient-to-r from-brand-primary to-brand-secondary hover:from-brand-primary/90 hover:to-brand-secondary/90 text-white font-semibold"
+                disabled={isSubmitting || !rulesAccepted}
+                size="lg"
+              >
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Submitting Application...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Icon icon="SvgArrowRight" className="w-4 h-4" />
+                    Submit Application
+                  </div>
+                )}
+              </Button>
+            </div>
+            <p className="text-xs text-fg-secondary mt-3 text-center">
+              By submitting this application, you agree to our terms and the DAO&apos;s specific requirements.
+            </p>
           </div>
         </div>
       </SimpleModal>
