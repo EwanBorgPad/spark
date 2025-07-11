@@ -7,11 +7,56 @@ import { useLoginWithEmail } from '@privy-io/react-auth';
 import { useState } from 'react';
 import { ROUTES } from "@/utils/routes"
 import { useQuery } from "@tanstack/react-query"
-import { GetTokensResponse } from "shared/models"
+import { GetTokenMarketResponse, GetTokensResponse, TokenModel } from "shared/models"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
 import Img from "@/components/Image/Img"
 import landingPageBanner from "@/assets/landing-page-banner.png"
 import { useDeviceDetection } from "@/hooks/useDeviceDetection"
+
+// Helper component to fetch and display market data for a single token
+const TokenCard = ({ token, isLoading }: { token: TokenModel, isLoading: boolean }) => {
+  const { data: marketData } = useQuery<GetTokenMarketResponse>({
+    queryFn: () =>
+      backendSparkApi.getTokenMarket({
+        address: token.mint,
+      }),
+    queryKey: ["getTokenMarket", token.mint],
+    enabled: Boolean(token.mint),
+  })
+
+  const navigate = useNavigate()
+  const { isDesktop } = useDeviceDetection()
+
+  const marketCap = marketData?.tokenMarketData?.marketCap 
+    ? `$${(marketData.tokenMarketData.marketCap / 1000).toFixed(2)}K`
+    : "N/A"
+  
+  const tokenPrice = marketData?.tokenMarketData?.price
+    ? `$${marketData.tokenMarketData.price.toFixed(4)}`
+    : "N/A"
+
+  return (
+    <div 
+      className={`flex items-center gap-4 p-6 bg-secondary rounded-xl cursor-pointer hover:bg-secondary/80 transition-all hover:scale-[1.02] ${isDesktop ? 'shadow-lg' : ''}`}
+      onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`)}
+    >
+      <Img
+        src={token.imageUrl}
+        isFetchingLink={isLoading}
+        imgClassName={`rounded-full object-cover ${isDesktop ? 'w-20 h-20' : 'w-16 h-16'}`}
+        isRounded={true}
+        size="20"
+      />
+      <div className="flex-1">
+        <h4 className={`font-semibold ${isDesktop ? 'text-lg' : 'font-medium'}`}>{token.name}</h4>
+        <div className={`flex gap-4 opacity-75 ${isDesktop ? 'text-base' : 'text-sm'}`}>
+          <span>Market Cap: {marketCap}</span>
+          <span>Token Price: {tokenPrice}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const Projects = () => {
   const { data: sparksData, isLoading: sparksLoading, refetch: sparksRefetch } = useQuery<GetTokensResponse>({
@@ -108,26 +153,7 @@ const Projects = () => {
                   <h3 className="text-2xl font-medium mb-6">Sparks</h3>
                   <div className="grid gap-6">
                     {sparksData?.tokens.map((token) => (
-                      <div 
-                        key={token.mint} 
-                        className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
-                        onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`)}
-                      >
-                        <Img
-                          src={token.imageUrl}
-                          isFetchingLink={sparksLoading}
-                          imgClassName="w-16 h-16 rounded-full object-cover"
-                          isRounded={true}
-                          size="20"
-                        />
-                        <div className="flex-1">
-                          <h4 className="font-medium">{token.name}</h4>
-                          <div className="flex gap-4 text-sm opacity-75">
-                            <span>Market Cap: $1.2M</span>
-                            <span>Token Price: $0.12</span>
-                          </div>
-                        </div>
-                      </div>
+                      <TokenCard key={token.mint} token={token} isLoading={sparksLoading} />
                     ))}
                   </div>
                 </div>
@@ -138,26 +164,7 @@ const Projects = () => {
                   <h3 className="text-2xl font-medium mb-6">Blazes</h3>
                   <div className="grid gap-6">
                     {blazesData?.tokens.map((token) => (
-                      <div 
-                        key={token.mint} 
-                        className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
-                        onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`)}
-                      >
-                        <Img
-                          src={token.imageUrl}
-                          isFetchingLink={blazesLoading}
-                          imgClassName="w-16 h-16 rounded-full object-cover"
-                          isRounded={true}
-                          size="20"
-                        />
-                        <div className="flex-1">
-                          <h4 className="font-medium">{token.name}</h4>
-                          <div className="flex gap-4 text-sm opacity-75">
-                            <span>Market Cap: $1.5M</span>
-                            <span>Token Price: $0.15</span>
-                          </div>
-                        </div>
-                      </div>
+                      <TokenCard key={token.mint} token={token} isLoading={blazesLoading} />
                     ))}
                   </div>
                 </div>
@@ -172,26 +179,7 @@ const Projects = () => {
               <h3 className={`font-medium mb-6 ${isDesktop ? 'text-3xl' : 'text-2xl'}`}>Sparks</h3>
               <div className={`grid gap-6 ${isDesktop ? 'grid-cols-1 lg:grid-cols-2' : ''}`}>
                 {sparksData?.tokens.map((token) => (
-                  <div 
-                    key={token.mint} 
-                    className={`flex items-center gap-4 p-6 bg-secondary rounded-xl cursor-pointer hover:bg-secondary/80 transition-all hover:scale-[1.02] ${isDesktop ? 'shadow-lg' : ''}`}
-                    onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`)}
-                  >
-                    <Img
-                      src={token.imageUrl}
-                      isFetchingLink={sparksLoading}
-                      imgClassName={`rounded-full object-cover ${isDesktop ? 'w-20 h-20' : 'w-16 h-16'}`}
-                      isRounded={true}
-                      size="20"
-                    />
-                    <div className="flex-1">
-                      <h4 className={`font-semibold ${isDesktop ? 'text-lg' : 'font-medium'}`}>{token.name}</h4>
-                      <div className={`flex gap-4 opacity-75 ${isDesktop ? 'text-base' : 'text-sm'}`}>
-                        <span>Market Cap: $1.2M</span>
-                        <span>Token Price: $0.12</span>
-                      </div>
-                    </div>
-                  </div>
+                  <TokenCard key={token.mint} token={token} isLoading={sparksLoading} />
                 ))}
               </div>
             </div>
@@ -201,26 +189,7 @@ const Projects = () => {
               <h3 className={`font-medium mb-6 ${isDesktop ? 'text-3xl' : 'text-2xl'}`}>Blazes</h3>
               <div className="grid gap-6">
                 {blazesData?.tokens.map((token) => (
-                  <div 
-                    key={token.mint} 
-                    className="flex items-center gap-4 p-4 bg-secondary rounded-lg cursor-pointer hover:bg-secondary/80 transition-colors"
-                    onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`)}
-                  >
-                    <Img
-                      src={token.imageUrl}
-                      isFetchingLink={blazesLoading}
-                      imgClassName="w-16 h-16 rounded-full object-cover"
-                      isRounded={true}
-                      size="20"
-                    />
-                    <div className="flex-1">
-                      <h4 className="font-medium">{token.name}</h4>
-                      <div className="flex gap-4 text-sm opacity-75">
-                        <span>Market Cap: $1.5M</span>
-                        <span>Token Price: $0.15</span>
-                      </div>
-                    </div>
-                  </div>
+                  <TokenCard key={token.mint} token={token} isLoading={blazesLoading} />
                 ))}
               </div>
             </div>
