@@ -7,9 +7,8 @@ import { z } from "zod"
 export const tokensTable = sqliteTable("tokens", {
   mint: text("mint").primaryKey(),
   name: text("name").notNull(),
-  isGraduated: integer("isGraduated", { mode: "boolean" }).notNull().default(false),
-  imageUrl: text("imageUrl").notNull(),
-  dao: text("dao").notNull(),
+  imageUrl: text("imageUrl"),
+  dao: text("dao"),
 })
 
 export const whitelistTable = sqliteTable(
@@ -44,6 +43,25 @@ export const projectTable = sqliteTable("project", {
     .default(sql`CURRENT_TIMESTAMP`),
   status: text("status").notNull().$type<ProjectStatus>(),
   json: text({ mode: "json" }).notNull().$type<ProjectModel>(),
+})
+
+export const applicationsTable = sqliteTable("applications", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id").notNull(),
+  githubUsername: text("github_username").notNull(),
+  githubId: text("github_id").notNull(),
+  deliverableName: text("deliverable_name").notNull(),
+  requestedPrice: integer("requested_price").notNull(),
+  estimatedDeadline: text("estimated_deadline").notNull(),
+  featureDescription: text("feature_description").notNull(),
+  solanaWalletAddress: text("solana_wallet_address").notNull(),
+  status: text("status").notNull().default("pending"), // pending, approved, rejected
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
 })
 
 export const followerTable = sqliteTable("follower", {

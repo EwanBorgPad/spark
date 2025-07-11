@@ -63,7 +63,6 @@ export type UserModelJson = {
 export type TokenModel = {
   mint: string
   name: string
-  isGraduated: boolean
   imageUrl: string
   dao: string
 }

@@ -32,7 +32,6 @@ const JITO_TIP_ACCOUNT = new PublicKey("96gYZGLnJYVFmbjzopPSU6QiEV5fGqZNyN9nmNhv
 const tokensTable = sqliteTable('tokens', {
   mint: text('mint').notNull().primaryKey(),
   name: text('name').notNull(),
-  isGraduated: integer('isGraduated', { mode: 'boolean' }).notNull(),
   imageUrl: text('imageUrl'),
   dao: text('dao').default("")
 })

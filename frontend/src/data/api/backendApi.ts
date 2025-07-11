@@ -654,6 +654,57 @@ const getRaisedAmountOnLbp = async ({ lbpWalletAddress, startDate, endDate, clus
   return response.json()
 }
 
+export type DaoResponse = {
+  id: string
+  name: string
+  imageUrl: string | null
+  dao: string
+  tokenMint: string
+}
+
+export type GetDaosResponse = {
+  daos: DaoResponse[]
+}
+
+export type SubmitApplicationRequest = {
+  projectId: string
+  githubUsername: string
+  githubId: string
+  deliverableName: string
+  requestedPrice: number
+  estimatedDeadline: string
+  featureDescription: string
+  solanaWalletAddress: string
+}
+
+const getDaos = async (): Promise<GetDaosResponse> => {
+  const url = new URL(`${API_BASE_URL}/daos`, window.location.href)
+  const response = await fetch(url)
+  
+  if (!response.ok) {
+    throw new Error("Failed to fetch DAOs")
+  }
+  
+  const json = await response.json()
+  return json
+}
+
+const submitApplication = async (applicationData: SubmitApplicationRequest): Promise<void> => {
+  const url = new URL(`${API_BASE_URL}/applications`, window.location.href)
+  
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(applicationData),
+  })
+  
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.message || "Failed to submit application")
+  }
+}
 
 export const backendApi = {
   getProject,
@@ -684,4 +735,6 @@ export const backendApi = {
   getTokenDistribution,
   distributeTokens,
   getRaisedAmountOnLbp,
+  getDaos,
+  submitApplication,
 }

@@ -11,6 +11,7 @@ export enum ROUTES {
   PROFILE = "/profile",
   SEARCH = "/search",
   PROJECT = "/project/:id",
+  APPLY = "/apply",
   GOAT_POOLS = "/goat-pools",
   LAUNCH_POOLS = "/launch-pools",
   BLITZ_POOLS = "/blitz-pools",
