@@ -150,9 +150,9 @@ const Projects = () => {
             {activeTab === 'sparks' ? (
               <div className="overflow-hidden">
                 <div className="w-full">
-                  <h3 className="text-2xl font-medium mb-6">Sparks</h3>
+                  <h3 className="text-2xl font-medium mb-6">New Projects</h3>
                   <div className="grid gap-6">
-                    {sparksData?.tokens.map((token) => (
+                    {(sparksData?.tokens || []).map((token) => (
                       <TokenCard key={token.mint} token={token} isLoading={sparksLoading} />
                     ))}
                   </div>
@@ -161,9 +161,9 @@ const Projects = () => {
             ) : (
               <div className="overflow-hidden">
                 <div className="w-full">
-                  <h3 className="text-2xl font-medium mb-6">Blazes</h3>
+                  <h3 className="text-2xl font-medium mb-6">Established Projects</h3>
                   <div className="grid gap-6">
-                    {blazesData?.tokens.map((token) => (
+                    {(blazesData?.tokens || []).map((token) => (
                       <TokenCard key={token.mint} token={token} isLoading={blazesLoading} />
                     ))}
                   </div>
@@ -174,21 +174,21 @@ const Projects = () => {
 
           {/* Desktop Layout */}
           <div className="hidden md:flex w-full gap-8">
-            {/* Sparks Section */}
+            {/* New Projects Section */}
             <div className="w-full">
-              <h3 className={`font-medium mb-6 ${isDesktop ? 'text-3xl' : 'text-2xl'}`}>Sparks</h3>
+              <h3 className={`font-medium mb-6 ${isDesktop ? 'text-3xl' : 'text-2xl'}`}>New Projects</h3>
               <div className={`grid gap-6 ${isDesktop ? 'grid-cols-1 lg:grid-cols-2' : ''}`}>
-                {sparksData?.tokens.map((token) => (
+                {(sparksData?.tokens || []).map((token) => (
                   <TokenCard key={token.mint} token={token} isLoading={sparksLoading} />
                 ))}
               </div>
             </div>
 
-            {/* Blazes Section */}
+            {/* Established Projects Section */}
             <div className="w-full">
-              <h3 className={`font-medium mb-6 ${isDesktop ? 'text-3xl' : 'text-2xl'}`}>Blazes</h3>
+              <h3 className={`font-medium mb-6 ${isDesktop ? 'text-3xl' : 'text-2xl'}`}>Established Projects</h3>
               <div className="grid gap-6">
-                {blazesData?.tokens.map((token) => (
+                {(blazesData?.tokens || []).map((token) => (
                   <TokenCard key={token.mint} token={token} isLoading={blazesLoading} />
                 ))}
               </div>

@@ -51,11 +51,7 @@ export default defineConfig({
     // enable below to serve on local network (for testing on mobile devices)
     // host: true,
     proxy: {
-      '/api/github-oauth-token': {
-        target: 'http://localhost:3001',
-        changeOrigin: true
-      },
-      '^/api/(?!github-oauth-token).*': {
+      '/api': {
         target: 'http://localhost:8788',
         changeOrigin: true
       }

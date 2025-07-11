@@ -15,50 +15,40 @@ type GitHubEmail = {
   email: string
   primary: boolean
   verified: boolean
+  visibility: string | null
 }
 
-const GITHUB_CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID || ''
-const GITHUB_CLIENT_SECRET = import.meta.env.VITE_GITHUB_CLIENT_SECRET || ''
 const REDIRECT_URI = `${window.location.origin}/apply`
-
-// Check if GitHub credentials are configured
-const isGitHubConfigured = () => {
-  if (!GITHUB_CLIENT_ID) {
-    console.error('VITE_GITHUB_CLIENT_ID is not configured')
-    return false
-  }
-  return true
-}
 
 export class GitHubAuth {
   private static STORAGE_KEY = 'github_auth_data'
 
-  // Generate OAuth URL
-  static getAuthUrl(): string {
-    if (!isGitHubConfigured()) {
-      throw new Error('GitHub OAuth is not properly configured')
-    }
-    
+  // Get OAuth URL from backend
+  static async getAuthUrl(): Promise<string> {
     const state = Math.random().toString(36).substring(2, 15)
     localStorage.setItem('github_oauth_state', state)
     
-    const params = new URLSearchParams({
-      client_id: GITHUB_CLIENT_ID,
-      redirect_uri: REDIRECT_URI,
-      scope: 'user:email',
-      state: state,
-      allow_signup: 'true'
+    const response = await fetch('/api/github-oauth-url', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        redirect_uri: REDIRECT_URI,
+        state: state,
+      }),
     })
-    
-    return `https://github.com/login/oauth/authorize?${params.toString()}`
+
+    if (!response.ok) {
+      throw new Error('Failed to get GitHub OAuth URL')
+    }
+
+    const data = await response.json()
+    return data.authUrl
   }
 
   // Handle OAuth callback
   static async handleCallback(code: string, state: string): Promise<GitHubAuthData> {
-    if (!isGitHubConfigured()) {
-      throw new Error('GitHub OAuth is not properly configured')
-    }
-    
     // Verify state parameter
     const storedState = localStorage.getItem('github_oauth_state')
     if (state !== storedState) {
@@ -66,32 +56,68 @@ export class GitHubAuth {
     }
     localStorage.removeItem('github_oauth_state')
 
+    console.log('Exchanging GitHub OAuth code for token...')
+
     // Exchange code for access token via our backend API
-    // (In local development, this is proxied to GitHub's OAuth endpoint)
     const tokenResponse = await fetch('/api/github-oauth-token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        client_id: GITHUB_CLIENT_ID,
-        client_secret: GITHUB_CLIENT_SECRET,
         code: code,
         redirect_uri: REDIRECT_URI,
       }),
     })
 
+    console.log('Token exchange response status:', tokenResponse.status)
+
     if (!tokenResponse.ok) {
-      throw new Error('Failed to exchange code for token')
+      let errorData: Record<string, unknown> = {}
+      let errorText = ''
+      
+      try {
+        // Try to parse as JSON first
+        const responseText = await tokenResponse.text()
+        errorText = responseText
+        console.log('Raw error response:', responseText)
+        
+        try {
+          errorData = JSON.parse(responseText)
+        } catch (parseError) {
+          console.log('Response is not JSON, treating as text')
+          errorData = { message: responseText }
+        }
+      } catch (readError) {
+        console.error('Failed to read error response:', readError)
+        errorData = { message: 'Failed to read response' }
+      }
+      
+      console.error('Token exchange failed:', {
+        status: tokenResponse.status,
+        statusText: tokenResponse.statusText,
+        headers: Object.fromEntries(tokenResponse.headers.entries()),
+        errorData,
+        errorText: errorText.substring(0, 200)
+      })
+      
+      if (tokenResponse.status === 500) {
+        throw new Error('Server configuration error. Please check if GitHub OAuth environment variables are set.')
+      }
+      
+      throw new Error(String(errorData.message) || errorText || 'Failed to exchange code for token')
     }
 
     const tokenData = await tokenResponse.json()
+    console.log('Token exchange successful')
     
     if (tokenData.error) {
       throw new Error(tokenData.error_description || 'OAuth error')
     }
     
     const accessToken = tokenData.access_token
+
+    console.log('Fetching GitHub user info...')
 
     // Get user info
     const userResponse = await fetch('https://api.github.com/user', {
@@ -101,6 +127,7 @@ export class GitHubAuth {
     })
 
     if (!userResponse.ok) {
+      console.error('Failed to get GitHub user info:', userResponse.status)
       throw new Error('Failed to get user info')
     }
 
@@ -138,6 +165,7 @@ export class GitHubAuth {
     // Store in localStorage
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(authData))
 
+    console.log('GitHub OAuth completed successfully for user:', user.username)
     return authData
   }
 
@@ -159,19 +187,14 @@ export class GitHubAuth {
     localStorage.removeItem('github_oauth_state')
   }
 
-  // Check if user is authenticated
-  static isAuthenticated(): boolean {
-    return this.getStoredAuth() !== null
-  }
-
   // Initiate OAuth flow
-  static login(): void {
-    const authUrl = this.getAuthUrl()
-    window.location.href = authUrl
-  }
-
-  // Logout
-  static logout(): void {
-    this.clearAuth()
+  static async login(): Promise<void> {
+    try {
+      const authUrl = await this.getAuthUrl()
+      window.location.href = authUrl
+    } catch (error) {
+      console.error('Failed to initiate GitHub OAuth:', error)
+      throw error
+    }
   }
 } 

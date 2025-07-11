@@ -83,8 +83,13 @@ const Apply = () => {
   })
 
   // Handle GitHub authentication
-  const handleGitHubAuth = () => {
-    GitHubAuth.login()
+  const handleGitHubAuth = async () => {
+    try {
+      await GitHubAuth.login()
+    } catch (error) {
+      console.error('GitHub authentication failed:', error)
+      toast.error('Failed to connect to GitHub. Please try again.')
+    }
   }
 
   // Handle opening application modal
