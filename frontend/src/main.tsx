@@ -191,10 +191,10 @@ const router = createBrowserRouter([
         path: "/pwa-install",
         element: <PwaInstall />,
       },
-      {
-        path: "*",
-        element: <NotFound />,
-      },
+      // {
+      //   path: "*",
+      //   element: <NotFound />,
+      // },
     ],
   },
 ])
