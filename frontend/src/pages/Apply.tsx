@@ -32,6 +32,7 @@ const Apply = () => {
     solanaWalletAddress: "",
   })
   const [rulesAccepted, setRulesAccepted] = useState(false)
+  const [termsOfUseAccepted, setTermsOfUseAccepted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [githubAuth, setGithubAuth] = useState<GitHubAuthData | null>(null)
   const [isHandlingCallback, setIsHandlingCallback] = useState(false)
@@ -112,43 +113,48 @@ const Apply = () => {
 
   // Handle form submission
   const handleSubmitApplication = async () => {
-    if (!selectedDao || !isGitHubAuthenticated || !githubAuth) return
-    
+    if (!selectedDao || !githubAuth) {
+      toast.error("Missing required information")
+      return
+    }
+
+    if (!rulesAccepted || !termsOfUseAccepted) {
+      toast.error("Please accept all requirements and terms of use")
+      return
+    }
+
     // Validate form
-    if (!applicationForm.deliverableName || 
-        !applicationForm.requestedPrice || 
-        !applicationForm.estimatedDeadline || 
-        !applicationForm.featureDescription || 
-        !applicationForm.solanaWalletAddress) {
+    const { deliverableName, requestedPrice, estimatedDeadline, featureDescription, solanaWalletAddress } = applicationForm
+    if (!deliverableName || !requestedPrice || !estimatedDeadline || !featureDescription || !solanaWalletAddress) {
       toast.error("Please fill in all required fields")
       return
     }
 
-    if (!rulesAccepted) {
-      toast.error("Please accept the required rules")
+    // Validate date format
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+    if (!dateRegex.test(estimatedDeadline)) {
+      toast.error("Please select a valid deadline date")
       return
     }
 
     setIsSubmitting(true)
-    
     try {
       await backendApi.submitApplication({
         projectId: selectedDao.id,
         githubUsername: githubAuth.user.username,
-        githubId: githubAuth.user.id,
-        deliverableName: applicationForm.deliverableName,
-        requestedPrice: parseFloat(applicationForm.requestedPrice),
-        estimatedDeadline: applicationForm.estimatedDeadline,
-        featureDescription: applicationForm.featureDescription,
-        solanaWalletAddress: applicationForm.solanaWalletAddress,
+        githubId: githubAuth.user.id.toString(),
+        deliverableName,
+        requestedPrice: parseFloat(requestedPrice),
+        estimatedDeadline,
+        featureDescription,
+        solanaWalletAddress,
       })
 
       toast.success("Application submitted successfully!")
-      setIsApplicationModalOpen(false)
-      resetForm()
+      handleModalClose()
     } catch (error) {
-      console.error("Application submission error:", error)
-      toast.error((error as Error).message || "Failed to submit application")
+      console.error('Application submission error:', error)
+      toast.error((error as Error).message || 'Failed to submit application')
     } finally {
       setIsSubmitting(false)
     }
@@ -164,6 +170,7 @@ const Apply = () => {
       solanaWalletAddress: "",
     })
     setRulesAccepted(false)
+    setTermsOfUseAccepted(false)
   }
 
   // Handle modal close
@@ -371,10 +378,11 @@ const Apply = () => {
                           Estimated Deadline *
                         </label>
                         <Input
+                          type="date"
                           value={applicationForm.estimatedDeadline}
                           onChange={(e) => handleInputChange('estimatedDeadline', e.target.value)}
-                          placeholder="e.g., 3 months"
-                          className="w-full"
+                          placeholder="YYYY-MM-DD"
+                          className="w-full [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
                         />
                       </div>
                     </div>
@@ -389,17 +397,17 @@ const Apply = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-fg-primary mb-2">
-                          Requested Price (USD) *
+                          Requested Price (SOL) *
                         </label>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-fg-secondary">$</span>
-                          <Input
-                            type="number"
-                            value={applicationForm.requestedPrice}
-                            onChange={(e) => handleInputChange('requestedPrice', e.target.value)}
-                            placeholder="50000"
-                            className="w-full pl-8"
-                          />
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-fg-secondary">SOL</span>
+                            <Input
+                              type="number"
+                              value={applicationForm.requestedPrice}
+                              onChange={(e) => handleInputChange('requestedPrice', e.target.value)}
+                              placeholder="10"
+                              className="w-full pl-12"
+                            />
                         </div>
                       </div>
                       <div>
@@ -493,10 +501,17 @@ const Apply = () => {
                         <p className="text-fg-secondary">Provide initial maintenance and bug fixes</p>
                       </div>
                     </div>
+                    <div className="flex items-start gap-3 p-3 bg-bg-primary rounded-lg">
+                      <Icon icon="SvgCircledCheckmark" className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-fg-primary">Terms of Use</p>
+                        <p className="text-fg-secondary">Accept and agree to the terms and conditions</p>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="mt-6 pt-4 border-t border-fg-primary/10">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 mb-3">
                       <input
                         type="checkbox"
                         id="rulesAccepted"
@@ -506,6 +521,26 @@ const Apply = () => {
                       />
                       <label htmlFor="rulesAccepted" className="text-sm font-medium text-fg-primary">
                         I accept and agree to follow all requirements
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id="termsOfUseAccepted"
+                        checked={termsOfUseAccepted}
+                        onChange={(e) => setTermsOfUseAccepted(e.target.checked)}
+                        className="w-5 h-5 text-brand-primary bg-bg-secondary border-fg-primary/20 rounded focus:ring-brand-primary"
+                      />
+                      <label htmlFor="termsOfUseAccepted" className="text-sm font-medium text-fg-primary">
+                        I accept and agree to the{' '}
+                        <a 
+                          href={ROUTES.TERMS_OF_USE} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-brand-primary hover:text-brand-primary/80 underline"
+                        >
+                          Terms of Use
+                        </a>
                       </label>
                     </div>
                   </div>
@@ -550,7 +585,7 @@ const Apply = () => {
               <Button
                 onClick={handleSubmitApplication}
                 className="flex-1 bg-gradient-to-r from-brand-primary to-brand-secondary hover:from-brand-primary/90 hover:to-brand-secondary/90 text-white font-semibold"
-                disabled={isSubmitting || !rulesAccepted}
+                disabled={isSubmitting || !rulesAccepted || !termsOfUseAccepted}
                 size="lg"
               >
                 {isSubmitting ? (
