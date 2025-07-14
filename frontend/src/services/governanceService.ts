@@ -110,7 +110,8 @@ export class GovernanceService {
     governancePubkey: PublicKey,
     proposalPubkey: PublicKey,
     governingTokenMint: PublicKey,
-    vote: 'approve' | 'deny'
+    vote: 'approve' | 'deny',
+    optionIndex?: number
   ): Promise<Transaction> {
     const transaction = new Transaction();
 
@@ -145,8 +146,9 @@ export class GovernanceService {
     );
 
     // We need the proposal owner's token owner record for the cast vote instruction
-    // Try to fetch the proposal to get the correct owner, fallback to voter if needed
+    // Try to fetch the proposal to get the correct owner and vote type, fallback to voter if needed
     let proposalOwnerTokenOwnerRecord = voterTokenOwnerRecord;
+    let proposalOptionsCount = 2; // Default to 2 for Yes/No proposals
     
     try {
       const proposalAccountInfo = await this.connection.getAccountInfo(proposalPubkey);
@@ -155,6 +157,14 @@ export class GovernanceService {
         // Proposal structure: accountType(1) + governance(32) + governingTokenMint(32) + state(1) + tokenOwnerRecord(32)
         const proposalOwnerRecordPubkey = new PublicKey(proposalAccountInfo.data.slice(65, 97));
         proposalOwnerTokenOwnerRecord = proposalOwnerRecordPubkey;
+        
+        // For multi-choice proposals, determine the correct number of options
+        // If optionIndex is provided, it means this is a multi-choice proposal
+        if (optionIndex !== undefined && optionIndex >= 0) {
+          // For the "Choose your developer" proposal with 3 options (2 developers + NOTA)
+          // we need to send exactly 3 vote choices
+          proposalOptionsCount = 3; // Fixed at 3 for this type of proposal
+        }
       }
     } catch (error) {
       console.warn("Could not fetch proposal owner, using voter as fallback:", error);
@@ -163,20 +173,42 @@ export class GovernanceService {
     // Create proper vote data based on vote type (Borsh serialization format)
     let voteData: Buffer;
     if (vote === 'approve') {
-      // Approve vote with vector of VoteChoice
-      // Format: enum discriminant (1 byte) + vector length (4 bytes LE) + VoteChoice entries
-      const vectorLength = Buffer.alloc(4);
-      vectorLength.writeUInt32LE(1, 0); // 1 choice
-      
-      const voteChoice = Buffer.alloc(2);
-      voteChoice.writeUInt8(0, 0); // rank: 0
-      voteChoice.writeUInt8(100, 1); // weightPercentage: 100
-      
-      voteData = Buffer.concat([
-        Buffer.from([0]), // Approve enum discriminant
-        vectorLength, // Vector length (1 choice)
-        voteChoice // VoteChoice: rank=0, weight=100%
-      ]);
+      // For multi-choice proposals, we need to include ALL options with rank=0
+      // Only the selected option gets 100% weight, others get 0%
+      if (optionIndex !== undefined && proposalOptionsCount > 2) {
+        // Multi-choice proposal: create vote choices for ALL options
+        // Format: enum discriminant (1 byte) + vector length (4 bytes LE) + VoteChoice entries
+        const vectorLength = Buffer.alloc(4);
+        vectorLength.writeUInt32LE(proposalOptionsCount, 0); // All options
+        
+        const voteChoices = [];
+        for (let i = 0; i < proposalOptionsCount; i++) {
+          const voteChoice = Buffer.alloc(2);
+          voteChoice.writeUInt8(0, 0); // rank: ALWAYS 0 (not the option index!)
+          voteChoice.writeUInt8(i === optionIndex ? 100 : 0, 1); // weightPercentage: 100 for selected, 0 for others
+          voteChoices.push(voteChoice);
+        }
+        
+        voteData = Buffer.concat([
+          Buffer.from([0]), // Approve enum discriminant
+          vectorLength, // Vector length (all options)
+          ...voteChoices // All VoteChoice entries with rank=0
+        ]);
+      } else {
+        // Traditional Yes/No proposal: single choice with rank=0
+        const vectorLength = Buffer.alloc(4);
+        vectorLength.writeUInt32LE(1, 0); // 1 choice
+        
+        const voteChoice = Buffer.alloc(2);
+        voteChoice.writeUInt8(0, 0); // rank: always 0 for traditional proposals
+        voteChoice.writeUInt8(100, 1); // weightPercentage: 100
+        
+        voteData = Buffer.concat([
+          Buffer.from([0]), // Approve enum discriminant
+          vectorLength, // Vector length (1 choice)
+          voteChoice // VoteChoice: rank=0, weight=100%
+        ]);
+      }
     } else {
       // Deny vote (no additional data)
       voteData = Buffer.from([1]); // Deny enum discriminant
@@ -210,6 +242,8 @@ export class GovernanceService {
     console.log("- Voter token owner record:", voterTokenOwnerRecord.toBase58());
     console.log("- Proposal owner token owner record:", proposalOwnerTokenOwnerRecord.toBase58());
     console.log("- Vote type:", vote);
+    console.log("- Option index:", optionIndex);
+    console.log("- Proposal options count:", proposalOptionsCount);
     console.log("- Vote data length:", voteData.length);
     console.log("- Vote data hex:", voteData.toString('hex'));
 

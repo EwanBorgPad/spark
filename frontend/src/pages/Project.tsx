@@ -10,6 +10,7 @@ import { Icon } from "@/components/Icon/Icon"
 import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
+import { backendApi } from "@/data/api/backendApi"
 import { useQuery } from "@tanstack/react-query"
 import { GetTokenResponse, DaoModel, GetTokenMarketResponse, TokenMarketData } from "shared/models"
 import TokenChart from "@/components/TokenChart/TokenChart"
@@ -237,6 +238,13 @@ const Project = () => {
       }),
     queryKey: ["getDao", tokenData?.token?.dao],
     enabled: Boolean(tokenData?.token?.dao && tokenData?.token?.dao !== ""),
+  })
+
+  // Fetch applications for this project
+  const { data: applicationsData } = useQuery({
+    queryFn: () => backendApi.getAllApplications(),
+    queryKey: ["getAllApplications"],
+    enabled: Boolean(id),
   })
 
   // Fetch token market data
@@ -1127,28 +1135,113 @@ const Project = () => {
                                       )}
 
                                       {/* Vote Stats */}
-                                      <div className="grid grid-cols-2 gap-2 text-xs">
-                                        <div className="bg-green-600/20 border border-green-600/30 rounded p-2 text-center">
-                                          <Text text="Yes" as="p" className="text-green-300 font-medium mb-1" />
-                                          <Text text={(() => {
-                                            const yesVotes = proposal.options[0]?.voteWeight || "0";
-                                            const votes = parseInt(yesVotes) / 1000000000;
-                                            return votes >= 1000000 ? `${(votes / 1000000).toFixed(1)}M` :
-                                              votes >= 1000 ? `${(votes / 1000).toFixed(1)}K` :
-                                                votes.toFixed(1);
-                                          })()} as="p" className="text-white font-semibold" />
-                                        </div>
-                                        <div className="bg-orange-600/20 border border-orange-600/30 rounded p-2 text-center">
-                                          <Text text="No" as="p" className="text-red-300 font-medium mb-1" />
-                                          <Text text={(() => {
-                                            const noVotes = proposal.denyVoteWeight || "0";
-                                            const votes = parseInt(noVotes) / 1000000000;
-                                            return votes >= 1000000 ? `${(votes / 1000000).toFixed(1)}M` :
-                                              votes >= 1000 ? `${(votes / 1000).toFixed(1)}K` :
-                                                votes.toFixed(1);
-                                          })()} as="p" className="text-white font-semibold" />
-                                        </div>
-                                      </div>
+                                      {(() => {
+                                        // Check if this is a multi-choice proposal by examining the structure
+                                        // Multi-choice proposals typically have more than 2 options and specific naming patterns
+                                        const isMultiChoice = proposal.options && proposal.options.length > 2 || 
+                                          (proposal.name && proposal.name.toLowerCase().includes('choose')) ||
+                                          (proposal.options && proposal.options.length > 0 && proposal.options.some(option => option.label && !['Yes', 'No'].includes(option.label)));
+                                        
+                                        if (isMultiChoice && proposal.options && proposal.options.length > 0) {
+                                          // Multi-choice proposal - show all options
+                                          return (
+                                            <div className="space-y-2 text-xs">
+                                              {proposal.options.map((option, index) => {
+                                                const votes = parseInt(option.voteWeight || "0") / 1000000000;
+                                                const formattedVotes = votes >= 1000000 ? `${(votes / 1000000).toFixed(1)}M` :
+                                                  votes >= 1000 ? `${(votes / 1000).toFixed(1)}K` :
+                                                    votes.toFixed(1);
+                                                
+                                                // Color based on option index
+                                                const colors = [
+                                                  'bg-blue-600/20 border-blue-600/30 text-blue-300',
+                                                  'bg-green-600/20 border-green-600/30 text-green-300', 
+                                                  'bg-purple-600/20 border-purple-600/30 text-purple-300',
+                                                  'bg-orange-600/20 border-orange-600/30 text-orange-300',
+                                                  'bg-pink-600/20 border-pink-600/30 text-pink-300'
+                                                ];
+                                                const colorClass = colors[index % colors.length];
+                                                
+                                                // Format option label consistently
+                                                const formatOptionLabel = (label: string): string => {
+                                                  if (label === "$$_NOTA_$$") {
+                                                    return "None of the Above"
+                                                  }
+                                                  return label
+                                                }
+                                                
+                                                // Find matching application for this developer
+                                                const matchingApplication = applicationsData?.applications?.find(app => 
+                                                  app.projectId === id && app.githubUsername === option.label
+                                                );
+                                                
+                                                // Format price similar to Applications component
+                                                const formatPrice = (price: number | null | undefined) => {
+                                                  if (price === null || price === undefined || isNaN(price)) {
+                                                    return "0"
+                                                  }
+                                                  if (price > 1000000) {
+                                                    return (price / 1000000000).toFixed(6)
+                                                  } else {
+                                                    return price.toString()
+                                                  }
+                                                }
+                                                
+                                                return (
+                                                  <div key={index} className={`${colorClass} border rounded p-2 text-center`}>
+                                                    {option.label && option.label !== "$$_NOTA_$$" ? (
+                                                      <a
+                                                        href={`https://github.com/${option.label}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="font-medium mb-1 hover:underline cursor-pointer block flex items-center justify-center gap-1"
+                                                      >
+                                                        <Text text={formatOptionLabel(option.label)} as="p" className="font-medium" />
+                                                        <Icon icon="SvgExternalLink" className="w-3 h-3 opacity-70" />
+                                                      </a>
+                                                    ) : (
+                                                      <Text text={formatOptionLabel(option.label || `Option ${index + 1}`)} as="p" className="font-medium mb-1" />
+                                                    )}
+                                                    <Text text={formattedVotes} as="p" className="text-white font-semibold" />
+                                                    {matchingApplication && (
+                                                      <div className="mt-1 text-xs opacity-80">
+                                                        <div>Price: {matchingApplication.requestedPrice} SOL</div>
+                                                        <div>Timeline: {matchingApplication.estimatedDeadline}</div>
+                                                      </div>
+                                                    )}
+                                                  </div>
+                                                );
+                                              })}
+                                            </div>
+                                          );
+                                        } else {
+                                          // Traditional Yes/No proposal
+                                          return (
+                                            <div className="grid grid-cols-2 gap-2 text-xs">
+                                              <div className="bg-green-600/20 border border-green-600/30 rounded p-2 text-center">
+                                                <Text text="Yes" as="p" className="text-green-300 font-medium mb-1" />
+                                                <Text text={(() => {
+                                                  const yesVotes = proposal.options[0]?.voteWeight || "0";
+                                                  const votes = parseInt(yesVotes) / 1000000000;
+                                                  return votes >= 1000000 ? `${(votes / 1000000).toFixed(1)}M` :
+                                                    votes >= 1000 ? `${(votes / 1000).toFixed(1)}K` :
+                                                      votes.toFixed(1);
+                                                })()} as="p" className="text-white font-semibold" />
+                                              </div>
+                                              <div className="bg-orange-600/20 border border-orange-600/30 rounded p-2 text-center">
+                                                <Text text="No" as="p" className="text-red-300 font-medium mb-1" />
+                                                <Text text={(() => {
+                                                  const noVotes = proposal.denyVoteWeight || "0";
+                                                  const votes = parseInt(noVotes) / 1000000000;
+                                                  return votes >= 1000000 ? `${(votes / 1000000).toFixed(1)}M` :
+                                                    votes >= 1000 ? `${(votes / 1000).toFixed(1)}K` :
+                                                      votes.toFixed(1);
+                                                })()} as="p" className="text-white font-semibold" />
+                                              </div>
+                                            </div>
+                                          );
+                                        }
+                                      })()}
 
                                       {/* Voting Buttons - Only show for voting state */}
                                       {isVotingOpen && (
