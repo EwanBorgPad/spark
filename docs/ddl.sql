@@ -10,9 +10,23 @@ CREATE TABLE user (
 CREATE TABLE tokens (
     mint TEXT NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
-    isGraduated BOOLEAN NOT NULL,
     imageUrl TEXT,
     dao TEXT
+);
+
+CREATE TABLE applications (
+    id TEXT NOT NULL PRIMARY KEY,
+    project_id TEXT NOT NULL,
+    github_username TEXT NOT NULL,
+    github_id TEXT NOT NULL,
+    deliverable_name TEXT NOT NULL,
+    requested_price INTEGER NOT NULL,
+    estimated_deadline TEXT NOT NULL,
+    feature_description TEXT NOT NULL,
+    solana_wallet_address TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE error (

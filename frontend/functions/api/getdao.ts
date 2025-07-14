@@ -136,6 +136,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
           const proposals = await splGovernance.getProposalsforGovernance(governance.publicKey);
           allProposals.push(...proposals);
           console.log(`Found ${proposals.length} proposals for governance ${governance.publicKey.toBase58()}`);
+          console.log(proposals)
         } catch (error) {
           console.warn(`Failed to get proposals for governance ${governance.publicKey.toBase58()}:`, error);
         }

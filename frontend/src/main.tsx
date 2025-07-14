@@ -38,6 +38,7 @@ import Projects from "./pages/Projects"
 import Providers from "./providers/PrivyProvider"
 import LandingPage from "./pages/LandingPage"
 import PwaInstall from "./pages/PwaInstall"
+import Apply from "./pages/Apply"
 window.Buffer = Buffer
 
 const queryClient = new QueryClient({
@@ -116,6 +117,10 @@ const router = createBrowserRouter([
       {
         path: ROUTES.SEARCH,
         element: <Search />,
+      },
+      {
+        path: ROUTES.APPLY,
+        element: <Apply />,
       },
 
       // @backOffice

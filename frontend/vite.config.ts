@@ -47,8 +47,14 @@ export default defineConfig({
     }),
   ],
   publicDir: publicDir,
-  // enable below to serve on local network (for testing on mobile devices)
-  // server: {
-  //   host: true,
-  // }
+  server: {
+    // enable below to serve on local network (for testing on mobile devices)
+    // host: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8788',
+        changeOrigin: true
+      }
+    }
+  }
 })

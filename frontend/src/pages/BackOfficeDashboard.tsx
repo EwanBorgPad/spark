@@ -2,15 +2,12 @@ import { Button } from "@/components/Button/Button"
 import { useState } from "react"
 
 import { Icon } from "@/components/Icon/Icon"
-import UpdateProjectJson from "@/components/BackOffice/UpdateProjectJson"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { ConnectButton } from "@/components/Header/ConnectButton"
 import AnalysisApprovalDashboard from "@/components/BackOffice/AnalysisApprovalDashboard"
-import AfterSaleUpdate from "@/components/BackOffice/AfterSaleUpdate"
-import ProjectStatus from "@/components/BackOffice/ProjectStatus"
-import TokenDistribution from "@/components/BackOffice/TokenDistribution"
+import Applications from "@/components/BackOffice/Applications"
 
-const BACK_OFFICE_FEATURES = ["AFTER_SALE_UPDATE", "UPDATE_JSON_FILE", "PROJECT_STATUS", "TOKEN_DISTRIBUTION"] as const
+const BACK_OFFICE_FEATURES = ["APPLICATIONS"] as const
 type BackOfficeFeatureType = (typeof BACK_OFFICE_FEATURES)[number]
 
 const BackOfficeDashboard = () => {
@@ -19,14 +16,8 @@ const BackOfficeDashboard = () => {
   const [renderedFeature, setRenderedFeature] = useState<BackOfficeFeatureType | null>(null)
 
   const renderFeature = () => {
-    if (renderedFeature === "AFTER_SALE_UPDATE") {
-      return <AfterSaleUpdate />
-    } else if (renderedFeature === "UPDATE_JSON_FILE") {
-      return <UpdateProjectJson />
-    } else if (renderedFeature === "PROJECT_STATUS") {
-      return <ProjectStatus />
-    } else if (renderedFeature === "TOKEN_DISTRIBUTION") {
-      return <TokenDistribution />
+    if (renderedFeature === "APPLICATIONS") {
+      return <Applications />
     }
   }
 
@@ -44,30 +35,12 @@ const BackOfficeDashboard = () => {
           {/* Content Area */}
           {!renderedFeature ? (
             <div className="flex w-full flex-col gap-6">
-              <div className="flex w-full gap-4">
+              <div className="flex w-full justify-center">
                 <div
                   className="flex max-w-[300px] flex-1 cursor-pointer justify-center rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-primary/30 p-10 ring-[1px] ring-brand-primary/40 hover:bg-brand-secondary/40"
-                  onClick={() => setRenderedFeature("AFTER_SALE_UPDATE")}
+                  onClick={() => setRenderedFeature("APPLICATIONS")}
                 >
-                  <span className="w-full text-center text-xl">💸 After Sale Update</span>
-                </div>
-                <div
-                  className="flex max-w-[300px] flex-1 cursor-pointer justify-center rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-primary/30 p-10 ring-[1px] ring-brand-primary/40 hover:bg-brand-secondary/40"
-                  onClick={() => setRenderedFeature("UPDATE_JSON_FILE")}
-                >
-                  <span className="w-full text-center text-xl">📝 Update JSON files</span>
-                </div>
-                <div
-                  className="flex max-w-[300px] flex-1 cursor-pointer justify-center rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-primary/30 p-10 ring-[1px] ring-brand-primary/40 hover:bg-brand-secondary/40"
-                  onClick={() => setRenderedFeature("PROJECT_STATUS")}
-                >
-                  <span className="w-full text-center text-xl">✅ Projects Status</span>
-                </div>
-                <div
-                  className="flex max-w-[300px] flex-1 cursor-pointer justify-center rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-primary/30 p-10 ring-[1px] ring-brand-primary/40 hover:bg-brand-secondary/40"
-                  onClick={() => setRenderedFeature("TOKEN_DISTRIBUTION")}
-                >
-                  <span className="w-full text-center text-xl">💰 Token Distribution</span>
+                  <span className="w-full text-center text-xl">📝 Applications</span>
                 </div>
               </div>
             </div>
@@ -82,7 +55,7 @@ const BackOfficeDashboard = () => {
             </div>
           )}
           {renderFeature()}
-          {!renderedFeature && <AnalysisApprovalDashboard />}
+
         </div>
       ) : (
         <div className="flex justify-center">

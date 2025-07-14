@@ -193,18 +193,18 @@ const Search = () => {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <Text
-                              text={token.isGraduated ? "Graduated" : "Active"}
+                              text={token.dao && token.dao !== "" ? "Has DAO" : "No DAO"}
                               as="span"
                               className={twMerge(
                                 "text-xs px-2 py-1 rounded-full",
-                                token.isGraduated 
+                                token.dao && token.dao !== "" 
                                   ? "bg-green-500/20 text-green-400" 
                                   : "bg-brand-primary/20 text-brand-primary"
                               )}
                             />
-                            {token.dao && (
+                            {token.dao && token.dao !== "" && (
                               <Text
-                                text="DAO"
+                                text="Available for Apps"
                                 as="span"
                                 className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full"
                               />

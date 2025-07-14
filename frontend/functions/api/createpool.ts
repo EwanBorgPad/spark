@@ -112,8 +112,8 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     if (txSignature) {
       await db
-        .prepare("INSERT INTO tokens (mint, name, isGraduated, imageUrl, dao) VALUES (?1, ?2, ?3, ?4, ?5)")
-        .bind(mint, tokenName, false, imageUrl, "")
+        .prepare("INSERT INTO tokens (mint, name, imageUrl, dao) VALUES (?1, ?2, ?3, ?4)")
+        .bind(mint, tokenName, imageUrl, "")
         .run();
       console.log("token inserted");
     }

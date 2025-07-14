@@ -1,5 +1,5 @@
 // src/pages/api/createToken.ts
-import { eq } from "drizzle-orm"
+import { eq, and, ne, isNotNull, or, isNull } from "drizzle-orm"
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { drizzle } from "drizzle-orm/d1"
 import { tokensTable } from "../../shared/drizzle-schema"
@@ -25,13 +25,29 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       return jsonResponse({ tokens }, 200)
     }
 
+    // "Graduated" tokens are now tokens that have DAOs (non-null, non-empty dao field)
     if (isGraduated === "true") {
-      const tokens = await db.select().from(tokensTable).where(eq(tokensTable.isGraduated, true));
+      const tokens = await db
+        .select()
+        .from(tokensTable)
+        .where(and(
+          isNotNull(tokensTable.dao),
+          ne(tokensTable.dao, "")
+        ))
+        .all();
       return jsonResponse({ tokens }, 200)
     }
 
+    // "Non-graduated" tokens are tokens without DAOs (null or empty dao field)  
     if (isGraduated === "false") {
-      const tokens = await db.select().from(tokensTable).where(eq(tokensTable.isGraduated, false));
+      const tokens = await db
+        .select()
+        .from(tokensTable)
+        .where(or(
+          isNull(tokensTable.dao),
+          eq(tokensTable.dao, "")
+        ))
+        .all();
       return jsonResponse({ tokens }, 200)
     }
 
