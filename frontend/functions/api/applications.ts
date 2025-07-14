@@ -1,7 +1,7 @@
 import { jsonResponse, reportError } from "./cfPagesFunctionsUtils"
 import { drizzle } from "drizzle-orm/d1"
 import { applicationsTable } from "../../shared/drizzle-schema"
-import { eq, and } from "drizzle-orm"
+import { eq, and, asc, desc } from "drizzle-orm"
 import { nanoid } from "nanoid"
 
 type ENV = {
@@ -90,37 +90,66 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const url = new URL(ctx.request.url)
     const projectId = url.searchParams.get("projectId")
     const githubId = url.searchParams.get("githubId")
+    const sortBy = url.searchParams.get("sortBy") || "createdAt"
+    const sortDirection = url.searchParams.get("sortDirection") || "desc"
 
+    // Get the sort field
+    const sortField = getSortField(sortBy)
+    const orderBy = sortDirection === "asc" ? asc(sortField) : desc(sortField)
+
+    let applications
     if (projectId) {
       // Get all applications for a specific project
-      const applications = await db
+      applications = await db
         .select()
         .from(applicationsTable)
         .where(eq(applicationsTable.projectId, projectId))
+        .orderBy(orderBy)
         .all()
-
-      return jsonResponse({ applications }, 200)
     } else if (githubId) {
       // Get all applications for a specific GitHub user
-      const applications = await db
+      applications = await db
         .select()
         .from(applicationsTable)
         .where(eq(applicationsTable.githubId, githubId))
+        .orderBy(orderBy)
         .all()
-
-      return jsonResponse({ applications }, 200)
     } else {
       // Get all applications (admin view)
-      const applications = await db
+      applications = await db
         .select()
         .from(applicationsTable)
+        .orderBy(orderBy)
         .all()
-
-      return jsonResponse({ applications }, 200)
     }
+
+    console.log(applications)
+    return jsonResponse({ applications }, 200)
   } catch (e) {
     await reportError(ctx.env.DB, e)
     return jsonResponse({ message: "Something went wrong..." }, 500)
+  }
+}
+
+// Helper function to map frontend sort field names to database columns
+function getSortField(sortBy: string) {
+  switch (sortBy) {
+    case "githubUsername":
+      return applicationsTable.githubUsername
+    case "projectId":
+      return applicationsTable.projectId
+    case "deliverableName":
+      return applicationsTable.deliverableName
+    case "requestedPrice":
+      return applicationsTable.requestedPrice
+    case "estimatedDeadline":
+      return applicationsTable.estimatedDeadline
+    case "status":
+      return applicationsTable.status
+    case "createdAt":
+      return applicationsTable.createdAt
+    default:
+      return applicationsTable.createdAt
   }
 }
 

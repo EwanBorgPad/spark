@@ -677,12 +677,51 @@ export type SubmitApplicationRequest = {
   solanaWalletAddress: string
 }
 
+export type ApplicationResponse = {
+  id: string
+  projectId: string
+  githubUsername: string
+  githubId: string
+  deliverableName: string
+  requestedPrice: number
+  estimatedDeadline: string
+  featureDescription: string
+  solanaWalletAddress: string
+  status: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type GetApplicationsResponse = {
+  applications: ApplicationResponse[]
+}
+
 const getDaos = async (): Promise<GetDaosResponse> => {
   const url = new URL(`${API_BASE_URL}/daos`, window.location.href)
   const response = await fetch(url)
   
   if (!response.ok) {
     throw new Error("Failed to fetch DAOs")
+  }
+  
+  const json = await response.json()
+  return json
+}
+
+const getAllApplications = async (sortBy?: string, sortDirection?: string): Promise<GetApplicationsResponse> => {
+  const url = new URL(`${API_BASE_URL}/applications`, window.location.href)
+  
+  if (sortBy) {
+    url.searchParams.set("sortBy", sortBy)
+  }
+  if (sortDirection) {
+    url.searchParams.set("sortDirection", sortDirection)
+  }
+  
+  const response = await fetch(url)
+  
+  if (!response.ok) {
+    throw new Error("Failed to fetch applications")
   }
   
   const json = await response.json()
@@ -736,5 +775,6 @@ export const backendApi = {
   distributeTokens,
   getRaisedAmountOnLbp,
   getDaos,
+  getAllApplications,
   submitApplication,
 }

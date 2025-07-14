@@ -1,9 +1,11 @@
 import { PrivyProvider } from '@privy-io/react-auth';
 import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
+import { WalletProvider } from "@/hooks/useWalletContext";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (
-        <PrivyProvider
+        <WalletProvider>
+            <PrivyProvider
             appId="cmasdjed900usji0md76gjyna"
             config={{
                 "appearance": {
@@ -58,6 +60,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         >
             {children}
         </PrivyProvider>
+        </WalletProvider>
     );
 }
 
