@@ -286,18 +286,6 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ tokenMarketData, cl
           <span>Now</span>
         </div>
       </div>
-
-      {/* Chart statistics */}
-      <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-fg-primary/10">
-        <div>
-          <div className="text-sm text-fg-primary text-opacity-70 mb-2 font-medium">High (24h)</div>
-          <div className="font-bold text-lg text-fg-primary">{formatPrice(maxPrice)}</div>
-        </div>
-        <div>
-          <div className="text-sm text-fg-primary text-opacity-70 mb-2 font-medium">Low (24h)</div>
-          <div className="font-bold text-lg text-fg-primary">{formatPrice(minPrice)}</div>
-        </div>
-      </div>
     </div>
   );
 };

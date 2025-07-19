@@ -38,6 +38,7 @@ const Project = () => {
   const [solPriceUSD, setSolPriceUSD] = useState<number | null>(null)
   const [fallbackChartData, setFallbackChartData] = useState<TokenMarketData | null>(null)
   const [isLoadingFallbackChart, setIsLoadingFallbackChart] = useState(false)
+  const [governanceData, setGovernanceData] = useState<{ userTokenBalance: number; votingPower: number }>({ userTokenBalance: 0, votingPower: 0 })
   const { isDesktop, isMobile } = useDeviceDetection()
 
   const { user, authenticated } = usePrivy()
@@ -272,6 +273,10 @@ const Project = () => {
       // This would trigger a refetch in a real implementation
       console.log("Governance status updated, refreshing data...")
     }
+  }
+
+  const handleGovernanceDataUpdate = (data: { userTokenBalance: number; votingPower: number }) => {
+    setGovernanceData(data)
   }
 
   // Check if DAO exists to conditionally adjust layout
@@ -946,6 +951,16 @@ const Project = () => {
           {/* Right Column - Simplified Info (Desktop only) */}
           {isDesktop && (
             <div className="lg:col-span-1 space-y-4">
+              {/* Governance Status Overview - Show when DAO exists */}
+              {hasDao && authenticated && (
+                <div className="bg-bg-secondary rounded-lg p-4 border border-fg-primary/10">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-fg-primary/60">Voting Power</div>
+                    <div className="text-lg font-medium text-fg-primary">{governanceData.votingPower.toFixed(2)}</div>
+                  </div>
+                </div>
+              )}
+
               {/* Token Stats */}
               <div className="bg-bg-secondary rounded-lg p-4 border border-fg-primary/10">
                 <h3 className="text-base font-medium mb-3">Token Info</h3>
@@ -1006,11 +1021,6 @@ const Project = () => {
         {/* DAO Governance */}
         {hasDao && (
           <div className="w-full space-y-4">
-            <div className="text-center">
-              <Text text="DAO Governance" as="h2" className="text-xl font-semibold mb-1" />
-              <Text text="Participate in project governance" as="p" className="text-sm text-fg-primary/60" />
-            </div>
-
             {daoLoading && (
               <div className="w-full rounded-lg bg-bg-secondary p-4 border border-fg-primary/10">
                 <div className="flex items-center justify-center space-x-2">
@@ -1043,17 +1053,25 @@ const Project = () => {
                   </a>
                 </div>
 
+                {/* Mobile Governance Status Overview */}
+                {!isDesktop && authenticated && (
+                  <div className="rounded-lg bg-bg-secondary p-4 border border-fg-primary/10">
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm text-fg-primary/60">Voting Power</div>
+                      <div className="text-lg font-medium text-fg-primary">{governanceData.votingPower.toFixed(2)}</div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Two Column Layout for Desktop */}
                 <div className={`${isDesktop ? 'grid grid-cols-1 lg:grid-cols-2 gap-6' : 'space-y-4'}`}>
                   {/* Left Column - Governance Status */}
                   <div className="rounded-lg bg-bg-secondary border border-fg-primary/10 overflow-hidden">
-                    <div className="p-4 border-b border-fg-primary/10">
-                      <Text text="Governance Status" as="h3" className="text-base font-medium" />
-                    </div>
                     <div className="p-4">
                       <GovernanceStatus
                         dao={daoData.dao}
                         onStatusUpdate={handleGovernanceStatusUpdate}
+                        onDataUpdate={handleGovernanceDataUpdate}
                       />
                     </div>
                   </div>

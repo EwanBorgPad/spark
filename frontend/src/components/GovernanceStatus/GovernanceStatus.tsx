@@ -14,9 +14,10 @@ interface GovernanceStatusProps {
   dao: DaoModel;
   className?: string;
   onStatusUpdate?: () => void;
+  onDataUpdate?: (data: { userTokenBalance: number; votingPower: number }) => void;
 }
 
-const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = "", onStatusUpdate }) => {
+const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = "", onStatusUpdate, onDataUpdate }) => {
   const { user, authenticated } = usePrivy();
   const { wallets } = useSolanaWallets();
   const [isDepositing, setIsDepositing] = useState(false);
@@ -61,9 +62,11 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
           userPubkey
         );
 
+        let currentUserTokenBalance = 0;
         try {
           const tokenAccountInfo = await connection.getTokenAccountBalance(userTokenAccount);
-          setUserTokenBalance(tokenAccountInfo.value.uiAmount || 0);
+          currentUserTokenBalance = tokenAccountInfo.value.uiAmount || 0;
+          setUserTokenBalance(currentUserTokenBalance);
         } catch (error) {
           console.log("User token account doesn't exist yet");
           setUserTokenBalance(0);
@@ -79,13 +82,25 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
         setVotingPower(govVotingPower);
         console.log("Voting power:", govVotingPower);
 
+        // Notify parent component of data updates
+        if (onDataUpdate) {
+          onDataUpdate({
+            userTokenBalance: currentUserTokenBalance,
+            votingPower: govVotingPower
+          });
+        }
+
       } catch (error) {
         console.error("Error checking user status:", error);
+        // Still notify parent with zero values
+        if (onDataUpdate) {
+          onDataUpdate({ userTokenBalance: 0, votingPower: 0 });
+        }
       }
     };
 
     checkUserStatus();
-  }, [authenticated, user, dao.communityMint, dao.address]);
+  }, [authenticated, user, dao.communityMint, dao.address, onDataUpdate]);
 
   const handleDepositTokens = async () => {
     if (!authenticated) {
@@ -248,18 +263,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
         </div>
       ) : (
         <div className="space-y-4">
-          {/* Status Overview */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-bg-primary/10 rounded p-3 text-center border border-fg-primary/10">
-              <Text text="Wallet Balance" as="h3" className="text-xs text-fg-primary/60 mb-1" />
-              <Text text={`${userTokenBalance.toFixed(2)}`} as="p" className="text-lg font-medium" />
-            </div>
-            <div className="bg-bg-primary/10 rounded p-3 text-center border border-fg-primary/10">
-              <Text text="Voting Power" as="h3" className="text-xs text-fg-primary/60 mb-1" />
-              <Text text={`${votingPower.toFixed(2)}`} as="p" className="text-lg font-medium" />
-            </div>
-          </div>
-
+          {/* Status Overview - Now handled externally */}
           {/* Token Management */}
           <div className="bg-bg-primary/5 rounded p-3 border border-fg-primary/10">
             <Text text="Manage Tokens" as="h3" className="text-sm font-medium mb-3" />
