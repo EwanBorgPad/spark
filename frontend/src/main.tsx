@@ -22,11 +22,7 @@ import { ROUTES } from "./utils/routes"
 // import BackOfficeDashboard from "./pages/BackOfficeDashboard"
 import { AuthProvider } from "./hooks/useAuthContext"
 import ProtectedRoute from "./components/BackOffice/ProtectedRoute"
-import Project2 from "./pages/Project2"
 import Project from "./pages/Project"
-import DraftPickPage from "./pages/DraftPickPage"
-import DraftPicks from "./pages/DraftPicks"
-import LaunchPools from "./pages/LaunchPools"
 import GetStarted from "./pages/GetStarted"
 import Connection from "./pages/Connection"
 import EmailConnection from "./pages/EmailConnection"
@@ -133,48 +129,6 @@ const router = createBrowserRouter([
             </ProtectedRoute>
           </AuthProvider>
         ),
-      },
-      // {
-      //   path: "/angel-staking",
-      //   element: <AngelStaking />,
-      // },
-      {
-        path: ROUTES.LAUNCH_POOLS,
-        errorElement: <SomethingWentWrong />,
-        element: <Outlet />,
-        children: [
-          {
-            path: ":projectId",
-            element: (
-              <ProjectDataProvider>
-                <Project />
-              </ProjectDataProvider>
-            ),
-          },
-          {
-            path: "",
-            element: <LaunchPools />,
-          },
-        ],
-      },
-      {
-        path: ROUTES.DRAFT_PICKS,
-        errorElement: <SomethingWentWrong />,
-        element: <Outlet />,
-        children: [
-          {
-            path: ":projectId",
-            element: (
-              <ProjectDataProvider>
-                <DraftPickPage />
-              </ProjectDataProvider>
-            ),
-          },
-          {
-            path: "",
-            element: <DraftPicks />,
-          },
-        ],
       },
       {
         path: "/goat-pools/*",

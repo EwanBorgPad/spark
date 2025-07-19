@@ -1,6 +1,6 @@
 import React from "react"
-import angelStakingTexture1Mob from "@/assets/angelStaking/angelStakingTexture1-mob.png"
-import angelStakingTexture1 from "@/assets/angelStaking/angelStakingTexture1.png"
+import angelStakingTexture1Mob from "@/assets/logos/type-background.png"
+import angelStakingTexture1 from "@/assets/logos/type-background.png"
 
 const SomethingWentWrong = () => {
   return (

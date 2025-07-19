@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query"
 import { GetTokenMarketResponse, GetTokensResponse, TokenModel } from "shared/models"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
 import Img from "@/components/Image/Img"
-import landingPageBanner from "@/assets/landing-page-banner.png"
+import logoSvg from "@/assets/logos/logo.svg"
 import { useDeviceDetection } from "@/hooks/useDeviceDetection"
 
 // Helper component to fetch and display market data for a single token
@@ -112,10 +112,10 @@ const Projects = () => {
           </h2>
 
           <Img
-            src={landingPageBanner}
+            src={logoSvg}
             size="custom"
-            customClass={`w-full object-cover rounded-lg mb-6 ${isDesktop ? 'max-w-[1200px] h-[300px]' : 'max-w-[800px] h-[250px]'}`}
-            imgClassName="object-contain"
+            customClass={`w-full object-cover rounded-lg ${isDesktop ? 'max-w-[1200px] h-[300px]' : 'max-w-[400px] h-[130px]'}`}
+            imgClassName="object-contain scale-100" // logo even smaller and more zoom
             alt="Explore Banner"
           />
 
