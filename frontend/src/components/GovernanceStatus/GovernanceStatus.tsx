@@ -68,7 +68,6 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
           currentUserTokenBalance = tokenAccountInfo.value.uiAmount || 0;
           setUserTokenBalance(currentUserTokenBalance);
         } catch (error) {
-          console.log("User token account doesn't exist yet");
           setUserTokenBalance(0);
         }
 

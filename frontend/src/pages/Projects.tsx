@@ -27,8 +27,12 @@ const TokenCard = ({ token, isLoading }: { token: TokenModel, isLoading: boolean
   const navigate = useNavigate()
   const { isDesktop } = useDeviceDetection()
 
-  const marketCap = marketData?.tokenMarketData?.marketCap 
-    ? `$${(marketData.tokenMarketData.marketCap / 1000).toFixed(2)}K`
+  const marketCap = marketData?.tokenMarketData?.marketCap
+    ? marketData.tokenMarketData.marketCap >= 1_000_000
+      ? `$${(marketData.tokenMarketData.marketCap / 1_000_000).toFixed(2)}M`
+      : marketData.tokenMarketData.marketCap >= 1_000
+        ? `$${(marketData.tokenMarketData.marketCap / 1_000).toFixed(2)}K`
+        : `$${marketData.tokenMarketData.marketCap}`
     : "N/A"
   
   const tokenPrice = marketData?.tokenMarketData?.price
