@@ -46,10 +46,6 @@ const Project = () => {
 
   const RPC_URL = import.meta.env.VITE_RPC_URL
   
-  // Debug logging to help troubleshoot RPC URL issues
-  console.log("RPC_URL from env:", RPC_URL)
-  console.log("All Vite env vars:", import.meta.env)
-  
   if (!RPC_URL) {
     console.error("VITE_RPC_URL is not set! This will cause connection errors.")
   }
@@ -93,14 +89,12 @@ const Project = () => {
   useEffect(() => {
     const getSolPrice = async () => {
       try {
-        console.log("Fetching SOL price...");
         const response = await fetch('https://price.jup.ag/v4/price?ids=So11111111111111111111111111111111111111112')
         if (response.ok) {
           const data = await response.json()
           const solPrice = data.data?.['So11111111111111111111111111111111111111112']?.price
           if (solPrice) {
             setSolPriceUSD(solPrice)
-            console.log("SOL price fetched successfully:", solPrice);
           } else {
             console.error("SOL price not found in response:", data);
           }
@@ -112,14 +106,12 @@ const Project = () => {
 
         // Try alternative price source
         try {
-          console.log("Trying alternative SOL price source...");
           const altResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd')
           if (altResponse.ok) {
             const altData = await altResponse.json()
             const altSolPrice = altData.solana?.usd
             if (altSolPrice) {
               setSolPriceUSD(altSolPrice)
-              console.log("SOL price from alternative source:", altSolPrice);
             }
           }
         } catch (altError) {
@@ -155,7 +147,6 @@ const Project = () => {
       const solDecimals = 9
       const solAmount = parseInt(quoteData.outAmount) / Math.pow(10, solDecimals)
       setJupiterQuote(solAmount)
-      console.log("Jupiter quote (sell) successful:", solAmount)
     } catch (error) {
       console.error('Error getting Jupiter sell quote:', error)
 
@@ -173,7 +164,6 @@ const Project = () => {
           const tokensPerSol = parseInt(buyQuoteData.outAmount) / Math.pow(10, decimals)
           const solPerToken = tokensPerSol > 0 ? 1 / tokensPerSol : 0
           setJupiterQuote(solPerToken)
-          console.log("Jupiter quote (buy fallback) successful:", solPerToken)
         } else {
           throw new Error('Buy fallback also failed')
         }
@@ -210,7 +200,6 @@ const Project = () => {
           const tokenAccountInfo = await connection.getTokenAccountBalance(userTokenAccount)
           setUserTokenBalance(tokenAccountInfo.value.uiAmount || 0)
         } catch (error) {
-          console.log("User token account doesn't exist yet")
           setUserTokenBalance(0)
         }
 
@@ -258,15 +247,6 @@ const Project = () => {
     enabled: Boolean(id),
   })
 
-  console.log("tokenData:", tokenData)
-  console.log("daoData:", daoData)
-  console.log("daoError:", daoError)
-  console.log("marketData:", marketData)
-  console.log("marketError:", marketError)
-  console.log("marketCap:", marketData?.tokenMarketData?.marketCap)
-  console.log("volume24h:", marketData?.tokenMarketData?.volume24h)
-  console.log("fallbackChartData:", fallbackChartData)
-
   const handleGovernanceStatusUpdate = () => {
     // Refetch DAO data when governance status updates
     if (daoData?.dao) {
@@ -287,7 +267,6 @@ const Project = () => {
     try {
       // Try GeckoTerminal OHLCV API first (provides real candlestick data)
       if (pairAddress) {
-        console.log("Fetching OHLCV data from GeckoTerminal for pair:", pairAddress)
         const geckoOHLCVUrl = `https://api.geckoterminal.com/api/v2/networks/solana/pools/${pairAddress}/ohlcv/hour?aggregate=1h&before_timestamp=${Math.floor(Date.now() / 1000)}&limit=24`
 
         try {
@@ -315,7 +294,6 @@ const Project = () => {
       }
 
       // Try Bitquery API for real transaction data (alternative approach)
-      console.log("Trying Bitquery API for transaction data...")
       const bitqueryUrl = 'https://streaming.bitquery.io/graphql'
       const bitqueryQuery = {
         query: `
@@ -381,7 +359,6 @@ const Project = () => {
       }
 
       // Try DexScreener historical data (if available)
-      console.log("Trying DexScreener historical data...")
       if (pairAddress) {
         const dexHistoryUrl = `https://api.dexscreener.com/latest/dex/pairs/solana/${pairAddress}`
         try {
@@ -429,8 +406,6 @@ const Project = () => {
                   price: Math.max(0, price)
                 })
               }
-
-              console.log("Generated enhanced synthetic data using DexScreener price changes")
               return chartData
             }
           }
@@ -451,7 +426,6 @@ const Project = () => {
     if (!tokenAddress) return null
 
     setIsLoadingFallbackChart(true)
-    console.log("Fetching fallback chart data for:", tokenAddress)
 
     try {
       // Try DexScreener API first (free and reliable)
@@ -460,7 +434,6 @@ const Project = () => {
 
       if (dexResponse.ok) {
         const dexData = await dexResponse.json()
-        console.log("DexScreener data:", dexData)
 
         if (dexData.pairs && dexData.pairs.length > 0) {
           // Get the pair with highest liquidity (most reliable)
@@ -469,8 +442,6 @@ const Project = () => {
           )
 
           if (bestPair) {
-            console.log("Best pair found:", bestPair)
-
             // Create chart data structure similar to backend format
             const chartData: TokenMarketData = {
               address: tokenAddress,
@@ -589,13 +560,11 @@ const Project = () => {
       }
 
       // Fallback to Jupiter Price API
-      console.log("Trying Jupiter Price API as final fallback...")
       const jupiterPriceUrl = `https://lite-api.jup.ag/price/v2?ids=${tokenAddress}&showExtraInfo=true`
       const jupiterResponse = await fetch(jupiterPriceUrl)
 
       if (jupiterResponse.ok) {
         const jupiterData = await jupiterResponse.json()
-        console.log("Jupiter price data:", jupiterData)
 
         const tokenData = jupiterData.data?.[tokenAddress]
         if (tokenData) {
@@ -634,12 +603,10 @@ const Project = () => {
           }
 
           chartData.priceChart = mockChart
-          console.log("Jupiter fallback chart data:", chartData)
           return chartData
         }
       }
 
-      console.log("No fallback chart data sources available")
       return null
 
     } catch (error) {
@@ -664,9 +631,6 @@ const Project = () => {
           ))
 
         if (shouldUseFallback) {
-          console.log("Backend chart data insufficient, trying fallback sources...")
-          console.log("Market data:", marketData?.tokenMarketData)
-          console.log("Market error:", marketError)
           const fallbackData = await fetchFallbackChartData(id)
           setFallbackChartData(fallbackData)
         } else {
@@ -805,19 +769,9 @@ const Project = () => {
                 marketData.tokenMarketData.priceChart.length > 0 &&
                 !(marketData.tokenMarketData.price === 0 && marketData.tokenMarketData.marketCap === 0)
 
-              console.log("Chart rendering decision:", {
-                hasValidBackendData,
-                hasFallbackData: !!fallbackChartData,
-                fallbackDataValid: fallbackChartData && fallbackChartData.priceChart && fallbackChartData.priceChart.length > 0,
-                fallbackChartLength: fallbackChartData?.priceChart?.length,
-                fallbackPrice: fallbackChartData?.price
-              })
-
               if (hasValidBackendData) {
-                console.log("Using backend chart data")
                 return <CandlestickChart tokenMarketData={marketData.tokenMarketData} />
               } else if (fallbackChartData) {
-                console.log("Using fallback chart data:", fallbackChartData)
                 return (
                   <div className="w-full">
                     <CandlestickChart tokenMarketData={fallbackChartData} />
@@ -827,7 +781,6 @@ const Project = () => {
                   </div>
                 )
               } else {
-                console.log("No chart data available")
                 return (
                   <div className="w-full rounded-lg bg-bg-secondary p-4 border border-yellow-500/20">
                     <div className="h-[300px] flex items-center justify-center flex-col gap-2">
@@ -877,19 +830,6 @@ const Project = () => {
                     />
                     <Text
                       text={(() => {
-                        // Debug logging
-                        console.log("Value calculation debug:", {
-                          authenticated,
-                          userTokenBalance,
-                          jupiterQuote,
-                          solPriceUSD,
-                          marketPrice: marketData?.tokenMarketData?.price,
-                          fallbackPrice: fallbackChartData?.price,
-                          hasJupiterData: !!(jupiterQuote && solPriceUSD),
-                          hasMarketData: !!marketData?.tokenMarketData?.price,
-                          hasFallbackData: !!fallbackChartData?.price
-                        });
-
                         if (!authenticated) return "--";
                         if (userTokenBalance <= 0) return "$0.00";
 

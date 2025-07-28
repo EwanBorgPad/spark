@@ -86,11 +86,6 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
           tokenMarketData.marketCap = parseFloat(mainPair.marketCap) || 0;
           tokenMarketData.fdv = parseFloat(mainPair.fdv) || 0;
           
-          console.log(`DexScreener data for ${tokenAddress}:`, {
-            name: tokenMarketData.name,
-            price: tokenMarketData.price,
-            marketCap: tokenMarketData.marketCap
-          });
         }
       }
     } catch (error) {

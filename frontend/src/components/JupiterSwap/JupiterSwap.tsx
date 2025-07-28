@@ -3,7 +3,6 @@ import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 import { usePrivy, useSolanaWallets } from '@privy-io/react-auth';
 import { Connection } from '@solana/web3.js';
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
-import { DynamicBondingCurveClient, deriveDbcPoolAddress } from '@meteora-ag/dynamic-bonding-curve-sdk';
 import BN from 'bn.js';
 import Text from '../Text';
 import { Button } from '../Button/Button';
@@ -16,14 +15,26 @@ interface JupiterSwapProps {
   className?: string;
   solPriceUSD?: number; // SOL price in USD for value calculations
   userTokenBalance?: number; // User's token balance for the input token
-  poolConfigKey?: string; // DBC pool config key
 }
 
-// Use the actual SDK interface
-interface DBCQuoteResult {
-  amountOut: BN;
-  priceImpactPct?: string;
-  fee?: BN;
+// Jupiter API response interfaces
+interface JupiterQuoteResponse {
+  inputMint: string;
+  inAmount: string;
+  outputMint: string;
+  outAmount: string;
+  otherAmountThreshold: string;
+  swapMode: string;
+  slippageBps: number;
+  platformFee: unknown;
+  priceImpactPct: string;
+  routePlan: unknown[];
+  contextSlot: number;
+  timeTaken: number;
+}
+
+interface JupiterSwapResponse {
+  swapTransaction: string;
 }
 
 const JupiterSwap: React.FC<JupiterSwapProps> = ({
@@ -31,22 +42,19 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
   outputMint,
   className = "",
   solPriceUSD,
-  userTokenBalance,
-  poolConfigKey = import.meta.env.VITE_POOL_CONFIG_KEY
+  userTokenBalance
 }) => {
   const { user, authenticated } = usePrivy();
   const { wallets } = useSolanaWallets();
   const [inputAmount, setInputAmount] = useState('');
   const [outputAmount, setOutputAmount] = useState('');
-  const [quote, setQuote] = useState<DBCQuoteResult | null>(null);
+  const [quote, setQuote] = useState<JupiterQuoteResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSwapping, setIsSwapping] = useState(false);
   const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
   const [solBalance, setSolBalance] = useState<number>(0);
-  const [poolAddress, setPoolAddress] = useState<PublicKey | null>(null);
 
   const connection = new Connection(import.meta.env.VITE_RPC_URL);
-  const client = new DynamicBondingCurveClient(connection, 'confirmed');
 
   const getSolanaWallet = () => {
     console.log("Available wallets:", wallets.map(w => ({
@@ -81,42 +89,6 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
     console.log("Using fallback wallet:", fallbackWallet?.address, fallbackWallet?.walletClientType);
     return fallbackWallet;
   };
-
-  // Derive pool address
-  useEffect(() => {
-    if (poolConfigKey && (outputMint || inputMint)) {
-      try {
-        const quoteMint = new PublicKey('So11111111111111111111111111111111111111112'); // SOL is always quoteMint
-        
-        // Determine which mint is the token (not SOL)
-        let tokenMint: string;
-        if (inputMint === 'So11111111111111111111111111111111111111112') {
-          // Buying tokens: inputMint=SOL, outputMint=token
-          tokenMint = outputMint;
-        } else {
-          // Selling tokens: inputMint=token, outputMint=SOL
-          tokenMint = inputMint;
-        }
-        
-        const baseMint = new PublicKey(tokenMint);
-        const config = new PublicKey(poolConfigKey);
-        
-        console.log('Pool derivation:', {
-          quoteMint: quoteMint.toBase58(),
-          baseMint: baseMint.toBase58(),
-          config: config.toBase58(),
-          isSellingToken: inputMint !== 'So11111111111111111111111111111111111111112'
-        });
-        
-        // Use the standalone function to derive the DBC pool address
-        const derivedPoolAddress = deriveDbcPoolAddress(quoteMint, baseMint, config);
-        setPoolAddress(derivedPoolAddress);
-        console.log("Derived pool address:", derivedPoolAddress.toBase58());
-      } catch (error) {
-        console.error("Error deriving pool address:", error);
-      }
-    }
-  }, [poolConfigKey, outputMint, inputMint]);
 
   // Fetch SOL balance
   const fetchSolBalance = async () => {
@@ -173,70 +145,50 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
     }
   }, [authenticated, user, connection]);
 
-  // Get quote from DBC
+  // Get quote from Jupiter
   const getQuote = async (inputMint: string, outputMint: string, amount: string) => {
-    if (!amount || parseFloat(amount) <= 0 || !poolAddress || !poolConfigKey) {
-      console.log("Missing required data for quote:", { amount, poolAddress, poolConfigKey });
+    if (!amount || parseFloat(amount) <= 0) {
+      console.log("Missing required data for quote:", { amount });
       return;
     }
 
     setIsLoading(true);
     try {
-      // Get pool state and config
-      const virtualPoolState = await client.state.getPool(poolAddress);
-      const poolConfigState = await client.state.getPoolConfig(new PublicKey(poolConfigKey));
-
-      console.log("Pool state:", virtualPoolState);
-      console.log("Config state:", poolConfigState);
-
-      if (!virtualPoolState || !poolConfigState) {
-        throw new Error("Pool or config not found");
-      }
-
-      // Convert input amount to smallest unit
+      // Convert input amount to smallest unit (lamports for SOL, atomic units for tokens)
       const inputToken = tokenMap.get(inputMint);
       const decimals = inputToken?.decimals || 9;
-      const amountIn = new BN(Math.floor(parseFloat(amount) * Math.pow(10, decimals)));
+      const amountInRaw = Math.floor(parseFloat(amount) * Math.pow(10, decimals));
 
-      // Determine swap direction
-      const swapBaseForQuote = inputMint !== 'So11111111111111111111111111111111111111112';
+      // Build Jupiter quote URL
+      const quoteUrl = new URL('https://quote-api.jup.ag/v6/quote');
+      quoteUrl.searchParams.set('inputMint', inputMint);
+      quoteUrl.searchParams.set('outputMint', outputMint);
+      quoteUrl.searchParams.set('amount', amountInRaw.toString());
+      quoteUrl.searchParams.set('slippageBps', '50'); // 0.5% slippage
+      quoteUrl.searchParams.set('restrictIntermediateTokens', 'true');
 
-      // Get current point (timestamp or slot)
-      const currentPoint = poolConfigState.activationType === 1 ?
-        new BN(Math.floor(Date.now() / 1000)) : // Timestamp
-        new BN(await connection.getSlot()); // Slot
+      console.log('Getting Jupiter quote:', quoteUrl.toString());
 
-      // Get quote
-      const quoteResult = await client.pool.swapQuote({
-        virtualPool: virtualPoolState,
-        config: poolConfigState,
-        swapBaseForQuote,
-        amountIn,
-        slippageBps: 50, // 0.5% slippage
-        hasReferral: false,
-        currentPoint
-      });
+      const response = await fetch(quoteUrl.toString());
+      if (!response.ok) {
+        throw new Error(`Jupiter quote failed: ${response.status} ${response.statusText}`);
+      }
 
-      console.log("Quote result:", quoteResult);
+      const quoteData: JupiterQuoteResponse = await response.json();
+      console.log("Jupiter quote result:", quoteData);
 
-      // Create a compatible quote object
-      const compatibleQuote: DBCQuoteResult = {
-        amountOut: quoteResult.amountOut,
-        priceImpactPct: "0", // Price impact not provided by SDK, use default
-        fee: quoteResult.fee?.trading || new BN(0) // Extract trading fee from fee object
-      };
-
-      setQuote(compatibleQuote);
+      setQuote(quoteData);
 
       // Calculate output amount for display
       const outputToken = tokenMap.get(outputMint);
       const outputDecimals = outputToken?.decimals || 9;
-      const outputAmountFormatted = (quoteResult.amountOut.toNumber() / Math.pow(10, outputDecimals)).toFixed(6);
+      const outputAmountFormatted = (parseInt(quoteData.outAmount) / Math.pow(10, outputDecimals)).toFixed(6);
       setOutputAmount(outputAmountFormatted);
     } catch (error) {
-      console.error('Error getting DBC quote:', error);
+      console.error('Error getting Jupiter quote:', error);
       setQuote(null);
       setOutputAmount('');
+      toast.error('Failed to get quote. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -286,9 +238,9 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
     }
   };
 
-  // Execute swap using DBC
+  // Execute swap using Jupiter
   const executeSwap = async () => {
-    if (!quote || !authenticated || !poolAddress || !poolConfigKey) {
+    if (!quote || !authenticated) {
       toast.error('Please connect your wallet and get a quote first');
       return;
     }
@@ -310,69 +262,40 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
       }
 
       console.log('Using wallet address:', walletAddress);
-      console.log('Pool address:', poolAddress.toBase58());
 
-      // Validate pool exists before attempting swap
-      try {
-        const poolState = await client.state.getPool(poolAddress);
-        if (!poolState) {
-          throw new Error('Pool state not found');
-        }
-        console.log('Pool state validated');
-        console.log('Pool state details:', {
-          baseMint: poolState.baseMint?.toBase58(),
-          config: poolState.config?.toBase58()
-        });
-              } catch (poolError) {
-          console.error('Pool validation error:', poolError);
-          toast.error('Unable to access pool. Please check if the pool exists.');
-          return;
-        }
+      // Step 1: Build the swap transaction
+      const swapRequestBody = {
+        quoteResponse: quote,
+        userPublicKey: walletAddress,
+        wrapUnwrapSOL: true // Automatically wrap/unwrap SOL
+      };
 
-      // Convert input amount to BN
-      const inputToken = tokenMap.get(inputMint);
-      const decimals = inputToken?.decimals || 9;
-      const amountIn = new BN(Math.floor(parseFloat(inputAmount) * Math.pow(10, decimals)));
-
-      // Calculate minimum amount out with slippage protection
-      const minimumAmountOut = quote.amountOut.mul(new BN(995)).div(new BN(1000)); // 0.5% slippage
-
-      // Determine swap direction
-      const swapBaseForQuote = inputMint !== 'So11111111111111111111111111111111111111112';
-
-      console.log('Swap parameters:', {
-        owner: walletAddress,
-        amountIn: amountIn.toString(),
-        minimumAmountOut: minimumAmountOut.toString(),
-        swapBaseForQuote,
-        poolAddress: poolAddress.toBase58()
+      console.log('Building swap transaction...');
+      const swapResponse = await fetch('https://quote-api.jup.ag/v6/swap', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(swapRequestBody),
       });
 
-      // Create swap transaction - use correct SwapParam interface
-      const swapTransaction = await client.pool.swap({
-        owner: new PublicKey(walletAddress),
-        pool: poolAddress, // Required 'pool' property
-        amountIn,
-        minimumAmountOut,
-        swapBaseForQuote,
-        referralTokenAccount: null
-      });
+      if (!swapResponse.ok) {
+        throw new Error(`Failed to build swap transaction: ${swapResponse.status} ${swapResponse.statusText}`);
+      }
 
-      console.log('Swap transaction created');
+      const swapData: JupiterSwapResponse = await swapResponse.json();
+      console.log('Swap transaction built');
 
-      console.log('getting blockhash');
-      const blockhash = await connection.getLatestBlockhash();
-      console.log('blockhash', blockhash);
+      // Step 2: Deserialize the transaction
+      const swapTransactionBuf = Buffer.from(swapData.swapTransaction, 'base64');
+      const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
+      console.log('Transaction deserialized');
 
-      // Set transaction blockhash and fee payer before signing
-      swapTransaction.feePayer = new PublicKey(walletAddress);
-      swapTransaction.recentBlockhash = blockhash.blockhash;
-      console.log('Transaction prepared for signing');
+      // Step 3: Sign the transaction
+      const signedTransaction = await wallet.signTransaction(transaction);
+      console.log('Transaction signed');
 
-      // Sign transaction with Privy
-      const signedTransaction = await wallet.signTransaction(swapTransaction);
-
-      // Send transaction
+      // Step 4: Send the transaction
       const signature = await connection.sendRawTransaction(signedTransaction.serialize(), {
         skipPreflight: false,
         maxRetries: 3,
@@ -394,7 +317,7 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
       fetchSolBalance();
 
     } catch (error) {
-      console.error('Error executing DBC swap:', error);
+      console.error('Error executing Jupiter swap:', error);
       toast.error(`Swap failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsSwapping(false);
@@ -449,10 +372,6 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
       {!authenticated ? (
         <div className="text-center py-6">
           <Text text="Connect your wallet to swap tokens" as="p" className="text-fg-primary text-opacity-75" />
-        </div>
-      ) : !poolAddress ? (
-        <div className="text-center py-6">
-          <Text text="Pool not found. Please check the token configuration." as="p" className="text-fg-primary text-opacity-75" />
         </div>
       ) : (
         <div className="space-y-4">
@@ -550,18 +469,16 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
             <div className="bg-bg-primary/5 rounded-lg p-3 text-sm">
               <div className="flex justify-between">
                 <Text text="Price Impact:" as="span" className="text-fg-primary text-opacity-75" />
-                <Text text={`${quote.priceImpactPct || "0"}%`} as="span" className="text-fg-primary" />
+                <Text text={`${quote.priceImpactPct}%`} as="span" className="text-fg-primary" />
               </div>
               <div className="flex justify-between">
                 <Text text="Slippage:" as="span" className="text-fg-primary text-opacity-75" />
                 <Text text="0.5%" as="span" className="text-fg-primary" />
               </div>
-              {quote.fee && (
-                <div className="flex justify-between">
-                  <Text text="Fee:" as="span" className="text-fg-primary text-opacity-75" />
-                  <Text text={`${(quote.fee.toNumber() / 1000000000).toFixed(6)} SOL`} as="span" className="text-fg-primary" />
-                </div>
-              )}
+              <div className="flex justify-between">
+                <Text text="Route:" as="span" className="text-fg-primary text-opacity-75" />
+                <Text text={`${quote.routePlan.length} hop${quote.routePlan.length > 1 ? 's' : ''}`} as="span" className="text-fg-primary" />
+              </div>
             </div>
           )}
 
@@ -576,7 +493,7 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
 
           {/* Disclaimer */}
           <div className="text-xs text-fg-primary text-opacity-60 text-center">
-            <Text text="Powered by Meteora DBC. Prices are estimates and may change." as="p" />
+            <Text text="Powered by Jupiter. Prices are estimates and may change." as="p" />
           </div>
         </div>
       )}
