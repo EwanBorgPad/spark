@@ -100,17 +100,52 @@ const getToken = async ({ mint }: GetTokenArgs): Promise<GetTokenResponse> => {
 }
 
 type CreateDaoArgs = {
-  tokenName: string
-  tokenSymbol: string
-  tokenAddress: string
+  name: string
+  communityTokenMint: string
+  minCommunityWeightToCreateGovernance?: number
+  communityTokenType?: "liquid" | "membership" | "dormant"
+  councilTokenType?: "liquid" | "membership" | "dormant"
+  councilTokenMint?: string
+  communityMintMaxVoterWeightSourceType?: "absolute" | "supplyFraction"
+  communityMintMaxVoterWeightSourceValue?: number
+  communityApprovalThreshold?: number
+  councilApprovalThreshold?: number
+  minCouncilWeightToCreateProposal?: number
+  minTransactionHoldUpTime?: number
+  votingBaseTime?: number
+  votingCoolOffTime?: number
+  depositExemptProposalCount?: number
+  communityVoteTipping?: "disabled" | "early" | "strict"
+  councilVoteTipping?: "disabled" | "early" | "strict"
+  communityVetoVoteThreshold?: "disabled" | "enabled"
+  councilVetoVoteThreshold?: "disabled" | "enabled"
 }
 
-const createDao = async ({ tokenName, tokenSymbol, tokenAddress }: CreateDaoArgs): Promise<boolean> => {
+type CreateDaoResponse = {
+  success: boolean
+  txSignature2?: string
+  realmAddress?: string
+  governanceAddress?: string
+  message?: string
+  transaction?: string
+  realmName?: string
+}
+
+const createDao = async (args: CreateDaoArgs): Promise<CreateDaoResponse> => {
   const url = new URL(CREATE_DAO)
   const response = await fetch(url, {
     method: "POST",
-    // body: JSON.stringify({ tokenName, tokenSymbol, tokenAddress }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(args),
   })
+  
+  if (!response.ok) {
+    const json = await response.json().catch(() => ({ message: "Unknown error" }))
+    throw new Error(json.message || "DAO creation failed")
+  }
+  
   const json = await response.json()
   return json
 }
