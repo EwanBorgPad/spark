@@ -15,6 +15,7 @@ interface JupiterSwapProps {
   className?: string;
   solPriceUSD?: number; // SOL price in USD for value calculations
   userTokenBalance?: number; // User's token balance for the input token
+  optimizeFees?: boolean; // Enable fee optimization
 }
 
 // Jupiter API response interfaces
@@ -42,7 +43,8 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
   outputMint,
   className = "",
   solPriceUSD,
-  userTokenBalance
+  userTokenBalance,
+  optimizeFees = true
 }) => {
   const { user, authenticated } = usePrivy();
   const { wallets } = useSolanaWallets();
@@ -53,6 +55,7 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
   const [isSwapping, setIsSwapping] = useState(false);
   const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
   const [solBalance, setSolBalance] = useState<number>(0);
+  const [estimatedFee, setEstimatedFee] = useState<number | null>(null);
 
   const connection = new Connection(import.meta.env.VITE_RPC_URL);
 
@@ -165,7 +168,10 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
       quoteUrl.searchParams.set('outputMint', outputMint);
       quoteUrl.searchParams.set('amount', amountInRaw.toString());
       quoteUrl.searchParams.set('slippageBps', '50'); // 0.5% slippage
-      quoteUrl.searchParams.set('restrictIntermediateTokens', 'true');
+      
+      // Always use fee optimization for lower costs
+      quoteUrl.searchParams.set('prioritizationFeeLamports', '1000'); // Lower priority fee
+      quoteUrl.searchParams.set('maxAccounts', '64'); // Limit account usage
 
       console.log('Getting Jupiter quote:', quoteUrl.toString());
 
@@ -184,10 +190,18 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
       const outputDecimals = outputToken?.decimals || 9;
       const outputAmountFormatted = (parseInt(quoteData.outAmount) / Math.pow(10, outputDecimals)).toFixed(6);
       setOutputAmount(outputAmountFormatted);
+
+      // Estimate transaction fee based on route complexity (optimized for low fees)
+      const baseFee = 0.000005; // Base Solana transaction fee
+      const routeComplexity = quoteData.routePlan.length;
+      const estimatedFeeSOL = baseFee + (routeComplexity * 0.000001) + 0.000001; // Always use low fee estimate
+      setEstimatedFee(estimatedFeeSOL);
+
     } catch (error) {
       console.error('Error getting Jupiter quote:', error);
       setQuote(null);
       setOutputAmount('');
+      setEstimatedFee(null);
       toast.error('Failed to get quote. Please try again.');
     } finally {
       setIsLoading(false);
@@ -267,7 +281,9 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
       const swapRequestBody = {
         quoteResponse: quote,
         userPublicKey: walletAddress,
-        wrapUnwrapSOL: true // Automatically wrap/unwrap SOL
+        wrapUnwrapSOL: false, // Never wrap/unwrap SOL to reduce fees
+        prioritizationFeeLamports: 1000, // Lower priority fee
+        maxAccounts: 64, // Limit account usage
       };
 
       console.log('Building swap transaction...');
@@ -295,16 +311,17 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
       const signedTransaction = await wallet.signTransaction(transaction);
       console.log('Transaction signed');
 
-      // Step 4: Send the transaction
+      // Step 4: Send the transaction with optimized settings
       const signature = await connection.sendRawTransaction(signedTransaction.serialize(), {
-        skipPreflight: false,
+        skipPreflight: true, // Skip preflight for faster execution
         maxRetries: 3,
+        preflightCommitment: 'processed', // Use processed instead of confirmed for speed
       });
 
       console.log('Swap transaction sent:', signature);
 
       // Wait for confirmation
-      await connection.confirmTransaction(signature, 'confirmed');
+      await connection.confirmTransaction(signature, 'processed');
 
       toast.success(`Swap successful! You received approximately ${outputAmount} tokens. Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
 
@@ -375,6 +392,7 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
         </div>
       ) : (
         <div className="space-y-4">
+
           {/* Input Amount */}
           <div>
             <div className="flex justify-between items-center mb-2">
@@ -479,6 +497,17 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
                 <Text text="Route:" as="span" className="text-fg-primary text-opacity-75" />
                 <Text text={`${quote.routePlan.length} hop${quote.routePlan.length > 1 ? 's' : ''}`} as="span" className="text-fg-primary" />
               </div>
+              {estimatedFee && (
+                <div className="flex justify-between">
+                  <Text text="Estimated Fee:" as="span" className="text-fg-primary text-opacity-75" />
+                  <Text 
+                    text={`${estimatedFee.toFixed(6)} SOL (≈ $${solPriceUSD ? (estimatedFee * solPriceUSD).toFixed(2) : 'N/A'})`} 
+                    as="span" 
+                    className="text-fg-primary" 
+                  />
+                </div>
+              )}
+
             </div>
           )}
 
@@ -494,6 +523,7 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
           {/* Disclaimer */}
           <div className="text-xs text-fg-primary text-opacity-60 text-center">
             <Text text="Powered by Jupiter. Prices are estimates and may change." as="p" />
+            <Text text="Optimized for minimal transaction costs with longer routes if needed." as="p" className="mt-1" />
           </div>
         </div>
       )}
