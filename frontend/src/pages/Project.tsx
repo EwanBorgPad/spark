@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { ScrollRestoration, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
@@ -12,7 +12,7 @@ import { Button } from "@/components/Button/Button"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
 import { backendApi } from "@/data/api/backendApi"
 import { useQuery } from "@tanstack/react-query"
-import { GetTokenResponse, DaoModel, GetTokenMarketResponse, TokenMarketData } from "shared/models"
+import { GetTokenResponse, DaoModel, GetTokenMarketResponse, TokenMarketData, GetTokenBalanceResponse } from "shared/models"
 import TokenChart from "@/components/TokenChart/TokenChart"
 import CandlestickChart from "@/components/TokenChart/CandlestickChart"
 import TokenStats from "@/components/TokenStats/TokenStats"
@@ -20,8 +20,6 @@ import ProposalVoting from "@/components/ProposalVoting/ProposalVoting"
 import GovernanceStatus from "@/components/GovernanceStatus/GovernanceStatus"
 import JupiterSwap from "@/components/JupiterSwap"
 import { usePrivy, useSolanaWallets } from '@privy-io/react-auth'
-import { Connection, PublicKey } from '@solana/web3.js'
-import { getAssociatedTokenAddress } from '@solana/spl-token'
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry'
 import { ROUTES } from "@/utils/routes"
 import { useDeviceDetection } from "@/hooks/useDeviceDetection"
@@ -40,18 +38,22 @@ const Project = () => {
   const [isLoadingFallbackChart, setIsLoadingFallbackChart] = useState(false)
   const [governanceData, setGovernanceData] = useState<{ userTokenBalance: number; votingPower: number }>({ userTokenBalance: 0, votingPower: 0 })
   const { isDesktop, isMobile } = useDeviceDetection()
+  const hasInitializedRef = useRef(false)
 
   const { user, authenticated } = usePrivy()
   const { wallets } = useSolanaWallets()
 
-  const RPC_URL = import.meta.env.VITE_RPC_URL
-  
-  if (!RPC_URL) {
-    console.error("VITE_RPC_URL is not set! This will cause connection errors.")
-  }
-  
-  const connection = new Connection(RPC_URL)
   const inputMint = 'So11111111111111111111111111111111111111112' // SOL
+
+  // Reset initialization flag when user or token changes
+  useEffect(() => {
+    hasInitializedRef.current = false
+    
+    return () => {
+      // Reset flag on cleanup
+      hasInitializedRef.current = false
+    }
+  }, [user?.wallet?.address, id])
 
   // Handle escape key to close modal
   useEffect(() => {
@@ -181,36 +183,36 @@ const Project = () => {
     }
   }, [id, tokenMap])
 
-  // Check user's token balance
+              // Check user's token balance using backend API with aggressive caching
+            const { data: tokenBalanceData, isLoading: tokenBalanceLoading } = useQuery({
+    queryFn: () =>
+      backendSparkApi.getTokenBalance({
+        userAddress: user?.wallet?.address || "",
+        tokenMint: id || "",
+        cluster: "mainnet"
+      }),
+    queryKey: ["getTokenBalance", user?.wallet?.address, id],
+    enabled: Boolean(authenticated && user?.wallet?.address && id && !hasInitializedRef.current),
+    refetchInterval: false, // Disable automatic refetching - use manual refresh only
+    staleTime: Infinity, // Never consider data stale - only fetch once
+    gcTime: Infinity, // Never garbage collect - keep forever
+    refetchOnWindowFocus: false, // Don't refetch when window regains focus
+    refetchOnMount: false, // Don't refetch when component mounts if data exists
+    refetchOnReconnect: false, // Don't refetch when reconnecting to network
+  })
+
+  // Update user token balance when data changes
   useEffect(() => {
-    const checkUserTokenBalance = async () => {
-      if (!authenticated || !user?.wallet?.address || !id) return
-
-      try {
-        const userPubkey = new PublicKey(user.wallet.address)
-        const tokenMint = new PublicKey(id)
-
-        // Get user's token account balance
-        const userTokenAccount = await getAssociatedTokenAddress(
-          tokenMint,
-          userPubkey
-        )
-
-        try {
-          const tokenAccountInfo = await connection.getTokenAccountBalance(userTokenAccount)
-          setUserTokenBalance(tokenAccountInfo.value.uiAmount || 0)
-        } catch (error) {
-          setUserTokenBalance(0)
-        }
-
-      } catch (error) {
-        console.error("Error checking user token balance:", error)
-        setUserTokenBalance(0)
-      }
+    if (tokenBalanceData?.success) {
+      setUserTokenBalance(tokenBalanceData.balance)
+      // Mark as initialized to prevent future requests
+      hasInitializedRef.current = true
+    } else if (tokenBalanceData !== undefined) {
+      setUserTokenBalance(0)
+      // Mark as initialized even on error to prevent retries
+      hasInitializedRef.current = true
     }
-
-    checkUserTokenBalance()
-  }, [authenticated, user, id, connection])
+  }, [tokenBalanceData])
 
   const { data: tokenData, isLoading: tokenLoading, refetch: tokenRefetch } = useQuery<GetTokenResponse>({
     queryFn: () =>
@@ -810,15 +812,18 @@ const Project = () => {
                       className="text-xs text-fg-primary text-opacity-75 font-medium mb-1"
                       isLoading={marketLoading && isLoadingFallbackChart}
                     />
-                    <Text
-                      text={authenticated
-                        ? userTokenBalance.toFixed(2)
-                        : "--"
-                      }
-                      as="span"
-                      className="text-lg font-semibold text-fg-primary"
-                      isLoading={marketLoading && isLoadingFallbackChart}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Text
+                        text={authenticated
+                          ? userTokenBalance.toFixed(2)
+                          : "--"
+                        }
+                        as="span"
+                        className="text-lg font-semibold text-fg-primary"
+                        isLoading={marketLoading && isLoadingFallbackChart || tokenBalanceLoading}
+                      />
+
+                    </div>
 
                   </div>
                   <div className="flex flex-col items-center text-center flex-1">
@@ -856,7 +861,7 @@ const Project = () => {
                       })()}
                       as="span"
                       className="text-lg font-semibold text-fg-primary"
-                      isLoading={marketLoading && isLoadingFallbackChart}
+                      isLoading={marketLoading && isLoadingFallbackChart || tokenBalanceLoading}
                     />
 
                   </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DaoModel } from '../../../shared/models';
 import Text from '../Text';
 import { Button } from '../Button/Button';
@@ -9,6 +9,7 @@ import GovernanceService from '../../services/governanceService';
 import BN from 'bn.js';
 import { getCorrectWalletAddress } from '@/utils/walletUtils';
 import { toast } from 'react-toastify';
+import { backendSparkApi } from '../../data/api/backendSparkApi';
 
 interface GovernanceStatusProps {
   dao: DaoModel;
@@ -25,6 +26,8 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
   const [depositAmount, setDepositAmount] = useState("1000000000"); // 1 token with 9 decimals
   const [userTokenBalance, setUserTokenBalance] = useState(0);
   const [votingPower, setVotingPower] = useState(0);
+  const isRequestingRef = useRef(false);
+  const hasFetchedRef = useRef(false);
 
   const RPC_URL = import.meta.env.VITE_RPC_URL;
   const connection = new Connection(RPC_URL);
@@ -45,8 +48,13 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
 
   // Check user's token balance and voting power
   useEffect(() => {
+    // Reset fetch flag when dependencies change
+    hasFetchedRef.current = false;
+    
     const checkUserStatus = async () => {
-      if (!authenticated) return;
+      if (!authenticated || isRequestingRef.current || hasFetchedRef.current) return;
+      
+      isRequestingRef.current = true;
 
       // Get the correct wallet address
       const correctWalletAddress = getCorrectWalletAddress(user, wallets);
@@ -56,30 +64,36 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
         const userPubkey = new PublicKey(correctWalletAddress);
         const communityMint = new PublicKey(dao.communityMint);
 
-        // Get user's token account balance
-        const userTokenAccount = await getAssociatedTokenAddress(
-          communityMint,
-          userPubkey
-        );
-
+        // Get user's token account balance using backend API
         let currentUserTokenBalance = 0;
         try {
-          const tokenAccountInfo = await connection.getTokenAccountBalance(userTokenAccount);
-          currentUserTokenBalance = tokenAccountInfo.value.uiAmount || 0;
+          const tokenBalanceResponse = await backendSparkApi.getTokenBalance({
+            userAddress: correctWalletAddress,
+            tokenMint: dao.communityMint,
+            cluster: "mainnet"
+          });
+          currentUserTokenBalance = tokenBalanceResponse.balance;
           setUserTokenBalance(currentUserTokenBalance);
         } catch (error) {
+          console.error("Error fetching token balance:", error);
           setUserTokenBalance(0);
         }
 
-        // Check voting power from governance
-        const realmPubkey = new PublicKey(dao.address);
-        const { votingPower: govVotingPower } = await governanceService.getUserTokenOwnerRecord(
-          userPubkey,
-          realmPubkey,
-          communityMint
-        );
-        setVotingPower(govVotingPower);
-        console.log("Voting power:", govVotingPower);
+        // Check voting power from governance using backend API
+        let govVotingPower = 0;
+        try {
+          const governanceResponse = await backendSparkApi.getGovernanceData({
+            userAddress: correctWalletAddress,
+            realmAddress: dao.address,
+            tokenMint: dao.communityMint,
+            cluster: "mainnet"
+          });
+          govVotingPower = governanceResponse.votingPower;
+          setVotingPower(govVotingPower);
+        } catch (error) {
+          console.error("Error fetching governance data:", error);
+          setVotingPower(0);
+        }
 
         // Notify parent component of data updates
         if (onDataUpdate) {
@@ -89,17 +103,30 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
           });
         }
 
+        // Mark as fetched to prevent future requests
+        hasFetchedRef.current = true;
+
       } catch (error) {
         console.error("Error checking user status:", error);
         // Still notify parent with zero values
         if (onDataUpdate) {
           onDataUpdate({ userTokenBalance: 0, votingPower: 0 });
         }
+        // Mark as fetched even on error to prevent retries
+        hasFetchedRef.current = true;
+      } finally {
+        isRequestingRef.current = false;
       }
     };
 
     checkUserStatus();
-  }, [authenticated, user, dao.communityMint, dao.address, onDataUpdate]);
+
+    return () => {
+      // Reset flags on cleanup
+      hasFetchedRef.current = false;
+      isRequestingRef.current = false;
+    };
+  }, [authenticated, user?.wallet?.address, dao.communityMint, dao.address]);
 
   const handleDepositTokens = async () => {
     if (!authenticated) {
@@ -127,10 +154,14 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
         userPubkey
       );
 
-      // Check if user has enough tokens
+      // Check if user has enough tokens using backend API
       try {
-        const tokenAccountInfo = await connection.getTokenAccountBalance(userTokenAccount);
-        const userBalance = tokenAccountInfo.value.uiAmount || 0;
+        const tokenBalanceResponse = await backendSparkApi.getTokenBalance({
+          userAddress: solanaWallet.address,
+          tokenMint: dao.communityMint,
+          cluster: "mainnet"
+        });
+        const userBalance = tokenBalanceResponse.balance;
         const requiredAmount = amount.toNumber() / 1000000000;
         
         if (userBalance < requiredAmount) {
