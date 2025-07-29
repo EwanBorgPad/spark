@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { ScrollRestoration, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
@@ -38,22 +38,11 @@ const Project = () => {
   const [isLoadingFallbackChart, setIsLoadingFallbackChart] = useState(false)
   const [governanceData, setGovernanceData] = useState<{ userTokenBalance: number; votingPower: number }>({ userTokenBalance: 0, votingPower: 0 })
   const { isDesktop, isMobile } = useDeviceDetection()
-  const hasInitializedRef = useRef(false)
 
   const { user, authenticated } = usePrivy()
   const { wallets } = useSolanaWallets()
 
   const inputMint = 'So11111111111111111111111111111111111111112' // SOL
-
-  // Reset initialization flag when user or token changes
-  useEffect(() => {
-    hasInitializedRef.current = false
-    
-    return () => {
-      // Reset flag on cleanup
-      hasInitializedRef.current = false
-    }
-  }, [user?.wallet?.address, id])
 
   // Handle escape key to close modal
   useEffect(() => {
@@ -183,7 +172,7 @@ const Project = () => {
     }
   }, [id, tokenMap])
 
-              // Check user's token balance using backend API with aggressive caching
+              // Check user's token balance using backend API - refresh on page visit but not while staying
             const { data: tokenBalanceData, isLoading: tokenBalanceLoading } = useQuery({
     queryFn: () =>
       backendSparkApi.getTokenBalance({
@@ -192,12 +181,12 @@ const Project = () => {
         cluster: "mainnet"
       }),
     queryKey: ["getTokenBalance", user?.wallet?.address, id],
-    enabled: Boolean(authenticated && user?.wallet?.address && id && !hasInitializedRef.current),
-    refetchInterval: false, // Disable automatic refetching - use manual refresh only
-    staleTime: Infinity, // Never consider data stale - only fetch once
-    gcTime: Infinity, // Never garbage collect - keep forever
+    enabled: Boolean(authenticated && user?.wallet?.address && id),
+    refetchInterval: false, // Disable automatic refetching
+    staleTime: 0, // Always consider data stale - will refetch on mount
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     refetchOnWindowFocus: false, // Don't refetch when window regains focus
-    refetchOnMount: false, // Don't refetch when component mounts if data exists
+    refetchOnMount: true, // Always refetch when component mounts (page visit)
     refetchOnReconnect: false, // Don't refetch when reconnecting to network
   })
 
@@ -205,12 +194,8 @@ const Project = () => {
   useEffect(() => {
     if (tokenBalanceData?.success) {
       setUserTokenBalance(tokenBalanceData.balance)
-      // Mark as initialized to prevent future requests
-      hasInitializedRef.current = true
     } else if (tokenBalanceData !== undefined) {
       setUserTokenBalance(0)
-      // Mark as initialized even on error to prevent retries
-      hasInitializedRef.current = true
     }
   }, [tokenBalanceData])
 
@@ -257,9 +242,9 @@ const Project = () => {
     }
   }
 
-  const handleGovernanceDataUpdate = (data: { userTokenBalance: number; votingPower: number }) => {
+  const handleGovernanceDataUpdate = useCallback((data: { userTokenBalance: number; votingPower: number }) => {
     setGovernanceData(data)
-  }
+  }, [])
 
   // Check if DAO exists to conditionally adjust layout
   const hasDao = tokenData?.token?.dao && tokenData?.token?.dao !== ""

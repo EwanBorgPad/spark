@@ -114,11 +114,14 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     
     // Check cache first with cache key
     const cacheKey = `${userAddress}-${tokenMint}-${cluster}`
+    console.log(`[gettokenbalance] Cache key: ${cacheKey}`)
     const cached = balanceCache.get(cacheKey)
     
     if (cached) {
+      console.log(`[gettokenbalance] Found cached data:`, cached)
       // If we have a cached result and it's still valid, return it
       if (Date.now() - cached.timestamp < CACHE_TTL) {
+        console.log(`[gettokenbalance] Returning cached balance: ${cached.balance}`)
         const response: GetTokenBalanceResponse = {
           success: true,
           balance: cached.balance,
@@ -130,8 +133,10 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       
       // If there's an ongoing request for this key, wait for it
       if (cached.promise) {
+        console.log(`[gettokenbalance] Waiting for ongoing request...`)
         try {
           const balance = await cached.promise
+          console.log(`[gettokenbalance] Got balance from ongoing request: ${balance}`)
           const response: GetTokenBalanceResponse = {
             success: true,
             balance,
@@ -141,9 +146,12 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
           return jsonResponse(response, 200)
         } catch (error) {
           // If the ongoing request failed, remove it and continue with fresh request
+          console.log(`[gettokenbalance] Ongoing request failed, removing from cache:`, error)
           balanceCache.delete(cacheKey)
         }
       }
+    } else {
+      console.log(`[gettokenbalance] No cached data found, fetching fresh data`)
     }
 
     // Create a promise for this request to prevent duplicate requests
@@ -225,14 +233,19 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       const userPubkey = new PublicKey(userAddress)
       const tokenMintPubkey = new PublicKey(tokenMint)
 
+      console.log(`[gettokenbalance] User address: ${userAddress}`)
+      console.log(`[gettokenbalance] Token mint: ${tokenMint}`)
+
       const userTokenAccount = await getAssociatedTokenAddress(
         tokenMintPubkey,
         userPubkey
       )
+      console.log(`[gettokenbalance] Token account address: ${userTokenAccount.toBase58()}`)
 
       // Get token account balance with retry logic and timeout
       let balance = 0
       try {
+        console.log(`[gettokenbalance] Fetching token account balance...`)
         const tokenAccountInfo = await retryWithBackoff(() => 
           Promise.race([
             connection.getTokenAccountBalance(userTokenAccount),
@@ -241,9 +254,12 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
             )
           ])
         )
+        console.log(`[gettokenbalance] Raw token account info:`, tokenAccountInfo)
         balance = tokenAccountInfo.value.uiAmount || 0
+        console.log(`[gettokenbalance] Calculated balance: ${balance}`)
       } catch (error) {
         // If token account doesn't exist or rate limited, balance is 0
+        console.log(`[gettokenbalance] Error fetching balance:`, error)
         balance = 0
       }
 
@@ -266,6 +282,9 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       timestamp: Date.now() 
     })
 
+    console.log(`[gettokenbalance] Final balance calculated: ${balance}`)
+    console.log(`[gettokenbalance] Cache updated with new balance`)
+
     const response: GetTokenBalanceResponse = {
       success: true,
       balance,
@@ -273,6 +292,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       userAddress
     }
 
+    console.log(`[gettokenbalance] Returning response:`, response)
     return jsonResponse(response, 200)
 
   } catch (e) {
