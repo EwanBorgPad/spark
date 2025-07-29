@@ -523,7 +523,6 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
           {/* Disclaimer */}
           <div className="text-xs text-fg-primary text-opacity-60 text-center">
             <Text text="Powered by Jupiter. Prices are estimates and may change." as="p" />
-            <Text text="Optimized for minimal transaction costs with longer routes if needed." as="p" className="mt-1" />
           </div>
         </div>
       )}
