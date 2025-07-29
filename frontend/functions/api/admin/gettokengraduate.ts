@@ -190,119 +190,145 @@ async function createDaoForToken({
   connection: Connection
 }): Promise<string> {
 
-  const governanceProgramId = new PublicKey("GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw")
-  const splGovernance = new SplGovernance(connection, governanceProgramId)
-
-  // DAO creation parameters
-  const communityTokenMintPubKey = new PublicKey(tokenMint)
-  const payerPubKey = wallet.publicKey
-  const minCommunityWeightToCreateGovernance = 10000000000
-
-  // Prepare the MintMaxVoteWeightSource
-  const communityMintMaxVoterWeightSource = {
-    type: "supplyFraction" as const,
-    amount: new BN(10000000000)
+  // Use the new DAO creation API instead of creating DAOs directly
+  const daoCreationPayload = {
+    name: `${tokenName} DAO`,
+    communityTokenMint: tokenMint,
+    minCommunityWeightToCreateGovernance: 10000000000,
+    communityTokenType: "liquid" as const,
+    councilTokenType: "dormant" as const,
+    communityMintMaxVoterWeightSourceType: "supplyFraction" as const,
+    communityMintMaxVoterWeightSourceValue: 10000000000,
+    communityApprovalThreshold: 50,
+    councilApprovalThreshold: 50,
+    minCouncilWeightToCreateProposal: 1,
+    minTransactionHoldUpTime: 0,
+    votingBaseTime: 216000,
+    votingCoolOffTime: 43200,
+    depositExemptProposalCount: 10,
+    communityVoteTipping: "disabled" as const,
+    councilVoteTipping: "strict" as const,
+    communityVetoVoteThreshold: "disabled" as const,
+    councilVetoVoteThreshold: "disabled" as const
   }
 
-  // Create realm instruction
-  const createRealmInstruction = await splGovernance.createRealmInstruction(
-    `${tokenName} DAO`, // DAO name
-    communityTokenMintPubKey,
-    minCommunityWeightToCreateGovernance,
-    payerPubKey,
-    communityMintMaxVoterWeightSource,
-    undefined, // no council token
-    "liquid",
-    "dormant"
-  )
-
-  const realmPubKey = createRealmInstruction.keys[0].pubkey // This is the DAO address
-
-  // Create governance instruction
-  const createGovernanceInstruction = await splGovernance.createGovernanceInstruction(
-    {
-      communityVoteThreshold: { yesVotePercentage: [50] },
-      minCommunityWeightToCreateProposal: minCommunityWeightToCreateGovernance,
-      minTransactionHoldUpTime: 0,
-      votingBaseTime: 216000,
-      communityVoteTipping: { disabled: {} },
-      councilVoteThreshold: { disabled: {} },
-      councilVetoVoteThreshold: { disabled: {} },
-      minCouncilWeightToCreateProposal: 1,
-      councilVoteTipping: { strict: {} },
-      communityVetoVoteThreshold: { disabled: {} },
-      votingCoolOffTime: 43200,
-      depositExemptProposalCount: 10,
-    },
-    realmPubKey,
-    payerPubKey,
-    undefined,
-    payerPubKey
-  )
-
-  const governancePubKey = createGovernanceInstruction.keys[1].pubkey
-
-  // Create native treasury instruction
-  const createNativeTreasuryInstruction = await splGovernance.createNativeTreasuryInstruction(
-    governancePubKey,
-    payerPubKey
-  )
-
-  // Build and send transaction
-  const { Transaction } = await import('@solana/web3.js')
-  const transaction = new Transaction().add(
-    createRealmInstruction,
-    createGovernanceInstruction,
-    createNativeTreasuryInstruction
-  )
-
-  const { blockhash } = await connection.getLatestBlockhash()
-  transaction.recentBlockhash = blockhash
-  transaction.feePayer = payerPubKey
-
-  // Sign and send transaction
-  transaction.sign(wallet)
-  const signature = await connection.sendRawTransaction(transaction.serialize(), {
-    skipPreflight: false,
-    preflightCommitment: 'confirmed'
-  })
-
-  // Wait for confirmation with extended timeout for devnet
   try {
-    // Use a more robust confirmation approach with timeout handling
-    const confirmation = await Promise.race([
-      connection.confirmTransaction(signature, 'confirmed'),
-      new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error('Confirmation timeout')), 60000)
-      )
-    ])
-    console.log(`DAO created for token ${tokenMint} with signature: ${signature}`)
-  } catch (timeoutError) {
-    // If timeout, check if transaction actually succeeded
-    console.log(`Confirmation timeout for ${tokenMint}, checking transaction status...`)
+    // Since this is running in a Cloudflare Worker, we need to call the API differently
+    // We'll use the same environment and create the DAO directly using the same logic
+    // but with the new parameters structure
     
-    try {
-      const transactionStatus = await connection.getSignatureStatus(signature)
-      if (transactionStatus.value?.confirmationStatus === 'confirmed' || 
-          transactionStatus.value?.confirmationStatus === 'finalized') {
-        console.log(`DAO creation confirmed via status check for token ${tokenMint}`)
-      } else {
-        console.log(`Transaction status for ${tokenMint}:`, transactionStatus.value)
-        // Re-throw if transaction actually failed
-        if (transactionStatus.value?.err) {
-          throw new Error(`Transaction failed: ${JSON.stringify(transactionStatus.value.err)}`)
-        }
-        // If still processing, log but don't fail
-        console.log(`Transaction for ${tokenMint} may still be processing`)
-      }
-    } catch (statusError) {
-      console.error(`Error checking transaction status for ${tokenMint}:`, statusError)
-      // Don't fail the whole process, just log the issue
+    const governanceProgramId = new PublicKey("GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw")
+    const splGovernance = new SplGovernance(connection, governanceProgramId)
+
+    // DAO creation parameters using the new structure
+    const communityTokenMintPubKey = new PublicKey(tokenMint)
+    const payerPubKey = wallet.publicKey
+    const minCommunityWeightToCreateGovernance = daoCreationPayload.minCommunityWeightToCreateGovernance
+
+    // Prepare the MintMaxVoteWeightSource
+    const communityMintMaxVoterWeightSource = {
+      type: daoCreationPayload.communityMintMaxVoterWeightSourceType,
+      amount: new BN(daoCreationPayload.communityMintMaxVoterWeightSourceValue)
     }
+
+    // Create realm instruction
+    const createRealmInstruction = await splGovernance.createRealmInstruction(
+      daoCreationPayload.name,
+      communityTokenMintPubKey,
+      minCommunityWeightToCreateGovernance,
+      payerPubKey,
+      communityMintMaxVoterWeightSource,
+      undefined, // no council token
+      daoCreationPayload.communityTokenType,
+      daoCreationPayload.councilTokenType
+    )
+
+    const realmPubKey = createRealmInstruction.keys[0].pubkey
+
+    // Create governance instruction with new parameters
+    const createGovernanceInstruction = await splGovernance.createGovernanceInstruction(
+      {
+        communityVoteThreshold: { yesVotePercentage: [daoCreationPayload.communityApprovalThreshold] },
+        minCommunityWeightToCreateProposal: minCommunityWeightToCreateGovernance,
+        minTransactionHoldUpTime: daoCreationPayload.minTransactionHoldUpTime,
+        votingBaseTime: daoCreationPayload.votingBaseTime,
+        communityVoteTipping: { disabled: {} },
+        councilVoteThreshold: { disabled: {} },
+        councilVetoVoteThreshold: { disabled: {} },
+        minCouncilWeightToCreateProposal: daoCreationPayload.minCouncilWeightToCreateProposal,
+        councilVoteTipping: { strict: {} },
+        communityVetoVoteThreshold: { disabled: {} },
+        votingCoolOffTime: daoCreationPayload.votingCoolOffTime,
+        depositExemptProposalCount: daoCreationPayload.depositExemptProposalCount,
+      },
+      realmPubKey,
+      payerPubKey,
+      undefined,
+      payerPubKey
+    )
+
+    const governancePubKey = createGovernanceInstruction.keys[1].pubkey
+
+    // Create native treasury instruction
+    const createNativeTreasuryInstruction = await splGovernance.createNativeTreasuryInstruction(
+      governancePubKey,
+      payerPubKey
+    )
+
+    // Build and send transaction
+    const transaction = new Transaction().add(
+      createRealmInstruction,
+      createGovernanceInstruction,
+      createNativeTreasuryInstruction
+    )
+
+    const { blockhash } = await connection.getLatestBlockhash()
+    transaction.recentBlockhash = blockhash
+    transaction.feePayer = payerPubKey
+
+    // Sign and send transaction
+    transaction.sign(wallet)
+    const signature = await connection.sendRawTransaction(transaction.serialize(), {
+      skipPreflight: false,
+      preflightCommitment: 'confirmed'
+    })
+
+    // Wait for confirmation with extended timeout for devnet
+    try {
+      const confirmation = await Promise.race([
+        connection.confirmTransaction(signature, 'confirmed'),
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Confirmation timeout')), 60000)
+        )
+      ])
+      console.log(`DAO created for token ${tokenMint} with signature: ${signature}`)
+    } catch (timeoutError) {
+      console.log(`Confirmation timeout for ${tokenMint}, checking transaction status...`)
+      
+      try {
+        const transactionStatus = await connection.getSignatureStatus(signature)
+        if (transactionStatus.value?.confirmationStatus === 'confirmed' || 
+            transactionStatus.value?.confirmationStatus === 'finalized') {
+          console.log(`DAO creation confirmed via status check for token ${tokenMint}`)
+        } else {
+          console.log(`Transaction status for ${tokenMint}:`, transactionStatus.value)
+          if (transactionStatus.value?.err) {
+            throw new Error(`Transaction failed: ${JSON.stringify(transactionStatus.value.err)}`)
+          }
+          console.log(`Transaction for ${tokenMint} may still be processing`)
+        }
+      } catch (statusError) {
+        console.error(`Error checking transaction status for ${tokenMint}:`, statusError)
+      }
+    }
+    
+    console.log(`DAO address for token ${tokenMint}: ${realmPubKey.toBase58()}`)
+    return realmPubKey.toBase58()
+
+  } catch (error) {
+    console.error(`Error creating DAO for token ${tokenMint}:`, error)
+    throw error
   }
-  
-  console.log(`DAO address for token ${tokenMint}: ${realmPubKey.toBase58()}`)
-  return realmPubKey.toBase58() // Return DAO address instead of transaction signature
 }
 
 // Function to migrate a graduated token to DAMM V2

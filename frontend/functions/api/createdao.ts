@@ -25,6 +25,17 @@ interface CreateDaoRequest {
   councilTokenMint?: string; // Optional PublicKey as string
   communityMintMaxVoterWeightSourceType?: "absolute" | "supplyFraction";
   communityMintMaxVoterWeightSourceValue?: number;
+  communityApprovalThreshold?: number; // Percentage for community approval (e.g., 60 for 60%)
+  councilApprovalThreshold?: number; // Percentage for council approval (e.g., 50 for 50%)
+  minCouncilWeightToCreateProposal?: number;
+  minTransactionHoldUpTime?: number;
+  votingBaseTime?: number;
+  votingCoolOffTime?: number;
+  depositExemptProposalCount?: number;
+  communityVoteTipping?: "disabled" | "early" | "strict";
+  councilVoteTipping?: "disabled" | "early" | "strict";
+  communityVetoVoteThreshold?: "disabled" | "enabled";
+  councilVetoVoteThreshold?: "disabled" | "enabled";
 }
 
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
@@ -54,6 +65,17 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       councilTokenMint,
       communityMintMaxVoterWeightSourceType = "supplyFraction",
       communityMintMaxVoterWeightSourceValue = 10000000000,
+      communityApprovalThreshold = 50,
+      councilApprovalThreshold = 50,
+      minCouncilWeightToCreateProposal = 1,
+      minTransactionHoldUpTime = 0,
+      votingBaseTime = 216000,
+      votingCoolOffTime = 43200,
+      depositExemptProposalCount = 10,
+      communityVoteTipping = "disabled",
+      councilVoteTipping = "strict",
+      communityVetoVoteThreshold = "disabled",
+      councilVetoVoteThreshold = "disabled",
     } = requestBody;
 
     // Convert string addresses to PublicKey
@@ -80,6 +102,9 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       amount: new BN(communityMintMaxVoterWeightSourceValue)
     };
 
+    // Determine council token type based on whether council token is provided
+    const finalCouncilTokenType = councilTokenMint ? "liquid" : councilTokenType;
+
     // Create the realm instruction using the correct signature:
     // createRealmInstruction(name, communityTokenMint, minCommunityWeightToCreateGovernance, payer, 
     //                       communityMintMaxVoterWeightSource?, councilTokenMint?, 
@@ -92,7 +117,7 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       communityMintMaxVoterWeightSource,
       councilTokenMintPubKey,
       communityTokenType,
-      councilTokenType
+      finalCouncilTokenType
     );
     console.log("createRealmInstruction", createRealmInstruction);
 
@@ -107,18 +132,22 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
 
     const createGovernanceInstruction = await splGovernance.createGovernanceInstruction(
       {
-        communityVoteThreshold: { yesVotePercentage: [50] },
+        communityVoteThreshold: { yesVotePercentage: [communityApprovalThreshold] },
         minCommunityWeightToCreateProposal: minCommunityWeightToCreateGovernance,
-        minTransactionHoldUpTime: 0,
-        votingBaseTime: 216000,
-        communityVoteTipping: { disabled: {} },
-        councilVoteThreshold: { disabled: {} },
+        minTransactionHoldUpTime: minTransactionHoldUpTime,
+        votingBaseTime: votingBaseTime,
+        communityVoteTipping: communityVoteTipping === "disabled" ? { disabled: {} } : 
+                              communityVoteTipping === "early" ? { early: {} } : 
+                              { strict: {} },
+        councilVoteThreshold: councilTokenMint ? { yesVotePercentage: [councilApprovalThreshold] } : { disabled: {} },
         councilVetoVoteThreshold: { disabled: {} },
-        minCouncilWeightToCreateProposal: 1,
-        councilVoteTipping: { strict: {} },
+        minCouncilWeightToCreateProposal: minCouncilWeightToCreateProposal,
+        councilVoteTipping: councilVoteTipping === "disabled" ? { disabled: {} } : 
+                           councilVoteTipping === "early" ? { early: {} } : 
+                           { strict: {} },
         communityVetoVoteThreshold: { disabled: {} },
-        votingCoolOffTime: 43200,
-        depositExemptProposalCount: 10,
+        votingCoolOffTime: votingCoolOffTime,
+        depositExemptProposalCount: depositExemptProposalCount,
       },
       realmPubKey,
       payerPubKey,
