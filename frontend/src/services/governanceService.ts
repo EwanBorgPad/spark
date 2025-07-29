@@ -254,6 +254,8 @@ export class GovernanceService {
 
   /**
    * Create a transaction to withdraw governance tokens
+   * Note: This always withdraws all tokens as the Solana Governance Program
+   * doesn't support partial withdrawals natively
    */
   async createWithdrawGovernanceTokensTransaction(
     userWallet: PublicKey,
@@ -294,6 +296,8 @@ export class GovernanceService {
     );
 
     // Create withdraw governance tokens instruction using proper format
+    // Note: WithdrawGoverningTokens typically withdraws all tokens
+    // For partial withdrawals, we might need to use a different approach
     const withdrawInstruction = new TransactionInstruction({
       programId: this.governanceProgramId,
       keys: [
