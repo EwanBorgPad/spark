@@ -5,7 +5,7 @@ import { getAssociatedTokenAddress } from '@solana/spl-token'
 
 // Enhanced cache for token balances with longer TTL
 const balanceCache = new Map<string, { balance: number; timestamp: number; promise?: Promise<number> }>()
-const CACHE_TTL = 1800000 // 30 minutes cache - very aggressive to prevent RPC calls
+const CACHE_TTL = 15000 // 15 seconds (very short cache for immediate balance updates) cache - very aggressive to prevent RPC calls
 
 // Clean up expired cache entries
 function cleanupCache() {
@@ -15,6 +15,13 @@ function cleanupCache() {
       balanceCache.delete(key)
     }
   }
+}
+
+// Clear cache for specific user/token combination
+function clearCacheForUser(userAddress: string, tokenMint: string, cluster: string) {
+  const cacheKey = `${userAddress}-${tokenMint}-${cluster}`
+  balanceCache.delete(cacheKey)
+  console.log(`[gettokenbalance] Cleared cache for key: ${cacheKey}`)
 }
 
 // Retry configuration for RPC calls
@@ -79,6 +86,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const userAddress = searchParams.get("userAddress")
     const tokenMint = searchParams.get("tokenMint")
     const cluster = searchParams.get("cluster") || "mainnet"
+    const forceRefresh = searchParams.get("forceRefresh") === "true"
 
     // Validate required parameters
     if (!userAddress || !tokenMint) {
@@ -115,9 +123,10 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     // Check cache first with cache key
     const cacheKey = `${userAddress}-${tokenMint}-${cluster}`
     console.log(`[gettokenbalance] Cache key: ${cacheKey}`)
+    console.log(`[gettokenbalance] Force refresh: ${forceRefresh}`)
     const cached = balanceCache.get(cacheKey)
     
-    if (cached) {
+    if (cached && !forceRefresh) {
       console.log(`[gettokenbalance] Found cached data:`, cached)
       // If we have a cached result and it's still valid, return it
       if (Date.now() - cached.timestamp < CACHE_TTL) {
@@ -152,6 +161,12 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
       }
     } else {
       console.log(`[gettokenbalance] No cached data found, fetching fresh data`)
+    }
+
+    // Clear cache if force refresh is requested
+    if (forceRefresh) {
+      clearCacheForUser(userAddress, tokenMint, cluster)
+      console.log(`[gettokenbalance] Force refresh requested, cleared cache`)
     }
 
     // Create a promise for this request to prevent duplicate requests
