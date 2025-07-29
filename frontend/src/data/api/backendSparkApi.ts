@@ -4,8 +4,11 @@ import {
   TokenModel,
   DaoModel,
   GetUserTokensResponse,
-  GetTokenMarketResponse
+  GetTokenMarketResponse,
+  GetTokenBalanceResponse,
+  GetGovernanceDataResponse
 } from "../../../shared/models.ts"
+import { deduplicateRequest, createRequestKey } from "../../utils/requestDeduplication"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || `${window.location.origin}/api`
 
@@ -17,6 +20,8 @@ const CREATE_DAO = API_BASE_URL + "/createdao"
 const GET_DAO = API_BASE_URL + "/getdao"
 const GET_USER_TOKENS = API_BASE_URL + "/getusertokens"
 const GET_TOKEN_MARKET = API_BASE_URL + "/gettokenmarket"
+const GET_TOKEN_BALANCE = API_BASE_URL + "/gettokenbalance"
+const GET_GOVERNANCE_DATA = API_BASE_URL + "/getgovernancedata"
 
 type PostCreateUserStatusArgs = {
   address: string 
@@ -196,6 +201,56 @@ const getTokenMarket = async ({ address }: GetTokenMarketArgs): Promise<GetToken
   return json
 }
 
+type GetTokenBalanceArgs = {
+  userAddress: string
+  tokenMint: string
+  cluster?: string
+}
+
+const getTokenBalance = async ({ userAddress, tokenMint, cluster = "mainnet" }: GetTokenBalanceArgs): Promise<GetTokenBalanceResponse> => {
+  const requestKey = createRequestKey("getTokenBalance", { userAddress, tokenMint, cluster })
+  
+  return deduplicateRequest(requestKey, async () => {
+    const url = new URL(GET_TOKEN_BALANCE)
+    url.searchParams.set("userAddress", userAddress)
+    url.searchParams.set("tokenMint", tokenMint)
+    url.searchParams.set("cluster", cluster)
+    
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(`Failed to fetch token balance: ${response.statusText}`)
+    }
+    const json = await response.json()
+    return json
+  })
+}
+
+type GetGovernanceDataArgs = {
+  userAddress: string
+  realmAddress: string
+  tokenMint: string
+  cluster?: string
+}
+
+const getGovernanceData = async ({ userAddress, realmAddress, tokenMint, cluster = "mainnet" }: GetGovernanceDataArgs): Promise<GetGovernanceDataResponse> => {
+  const requestKey = createRequestKey("getGovernanceData", { userAddress, realmAddress, tokenMint, cluster })
+  
+  return deduplicateRequest(requestKey, async () => {
+    const url = new URL(GET_GOVERNANCE_DATA)
+    url.searchParams.set("userAddress", userAddress)
+    url.searchParams.set("realmAddress", realmAddress)
+    url.searchParams.set("tokenMint", tokenMint)
+    url.searchParams.set("cluster", cluster)
+    
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(`Failed to fetch governance data: ${response.statusText}`)
+    }
+    const json = await response.json()
+    return json
+  })
+}
+
 export const backendSparkApi = {
   postCreateUserStatus,
   getUser,
@@ -205,4 +260,6 @@ export const backendSparkApi = {
   getDao,
   getUserTokens,
   getTokenMarket,
+  getTokenBalance,
+  getGovernanceData,
 }

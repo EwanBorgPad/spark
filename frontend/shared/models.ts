@@ -185,6 +185,22 @@ export type GetTokenMarketResponse = {
   tokenMarketData: TokenMarketData
 }
 
+export type GetTokenBalanceResponse = {
+  success: boolean
+  balance: number
+  mint: string
+  userAddress: string
+}
+
+export type GetGovernanceDataResponse = {
+  success: boolean
+  votingPower: number
+  hasRecord: boolean
+  userAddress: string
+  realmAddress: string
+  tokenMint: string
+}
+
 /**
  * Represents url type
  * Not sure what we wanna validate there ATM, so leave it as string for now.

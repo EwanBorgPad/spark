@@ -11,9 +11,9 @@ interface Wallet {
 }
 
 export const getCorrectWalletAddress = (privyUser: PrivyUser | null, wallets: Wallet[]): string | null => {
-  console.log("=== getCorrectWalletAddress Debug ===");
-  console.log("privyUser:", privyUser);
-  console.log("wallets:", wallets);
+  // console.log("=== getCorrectWalletAddress Debug ===");
+  // console.log("privyUser:", privyUser);
+  // console.log("wallets:", wallets);
   
   if (!privyUser) {
     console.log("No privyUser, returning null");
@@ -23,10 +23,10 @@ export const getCorrectWalletAddress = (privyUser: PrivyUser | null, wallets: Wa
   // For social logins, Privy creates embedded wallets
   // Check if user has an embedded wallet first
   const embeddedWallet = wallets.find(wallet => wallet.walletClientType === 'privy');
-  console.log("embeddedWallet:", embeddedWallet);
+  // console.log("embeddedWallet:", embeddedWallet);
   
   if (embeddedWallet) {
-    console.log("Found embedded wallet, returning:", embeddedWallet.address);
+    // console.log("Found embedded wallet, returning:", embeddedWallet.address);
     return embeddedWallet.address;
   }
   
@@ -39,15 +39,15 @@ export const getCorrectWalletAddress = (privyUser: PrivyUser | null, wallets: Wa
     )
   );
   
-  console.log("linkedWallet:", linkedWallet);
+  // console.log("linkedWallet:", linkedWallet);
   
   if (linkedWallet) {
-    console.log("Found linked wallet, returning:", linkedWallet.address);
+    // console.log("Found linked wallet, returning:", linkedWallet.address);
     return linkedWallet.address;
   }
   
   // DON'T fall back to external wallets that aren't linked to the user
   // This prevents using random browser wallets (like Phantom) for social logins
-  console.log("No embedded or properly linked wallet found, returning null");
+  // console.log("No embedded or properly linked wallet found, returning null");
   return null;
 }; 
