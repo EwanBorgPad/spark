@@ -124,14 +124,16 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ tokenMarketData, cl
 
   // Chart dimensions
   const width = 600;
-  const height = 180; // Reduced height for less space
-  const padding = 25; // Reduced padding for less space
-  const candleWidth = Math.max(8, (width - 2 * padding) / candleData.length * 0.6);
-  const candleSpacing = (width - 2 * padding) / candleData.length;
+  const height = 140; // Reduced height to remove top/bottom space
+  const leftPadding = 5; // Minimal left padding
+  const rightPadding = 80; // More space for legend on right
+  const topBottomPadding = 0; // No padding to move candles to the very top
+  const candleWidth = Math.max(8, (width - leftPadding - rightPadding) / candleData.length * 0.6);
+  const candleSpacing = (width - leftPadding - rightPadding) / candleData.length;
 
   // Helper function to get Y coordinate
   const getY = (price: number) => {
-    return height - padding - ((price - minPrice) / priceRange) * (height - 2 * padding);
+    return topBottomPadding + ((maxPrice - price) / priceRange) * (height - 2 * topBottomPadding);
   };
 
   // Format price for display
@@ -157,7 +159,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ tokenMarketData, cl
   return (
     <div className={`w-full bg-bg-secondary rounded-lg p-6 ${className}`}>
       {/* Header with current price and change */}
-      <div className="mb-6">
+      <div className="mb-1">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <h3 className="text-lg font-semibold text-fg-primary">Price Chart</h3>
@@ -180,7 +182,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ tokenMarketData, cl
       <div className="relative">
         <svg
           width="100%"
-          height="240"
+          height="160"
           viewBox={`0 0 ${width} ${height}`}
           className="overflow-visible"
         >
@@ -194,26 +196,26 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ tokenMarketData, cl
 
           {/* Price level lines */}
           {[0.25, 0.5, 0.75].map((ratio, index) => {
-            const y = padding + ratio * (height - 2 * padding);
+            const y = topBottomPadding + ratio * (height - 2 * topBottomPadding);
             const priceAtLevel = maxPrice - ratio * priceRange;
             return (
               <g key={index}>
                 <line
-                  x1={padding}
+                  x1={leftPadding}
                   y1={y}
-                  x2={width - padding}
+                  x2={width - rightPadding}
                   y2={y}
                   stroke="rgba(255,255,255,0.1)"
                   strokeWidth="1"
                   strokeDasharray="2,2"
                 />
                 <text
-                  x={padding - 5}
+                  x={width - rightPadding + 5}
                   y={y + 4}
-                  fill="rgba(255,255,255,0.7)"
-                  fontSize="12"
-                  fontWeight="500"
-                  textAnchor="end"
+                  fill="rgba(255,255,255,0.9)"
+                  fontSize="16"
+                  fontWeight="700"
+                  textAnchor="start"
                 >
                   {formatPrice(priceAtLevel)}
                 </text>
@@ -223,7 +225,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ tokenMarketData, cl
 
           {/* Candlesticks */}
           {candleData.map((candle, index) => {
-            const x = padding + index * candleSpacing + candleSpacing / 2;
+            const x = leftPadding + index * candleSpacing + candleSpacing / 2;
             const openY = getY(candle.open);
             const closeY = getY(candle.close);
             const highY = getY(candle.high);
@@ -234,16 +236,20 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ tokenMarketData, cl
             const bodyTop = Math.min(openY, closeY);
             const bodyHeight = Math.abs(closeY - openY);
 
+            // Debug: Add visible markers for high and low points
+            console.log(`Candle ${index}: high=${candle.high}, low=${candle.low}, highY=${highY}, lowY=${lowY}`);
+
             return (
               <g key={index}>
-                {/* Wick (high-low line) */}
+                {/* Top wick (from high to body top) */}
                 <line
                   x1={x}
                   y1={highY}
                   x2={x}
-                  y2={lowY}
+                  y2={bodyTop}
                   stroke={candleColor}
-                  strokeWidth="1"
+                  strokeWidth="2"
+                  opacity="1"
                 />
                 
                 {/* Candle body */}
@@ -251,15 +257,24 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ tokenMarketData, cl
                   x={x - candleWidth / 2}
                   y={bodyTop}
                   width={candleWidth}
-                  height={Math.max(bodyHeight, 2)} // Minimum height of 2px
-                  fill={candleColor} // Always fill with color
+                  height={Math.max(bodyHeight, 1)} // Minimum height of 1px
+                  fill={candleColor}
+                  opacity="0.9"
+                />
+                
+                {/* Bottom wick (from body bottom to low) */}
+                <line
+                  x1={x}
+                  y1={bodyTop + Math.max(bodyHeight, 1)}
+                  x2={x}
+                  y2={lowY}
                   stroke={candleColor}
-                  strokeWidth="1"
-                  opacity={1} // Full opacity
+                  strokeWidth="2"
+                  opacity="1"
                 />
 
-                {/* Small circles at open/close for very small bodies */}
-                {bodyHeight < 2 && (
+                {/* Small circles for very small bodies */}
+                {bodyHeight < 1 && (
                   <>
                     <circle
                       cx={x}
@@ -281,7 +296,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ tokenMarketData, cl
         </svg>
 
         {/* Time labels */}
-        <div className="flex justify-between mt-3 text-sm font-medium text-fg-primary text-opacity-70">
+        <div className="flex justify-between mt-1 text-sm font-medium text-fg-primary text-opacity-70">
           <span>24h ago</span>
           <span>Now</span>
         </div>
