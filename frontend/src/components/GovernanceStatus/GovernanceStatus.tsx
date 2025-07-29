@@ -10,6 +10,7 @@ import BN from 'bn.js';
 import { getCorrectWalletAddress } from '@/utils/walletUtils';
 import { toast } from 'react-toastify';
 import { backendSparkApi } from '../../data/api/backendSparkApi';
+import { useQuery } from '@tanstack/react-query';
 
 interface GovernanceStatusProps {
   dao: DaoModel;
@@ -24,10 +25,6 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
   const [isDepositing, setIsDepositing] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [depositAmount, setDepositAmount] = useState("1000000000"); // 1 token with 9 decimals
-  const [userTokenBalance, setUserTokenBalance] = useState(0);
-  const [votingPower, setVotingPower] = useState(0);
-  const isRequestingRef = useRef(false);
-  const hasFetchedRef = useRef(false);
 
   const RPC_URL = import.meta.env.VITE_RPC_URL;
   const connection = new Connection(RPC_URL);
@@ -46,87 +43,59 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
     return null;
   };
 
-  // Check user's token balance and voting power
+  // Get the correct wallet address for queries
+  const correctWalletAddress = getCorrectWalletAddress(user, wallets);
+
+  // Fetch token balance using React Query - refresh on page visit but not while staying
+  const { data: tokenBalanceData } = useQuery({
+    queryFn: () =>
+      backendSparkApi.getTokenBalance({
+        userAddress: correctWalletAddress || "",
+        tokenMint: dao.communityMint,
+        cluster: "mainnet"
+      }),
+    queryKey: ["getTokenBalance", correctWalletAddress, dao.communityMint],
+    enabled: Boolean(authenticated && correctWalletAddress && dao.communityMint),
+    refetchInterval: false,
+    staleTime: 0, // Always consider data stale - will refetch on mount
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: true, // Always refetch when component mounts (page visit)
+    refetchOnReconnect: false,
+  });
+
+  // Fetch governance data using React Query - refresh on page visit but not while staying
+  const { data: governanceData } = useQuery({
+    queryFn: () =>
+      backendSparkApi.getGovernanceData({
+        userAddress: correctWalletAddress || "",
+        realmAddress: dao.address,
+        tokenMint: dao.communityMint,
+        cluster: "mainnet"
+      }),
+    queryKey: ["getGovernanceData", correctWalletAddress, dao.address, dao.communityMint],
+    enabled: Boolean(authenticated && correctWalletAddress && dao.address && dao.communityMint),
+    refetchInterval: false,
+    staleTime: 0, // Always consider data stale - will refetch on mount
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: true, // Always refetch when component mounts (page visit)
+    refetchOnReconnect: false,
+  });
+
+  // Get current values from React Query data
+  const currentUserTokenBalance = tokenBalanceData?.success ? tokenBalanceData.balance : 0;
+  const govVotingPower = governanceData?.success ? governanceData.votingPower : 0;
+  
+  // Notify parent component when data changes
   useEffect(() => {
-    // Reset fetch flag when dependencies change
-    hasFetchedRef.current = false;
-    
-    const checkUserStatus = async () => {
-      if (!authenticated || isRequestingRef.current || hasFetchedRef.current) return;
-      
-      isRequestingRef.current = true;
-
-      // Get the correct wallet address
-      const correctWalletAddress = getCorrectWalletAddress(user, wallets);
-      if (!correctWalletAddress) return;
-
-      try {
-        const userPubkey = new PublicKey(correctWalletAddress);
-        const communityMint = new PublicKey(dao.communityMint);
-
-        // Get user's token account balance using backend API
-        let currentUserTokenBalance = 0;
-        try {
-          const tokenBalanceResponse = await backendSparkApi.getTokenBalance({
-            userAddress: correctWalletAddress,
-            tokenMint: dao.communityMint,
-            cluster: "mainnet"
-          });
-          currentUserTokenBalance = tokenBalanceResponse.balance;
-          setUserTokenBalance(currentUserTokenBalance);
-        } catch (error) {
-          console.error("Error fetching token balance:", error);
-          setUserTokenBalance(0);
-        }
-
-        // Check voting power from governance using backend API
-        let govVotingPower = 0;
-        try {
-          const governanceResponse = await backendSparkApi.getGovernanceData({
-            userAddress: correctWalletAddress,
-            realmAddress: dao.address,
-            tokenMint: dao.communityMint,
-            cluster: "mainnet"
-          });
-          govVotingPower = governanceResponse.votingPower;
-          setVotingPower(govVotingPower);
-        } catch (error) {
-          console.error("Error fetching governance data:", error);
-          setVotingPower(0);
-        }
-
-        // Notify parent component of data updates
-        if (onDataUpdate) {
-          onDataUpdate({
-            userTokenBalance: currentUserTokenBalance,
-            votingPower: govVotingPower
-          });
-        }
-
-        // Mark as fetched to prevent future requests
-        hasFetchedRef.current = true;
-
-      } catch (error) {
-        console.error("Error checking user status:", error);
-        // Still notify parent with zero values
-        if (onDataUpdate) {
-          onDataUpdate({ userTokenBalance: 0, votingPower: 0 });
-        }
-        // Mark as fetched even on error to prevent retries
-        hasFetchedRef.current = true;
-      } finally {
-        isRequestingRef.current = false;
-      }
-    };
-
-    checkUserStatus();
-
-    return () => {
-      // Reset flags on cleanup
-      hasFetchedRef.current = false;
-      isRequestingRef.current = false;
-    };
-  }, [authenticated, user?.wallet?.address, dao.communityMint, dao.address]);
+    if (onDataUpdate) {
+      onDataUpdate({
+        userTokenBalance: currentUserTokenBalance,
+        votingPower: govVotingPower
+      });
+    }
+  }, [currentUserTokenBalance, govVotingPower, onDataUpdate]);
 
   const handleDepositTokens = async () => {
     if (!authenticated) {
@@ -317,7 +286,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
             <div className="flex gap-2">
               <Button
                 onClick={handleDepositTokens}
-                disabled={isDepositing || parseFloat(depositAmount) <= 0 || userTokenBalance === 0}
+                disabled={isDepositing || parseFloat(depositAmount) <= 0 || currentUserTokenBalance === 0}
                 className="flex-1 bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border-brand-primary/30 text-sm py-2"
               >
                 {isDepositing ? "Depositing..." : "Deposit"}
@@ -325,14 +294,14 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
               
               <Button
                 onClick={handleWithdrawTokens}
-                disabled={isWithdrawing || votingPower === 0}
+                disabled={isWithdrawing || govVotingPower === 0}
                 className="flex-1 bg-fg-primary/20 hover:bg-fg-primary/30 text-fg-primary border-fg-primary/30 text-sm py-2"
               >
                 {isWithdrawing ? "Withdrawing..." : "Withdraw"}
               </Button>
             </div>
 
-            {userTokenBalance === 0 && (
+            {currentUserTokenBalance === 0 && (
               <div className="mt-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded text-center">
                 <Text text="You need tokens in your wallet to deposit" as="p" className="text-xs text-fg-primary/60" />
               </div>
