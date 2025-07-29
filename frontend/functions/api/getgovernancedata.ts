@@ -3,9 +3,9 @@ import { getRpcUrlForCluster } from "../../shared/solana/rpcUtils"
 import { Connection, PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
 
-// Enhanced cache for governance data with longer TTL
+// Enhanced cache for governance data with shorter TTL for real-time updates
 const governanceCache = new Map<string, { votingPower: number; hasRecord: boolean; timestamp: number; promise?: Promise<{ votingPower: number; hasRecord: boolean }> }>()
-const CACHE_TTL = 1800000 // 30 minutes cache - very aggressive to prevent RPC calls
+const CACHE_TTL = 30000 // 30 seconds cache - much shorter for real-time governance updates
 
 // Clean up expired cache entries
 function cleanupCache() {
@@ -82,6 +82,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const realmAddress = searchParams.get("realmAddress")
     const tokenMint = searchParams.get("tokenMint")
     const cluster = searchParams.get("cluster") || "mainnet"
+    const forceRefresh = searchParams.get("forceRefresh") === "true"
 
     // Validate required parameters
     if (!userAddress || !realmAddress || !tokenMint) {
@@ -114,7 +115,7 @@ export const onRequestGet: PagesFunction<ENV> = async (ctx) => {
     const cacheKey = `${userAddress}-${realmAddress}-${tokenMint}-${cluster}`
     const cached = governanceCache.get(cacheKey)
     
-    if (cached) {
+    if (cached && !forceRefresh) {
       // If we have a cached result and it's still valid, return it
       if (Date.now() - cached.timestamp < CACHE_TTL) {
         const response: GetGovernanceDataResponse = {

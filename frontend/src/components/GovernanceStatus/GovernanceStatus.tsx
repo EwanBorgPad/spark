@@ -10,7 +10,7 @@ import BN from 'bn.js';
 import { getCorrectWalletAddress } from '@/utils/walletUtils';
 import { toast } from 'react-toastify';
 import { backendSparkApi } from '../../data/api/backendSparkApi';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface GovernanceStatusProps {
   dao: DaoModel;
@@ -22,9 +22,10 @@ interface GovernanceStatusProps {
 const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = "", onStatusUpdate, onDataUpdate }) => {
   const { user, authenticated } = usePrivy();
   const { wallets } = useSolanaWallets();
+  const queryClient = useQueryClient();
   const [isDepositing, setIsDepositing] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
-  const [depositAmount, setDepositAmount] = useState("1000000000"); // 1 token with 9 decimals
+  const [amount, setAmount] = useState("1000000000"); // 1 token with 9 decimals
 
   const RPC_URL = import.meta.env.VITE_RPC_URL;
   const connection = new Connection(RPC_URL);
@@ -87,6 +88,11 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
   const currentUserTokenBalance = tokenBalanceData?.success ? tokenBalanceData.balance : 0;
   const govVotingPower = governanceData?.success ? governanceData.votingPower : 0;
   
+  // Helper function for max deposit amount
+  const setMaxDeposit = () => {
+    setAmount((currentUserTokenBalance * 1000000000).toString());
+  };
+  
   // Notify parent component when data changes
   useEffect(() => {
     if (onDataUpdate) {
@@ -115,7 +121,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
       const userPubkey = new PublicKey(solanaWallet.address);
       const communityMint = new PublicKey(dao.communityMint);
       const realmPubkey = new PublicKey(dao.address);
-      const amount = new BN(depositAmount);
+      const depositAmountBN = new BN(amount);
 
       // Ensure user has an associated token account for the community mint
       const userTokenAccount = await getAssociatedTokenAddress(
@@ -131,7 +137,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
           cluster: "mainnet"
         });
         const userBalance = tokenBalanceResponse.balance;
-        const requiredAmount = amount.toNumber() / 1000000000;
+        const requiredAmount = depositAmountBN.toNumber() / 1000000000;
         
         if (userBalance < requiredAmount) {
           throw new Error(`Insufficient token balance. You have ${userBalance} tokens but need ${requiredAmount}`);
@@ -148,7 +154,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
         userPubkey,
         realmPubkey,
         communityMint,
-        amount
+        depositAmountBN
       );
 
       // Get recent blockhash
@@ -169,14 +175,23 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
       await connection.confirmTransaction(signature, 'confirmed');
       
       console.log("Deposit successful! Signature:", signature);
-      toast.success(`Successfully deposited ${(amount.toNumber() / 1000000000).toFixed(2)} tokens! Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
+      toast.success(`Successfully deposited ${(depositAmountBN.toNumber() / 1000000000).toFixed(2)} tokens! Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
+      
+      // Invalidate and refetch queries to get updated data
+      await queryClient.invalidateQueries({
+        queryKey: ["getTokenBalance", correctWalletAddress, dao.communityMint]
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["getGovernanceData", correctWalletAddress, dao.address, dao.communityMint]
+      });
+      
+      // Force a fresh fetch of governance data to get immediate updates
+      await queryClient.refetchQueries({
+        queryKey: ["getGovernanceData", correctWalletAddress, dao.address, dao.communityMint]
+      });
       
       // Refresh user status
-      setTimeout(() => {
-        if (onStatusUpdate) onStatusUpdate();
-        // Force a page refresh to get updated governance data
-        window.location.reload();
-      }, 2000);
+      if (onStatusUpdate) onStatusUpdate();
 
     } catch (error) {
       console.error("Error depositing tokens:", error);
@@ -212,6 +227,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
       );
 
       // Create transaction using governance service
+      // Note: Withdrawals always withdraw all tokens due to Solana Governance Program limitations
       const transaction = await governanceService.createWithdrawGovernanceTokensTransaction(
         userPubkey,
         realmPubkey,
@@ -239,12 +255,21 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
       console.log("Withdraw successful! Signature:", signature);
       toast.success(`Successfully withdrew all governance tokens! Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
       
+      // Invalidate and refetch queries to get updated data
+      await queryClient.invalidateQueries({
+        queryKey: ["getTokenBalance", correctWalletAddress, dao.communityMint]
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["getGovernanceData", correctWalletAddress, dao.address, dao.communityMint]
+      });
+      
+      // Force a fresh fetch of governance data to get immediate updates
+      await queryClient.refetchQueries({
+        queryKey: ["getGovernanceData", correctWalletAddress, dao.address, dao.communityMint]
+      });
+      
       // Refresh user status
-      setTimeout(() => {
-        if (onStatusUpdate) onStatusUpdate();
-        // Trigger a re-check of user status
-        window.location.reload(); // Simple way to refresh data
-      }, 2000);
+      if (onStatusUpdate) onStatusUpdate();
 
     } catch (error) {
       console.error("Error withdrawing tokens:", error);
@@ -265,28 +290,35 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
           {/* Status Overview - Now handled externally */}
           {/* Token Management */}
           <div className="bg-bg-primary/5 rounded p-3 border border-fg-primary/10">
-            <Text text="Manage Tokens" as="h3" className="text-sm font-medium mb-3" />
+            <Text text="Lock tokens to vote" as="h3" className="text-sm font-medium mb-3" />
             
+            {/* Amount Input */}
             <div className="mb-3">
               <Text text="Deposit Amount" as="p" className="text-xs text-fg-primary/60 mb-1" />
               <div className="flex items-center gap-2">
                 <input
                   type="number"
-                  value={(parseInt(depositAmount) / 1000000000).toString()}
-                  onChange={(e) => setDepositAmount((parseFloat(e.target.value) * 1000000000).toString())}
+                  value={(parseInt(amount) / 1000000000).toString()}
+                  onChange={(e) => setAmount((parseFloat(e.target.value) * 1000000000).toString())}
                   className="flex-1 px-3 py-2 bg-bg-primary border border-fg-primary/20 rounded text-black text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   placeholder="1.0"
                   min="0"
                   step="0.1"
                 />
                 <span className="text-xs text-fg-primary/60 px-2">tokens</span>
+                <Button
+                  onClick={setMaxDeposit}
+                  className="px-3 py-2 bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border-brand-primary/30 text-xs"
+                >
+                  Max
+                </Button>
               </div>
             </div>
 
             <div className="flex gap-2">
               <Button
                 onClick={handleDepositTokens}
-                disabled={isDepositing || parseFloat(depositAmount) <= 0 || currentUserTokenBalance === 0}
+                disabled={isDepositing || parseFloat(amount) <= 0 || currentUserTokenBalance === 0}
                 className="flex-1 bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border-brand-primary/30 text-sm py-2"
               >
                 {isDepositing ? "Depositing..." : "Deposit"}
@@ -297,7 +329,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
                 disabled={isWithdrawing || govVotingPower === 0}
                 className="flex-1 bg-fg-primary/20 hover:bg-fg-primary/30 text-fg-primary border-fg-primary/30 text-sm py-2"
               >
-                {isWithdrawing ? "Withdrawing..." : "Withdraw"}
+                {isWithdrawing ? "Withdrawing..." : "Withdraw All"}
               </Button>
             </div>
 
