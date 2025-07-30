@@ -9,7 +9,6 @@ import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom"
 import { PrivyProvider } from "@privy-io/react-auth"
 import App from "./App"
 import { WalletProvider } from "@/hooks/useWalletContext"
-import { ProjectDataProvider } from "./hooks/useProjectData"
 import SomethingWentWrong from "./components/SomethingWentWrong"
 
 import "./index.css"
@@ -87,9 +86,7 @@ const router = createBrowserRouter([
           {
             path: ":id",
             element: (
-              <ProjectDataProvider>
-                <Project />
-              </ProjectDataProvider>
+              <Project />
             ),
           },
           {

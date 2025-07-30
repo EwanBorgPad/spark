@@ -9,8 +9,7 @@ import Text from "@/components/Text"
 import { Icon } from "@/components/Icon/Icon"
 import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
-import { backendSparkApi } from "@/data/api/backendSparkApi"
-import { backendApi } from "@/data/api/backendApi"
+import { backendSparkApi, ApplicationResponse } from "@/data/api/backendSparkApi"
 import { useQuery } from "@tanstack/react-query"
 import { GetTokenResponse, DaoModel, GetTokenMarketResponse, TokenMarketData, GetTokenBalanceResponse } from "shared/models"
 import TokenChart from "@/components/TokenChart/TokenChart"
@@ -19,6 +18,7 @@ import TokenStats from "@/components/TokenStats/TokenStats"
 import ProposalVoting from "@/components/ProposalVoting/ProposalVoting"
 import GovernanceStatus from "@/components/GovernanceStatus/GovernanceStatus"
 import JupiterSwap from "@/components/JupiterSwap"
+import ApplicationDetailsModal from "@/components/Modal/Modals/ApplicationDetailsModal"
 import { usePrivy, useSolanaWallets } from '@privy-io/react-auth'
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry'
 import { ROUTES } from "@/utils/routes"
@@ -37,6 +37,8 @@ const Project = () => {
   const [fallbackChartData, setFallbackChartData] = useState<TokenMarketData | null>(null)
   const [isLoadingFallbackChart, setIsLoadingFallbackChart] = useState(false)
   const [governanceData, setGovernanceData] = useState<{ userTokenBalance: number; votingPower: number }>({ userTokenBalance: 0, votingPower: 0 })
+  const [selectedApplication, setSelectedApplication] = useState<ApplicationResponse | null>(null)
+  const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false)
   const { isDesktop, isMobile } = useDeviceDetection()
 
   const { user, authenticated } = usePrivy()
@@ -44,17 +46,22 @@ const Project = () => {
 
   const inputMint = 'So11111111111111111111111111111111111111112' // SOL
 
-  // Handle escape key to close modal
+  // Handle escape key to close modals
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isSwapModalOpen) {
-        setIsSwapModalOpen(false)
+      if (event.key === 'Escape') {
+        if (isSwapModalOpen) {
+          setIsSwapModalOpen(false)
+        }
+        if (isApplicationModalOpen) {
+          handleCloseApplicationModal()
+        }
       }
     }
 
     document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
-  }, [isSwapModalOpen])
+  }, [isSwapModalOpen, isApplicationModalOpen])
 
   // Load token list
   useEffect(() => {
@@ -219,10 +226,25 @@ const Project = () => {
 
   // Fetch applications for this project
   const { data: applicationsData } = useQuery({
-    queryFn: () => backendApi.getAllApplications(),
-    queryKey: ["getAllApplications"],
+          queryFn: () => backendSparkApi.getApplicationsByProjectId({ projectId: id || "" }),
+    queryKey: ["getApplicationsByProjectId", id],
     enabled: Boolean(id),
   })
+
+  // Log applications data when it changes
+  useEffect(() => {
+    console.log('📊 Applications data updated:', {
+      projectId: id,
+      applicationsCount: applicationsData?.applications?.length || 0,
+      applications: applicationsData?.applications?.map(app => ({
+        id: app.id,
+        deliverableName: app.deliverableName,
+        githubUsername: app.githubUsername,
+        projectId: app.projectId,
+        status: app.status
+      })) || []
+    });
+  }, [applicationsData, id]);
 
   // Fetch token market data
   const { data: marketData, isLoading: marketLoading, error: marketError } = useQuery<GetTokenMarketResponse>({
@@ -241,6 +263,79 @@ const Project = () => {
       console.log("Governance status updated, refreshing data...")
     }
   }
+
+
+
+  // Find matching application for a proposal
+  const findMatchingApplication = (proposal: any): ApplicationResponse | null => {
+    console.log('🔍 Checking for matching application for proposal:', {
+      proposalName: proposal.name,
+      proposalDescription: proposal.description,
+      applicationsCount: applicationsData?.applications?.length || 0
+    });
+
+    if (!applicationsData?.applications || applicationsData.applications.length === 0) {
+      console.log('❌ No applications data available');
+      return null;
+    }
+
+    console.log('📋 Available applications:', applicationsData.applications.map(app => ({
+      deliverableName: app.deliverableName,
+      githubUsername: app.githubUsername,
+      projectId: app.projectId
+    })));
+    
+    // Try to match by proposal name/description with deliverable name
+    const match = applicationsData.applications.find(app => {
+      const proposalNameLower = proposal.name?.toLowerCase() || '';
+      const proposalDescLower = proposal.description?.toLowerCase() || '';
+      const deliverableNameLower = app.deliverableName.toLowerCase();
+      
+      const nameMatch = proposalNameLower.includes(deliverableNameLower) || 
+                       deliverableNameLower.includes(proposalNameLower);
+      const descMatch = proposalDescLower.includes(deliverableNameLower) || 
+                       deliverableNameLower.includes(proposalDescLower);
+      
+      console.log(`🔍 Checking application "${app.deliverableName}":`, {
+        nameMatch,
+        descMatch,
+        proposalName: proposalNameLower,
+        proposalDesc: proposalDescLower,
+        deliverableName: deliverableNameLower
+      });
+      
+      return nameMatch || descMatch;
+    });
+    
+    if (match) {
+      console.log('✅ Found matching application:', {
+        deliverableName: match.deliverableName,
+        githubUsername: match.githubUsername,
+        projectId: match.projectId
+      });
+    } else {
+      console.log('❌ No matching application found for proposal:', proposal.name);
+    }
+    
+    return match || null;
+  };
+
+  // Handle opening application modal
+  const handleOpenApplicationModal = (application: ApplicationResponse) => {
+    console.log('🚀 Opening application modal for:', {
+      deliverableName: application.deliverableName,
+      githubUsername: application.githubUsername,
+      projectId: application.projectId
+    });
+    setSelectedApplication(application);
+    setIsApplicationModalOpen(true);
+  };
+
+  // Handle closing application modal
+  const handleCloseApplicationModal = () => {
+    setIsApplicationModalOpen(false);
+    setSelectedApplication(null);
+  };
 
   const handleGovernanceDataUpdate = useCallback((data: { userTokenBalance: number; votingPower: number }) => {
     setGovernanceData(data)
@@ -1057,6 +1152,13 @@ const Project = () => {
                                 })
                                 .slice(0, 5)
                                 .map((proposal) => {
+                                  console.log('📝 Rendering proposal:', {
+                                    name: proposal.name,
+                                    description: proposal.description,
+                                    state: proposal.state,
+                                    address: proposal.address
+                                  });
+                                  
                                   const stateKey = typeof proposal.state === 'object' && proposal.state !== null
                                     ? Object.keys(proposal.state)[0]
                                     : proposal.state;
@@ -1066,7 +1168,51 @@ const Project = () => {
                                     <div key={proposal.address} className="border border-fg-primary/10 rounded-lg p-4 bg-bg-primary/5 space-y-3">
                                       {/* Proposal Header */}
                                       <div className="flex justify-between items-start">
-                                        <Text text={proposal.name || "Unnamed Proposal"} as="p" className="font-medium text-fg-primary text-sm" />
+                                        <div className="flex-1">
+                                          <div className="flex items-center gap-2">
+                                            <button
+                                              onClick={() => {
+                                                const matchingApp = findMatchingApplication(proposal);
+                                                if (matchingApp) {
+                                                  handleOpenApplicationModal(matchingApp);
+                                                }
+                                              }}
+                                              className={`text-left font-medium text-sm transition-colors ${
+                                                findMatchingApplication(proposal) 
+                                                  ? 'text-blue-400 hover:text-blue-300 cursor-pointer' 
+                                                  : 'text-fg-primary'
+                                              }`}
+                                            >
+                                              {proposal.name || "Unnamed Proposal"}
+                                            </button>
+                                            {findMatchingApplication(proposal) && (
+                                              <Icon icon="SvgDocument" className="w-4 h-4 text-blue-400" />
+                                            )}
+                                          </div>
+                                          
+                                          {/* Developer Info for Traditional Proposals */}
+                                          {findMatchingApplication(proposal) && (
+                                            <div className="flex items-center gap-3 mt-2 text-xs">
+                                              <div className="flex items-center gap-1">
+                                                <Icon icon="SvgWeb" className="w-3 h-3 text-gray-400" />
+                                                <a 
+                                                  href={`https://github.com/${findMatchingApplication(proposal)?.githubUsername}`}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="text-blue-400 hover:text-blue-300 font-medium"
+                                                >
+                                                  @{findMatchingApplication(proposal)?.githubUsername}
+                                                </a>
+                                              </div>
+                                              <div className="flex items-center gap-1">
+                                                <span className="text-gray-400">Price:</span>
+                                                <span className="text-green-400 font-medium">
+                                                  {findMatchingApplication(proposal)?.requestedPrice} SOL
+                                                </span>
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
                                         <span className={`px-3 py-1 rounded-full text-xs font-medium border ${isVotingOpen
                                           ? 'bg-green-600/30 text-green-300 border-green-600/50'
                                           : 'bg-blue-600/30 text-blue-300 border-blue-600/50'
@@ -1082,13 +1228,29 @@ const Project = () => {
                                         <Text text={proposal.description.slice(0, 150) + (proposal.description.length > 150 ? '...' : '')} as="p" className="text-xs text-fg-primary/60" />
                                       )}
 
+                                      {/* Show More Button for Applications */}
+                                      {findMatchingApplication(proposal) && (
+                                        <div className="flex items-center gap-2">
+                                          <Button
+                                            onClick={() => {
+                                              const matchingApp = findMatchingApplication(proposal);
+                                              if (matchingApp) {
+                                                handleOpenApplicationModal(matchingApp);
+                                              }
+                                            }}
+                                            className="px-3 py-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 text-xs font-medium rounded border border-blue-600/30 transition-colors"
+                                          >
+                                            Show Application Details
+                                          </Button>
+                                        </div>
+                                      )}
+
                                       {/* Vote Stats */}
                                       {(() => {
-                                        // Check if this is a multi-choice proposal by examining the structure
-                                        // Multi-choice proposals typically have more than 2 options and specific naming patterns
-                                        const isMultiChoice = proposal.options && proposal.options.length > 2 || 
-                                          (proposal.name && proposal.name.toLowerCase().includes('choose')) ||
-                                          (proposal.options && proposal.options.length > 0 && proposal.options.some(option => option.label && !['Yes', 'No'].includes(option.label)));
+                                        // Check if this is a multi-choice proposal (only for specific cases)
+                                        const isMultiChoice = proposal.options && 
+                                          proposal.options.length > 2 && 
+                                          (proposal.name && proposal.name.toLowerCase().includes('choose'));
                                         
                                         if (isMultiChoice && proposal.options && proposal.options.length > 0) {
                                           // Multi-choice proposal - show all options
@@ -1319,6 +1481,15 @@ const Project = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Application Details Modal */}
+      {selectedApplication && (
+        <ApplicationDetailsModal
+          application={selectedApplication}
+          isOpen={isApplicationModalOpen}
+          onClose={handleCloseApplicationModal}
+        />
       )}
 
       <ScrollRestoration />

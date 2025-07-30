@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { backendApi, ApplicationResponse } from "@/data/api/backendApi"
+import { backendSparkApi, ApplicationResponse } from "@/data/api/backendSparkApi"
 import { TableCell } from "../Tables/TableCell"
 import { TableHeader } from "../Tables/TableHeader"
 import { Button } from "../Button/Button"
@@ -14,7 +14,7 @@ const Applications = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
 
   const { data, isLoading, refetch } = useQuery({
-    queryFn: () => backendApi.getAllApplications(sortField, sortDirection),
+    queryFn: () => backendSparkApi.getAllApplications({ sortBy: sortField, sortDirection: sortDirection }),
     queryKey: ["getAllApplications", sortField, sortDirection],
     refetchOnWindowFocus: false,
   })

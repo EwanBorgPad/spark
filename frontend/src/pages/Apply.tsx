@@ -6,7 +6,7 @@ import { Button } from "@/components/Button/Button"
 import { Input } from "@/components/Input/Input"
 import { Icon } from "@/components/Icon/Icon"
 import { SimpleModal } from "@/components/Modal/SimpleModal"
-import { backendApi, DaoResponse } from "@/data/api/backendApi"
+import { backendSparkApi, DaoResponse } from "@/data/api/backendSparkApi"
 import { ROUTES } from "@/utils/routes"
 import { toast } from "react-toastify"
 import Img from "@/components/Image/Img"
@@ -79,7 +79,7 @@ const Apply = () => {
   // Fetch all DAOs
   const { data: daosData, isLoading: isLoadingDaos } = useQuery({
     queryKey: ['daos-for-apply'],
-    queryFn: () => backendApi.getDaos(),
+    queryFn: () => backendSparkApi.getDaos(),
     enabled: true,
   })
 
@@ -139,7 +139,7 @@ const Apply = () => {
 
     setIsSubmitting(true)
     try {
-      await backendApi.submitApplication({
+      await backendSparkApi.submitApplication({
         projectId: selectedDao.id,
         githubUsername: githubAuth.user.username,
         githubId: githubAuth.user.id.toString(),

@@ -6,7 +6,8 @@ import {
   GetUserTokensResponse,
   GetTokenMarketResponse,
   GetTokenBalanceResponse,
-  GetGovernanceDataResponse
+  GetGovernanceDataResponse,
+  AdminAuthFields
 } from "../../../shared/models.ts"
 import { deduplicateRequest, createRequestKey } from "../../utils/requestDeduplication"
 
@@ -22,11 +23,28 @@ const GET_USER_TOKENS = API_BASE_URL + "/getusertokens"
 const GET_TOKEN_MARKET = API_BASE_URL + "/gettokenmarket"
 const GET_TOKEN_BALANCE = API_BASE_URL + "/gettokenbalance"
 const GET_GOVERNANCE_DATA = API_BASE_URL + "/getgovernancedata"
+const GET_APPLICATIONS = API_BASE_URL + "/applications"
+const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
 
 type PostCreateUserStatusArgs = {
   address: string 
   // email: string
   username: string
+}
+
+const isAdmin = async (auth: AdminAuthFields): Promise<void> => {
+  const url = new URL(IS_ADMIN_URL, window.location.href)
+
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(auth),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  const json = await response.json()
+  if (!response.ok) throw new Error(json.message)
+  return json
 }
 
 const postCreateUserStatus = async ({ address, username }: PostCreateUserStatusArgs): Promise<boolean> => {
@@ -251,6 +269,122 @@ const getGovernanceData = async ({ userAddress, realmAddress, tokenMint, cluster
   })
 }
 
+// Applications API Types
+export type ApplicationResponse = {
+  id: string
+  projectId: string
+  githubUsername: string
+  githubId: string
+  deliverableName: string
+  requestedPrice: number
+  estimatedDeadline: string
+  featureDescription: string
+  solanaWalletAddress: string
+  status: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type GetApplicationsResponse = {
+  applications: ApplicationResponse[]
+}
+
+export type SubmitApplicationRequest = {
+  projectId: string
+  githubUsername: string
+  githubId: string
+  deliverableName: string
+  requestedPrice: number
+  estimatedDeadline: string
+  featureDescription: string
+  solanaWalletAddress: string
+}
+
+// Applications API Functions
+type GetApplicationsByProjectIdArgs = {
+  projectId: string
+}
+
+const getApplicationsByProjectId = async ({ projectId }: GetApplicationsByProjectIdArgs): Promise<GetApplicationsResponse> => {
+  const url = new URL(GET_APPLICATIONS)
+  url.searchParams.set("projectId", projectId)
+  
+  const response = await fetch(url)
+  
+  if (!response.ok) {
+    throw new Error("Failed to fetch applications")
+  }
+  
+  const json = await response.json()
+  return json
+}
+
+type GetAllApplicationsArgs = {
+  sortBy?: string
+  sortDirection?: string
+}
+
+const getAllApplications = async ({ sortBy, sortDirection }: GetAllApplicationsArgs = {}): Promise<GetApplicationsResponse> => {
+  const url = new URL(GET_APPLICATIONS)
+  
+  if (sortBy) {
+    url.searchParams.set("sortBy", sortBy)
+  }
+  if (sortDirection) {
+    url.searchParams.set("sortDirection", sortDirection)
+  }
+  
+  const response = await fetch(url)
+  
+  if (!response.ok) {
+    throw new Error("Failed to fetch applications")
+  }
+  
+  const json = await response.json()
+  return json
+}
+
+const submitApplication = async (applicationData: SubmitApplicationRequest): Promise<void> => {
+  const url = new URL(GET_APPLICATIONS)
+  
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(applicationData),
+  })
+  
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.message || "Failed to submit application")
+  }
+}
+
+export type DaoResponse = {
+  id: string
+  name: string
+  imageUrl: string | null
+  dao: string
+  tokenMint: string
+}
+
+export type GetDaosResponse = {
+  daos: DaoResponse[]
+}
+
+const getDaos = async (): Promise<GetDaosResponse> => {
+  const url = new URL(`${API_BASE_URL}/daos`, window.location.href)
+  const response = await fetch(url)
+  
+  if (!response.ok) {
+    throw new Error("Failed to fetch DAOs")
+  }
+  
+  const json = await response.json()
+  return json
+}
+
 export const backendSparkApi = {
   postCreateUserStatus,
   getUser,
@@ -262,4 +396,9 @@ export const backendSparkApi = {
   getTokenMarket,
   getTokenBalance,
   getGovernanceData,
+  getApplicationsByProjectId,
+  getAllApplications,
+  submitApplication,
+  getDaos,
+  isAdmin,
 }

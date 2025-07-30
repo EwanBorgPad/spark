@@ -5,7 +5,7 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 import { useWalletContext } from "./useWalletContext"
 import { useMutation } from "@tanstack/react-query"
-import { backendApi } from "@/data/api/backendApi"
+import { backendSparkApi } from "@/data/api/backendSparkApi"
 import { AdminAuthFields } from "shared/models"
 import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"
@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // fetch Analyst and token via sessionId
   const { mutate: checkIfUserIsAdmin, isPending } = useMutation({
-    mutationFn: async (auth: AdminAuthFields) => backendApi.isAdmin(auth),
+    mutationFn: async (auth: AdminAuthFields) => backendSparkApi.isAdmin(auth),
     onError: (error) => {
       toast.error(error.message)
       navigate("/", { replace: true })
