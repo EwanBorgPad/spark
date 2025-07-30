@@ -237,7 +237,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ tokenMarketData, cl
             const bodyHeight = Math.abs(closeY - openY);
 
             // Debug: Add visible markers for high and low points
-            console.log(`Candle ${index}: high=${candle.high}, low=${candle.low}, highY=${highY}, lowY=${lowY}`);
+            // console.log(`Candle ${index}: high=${candle.high}, low=${candle.low}, highY=${highY}, lowY=${lowY}`);
 
             return (
               <g key={index}>

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { DaoProposalModel, DaoModel } from '../../../shared/models';
+import { ApplicationResponse } from '../../data/api/backendSparkApi';
 import Text from '../Text';
 import { Button } from '../Button/Button';
 import { usePrivy, useSolanaWallets } from '@privy-io/react-auth';
 import { Connection, PublicKey } from '@solana/web3.js';
 import GovernanceService from '../../services/governanceService';
 import { getCorrectWalletAddress } from '@/utils/walletUtils';
+import { backendSparkApi } from '../../data/api/backendSparkApi';
 import { toast } from 'react-toastify';
+import { Icon } from '../Icon/Icon';
 
 interface ProposalVotingProps {
   proposal: DaoProposalModel;
@@ -19,8 +22,10 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
   const { wallets } = useSolanaWallets();
   const [isVoting, setIsVoting] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
-  const [userVote, setUserVote] = useState<'approve' | 'deny' | null>(null);
+  const [userVote, setUserVote] = useState<'yes' | 'no' | null>(null);
   const [userVoteOption, setUserVoteOption] = useState<number | null>(null);
+  const [applications, setApplications] = useState<ApplicationResponse[]>([]);
+  const [isLoadingApplications, setIsLoadingApplications] = useState(false);
 
   const RPC_URL = import.meta.env.VITE_RPC_URL;
   const connection = new Connection(RPC_URL);
@@ -42,10 +47,10 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
   // Check if proposal is in voting state
   const isVotingOpen = proposal.state && typeof proposal.state === 'object' && 'voting' in proposal.state;
 
-  // Check if this is a multi-choice proposal
-  const isMultiChoice = proposal.options && proposal.options.length > 2 || 
-    (proposal.name && proposal.name.toLowerCase().includes('choose')) ||
-    (proposal.options && proposal.options.length > 0 && proposal.options.some(option => option.label && !['Yes', 'No'].includes(option.label)));
+  // Check if this is a multi-choice proposal (only for specific cases)
+  const isMultiChoice = proposal.options && 
+    proposal.options.length > 2 && 
+    (proposal.name && proposal.name.toLowerCase().includes('choose'));
 
   // Format option label for display
   const formatOptionLabel = (label: string) => {
@@ -82,6 +87,48 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
     }
   };
 
+  // Find matching application for a proposal option
+  const findMatchingApplication = (optionLabel: string): ApplicationResponse | null => {
+    if (!applications || applications.length === 0) return null;
+    
+    // Try to match by deliverable name first
+    let match = applications.find(app => 
+      app.deliverableName.toLowerCase().includes(optionLabel.toLowerCase()) ||
+      optionLabel.toLowerCase().includes(app.deliverableName.toLowerCase())
+    );
+    
+    if (match) return match;
+    
+    // Try to match by GitHub username
+    match = applications.find(app => 
+      optionLabel.toLowerCase().includes(app.githubUsername.toLowerCase()) ||
+      app.githubUsername.toLowerCase().includes(optionLabel.toLowerCase())
+    );
+    
+    return match || null;
+  };
+
+  // Load applications for this DAO/project
+  useEffect(() => {
+    const loadApplications = async () => {
+      if (!dao.address) return;
+      
+      setIsLoadingApplications(true);
+      try {
+        // Try to get applications by DAO address as project ID
+        const response = await backendSparkApi.getApplicationsByProjectId({ projectId: dao.address });
+        setApplications(response.applications || []);
+      } catch (error) {
+        console.error("Error loading applications:", error);
+        setApplications([]);
+      } finally {
+        setIsLoadingApplications(false);
+      }
+    };
+
+    loadApplications();
+  }, [dao.address]);
+
   // Check user's vote status
   useEffect(() => {
     const checkUserVote = async () => {
@@ -105,7 +152,14 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
         );
 
         setHasVoted(voted);
-        setUserVote(vote);
+        // Convert governance vote to UI vote format
+        if (vote === 'approve') {
+          setUserVote('yes');
+        } else if (vote === 'deny') {
+          setUserVote('no');
+        } else {
+          setUserVote(null);
+        }
       } catch (error) {
         console.error("Error checking vote status:", error);
       }
@@ -180,7 +234,12 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
       
       // Update local state
       setHasVoted(true);
-      setUserVote(voteType);
+      // Convert UI vote to governance vote format for state
+      if (voteType === 'approve') {
+        setUserVote('yes');
+      } else if (voteType === 'deny') {
+        setUserVote('no');
+      }
       if (optionIndex !== undefined) {
         setUserVoteOption(optionIndex);
       }
@@ -325,6 +384,17 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
     }
   };
 
+  // Format price for display
+  const formatPrice = (price: number): string => {
+    if (price > 1000000) {
+      // Likely in lamports, convert to SOL
+      return `${(price / 1000000000).toFixed(6)} SOL`;
+    } else {
+      // Already in SOL or a reasonable number
+      return `${price} SOL`;
+    }
+  };
+
   return (
     <div className={`${className}`}>
       {!authenticated ? (
@@ -336,13 +406,13 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
           <div className="text-center py-2 bg-gray-800/50 border border-gray-700 rounded">
             <Text text="Your Vote:" as="span" className="text-gray-300 text-xs mr-2" />
             <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-              userVote === 'approve' 
+              userVote === 'yes' 
                 ? 'bg-green-600/30 text-green-300 border border-green-600/50' 
                 : 'bg-orange-600/30 text-orange-300 border border-orange-600/50'
             }`}>
               {isMultiChoice && userVoteOption !== null && proposal.options && proposal.options[userVoteOption] 
                 ? `✓ ${formatOptionLabel(proposal.options[userVoteOption].label || `Option ${userVoteOption + 1}`)}`
-                : userVote === 'approve' ? '✓ Yes' : '✗ No'
+                : userVote === 'yes' ? '✓ Yes' : '✗ No'
               }
             </span>
           </div>
@@ -358,10 +428,12 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
       ) : (
         <div className="space-y-2">
           {isMultiChoice && proposal.options && proposal.options.length > 0 ? (
-            // Multi-choice proposal - show buttons for each option
+            // Multi-choice proposal - show buttons for each option with application info
             <>
               <div className="space-y-2">
                 {proposal.options.map((option, index) => {
+                  const matchingApplication = findMatchingApplication(option.label || `Option ${index + 1}`);
+                  
                   // Color based on option index
                   const colors = [
                     'bg-blue-600 hover:bg-blue-500 border-blue-600/50',
@@ -373,14 +445,54 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
                   const colorClass = colors[index % colors.length];
                   
                   return (
-                    <Button
-                      key={index}
-                      onClick={() => handleVote('approve', index)}
-                      disabled={isVoting}
-                      className={`w-full ${colorClass} text-white font-medium text-xs py-2 shadow-sm`}
-                    >
-                      {isVoting ? "Voting..." : `Vote: ${formatOptionLabel(option.label || `Option ${index + 1}`)}`}
-                    </Button>
+                    <div key={index} className="space-y-2">
+                      <Button
+                        onClick={() => handleVote('approve', index)}
+                        disabled={isVoting}
+                        className={`w-full ${colorClass} text-white font-medium text-xs py-2 shadow-sm`}
+                      >
+                        {isVoting ? "Voting..." : `Vote: ${formatOptionLabel(option.label || `Option ${index + 1}`)}`}
+                      </Button>
+                      
+                      {/* Show application info if available */}
+                      {matchingApplication && (
+                        <div className="bg-gray-800/30 border border-gray-700/50 rounded p-3 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Icon icon="SvgWeb" className="w-4 h-4 text-gray-400" />
+                              <a 
+                                href={`https://github.com/${matchingApplication.githubUsername}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-300 text-xs font-medium"
+                              >
+                                @{matchingApplication.githubUsername}
+                              </a>
+                            </div>
+                            <span className="text-xs text-gray-400">
+                              {matchingApplication.status}
+                            </span>
+                          </div>
+                          
+                          <div className="text-xs text-gray-300">
+                            <div className="font-medium mb-1">{matchingApplication.deliverableName}</div>
+                            <div className="space-y-1">
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Price:</span>
+                                <span className="text-green-400">{formatPrice(matchingApplication.requestedPrice)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Deadline:</span>
+                                <span className="text-yellow-400">{matchingApplication.estimatedDeadline}</span>
+                              </div>
+                            </div>
+                            <div className="mt-2 text-gray-400 line-clamp-2">
+                              {matchingApplication.featureDescription}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </div>
@@ -390,7 +502,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
               </div>
             </>
           ) : (
-            // Traditional Yes/No proposal
+            // Traditional Yes/No proposal or fallback
             <>
               <div className="grid grid-cols-2 gap-2">
                 <Button
@@ -398,7 +510,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
                   disabled={isVoting}
                   className="bg-green-600 hover:bg-green-500 text-white font-medium text-xs py-2 border border-green-600/50 shadow-sm"
                 >
-                  {isVoting ? "Voting..." : "Vote Yes"}
+                  {isVoting ? "Voting..." : "Yes"}
                 </Button>
                 
                 <Button
@@ -406,9 +518,43 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
                   disabled={isVoting}
                   className="bg-orange-600 hover:bg-orange-500 text-white font-medium text-xs py-2 border border-orange-600/50 shadow-sm"
                 >
-                  {isVoting ? "Voting..." : "Vote No"}
+                  {isVoting ? "Voting..." : "No"}
                 </Button>
               </div>
+              
+              {/* Show applications info for Yes/No proposals if any exist */}
+              {applications.length > 0 && (
+                <div className="mt-3 p-3 bg-gray-800/30 border border-gray-700/50 rounded">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Icon icon="SvgDocument" className="w-4 h-4 text-gray-400" />
+                    <Text text={`${applications.length} Developer Application${applications.length !== 1 ? 's' : ''}`} as="span" className="text-xs font-medium text-gray-300" />
+                  </div>
+                  <div className="space-y-2">
+                    {applications.slice(0, 3).map((app) => (
+                      <div key={app.id} className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2">
+                          <a 
+                            href={`https://github.com/${app.githubUsername}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-400 hover:text-blue-300"
+                          >
+                            @{app.githubUsername}
+                          </a>
+                          <span className="text-gray-500">•</span>
+                          <span className="text-gray-400">{app.deliverableName}</span>
+                        </div>
+                        <span className="text-green-400">{formatPrice(app.requestedPrice)}</span>
+                      </div>
+                    ))}
+                    {applications.length > 3 && (
+                      <div className="text-xs text-gray-500">
+                        +{applications.length - 3} more applications
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
               
               <div className="text-center">
                 <Text text="Need governance tokens deposited to vote" as="p" className="text-xs text-gray-400" />
