@@ -4,7 +4,6 @@ import { useState } from "react"
 import { Icon } from "@/components/Icon/Icon"
 import { useWalletContext } from "@/hooks/useWalletContext"
 import { ConnectButton } from "@/components/Header/ConnectButton"
-import AnalysisApprovalDashboard from "@/components/BackOffice/AnalysisApprovalDashboard"
 import Applications from "@/components/BackOffice/Applications"
 
 const BACK_OFFICE_FEATURES = ["APPLICATIONS"] as const
