@@ -1,4 +1,4 @@
-import { ScrollRestoration, useNavigate } from "react-router-dom"
+import { ScrollRestoration, useNavigate, useLocation } from "react-router-dom"
 import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { Input } from "@/components/Input/Input"
@@ -6,7 +6,7 @@ import { Icon } from "@/components/Icon/Icon"
 import Text from "@/components/Text"
 import Img from "@/components/Image/Img"
 import { useLoginWithEmail, useSolanaWallets, usePrivy } from '@privy-io/react-auth';
-import { useState, startTransition } from 'react';
+import { useState, startTransition, useEffect } from 'react';
 import { ROUTES } from "@/utils/routes"
 import { useQuery } from "@tanstack/react-query"
 import { backendSparkApi } from "@/data/api/backendSparkApi"
@@ -15,17 +15,52 @@ import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } f
 import { TOKEN_PROGRAM_ID, createTransferInstruction, getAssociatedTokenAddress } from "@solana/spl-token"
 import { getCorrectWalletAddress } from "@/utils/walletUtils"
 import { useDeviceDetection } from "@/hooks/useDeviceDetection"
+import { getPhantomProvider } from '@/services/phantomService'
 
 
 const Profile = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { wallets } = useSolanaWallets();
   const { user: privyUser, logout } = usePrivy();
   const { isDesktop, isMobile } = useDeviceDetection();
   
-  const address = getCorrectWalletAddress(privyUser, wallets);
+  // Get the referrer from URL state or default to projects
+  const getBackRoute = () => {
+    const state = location.state as { from?: string } | null
+    return state?.from || ROUTES.PROJECTS
+  }
+  
+  // Check if we're in Discover mode (came from Discover page)
+  const isDiscoverMode = () => {
+    const state = location.state as { from?: string } | null
+    return state?.from === ROUTES.DISCOVER
+  }
+  
+  // Get wallet address - if in Discover mode, try to get Solana wallet, otherwise use Privy
+  const getWalletAddress = () => {
+    if (isDiscoverMode()) {
+      const provider = getPhantomProvider()
+      if (provider && provider.isConnected && provider.publicKey) {
+        return provider.publicKey.toString()
+      }
+    }
+    return getCorrectWalletAddress(privyUser, wallets)
+  }
+  
+  const address = getWalletAddress();
   const [userId, setUserId] = useState('');
   const [copiedAddress, setCopiedAddress] = useState(false);
+  
+  // Check if Solana wallet is connected in Discover mode
+  useEffect(() => {
+    if (isDiscoverMode()) {
+      const provider = getPhantomProvider()
+      if (provider && provider.isConnected && provider.publicKey) {
+        console.log('Solana wallet connected in Discover mode:', provider.publicKey.toString())
+      }
+    }
+  }, [])
   const [sendModalOpen, setSendModalOpen] = useState(false);
   const [selectedToken, setSelectedToken] = useState<UserTokenModel | null>(null);
   const [sendForm, setSendForm] = useState({
@@ -58,21 +93,36 @@ const Profile = () => {
 
   const handleDisconnect = async () => {
     try {
-      // Clear localStorage
-      localStorage.removeItem('sparkit-wallet');
-      localStorage.removeItem('sparkit-email');
-      
-      // Logout from Privy
-      await logout();
-      
-      // Navigate to landing page
-      navigate(ROUTES.LANDING_PAGE);
+      if (isDiscoverMode()) {
+        // In Discover mode, disconnect Solana wallet
+        const provider = getPhantomProvider()
+        if (provider && provider.isConnected) {
+          await provider.disconnect()
+        }
+        // Navigate back to Discover page
+        navigate(ROUTES.DISCOVER)
+      } else {
+        // Clear localStorage
+        localStorage.removeItem('sparkit-wallet');
+        localStorage.removeItem('sparkit-email');
+        
+        // Logout from Privy
+        await logout();
+        
+        // Navigate to landing page
+        navigate(ROUTES.LANDING_PAGE);
+      }
     } catch (error) {
       console.error('Error disconnecting:', error);
-      // Even if logout fails, clear storage and navigate
-      localStorage.removeItem('sparkit-wallet');
-      localStorage.removeItem('sparkit-email');
-      navigate(ROUTES.LANDING_PAGE);
+      if (isDiscoverMode()) {
+        // In Discover mode, just navigate back to Discover
+        navigate(ROUTES.DISCOVER)
+      } else {
+        // Even if logout fails, clear storage and navigate
+        localStorage.removeItem('sparkit-wallet');
+        localStorage.removeItem('sparkit-email');
+        navigate(ROUTES.LANDING_PAGE);
+      }
     }
   };
 
@@ -252,7 +302,7 @@ const Profile = () => {
       {/* Header with back button */}
       <div className="absolute left-4 top-4 z-50">
         <Button
-          onClick={() => navigate(ROUTES.PROJECTS)}
+          onClick={() => navigate(getBackRoute())}
           size="lg"
           className="bg-brand-primary hover:bg-brand-primary/80"
         >
@@ -266,14 +316,14 @@ const Profile = () => {
           {/* Profile Header */}
           <div className="text-center mb-12">
             <Text
-              text="Profile"
+              text={isDiscoverMode() ? "Discover Profile" : "Profile"}
               as="h1"
               className={`font-medium tracking-[-0.4px] mb-4 text-brand-primary ${
                 isDesktop ? 'text-[56px] leading-[60px]' : 'text-[40px] leading-[48px] md:text-[68px] md:leading-[74px]'
               }`}
             />
             <Text
-              text="Your Account & Token Portfolio"
+              text={isDiscoverMode() ? "Discover Mode - Your Token Portfolio" : "Your Account & Token Portfolio"}
               as="h2"
               className={`opacity-75 ${isDesktop ? 'text-2xl' : 'text-xl md:text-2xl'}`}
             />
@@ -294,7 +344,7 @@ const Profile = () => {
                     </div>
                     <div>
                       <Text text="Username" as="span" className="text-sm font-medium opacity-75" />
-                      <Text text={user?.username || "Not set"} as="p" className="text-lg font-medium" />
+                      <Text text={isDiscoverMode() ? "Discover Mode" : (user?.username || "Not set")} as="p" className="text-lg font-medium" />
                     </div>
                   </div>
 
@@ -330,7 +380,7 @@ const Profile = () => {
                     className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border-red-500/30 px-8"
                   >
                     <Icon icon="SvgLogOut" className="text-lg mr-2" />
-                    Disconnect Wallet
+                    {isDiscoverMode() ? "Disconnect Solana Wallet" : "Disconnect Wallet"}
                   </Button>
                 </div>
               </div>

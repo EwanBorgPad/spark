@@ -3,7 +3,6 @@ import { twMerge } from "tailwind-merge"
 import { Button } from "@/components/Button/Button"
 import { Input } from "@/components/Input/Input"
 import { Icon } from "@/components/Icon/Icon"
-import { useLoginWithEmail } from '@privy-io/react-auth';
 import { useState } from 'react';
 import { ROUTES } from "@/utils/routes"
 import { useQuery } from "@tanstack/react-query"
@@ -12,6 +11,7 @@ import { backendSparkApi } from "@/data/api/backendSparkApi"
 import Img from "@/components/Image/Img"
 import logoSvg from "@/assets/logos/logo.svg"
 import { useDeviceDetection } from "@/hooks/useDeviceDetection"
+import { ConnectButton } from "@/components/Header/ConnectButton"
 
 // Helper component to fetch and display market data for a single token
 const TokenCard = ({ token, isLoading }: { token: TokenModel, isLoading: boolean }) => {
@@ -42,7 +42,7 @@ const TokenCard = ({ token, isLoading }: { token: TokenModel, isLoading: boolean
   return (
     <div 
       className={`flex items-center gap-4 p-6 bg-secondary rounded-xl cursor-pointer hover:bg-secondary/80 transition-all hover:scale-[1.02] ${isDesktop ? 'shadow-lg' : ''}`}
-      onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`, { state: { from: ROUTES.PROJECTS } })}
+      onClick={() => navigate(`${ROUTES.PROJECTS}/${token.mint}`, { state: { from: ROUTES.DISCOVER } })}
     >
       <Img
         src={token.imageUrl}
@@ -62,7 +62,7 @@ const TokenCard = ({ token, isLoading }: { token: TokenModel, isLoading: boolean
   )
 }
 
-const Projects = () => {
+const Discover = () => {
   const { data: sparksData, isLoading: sparksLoading, refetch: sparksRefetch } = useQuery<GetTokensResponse>({
     queryFn: () =>
       backendSparkApi.getTokens({
@@ -90,7 +90,7 @@ const Projects = () => {
       <div className="absolute left-4 top-4 z-50">
         <Button
           onClick={() => {
-            navigate(ROUTES.PROFILE, { state: { from: ROUTES.PROJECTS } })
+            navigate(ROUTES.PROFILE, { state: { from: ROUTES.DISCOVER } })
           }}
           size="lg"
           className="flex-1 bg-brand-primary hover:bg-brand-primary/80"
@@ -99,20 +99,16 @@ const Projects = () => {
         </Button>
       </div>
       <div className="absolute right-4 top-4 z-50">
-        <Button
-          onClick={() => {
-            navigate(ROUTES.SEARCH)
-          }}
+        <ConnectButton 
           size="lg"
-          className="flex-1 bg-brand-primary hover:bg-brand-primary/80"
-        >
-          <Icon icon="SvgLoupe" className="text-xl text-fg-primary" />
-        </Button>
+          color="primary"
+          btnClassName="flex-1 bg-brand-primary hover:bg-brand-primary/80"
+        />
       </div>
       <section className={`z-[1] flex h-full w-full flex-1 flex-col items-center justify-between px-5 pb-[60px] pt-10 md:pb-[56px] md:pt-[40px] ${isDesktop ? 'max-w-[1400px]' : ''}`}>
         <div className="flex w-full flex-col items-center">
           <h2 className={`font-medium tracking-[-0.4px] mb-4 ${isDesktop ? 'text-[56px] leading-[60px]' : 'text-[40px] leading-[48px] md:text-[68px] md:leading-[74px]'}`}>
-            <span className="text-brand-primary">Explore</span>
+            <span className="text-brand-primary">Discover</span>
           </h2>
 
           <Img
@@ -120,7 +116,7 @@ const Projects = () => {
             size="custom"
             customClass={`w-full object-cover rounded-lg ${isDesktop ? 'max-w-[1200px] h-[300px]' : 'max-w-[400px] h-[130px]'}`}
             imgClassName="object-contain scale-100" // logo even smaller and more zoom
-            alt="Explore Banner"
+            alt="Discover Banner"
           />
 
           {/* Mobile Tabs */}
@@ -205,4 +201,4 @@ const Projects = () => {
   )
 }
 
-export default Projects
+export default Discover 

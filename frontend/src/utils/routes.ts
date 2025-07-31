@@ -8,6 +8,7 @@ export enum ROUTES {
   USERNAME = "/username",
   TERMS = "/terms",
   PROJECTS = "/projects",
+  DISCOVER = "/discover",
   PROFILE = "/profile",
   SEARCH = "/search",
   PROJECT = "/project/:id",

@@ -26,6 +26,12 @@ type NavigationBarProps = {
 }
 const navigationItems: NavigationItem[] = [
   {
+    path: ROUTES.DISCOVER,
+    label: "Discover",
+    activeClass: "text-brand-primary",
+    className: "hover:text-brand-primary",
+  },
+  {
     path: ROUTES.DRAFT_PICKS,
     label: "Draft Picks",
     activeClass: "text-draft-picks",
