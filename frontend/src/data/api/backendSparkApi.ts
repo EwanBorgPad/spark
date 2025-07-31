@@ -9,6 +9,7 @@ import {
   GetGovernanceDataResponse,
   AdminAuthFields
 } from "../../../shared/models.ts"
+import { GitHubScoreData } from "../../../shared/services/githubScore"
 import { deduplicateRequest, createRequestKey } from "../../utils/requestDeduplication"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || `${window.location.origin}/api`
@@ -24,6 +25,7 @@ const GET_TOKEN_MARKET = API_BASE_URL + "/gettokenmarket"
 const GET_TOKEN_BALANCE = API_BASE_URL + "/gettokenbalance"
 const GET_GOVERNANCE_DATA = API_BASE_URL + "/getgovernancedata"
 const GET_APPLICATIONS = API_BASE_URL + "/applications"
+const GITHUB_SCORE = API_BASE_URL + "/github-score"
 const IS_ADMIN_URL = API_BASE_URL + "/admin/isadmin"
 
 type PostCreateUserStatusArgs = {
@@ -281,6 +283,7 @@ export type ApplicationResponse = {
   featureDescription: string
   solanaWalletAddress: string
   status: string
+  githubScore?: number
   createdAt: string
   updatedAt: string
 }
@@ -298,6 +301,7 @@ export type SubmitApplicationRequest = {
   estimatedDeadline: string
   featureDescription: string
   solanaWalletAddress: string
+  githubAccessToken?: string
 }
 
 // Applications API Functions
@@ -344,7 +348,7 @@ const getAllApplications = async ({ sortBy, sortDirection }: GetAllApplicationsA
   return json
 }
 
-const submitApplication = async (applicationData: SubmitApplicationRequest): Promise<void> => {
+const submitApplication = async (applicationData: SubmitApplicationRequest): Promise<{ success: boolean; applicationId: string; githubScore?: number; message: string }> => {
   const url = new URL(GET_APPLICATIONS)
   
   const response = await fetch(url, {
@@ -359,6 +363,103 @@ const submitApplication = async (applicationData: SubmitApplicationRequest): Pro
     const errorData = await response.json()
     throw new Error(errorData.message || "Failed to submit application")
   }
+  
+  const json = await response.json()
+  return json
+}
+
+// GitHub Score API Types
+export type GenerateGitHubScoreRequest = {
+  githubUsername: string
+  githubAccessToken: string
+  applicationId?: string
+}
+
+export type GenerateGitHubScoreResponse = {
+  success: boolean
+  githubScore?: number
+  message: string
+}
+
+export type GetApplicationWithGitHubScoreResponse = {
+  success: boolean
+  application: ApplicationResponse
+}
+
+// GitHub Score API Functions
+const generateGitHubScore = async (request: GenerateGitHubScoreRequest): Promise<GenerateGitHubScoreResponse> => {
+  const url = new URL(GITHUB_SCORE)
+  
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  })
+  
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.message || "Failed to generate GitHub score")
+  }
+  
+  const json = await response.json()
+  return json
+}
+
+const getApplicationWithGitHubScore = async (applicationId: string): Promise<GetApplicationWithGitHubScoreResponse> => {
+  const url = new URL(GITHUB_SCORE)
+  url.searchParams.set("applicationId", applicationId)
+  
+  const response = await fetch(url)
+  
+  if (!response.ok) {
+    throw new Error("Failed to fetch application with GitHub score")
+  }
+  
+  const json = await response.json()
+  return json
+}
+
+// Test GitHub API connectivity
+const testGitHubApi = async (githubAccessToken: string): Promise<{ success: boolean; message: string; user?: { username: string; id: number; publicRepos: number } }> => {
+  const url = new URL(`${API_BASE_URL}/test-github`)
+  
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ githubAccessToken }),
+  })
+  
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.message || "Failed to test GitHub API")
+  }
+  
+  const json = await response.json()
+  return json
+}
+
+const testGitHubPermissions = async (githubAccessToken: string): Promise<{ success: boolean; message: string; results: Record<string, unknown> }> => {
+  const url = new URL(`${API_BASE_URL}/test-github-permissions`)
+  
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ githubAccessToken }),
+  })
+  
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.message || "Failed to test GitHub permissions")
+  }
+  
+  const json = await response.json()
+  return json
 }
 
 export type DaoResponse = {
@@ -401,4 +502,8 @@ export const backendSparkApi = {
   submitApplication,
   getDaos,
   isAdmin,
+  generateGitHubScore,
+  getApplicationWithGitHubScore,
+  testGitHubApi,
+  testGitHubPermissions,
 }

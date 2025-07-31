@@ -1157,41 +1157,27 @@ const Project = () => {
                                   const isVotingOpen = stateKey === 'voting';
 
                                   return (
-                                    <div key={proposal.address} className="border border-fg-primary/10 rounded-lg p-4 bg-bg-primary/5 space-y-3">
+                                    <div key={proposal.address} className="border border-fg-primary/10 rounded-lg p-4 bg-bg-primary/5 space-y-3 relative">
                                       {/* Proposal Header */}
-                                      <div className="flex justify-between items-start">
-                                        <div className="flex-1">
-                                          <div className="flex items-center gap-2">
-                                            <button
-                                              onClick={() => {
-                                                const matchingApp = findMatchingApplication(proposal);
-                                                if (matchingApp) {
-                                                  handleOpenApplicationModal(matchingApp);
-                                                }
-                                              }}
-                                              className={`text-left font-medium text-sm transition-colors ${
-                                                findMatchingApplication(proposal) 
-                                                  ? 'text-blue-400 hover:text-blue-300 cursor-pointer' 
-                                                  : 'text-fg-primary'
-                                              }`}
-                                            >
+                                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                                        <div className="flex-1 min-w-0">
+                                          <div className="flex items-start gap-2">
+                                            <div className="text-left font-semibold text-base break-words text-white">
                                               {proposal.name || "Unnamed Proposal"}
-                                            </button>
-                                            {findMatchingApplication(proposal) && (
-                                              <Icon icon="SvgDocument" className="w-4 h-4 text-blue-400" />
-                                            )}
+                                            </div>
+
                                           </div>
                                           
                                           {/* Developer Info for Traditional Proposals */}
                                           {findMatchingApplication(proposal) && (
-                                            <div className="flex items-center gap-3 mt-2 text-xs">
+                                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 text-xs">
                                               <div className="flex items-center gap-1">
-                                                <Icon icon="SvgWeb" className="w-3 h-3 text-gray-400" />
+                                                <Icon icon="SvgWeb" className="w-3 h-3 text-gray-400 flex-shrink-0" />
                                                 <a 
                                                   href={`https://github.com/${findMatchingApplication(proposal)?.githubUsername}`}
                                                   target="_blank"
                                                   rel="noopener noreferrer"
-                                                  className="text-blue-400 hover:text-blue-300 font-medium"
+                                                  className="text-blue-400 hover:text-blue-300 font-medium break-all"
                                                 >
                                                   @{findMatchingApplication(proposal)?.githubUsername}
                                                 </a>
@@ -1202,10 +1188,31 @@ const Project = () => {
                                                   {findMatchingApplication(proposal)?.requestedPrice} SOL
                                                 </span>
                                               </div>
+                                              {findMatchingApplication(proposal)?.githubScore !== undefined && (
+                                                <div className="flex items-center gap-1">
+                                                  <span className="text-gray-400">Score:</span>
+                                                  <span 
+                                                    className="font-medium"
+                                                    style={{
+                                                      color: (() => {
+                                                        const score = findMatchingApplication(proposal)?.githubScore || 0;
+                                                        if (score >= 90) return '#4ade80'; // green-400
+                                                        if (score >= 80) return '#60a5fa'; // blue-400
+                                                        if (score >= 70) return '#facc15'; // yellow-400
+                                                        if (score >= 60) return '#fb923c'; // orange-400
+                                                        return '#f87171'; // red-400
+                                                      })()
+                                                    }}
+                                                  >
+                                                    {findMatchingApplication(proposal)?.githubScore}/100
+                                                  </span>
+                                                </div>
+                                              )}
                                             </div>
                                           )}
                                         </div>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${isVotingOpen
+                                        
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium border self-start flex-shrink-0 absolute top-4 right-4 ${isVotingOpen
                                           ? 'bg-green-600/30 text-green-300 border-green-600/50'
                                           : 'bg-blue-600/30 text-blue-300 border-blue-600/50'
                                           }`}>
@@ -1290,25 +1297,36 @@ const Project = () => {
                                                 }
                                                 
                                                 return (
-                                                  <div key={index} className={`${colorClass} border rounded p-2 text-center`}>
+                                                  <div key={index} className={`${colorClass} border rounded p-3 text-center min-h-[80px] flex flex-col justify-center`}>
                                                     {option.label && option.label !== "$$_NOTA_$$" ? (
                                                       <a
                                                         href={`https://github.com/${option.label}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="font-medium mb-1 hover:underline cursor-pointer block flex items-center justify-center gap-1"
+                                                        className="font-medium mb-1 hover:underline cursor-pointer block flex items-center justify-center gap-1 break-words"
                                                       >
-                                                        <Text text={formatOptionLabel(option.label)} as="p" className="font-medium" />
-                                                        <Icon icon="SvgExternalLink" className="w-3 h-3 opacity-70" />
+                                                        <Text text={formatOptionLabel(option.label)} as="p" className="font-medium text-sm" />
+                                                        <Icon icon="SvgExternalLink" className="w-3 h-3 opacity-70 flex-shrink-0" />
                                                       </a>
                                                     ) : (
-                                                      <Text text={formatOptionLabel(option.label || `Option ${index + 1}`)} as="p" className="font-medium mb-1" />
+                                                      <Text text={formatOptionLabel(option.label || `Option ${index + 1}`)} as="p" className="font-medium mb-1 text-sm" />
                                                     )}
-                                                    <Text text={formattedVotes} as="p" className="text-white font-semibold" />
+                                                    <Text text={formattedVotes} as="p" className="text-white font-semibold text-lg" />
                                                     {matchingApplication && (
-                                                      <div className="mt-1 text-xs opacity-80">
-                                                        <div>Price: {matchingApplication.requestedPrice} SOL</div>
-                                                        <div>Timeline: {matchingApplication.estimatedDeadline}</div>
+                                                      <div className="mt-2 text-xs opacity-80 space-y-1">
+                                                        <div className="break-words">Price: {matchingApplication.requestedPrice} SOL</div>
+                                                        <div className="break-words">Timeline: {matchingApplication.estimatedDeadline}</div>
+                                                        {matchingApplication.githubScore !== undefined && (
+                                                          <div className={`font-medium ${
+                                                            (matchingApplication.githubScore || 0) >= 90 ? 'text-green-400' :
+                                                            (matchingApplication.githubScore || 0) >= 80 ? 'text-blue-400' :
+                                                            (matchingApplication.githubScore || 0) >= 70 ? 'text-yellow-400' :
+                                                            (matchingApplication.githubScore || 0) >= 60 ? 'text-orange-400' :
+                                                            'text-red-400'
+                                                          }`}>
+                                                            Score: {matchingApplication.githubScore}/100
+                                                          </div>
+                                                        )}
                                                       </div>
                                                     )}
                                                   </div>
@@ -1320,7 +1338,7 @@ const Project = () => {
                                           // Traditional Yes/No proposal
                                           return (
                                             <div className="grid grid-cols-2 gap-2 text-xs">
-                                              <div className="bg-green-600/20 border border-green-600/30 rounded p-2 text-center">
+                                              <div className="bg-green-600/20 border border-green-600/30 rounded p-2 text-center min-h-[60px] flex flex-col justify-center">
                                                 <Text text="Yes" as="p" className="text-green-300 font-medium mb-1" />
                                                 <Text text={(() => {
                                                   const yesVotes = proposal.options[0]?.voteWeight || "0";
@@ -1330,7 +1348,7 @@ const Project = () => {
                                                       votes.toFixed(1);
                                                 })()} as="p" className="text-white font-semibold" />
                                               </div>
-                                              <div className="bg-orange-600/20 border border-orange-600/30 rounded p-2 text-center">
+                                              <div className="bg-orange-600/20 border border-orange-600/30 rounded p-2 text-center min-h-[60px] flex flex-col justify-center">
                                                 <Text text="No" as="p" className="text-red-300 font-medium mb-1" />
                                                 <Text text={(() => {
                                                   const noVotes = proposal.denyVoteWeight || "0";
@@ -1347,11 +1365,13 @@ const Project = () => {
 
                                       {/* Voting Buttons - Only show for voting state */}
                                       {isVotingOpen && (
-                                        <ProposalVoting
-                                          proposal={proposal}
-                                          dao={daoData.dao}
-                                          className="mt-3"
-                                        />
+                                        <div className="mt-3">
+                                          <ProposalVoting
+                                            proposal={proposal}
+                                            dao={daoData.dao}
+                                            className="w-full"
+                                          />
+                                        </div>
                                       )}
                                     </div>
                                   );

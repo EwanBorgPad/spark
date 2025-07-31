@@ -56,6 +56,7 @@ export const applicationsTable = sqliteTable("applications", {
   featureDescription: text("feature_description").notNull(),
   solanaWalletAddress: text("solana_wallet_address").notNull(),
   status: text("status").notNull().default("pending"), // pending, approved, rejected
+  githubScore: integer("github_score"),
   createdAt: text("created_at")
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),

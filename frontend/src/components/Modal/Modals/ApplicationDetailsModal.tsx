@@ -92,6 +92,31 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
                 }`}>
                   {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
                 </span>
+                {application.githubScore !== undefined && (
+                  <span 
+                    className="px-2 py-1 rounded-full text-xs font-medium w-fit"
+                    style={{
+                      backgroundColor: (() => {
+                        const score = application.githubScore || 0;
+                        if (score >= 90) return 'rgba(34, 197, 94, 0.2)'; // green-600/20
+                        if (score >= 80) return 'rgba(37, 99, 235, 0.2)'; // blue-600/20
+                        if (score >= 70) return 'rgba(202, 138, 4, 0.2)'; // yellow-600/20
+                        if (score >= 60) return 'rgba(234, 88, 12, 0.2)'; // orange-600/20
+                        return 'rgba(220, 38, 38, 0.2)'; // red-600/20
+                      })(),
+                      color: (() => {
+                        const score = application.githubScore || 0;
+                        if (score >= 90) return '#4ade80'; // green-400
+                        if (score >= 80) return '#60a5fa'; // blue-400
+                        if (score >= 70) return '#facc15'; // yellow-400
+                        if (score >= 60) return '#fb923c'; // orange-400
+                        return '#f87171'; // red-400
+                      })()
+                    }}
+                  >
+                    Score: {application.githubScore}/100
+                  </span>
+                )}
                 <span className="text-fg-secondary">
                   Applied on {formatDate(application.createdAt)}
                 </span>
@@ -125,6 +150,57 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
                 <Text text={application.estimatedDeadline} as="p" className="text-base sm:text-lg font-semibold text-yellow-400" />
               </div>
             </div>
+
+            {/* GitHub Score - Prominent Display */}
+            {application.githubScore !== undefined && (
+              <div className="p-4 sm:p-6 bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-lg border border-blue-600/20">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm sm:text-base font-medium text-fg-secondary mb-1">GitHub Trust Score</h3>
+                    <p className="text-xs sm:text-sm text-fg-secondary">Developer credibility and track record</p>
+                  </div>
+                  <div className="text-center">
+                    <div 
+                      className="text-2xl sm:text-3xl font-bold"
+                      style={{
+                        color: (() => {
+                          const score = application.githubScore || 0;
+                          if (score >= 90) return '#4ade80'; // green-400
+                          if (score >= 80) return '#60a5fa'; // blue-400
+                          if (score >= 70) return '#facc15'; // yellow-400
+                          if (score >= 60) return '#fb923c'; // orange-400
+                          return '#f87171'; // red-400
+                        })()
+                      }}
+                    >
+                      {application.githubScore}/100
+                    </div>
+                    <div 
+                      className="text-xs sm:text-sm font-medium mt-1"
+                      style={{
+                        color: (() => {
+                          const score = application.githubScore || 0;
+                          if (score >= 90) return '#4ade80'; // green-400
+                          if (score >= 80) return '#60a5fa'; // blue-400
+                          if (score >= 70) return '#facc15'; // yellow-400
+                          if (score >= 60) return '#fb923c'; // orange-400
+                          return '#f87171'; // red-400
+                        })()
+                      }}
+                    >
+                      {(() => {
+                        const score = application.githubScore || 0;
+                        if (score >= 90) return 'Exceptional';
+                        if (score >= 80) return 'Excellent';
+                        if (score >= 70) return 'Good';
+                        if (score >= 60) return 'Fair';
+                        return 'Poor';
+                      })()}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Wallet Address */}
             <div className="p-3 sm:p-4 bg-bg-primary/5 rounded-lg border border-fg-primary/10">
