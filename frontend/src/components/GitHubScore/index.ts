@@ -1,2 +1,1 @@
-export { default as GitHubScoreCard } from './GitHubScoreCard'
-export { GitHubScoreCard } from './GitHubScoreCard' 
+export { default as GitHubScoreCard } from './GitHubScoreCard' 

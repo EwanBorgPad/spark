@@ -377,7 +377,7 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
 
     console.log("Max button clicked:", {
       isSellingToken,
-      userTokenBalance,
+      tokenBalance,
       solBalance,
       inputMint,
       outputMint
@@ -526,7 +526,7 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
           new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Initial confirmation timeout')), 30000) // 30 second initial timeout
           )
-        ]);
+        ]) as { value: { err?: any } };
         
         if (confirmation.value.err) {
           throw new Error(`Transaction failed: ${confirmation.value.err}`);
@@ -670,9 +670,10 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
             onClick={connectSolanaWallet}
             size="md"
             color="primary"
-            btnClassName="bg-brand-primary hover:bg-brand-primary/80 text-white"
-            btnText="Connect Phantom Wallet"
-          />
+            className="bg-brand-primary hover:bg-brand-primary/80 text-white"
+          >
+            Connect Phantom Wallet
+          </Button>
         </div>
       ) : (
         <div className="space-y-4">
