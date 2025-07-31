@@ -10,6 +10,10 @@ import { getCorrectWalletAddress } from '@/utils/walletUtils';
 import { backendSparkApi } from '../../data/api/backendSparkApi';
 import { toast } from 'react-toastify';
 import { Icon } from '../Icon/Icon';
+import { getPhantomProvider } from '@/services/phantomService';
+import { useLocation } from 'react-router-dom';
+import { ROUTES } from '@/utils/routes';
+import { useQuery } from '@tanstack/react-query';
 
 interface ProposalVotingProps {
   proposal: DaoProposalModel;
@@ -20,6 +24,25 @@ interface ProposalVotingProps {
 const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, className = "" }) => {
   const { user, authenticated } = usePrivy();
   const { wallets } = useSolanaWallets();
+  const location = useLocation();
+  
+  // Check if we're in Discover mode (came from Discover page)
+  const isDiscoverMode = () => {
+    const state = location.state as { from?: string } | null
+    return state?.from === ROUTES.DISCOVER
+  }
+  
+  // Check if Solana wallet is connected in Discover mode
+  const isSolanaConnected = () => {
+    if (isDiscoverMode()) {
+      const provider = getPhantomProvider()
+      return provider && provider.isConnected && provider.publicKey
+    }
+    return false
+  }
+  
+  // Check if user is authenticated via Privy OR connected via Solana wallet in Discover mode
+  const isAuthenticated = authenticated || isSolanaConnected()
   const [isVoting, setIsVoting] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
   const [userVote, setUserVote] = useState<'yes' | 'no' | null>(null);
@@ -30,14 +53,71 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
   const RPC_URL = import.meta.env.VITE_RPC_URL;
   const connection = new Connection(RPC_URL);
   const governanceService = new GovernanceService(RPC_URL);
+  
+  // Get the correct wallet address for queries - handle Discover mode
+  const correctWalletAddress = (() => {
+    if (isDiscoverMode() && isSolanaConnected()) {
+      const provider = getPhantomProvider()
+      return provider?.publicKey?.toString() || null
+    }
+    return getCorrectWalletAddress(user, wallets)
+  })();
+  
+  // Fetch governance data to check voting power
+  const { data: governanceData } = useQuery({
+    queryFn: () =>
+      backendSparkApi.getGovernanceData({
+        userAddress: correctWalletAddress || "",
+        realmAddress: dao.address,
+        tokenMint: dao.communityMint,
+        cluster: "mainnet"
+      }),
+    queryKey: ["getGovernanceData", correctWalletAddress, dao.address, dao.communityMint],
+    enabled: Boolean(isAuthenticated && correctWalletAddress && dao.address && dao.communityMint),
+    refetchInterval: false,
+    staleTime: 0,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchOnReconnect: false,
+  });
+  
+  const govVotingPower = governanceData?.success ? governanceData.votingPower : 0;
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('ProposalVoting Debug:', {
+      isDiscoverMode: isDiscoverMode(),
+      isSolanaConnected: isSolanaConnected(),
+      isAuthenticated,
+      correctWalletAddress,
+      govVotingPower,
+      hasVoted,
+      userVote,
+      userVoteOption
+    });
+  }, [isAuthenticated, correctWalletAddress, govVotingPower, hasVoted, userVote, userVoteOption]);
 
   // Get Solana wallet from Privy using the correct wallet selection logic
   const getSolanaWallet = () => {
+    if (isDiscoverMode() && isSolanaConnected()) {
+      // In Discover mode, return the Phantom provider
+      const provider = getPhantomProvider()
+      if (provider && provider.isConnected && provider.publicKey) {
+        console.log("Using Solana wallet in Discover mode:", provider.publicKey.toString());
+        return {
+          address: provider.publicKey.toString(),
+          signTransaction: provider.signTransaction.bind(provider)
+        };
+      }
+    }
+    
+    // Fall back to Privy wallet
     const correctWalletAddress = getCorrectWalletAddress(user, wallets);
     if (correctWalletAddress) {
       const correctWallet = wallets.find(w => w.address === correctWalletAddress);
       if (correctWallet) {
-        console.log("Using correct wallet:", correctWallet.address, correctWallet.walletClientType);
+        console.log("Using Privy wallet:", correctWallet.address, correctWallet.walletClientType);
         return correctWallet;
       }
     }
@@ -132,10 +212,17 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
   // Check user's vote status
   useEffect(() => {
     const checkUserVote = async () => {
-      if (!authenticated) return;
+      if (!isAuthenticated) return;
 
-      // Get the correct wallet address
-      const correctWalletAddress = getCorrectWalletAddress(user, wallets);
+      // Get the correct wallet address - handle Discover mode
+      let correctWalletAddress: string | null = null;
+      if (isDiscoverMode() && isSolanaConnected()) {
+        const provider = getPhantomProvider()
+        correctWalletAddress = provider?.publicKey?.toString() || null
+      } else {
+        correctWalletAddress = getCorrectWalletAddress(user, wallets)
+      }
+      
       if (!correctWalletAddress) return;
 
       try {
@@ -166,7 +253,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
     };
 
     checkUserVote();
-  }, [authenticated, user, wallets, dao.address, proposal.address, dao.communityMint]);
+  }, [isAuthenticated, user, wallets, dao.address, proposal.address, dao.communityMint]);
 
   // Don't render if voting is not open
   if (!isVotingOpen) {
@@ -174,7 +261,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
   }
 
   const handleVote = async (voteType: 'approve' | 'deny', optionIndex?: number) => {
-    if (!authenticated) {
+    if (!isAuthenticated) {
       toast.error("Please connect your wallet first");
       return;
     }
@@ -285,7 +372,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
   };
 
   const handleRelinquishVote = async () => {
-    if (!authenticated) {
+    if (!isAuthenticated) {
       toast.error("Please connect your wallet first");
       return;
     }
@@ -397,7 +484,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
 
   return (
     <div className={`${className}`}>
-      {!authenticated ? (
+      {!isAuthenticated ? (
         <div className="text-center py-2 bg-blue-600/20 border border-blue-600/30 rounded">
           <Text text="Connect wallet to vote" as="p" className="text-blue-300 text-xs font-medium" />
         </div>
@@ -424,6 +511,10 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
           >
             {isVoting ? "Processing..." : "Change Vote"}
           </Button>
+        </div>
+      ) : govVotingPower === 0 ? (
+        <div className="text-center py-2 bg-yellow-600/20 border border-yellow-600/30 rounded">
+          <Text text="You need to deposit tokens to vote. Go to the Governance section to deposit tokens." as="p" className="text-yellow-300 text-xs font-medium" />
         </div>
       ) : (
         <div className="space-y-2">
@@ -565,7 +656,7 @@ const ProposalVoting: React.FC<ProposalVotingProps> = ({ proposal, dao, classNam
       )}
       
       {/* Cool-off period info note */}
-      {authenticated && !hasVoted && (
+      {isAuthenticated && !hasVoted && (
         <div className="mt-3 text-center">
           <Text text="Note: New proposals may have a cool-off period before voting opens" as="p" className="text-xs text-gray-400" />
         </div>

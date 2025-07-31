@@ -133,7 +133,7 @@ const LandingPage = () => {
                   Launch App
                 </Button>
                 <Button
-                  onClick={() => navigate(ROUTES.GET_STARTED)}
+                  onClick={() => navigate(ROUTES.DISCOVER)}
                   size="xl"
                   className="bg-transparent border-2 border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white px-8 py-4 text-lg font-semibold transition-all"
                 >
@@ -250,7 +250,7 @@ const LandingPage = () => {
               Launch Your Idea
             </Button>
             <Button
-              onClick={() => navigate(ROUTES.GET_STARTED)}
+              onClick={() => navigate(ROUTES.DISCOVER)}
               size="xl"
               className="bg-transparent border-2 border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white px-12 py-4 text-lg font-semibold transition-all"
             >

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react"
-import { ScrollRestoration, useNavigate } from "react-router-dom"
+import { ScrollRestoration, useNavigate, useLocation } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
 import backdropImg from "@/assets/backdropImgMin.png"
@@ -22,10 +22,19 @@ import { usePrivy, useSolanaWallets } from '@privy-io/react-auth'
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry'
 import { ROUTES } from "@/utils/routes"
 import { useDeviceDetection } from "@/hooks/useDeviceDetection"
+import { getPhantomProvider } from '@/services/phantomService'
+import { useWalletContext } from '@/hooks/useWalletContext'
 
 const Project = () => {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
+  
+  // Get the referrer from URL state or default to projects
+  const getBackRoute = () => {
+    const state = location.state as { from?: string } | null
+    return state?.from || ROUTES.PROJECTS
+  }
   const [activeTab, setActiveTab] = useState<'current' | 'past'>('current')
   const [isSwapModalOpen, setIsSwapModalOpen] = useState(false)
   const [swapMode, setSwapMode] = useState<'buy' | 'sell'>('buy')
@@ -42,8 +51,26 @@ const Project = () => {
 
   const { user, authenticated } = usePrivy()
   const { wallets } = useSolanaWallets()
+  const { walletState } = useWalletContext()
+  
+  // Solana wallet connection state
+  const [solanaWalletAddress, setSolanaWalletAddress] = useState<string | null>(null)
+  const [isSolanaConnected, setIsSolanaConnected] = useState(false)
+  
+  // Check if user is authenticated via Privy OR connected via Solana wallet
+  const isAuthenticated = authenticated || isSolanaConnected
 
   const inputMint = 'So11111111111111111111111111111111111111112' // SOL
+
+  // Check if Solana wallet is already connected
+  const checkSolanaConnection = () => {
+    const provider = getPhantomProvider()
+    if (provider && provider.isConnected && provider.publicKey) {
+      const address = provider.publicKey.toString()
+      setSolanaWalletAddress(address)
+      setIsSolanaConnected(true)
+    }
+  }
 
   // Handle escape key to close modals
   useEffect(() => {
@@ -61,6 +88,11 @@ const Project = () => {
     document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
   }, [isSwapModalOpen, isApplicationModalOpen])
+
+  // Check Solana connection on mount
+  useEffect(() => {
+    checkSolanaConnection()
+  }, [])
 
   // Load token list
   useEffect(() => {
@@ -182,12 +214,12 @@ const Project = () => {
             const { data: tokenBalanceData, isLoading: tokenBalanceLoading } = useQuery({
     queryFn: () =>
       backendSparkApi.getTokenBalance({
-        userAddress: user?.wallet?.address || "",
+        userAddress: (authenticated ? user?.wallet?.address : solanaWalletAddress) || "",
         tokenMint: id || "",
         cluster: "mainnet"
       }),
-    queryKey: ["getTokenBalance", user?.wallet?.address, id],
-    enabled: Boolean(authenticated && user?.wallet?.address && id),
+    queryKey: ["getTokenBalance", authenticated ? user?.wallet?.address : solanaWalletAddress, id],
+    enabled: Boolean(isAuthenticated && (authenticated ? user?.wallet?.address : solanaWalletAddress) && id),
     refetchInterval: false, // Disable automatic refetching
     staleTime: 0, // Always consider data stale - will refetch on mount
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
@@ -267,22 +299,9 @@ const Project = () => {
 
   // Find matching application for a proposal
   const findMatchingApplication = (proposal: any): ApplicationResponse | null => {
-    console.log('🔍 Checking for matching application for proposal:', {
-      proposalName: proposal.name,
-      proposalDescription: proposal.description,
-      applicationsCount: applicationsData?.applications?.length || 0
-    });
-
     if (!applicationsData?.applications || applicationsData.applications.length === 0) {
-      console.log('❌ No applications data available');
       return null;
     }
-
-    console.log('📋 Available applications:', applicationsData.applications.map(app => ({
-      deliverableName: app.deliverableName,
-      githubUsername: app.githubUsername,
-      projectId: app.projectId
-    })));
     
     // Try to match by proposal name/description with deliverable name
     const match = applicationsData.applications.find(app => {
@@ -295,26 +314,9 @@ const Project = () => {
       const descMatch = proposalDescLower.includes(deliverableNameLower) || 
                        deliverableNameLower.includes(proposalDescLower);
       
-      console.log(`🔍 Checking application "${app.deliverableName}":`, {
-        nameMatch,
-        descMatch,
-        proposalName: proposalNameLower,
-        proposalDesc: proposalDescLower,
-        deliverableName: deliverableNameLower
-      });
-      
       return nameMatch || descMatch;
     });
-    
-    if (match) {
-      console.log('✅ Found matching application:', {
-        deliverableName: match.deliverableName,
-        githubUsername: match.githubUsername,
-        projectId: match.projectId
-      });
-    } else {
-      console.log('❌ No matching application found for proposal:', proposal.name);
-    }
+
     
     return match || null;
   };
@@ -354,7 +356,6 @@ const Project = () => {
           const ohlcvResponse = await fetch(geckoOHLCVUrl)
           if (ohlcvResponse.ok) {
             const ohlcvData = await ohlcvResponse.json()
-            console.log("GeckoTerminal OHLCV data:", ohlcvData)
 
             if (ohlcvData.data && ohlcvData.data.attributes && ohlcvData.data.attributes.ohlcv_list) {
               const ohlcvList = ohlcvData.data.attributes.ohlcv_list
@@ -364,7 +365,6 @@ const Project = () => {
               })).filter((point: { timestamp: number; price: number }) => point.price > 0)
 
               if (chartData.length > 0) {
-                console.log("Successfully fetched OHLCV data:", chartData.length, "points")
                 return chartData.reverse() // Reverse to get chronological order
               }
             }
@@ -430,7 +430,6 @@ const Project = () => {
               }))
 
             if (chartData.length > 0) {
-              console.log("Successfully fetched Bitquery transaction data:", chartData.length, "points")
               return chartData
             }
           }
@@ -730,7 +729,7 @@ const Project = () => {
         {/* Header with back button */}
         <div className="absolute left-4 top-4 z-50">
           <Button
-            onClick={() => navigate(ROUTES.PROJECTS)}
+            onClick={() => navigate(getBackRoute())}
             size="sm"
             className="bg-bg-secondary/80 hover:bg-bg-secondary border border-fg-primary/10 backdrop-blur-sm"
           >
@@ -893,7 +892,7 @@ const Project = () => {
                     />
                     <div className="flex items-center gap-2">
                       <Text
-                        text={authenticated
+                        text={isAuthenticated
                           ? userTokenBalance.toFixed(2)
                           : "--"
                         }
@@ -914,7 +913,7 @@ const Project = () => {
                     />
                     <Text
                       text={(() => {
-                        if (!authenticated) return "--";
+                        if (!isAuthenticated) return "--";
                         if (userTokenBalance <= 0) return "$0.00";
 
                         // Try Jupiter quote first
@@ -965,7 +964,7 @@ const Project = () => {
                   setIsSwapModalOpen(true)
                 }}
                 className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 rounded transition-colors disabled:bg-gray-500"
-                disabled={!authenticated || userTokenBalance <= 0}
+                disabled={!isAuthenticated || userTokenBalance <= 0}
               >
                 Sell
               </Button>
@@ -1151,12 +1150,6 @@ const Project = () => {
                                 })
                                 .slice(0, 5)
                                 .map((proposal) => {
-                                  console.log('📝 Rendering proposal:', {
-                                    name: proposal.name,
-                                    description: proposal.description,
-                                    state: proposal.state,
-                                    address: proposal.address
-                                  });
                                   
                                   const stateKey = typeof proposal.state === 'object' && proposal.state !== null
                                     ? Object.keys(proposal.state)[0]
@@ -1462,11 +1455,6 @@ const Project = () => {
                 <h3 className="text-lg font-semibold text-fg-primary">
                   {swapMode === 'buy' ? 'Buy Token' : 'Sell Token'}
                 </h3>
-                {swapMode === 'sell' && userTokenBalance > 0 && (
-                  <p className="text-sm text-fg-primary/60 mt-1">
-                    Available: {userTokenBalance.toFixed(4)} tokens
-                  </p>
-                )}
               </div>
 
               {/* Jupiter Swap Component */}
@@ -1475,7 +1463,6 @@ const Project = () => {
                 outputMint={swapMode === 'buy' ? (tokenData?.token?.mint || id || "") : "So11111111111111111111111111111111111111112"}
                 className="w-full"
                 solPriceUSD={solPriceUSD || undefined}
-                userTokenBalance={swapMode === 'sell' ? userTokenBalance : undefined}
               />
             </div>
           </div>

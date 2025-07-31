@@ -30,6 +30,7 @@ import Terms from "./pages/Terms"
 import Profile from "./pages/Profile"
 import Search from "./pages/Search"
 import Projects from "./pages/Projects"
+import Discover from "./pages/Discover"
 import Providers from "./providers/PrivyProvider"
 import LandingPage from "./pages/LandingPage"
 import PwaInstall from "./pages/PwaInstall"
@@ -94,6 +95,10 @@ const router = createBrowserRouter([
             element: <Projects />,
           },
         ],
+      },
+      {
+        path: ROUTES.DISCOVER,
+        element: <Discover />,
       },
       {
         path: ROUTES.USERNAME,

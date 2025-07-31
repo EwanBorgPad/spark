@@ -6,6 +6,7 @@ import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
 import BN from 'bn.js';
 import Text from '../Text';
 import { Button } from '../Button/Button';
+import { getPhantomProvider, connectPhantom } from '@/services/phantomService';
 import { getCorrectWalletAddress } from '@/utils/walletUtils';
 import { toast } from 'react-toastify';
 
@@ -14,7 +15,6 @@ interface JupiterSwapProps {
   outputMint: string; // The token they want to buy
   className?: string;
   solPriceUSD?: number; // SOL price in USD for value calculations
-  userTokenBalance?: number; // User's token balance for the input token
   optimizeFees?: boolean; // Enable fee optimization
 }
 
@@ -43,11 +43,17 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
   outputMint,
   className = "",
   solPriceUSD,
-  userTokenBalance,
   optimizeFees = true
 }) => {
   const { user, authenticated } = usePrivy();
   const { wallets } = useSolanaWallets();
+  
+  // Check Solana wallet connection
+  const [solanaWalletAddress, setSolanaWalletAddress] = useState<string | null>(null);
+  const [isSolanaConnected, setIsSolanaConnected] = useState(false);
+  
+  // Check if user is authenticated via Privy OR connected via Solana wallet
+  const isAuthenticated = authenticated || isSolanaConnected;
   const [inputAmount, setInputAmount] = useState('');
   const [outputAmount, setOutputAmount] = useState('');
   const [quote, setQuote] = useState<JupiterQuoteResponse | null>(null);
@@ -55,68 +61,191 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
   const [isSwapping, setIsSwapping] = useState(false);
   const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
   const [solBalance, setSolBalance] = useState<number>(0);
+  const [tokenBalance, setTokenBalance] = useState<number>(0);
   const [estimatedFee, setEstimatedFee] = useState<number | null>(null);
 
   const connection = new Connection(import.meta.env.VITE_RPC_URL);
 
-  const getSolanaWallet = () => {
-    console.log("Available wallets:", wallets.map(w => ({
-      address: w.address,
-      walletClientType: w.walletClientType,
-      connectedAt: w.connectedAt
-    })));
-
-    // Use the same wallet selection logic as Profile page
-    const correctWalletAddress = getCorrectWalletAddress(user, wallets);
-
-    if (correctWalletAddress) {
-      const correctWallet = wallets.find(w => w.address === correctWalletAddress);
-      if (correctWallet) {
-        console.log("Using correct wallet:", correctWallet.address, correctWallet.walletClientType);
-        return correctWallet;
-      }
+  // Connect to Solana wallet
+  const connectSolanaWallet = async () => {
+    console.log("🔌 Attempting to connect Solana wallet...");
+    try {
+      const address = await connectPhantom();
+      console.log("✅ Solana wallet connected with address:", address);
+      setSolanaWalletAddress(address);
+      setIsSolanaConnected(true);
+      toast.success('Wallet connected successfully!');
+    } catch (error) {
+      console.error('❌ Error connecting to Solana wallet:', error);
+      toast.error('Failed to connect wallet');
     }
-
-    // Fallback: Find any connected wallet (but avoid Solflare unless it's the only option)
-    const connectedWallet = wallets.find(wallet =>
-      wallet.connectedAt && wallet.walletClientType !== 'solflare'
-    );
-
-    if (connectedWallet) {
-      console.log("Using connected wallet:", connectedWallet.address, connectedWallet.walletClientType);
-      return connectedWallet;
-    }
-
-    // Last resort: use any wallet
-    const fallbackWallet = wallets[0];
-    console.log("Using fallback wallet:", fallbackWallet?.address, fallbackWallet?.walletClientType);
-    return fallbackWallet;
   };
 
-  // Fetch SOL balance
-  const fetchSolBalance = async () => {
-    if (!authenticated || !user?.wallet?.address) {
-      console.log("Cannot fetch SOL balance - not authenticated or no wallet address");
+  // Check if Solana wallet is already connected
+  const checkSolanaConnection = () => {
+    console.log("🔍 Checking Solana wallet connection...");
+    const provider = getPhantomProvider();
+    console.log("🔍 Phantom provider found:", !!provider);
+    if (provider && provider.isConnected && provider.publicKey) {
+      const address = provider.publicKey.toString();
+      console.log("✅ Solana wallet already connected with address:", address);
+      setSolanaWalletAddress(address);
+      setIsSolanaConnected(true);
+    } else {
+      console.log("❌ Solana wallet not connected");
+    }
+  };
+
+  const getSolanaWallet = () => {
+    // If authenticated via Privy, use Privy wallets
+    if (authenticated) {
+      console.log("Available Privy wallets:", wallets.map(w => ({
+        address: w.address,
+        walletClientType: w.walletClientType,
+        connectedAt: w.connectedAt
+      })));
+
+      // Use the same wallet selection logic as Profile page
+      const correctWalletAddress = getCorrectWalletAddress(user, wallets);
+
+      if (correctWalletAddress) {
+        const correctWallet = wallets.find(w => w.address === correctWalletAddress);
+        if (correctWallet) {
+          console.log("Using correct Privy wallet:", correctWallet.address, correctWallet.walletClientType);
+          return correctWallet;
+        }
+      }
+
+      // Fallback: Find any connected wallet (but avoid Solflare unless it's the only option)
+      const connectedWallet = wallets.find(wallet =>
+        wallet.connectedAt && wallet.walletClientType !== 'solflare'
+      );
+
+      if (connectedWallet) {
+        console.log("Using connected Privy wallet:", connectedWallet.address, connectedWallet.walletClientType);
+        return connectedWallet;
+      }
+
+      // Last resort: use any wallet
+      const fallbackWallet = wallets[0];
+      console.log("Using fallback Privy wallet:", fallbackWallet?.address, fallbackWallet?.walletClientType);
+      return fallbackWallet;
+    }
+    
+    // If connected via Solana wallet, return the provider
+    if (isSolanaConnected) {
+      const provider = getPhantomProvider();
+      if (provider && provider.isConnected) {
+        console.log("Using Solana wallet:", provider.publicKey.toString());
+        return provider;
+      }
+    }
+    
+    return null;
+  };
+
+  // Fetch token balance
+  const fetchTokenBalance = async () => {
+    console.log("🔍 fetchTokenBalance called with:", {
+      isAuthenticated,
+      authenticated,
+      isSolanaConnected,
+      solanaWalletAddress,
+      inputMint
+    });
+
+    if (!isAuthenticated) {
+      console.log("❌ Cannot fetch token balance - not authenticated");
+      return;
+    }
+    
+    let addressToUse: string | null = null;
+    
+    if (authenticated) {
+      // Use Privy wallet address
+      addressToUse = user?.wallet?.address || null;
+      console.log("🔑 Using Privy wallet address:", addressToUse);
+    } else if (isSolanaConnected) {
+      // Use Solana wallet address
+      addressToUse = solanaWalletAddress;
+      console.log("🔑 Using Solana wallet address:", addressToUse);
+    }
+    
+    if (!addressToUse) {
+      console.log("❌ Cannot fetch token balance - no wallet address");
       return;
     }
 
     try {
-      const wallet = getSolanaWallet();
-      const walletAddress = user?.wallet?.address || wallet?.address;
-      console.log("Fetching SOL balance for address:", walletAddress);
+      console.log("🔄 Fetching token balance for address:", addressToUse, "token:", inputMint);
 
-      if (!walletAddress) {
-        console.log("No wallet address found");
-        return;
+      const publicKey = new PublicKey(addressToUse);
+      const tokenMint = new PublicKey(inputMint);
+      
+      console.log("🔍 Getting token accounts for owner:", publicKey.toString(), "mint:", tokenMint.toString());
+      
+      // Get token accounts for this mint
+      const tokenAccounts = await connection.getParsedTokenAccountsByOwner(publicKey, {
+        mint: tokenMint,
+      });
+
+      console.log("📊 Token accounts found:", tokenAccounts.value.length);
+
+      if (tokenAccounts.value.length > 0) {
+        const balance = tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount;
+        console.log("✅ Token balance fetched:", balance);
+        setTokenBalance(balance);
+      } else {
+        console.log("❌ No token account found for this mint");
+        setTokenBalance(0);
       }
+    } catch (error) {
+      console.error('❌ Error fetching token balance:', error);
+      setTokenBalance(0);
+    }
+  };
 
-      const publicKey = new PublicKey(walletAddress);
+  // Fetch SOL balance
+  const fetchSolBalance = async () => {
+    console.log("🔍 fetchSolBalance called with:", {
+      isAuthenticated,
+      authenticated,
+      isSolanaConnected,
+      solanaWalletAddress
+    });
+
+    if (!isAuthenticated) {
+      console.log("❌ Cannot fetch SOL balance - not authenticated");
+      return;
+    }
+    
+    let addressToUse: string | null = null;
+    
+    if (authenticated) {
+      // Use Privy wallet address
+      addressToUse = user?.wallet?.address || null;
+      console.log("🔑 Using Privy wallet address for SOL:", addressToUse);
+    } else if (isSolanaConnected) {
+      // Use Solana wallet address
+      addressToUse = solanaWalletAddress;
+      console.log("🔑 Using Solana wallet address for SOL:", addressToUse);
+    }
+    
+    if (!addressToUse) {
+      console.log("❌ Cannot fetch SOL balance - no wallet address");
+      return;
+    }
+
+    try {
+      console.log("🔄 Fetching SOL balance for address:", addressToUse);
+
+      const publicKey = new PublicKey(addressToUse);
       const balance = await connection.getBalance(publicKey);
       const solBalance = balance / 1000000000; // Convert lamports to SOL
-      console.log("SOL balance fetched:", solBalance, "SOL");
+      console.log("✅ SOL balance fetched:", solBalance, "SOL");
       setSolBalance(solBalance);
     } catch (error) {
-      console.error('Error fetching SOL balance:', error);
+      console.error('❌ Error fetching SOL balance:', error);
       setSolBalance(0);
     }
   };
@@ -141,12 +270,35 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
     loadTokens();
   }, []);
 
-  // Fetch SOL balance when authenticated
+  // Check Solana connection on mount
   useEffect(() => {
-    if (authenticated) {
+    checkSolanaConnection();
+  }, []);
+
+  // Fetch balances when authenticated
+  useEffect(() => {
+    console.log("🔄 Balance useEffect triggered with:", {
+      isAuthenticated,
+      inputMint,
+      solanaWalletAddress,
+      user: user?.wallet?.address
+    });
+
+    if (isAuthenticated) {
+      console.log("✅ User authenticated, fetching balances...");
       fetchSolBalance();
+      // Only fetch token balance if we're not dealing with SOL
+      if (inputMint !== 'So11111111111111111111111111111111111111112') {
+        console.log("🪙 Fetching token balance for non-SOL input");
+        fetchTokenBalance();
+      } else {
+        console.log("💰 Input is SOL, setting token balance to 0");
+        setTokenBalance(0);
+      }
+    } else {
+      console.log("❌ User not authenticated, skipping balance fetch");
     }
-  }, [authenticated, user, connection]);
+  }, [isAuthenticated, user, solanaWalletAddress, connection, inputMint]);
 
   // Get quote from Jupiter
   const getQuote = async (inputMint: string, outputMint: string, amount: string) => {
@@ -231,12 +383,12 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
       outputMint
     });
 
-    if (isSellingToken && userTokenBalance) {
+    if (isSellingToken && tokenBalance) {
       // When selling tokens, use the token balance
-      console.log("Using token balance:", userTokenBalance);
-      setInputAmount(userTokenBalance.toString());
-      if (userTokenBalance > 0) {
-        getQuote(inputMint, outputMint, userTokenBalance.toString());
+      console.log("Using token balance:", tokenBalance);
+      setInputAmount(tokenBalance.toString());
+      if (tokenBalance > 0) {
+        getQuote(inputMint, outputMint, tokenBalance.toString());
       }
     } else {
       // When buying tokens (paying with SOL), use SOL balance minus small fee buffer
@@ -254,35 +406,53 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
 
   // Execute swap using Jupiter
   const executeSwap = async () => {
-    if (!quote || !authenticated) {
+    if (!quote || !isAuthenticated) {
       toast.error('Please connect your wallet and get a quote first');
+      return;
+    }
+
+    // Check if user has enough SOL for fees
+    if (solBalance < 0.01) {
+      toast.error('Insufficient SOL for transaction fees. Please ensure you have at least 0.01 SOL.');
       return;
     }
 
     setIsSwapping(true);
     try {
-      const wallet = getSolanaWallet();
-      if (!wallet) {
-        toast.error('No Solana wallet found');
-        return;
-      }
+      let walletToUse: any = null;
+      let addressToUse: string | null = null;
 
-      // Get the correct wallet address
-      const walletAddress = getCorrectWalletAddress(user, wallets) || wallet.address;
+      if (authenticated) {
+        // Use Privy wallet
+        walletToUse = getSolanaWallet();
+        if (!walletToUse) {
+          toast.error('No Solana wallet found');
+          return;
+        }
+        addressToUse = getCorrectWalletAddress(user, wallets) || walletToUse.address;
+      } else if (isSolanaConnected) {
+        // Use Solana wallet
+        walletToUse = getSolanaWallet();
+        if (!walletToUse) {
+          toast.error('No Solana wallet found');
+          return;
+        }
+        addressToUse = solanaWalletAddress;
+      }
       
-      if (!walletAddress) {
+      if (!addressToUse) {
         toast.error('No wallet address found');
         return;
       }
 
-      console.log('Using wallet address:', walletAddress);
+      console.log('Using wallet address:', addressToUse);
 
-      // Step 1: Build the swap transaction
+      // Step 1: Build the swap transaction with higher fees
       const swapRequestBody = {
         quoteResponse: quote,
-        userPublicKey: walletAddress,
+        userPublicKey: addressToUse,
         wrapUnwrapSOL: false, // Never wrap/unwrap SOL to reduce fees
-        prioritizationFeeLamports: 1000, // Lower priority fee
+        prioritizationFeeLamports: 5000, // Higher priority fee for better success rate
         maxAccounts: 64, // Limit account usage
       };
 
@@ -308,22 +478,99 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
       console.log('Transaction deserialized');
 
       // Step 3: Sign the transaction
-      const signedTransaction = await wallet.signTransaction(transaction);
+      const signedTransaction = await walletToUse.signTransaction(transaction);
       console.log('Transaction signed');
 
-      // Step 4: Send the transaction with optimized settings
+      // Step 4: Validate transaction before sending
+      try {
+        // Simulate the transaction to catch errors early
+        const simulation = await connection.simulateTransaction(transaction);
+        if (simulation.value.err) {
+          throw new Error(`Transaction simulation failed: ${simulation.value.err}`);
+        }
+        console.log('Transaction simulation successful');
+      } catch (simError) {
+        console.error('Transaction simulation error:', simError);
+        throw new Error(`Transaction validation failed: ${simError instanceof Error ? simError.message : 'Unknown error'}`);
+      }
+
+      // Step 5: Send the transaction with better settings
       const signature = await connection.sendRawTransaction(signedTransaction.serialize(), {
-        skipPreflight: true, // Skip preflight for faster execution
-        maxRetries: 3,
-        preflightCommitment: 'processed', // Use processed instead of confirmed for speed
+        skipPreflight: false, // Enable preflight to catch errors early
+        maxRetries: 5, // More retries
+        preflightCommitment: 'confirmed', // Use confirmed for better reliability
       });
 
       console.log('Swap transaction sent:', signature);
 
-      // Wait for confirmation
-      await connection.confirmTransaction(signature, 'processed');
+      // Show pending toast with explorer link
+      const explorerUrl = `https://solscan.io/tx/${signature}`;
+      toast.info(
+        <div>
+          Transaction submitted! 
+          <br />
+          <a href={explorerUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">
+            View on Solscan: {signature.slice(0, 8)}...{signature.slice(-8)}
+          </a>
+        </div>,
+        { autoClose: 10000 }
+      );
 
-      toast.success(`Swap successful! You received approximately ${outputAmount} tokens. Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
+      // Wait for confirmation with better error handling and longer timeout
+      try {
+        console.log('Waiting for transaction confirmation...');
+        
+        // First try with a shorter timeout for quick confirmations
+        const confirmation = await Promise.race([
+          connection.confirmTransaction(signature, 'confirmed'),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Initial confirmation timeout')), 30000) // 30 second initial timeout
+          )
+        ]);
+        
+        if (confirmation.value.err) {
+          throw new Error(`Transaction failed: ${confirmation.value.err}`);
+        }
+        
+        console.log('Transaction confirmed successfully');
+        toast.success(`Swap successful! You received approximately ${outputAmount} tokens. Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
+      } catch (confirmError) {
+        console.error('Initial confirmation error:', confirmError);
+        
+        // If initial confirmation failed, wait longer and check status
+        console.log('Initial confirmation failed, checking transaction status...');
+        
+        try {
+          // Wait a bit more and check status
+          await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 more seconds
+          
+          const status = await connection.getSignatureStatus(signature);
+          console.log('Transaction status after timeout:', status);
+          
+          if (status.value?.confirmationStatus === 'confirmed' || status.value?.confirmationStatus === 'finalized') {
+            console.log('Transaction succeeded despite initial timeout');
+            toast.success(`Swap successful! You received approximately ${outputAmount} tokens. Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
+          } else if (status.value?.confirmationStatus === 'processed') {
+            console.log('Transaction is processed, waiting for final confirmation...');
+            
+            // Wait a bit more for final confirmation
+            await new Promise(resolve => setTimeout(resolve, 15000)); // Wait 15 more seconds
+            
+            const finalStatus = await connection.getSignatureStatus(signature);
+            if (finalStatus.value?.confirmationStatus === 'confirmed' || finalStatus.value?.confirmationStatus === 'finalized') {
+              console.log('Transaction finally confirmed');
+              toast.success(`Swap successful! You received approximately ${outputAmount} tokens. Signature: ${signature.slice(0, 8)}...${signature.slice(-8)}`);
+            } else {
+              throw new Error('Transaction still not confirmed after extended wait');
+            }
+          } else {
+            throw confirmError;
+          }
+        } catch (statusError) {
+          console.error('Status check error:', statusError);
+          throw confirmError;
+        }
+      }
 
       // Reset form
       setInputAmount('');
@@ -332,10 +579,28 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
 
       // Refresh balances
       fetchSolBalance();
+      if (inputMint !== 'So11111111111111111111111111111111111111112') {
+        fetchTokenBalance();
+      }
 
     } catch (error) {
       console.error('Error executing Jupiter swap:', error);
-      toast.error(`Swap failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
+      // Provide better error messages
+      let errorMessage = 'Swap failed';
+      if (error instanceof Error) {
+        if (error.message.includes('Transaction was not confirmed')) {
+          errorMessage = 'Transaction submitted but confirmation timed out. Please check your wallet or Solana Explorer to verify if the swap succeeded.';
+        } else if (error.message.includes('insufficient funds')) {
+          errorMessage = 'Insufficient funds for this transaction. Please check your balance.';
+        } else if (error.message.includes('slippage')) {
+          errorMessage = 'Swap failed due to price movement. Please try again with a smaller amount or higher slippage.';
+        } else {
+          errorMessage = `Swap failed: ${error.message}`;
+        }
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsSwapping(false);
     }
@@ -382,13 +647,32 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
     }
   };
 
+  // Debug log for current state
+  console.log("🎯 JupiterSwap render state:", {
+    isAuthenticated,
+    authenticated,
+    isSolanaConnected,
+    solanaWalletAddress,
+    solBalance,
+    tokenBalance,
+    inputMint,
+    isSellingToken
+  });
+
   return (
     <div className={`bg-bg-secondary rounded-lg p-6 border border-fg-primary/10 ${className}`}>
       <Text text={isSellingToken ? "Sell Tokens" : "Buy Tokens"} as="h2" className="text-xl font-semibold mb-4" />
 
-      {!authenticated ? (
+      {!isAuthenticated ? (
         <div className="text-center py-6">
-          <Text text="Connect your wallet to swap tokens" as="p" className="text-fg-primary text-opacity-75" />
+          <Text text="Connect your wallet to swap tokens" as="p" className="text-fg-primary text-opacity-75 mb-4" />
+          <Button
+            onClick={connectSolanaWallet}
+            size="md"
+            color="primary"
+            btnClassName="bg-brand-primary hover:bg-brand-primary/80 text-white"
+            btnText="Connect Phantom Wallet"
+          />
         </div>
       ) : (
         <div className="space-y-4">
@@ -401,7 +685,7 @@ const JupiterSwap: React.FC<JupiterSwapProps> = ({
               </label>
               <div className="text-xs text-fg-primary text-opacity-60">
                 Balance: {isSellingToken ?
-                  (userTokenBalance?.toFixed(4) || "0") :
+                  (tokenBalance?.toFixed(4) || "0") :
                   solBalance.toFixed(4)
                 } {inputToken?.symbol || (inputMint === 'So11111111111111111111111111111111111111112' ? 'SOL' : 'TOKEN')}
               </div>

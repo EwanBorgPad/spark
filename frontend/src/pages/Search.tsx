@@ -41,7 +41,7 @@ const Search = () => {
   ) || [];
 
   const handleTokenClick = (tokenMint: string) => {
-    navigate(`${ROUTES.PROJECTS}/${tokenMint}`);
+    navigate(`${ROUTES.PROJECTS}/${tokenMint}`, { state: { from: ROUTES.SEARCH } });
   };
 
   const handleClearSearch = () => {

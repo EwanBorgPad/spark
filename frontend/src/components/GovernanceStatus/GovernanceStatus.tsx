@@ -11,6 +11,9 @@ import { getCorrectWalletAddress } from '@/utils/walletUtils';
 import { toast } from 'react-toastify';
 import { backendSparkApi } from '../../data/api/backendSparkApi';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getPhantomProvider } from '@/services/phantomService';
+import { useLocation } from 'react-router-dom';
+import { ROUTES } from '@/utils/routes';
 
 interface GovernanceStatusProps {
   dao: DaoModel;
@@ -23,6 +26,25 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
   const { user, authenticated } = usePrivy();
   const { wallets } = useSolanaWallets();
   const queryClient = useQueryClient();
+  const location = useLocation();
+  
+  // Check if we're in Discover mode (came from Discover page)
+  const isDiscoverMode = () => {
+    const state = location.state as { from?: string } | null
+    return state?.from === ROUTES.DISCOVER
+  }
+  
+  // Check if Solana wallet is connected in Discover mode
+  const isSolanaConnected = () => {
+    if (isDiscoverMode()) {
+      const provider = getPhantomProvider()
+      return provider && provider.isConnected && provider.publicKey
+    }
+    return false
+  }
+  
+  // Check if user is authenticated via Privy OR connected via Solana wallet in Discover mode
+  const isAuthenticated = authenticated || isSolanaConnected()
   const [isDepositing, setIsDepositing] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [amount, setAmount] = useState("1000000000"); // 1 token with 9 decimals
@@ -33,19 +55,51 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
 
   // Get Solana wallet from Privy using the correct wallet selection logic
   const getSolanaWallet = () => {
+    if (isDiscoverMode() && isSolanaConnected()) {
+      // In Discover mode, return the Phantom provider
+      const provider = getPhantomProvider()
+      if (provider && provider.isConnected && provider.publicKey) {
+        console.log("Using Solana wallet in Discover mode:", provider.publicKey.toString());
+        return {
+          address: provider.publicKey.toString(),
+          signTransaction: provider.signTransaction.bind(provider)
+        };
+      }
+    }
+    
+    // Fall back to Privy wallet
     const correctWalletAddress = getCorrectWalletAddress(user, wallets);
     if (correctWalletAddress) {
       const correctWallet = wallets.find(w => w.address === correctWalletAddress);
       if (correctWallet) {
-        console.log("Using correct wallet:", correctWallet.address, correctWallet.walletClientType);
+        console.log("Using Privy wallet:", correctWallet.address, correctWallet.walletClientType);
         return correctWallet;
       }
     }
     return null;
   };
 
-  // Get the correct wallet address for queries
-  const correctWalletAddress = getCorrectWalletAddress(user, wallets);
+  // Get the correct wallet address for queries - make it reactive
+  const correctWalletAddress = (() => {
+    if (isDiscoverMode() && isSolanaConnected()) {
+      const provider = getPhantomProvider()
+      return provider?.publicKey?.toString() || null
+    }
+    return getCorrectWalletAddress(user, wallets)
+  })();
+  
+  // Monitor wallet connection changes and force refetch
+  useEffect(() => {
+    if (isAuthenticated && correctWalletAddress) {
+      console.log('Wallet address changed, invalidating queries:', correctWalletAddress);
+      queryClient.invalidateQueries({
+        queryKey: ["getTokenBalance", correctWalletAddress, dao.communityMint]
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["getGovernanceData", correctWalletAddress, dao.address, dao.communityMint]
+      });
+    }
+  }, [correctWalletAddress, isAuthenticated, queryClient, dao.communityMint, dao.address]);
 
   // Fetch token balance using React Query - refresh on page visit but not while staying
   const { data: tokenBalanceData } = useQuery({
@@ -56,7 +110,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
         cluster: "mainnet"
       }),
     queryKey: ["getTokenBalance", correctWalletAddress, dao.communityMint],
-    enabled: Boolean(authenticated && correctWalletAddress && dao.communityMint),
+    enabled: Boolean(isAuthenticated && correctWalletAddress && dao.communityMint),
     refetchInterval: false,
     staleTime: 0, // Always consider data stale - will refetch on mount
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
@@ -75,7 +129,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
         cluster: "mainnet"
       }),
     queryKey: ["getGovernanceData", correctWalletAddress, dao.address, dao.communityMint],
-    enabled: Boolean(authenticated && correctWalletAddress && dao.address && dao.communityMint),
+    enabled: Boolean(isAuthenticated && correctWalletAddress && dao.address && dao.communityMint),
     refetchInterval: false,
     staleTime: 0, // Always consider data stale - will refetch on mount
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
@@ -87,6 +141,20 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
   // Get current values from React Query data
   const currentUserTokenBalance = tokenBalanceData?.success ? tokenBalanceData.balance : 0;
   const govVotingPower = governanceData?.success ? governanceData.votingPower : 0;
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('GovernanceStatus Debug:', {
+      isDiscoverMode: isDiscoverMode(),
+      isSolanaConnected: isSolanaConnected(),
+      isAuthenticated,
+      correctWalletAddress,
+      tokenBalanceData,
+      governanceData,
+      currentUserTokenBalance,
+      govVotingPower
+    });
+  }, [isAuthenticated, correctWalletAddress, tokenBalanceData, governanceData, currentUserTokenBalance, govVotingPower]);
   
   // Helper function for max deposit amount
   const setMaxDeposit = () => {
@@ -104,7 +172,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
   }, [currentUserTokenBalance, govVotingPower, onDataUpdate]);
 
   const handleDepositTokens = async () => {
-    if (!authenticated) {
+    if (!isAuthenticated) {
       toast.error("Please connect your wallet first");
       return;
     }
@@ -202,7 +270,7 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
   };
 
   const handleWithdrawTokens = async () => {
-    if (!authenticated) {
+    if (!isAuthenticated) {
       toast.error("Please connect your wallet first");
       return;
     }
@@ -281,13 +349,20 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
 
   return (
     <div className={`${className}`}>
-      {!authenticated ? (
+      {!isAuthenticated ? (
         <div className="text-center py-4 bg-bg-primary/5 rounded">
           <Text text="Connect wallet to participate in governance" as="p" className="text-fg-primary/60" />
         </div>
       ) : (
         <div className="space-y-4">
-          {/* Status Overview - Now handled externally */}
+          {/* Voting Power */}
+          <div className="bg-bg-primary/5 rounded p-3 border border-fg-primary/10">
+            <div className="flex justify-between items-center">
+              <Text text="Voting Power" as="p" className="text-lg font-medium" />
+              <Text text={`${govVotingPower.toFixed(2)} tokens`} as="p" className="text-sm font-medium" />
+            </div>
+          </div>
+          
           {/* Token Management */}
           <div className="bg-bg-primary/5 rounded p-3 border border-fg-primary/10">
             <Text text="Lock tokens to vote" as="h3" className="text-sm font-medium mb-3" />
@@ -336,6 +411,14 @@ const GovernanceStatus: React.FC<GovernanceStatusProps> = ({ dao, className = ""
             {currentUserTokenBalance === 0 && (
               <div className="mt-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded text-center">
                 <Text text="You need tokens in your wallet to deposit" as="p" className="text-xs text-fg-primary/60" />
+              </div>
+            )}
+            
+
+            
+            {currentUserTokenBalance > 0 && govVotingPower === 0 && (
+              <div className="mt-3 p-2 bg-blue-500/10 border border-blue-500/20 rounded text-center">
+                <Text text="Deposit tokens to gain voting power" as="p" className="text-xs text-blue-400" />
               </div>
             )}
           </div>
