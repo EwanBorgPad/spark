@@ -3,6 +3,8 @@ import { drizzle } from "drizzle-orm/d1"
 import { applicationsTable } from "../../shared/drizzle-schema"
 import { eq, and, asc, desc } from "drizzle-orm"
 import { nanoid } from "nanoid"
+import { GitHubScoreCalculator } from "../../shared/services/githubScoreCalculator"
+import { GitHubService } from "../../shared/services/githubService"
 
 type ENV = {
   DB: D1Database
@@ -18,12 +20,21 @@ type CreateApplicationRequest = {
   estimatedDeadline: string
   featureDescription: string
   solanaWalletAddress: string
+  githubAccessToken?: string
 }
 
 export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
   const db = drizzle(ctx.env.DB, { logger: true })
   try {
     const applicationData: CreateApplicationRequest = await ctx.request.json()
+    
+    console.log('=== Application Submission ===')
+    console.log('Application data received:', {
+      projectId: applicationData.projectId,
+      githubUsername: applicationData.githubUsername,
+      hasGithubAccessToken: !!applicationData.githubAccessToken,
+      tokenPrefix: applicationData.githubAccessToken ? `${applicationData.githubAccessToken.substring(0, 10)}...` : 'none'
+    })
 
     // Validate required fields
     if (!applicationData.projectId || 
@@ -73,9 +84,48 @@ export const onRequestPost: PagesFunction<ENV> = async (ctx) => {
       )
       .run()
 
+    // Fetch GitHub score if access token is provided
+    let githubScore = null
+    
+    if (applicationData.githubAccessToken) {
+      try {
+        console.log(`Calculating GitHub score for user: ${applicationData.githubUsername}`)
+        console.log(`GitHub access token provided: ${applicationData.githubAccessToken.substring(0, 10)}...`)
+        
+        // Create GitHub service and calculator
+        const githubService = new GitHubService(applicationData.githubAccessToken)
+        const calculator = new GitHubScoreCalculator(githubService)
+
+        // Calculate GitHub score
+        console.log('Starting GitHub score calculation...')
+        const scoreData = await calculator.calculateScore(applicationData.githubUsername)
+        githubScore = scoreData.totalScore
+        
+        console.log(`GitHub score calculated: ${githubScore}`)
+        
+        // Update the application with GitHub score only (no detailed data)
+        await ctx.env.DB
+          .prepare("UPDATE applications SET github_score = ?, updated_at = ? WHERE id = ?")
+          .bind(githubScore, new Date().toISOString(), applicationId)
+          .run()
+        
+        console.log(`Updated application ${applicationId} with GitHub score: ${githubScore}`)
+      } catch (scoreError) {
+        console.error('Error calculating GitHub score:', scoreError)
+        console.error('Error details:', {
+          message: scoreError instanceof Error ? scoreError.message : 'Unknown error',
+          stack: scoreError instanceof Error ? scoreError.stack : undefined
+        })
+        // Don't fail the application creation if GitHub score calculation fails
+      }
+    } else {
+      console.log('No GitHub access token provided, skipping score calculation')
+    }
+
     return jsonResponse({ 
       success: true, 
       applicationId,
+      githubScore,
       message: "Application submitted successfully" 
     }, 201)
   } catch (e) {

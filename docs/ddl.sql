@@ -25,6 +25,7 @@ CREATE TABLE applications (
     feature_description TEXT NOT NULL,
     solana_wallet_address TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending',
+    github_score INTEGER,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -44,4 +45,6 @@ CREATE TABLE api_key (
 );
 
 
+-- Migration to add github_score column to existing applications table
+-- ALTER TABLE applications ADD COLUMN github_score INTEGER;
 
