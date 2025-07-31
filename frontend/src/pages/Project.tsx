@@ -295,10 +295,15 @@ const Project = () => {
     }
   }
 
-
-
   // Find matching application for a proposal
-  const findMatchingApplication = (proposal: any): ApplicationResponse | null => {
+  const findMatchingApplication = (proposal: { 
+    address: string; 
+    name?: string; 
+    description?: string; 
+    state?: any; 
+    options?: any[]; 
+    denyVoteWeight?: string;
+  }): ApplicationResponse | null => {
     if (!applicationsData?.applications || applicationsData.applications.length === 0) {
       return null;
     }
