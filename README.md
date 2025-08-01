@@ -14,10 +14,10 @@ Spark turns every idea into a token. Trading fees go into a dedicated DAO. Token
 Spark is a revolutionary platform that transforms ideas into tradable tokens with built-in governance. Here's how it works:
 
 1. **Anyone posts an idea** on Twitter by tagging the official Spark account
-2. **Spark automatically creates a token** for that idea
+2. **Spark automatically creates a token** for that idea using Meteora DBC (Dynamic Bonding Curve)
 3. **The token trades in permissionless pools** with dynamic bonding curves
 4. **Trading fees are split**: 50% to the idea's DAO treasury, 50% to Spark DAO
-5. **Token holders vote** on how to use the treasury to build the idea
+5. **Token holders vote** on how to use the treasury to build the idea using Realms DAO governance
 6. **The more belief + trading, the bigger the treasury** — and the higher chance the idea gets built
 
 ## 🧩 The Problem — Why Spark?
@@ -42,19 +42,20 @@ Today's innovation landscape is broken:
 Anyone can submit an idea by tagging the official Spark account on Twitter. The platform automatically detects and processes these submissions.
 
 ### 2. Token Creation
-Spark automatically creates an SPL token for each idea with:
-- **Dynamic bonding curve** for fair price discovery
+Spark automatically creates an SPL token for each idea using the **Meteora Stack**:
+- **Meteora DBC (Dynamic Bonding Curve)** for initial token launch and fair price discovery
+- **DAMM v2** when the token graduates to more advanced trading
 - **Permissionless trading** on Meteora DEX
-- **Built-in governance** through Solana DAOs
+- **Built-in governance** through Realms DAO
 
 ### 3. Trading & Fee Collection
 - **2% trading fees** are collected on every transaction
 - **Fee split**: 50% to the idea's DAO treasury, 50% to Spark DAO
 - **Real-time market data** from Jupiter, DexScreener, and Birdeye
 
-### 4. DAO Governance
-Once a project "graduates" (reaches certain milestones), a dedicated DAO is created where token holders can:
-- **Vote on proposals** for how to use the treasury
+### 4. DAO Governance with Realms
+Once a project "graduates" (reaches certain milestones), a dedicated **Realms DAO** is created where token holders can:
+- **Vote on proposals** for how to use the treasury using Realms governance stack
 - **Fund builders and developers** through application system
 - **Support marketing and community growth**
 - **Reward contributors**
@@ -64,7 +65,18 @@ Once a project "graduates" (reaches certain milestones), a dedicated DAO is crea
 - **Developers can apply** to build specific proposals
 - **GitHub integration** for reputation and skill verification
 - **Transparent pricing** and project scope
-- **Community voting** on builder selection
+- **Community voting** on builder selection using Realms voting system
+
+## 📱 Application Flow
+
+### Complete User Journey
+1. **Create a token with an idea on X (Twitter)** - Users post ideas by tagging the official Spark account
+2. **Token appears on Spark app** - The platform automatically creates a token using Meteora DBC
+3. **Connect using Privy** - Users authenticate with their wallet through Privy integration
+4. **Receive and send tokens** - Users can transfer tokens to other users
+5. **Buy tokens with Jupiter** - Integrated Jupiter stack allows seamless token purchases for newly created tokens
+6. **Developer proposals** - Developers can create proposals to build specific features or improvements
+7. **Token-based voting** - Users vote on proposals using their tokens through the Realms governance system
 
 ## 🌐 Who Is It For?
 
@@ -90,14 +102,20 @@ Looking for a signal to build what people actually want. The marketplace connect
 - **Cloudflare Pages Functions** for serverless APIs
 - **D1 Database** for data persistence
 - **Solana Web3.js** for blockchain interactions
-- **Meteora SDK** for DEX operations
-- **Governance SDK** for DAO management
+- **Meteora SDK** for DEX operations and DBC
+- **Realms SDK** for DAO governance
 
 ### Smart Contracts
 - **Anchor Framework** for Solana programs
 - **SPL Token** for token creation
-- **Solana Governance** for DAO functionality
-- **Dynamic Bonding Curves** for fair pricing
+- **Realms Governance** for DAO functionality
+- **Meteora DBC** for dynamic bonding curves
+- **DAMM v2** for advanced trading when tokens graduate
+
+### Mobile App
+- **Android APK** created by converting the PWA to an Android app using [Solana Mobile's TWA (Trusted Web Activity) approach](https://docs.solanamobile.com/dapp-publishing/publishing-a-pwa)
+- **Bubblewrap CLI** used to package the PWA into a native Android experience
+- **Not yet published to dApp Store** - currently in development/testing phase
 
 ## 🚀 Getting Started
 
@@ -231,10 +249,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - **Solana Foundation** for the blockchain infrastructure
-- **Meteora** for the DEX and bonding curve technology
+- **Meteora** for the DEX, DBC (Dynamic Bonding Curve), and DAMM v2 technology
+- **Realms** for the DAO governance and voting infrastructure
 - **Jupiter** for the swap aggregation
 - **Cloudflare** for the serverless infrastructure
 - **Privy** for the wallet authentication
+- **Solana Mobile** for the TWA (Trusted Web Activity) documentation and tools
 
 ## 📞 Support
 
